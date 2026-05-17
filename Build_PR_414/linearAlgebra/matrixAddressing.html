@@ -283,24 +283,25 @@
 where each row corresponds to a mesh cell and each non-zero off-diagonal entry corresponds to a
 face shared by two cells.  NeoN assembles this system in three parts:</p>
 <ul class="simple">
-<li><p><strong>Local CSR matrix</strong> — all cell-to-cell connections within the current MPI rank.</p></li>
-<li><p><strong>Physical-boundary COO matrix</strong> — contributions from Dirichlet/Neumann boundaries.</p></li>
-<li><p><strong>Processor-boundary COO matrix</strong> — contributions from faces shared with neighbouring MPI ranks.</p></li>
+<li><p><strong>Local system matrix</strong> — all cell-to-cell connections within the current MPI rank.</p></li>
+<li><p><strong>Physical-boundary matrix</strong> — contributions from Dirichlet/Neumann boundaries.</p></li>
+<li><p><strong>Processor-boundary matrix</strong> — contributions from faces shared with neighbouring MPI ranks.</p></li>
 </ul>
 <p>The central object that links mesh topology to matrix storage is
 <code class="docutils literal notranslate"><span class="pre">FaceToMatrixAddress</span></code> (<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/faceToMatrixAddress.hpp</span></code>).
 It stores three compact offset arrays (<code class="docutils literal notranslate"><span class="pre">diagOffset</span></code>, <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code>, <code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code>)
-that map every mesh face to a position inside the flat <code class="docutils literal notranslate"><span class="pre">values</span></code> array of the CSR matrix.</p>
+that map every mesh face to a position inside the flat <code class="docutils literal notranslate"><span class="pre">values</span></code> array of the corresponding matrix.</p>
 <p>Further details:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a></p></li>
 <li><p><a class="reference external" href="https://exasim-project.com/NeoN/latest/doxygen/html/classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a></p></li>
 </ul>
+<p>Currently, only two matrix formats are supported: CSR and COO. These are hardcoded, with the system matrix stored in CSR format and the boundary matrix stored in COO format.</p>
 </section>
 <section id="csr-format">
 <h2>CSR Format<a class="headerlink" href="#csr-format" title="Link to this heading">¶</a></h2>
-<p>The local matrix is stored in <strong>Compressed Sparse Row (CSR)</strong> format via
-<code class="docutils literal notranslate"><span class="pre">SparsityPattern</span></code> (<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/sparsityPattern.hpp</span></code>):</p>
+<p>The local system matrix is stored in <strong>Compressed Sparse Row (CSR)</strong> format via
+<code class="docutils literal notranslate"><span class="pre">CsrSparsityPattern</span></code> (<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/csrSparsityPattern.hpp</span></code>):</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rowOffs_</span><span class="p">;</span><span class="w">   </span><span class="c1">// size nCells + 1</span>
 <span class="n">Vector</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">colIdxs_</span><span class="p">;</span><span class="w">   </span><span class="c1">// size nnz (number of non-zeros)</span>
 <span class="c1">// values stored separately in Matrix::values_</span>
@@ -316,83 +317,27 @@ Iterating over row <code class="docutils literal notranslate"><span class="pre">
 </pre></div>
 </div>
 </section>
-<section id="row-layout-lower-diagonal-upper">
-<h2>Row Layout: Lower | Diagonal | Upper<a class="headerlink" href="#row-layout-lower-diagonal-upper" title="Link to this heading">¶</a></h2>
-<p>Within every row the non-zero entries are stored in the order:</p>
+<section id="row-layout-and-face-addressing-arrays">
+<h2>Row Layout and Face Addressing Arrays<a class="headerlink" href="#row-layout-and-face-addressing-arrays" title="Link to this heading">¶</a></h2>
+<p>Within every row of a matrix A the non-zero values are stored in row-major order.
+This leads to entries being sorted as lower | diag | upper in a row as shown below:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Row i: [ A[i,j0] ... A[i,j_{k-1}] | A[i,i] | A[i,j_{k+1}] ... A[i,j_{m}] ]
        |&lt;----- lower (j &lt; i) -----&gt;|&lt;-diag-&gt;|&lt;----- upper (j &gt; i) --------&gt;|
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">diagOffset[i]</span></code> equals the count of lower-triangular entries in row <code class="docutils literal notranslate"><span class="pre">i</span></code>, which is also
 the number of internal faces for which cell <code class="docutils literal notranslate"><span class="pre">i</span></code> is the <em>neighbour</em> (i.e. has a larger
-index than the owner).</p>
+index than the owner).
+Additionally, the FaceToMatrixAddress class stores <code class="docutils literal notranslate"><span class="pre">ownerOffset[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">neighbourOffset[i]</span></code>, which map from a given face ID to the offset of a lower or upper matrix element, respectively.
+Note that by construction <code class="docutils literal notranslate"><span class="pre">ownerOffset[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">neighbourOffset[i]</span></code> map to the upper triangular and lower triangular matrix respectively.
+These face addressing arrays are stored as <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> arrays.
+The following table gives as summary</p>
 </section>
-<section id="face-addressing-arrays">
-<h2>Face Addressing Arrays<a class="headerlink" href="#face-addressing-arrays" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">FaceToMatrixAddress</span></code> stores three <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> arrays:</p>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 25.0%" />
-<col style="width: 20.0%" />
-<col style="width: 55.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Array</p></th>
-<th class="head"><p>Size</p></th>
-<th class="head"><p>Meaning</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">diagOffset[celli]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">nCells</span></code></p></td>
-<td><p>Offset of the diagonal entry within cell <code class="docutils literal notranslate"><span class="pre">celli</span></code>’s row.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ownerOffset[facei]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">nInternalFaces</span></code></p></td>
-<td><p>Offset within the <em>owner</em> cell’s row for the column pointing at the <em>neighbour</em> cell.
-Gives the <strong>upper</strong>-triangular entry <span class="math notranslate nohighlight">\(A[\text{own},\text{nei}]\)</span>.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">neighbourOffset[facei]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">nInternalFaces</span></code></p></td>
-<td><p>Offset within the <em>neighbour</em> cell’s row for the column pointing at the <em>owner</em> cell.
-Gives the <strong>lower</strong>-triangular entry <span class="math notranslate nohighlight">\(A[\text{nei},\text{own}]\)</span>.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<section id="why-owneroffset-upper-triangular">
-<h3>Why <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> → upper triangular<a class="headerlink" href="#why-owneroffset-upper-triangular" title="Link to this heading">¶</a></h3>
-<p>By construction, NeoN guarantees <code class="docutils literal notranslate"><span class="pre">owner[f]</span> <span class="pre">&lt;</span> <span class="pre">neighbour[f]</span></code> for every internal face <code class="docutils literal notranslate"><span class="pre">f</span></code>.
-This means that in the owner’s row (row index = <code class="docutils literal notranslate"><span class="pre">own</span></code>), the column that points to the
-neighbour has column index <code class="docutils literal notranslate"><span class="pre">nei</span> <span class="pre">&gt;</span> <span class="pre">own</span></code> — which is the <strong>upper triangle</strong>.
-Conversely, in the neighbour’s row (row index = <code class="docutils literal notranslate"><span class="pre">nei</span></code>), the column pointing back to the
-owner has column index <code class="docutils literal notranslate"><span class="pre">own</span> <span class="pre">&lt;</span> <span class="pre">nei</span></code> — which is the <strong>lower triangle</strong>.</p>
-<p>This invariant is what makes <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> the upper-triangular offset and
-<code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code> the lower-triangular offset.</p>
-<p>Helper functions (<code class="docutils literal notranslate"><span class="pre">faceToMatrixAddress.hpp</span></code>) convert offsets to flat <code class="docutils literal notranslate"><span class="pre">values</span></code> indices:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Flat index of diagonal for cell i:</span>
-<span class="c1">//   diagIdx(celli) = rowOffs[celli] + diagOffset[celli]</span>
-<span class="n">localIdx</span><span class="w"> </span><span class="nf">diagIdx</span><span class="p">(</span><span class="n">localIdx</span><span class="w"> </span><span class="n">celli</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="c1">// Flat index of A[own, nei]  (upper triangular):</span>
-<span class="c1">//   upperIdx(own, f) = rowOffs[own] + ownerOffset[f]</span>
-<span class="c1">//   own &lt; nei by construction → column index nei &gt; row index own</span>
-<span class="n">localIdx</span><span class="w"> </span><span class="nf">upperIdx</span><span class="p">(</span><span class="n">localIdx</span><span class="w"> </span><span class="n">own</span><span class="p">,</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">faceIdx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="c1">// Flat index of A[nei, own]  (lower triangular):</span>
-<span class="c1">//   lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]</span>
-<span class="c1">//   nei &gt; own by construction → column index own &lt; row index nei</span>
-<span class="n">localIdx</span><span class="w"> </span><span class="nf">lowerIdx</span><span class="p">(</span><span class="n">localIdx</span><span class="w"> </span><span class="n">nei</span><span class="p">,</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">faceIdx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="cell-2-rank-example">
-<h2>8-Cell 2-Rank Example<a class="headerlink" href="#cell-2-rank-example" title="Link to this heading">¶</a></h2>
+<section id="mesh-matrix-example">
+<h2>Mesh - Matrix Example<a class="headerlink" href="#mesh-matrix-example" title="Link to this heading">¶</a></h2>
 <section id="mesh-topology">
 <h3>Mesh Topology<a class="headerlink" href="#mesh-topology" title="Link to this heading">¶</a></h3>
-<p>Consider a 1-D mesh with <strong>4 cells on rank 0</strong> (C0–C3) and <strong>4 cells on rank 1</strong> (C4–C7):</p>
+<p>Consider the following 1-D mesh partitioned into 2 parts with 4 cells (Ci) on each rank 0</p>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/matrix_cell_connectivity.png"><img alt="8-cell 2-rank mesh connectivity" src="../_images/matrix_cell_connectivity.png" style="width: 95%;" /></a>
 <figcaption>
@@ -410,8 +355,9 @@ Internal faces f0–f2 are on rank 0; pf0 is the processor boundary; bf0 is a wa
 <p>The <strong>local</strong> matrix on rank 0 has shape 4×4 with 10 non-zeros
 (2 entries per interior face + 4 diagonals).</p>
 </section>
-<section id="csr-non-zero-pattern">
-<h3>CSR Non-zero Pattern<a class="headerlink" href="#csr-non-zero-pattern" title="Link to this heading">¶</a></h3>
+<section id="matrix-sparsity-pattern">
+<h3>Matrix Sparsity Pattern<a class="headerlink" href="#matrix-sparsity-pattern" title="Link to this heading">¶</a></h3>
+<p>The resulting sparsity pattern of the local system matrix, i.e. the position of the non zero entries is shown in the figure below.</p>
 <figure class="align-default" id="id2">
 <a class="reference internal image-reference" href="../_images/matrix_csr_pattern.png"><img alt="CSR non-zero pattern for rank-0 4x4 matrix" src="../_images/matrix_csr_pattern.png" style="width: 70%;" /></a>
 <figcaption>
@@ -420,19 +366,25 @@ Numbers show the flat <code class="docutils literal notranslate"><span class="pr
 A[own,nei] (via <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code>), green = lower triangular A[nei,own] (via <code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code>).</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
+<p>For the simple 1d mesh the resulting local system matrix is banded with  single lower and upper off-diagonal band.</p>
 </section>
 <section id="construction-walkthrough">
 <h3>Construction Walkthrough<a class="headerlink" href="#construction-walkthrough" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">setSparsityPatternFaceToMatrixAddressSerial</span></code> (<code class="docutils literal notranslate"><span class="pre">src/linearAlgebra/faceToMatrixAddress.cpp</span></code>)
-builds the arrays in five passes:</p>
+<p>The procedure to construct the sparsity pattern and corresponding offsets is implemented in the
+<code class="docutils literal notranslate"><span class="pre">setSparsityPatternFaceToMatrixAddressSerial</span></code> function (see <code class="docutils literal notranslate"><span class="pre">src/linearAlgebra/faceToMatrixAddress.cpp</span></code>).
+It builds the arrays in five passes:</p>
 <p><strong>Step 1 — count non-zeros per cell</strong> (initialised to 1 for the diagonal):</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>nFacesPerCell = [1, 1, 1, 1]
+<p>Iterate all faces and increment the count for each owner and neighbour cell.</p>
+<p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/develop
+.. code-block:: text</p>
+<blockquote>
+<div><p>nFacesPerCell = [1, 1, 1, 1]
 f0: nFacesPerCell[C0]++, nFacesPerCell[C1]++  → [2, 2, 1, 1]
 f1: nFacesPerCell[C1]++, nFacesPerCell[C2]++  → [2, 3, 2, 1]
-f2: nFacesPerCell[C2]++, nFacesPerCell[C3]++  → [2, 3, 3, 2]
-</pre></div>
-</div>
+f2: nFacesPerCell[C2]++, nFacesPerCell[C3]++  → [2, 3, 3, 2]</p>
+</div></blockquote>
 <p><strong>Step 2 — compute row offsets</strong> (exclusive prefix sum):</p>
+<p>From the face per cell count the rowOffsets can be computed as a prefix sum.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>rowOffs = [0, 2, 5, 8, 10]
 </pre></div>
 </div>
@@ -445,6 +397,7 @@ f2: segIdx = nFacesPerCell[C3]++ = 0 → neighbourOffset[f2] = 0, colIdx[8+0] = 
 </pre></div>
 </div>
 <p><strong>Step 4 — place diagonal</strong>:</p>
+<p>Once all lower diagonal entries are know the diagonal offset can be updated</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>C0: diagOffset[C0] = nFacesPerCell[C0] = 0, colIdx[0+0] = C0, nFacesPerCell[C0]++ = 1
 C1: diagOffset[C1] = nFacesPerCell[C1] = 1, colIdx[2+1] = C1, nFacesPerCell[C1]++ = 2
 C2: diagOffset[C2] = nFacesPerCell[C2] = 1, colIdx[5+1] = C2, nFacesPerCell[C2]++ = 2
@@ -462,12 +415,6 @@ f2: segIdx = nFacesPerCell[C2]++ = 2 → ownerOffset[f2] = 2, colIdx[5+2] = C3
 </section>
 <section id="resulting-arrays">
 <h3>Resulting Arrays<a class="headerlink" href="#resulting-arrays" title="Link to this heading">¶</a></h3>
-<figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="../_images/matrix_offset_table.png"><img alt="Offset arrays for the 8-cell rank-0 example" src="../_images/matrix_offset_table.png" style="width: 75%;" /></a>
-<figcaption>
-<p><span class="caption-text">Generated by <code class="docutils literal notranslate"><span class="pre">generate_matrix_addressing_figure.py</span></code>.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -487,7 +434,7 @@ f2: segIdx = nFacesPerCell[C2]++ = 2 → ownerOffset[f2] = 2, colIdx[5+2] = C3
 <td><p>size = nCells+1 = 5</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">colIdxs</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">[0,1,</span> <span class="pre">0,1,2,</span> <span class="pre">1,2,3,</span> <span class="pre">2,3]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">2,</span> <span class="pre">3]</span></code></p></td>
 <td><p>size = nnz = 10</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">diagOffset</span></code></p></td>
@@ -506,103 +453,20 @@ f2: segIdx = nFacesPerCell[C2]++ = 2 → ownerOffset[f2] = 2, colIdx[5+2] = C3
 </table>
 </div>
 </section>
-<section id="values-array-layout">
-<h3>Values Array Layout<a class="headerlink" href="#values-array-layout" title="Link to this heading">¶</a></h3>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 12.0%" />
-<col style="width: 18.0%" />
-<col style="width: 18.0%" />
-<col style="width: 52.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Flat index</p></th>
-<th class="head"><p>Row (cell)</p></th>
-<th class="head"><p>Column (cell)</p></th>
-<th class="head"><p>Matrix entry</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>0</p></td>
-<td><p>C0</p></td>
-<td><p>C0</p></td>
-<td><p>A[C0,C0] — diagonal</p></td>
-</tr>
-<tr class="row-odd"><td><p>1</p></td>
-<td><p>C0</p></td>
-<td><p>C1</p></td>
-<td><p>A[C0,C1] — upper triangular (f0, via <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code>)</p></td>
-</tr>
-<tr class="row-even"><td><p>2</p></td>
-<td><p>C1</p></td>
-<td><p>C0</p></td>
-<td><p>A[C1,C0] — lower triangular (f0, via <code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p>3</p></td>
-<td><p>C1</p></td>
-<td><p>C1</p></td>
-<td><p>A[C1,C1] — diagonal</p></td>
-</tr>
-<tr class="row-even"><td><p>4</p></td>
-<td><p>C1</p></td>
-<td><p>C2</p></td>
-<td><p>A[C1,C2] — upper triangular (f1, via <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p>5</p></td>
-<td><p>C2</p></td>
-<td><p>C1</p></td>
-<td><p>A[C2,C1] — lower triangular (f1, via <code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code>)</p></td>
-</tr>
-<tr class="row-even"><td><p>6</p></td>
-<td><p>C2</p></td>
-<td><p>C2</p></td>
-<td><p>A[C2,C2] — diagonal</p></td>
-</tr>
-<tr class="row-odd"><td><p>7</p></td>
-<td><p>C2</p></td>
-<td><p>C3</p></td>
-<td><p>A[C2,C3] — upper triangular (f2, via <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code>)</p></td>
-</tr>
-<tr class="row-even"><td><p>8</p></td>
-<td><p>C3</p></td>
-<td><p>C2</p></td>
-<td><p>A[C3,C2] — lower triangular (f2, via <code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p>9</p></td>
-<td><p>C3</p></td>
-<td><p>C3</p></td>
-<td><p>A[C3,C3] — diagonal</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="verification-with-helper-functions">
-<h3>Verification with Helper Functions<a class="headerlink" href="#verification-with-helper-functions" title="Link to this heading">¶</a></h3>
-<p>Using the helper functions:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Diagonal access</span>
-<span class="n">diagIdx</span><span class="p">(</span><span class="n">C0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C0</span><span class="p">,</span><span class="n">C0</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">diagIdx</span><span class="p">(</span><span class="n">C1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C1</span><span class="p">,</span><span class="n">C1</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">diagIdx</span><span class="p">(</span><span class="n">C2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C2</span><span class="p">,</span><span class="n">C2</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">diagIdx</span><span class="p">(</span><span class="n">C3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">diagOffset</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C3</span><span class="p">,</span><span class="n">C3</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-
-<span class="c1">// Upper triangular A[own, nei] — via upperIdx(own, face)</span>
-<span class="n">upperIdx</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">f0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownerOffset</span><span class="p">[</span><span class="n">f0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C0</span><span class="p">,</span><span class="n">C1</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">upperIdx</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">f1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownerOffset</span><span class="p">[</span><span class="n">f1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C1</span><span class="p">,</span><span class="n">C2</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">upperIdx</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">f2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ownerOffset</span><span class="p">[</span><span class="n">f2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C2</span><span class="p">,</span><span class="n">C3</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-
-<span class="c1">// Lower triangular A[nei, own] — via lowerIdx(nei, face)</span>
-<span class="n">lowerIdx</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">f0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neighbourOffset</span><span class="p">[</span><span class="n">f0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C1</span><span class="p">,</span><span class="n">C0</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">lowerIdx</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">f1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neighbourOffset</span><span class="p">[</span><span class="n">f1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C2</span><span class="p">,</span><span class="n">C1</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-<span class="n">lowerIdx</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">f2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rowOffs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">neighbourOffset</span><span class="p">[</span><span class="n">f2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">C3</span><span class="p">,</span><span class="n">C2</span><span class="p">]</span><span class="w"> </span><span class="err">✓</span>
-</pre></div>
-</div>
+<section id="why-owneroffset-upper-triangular">
+<h3>Why <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> → upper triangular<a class="headerlink" href="#why-owneroffset-upper-triangular" title="Link to this heading">¶</a></h3>
+<p>By construction, NeoN guarantees <code class="docutils literal notranslate"><span class="pre">owner[f]</span> <span class="pre">&lt;</span> <span class="pre">neighbour[f]</span></code> for every internal face <code class="docutils literal notranslate"><span class="pre">f</span></code>.
+This means that in the owner’s row (row index = <code class="docutils literal notranslate"><span class="pre">own</span></code>), the column that points to the
+neighbour has column index <code class="docutils literal notranslate"><span class="pre">nei</span> <span class="pre">&gt;</span> <span class="pre">own</span></code> — which is the <strong>upper triangle</strong>.
+Conversely, in the neighbour’s row (row index = <code class="docutils literal notranslate"><span class="pre">nei</span></code>), the column pointing back to the
+owner has column index <code class="docutils literal notranslate"><span class="pre">own</span> <span class="pre">&lt;</span> <span class="pre">nei</span></code> — which is the <strong>lower triangle</strong>.
+This invariant is what makes <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> the upper-triangular offset and
+<code class="docutils literal notranslate"><span class="pre">neighbourOffset</span></code> the lower-triangular offset.</p>
 </section>
 </section>
 <section id="ldu-to-csr-correspondence">
 <h2>LDU to CSR Correspondence<a class="headerlink" href="#ldu-to-csr-correspondence" title="Link to this heading">¶</a></h2>
-<p>OpenFOAM’s classical LDU format stores three separate arrays: <code class="docutils literal notranslate"><span class="pre">diag</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span></code>, and <code class="docutils literal notranslate"><span class="pre">upper</span></code>.
+<p>In comparison OpenFOAM’s classical LDU format stores three separate arrays: <code class="docutils literal notranslate"><span class="pre">diag</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span></code>, and <code class="docutils literal notranslate"><span class="pre">upper</span></code>.
 NeoN encodes the same information in a single <code class="docutils literal notranslate"><span class="pre">values</span></code> array.  The mapping for the 4-cell
 rank-0 example is:</p>
 <div class="table-wrapper colwidths-given docutils container">
@@ -685,11 +549,11 @@ off-diagonals and diagonal (asymmetric); see <a class="reference internal" href=
 </section>
 <section id="physical-boundary-contributions-coo">
 <h2>Physical Boundary Contributions (COO)<a class="headerlink" href="#physical-boundary-contributions-coo" title="Link to this heading">¶</a></h2>
-<p>A physical boundary face (wall, inlet, outlet, …) touches only one cell — the owner.
+<p>A boundary face touches only one cell — the owner.
 Its contribution modifies the <strong>diagonal</strong> of that cell’s row and the right-hand side.
-No off-diagonal coupling is introduced, so a full CSR row is unnecessary.</p>
-<p>NeoN stores physical boundary contributions in a <code class="docutils literal notranslate"><span class="pre">CooSparsityPattern</span></code>
-(<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/sparsityPattern.hpp</span></code>):</p>
+No off-diagonal coupling in the system matrix is introduced, so a full CSR row is unnecessary.</p>
+<p>NeoN stores physical boundary contributions in a <code class="docutils literal notranslate"><span class="pre">CooSparsityPattern</span></code> class
+(<code class="docutils literal notranslate"><span class="pre">include/NeoN/linearAlgebra/cooSparsityPattern.hpp</span></code>):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">rowOffs[bfacei]</span></code> = owner cell index</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">colIdx[bfacei]</span></code>  = <code class="docutils literal notranslate"><span class="pre">celli</span> <span class="pre">+</span> <span class="pre">diagOffset[celli]</span></code>  (see note below)</p></li>
@@ -836,18 +700,13 @@ resolves <code class="docutils literal notranslate"><span class="pre">rowOffs[ce
 <li><a class="reference internal" href="#">Matrix Addressing</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#csr-format">CSR Format</a></li>
-<li><a class="reference internal" href="#row-layout-lower-diagonal-upper">Row Layout: Lower | Diagonal | Upper</a></li>
-<li><a class="reference internal" href="#face-addressing-arrays">Face Addressing Arrays</a><ul>
-<li><a class="reference internal" href="#why-owneroffset-upper-triangular">Why <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> → upper triangular</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cell-2-rank-example">8-Cell 2-Rank Example</a><ul>
+<li><a class="reference internal" href="#row-layout-and-face-addressing-arrays">Row Layout and Face Addressing Arrays</a></li>
+<li><a class="reference internal" href="#mesh-matrix-example">Mesh - Matrix Example</a><ul>
 <li><a class="reference internal" href="#mesh-topology">Mesh Topology</a></li>
-<li><a class="reference internal" href="#csr-non-zero-pattern">CSR Non-zero Pattern</a></li>
+<li><a class="reference internal" href="#matrix-sparsity-pattern">Matrix Sparsity Pattern</a></li>
 <li><a class="reference internal" href="#construction-walkthrough">Construction Walkthrough</a></li>
 <li><a class="reference internal" href="#resulting-arrays">Resulting Arrays</a></li>
-<li><a class="reference internal" href="#values-array-layout">Values Array Layout</a></li>
-<li><a class="reference internal" href="#verification-with-helper-functions">Verification with Helper Functions</a></li>
+<li><a class="reference internal" href="#why-owneroffset-upper-triangular">Why <code class="docutils literal notranslate"><span class="pre">ownerOffset</span></code> → upper triangular</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ldu-to-csr-correspondence">LDU to CSR Correspondence</a></li>

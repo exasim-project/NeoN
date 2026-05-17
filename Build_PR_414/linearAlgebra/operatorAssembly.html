@@ -414,12 +414,21 @@ identical in sign to <code class="docutils literal notranslate"><span class="pre
 <h3>Divergence convention<a class="headerlink" href="#divergence-convention" title="Link to this heading">¶</a></h3>
 <p>With <span class="math notranslate nohighlight">\(F_f &gt; 0\)</span> meaning flux from owner P to neighbour N
 (valid because <span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> points from owner to neighbour):</p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+- <strong>Owner row</strong> P: total contribution <strong>+F_f</strong></p>
+<blockquote>
+<div><p>(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is outward from P → positive divergence at P).</p>
+</div></blockquote>
 <ul class="simple">
-<li><p><strong>Owner row</strong> P: total contribution <strong>+F_f</strong>
-(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is outward from P → positive divergence at P).</p></li>
-<li><p><strong>Neighbour row</strong> N: total contribution <strong>−F_f</strong>
-(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is inward to N from this face → negative contribution at N).</p></li>
+<li><p><strong>Neighbour row</strong> N: total contribution <strong>−F_f</strong></p></li>
 </ul>
+<ul class="simple">
+<li><p><strong>Neighbour row</strong> N: total contribution <span class="math notranslate nohighlight">\(\mathbf{-F_f}\)</span></p></li>
+</ul>
+<dl class="simple">
+<dt>&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/develop</dt><dd><p>(<span class="math notranslate nohighlight">\(\mathbf{S}_f\)</span> is inward to N from this face → negative contribution at N).</p>
+</dd>
+</dl>
 <p>Global verification: <span class="math notranslate nohighlight">\(+F_f - F_f = 0\)</span> per face ✓</p>
 </section>
 <section id="id1">
@@ -495,12 +504,13 @@ pass.  Each face contributes <span class="math notranslate nohighlight">\(+w F_f
 <span class="math notranslate nohighlight">\(-(1-w) F_f\)</span> to the neighbour diagonal, so the full sums converge to
 <span class="math notranslate nohighlight">\(+F_f\)</span> and <span class="math notranslate nohighlight">\(-F_f\)</span> respectively.</p>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Matches OpenFOAM.</strong>  OpenFOAM’s <code class="docutils literal notranslate"><span class="pre">gaussConvectionScheme</span></code> sets
-<code class="docutils literal notranslate"><span class="pre">lower[f]</span> <span class="pre">=</span> <span class="pre">-w</span> <span class="pre">F_f</span></code>, <code class="docutils literal notranslate"><span class="pre">upper[f]</span> <span class="pre">=</span> <span class="pre">(1-w)</span> <span class="pre">F_f</span></code>, then <code class="docutils literal notranslate"><span class="pre">negSumDiag()</span></code> gives
-<code class="docutils literal notranslate"><span class="pre">diag[own]</span> <span class="pre">+=</span> <span class="pre">w</span> <span class="pre">F_f</span></code> and <code class="docutils literal notranslate"><span class="pre">diag[nei]</span> <span class="pre">-=</span> <span class="pre">(1-w)</span> <span class="pre">F_f</span></code> — the <strong>same structure</strong>
-as NeoN.</p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+.. note:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="o">**</span><span class="n">Matches</span><span class="w"> </span><span class="n">OpenFOAM</span><span class="p">.</span><span class="o">**</span><span class="w">  </span><span class="n">OpenFOAM</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="err">``</span><span class="n">gaussConvectionScheme</span><span class="err">``</span><span class="w"> </span><span class="n">sets</span>
+<span class="err">``</span><span class="n">lower</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">w</span><span class="w"> </span><span class="n">F_f</span><span class="err">``</span><span class="p">,</span><span class="w"> </span><span class="err">``</span><span class="n">upper</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="n">F_f</span><span class="err">``</span><span class="p">,</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="err">``</span><span class="n">negSumDiag</span><span class="p">()</span><span class="err">``</span><span class="w"> </span><span class="n">gives</span>
+<span class="err">``</span><span class="n">diag</span><span class="p">[</span><span class="n">own</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="n">F_f</span><span class="err">``</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="err">``</span><span class="n">diag</span><span class="p">[</span><span class="n">nei</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="n">F_f</span><span class="err">``</span><span class="w"> </span><span class="err">—</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="o">**</span><span class="n">same</span><span class="w"> </span><span class="n">structure</span><span class="o">**</span>
+<span class="n">as</span><span class="w"> </span><span class="n">NeoN</span><span class="p">.</span>
+</pre></div>
 </div>
 </section>
 <section id="physical-boundary">
@@ -586,7 +596,7 @@ from high to low concentration).</p>
 </section>
 <section id="gaussgreenlaplacian-implicit">
 <h2>gaussGreenLaplacian — Implicit<a class="headerlink" href="#gaussgreenlaplacian-implicit" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">computeLaplacianImpl</span></code> assembles the diffusion operator
+<p><code class="docutils literal notranslate"><span class="pre">computeLaplacianIntImpl</span></code> assembles the internal contributions of the diffusion operator
 <span class="math notranslate nohighlight">\(+\nabla \cdot (\gamma \nabla \varphi)\)</span> into the linear system.</p>
 <section id="id4">
 <h3>Internal faces<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
@@ -635,7 +645,7 @@ diffusion out of one cell equals diffusion into the other.</p>
 </tbody>
 </table>
 </div>
-<p>The assembled matrix is symmetric and negative semi-definite for
+<p>The assembled matrix is symmetric and positive definite for
 positive <span class="math notranslate nohighlight">\(\gamma\)</span> and consistent <code class="docutils literal notranslate"><span class="pre">operatorScaling</span></code>, representing
 <span class="math notranslate nohighlight">\(-\nabla \cdot (\gamma \nabla \varphi)\)</span>.</p>
 <div class="admonition note">
