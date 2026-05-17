@@ -233,14 +233,41 @@ configure_package_config_file(
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
-# install internal ginkgo version
+# install internal ginkgo version (including enabled backend libs so they ship alongside libNeoN.so
+# — required for dlopen at runtime when Ginkgo is built via CPM rather than found system-wide)
 if(ginkgo_POPULATED)
+  set(_ginkgo_install_tgts ginkgo)
+  foreach(_ginkgo_backend ginkgo_omp ginkgo_cuda ginkgo_reference ginkgo_hip ginkgo_dpcpp
+                          ginkgo_device)
+    if(TARGET ${_ginkgo_backend})
+      list(APPEND _ginkgo_install_tgts ${_ginkgo_backend})
+    endif()
+  endforeach()
   install(
-    TARGETS ginkgo
+    TARGETS ${_ginkgo_install_tgts}
     EXPORT GinkgoTargets
     INCLUDES
     DESTINATION include)
   install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
+endif()
+
+# install internal kokkos version — when Kokkos is built as a shared library (BUILD_SHARED_LIBS=ON,
+# as the python-bindings preset uses), libNeoN.so and any consumer dlopens libkokkoscore.so /
+# libkokkoscontainers.so at runtime. Without this, the wheel ships libNeoN.so but not its kokkos
+# runtime deps.
+if(kokkos_POPULATED)
+  set(_kokkos_install_tgts)
+  foreach(_kokkos_tgt kokkoscore kokkoscontainers)
+    if(TARGET ${_kokkos_tgt})
+      get_target_property(_kokkos_type ${_kokkos_tgt} TYPE)
+      if(_kokkos_type STREQUAL "SHARED_LIBRARY")
+        list(APPEND _kokkos_install_tgts ${_kokkos_tgt})
+      endif()
+    endif()
+  endforeach()
+  if(_kokkos_install_tgts)
+    install(TARGETS ${_kokkos_install_tgts})
+  endif()
 endif()
 
 if(nlohmann_json_POPULATED)

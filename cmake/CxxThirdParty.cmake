@@ -116,6 +116,15 @@ if(${NeoN_WITH_UMPIRE})
     "ENABLE_TESTS OFF"
     SYSTEM
     YES)
+
+  # Umpire/BLT set INSTALL_RPATH to the absolute install prefix, which scikit-build-core's $ORIGIN
+  # rewriter doesn't catch. Force $ORIGIN so the installed libs can find their siblings (e.g.
+  # libumpire → libcamp).
+  foreach(_umpire_tgt umpire camp)
+    if(TARGET ${_umpire_tgt})
+      set_target_properties(${_umpire_tgt} PROPERTIES INSTALL_RPATH "\$ORIGIN")
+    endif()
+  endforeach()
 endif()
 
 if(${NeoN_WITH_ADIOS2})
@@ -263,6 +272,27 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+
+    # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
+    # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built
+    # deps live together and downstream RPATHs need only one entry.
+    foreach(
+      _ginkgo_tgt
+      ginkgo
+      ginkgo_omp
+      ginkgo_cuda
+      ginkgo_reference
+      ginkgo_hip
+      ginkgo_dpcpp
+      ginkgo_device)
+      if(TARGET ${_ginkgo_tgt})
+        set_target_properties(
+          ${_ginkgo_tgt}
+          PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+                     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
+      endif()
+    endforeach()
   endif()
 endif()
 
