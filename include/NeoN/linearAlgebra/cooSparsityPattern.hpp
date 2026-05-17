@@ -76,7 +76,7 @@ public:
      */
     [[nodiscard]] SparsityView<IndexType> view() const
     {
-        return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
+        return SparsityView<IndexType>(colIdxs_.view(), rowIdxs_.view());
     }
 
 private:
