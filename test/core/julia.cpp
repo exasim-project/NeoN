@@ -10,8 +10,95 @@ JULIA_DEFINE_FAST_TLS; // only define this once, in an executable (not in a
 // shared library) if you want fast code.
 #include "NeoN/NeoN.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
+using namespace NeoN;
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
+
+TEST_CASE("GPUExec single vector")
+{
+    jl_init();
+    auto exec = GPUExecutor {};
+	jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to where this compiles to
+    jl_eval_string(R"(
+      	function use_pointer(ptr::Ptr{Cvoid}, size::Int64)
+      		vec = unsafe_wrap(CuArray, reinterpret(CuPtr{Float64}, ptr),size)
+      		vec[1:3] = [1.0,2.0,3.0]    
+      	end
+    )");
+	int64_t  N = 10;
+    auto input = Vector<double>(exec, N, 0.0);
+   
+    
+    auto ptrval = jl_box_voidpointer((void*)input.data());
+    auto boxed_size = jl_box_int64(N);
+	jl_value_t* args[2];
+	args[0] = (jl_value_t*)ptrval;
+	args[1] = (jl_value_t*)boxed_size;
+    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
+    jl_call(func, args, 2);
+    if (jl_exception_occurred())
+    {
+       const char* p = jl_string_ptr(
+           jl_eval_string("sprint(showerror, ccall(:jl_exception_occurred, Any, ()))")
+       );
+
+       fprintf(stderr, "%s%s\n", "error: ", p);
+    }    
+	REQUIRE(!jl_exception_occurred());
+    auto cpu = CPUExecutor {};
+	auto cpuarr = input.copyToExecutor(cpu);
+	auto view = cpuarr.view();
+	REQUIRE(view[0] == 1.0);
+	REQUIRE(view[1] == 2.0);
+	REQUIRE(view[2] == 3.0);
+	jl_atexit_hook(0);
+}
+
+TEST_CASE("GPUExec vec<vec3> 1")
+{
+    jl_init();
+    auto exec = GPUExecutor {};
+    jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to where this compiles to
+    jl_eval_string(R"(
+        function use_pointer(addr::UInt64, size::Int64)
+            ptr = CuPtr{Float64}(addr)
+			vec = unsafe_wrap(CuArray, ptr, (size,3); own=false)
+            #vec[1:3] = [21.0,22.0,23.0]
+			#vec[1:3] = [1.0,2.0,3.0] # start
+			#vec[22:24] = [22.0, 23.0, 24.0]
+        end
+    )");
+    int64_t  N = 10;
+    auto input = Vector<Vec3>(exec, N, zero<Vec3>());
+
+
+    auto ptrval = jl_box_voidpointer((void*)input.data());
+    auto boxed_size = jl_box_int64(N);
+    jl_value_t* args[2];
+    args[0] = (jl_value_t*)ptrval;
+    args[1] = (jl_value_t*)boxed_size;
+    
+	JL_GC_PUSH2(args[0], args[1]);
+	jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
+    jl_call(func, args, 2);
+    if (jl_exception_occurred())
+    {
+       const char* p = jl_string_ptr(
+           jl_eval_string("sprint(showerror, ccall(:jl_exception_occurred, Any, ()))")
+       );
+
+       fprintf(stderr, "%s%s\n", "error: ", p);
+    }
+    REQUIRE(!jl_exception_occurred());
+    auto cpu = CPUExecutor {};
+    auto cpuarr = input.copyToExecutor(cpu);
+    auto view = cpuarr.view();
+    REQUIRE(view[0][0] == 21.0);
+	REQUIRE(view[0][1] == 22.0);
+    REQUIRE(view[0][2] == 23.0);
+	JL_GC_POP();
+	jl_atexit_hook(0);
+}
 
 TEST_CASE("Julia Hello World")
 {
@@ -19,43 +106,27 @@ TEST_CASE("Julia Hello World")
     jl_eval_string("println(\"Hello from NEON!\")");
     jl_atexit_hook(0);
 }
-using namespace NeoN;
 TEST_CASE("[CPU] Pass Vector<Vec3> to Julia")
 {
     jl_init();
     auto exec = Executor(CPUExecutor {});
     jl_eval_string(R"(
-        function use_pointer(x::Matrix{Float64})
-            vecs = [Vector(x[:, i]) for i in axes(x, 2)]
+        function use_pointer(x::Vector{Float64})
             x[1:3] = [1.0, 2.0, 3.0]
-
-            s = 0.0
-            for outer in vecs
-                for inner in outer
-                    s += 1.0
-                end
-            end
-            return s
         end
-        #end
     )");
     auto input = Vector<Vec3>(exec, 10, zero<Vec3>());
-    auto julia2dptr = transposeToJulia(input);
-
+    auto julia2dptr = input.juliaPtr();
     jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
-    jl_value_t* ret = jl_call1(func, (jl_value_t*)julia2dptr);
+    jl_call1(func, (jl_value_t*)julia2dptr);
     if (jl_exception_occurred())
     {
         std::cerr << "Julia exception: " << jl_typeof_str(jl_exception_occurred()) << std::endl;
     }
-    double ret_unboxed = jl_unbox_float64(ret);
-    std::cout << "result: " << ret_unboxed << std::endl;
-    REQUIRE(ret_unboxed == 30.0);
-    double* p = jl_array_data(julia2dptr, double);
-
-    REQUIRE(p[0] == 1.0);
-    REQUIRE(p[1] == 2.0);
-    REQUIRE(p[2] == 3.0);
+    auto view = input.view();
+	REQUIRE(view[0][0] == 1.0);
+    REQUIRE(view[0][1] == 2.0);
+    REQUIRE(view[0][2] == 3.0);
 
     jl_atexit_hook(0);
 }

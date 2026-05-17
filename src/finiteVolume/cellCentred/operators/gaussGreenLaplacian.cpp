@@ -179,9 +179,9 @@ void computeLaplacianImpl(
             bRhs[bcfacei] = valueRhs;
             if (bcfacei < 4)
             {
-                std::cout << "NEON (refValue): " << refValue[bcfacei] << std::endl;
-                std::cout << "NEON (refGradient): " << refGradient[bcfacei] << std::endl;
-                std::cout << "NEON (valuemat): " << valueMat << std::endl;
+                //std::cout << "NEON (refValue): " << refValue[bcfacei] << std::endl;
+                //std::cout << "NEON (refGradient): " << refGradient[bcfacei] << std::endl;
+                //std::cout << "NEON (valuemat): " << valueMat << std::endl;
                 // std::cout << "NEON (faceFlux):" << std::endl;
                 // std::cout << "NEON (valueFractions): " << valueFraction[bcfacei] << std::endl;
                 // std::cout << "NEON (deltaCoeffs): " << deltaCoeffs[facei] << ", "

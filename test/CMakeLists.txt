@@ -32,11 +32,12 @@ function(NeoN_unit_test TEST)
   install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_JULIA)
-    execute_process(
-        COMMAND julia -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
-        OUTPUT_VARIABLE JULIA_DIR
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
+	  #set(JULIA_DIR "/storage/home/lupeterm/.julia/juliaup/julia-1.11.9+0.x64.linux.gnu")
+	  execute_process(
+	  	COMMAND julialauncher +1.11 -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
+	  	OUTPUT_VARIABLE JULIA_DIR
+	  	OUTPUT_STRIP_TRAILING_WHITESPACE
+	  )
     execute_process(
       COMMAND echo "JULIA_DIR: --------> '${JULIA_DIR}'"
     )

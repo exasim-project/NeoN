@@ -175,12 +175,12 @@ public:
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
             auto scheme = tokens.get<std::string>(tokens.size() - 1);
-            juliaEvalString_ = std::format(
-                "Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), {})",
-                scheme,
-                scheme,
-                operatorScaling[0]
-            );
+            juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}("+scheme+"{Float64}(), "+std::to_string(operatorScaling[0])+")";
+	    //,
+             //   scheme,
+              //  scheme,
+               // operatorScaling[0]
+           // );
         }
         else
         {
@@ -188,12 +188,13 @@ public:
             divOperatorStrategy_ =
                 DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
             auto scheme = tokens.get<std::string>(tokens.size() - 1);
-            juliaEvalString_ = std::format(
-                "Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), {})",
-                scheme,
-                scheme,
-                operatorScaling[0]
-            );
+            juliaEvalString_ = "Div{Float64, {" + scheme + "}{Float64}}({"+scheme+"}{Float64}(), "+std::to_string(operatorScaling[0])+")";
+	    //juliaEvalString_ = std::format(
+            //    "Div{{Float64, {}{{Float64}}}}({}{{Float64}}(), {})",
+            //    scheme,
+            //    scheme,
+            //    operatorScaling[0]
+            // );
         }
     }
 
