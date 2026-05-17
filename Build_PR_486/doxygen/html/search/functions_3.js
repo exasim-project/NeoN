@@ -17,7 +17,7 @@ var searchData=
   ['dev2_14',['dev2',['../classNeoN_1_1SymmTensor.html#a7f61eb14423a83c56cfdc9b6d74b10e1',1,'NeoN::SymmTensor']]],
   ['devtwosymm_15',['devTwoSymm',['../namespaceNeoN.html#abe63c2a7df727ae21d3a12bb24ef5d67',1,'NeoN']]],
   ['diag_16',['diag',['../classNeoN_1_1la_1_1Matrix.html#a979c3429572d3ca0afad7dc8acf90475',1,'NeoN::la::Matrix']]],
-  ['diagidx_17',['diagIdx',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a624aa26b24cb7c4f0450afeecf0d2944',1,'NeoN::la::FaceToMatrixAddress']]],
+  ['diagidx_17',['diagIdx',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a47d2aa052306de6384cc8299e95eff5d',1,'NeoN::la::FaceToMatrixView']]],
   ['diagoffset_18',['diagoffset',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a8e47d177565285c1eba0a43eca001e8a',1,'NeoN::la::FaceToMatrixAddress::diagOffset() const'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a72862f12409e122f38b1dd0e703bdd55',1,'NeoN::la::FaceToMatrixAddress::diagOffset()']]],
   ['diagonalsolver_19',['DiagonalSolver',['../classNeoN_1_1la_1_1DiagonalSolver.html#a825b7a56f08d36b4517721d80c64e1fa',1,'NeoN::la::DiagonalSolver']]],
   ['dictionary_20',['dictionary',['../classNeoN_1_1Dictionary.html#afc322ec82ab3993bf9d2fee41591d275',1,'NeoN::Dictionary::Dictionary(const std::unordered_map&lt; std::string, std::any &gt; &amp;keyValuePairs)'],['../classNeoN_1_1Dictionary.html#a8f54d8ca4b0f349d277cc2bed51d06bc',1,'NeoN::Dictionary::Dictionary(const std::initializer_list&lt; std::pair&lt; std::string, std::any &gt; &gt; &amp;initList)'],['../classNeoN_1_1Dictionary.html#af39eea7cc13e5277def74ef334043c39',1,'NeoN::Dictionary::Dictionary()=default']]],

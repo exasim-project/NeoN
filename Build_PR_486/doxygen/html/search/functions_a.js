@@ -14,5 +14,5 @@ var searchData=
   ['logimpl_11',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
   ['logoutrange_12',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
   ['loop_13',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]],
-  ['loweridx_14',['lowerIdx',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#ae76a1e8b3d044a93782c3813f8ddcf87',1,'NeoN::la::FaceToMatrixAddress']]]
+  ['loweridx_14',['lowerIdx',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a22ca2d20507e6a0b2e07ca7499260bb6',1,'NeoN::la::FaceToMatrixView']]]
 ];
