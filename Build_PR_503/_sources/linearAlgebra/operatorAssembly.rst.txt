@@ -157,9 +157,9 @@ Divergence convention
 With :math:`F_f > 0` meaning flux from owner P to neighbour N
 (valid because :math:`\mathbf{S}_f` points from owner to neighbour):
 
-- **Owner row** P: total contribution **+F_f**
+- **Owner row** P: total contribution :math:`\mathbf{+F_f}`
   (:math:`\mathbf{S}_f` is outward from P → positive divergence at P).
-- **Neighbour row** N: total contribution **−F_f**
+- **Neighbour row** N: total contribution :math:`\mathbf{-F_f}`
   (:math:`\mathbf{S}_f` is inward to N from this face → negative contribution at N).
 
 Global verification: :math:`+F_f - F_f = 0` per face ✓
