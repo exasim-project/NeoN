@@ -62,14 +62,10 @@ void computeLaplacianExp(
         "computeLaplacianExplicitInternal"
     );
 
-<<<<<<< HEAD
     // Physical (non-proc) boundary faces: only the owner cell is on this rank.
     // For non-proc patches, OpenFOAM's full face index and NeoN's compressed
     // index agree (empty patches like defaultFaces have size()==0 in fvPatch),
     // so faceArea[i] = mesh.magFaceAreas()[i] is correct here.
-=======
-    // Boundary faces: only the owner cell is on this rank.
->>>>>>> origin/develop
     parallelFor(
         exec,
         {nInternalFaces, nInternalFaces + nBoundaryFaces},
@@ -195,86 +191,86 @@ void computeLaplacianProcBoundImpl(
     );
 }
 
+// template<typename ValueType>
+// void computeLaplacianBoundImpl(
+//     la::LinearSystem<ValueType>& ls,
+//     const SurfaceField<scalar>& gamma,
+//     const VolumeField<ValueType>& phi,
+//     const dsl::Coeff operatorScaling,
+//     const FaceNormalGradient<ValueType>& faceNormalGradient
+// )
+// {
+//     const auto exec = phi.exec();
+//     const auto& mesh = phi.mesh();
+
+//     auto gammaV = gamma.internalVector().view();
+
+
+//     const auto [magFaceArea, surfFaceCells, deltaCoeffs] = views(
+//         mesh.magFaceAreas(),
+//         mesh.boundaryMesh().faceCells(),
+//         faceNormalGradient.deltaCoeffs().internalVector()
+//     );
+
+//     const auto matIt = ls.faceToMatrixAddress();
+//     auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
+//     auto const diagOffs = matIt->diagOffset().view();
+
+//     auto values = ls.matrix().values().view();
+
+//     auto [/*bweights,*/ refGradient, value, valueFraction, refValue] = views(
+//         // weights.boundaryData().value(),
+//         phi.boundaryData().refGrad(),
+//         phi.boundaryData().value(),
+//         phi.boundaryData().valueFraction(),
+//         phi.boundaryData().refValue()
+//     );
+
+//     auto rhs = ls.rhs().view();
+//     auto bRhs = ls.boundaryRhs().view();
+//     auto bValues = ls.boundaryMatrix().values().view();
+
+
+//     const auto nInternalFaces = mesh.nInternalFaces();
+//     const auto nBoundaryFaces = mesh.nBoundaryFaces();
+//     auto totalFaces = nInternalFaces + nBoundaryFaces;
+//     NeoN::mpi::Environment mpiEnviron;
+//     parallelFor(
+//         exec,
+//         {nInternalFaces, totalFaces},
+//         NEON_LAMBDA(const localIdx facei) {
+//             auto bcfacei = facei - nInternalFaces;
+//             auto flux = gammaV[facei] * magFaceArea[facei];
+
+//             auto own = surfFaceCells[bcfacei];
+//             auto rowOwnStart = rowOffs[own];
+//             auto operatorScalingOwn = operatorScaling[own];
+
+//             auto valFrac1 = valueFraction[bcfacei];
+//             auto valFrac2 = 1.0 - valFrac1;
+
+//             // FIXME deltaCoeffs was previously indexed by facei?
+//             auto valueMat =
+//                 flux * operatorScalingOwn * valFrac1 * deltaCoeffs[facei] * one<ValueType>();
+
+//             Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
+//             bValues[bcfacei] += valueMat;
+//             ValueType valueRhs = flux * operatorScalingOwn
+//                                * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
+//                                   + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
+//             Kokkos::atomic_sub(&rhs[own], valueRhs);
+//             bRhs[bcfacei] += valueRhs;
+//         },
+//         "computeInterfaceLaplacianCoefficients"
+//     );
+// }
+
 template<typename ValueType>
-void computeLaplacianBoundImpl(
+void computeLaplacianIntImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
-    const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
-)
-{
-    const auto exec = phi.exec();
-    const auto& mesh = phi.mesh();
-
-    auto gammaV = gamma.internalVector().view();
-
-
-    const auto [magFaceArea, surfFaceCells, deltaCoeffs] = views(
-        mesh.magFaceAreas(),
-        mesh.boundaryMesh().faceCells(),
-        faceNormalGradient.deltaCoeffs().internalVector()
-    );
-
-    const auto matIt = ls.faceToMatrixAddress();
-    auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
-    auto const diagOffs = matIt->diagOffset().view();
-
-    auto values = ls.matrix().values().view();
-
-    auto [/*bweights,*/ refGradient, value, valueFraction, refValue] = views(
-        // weights.boundaryData().value(),
-        phi.boundaryData().refGrad(),
-        phi.boundaryData().value(),
-        phi.boundaryData().valueFraction(),
-        phi.boundaryData().refValue()
-    );
-
-    auto rhs = ls.rhs().view();
-    auto bRhs = ls.boundaryRhs().view();
-    auto bValues = ls.boundaryMatrix().values().view();
-
-
-    const auto nInternalFaces = mesh.nInternalFaces();
-    const auto nBoundaryFaces = mesh.nBoundaryFaces();
-    auto totalFaces = nInternalFaces + nBoundaryFaces;
-    NeoN::mpi::Environment mpiEnviron;
-    parallelFor(
-        exec,
-        {nInternalFaces, totalFaces},
-        NEON_LAMBDA(const localIdx facei) {
-            auto bcfacei = facei - nInternalFaces;
-            auto flux = gammaV[facei] * magFaceArea[facei];
-
-            auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = rowOffs[own];
-            auto operatorScalingOwn = operatorScaling[own];
-
-            auto valFrac1 = valueFraction[bcfacei];
-            auto valFrac2 = 1.0 - valFrac1;
-
-            // FIXME deltaCoeffs was previously indexed by facei?
-            auto valueMat =
-                flux * operatorScalingOwn * valFrac1 * deltaCoeffs[facei] * one<ValueType>();
-
-            Kokkos::atomic_sub(&values[rowOwnStart + diagOffs[own]], valueMat);
-            bValues[bcfacei] += valueMat;
-            ValueType valueRhs = flux * operatorScalingOwn
-                               * (valueFraction[bcfacei] * deltaCoeffs[facei] * refValue[bcfacei]
-                                  + (1.0 - valueFraction[bcfacei]) * refGradient[bcfacei]);
-            Kokkos::atomic_sub(&rhs[own], valueRhs);
-            bRhs[bcfacei] += valueRhs;
-        },
-        "computeInterfaceLaplacianCoefficients"
-    );
-}
-
-template<typename ValueType>
-void computeLaplacianBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
-    const dsl::Coeff operatorScaling,
+    const dsl::Coeff coeff,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 )
 {
@@ -297,7 +293,6 @@ void computeLaplacianBoundImpl(
         mesh.magFaceAreas()
     );
 
-    auto rhs = ls.rhs().view();
     auto values = ls.matrix().values().view();
 
     const auto nInternalFaces = mesh.nInternalFaces();
@@ -305,39 +300,99 @@ void computeLaplacianBoundImpl(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            // row and column indices
             auto ownRow = ownV[facei];
             auto neiRow = neiV[facei];
 
             auto neiRowStart = rowOffs[neiRow];
             auto ownRowStart = rowOffs[ownRow];
 
-            // operator sign coefficient  handles: = +/- laplacian
             auto ownCoeff = coeff[ownRow];
             auto neiCoeff = coeff[neiRow];
 
-            // matrix value diagonal and column offsets
-            // NOTE TODO these are currently hardcode COO/CSR offsets
             auto ownDiagOffs = ownRowStart + static_cast<localIdx>(diagOffs[ownRow]);
             auto neiDiagOffs = neiRowStart + static_cast<localIdx>(diagOffs[neiRow]);
             auto upperColOffs = ownRowStart + ownOffs[facei];
             auto lowerColOffs = neiRowStart + neiOffs[facei];
 
-            // Laplacian face coefficient: δ_f · γ_f · |S_f|
-            // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
-            // with opposite signs (diffusion out of one cell = diffusion into the other).
-            // S_f points from owner to neighbour by construction.
             auto flux = deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<ValueType>();
 
-            // triangular coefficients - neighbour -> lower, owner -> upper
             values[upperColOffs] += flux * ownCoeff;
             values[lowerColOffs] += flux * neiCoeff;
 
-            // diagonal contribution is negative sum of offdiagonal coefficients
             Kokkos::atomic_sub(&values[ownDiagOffs], flux * ownCoeff);
             Kokkos::atomic_sub(&values[neiDiagOffs], flux * neiCoeff);
         },
         "computeLocalLaplacianCoefficients"
+    );
+}
+
+template<typename ValueType>
+void computeLaplacianBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+)
+{
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    auto gammaV = gamma.internalVector().view();
+
+    const auto [magFaceArea, surfFaceCells, deltaCoeffs] = views(
+        mesh.magFaceAreas(),
+        mesh.boundaryMesh().faceCells(),
+        faceNormalGradient.deltaCoeffs().internalVector()
+    );
+
+    const auto matIt = ls.faceToMatrixAddress();
+    auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
+    auto const diagOffs = matIt->diagOffset().view();
+
+    auto values = ls.matrix().values().view();
+
+    auto [refGradient, valueFraction, refValue] = views(
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
+    );
+
+    auto rhs = ls.rhs().view();
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    parallelFor(
+        exec,
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            auto bfi = facei - nInternalFaces;
+            auto ownRow = surfFaceCells[bfi];
+
+            auto ownRowStart = rowOffs[ownRow];
+            auto ownCoeff = operatorScaling[ownRow];
+
+            auto flux = gammaV[facei] * magFaceArea[facei];
+            auto fluxContrib =
+                flux * ownCoeff * valueFraction[bfi] * deltaCoeffs[facei] * one<ValueType>();
+
+            auto ownDiagOffs = ownRowStart + static_cast<localIdx>(diagOffs[ownRow]);
+
+            bValues[bfi] += fluxContrib;
+            Kokkos::atomic_sub(&values[ownDiagOffs], fluxContrib);
+
+            // Explicit RHS contribution from the mixed BC:
+            //   φ_f = valFrac * refValue               (Dirichlet part)
+            //       + (1-valFrac) * (φ_C + refGradient/δ)  (Neumann part)
+            auto valueRhs = flux * ownCoeff
+                          * (valueFraction[bfi] * deltaCoeffs[facei] * refValue[bfi]
+                             + (1.0 - valueFraction[bfi]) * refGradient[bfi]);
+            Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
+            bRhs[bfi] += valueRhs;
+        },
+        "computeInterfaceLaplacianCoefficients"
     );
 }
 
@@ -351,5 +406,8 @@ void computeLaplacianBoundImpl(
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
+
+template class GaussGreenLaplacian<scalar>;
+template class GaussGreenLaplacian<Vec3>;
 
 };

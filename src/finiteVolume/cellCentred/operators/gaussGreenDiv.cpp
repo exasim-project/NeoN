@@ -226,7 +226,8 @@ void computeDivProcBoundImpl(
 }
 
 
-void computeDivBoundImp(
+template<typename ValueType>
+void computeDivBoundImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
@@ -403,5 +404,8 @@ void computeDivIntImp(
 
 NN_DECLARE_COMPUTE_IMP_DIV(scalar);
 NN_DECLARE_COMPUTE_IMP_DIV(Vec3);
+
+template class GaussGreenDiv<scalar>;
+template class GaussGreenDiv<Vec3>;
 
 };
