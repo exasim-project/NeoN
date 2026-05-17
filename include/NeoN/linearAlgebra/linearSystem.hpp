@@ -205,23 +205,20 @@ inline la::LinearSystem<ValueType>
 removeBoundaryContributions(const la::LinearSystem<ValueType>& lsIn)
 {
     auto ls = la::LinearSystem<ValueType>(lsIn);
-    const auto matIt = ls.faceToMatrixAddress();
     auto lsView = ls.view();
     auto& matrix = lsView.matrix;
     auto& rhs = lsView.rhs;
     auto& bMatrix = lsView.boundaryMatrix;
     auto& bRhs = lsView.boundaryRhs;
-    auto& mtx = ls.matrix();
-    const auto [diagOffs, rowOffs] = views(matIt->diagOffset(), mtx.rowOffs());
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     parallelFor(
         ls.exec(),
         {0, bMatrix.values.size()},
         NEON_LAMBDA(const localIdx facei) {
             const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
-            Kokkos::atomic_add(
-                &matrix.values[rowOffs[celli] + diagOffs[celli]], bMatrix.values[facei]
-            );
+            Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
             Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
         },
         "removeBoundaryContributions"

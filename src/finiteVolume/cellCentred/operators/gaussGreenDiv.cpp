@@ -155,9 +155,6 @@ void computeDivBoundImp(
     const auto [ownV, deltaCoeffs] =
         views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().deltaCoeffs());
 
-    const auto matIt = ls.faceToMatrixAddress();
-    auto const diagOffs = matIt->diagOffset().view();
-
     auto values = ls.matrix().values().view();
 
     auto [bweights, refGradient, valueFraction, refValue] = views(
