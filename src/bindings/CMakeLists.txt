@@ -83,6 +83,11 @@ endif()
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
+# Ensure the POST_BUILD stubgen step can dlopen all transitive deps (libNeoN.so, libumpire.so,
+# libcamp.so, libginkgo*, kokkos, ...) from the build tree. All shared libs are routed into
+# ${CMAKE_BINARY_DIR}/lib, so a single RPATH entry suffices.
+set_target_properties(_neon PROPERTIES BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
+
 if(NOT NeoN_ENABLE_CUDA AND NOT WIN32)
   # Stub generation imports _neon. Skipped for CUDA (may build without an NVIDIA driver present) and
   # on Windows (the extension's dependent DLLs are not on the loader search path at build time, so
