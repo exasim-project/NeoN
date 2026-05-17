@@ -313,8 +313,6 @@ void computeDivImp(
             Kokkos::atomic_sub(
                 &values[rowNeiStart + diagOffs[nei]], valueLower * operatorScalingNei
             );
-
-
         },
         "computeLocalGaussGreenDivCoefficients"
     );
@@ -353,12 +351,6 @@ void computeDivImp(
 
             Kokkos::atomic_sub(&rhs[own], valueRhs);
             bRhs[bcfacei] = valueRhs;
-            if (rowOwnStart + diagOffs[own] == 0)
-            {
-               // std::cout << "bweight: " << bweights[bcfacei] << std::endl;
-               // std::cout << "bface " << bcfacei << " valueMat: " << valueMat << std::endl;
-               // std::cout << "bface " << bcfacei << " valueRHS: " << valueRhs << std::endl;
-            }
         },
         "computeInterfaceGaussGreenDivCoefficients"
     );

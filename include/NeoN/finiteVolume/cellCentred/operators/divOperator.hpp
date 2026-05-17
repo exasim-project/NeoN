@@ -201,8 +201,7 @@ public:
     std::string getName() const { return "DivOperator"; }
     std::string juliaOP() const { return juliaEvalString_; }
     std::string juliaOP() { return juliaEvalString_; }
-    // jl_array_t* fuckoff() { throw std::logic_error("fuckoff() not implemented for this
-    // operator"); }
+
 
 private:
 

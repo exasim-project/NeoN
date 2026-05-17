@@ -67,7 +67,7 @@ public:
         }
         else if constexpr (std::is_same_v<VectorValueType, NeoN::Vec3>)
         {
-            std::cout << "vector is Vec3\n";
+            // std::cout << "vector is Vec3\n";
             jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
             jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_ * 3, 0);
             return julia_ptr;
