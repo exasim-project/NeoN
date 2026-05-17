@@ -12,6 +12,52 @@
 namespace NeoN::la
 {
 
+struct FaceToMatrixView
+{
+
+    // TODO check performance
+    /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
+     *  diagIdx(celli) = rowOffs[celli] + diagOffset[celli]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
+    {
+        return rowOffs[celli] + diagOffset[celli];
+    }
+
+    /* @brief Returns the flat values-array index of the upper-triangular entry A[own, nei].
+     *
+     *  By construction own < nei for every internal face, so the column index nei is greater
+     *  than the row index own — this entry lies in the upper triangle.
+     *
+     *  upperIdx(own, f) = rowOffs[own] + ownerOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
+    {
+        return rowOffs[own] + ownerOffset[faceIdx];
+    }
+
+    /* @brief Returns the flat values-array index of the lower-triangular entry A[nei, own].
+     *
+     *  By construction nei > own for every internal face, so the column index own is less
+     *  than the row index nei — this entry lies in the lower triangle.
+     *
+     *  lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
+    {
+        return rowOffs[nei] + neighbourOffset[faceIdx];
+    }
+
+    // corresponding views
+    View<const uint8_t> ownerOffset;
+
+    View<const uint8_t> neighbourOffset;
+
+    View<const uint8_t> diagOffset;
+
+    // row offsets borrowed from the owning Matrix's sparsity pattern
+    View<const localIdx> rowOffs;
+};
 
 /* @class FaceToMatrixAddress
  * @brief Stores the mapping between mesh faces and matrix row offsets.
@@ -50,16 +96,6 @@ class FaceToMatrixAddress
 
     Array<uint8_t> diagOffset_; //! mapping from celli to diagonal element offset
 
-    // corresponding views
-    View<uint8_t> ownerOffsetV_;
-
-    View<uint8_t> neighbourOffsetV_;
-
-    View<uint8_t> diagOffsetV_;
-
-    // row offsets borrowed from the owning Matrix's sparsity pattern
-    View<const IndexType> rowOffsV_;
-
 public:
 
     /* @brief constructor
@@ -70,14 +106,22 @@ public:
      * @param rowOffsView     view of row offsets from the owning Matrix's CsrSparsityPattern
      */
     FaceToMatrixAddress(
-        Array<uint8_t> ownerOffset,
-        Array<uint8_t> neighbourOffset,
-        Array<uint8_t> diagOffset,
-        View<const IndexType> rowOffsView
+        Array<uint8_t> ownerOffset, Array<uint8_t> neighbourOffset, Array<uint8_t> diagOffset
     );
 
     /* @brief copy constructor */
     FaceToMatrixAddress(const FaceToMatrixAddress& mi);
+
+    /**
+     * @brief Get a view representation of the matrix's data.
+     * @return MatrixView for easy access to matrix elements.
+     */
+    [[nodiscard]] FaceToMatrixView view(View<const localIdx> rowOffsView) const
+    {
+        return FaceToMatrixView(
+            ownerOffset_.view(), neighbourOffset_.view(), diagOffset_.view(), rowOffsView
+        );
+    }
 
     /*@brief getter for ownerOffset */
     const Array<uint8_t>& ownerOffset() const;
@@ -96,39 +140,6 @@ public:
 
     /*@brief getter for diagOffset */
     Array<uint8_t>& diagOffset();
-
-    // TODO check performance
-    /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
-     *  diagIdx(celli) = rowOffs[celli] + diagOffset[celli]
-     */
-    KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
-    {
-        return rowOffsV_[celli] + diagOffsetV_[celli];
-    }
-
-    /* @brief Returns the flat values-array index of the upper-triangular entry A[own, nei].
-     *
-     *  By construction own < nei for every internal face, so the column index nei is greater
-     *  than the row index own — this entry lies in the upper triangle.
-     *
-     *  upperIdx(own, f) = rowOffs[own] + ownerOffset[f]
-     */
-    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
-    {
-        return rowOffsV_[own] + ownerOffsetV_[faceIdx];
-    }
-
-    /* @brief Returns the flat values-array index of the lower-triangular entry A[nei, own].
-     *
-     *  By construction nei > own for every internal face, so the column index own is less
-     *  than the row index nei — this entry lies in the lower triangle.
-     *
-     *  lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]
-     */
-    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
-    {
-        return rowOffsV_[nei] + neighbourOffsetV_[faceIdx];
-    }
 };
 
 /* @brief Creates the sparsity pattern and corresponding FaceToMatrixAddress from a mesh.

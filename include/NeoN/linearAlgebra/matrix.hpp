@@ -237,8 +237,7 @@ public:
                 auto hostFtma = std::make_shared<const FaceToMatrixAddress<localIdx>>(
                     faceToMatrixAddress_->ownerOffset().copyToHost(),
                     faceToMatrixAddress_->neighbourOffset().copyToHost(),
-                    faceToMatrixAddress_->diagOffset().copyToHost(),
-                    hostSp->rowOffs().view()
+                    faceToMatrixAddress_->diagOffset().copyToHost()
                 );
                 return {values_.copyToHost(), hostSp, hostFtma};
             }

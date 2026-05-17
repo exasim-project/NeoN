@@ -49,22 +49,15 @@ NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::diagOffset()
 
 template<typename IndexType, typename MeshType>
 FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
-    Array<uint8_t> ownerOffset,
-    Array<uint8_t> neighbourOffset,
-    Array<uint8_t> diagOffset,
-    View<const IndexType> rowOffsView
+    Array<uint8_t> ownerOffset, Array<uint8_t> neighbourOffset, Array<uint8_t> diagOffset
 )
-    : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset),
-      ownerOffsetV_(ownerOffset_.view()), neighbourOffsetV_(neighbourOffset_.view()),
-      diagOffsetV_(diagOffset_.view()), rowOffsV_(rowOffsView)
+    : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset)
 {}
 
 template<typename IndexType, typename MeshType>
 FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(const FaceToMatrixAddress& mi)
     : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
-      diagOffset_(mi.diagOffset_), ownerOffsetV_(ownerOffset_.view()),
-      neighbourOffsetV_(neighbourOffset_.view()), diagOffsetV_(diagOffset_.view()),
-      rowOffsV_(mi.rowOffsV_)
+      diagOffset_(mi.diagOffset_)
 {}
 
 template class FaceToMatrixAddress<localIdx, UnstructuredMesh>;
@@ -231,9 +224,7 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
     auto sp = std::make_shared<const SparsityType>(
         std::move(colIdx), std::move(rowOffs), Dimensions {nCells, nCells}
     );
-    auto ftma = std::make_shared<const FaceToMatrixAddress<IndexType>>(
-        ownOffs, neiOffs, diagOffs, sp->rowOffs().view()
-    );
+    auto ftma = std::make_shared<const FaceToMatrixAddress<IndexType>>(ownOffs, neiOffs, diagOffs);
     return {sp, ftma};
 }
 
@@ -273,9 +264,7 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
     auto sp = std::make_shared<const CooSparsityPattern<localIdx>>(
         std::move(colIdx), std::move(cooRowIdx), Dimensions {nCells, nCells}
     );
-    auto ftma = std::make_shared<const FaceToMatrixAddress<localIdx>>(
-        ownOffs, neiOffs, diagOffs, sp->rowOffs().view()
-    );
+    auto ftma = std::make_shared<const FaceToMatrixAddress<localIdx>>(ownOffs, neiOffs, diagOffs);
     return {sp, ftma};
 }
 

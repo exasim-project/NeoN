@@ -104,4 +104,9 @@ void computeResidual(
     const MatrixType& mtx, const Vector<scalar>& b, const Vector<scalar>& x, Vector<scalar>& res
 );
 
+/**@brief given a set off row idx this function converts to rowOffsets
+ */
+template<typename IndexType>
+[[nodiscard]] const Vector<IndexType> rowsToRowOffs(Vector<IndexType>& rows);
+
 }

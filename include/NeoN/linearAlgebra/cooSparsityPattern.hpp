@@ -31,13 +31,13 @@ public:
     /* @brief create an "empty" SparsityPattern with a given size  */
     CooSparsityPattern(const CooSparsityPattern& sp);
 
-    CooSparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowOffs, Dimensions dim);
+    CooSparsityPattern(Vector<IndexType>&& colIdx, Vector<IndexType>&& rowIdxs, Dimensions dim);
 
     [[nodiscard]] CooSparsityPattern copyToHost() const
     {
         return CooSparsityPattern<IndexType>(
             colIdxs_.copyToExecutor(SerialExecutor()),
-            rowOffs_.copyToExecutor(SerialExecutor()),
+            rowIdxs_.copyToExecutor(SerialExecutor()),
             dimensions_
         );
     }
@@ -45,7 +45,7 @@ public:
     [[nodiscard]] CooSparsityPattern copyToExecutor(Executor dstExec) const
     {
         return CooSparsityPattern<IndexType>(
-            colIdxs_.copyToExecutor(dstExec), rowOffs_.copyToExecutor(dstExec), dimensions_
+            colIdxs_.copyToExecutor(dstExec), rowIdxs_.copyToExecutor(dstExec), dimensions_
         );
     }
 
@@ -60,11 +60,11 @@ public:
 
     [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; };
 
-    /*@brief getter for rowOffs */
-    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowOffs_; };
+    /*@brief returns the COO per-entry row indices (one per nnz) */
+    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowIdxs_; };
 
-    /*@brief getter for rowOffs */
-    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; };
+    /*@brief returns the COO per-entry row indices (one per nnz) */
+    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowIdxs_; };
 
     [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 
@@ -79,19 +79,15 @@ public:
         return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
     }
 
-    KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }
-
 private:
 
     Dimensions dimensions_;
 
-    Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
+    Vector<IndexType> rowIdxs_; //! rowIdx
 
     Vector<IndexType> colIdxs_; //!
 
-    View<IndexType> rowOffsV_;
-
-    View<IndexType> colIdxsV_;
+    Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
 };
 
 } // namespace NeoN::la

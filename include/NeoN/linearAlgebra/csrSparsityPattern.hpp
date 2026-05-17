@@ -78,8 +78,6 @@ public:
         return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
     }
 
-    KOKKOS_INLINE_FUNCTION IndexType rowOffs(localIdx celli) const { return rowOffsV_[celli]; }
-
 private:
 
     Dimensions dimensions_;
@@ -87,17 +85,6 @@ private:
     Vector<IndexType> rowOffs_; //! rowOffs map from row to start index in values
 
     Vector<IndexType> colIdxs_; //!
-
-    View<IndexType> rowOffsV_;
-
-    View<IndexType> colIdxsV_;
 };
-
-
-/**@brief given a set off row idx this function converts to rowOffsets
- */
-template<typename IndexType>
-[[nodiscard]] const Vector<IndexType> rowsToRowOffs(Vector<IndexType>& rows);
-
 
 } // namespace NeoN::la

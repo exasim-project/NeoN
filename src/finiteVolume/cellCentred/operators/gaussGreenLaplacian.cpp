@@ -111,7 +111,7 @@ void computeLaplacianBoundImpl(
     );
 
     const auto matIt = ls.faceToMatrixAddress();
-    auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
+    auto const rowOffs = ls.matrix().sparsity()->rowOffs().view();
     auto const diagOffs = matIt->diagOffset().view();
 
     auto values = ls.matrix().values().view();
