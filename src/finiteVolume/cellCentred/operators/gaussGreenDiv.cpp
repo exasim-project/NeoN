@@ -454,4 +454,7 @@ void GaussGreenDiv<ValueType>::div(
 template class GaussGreenDiv<scalar>;
 template class GaussGreenDiv<Vec3>;
 
+template class GaussGreenDiv<scalar>;
+template class GaussGreenDiv<Vec3>;
+
 };
