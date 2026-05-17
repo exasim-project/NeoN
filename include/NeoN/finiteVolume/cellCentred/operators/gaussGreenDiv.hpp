@@ -25,7 +25,7 @@ void computeDivExp(
 
 /** @brief assemble internal dofs*/
 template<typename ValueType>
-void computeDivImp(
+void computeDivIntImp(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
@@ -121,7 +121,7 @@ public:
     {
         const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
         computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-        computeDivImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
         computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     }
 

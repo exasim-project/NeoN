@@ -25,7 +25,16 @@ void computeLaplacianExp(
 );
 
 template<typename ValueType>
-void computeLaplacianImpl(
+void computeLaplacianIntImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+);
+
+template<typename ValueType>
+void computeLaplacianBoundImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
@@ -123,7 +132,7 @@ public:
     {
         computeLaplacianProcBoundImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
         computeLaplacianBoundImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
-        computeLaplacianImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
+        computeLaplacianIntImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
     };
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override

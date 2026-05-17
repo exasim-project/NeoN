@@ -204,17 +204,17 @@ public:
 
 private:
 
-    Executor exec_;                ///< The executor on which the field is stored
-    Vector<T> value_;              ///< The Vector storing the computed values from the
-                                   ///< boundary condition.
-    Vector<T> refValue_;           ///< The Vector storing the Dirichlet boundary values.
-    Vector<scalar> valueFraction_; ///< The Vector storing the fraction of
-                                   ///< the boundary value.
-    Vector<T> refGrad_;            ///< The Vector storing the Neumann boundary values.
-    Vector<int> boundaryTypes_;    ///< The Vector storing the boundary types.
-    Vector<localIdx> offset_;      ///< The Vector storing the offsets of each boundary.
-    localIdx nBoundaries_;         ///< The number of boundaries.
-    localIdx nBoundaryFaces_;      ///< The number of boundary faces.
+    Executor exec_;      ///< The executor on which the field is stored
+    Vector<T> value_;    ///< The Vector storing the computed values from the
+                         ///< boundary condition.
+    Vector<T> refValue_; ///< The Vector storing the Dirichlet boundary values.
+    Vector<scalar>
+        valueFraction_; ///< Fraction between Dirichlet (1.0) and Neuman (0.0) boundary value
+    Vector<T> refGrad_; ///< The Vector storing the Neumann boundary values.
+    Vector<int> boundaryTypes_; ///< The Vector storing the boundary types.
+    Vector<localIdx> offset_;   ///< The Vector storing the offsets of each boundary.
+    localIdx nBoundaries_;      ///< The number of boundaries.
+    localIdx nBoundaryFaces_;   ///< The number of boundary faces.
 };
 
 /**@brief exchange values on processor boundaries*/

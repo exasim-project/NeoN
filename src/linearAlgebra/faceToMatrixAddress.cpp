@@ -244,7 +244,7 @@ void setSparsityPatternFaceToMatrixAddressSerial(
         nFacesPerCellH,
         KOKKOS_LAMBDA(const localIdx celli) {
             auto nFaces = nFacesPerCellHV[celli];
-            // store number of lower entries
+            // store number of lower entries as diagonal offset
             diagOffsetHV[celli] = static_cast<uint8_t>(nFaces);
             colIdxHV[rowOffsHV[celli] + nFaces] = celli;
             return nFaces + 1;
