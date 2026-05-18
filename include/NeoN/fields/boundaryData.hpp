@@ -277,7 +277,7 @@ void communicateBoundaryData(
     // Flush any pending GPU kernels writing to boundaryData before MPI reads it.
     // Kernels launched by per-BC correctBoundaryCondition() in the caller are async
     // on the GPU executor; without this fence MPI would send pre-kernel device data.
-    fence(boundaryData.exec());
+    deviceSync(boundaryData.exec());
 
 #if defined(NEON_CUDA_AWARE_MPI)
     auto recvBuffer = Vector<ValueType>(boundaryData.exec(), static_cast<localIdx>(totalRecv));
@@ -315,7 +315,7 @@ void communicateBoundaryData(
     // On GPU, UCX may fill recvBuffer via a private CUDA stream that is not the
     // Kokkos stream. fence() calls cudaDeviceSynchronize() which waits for ALL
     // CUDA streams — ensuring the received data is visible before the unpack kernel.
-    fence(exec);
+    deviceSync(exec);
     auto outV = boundaryData.view();
     const auto inV = recvBuffer.view();
 
@@ -350,7 +350,7 @@ void communicateBoundaryData(
     );
 
     // Ensure the unpack kernel completes before callers continue to use boundaryData.
-    fence(exec);
+    deviceSync(exec);
 }
 
 // Specialization for Vec3
@@ -414,7 +414,7 @@ inline void communicateBoundaryData(
 
     // Flush the pack kernel above (and any caller-launched BC kernels) before MPI
     // reads sendBuffer. parallelFor is async on GPU.
-    fence(exec);
+    deviceSync(exec);
 
 #if defined(NEON_CUDA_AWARE_MPI)
     auto recvBuffer = Vector<NeoN::scalar>(boundaryData.exec(), static_cast<localIdx>(totalRecv3));
@@ -452,7 +452,7 @@ inline void communicateBoundaryData(
 
     // On GPU, UCX may fill recvBuffer via a private CUDA stream. fence() calls
     // cudaDeviceSynchronize() to flush all CUDA streams before the unpack kernel.
-    fence(exec);
+    deviceSync(exec);
     const auto inV = recvBuffer.view();
     auto outV = boundaryData.view();
 
@@ -487,7 +487,7 @@ inline void communicateBoundaryData(
     );
 
     // Ensure the unpack kernel completes before callers continue to use boundaryData.
-    fence(exec);
+    deviceSync(exec);
 }
 
 }

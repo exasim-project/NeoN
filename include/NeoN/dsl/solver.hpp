@@ -57,7 +57,7 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
+    deviceSync(solution.exec());
 
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
@@ -66,7 +66,7 @@ la::SolverStats iterativeSolveImpl(
     // (stream-specific) at the end. fence() here calls cudaDeviceSynchronize(),
     // making the written solution globally visible to all subsequent Kokkos
     // kernels across any stream.
-    fence(solution.exec());
+    deviceSync(solution.exec());
     return stats;
 }
 
@@ -94,9 +94,9 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
+    deviceSync(solution.exec());
     auto stats = solver.solve(ls, solution.internalVector());
-    fence(solution.exec());
+    deviceSync(solution.exec());
     return stats;
 }
 }

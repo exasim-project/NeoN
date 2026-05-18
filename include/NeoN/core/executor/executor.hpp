@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstdlib>
 #include <string>
 #include <variant>
 
@@ -13,6 +14,10 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/logging.hpp"
 #include "NeoN/core/memory/kokkos.hpp"
+
+#if defined(KOKKOS_ENABLE_CUDA)
+#include <cuda_runtime.h>
+#endif
 
 namespace NeoN
 {
@@ -26,6 +31,55 @@ inline void fence(const Executor& exec)
     {
         Kokkos::fence();
     }
+}
+
+
+/* @brief returns true if the env var NEON_HARD_DEVICE_SYNC is set to a
+ * non-empty, non-"0" value. Cached on first call so subsequent invocations
+ * are a single load. Allows A/B testing of the hard-sync path on a single
+ * HPC build by flipping the env var between runs. */
+inline bool hardDeviceSyncEnabled()
+{
+    static const bool enabled = []
+    {
+        const char* s = std::getenv("NEON_HARD_DEVICE_SYNC");
+        return s != nullptr && s[0] != '\0' && s[0] != '0';
+    }();
+    return enabled;
+}
+
+
+/* @brief device-wide synchronization at MPI / linear-solver boundaries.
+ *
+ * SPUMA-style hardened sync: when the env var `NEON_HARD_DEVICE_SYNC=1`
+ * is set at process start AND the executor is GPU on a CUDA build, call
+ * `cudaDeviceSynchronize()` directly (mirrors SPUMA's `cudaExecutor::_backendFor`
+ * post-kernel sync). This synchronises ALL CUDA streams in the primary
+ * context — including streams owned by Ginkgo's CudaExecutor and any
+ * UCX-CUDA stream on the primary context — rather than just the Kokkos
+ * default execution space (which on newer Kokkos may be per-stream).
+ *
+ * Otherwise alias to `fence(exec)` to preserve existing behaviour on every
+ * non-CUDA build path (CPU, Serial, AMD/HIP, SYCL) and on CUDA builds when
+ * the env var is unset.
+ *
+ * The env var is the only gate so that a single HPC build can be A/B
+ * tested by toggling the variable between runs. No rebuild required.
+ *
+ * Use at every MPI / linear-solver boundary site where the post-MPI /
+ * post-solve correctness depends on cross-stream visibility, not just
+ * Kokkos-stream completion.
+ */
+inline void deviceSync(const Executor& exec)
+{
+#if defined(KOKKOS_ENABLE_CUDA)
+    if (hardDeviceSyncEnabled() && std::holds_alternative<NeoN::GPUExecutor>(exec))
+    {
+        cudaDeviceSynchronize();
+        return;
+    }
+#endif
+    fence(exec);
 }
 
 
