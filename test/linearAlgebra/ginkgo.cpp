@@ -90,6 +90,28 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
     }
 }
 
+TEST_CASE("MatrixConversion - Ginkgo")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto values = Vector<scalar>(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
+    auto rowIdx = Vector<localIdx>(exec, {0, 0, 1, 1, 1, 2, 2, 2, 3, 3});
+    auto colIdx = Vector<localIdx>(exec, {0, 1, 0, 1, 2, 1, 2, 3, 2, 3});
+    auto rowPtr = Vector<localIdx>(exec, {0, 2, 5, 8, 10});
+
+    SECTION("CSRMatrix " + execName)
+    {
+        auto csrMatrix = CSRMatrix<scalar, localIdx>(values, colIdx, rowPtr);
+        auto gkoCsrMtx = NeoN::la::ginkgo::createGkoMtx(csrMatrix);
+    }
+
+    SECTION("COOMatrix " + execName)
+    {
+        auto cooMatrix = COOMatrix<scalar, localIdx>(values, colIdx, rowIdx);
+        auto gkoCooMtx = NeoN::la::ginkgo::createGkoMtx(cooMatrix);
+    }
+}
+
 TEST_CASE("MatrixAssembly - Ginkgo")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());

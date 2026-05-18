@@ -40,14 +40,14 @@ TEST_CASE("SparsityPattern")
         auto rowPtrExp = std::vector<localIdx> {0, 0, 1, 1, 1, 2, 2, 2, 3, 3};
         auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
-        REQUIRE_THAT(sp->rowOffs(), Equals(rowPtrExp, EqualInt()));
+        REQUIRE_THAT(sp->rowIdxs(), Equals(rowPtrExp, EqualInt()));
         REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
 
     auto bsp = NeoN::la::createBoundarySparsityPattern<CooSparsityType>(mesh, *mi);
     SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
+        REQUIRE_THAT(bsp->rowIdxs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
     }
 }
 

@@ -69,6 +69,7 @@ public:
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
+    [[nodiscard]] Dimensions dimension() const { return dimensions_; };
     /**
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
