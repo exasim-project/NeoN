@@ -31,6 +31,24 @@ scalar ddtFluxCorrLimiter(const scalar fluxMag, const scalar corrMag)
 // ------------------------------------------------------------------
 // BDF1 kernel (also used for BDF2 startup)
 // ------------------------------------------------------------------
+//
+// Indexing convention (matches pressureVelocityCoupling::flux,
+// gaussGreenGrad::computeGradProcBoundary, and basicGeometryScheme):
+//
+//   internal faces  i in [0, nInternalFaces)
+//       -> mesh.faceAreas()[i]                (OF-full; internal indices coincide)
+//
+//   boundary faces  i in [nInternalFaces, nInternalFaces + nBoundaryFaces)
+//       -> mesh.boundaryMesh().sf()[i - nInternalFaces]   (compressed)
+//
+//   proc-tail faces i in [nInternalFaces + nBoundaryFaces, nTotalFaces)
+//       -> mesh.boundaryMesh().sf()[i - nInternalFaces]   (compressed, proc-tail)
+//
+// `mesh.faceAreas()` is OF-full size (Foam::fvMesh::Sf() including empty/wedge
+// patches) per `src/datastructures/meshAdapter.cpp:216`. Indexing it with the
+// compressed proc-face index reads the WRONG (empty-patch) face's area vector
+// and produces garbage fluxCorr at proc-tail faces. See project-memory entry
+// `project_neon_compressed_face_indexing.md` for the canonical rule.
 inline void ddtFluxCorrBDF1Kernel(
     const Executor& exec,
     const UnstructuredMesh& mesh,
@@ -40,16 +58,24 @@ inline void ddtFluxCorrBDF1Kernel(
     scalar dt
 )
 {
-    auto [outV, flux0V, uf0V, SfV] = views(
-        fluxCorr.internalVector(), flux0.internalVector(), uf0.internalVector(), mesh.faceAreas()
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.boundaryMesh().nBoundaryFaces();
+
+    auto [outV, flux0V, uf0V, SfV, bSfV] = views(
+        fluxCorr.internalVector(),
+        flux0.internalVector(),
+        uf0.internalVector(),
+        mesh.faceAreas(),
+        mesh.boundaryMesh().sf()
     );
 
     const scalar a1 = scalar(1) / dt;
     const auto n = outV.size();
 
+    // --- internal faces: OF-full Sf indexing is correct here
     parallelFor(
         exec,
-        {size_t(0), n},
+        {localIdx(0), nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             const auto d = (SfV[i] & uf0V[i]);
             const auto corr = flux0V[i] - d;
@@ -58,12 +84,45 @@ inline void ddtFluxCorrBDF1Kernel(
 
             outV[i] = limiter * a1 * corr;
         },
-        "ddtFluxCorr::BDF1"
+        "ddtFluxCorr::BDF1::internal"
+    );
+
+    // --- boundary faces: compressed bm.sf() indexing
+    parallelFor(
+        exec,
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            const auto d = (bSfV[bcfacei] & uf0V[i]);
+            const auto corr = flux0V[i] - d;
+
+            const scalar limiter = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr));
+
+            outV[i] = limiter * a1 * corr;
+        },
+        "ddtFluxCorr::BDF1::boundary"
+    );
+
+    // --- proc-tail faces: compressed bm.sf() indexing (this is the bug fix:
+    //   previously used SfV[i] (OF-full) at the compressed proc-face index)
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, n},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            const auto d = (bSfV[bcfacei] & uf0V[i]);
+            const auto corr = flux0V[i] - d;
+
+            const scalar limiter = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr));
+
+            outV[i] = limiter * a1 * corr;
+        },
+        "ddtFluxCorr::BDF1::proc"
     );
 }
 
 // ------------------------------------------------------------------
-// BDF2 kernel
+// BDF2 kernel — same OF-full vs compressed split as BDF1
 // ------------------------------------------------------------------
 inline void ddtFluxCorrBDF2Kernel(
     const Executor& exec,
@@ -76,22 +135,27 @@ inline void ddtFluxCorrBDF2Kernel(
     scalar dt
 )
 {
-    auto [outV, flux0V, flux00V, uf0V, uf00V, SfV] = views(
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.boundaryMesh().nBoundaryFaces();
+
+    auto [outV, flux0V, flux00V, uf0V, uf00V, SfV, bSfV] = views(
         fluxCorr.internalVector(),
         flux0.internalVector(),
         flux00.internalVector(),
         uf0.internalVector(),
         uf00.internalVector(),
-        mesh.faceAreas()
+        mesh.faceAreas(),
+        mesh.boundaryMesh().sf()
     );
 
     const scalar a1 = 2.0 / dt;
     const scalar a2 = -0.5 / dt;
     const auto n = outV.size();
 
+    // --- internal faces: OF-full Sf indexing is correct here
     parallelFor(
         exec,
-        {size_t(0), n},
+        {localIdx(0), nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
             const auto d1 = (SfV[i] & uf0V[i]);
             const auto corr1 = flux0V[i] - d1;
@@ -104,7 +168,47 @@ inline void ddtFluxCorrBDF2Kernel(
 
             outV[i] = limiter1 * a1 * corr1 + limiter2 * a2 * corr2;
         },
-        "ddtFluxCorr::BDF2"
+        "ddtFluxCorr::BDF2::internal"
+    );
+
+    // --- boundary faces: compressed bm.sf() indexing
+    parallelFor(
+        exec,
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            const auto d1 = (bSfV[bcfacei] & uf0V[i]);
+            const auto corr1 = flux0V[i] - d1;
+
+            const auto d2 = (bSfV[bcfacei] & uf00V[i]);
+            const auto corr2 = flux00V[i] - d2;
+
+            const scalar limiter1 = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr1));
+            const scalar limiter2 = ddtFluxCorrLimiter(mag(flux00V[i]), mag(corr2));
+
+            outV[i] = limiter1 * a1 * corr1 + limiter2 * a2 * corr2;
+        },
+        "ddtFluxCorr::BDF2::boundary"
+    );
+
+    // --- proc-tail faces: compressed bm.sf() indexing (bug fix)
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, n},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            const auto d1 = (bSfV[bcfacei] & uf0V[i]);
+            const auto corr1 = flux0V[i] - d1;
+
+            const auto d2 = (bSfV[bcfacei] & uf00V[i]);
+            const auto corr2 = flux00V[i] - d2;
+
+            const scalar limiter1 = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr1));
+            const scalar limiter2 = ddtFluxCorrLimiter(mag(flux00V[i]), mag(corr2));
+
+            outV[i] = limiter1 * a1 * corr1 + limiter2 * a2 * corr2;
+        },
+        "ddtFluxCorr::BDF2::proc"
     );
 }
 
