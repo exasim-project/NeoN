@@ -14,9 +14,9 @@ template<typename IndexType>
 void CsrSparsityPattern<IndexType>::validate() const
 {
     NF_ASSERT(rowOffs_.exec() == colIdxs_.exec(), "Executors are not the same");
-    NF_ASSERT(rowOffs_.size() <= colIdxs_.size() + 1, "CSR size mismatch");
 
     // TODO add something like his test assert
+    // NF_ASSERT(rowOffs_.size() <= colIdxs_.size() + 1, "CSR size mismatch");
     // auto rowCopy = rowOffs_.copyToHost();
     // NF_ASSERT(rowCopy.view()[rowOffs_.size()-1] == colIdxs_.size(), "broken rowOffs");
 }

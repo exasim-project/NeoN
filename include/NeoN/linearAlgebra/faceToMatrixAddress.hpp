@@ -70,7 +70,6 @@ struct FaceToMatrixView
  * the Matrix, not by this class; this class only borrows a view of the row offsets.
  *
  */
-template<typename IndexType = localIdx, typename MeshType = UnstructuredMesh>
 class FaceToMatrixAddress
 {
 
@@ -112,6 +111,17 @@ public:
     /* @brief copy constructor */
     FaceToMatrixAddress(const FaceToMatrixAddress& mi);
 
+
+    FaceToMatrixAddress copyToExecutor(Executor dstExec) const
+    {
+        return {
+            ownerOffset_.copyToExecutor(dstExec),
+            neighbourOffset_.copyToExecutor(dstExec),
+            diagOffset_.copyToExecutor(dstExec)
+        };
+    }
+
+
     /**
      * @brief Get a view representation of the matrix's data.
      * @return FaceToMatrixView for easy access to matrix elements.
@@ -152,9 +162,7 @@ public:
  *         CsrSparsityPattern<localIdx> or CooSparsityPattern<localIdx>
  */
 template<typename SparsityType>
-std::pair<
-    std::shared_ptr<const SparsityType>,
-    std::shared_ptr<const FaceToMatrixAddress<typename SparsityType::SparsityIndexType>>>
+std::pair<std::shared_ptr<const SparsityType>, std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
 
 /* @brief Creates the boundary sparsity pattern from a mesh and an existing
@@ -165,8 +173,7 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
  */
 template<typename SparsityType>
 std::shared_ptr<const SparsityType> createBoundarySparsityPattern(
-    const UnstructuredMesh& mesh,
-    const FaceToMatrixAddress<typename SparsityType::SparsityIndexType>& faceToMatrixAddress
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
 );
 
 }

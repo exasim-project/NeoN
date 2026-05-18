@@ -19,7 +19,7 @@ namespace NeoN::la
  * @brief A view struct to allow easy read/write on all executors.
  *
  * @tparam ValueType The value type of the non-zero entries.
- * @tparam IndexType The index type of the rows and columns.
+ * @tparam SparsityViewType The type of the sparsity pattern, eg COO or CSR.
  */
 template<typename ValueType, typename SparsityViewType>
 struct MatrixView
@@ -75,7 +75,7 @@ class Matrix
     void validate()
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
-        // TODO this is not necessarily try for matrix types with padding like ELL
+        // TODO this is not necessarily true for matrix types with padding like ELL
         NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
     }
 
@@ -104,16 +104,13 @@ public:
     Matrix(
         const Vector<ValueType>& values,
         const Vector<typename SparsityType::SparsityIndexType>& colIdxs,
-        const Vector<typename SparsityType::SparsityIndexType>& rowOffs
+        const Vector<typename SparsityType::SparsityIndexType>& rowOffs,
+        Dimensions dimensions
     )
         : values_(values),
-          sparsityPattern_(std::make_shared<const SparsityType>(
-              Vector(colIdxs),
-              Vector(rowOffs),
-              Dimensions {
-                  static_cast<localIdx>(rowOffs.size()), static_cast<localIdx>(rowOffs.size())
-              }
-          ))
+          sparsityPattern_(
+              std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs), dimensions)
+          )
     {
         validate();
     }
@@ -131,7 +128,7 @@ public:
     Matrix(
         const Vector<ValueType>& values,
         std::shared_ptr<const SparsityType> sparsity,
-        std::shared_ptr<const FaceToMatrixAddress<localIdx>> faceToMatrixAddress
+        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress
     )
         requires std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
         : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
@@ -205,7 +202,11 @@ public:
         }
         return {
             values_.copyToExecutor(dstExec),
-            std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec))
+            std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec)),
+            (faceToMatrixAddress_) ? std::make_shared<const FaceToMatrixAddress>(
+                this->faceToMatrixAddress_->copyToExecutor(dstExec)
+            )
+                                   : nullptr
         };
     }
 
@@ -218,7 +219,7 @@ public:
     /**
      * @brief Get the FaceToMatrixAddress associated with this matrix (may be null).
      */
-    [[nodiscard]] std::shared_ptr<const FaceToMatrixAddress<localIdx>> faceToMatrixAddress() const
+    [[nodiscard]] std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
     {
         return faceToMatrixAddress_;
     }
@@ -234,7 +235,7 @@ public:
             if (faceToMatrixAddress_)
             {
                 auto hostSp = std::make_shared<const SparsityType>(sparsityPattern_->copyToHost());
-                auto hostFtma = std::make_shared<const FaceToMatrixAddress<localIdx>>(
+                auto hostFtma = std::make_shared<const FaceToMatrixAddress>(
                     faceToMatrixAddress_->ownerOffset().copyToHost(),
                     faceToMatrixAddress_->neighbourOffset().copyToHost(),
                     faceToMatrixAddress_->diagOffset().copyToHost()
@@ -283,7 +284,7 @@ private:
 
     std::shared_ptr<const SparsityType> sparsityPattern_;
 
-    std::shared_ptr<const FaceToMatrixAddress<localIdx>> faceToMatrixAddress_;
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress_;
 };
 
 
@@ -315,11 +316,11 @@ void scaledInverseDiag(
  * entries are identical
  */
 [[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress<localIdx>& mi, const Vector<scalar>&);
+scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
+    const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 );

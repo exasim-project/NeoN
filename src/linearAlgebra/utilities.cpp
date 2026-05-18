@@ -191,33 +191,38 @@ template void computeResidual<CSRMatrix<
     localIdx>>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
 
 template<typename IndexType>
-[[nodiscard]] const Vector<IndexType> rowsToRowOffs(Vector<IndexType>& rows)
+Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows)
 {
     auto rowsHost = rows.copyToHost();
     const auto rowsV = rowsHost.view();
     const auto nnz = rowsV.size();
 
+    // TODO can this be realized without copying to host?
     IndexType maxRow = 0;
-    // FIXME this needs to be in a parallel for
     for (localIdx i = 0; i < nnz; i++)
+    {
         if (rowsV[i] > maxRow) maxRow = rowsV[i];
+    }
 
     const IndexType nRows = maxRow + 1;
     Vector<IndexType> rowOffs(SerialExecutor {}, nRows + 1, IndexType(0));
     auto rowOffsV = rowOffs.view();
 
-    // FIXME this needs to be in a parallel for
     for (localIdx i = 0; i < nnz; i++)
+    {
         rowOffsV[rowsV[i] + 1]++;
-    // FIXME this needs to be in a parallel for
+    }
+
     for (IndexType r = 0; r < nRows; r++)
+    {
         rowOffsV[r + 1] += rowOffsV[r];
+    }
 
     return rowOffs.copyToExecutor(rows.exec());
 }
 
 #define NN_INSTANTIATE_ROWS_TO_ROW_OFFS(TYPENAME)                                                  \
-    template const Vector<TYPENAME> rowsToRowOffs<TYPENAME>(Vector<TYPENAME>&)
+    template Vector<TYPENAME> rowsToRowOffs<TYPENAME>(const Vector<TYPENAME>&)
 
 NN_FOR_ALL_INTEGER_TYPES(NN_INSTANTIATE_ROWS_TO_ROW_OFFS);
 

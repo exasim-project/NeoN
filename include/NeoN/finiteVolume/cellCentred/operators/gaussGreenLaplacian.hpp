@@ -126,8 +126,7 @@ private:
     FaceNormalGradient<ValueType> faceNormalGradient_;
 };
 
-// instantiate the template class
-template class GaussGreenLaplacian<scalar>;
-template class GaussGreenLaplacian<Vec3>;
+extern template class GaussGreenLaplacian<scalar>;
+extern template class GaussGreenLaplacian<Vec3>;
 
 } // namespace NeoN

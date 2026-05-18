@@ -47,7 +47,7 @@ TEST_CASE("SparsityPattern")
     auto bsp = NeoN::la::createBoundarySparsityPattern<CsrSparsityType>(mesh, *mi);
     SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
+        REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {0, 1, 1, 1, 2}, EqualInt()));
         // REQUIRE_THAT(bsp->colIdxs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
     }
 }

@@ -24,12 +24,12 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     Vector<scalar> values(exec, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs, {3, 3});
 
     Vector<scalar> bValues(exec, {0.0, 0.0, 0.0});
     Vector<localIdx> bColIdx(exec, {0, 1, 2});
     Vector<localIdx> bRowOffs(exec, {0, 1, 2});
-    COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs);
+    COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs, {3, 1});
 
     SECTION("construct " + execName)
     {

@@ -121,7 +121,7 @@ private:
     SurfaceInterpolation<ValueType> surfaceInterpolation_;
 };
 
-template class GaussGreenDiv<scalar>;
-template class GaussGreenDiv<Vec3>;
+extern template class GaussGreenDiv<scalar>;
+extern template class GaussGreenDiv<Vec3>;
 
 } // namespace NeoN

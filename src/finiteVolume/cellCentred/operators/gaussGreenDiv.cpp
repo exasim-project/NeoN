@@ -231,7 +231,6 @@ void computeDivIntImp(
         mesh.faceNeighbour(),
         mesh.boundaryMesh().faceCells()
     );
-    auto rhs = ls.rhs().view();
     auto values = ls.matrix().values().view();
 
     parallelFor(
@@ -286,5 +285,8 @@ void computeDivIntImp(
 
 NN_DECLARE_COMPUTE_IMP_DIV(scalar);
 NN_DECLARE_COMPUTE_IMP_DIV(Vec3);
+
+template class GaussGreenDiv<scalar>;
+template class GaussGreenDiv<Vec3>;
 
 };

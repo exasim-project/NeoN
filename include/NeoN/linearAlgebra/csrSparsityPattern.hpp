@@ -65,7 +65,7 @@ public:
     /*@brief getter for non-const rowOffs */
     [[nodiscard]] Vector<IndexType>& rowOffs() { return rowOffs_; };
 
-    [[nodiscard]] localIdx rows() const { return rowOffs_.size() - 1; };
+    [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 

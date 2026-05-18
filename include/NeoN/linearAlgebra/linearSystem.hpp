@@ -108,7 +108,7 @@ public:
 
     [[nodiscard]] const Vector<ValueType>& boundaryRhs() const { return boundaryRhs_; }
 
-    [[nodiscard]] LinearSystem<ValueType, SystemMatrixType> copyToHost() const
+    [[nodiscard]] LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> copyToHost() const
     {
         return {
             matrix_.copyToHost(),
@@ -128,12 +128,16 @@ public:
 
     [[nodiscard]] LinearSystemView<
         ValueType,
-        MatrixView<ValueType, SparsityView<typename SystemMatrixType::MatrixSparsityType>>>
+        MatrixView<
+            ValueType,
+            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
     view() && = delete;
 
     [[nodiscard]] LinearSystemView<
         ValueType,
-        MatrixView<ValueType, SparsityView<typename SystemMatrixType::MatrixSparsityType>>>
+        MatrixView<
+            ValueType,
+            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
     view() const&& = delete;
 
     [[nodiscard]] LinearSystemView<
@@ -144,7 +148,7 @@ public:
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
-    std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress() const
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
     {
         return matrix_.faceToMatrixAddress();
     }
@@ -183,16 +187,16 @@ template<
 LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType>
 createEmptyLinearSystem(const UnstructuredMesh& mesh)
 {
-    auto [csrSp, ftma] =
+    auto [systemSp, ftma] =
         createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(mesh
         );
     auto bSp =
         createBoundarySparsityPattern<typename BoundaryMatrixType::MatrixSparsityType>(mesh, *ftma);
     return {
         SystemMatrixType(
-            Vector<ValueType>(csrSp->exec(), csrSp->nnz(), zero<ValueType>()), csrSp, ftma
+            Vector<ValueType>(systemSp->exec(), systemSp->nnz(), zero<ValueType>()), systemSp, ftma
         ),
-        Vector<ValueType>(csrSp->exec(), csrSp->rows(), zero<ValueType>()),
+        Vector<ValueType>(systemSp->exec(), systemSp->rows(), zero<ValueType>()),
         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
         Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>())
     };

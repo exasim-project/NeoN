@@ -85,12 +85,8 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             auto res = Vector<scalar>(exec, mesh.nCells(), 0.0);
             computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
 
-            auto resHost = res.copyToHost();
-            auto resV = resHost.view();
-            for (localIdx celli = 0; celli < resV.size(); celli++)
-            {
-                REQUIRE(resV[celli] == Catch::Approx(0.0).margin(1e-8));
-            }
+            auto resExp = std::vector<NeoN::scalar>(res.size(), 0);
+            REQUIRE_THAT(res, Equals(resExp, ApproxScalar {1e-12}));
         }
     }
 }

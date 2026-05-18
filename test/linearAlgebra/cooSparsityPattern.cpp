@@ -37,10 +37,10 @@ TEST_CASE("SparsityPattern")
     // clang-format on
     SECTION("Can produce internal rowOffs and colIdx " + execName)
     {
-        auto rowPtrExp = std::vector<localIdx> {0, 0, 1, 1, 1, 2, 2, 2, 3, 3};
+        auto rowIdxExp = std::vector<localIdx> {0, 0, 1, 1, 1, 2, 2, 2, 3, 3};
         auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
-        REQUIRE_THAT(sp->rowIdxs(), Equals(rowPtrExp, EqualInt()));
+        REQUIRE_THAT(sp->rowIdxs(), Equals(rowIdxExp, EqualInt()));
         REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
 

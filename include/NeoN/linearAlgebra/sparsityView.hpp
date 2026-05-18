@@ -10,7 +10,7 @@ namespace NeoN::la
 {
 
 /**
- * @struct dimensions
+ * @struct Dimensions
  * @brief hold the number of rows and columns of a matrix
  */
 struct Dimensions

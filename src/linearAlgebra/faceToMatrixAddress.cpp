@@ -4,6 +4,7 @@
 
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/segmentedVector.hpp"
+#include "NeoN/linearAlgebra/utilities.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
@@ -11,66 +12,42 @@
 namespace NeoN::la
 {
 
-template<typename IndexType, typename MeshType>
-const NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::ownerOffset() const
-{
-    return ownerOffset_;
-}
+const NeoN::Array<uint8_t>& FaceToMatrixAddress::ownerOffset() const { return ownerOffset_; }
 
-template<typename IndexType, typename MeshType>
-const NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::neighbourOffset() const
+const NeoN::Array<uint8_t>& FaceToMatrixAddress::neighbourOffset() const
 {
     return neighbourOffset_;
 }
 
-template<typename IndexType, typename MeshType>
-const NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::diagOffset() const
-{
-    return diagOffset_;
-}
+const NeoN::Array<uint8_t>& FaceToMatrixAddress::diagOffset() const { return diagOffset_; }
 
-template<typename IndexType, typename MeshType>
-NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::ownerOffset()
-{
-    return ownerOffset_;
-}
+NeoN::Array<uint8_t>& FaceToMatrixAddress::ownerOffset() { return ownerOffset_; }
 
-template<typename IndexType, typename MeshType>
-NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::neighbourOffset()
-{
-    return neighbourOffset_;
-}
+NeoN::Array<uint8_t>& FaceToMatrixAddress::neighbourOffset() { return neighbourOffset_; }
 
-template<typename IndexType, typename MeshType>
-NeoN::Array<uint8_t>& FaceToMatrixAddress<IndexType, MeshType>::diagOffset()
-{
-    return diagOffset_;
-}
+NeoN::Array<uint8_t>& FaceToMatrixAddress::diagOffset() { return diagOffset_; }
 
-template<typename IndexType, typename MeshType>
-FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(
+FaceToMatrixAddress::FaceToMatrixAddress(
     Array<uint8_t> ownerOffset, Array<uint8_t> neighbourOffset, Array<uint8_t> diagOffset
 )
     : ownerOffset_(ownerOffset), neighbourOffset_(neighbourOffset), diagOffset_(diagOffset)
 {}
 
-template<typename IndexType, typename MeshType>
-FaceToMatrixAddress<IndexType, MeshType>::FaceToMatrixAddress(const FaceToMatrixAddress& mi)
+FaceToMatrixAddress::FaceToMatrixAddress(const FaceToMatrixAddress& mi)
     : ownerOffset_(mi.ownerOffset_), neighbourOffset_(mi.neighbourOffset_),
       diagOffset_(mi.diagOffset_)
 {}
-
-template class FaceToMatrixAddress<localIdx, UnstructuredMesh>;
 
 // ---------------------------------------------------------------------------
 // Internal helpers for building the sparsity data from a mesh
 // ---------------------------------------------------------------------------
 
+/** @brief */
 template<typename IndexType>
 void setBoundarySparsityPatternImpl(
     const UnstructuredMesh& mesh,
     const Array<uint8_t>& diagOffs,
-    Vector<IndexType>& bRowOffs,
+    Vector<IndexType>& rowIdx,
     Vector<IndexType>& bColIdx
 )
 {
@@ -78,14 +55,15 @@ void setBoundarySparsityPatternImpl(
     const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
     const auto diagOffsV = diagOffs.view();
     const auto faceCellsV = mesh.boundaryMesh().faceCells().view();
-    auto bRowOffsV = bRowOffs.view();
+    auto bRowOffsV = rowIdx.view();
     auto bColIdxV = bColIdx.view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
         KOKKOS_LAMBDA(const localIdx bfacei) {
             localIdx celli = faceCellsV[bfacei];
-            bColIdxV[bfacei] = celli + diagOffsV[celli];
+            bColIdxV[bfacei] = celli + diagOffsV[celli]; // TODO the meaning of bColIdxV  is
+                                                         // currently unused and undefined
             bRowOffsV[bfacei] = celli;
         },
         "setSparsityPatternFaceToMatrixAddress::setBoundarySparsity"
@@ -205,9 +183,7 @@ void setSparsityPatternFaceToMatrixAddressSerial(
 }
 
 template<typename SparsityType>
-std::pair<
-    std::shared_ptr<const SparsityType>,
-    std::shared_ptr<const FaceToMatrixAddress<typename SparsityType::SparsityIndexType>>>
+std::pair<std::shared_ptr<const SparsityType>, std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 {
     using IndexType = typename SparsityType::SparsityIndexType;
@@ -224,7 +200,7 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
     auto sp = std::make_shared<const SparsityType>(
         std::move(colIdx), std::move(rowOffs), Dimensions {nCells, nCells}
     );
-    auto ftma = std::make_shared<const FaceToMatrixAddress<IndexType>>(ownOffs, neiOffs, diagOffs);
+    auto ftma = std::make_shared<const FaceToMatrixAddress>(ownOffs, neiOffs, diagOffs);
     return {sp, ftma};
 }
 
@@ -233,7 +209,7 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
 template<>
 std::pair<
     std::shared_ptr<const CooSparsityPattern<localIdx>>,
-    std::shared_ptr<const FaceToMatrixAddress<localIdx>>>
+    std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const UnstructuredMesh& mesh)
 {
     const auto exec = mesh.exec();
@@ -264,45 +240,47 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
     auto sp = std::make_shared<const CooSparsityPattern<localIdx>>(
         std::move(colIdx), std::move(cooRowIdx), Dimensions {nCells, nCells}
     );
-    auto ftma = std::make_shared<const FaceToMatrixAddress<localIdx>>(ownOffs, neiOffs, diagOffs);
+    auto ftma = std::make_shared<const FaceToMatrixAddress>(ownOffs, neiOffs, diagOffs);
     return {sp, ftma};
 }
 
 template<>
 std::shared_ptr<const CooSparsityPattern<localIdx>>
 createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(
-    const UnstructuredMesh& mesh, const FaceToMatrixAddress<localIdx>& faceToMatrixAddress
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
 )
 {
     const auto exec = mesh.exec();
     const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
-    Vector<localIdx> bRowOffs(exec, nBoundaryFaces, 0);
-    Vector<localIdx> bColIdx(exec, nBoundaryFaces, 0);
-    setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), bRowOffs, bColIdx);
+    Vector<localIdx> rowIdx(exec, nBoundaryFaces, 0);
+    Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
+    setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
     return std::make_shared<const CooSparsityPattern<localIdx>>(
-        std::move(bColIdx), std::move(bRowOffs), Dimensions {mesh.nCells(), mesh.nCells()}
+        std::move(colIdx), std::move(rowIdx), Dimensions {mesh.nCells(), mesh.nCells()}
     );
 }
 
 template<>
 std::shared_ptr<const CsrSparsityPattern<localIdx>>
 createBoundarySparsityPattern<CsrSparsityPattern<localIdx>>(
-    const UnstructuredMesh& mesh, const FaceToMatrixAddress<localIdx>& faceToMatrixAddress
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
 )
 {
     const auto exec = mesh.exec();
     const auto nBoundaryFaces = mesh.boundaryMesh().faceCells().size();
-    Vector<localIdx> bRowOffs(exec, nBoundaryFaces, 0);
-    Vector<localIdx> bColIdx(exec, nBoundaryFaces, 0);
-    setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), bRowOffs, bColIdx);
+    Vector<localIdx> rowIdx(exec, nBoundaryFaces, 0);
+    Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
+    setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
+    auto rowPtrs = rowsToRowOffs(rowIdx);
     return std::make_shared<const CsrSparsityPattern<localIdx>>(
-        std::move(bColIdx), std::move(bRowOffs), Dimensions {mesh.nCells(), mesh.nCells()}
+        std::move(colIdx), std::move(rowPtrs), Dimensions {mesh.nCells(), nBoundaryFaces}
     );
 }
 
+// TODO currently CSR is hardcoded here
 template std::pair<
     std::shared_ptr<const CsrSparsityPattern<localIdx>>,
-    std::shared_ptr<const FaceToMatrixAddress<localIdx>>>
+    std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress<CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
 
 }

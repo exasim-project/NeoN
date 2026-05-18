@@ -101,13 +101,13 @@ TEST_CASE("MatrixConversion - Ginkgo")
 
     SECTION("CSRMatrix " + execName)
     {
-        auto csrMatrix = CSRMatrix<scalar, localIdx>(values, colIdx, rowPtr);
+        auto csrMatrix = CSRMatrix<scalar, localIdx>(values, colIdx, rowPtr, {4, 4});
         auto gkoCsrMtx = NeoN::la::ginkgo::createGkoMtx(csrMatrix);
     }
 
     SECTION("COOMatrix " + execName)
     {
-        auto cooMatrix = COOMatrix<scalar, localIdx>(values, colIdx, rowIdx);
+        auto cooMatrix = COOMatrix<scalar, localIdx>(values, colIdx, rowIdx, {4, 4});
         auto gkoCooMtx = NeoN::la::ginkgo::createGkoMtx(cooMatrix);
     }
 }

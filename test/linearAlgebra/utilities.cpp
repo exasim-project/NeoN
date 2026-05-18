@@ -41,7 +41,7 @@ TEST_CASE("Utilities")
     );
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs, {3, 3});
 
     // Sparse matrix variant of the above, i.e, not all rows contain
     // 3 entries
@@ -140,7 +140,7 @@ TEST_CASE("Utilities")
         Vector<scalar> bValues(exec, {0.0, 0.0, 0.0});
         Vector<localIdx> bColIdx(exec, {0, 1, 2});
         Vector<localIdx> bRowOffs(exec, {0, 1, 2});
-        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs);
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs, {3, 1});
         LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
             csrMatrix, rhs, bCooMatrix, rhs
         );

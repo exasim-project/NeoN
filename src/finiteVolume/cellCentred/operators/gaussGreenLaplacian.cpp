@@ -186,7 +186,6 @@ void computeLaplacianIntImpl(
         mesh.magFaceAreas()
     );
 
-    auto rhs = ls.rhs().view();
     auto values = ls.matrix().values().view();
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
@@ -211,8 +210,8 @@ void computeLaplacianIntImpl(
             auto flux = deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<ValueType>();
 
             // triangular coefficients - neighbour -> lower, owner -> upper
-            values[ma.lowerIdx(neiRow, facei)] += flux * ownCoeff;
-            values[ma.upperIdx(ownRow, facei)] += flux * neiCoeff;
+            values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
+            values[ma.upperIdx(ownRow, facei)] += flux * ownCoeff;
 
             // diagonal contribution is negative sum of offdiagonal coefficients
             Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux * ownCoeff);
@@ -230,5 +229,8 @@ void computeLaplacianIntImpl(
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);
 NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
+
+template class GaussGreenLaplacian<scalar>;
+template class GaussGreenLaplacian<Vec3>;
 
 };
