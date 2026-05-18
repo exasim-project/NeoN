@@ -28,7 +28,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad6124c692980bcb287f0deab83
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_aed0971c592bb814a258f3867f53b4ebd}{assemble\+Temporal\+Operator}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const
 \item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_abb55446f88112fb951653c4500b58eb8}{assemble}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, std\+::span$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ $>$ ps=\{\}) const
-\item 
+\begin{DoxyCompactList}\small\item\em construct a linear system and force assembly \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_af285a2284b3bb160ebc34034fb9e7728}{assemble}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, std\+::span$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ $>$ ps=\{\}) const
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad1afa5ea6175ae657a09042c54070d15}{add\+Operator}} (const \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ \&oper)
@@ -156,6 +156,18 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00168}{168}} of file
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
 \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{std\+::span$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ $>$}]{ps = {\ttfamily \{\}} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
+
+
+construct a linear system and force assembly 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ps} & a vector of functor performing transformation on the created linear system \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the assembled linear system 
+\end{DoxyReturn}
 
 
 Definition at line \mbox{\hyperlink{expression_8hpp_source_l00133}{133}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
