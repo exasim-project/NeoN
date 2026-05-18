@@ -283,4 +283,91 @@ template std::pair<
     std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress<CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
 
+// -----------------------------------------------------------------------
+// Proc-boundary (non-local) sparsity + distributed factory (Phase B re-port)
+// -----------------------------------------------------------------------
+
+/* @brief Populate (rowIdx) from the boundary mesh's proc tail. colIdx is
+ * expected to already hold the global ghost-cell ids from commPattern.recvIdx
+ * before this function runs.
+ */
+template<typename IndexType>
+static void
+setProcBoundarySparsityPatternImpl(const UnstructuredMesh& mesh, Vector<IndexType>& rowIdx)
+{
+    const auto exec = mesh.exec();
+    const auto faceCellsV = mesh.boundaryMesh().faceCells().view();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    auto rowIdxV = rowIdx.view();
+    NF_ASSERT(
+        nProcBoundaryFaces == rowIdx.size(),
+        "setProcBoundarySparsityPatternImpl: rowIdx size mismatch"
+    );
+
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        KOKKOS_LAMBDA(const localIdx bfacei) {
+            // proc faces sit after physical boundary faces in compressed layout.
+            const localIdx celli = faceCellsV[bfacei + nBoundaryFaces];
+            rowIdxV[bfacei] = celli;
+        },
+        "setProcBoundarySparsityPattern"
+    );
+}
+
+template<>
+std::shared_ptr<const CooSparsityPattern<localIdx>>
+createProcBoundarySparsityPattern<CooSparsityPattern<localIdx>>(
+    const UnstructuredMesh& mesh,
+    const FaceToMatrixAddress& /*faceToMatrixAddress*/,
+    const CommunicationPattern& commPattern
+)
+{
+    const auto exec = mesh.exec();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces == 0)
+    {
+        return nullptr;
+    }
+
+    // colIdx holds the GLOBAL ghost-cell ids received via Alltoallv. The
+    // ginkgoDistributed builder downcasts these to int64 and feeds them to
+    // index_map for the Schwarz preconditioner partition.
+    std::vector<localIdx> recvIdxLocal(commPattern.recvIdx.size());
+    for (std::size_t i = 0; i < commPattern.recvIdx.size(); ++i)
+        recvIdxLocal[i] = static_cast<localIdx>(commPattern.recvIdx[i]);
+    Vector<localIdx> procColIdx(exec, recvIdxLocal);
+
+    Vector<localIdx> procRowIdx(exec, nProcBoundaryFaces, 0);
+    setProcBoundarySparsityPatternImpl(mesh, procRowIdx);
+
+    return std::make_shared<const CooSparsityPattern<localIdx>>(
+        std::move(procColIdx), std::move(procRowIdx), Dimensions {mesh.nCells(), mesh.nCells()}
+    );
+}
+
+template<>
+std::tuple<
+    std::shared_ptr<const CsrSparsityPattern<localIdx>>,
+    std::shared_ptr<const FaceToMatrixAddress>,
+    std::shared_ptr<const CooSparsityPattern<localIdx>>,
+    std::shared_ptr<const CooSparsityPattern<localIdx>>,
+    CommunicationPattern>
+createDistributedSparsityPattern<CsrSparsityPattern<localIdx>, CooSparsityPattern<localIdx>>(
+    const UnstructuredMesh& mesh
+)
+{
+    auto [systemSp, ftma] =
+        createSparsityPatternFaceToMatrixAddress<CsrSparsityPattern<localIdx>>(mesh);
+    auto boundarySp = createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(mesh, *ftma);
+
+    auto commPattern = computeCommunicationPattern(mesh);
+    auto nonLocalSp =
+        createProcBoundarySparsityPattern<CooSparsityPattern<localIdx>>(mesh, *ftma, commPattern);
+
+    return std::make_tuple(systemSp, ftma, nonLocalSp, boundarySp, commPattern);
+}
+
 }

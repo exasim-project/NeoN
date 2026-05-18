@@ -5,9 +5,12 @@
 #pragma once
 
 #include "NeoN/core/array.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+#include <tuple>
 
 namespace NeoN::la
 {
@@ -175,5 +178,43 @@ template<typename SparsityType>
 std::shared_ptr<const SparsityType> createBoundarySparsityPattern(
     const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
 );
+
+/* @brief Creates the proc-boundary (non-local) sparsity pattern from a mesh
+ * and an existing FaceToMatrixAddress, plus the matching CommunicationPattern.
+ *
+ * The non-local sparsity has one COO entry per processor-boundary face on this
+ * rank. rowIdxs hold the local owner cell of the proc face; colIdxs hold the
+ * GLOBAL ghost cell id (taken from commPattern.recvIdx) for downstream
+ * Ginkgo index_map consumption.
+ *
+ * Returns a nullptr COO when the mesh is not distributed.
+ *
+ * @tparam SparsityType - COO sparsity type, parameterised on the same index
+ *         type as the local sparsity pattern.
+ */
+template<typename SparsityType>
+std::shared_ptr<const SparsityType> createProcBoundarySparsityPattern(
+    const UnstructuredMesh& mesh,
+    const FaceToMatrixAddress& faceToMatrixAddress,
+    const CommunicationPattern& commPattern
+);
+
+/* @brief Combined distributed-sparsity factory.
+ *
+ * Builds the local CSR/COO sparsity, the FaceToMatrixAddress mapping,
+ * the boundary (physical) sparsity, the non-local (proc-boundary) sparsity
+ * and the CommunicationPattern in one pass.
+ *
+ * For non-distributed meshes the non-local sparsity is nullptr and the
+ * CommunicationPattern is default-constructed (empty).
+ */
+template<typename SystemSparsityType, typename BoundarySparsityType>
+std::tuple<
+    std::shared_ptr<const SystemSparsityType>,
+    std::shared_ptr<const FaceToMatrixAddress>,
+    std::shared_ptr<const BoundarySparsityType>, // non-local (proc-boundary)
+    std::shared_ptr<const BoundarySparsityType>, // boundary (physical)
+    CommunicationPattern>
+createDistributedSparsityPattern(const UnstructuredMesh& mesh);
 
 }
