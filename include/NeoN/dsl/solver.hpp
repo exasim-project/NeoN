@@ -55,11 +55,17 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
+    deviceSync(solution.exec());
 
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
-    return solver.solve(ls, solution.internalVector());
+    auto stats = solver.solve(ls, solution.internalVector());
+    // Ginkgo solves on its own CUDA stream and calls exec->synchronize()
+    // (stream-specific) at the end. deviceSync() here calls cudaDeviceSynchronize(),
+    // making the written solution globally visible to all subsequent Kokkos
+    // kernels across any stream.
+    deviceSync(solution.exec());
+    return stats;
 }
 
 template<typename VectorType, typename IndexType>
@@ -86,8 +92,12 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
-    return solver.solve(ls, solution.internalVector());
+    deviceSync(solution.exec());
+    auto stats = solver.solve(ls, solution.internalVector());
+    // Same rationale as the other iterativeSolveImpl overload above: cross-stream
+    // visibility of the Ginkgo-written solution before any Kokkos kernel reads it.
+    deviceSync(solution.exec());
+    return stats;
 }
 }
 
