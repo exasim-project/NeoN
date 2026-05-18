@@ -7,7 +7,7 @@ var searchData=
   ['diagonalsolver_4',['DiagonalSolver',['../classNeoN_1_1la_1_1DiagonalSolver.html',1,'NeoN::la']]],
   ['dictionary_5',['Dictionary',['../classNeoN_1_1Dictionary.html',1,'NeoN']]],
   ['dimensionmismatch_6',['DimensionMismatch',['../classNeoN_1_1DimensionMismatch.html',1,'NeoN']]],
-  ['dimensions_7',['dimensions',['../structdimensions.html',1,'dimensions'],['../structNeoN_1_1la_1_1Dimensions.html',1,'NeoN::la::Dimensions']]],
+  ['dimensions_7',['Dimensions',['../structNeoN_1_1la_1_1Dimensions.html',1,'NeoN::la']]],
   ['divoperator_8',['DivOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['divoperatorfactory_9',['DivOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['document_10',['Document',['../classNeoN_1_1Document.html',1,'NeoN']]],
