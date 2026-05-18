@@ -319,6 +319,12 @@ private:
 };
 
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
+ *
+ * In serial mode this constructs a non-distributed LinearSystem (4-arg ctor).
+ * For distributed meshes (boundaryMesh().isDistributed() == true) this also
+ * builds the proc-boundary (non-local) matrix and CommunicationPattern via
+ * createDistributedSparsityPattern, and uses the distributed LinearSystem
+ * ctor.
  */
 template<
     typename ValueType,
@@ -327,6 +333,30 @@ template<
 LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType>
 createEmptyLinearSystem(const UnstructuredMesh& mesh)
 {
+    if (mesh.boundaryMesh().isDistributed())
+    {
+        auto [systemSp, ftma, nonLocalSp, bSp, commPattern] = createDistributedSparsityPattern<
+            typename SystemMatrixType::MatrixSparsityType,
+            typename BoundaryMatrixType::MatrixSparsityType>(mesh);
+
+        SystemMatrixType matrix(
+            Vector<ValueType>(systemSp->exec(), systemSp->nnz(), zero<ValueType>()), systemSp, ftma
+        );
+        Vector<ValueType> rhs(systemSp->exec(), systemSp->rows(), zero<ValueType>());
+        BoundaryMatrixType boundaryMatrix(
+            Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp
+        );
+        Vector<ValueType> boundaryRhs(bSp->exec(), bSp->nnz(), zero<ValueType>());
+
+        auto nonLocalMatrix = std::make_shared<BoundaryMatrixType>(
+            Vector<ValueType>(nonLocalSp->exec(), nonLocalSp->nnz(), zero<ValueType>()), nonLocalSp
+        );
+
+        return LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType>(
+            matrix, rhs, boundaryMatrix, boundaryRhs, nonLocalMatrix, commPattern
+        );
+    }
+
     auto [systemSp, ftma] =
         createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(mesh
         );
