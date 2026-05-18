@@ -78,8 +78,8 @@ void \mbox{\hyperlink{namespaceNeoN_1_1la_ac660a56892c40a7854054c3c1597185f}{pac
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a30676e1fef51ed16b5e6b46e71ef6ed3}{unpack\+Mtx\+Values}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&in, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&row\+Offs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&new\+Row\+Offs)
 \item 
 {\footnotesize template$<$typename Matrix\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1la_ad74bd26b28c6ce859605043d4c1d6812}{compute\+Residual}} (const Matrix\+Type \&mtx, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&b, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&x, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&res)
-\item 
-{\footnotesize template$<$typename Index\+Type $>$ }\\const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ad872f9940c0380f621ad7c02b4e7815f}{rows\+To\+Row\+Offs}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&rows)
+\begin{DoxyCompactList}\small\item\em given a linear system consisting of A, b and x the operator computes the residual vector Ax-\/b \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ad42bf66d8c3f93ab08fd9044b9550510}{rows\+To\+Row\+Offs}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&rows)
 \begin{DoxyCompactList}\small\item\em given a set off row idx this function converts to row\+Offsets \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -93,7 +93,7 @@ using \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{Ne
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00294}{294}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00291}{291}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}\label{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7} 
 \index{NeoN::la@{NeoN::la}!CSRMatrix@{CSRMatrix}}
@@ -104,7 +104,7 @@ using \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{Ne
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00291}{291}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00288}{288}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 
 
@@ -116,6 +116,21 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00291}{291}} of file \mb
 {\footnotesize\ttfamily template$<$typename Matrix\+Type $>$ \\
 void Neo\+N\+::la\+::compute\+Residual (\begin{DoxyParamCaption}\item[{const Matrix\+Type \&}]{mtx,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{b,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{x,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{res }\end{DoxyParamCaption})}
 
+
+
+given a linear system consisting of A, b and x the operator computes the residual vector Ax-\/b 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em mtx,the} & corresponding matrix \\
+\hline
+\mbox{\texttt{ in}}  & {\em b,rhs} & vector b \\
+\hline
+\mbox{\texttt{ in}}  & {\em x,initial} & guess vector x \\
+\hline
+\mbox{\texttt{ out}}  & {\em } & \\
+\hline
+\end{DoxyParams}
 \Hypertarget{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115}\label{namespaceNeoN_1_1la_a46ab66a775543d3b01c752bed81d4115} 
 \index{NeoN::la@{NeoN::la}!createBoundarySparsityPattern@{createBoundarySparsityPattern}}
 \index{createBoundarySparsityPattern@{createBoundarySparsityPattern}!NeoN::la@{NeoN::la}}
@@ -150,7 +165,7 @@ auto Neo\+N\+::la\+::get\+Component (\begin{DoxyParamCaption}\item[{const \mbox{
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00329}{329}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00326}{326}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_a81ea5bf6450cb2402acf9f981d5583ab}\label{namespaceNeoN_1_1la_a81ea5bf6450cb2402acf9f981d5583ab} 
 \index{NeoN::la@{NeoN::la}!negLUx@{negLUx}}
@@ -183,12 +198,12 @@ for testing purposes, this function reverses boundary contributions previously a
 
 Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00209}{209}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1la_ad872f9940c0380f621ad7c02b4e7815f}\label{namespaceNeoN_1_1la_ad872f9940c0380f621ad7c02b4e7815f} 
+\Hypertarget{namespaceNeoN_1_1la_ad42bf66d8c3f93ab08fd9044b9550510}\label{namespaceNeoN_1_1la_ad42bf66d8c3f93ab08fd9044b9550510} 
 \index{NeoN::la@{NeoN::la}!rowsToRowOffs@{rowsToRowOffs}}
 \index{rowsToRowOffs@{rowsToRowOffs}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{rowsToRowOffs()}{rowsToRowOffs()}}
 {\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
-const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ Neo\+N\+::la\+::rows\+To\+Row\+Offs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{rows }\end{DoxyParamCaption})}
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ Neo\+N\+::la\+::rows\+To\+Row\+Offs (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&}]{rows }\end{DoxyParamCaption})}
 
 
 
