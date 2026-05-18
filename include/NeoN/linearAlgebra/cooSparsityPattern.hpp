@@ -12,7 +12,7 @@ namespace NeoN::la
 {
 
 
-/** @class SparsityPattern
+/** @class CooSparsityPattern
  * @brief row and column index representation of a mesh
  *
  * This class implements the finite volume 3/5/7 pt stencil specific generation
@@ -52,7 +52,7 @@ public:
 
     ~CooSparsityPattern() = default;
 
-    /*@brief getter for diagOffset */
+    /*@brief getter for executor */
     const Executor& exec() const { return rowOffs_.exec(); }
 
     /*@brief getter for colIdxs */
@@ -61,10 +61,10 @@ public:
     [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; };
 
     /*@brief returns the COO per-entry row indices (one per nnz) */
-    [[nodiscard]] const Vector<IndexType>& rowOffs() const { return rowIdxs_; };
+    [[nodiscard]] const Vector<IndexType>& rowIdxs() const { return rowIdxs_; };
 
-    /*@brief returns the COO per-entry row indices (one per nnz) */
-    [[nodiscard]] Vector<IndexType>& rowOffs() { return rowIdxs_; };
+    /*@brief returns the non-const COO per-entry row indices (one per nnz) */
+    [[nodiscard]] Vector<IndexType>& rowIdxs() { return rowIdxs_; };
 
     [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 

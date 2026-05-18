@@ -114,7 +114,7 @@ public:
 
     /**
      * @brief Get a view representation of the matrix's data.
-     * @return MatrixView for easy access to matrix elements.
+     * @return FaceToMatrixView for easy access to matrix elements.
      */
     [[nodiscard]] FaceToMatrixView view(View<const localIdx> rowOffsView) const
     {
