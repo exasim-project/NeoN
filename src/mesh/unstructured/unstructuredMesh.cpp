@@ -421,10 +421,13 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
         faceAreasH.view()[localCells - 1] = {1.0, 0.0, 0.0};
     }
 
-    // Counts: with the appended proc patches the mesh-wide totals must include
-    // them so SurfaceField allocations match the boundaryMesh compressed tail.
-    const localIdx nBoundaryFacesTotal = static_cast<localIdx>(faceCellVec.size());
-    const localIdx nFacesTotal = tmp.nInternalFaces() + nBoundaryFacesTotal;
+    // nBoundaryFaces stored on the mesh excludes proc faces (matches the
+    // BoundaryMesh::nBoundaryFaces() semantics). nFaces is the OF-full face
+    // count = nInternalFaces + nBoundaryFaces (no proc). Proc-face counts are
+    // recovered via mesh.nProcBoundaryFaces() / mesh.nTotalFaces().
+    const localIdx nRegularBoundary =
+        static_cast<localIdx>(faceCellVec.size()) - nProcBoundaryFaces;
+    const localIdx nFacesNonProc = tmp.nInternalFaces() + nRegularBoundary;
 
     UnstructuredMesh mesh(
         exec,
@@ -438,9 +441,9 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
         tmp.faceNeighbour(),
         tmp.nCells(),
         tmp.nInternalFaces(),
-        nBoundaryFacesTotal,
+        nRegularBoundary,
         static_cast<localIdx>(boundaryMesh.offset().size() - 1), // nBoundaries
-        nFacesTotal,
+        nFacesNonProc,
         boundaryMesh
     );
 
