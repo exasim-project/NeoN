@@ -35,5 +35,5 @@ var searchData=
   ['operatormixin_3c_20volumefield_3c_20valuetype_20_3e_2c_20volumefield_3c_20scalar_20_3e_20_3e_32',['OperatorMixin&lt; VolumeField&lt; ValueType &gt;, VolumeField&lt; scalar &gt; &gt;',['../classNeoN_1_1dsl_1_1OperatorMixin.html',1,'NeoN::dsl']]],
   ['operators_2ehpp_33',['operators.hpp',['../operators_8hpp.html',1,'']]],
   ['owner_34',['owner',['../structNeoN_1_1detail_1_1FaceData.html#a35120a2928f5010779cfcaab17ccba41',1,'NeoN::detail::FaceData']]],
-  ['owneroffset_35',['owneroffset',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a697be4e8e03b17fa65dd5b70c8dc92da',1,'NeoN::la::FaceToMatrixView::ownerOffset'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#ab70dc4ffec78ea4a49d696a250eb31c2',1,'NeoN::la::FaceToMatrixAddress::ownerOffset() const'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a9e06b6dc4bcd66865978a71ad5e5b9c1',1,'NeoN::la::FaceToMatrixAddress::ownerOffset()']]]
+  ['owneroffset_35',['owneroffset',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a697be4e8e03b17fa65dd5b70c8dc92da',1,'NeoN::la::FaceToMatrixView::ownerOffset'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#aa4c3cad41cd1488a74093e20ada17bd2',1,'NeoN::la::FaceToMatrixAddress::ownerOffset() const'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#ad4894f12697a2f0b773b4595b6b7bd8a',1,'NeoN::la::FaceToMatrixAddress::ownerOffset()']]]
 ];
