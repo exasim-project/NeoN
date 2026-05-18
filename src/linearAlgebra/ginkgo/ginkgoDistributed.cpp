@@ -157,8 +157,10 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     auto numNonLocalElements = imap.get_non_local_size();
 
     auto non_loc_vals = gko::array<scalar>::const_view(exec, nRecv, bmtx.values().data());
+    // In the new CooSparsityPattern the per-nnz row indices live in rowIdxs();
+    // rowOffs() became a CSR-style derived offset array. Use rowIdxs().
     auto non_loc_row =
-        gko::array<IndexType>::const_view(exec, nRecv, bmtx.sparsity()->rowOffs().data());
+        gko::array<IndexType>::const_view(exec, nRecv, bmtx.sparsity()->rowIdxs().data());
 
     // imap is templated on <label, global_index_type=int64>, so map_to_local expects
     // the input to be a gko::array<global_index_type>. Cast all nRecv colIdxs (int32)
