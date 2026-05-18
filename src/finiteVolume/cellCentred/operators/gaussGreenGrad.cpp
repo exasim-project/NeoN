@@ -44,6 +44,7 @@ void computeGrad(
     );
 
     auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss gradient theorem: ∇φ_C = (1/V_C) * sum_f S_f * φ_f
     //
@@ -62,16 +63,33 @@ void computeGrad(
         "computeGradInternal"
     );
 
-    // Boundary faces: only the owner cell is on this rank.
+    // Physical (non-proc) boundary faces: only the owner cell is on this rank.
+    // For non-proc patches, OF-full and compressed face indices coincide.
     parallelFor(
         exec,
-        {nInternalFaces, surfPhif.size()},
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
             Vec3 valueOwn = faceAreaS[i] * surfPhif[i]; // +S_f * φ_f (S_f outward from owner)
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeGradBoundary"
+    );
+
+    // Processor-boundary faces: read S_f from bm.sf() (compressed, matches
+    // bcfacei) rather than mesh.faceAreas() (OF-full, indexed by full face
+    // id and including empty patches). See project memory
+    // project_neon_compressed_face_indexing.
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, surfPhif.size()},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            const auto own = surfFaceCells[bcfacei];
+            Vec3 valueOwn = sBSf[bcfacei] * surfPhif[i];
+            Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
+        },
+        "computeProcGradBoundary"
     );
 
     parallelFor(
@@ -244,9 +262,14 @@ void computeGradTensor(
         mesh.boundaryMesh().faceCells()
     );
 
+    // Boundary-tail face areas (compressed). Used for proc faces (see
+    // project_neon_compressed_face_indexing).
+    const auto bcSf = mesh.boundaryMesh().sf().view();
+
     const localIdx nInt = mesh.nInternalFaces();
-    const localIdx nBnd = mesh.boundaryMesh().offset().back();
-    const localIdx nFaces = nInt + nBnd;
+    const localIdx nBnd = mesh.nBoundaryFaces();
+    const localIdx nProcBnd = mesh.boundaryMesh().nProcBoundaryFaces();
+    const localIdx nFaces = nInt + nBnd + nProcBnd;
 
     parallelFor(
         exec,
@@ -270,9 +293,10 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
+    // Physical (non-proc) boundary faces: OF-full and compressed indices coincide.
     parallelFor(
         exec,
-        {nInt, nFaces},
+        {nInt, nInt + nBnd},
         NEON_LAMBDA(const localIdx f) {
             const localIdx bi = f - nInt;
             const auto o = bFaceCells[bi];
@@ -287,6 +311,26 @@ void computeGradTensor(
             }
         },
         "computeGradTensorBoundary"
+    );
+
+    // Processor boundary faces: read S_f from the compressed boundary-tail view.
+    parallelFor(
+        exec,
+        {nInt + nBnd, nFaces},
+        NEON_LAMBDA(const localIdx f) {
+            const localIdx bi = f - nInt;
+            const auto o = bFaceCells[bi];
+            const Vec3 sf = bcSf[bi];
+            const Vec3 uf = UfAll[f];
+            for (int row = 0; row < 3; ++row)
+            {
+                for (int col = 0; col < 3; ++col)
+                {
+                    atomicAddTensor(&gT[o], row, col, sf[col] * uf[row]);
+                }
+            }
+        },
+        "computeGradTensorProcBoundary"
     );
 
     parallelFor(

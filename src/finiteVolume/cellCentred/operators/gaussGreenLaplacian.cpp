@@ -27,8 +27,13 @@ void computeLaplacianExp(
 
     const auto [result, faceArea, fnGrad, vol] =
         views(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
+    // Boundary-tail face area (compressed). Use for proc faces; faceArea =
+    // mesh.magFaceAreas() is OF-full and indexes the wrong face at the
+    // compressed proc-face index.
+    const auto bcMagSf = mesh.boundaryMesh().magSf().view();
 
     auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss Laplacian: ∇·(γ∇φ)_C = (1/V_C) * sum_f γ_f * |S_f| * (∂φ/∂n)_f
     //
@@ -56,10 +61,10 @@ void computeLaplacianExp(
         "computeLaplacianExplicitInternal"
     );
 
-    // Boundary faces: only the owner cell is on this rank.
+    // Physical (non-proc) boundary faces: only the owner cell is on this rank.
     parallelFor(
         exec,
-        {nInternalFaces, fnGrad.size()},
+        {nInternalFaces, nInternalFaces + nBoundaryFaces},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
             ValueType valueOwn =
@@ -67,6 +72,20 @@ void computeLaplacianExp(
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
+    );
+
+    // Processor-boundary faces: read |S_f| from the compressed boundary-tail
+    // view (bm.magSf()). See project_neon_compressed_face_indexing.
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, fnGrad.size()},
+        NEON_LAMBDA(const localIdx i) {
+            const auto bcfacei = i - nInternalFaces;
+            const auto own = surfFaceCells[bcfacei];
+            ValueType valueOwn = bcMagSf[bcfacei] * fnGrad[i];
+            Kokkos::atomic_add(&result[own], valueOwn);
+        },
+        "computeLaplacianExplicitProcBoundary"
     );
 
     parallelFor(
@@ -88,6 +107,64 @@ void computeLaplacianExp(
 
 NF_DECLARE_COMPUTE_EXP_LAP(scalar);
 NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
+
+
+template<typename ValueType>
+void computeLaplacianProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+)
+{
+    if (!ls.hasNonLocalMatrix())
+    {
+        return;
+    }
+
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    auto gammaV = gamma.internalVector().view();
+
+    // bm.magSf() is in the compressed boundary-tail layout matching bcfacei.
+    // mesh.magFaceAreas() is OF-full; indexing it with the compressed proc-face
+    // index reads the wrong face's area and produces wrong Laplacian
+    // coefficients at proc patches.
+    const auto [deltaCoeffs, surfFaceCells] =
+        views(faceNormalGradient.deltaCoeffs().internalVector(), mesh.boundaryMesh().faceCells());
+    const auto bcMagSf = mesh.boundaryMesh().magSf().view();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    auto values = ls.matrix().values().view();
+    auto bValues = ls.nonLocalMatrix().values().view();
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    auto totalFaces = gammaV.size();
+
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, totalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            auto bcfacei = facei - (nInternalFaces);
+            auto bcfaceii = facei - (nInternalFaces + nBoundaryFaces);
+            auto cell = surfFaceCells[bcfacei];
+            auto c = operatorScaling[cell];
+
+            auto flux = gammaV[facei] * bcMagSf[bcfacei] * deltaCoeffs[facei];
+            auto value = flux * c * one<ValueType>();
+
+            // diagonal contribution: -flux (diffusion out of own toward ghost)
+            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], value);
+            // proc-boundary off-diagonal entry (stored in non-local matrix)
+            bValues[bcfaceii] += value;
+        },
+        "computeProcInterfaceLaplacianCoefficients"
+    );
+}
 
 
 template<typename ValueType>
@@ -225,6 +302,8 @@ void computeLaplacianIntImpl(
     template void computeLaplacianIntImpl<                                                                                                                        \
         TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&); \
     template void computeLaplacianBoundImpl<                                                                                                                      \
+        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&); \
+    template void computeLaplacianProcBoundImpl<                                                                                                                  \
         TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
 
 NN_DECLARE_COMPUTE_IMP_LAP(scalar);

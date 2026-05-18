@@ -43,6 +43,11 @@ void computeDiv(
 )
 {
     auto nCells = v.size();
+    // Total face count covers internal + physical boundary + processor boundary.
+    // faceFlux / phiF are sized over all faces; faceCells covers the boundary
+    // tail (physical patches followed by processor patches), so the owner cell
+    // of any boundary or processor face is faceCells[facei - nInternalFaces].
+    const auto nTotalFaces = static_cast<localIdx>(faceFlux.size());
 
     // Green-Gauss divergence theorem: ∇·(F φ)_C = (1/V_C) * sum_f F_f * φ_f
     //
@@ -75,6 +80,22 @@ void computeDiv(
             Kokkos::atomic_add(&res[own], valueOwn); // boundary face: F_f outward from owner
         },
         "sumFluxesBoundary"
+    );
+
+    // Processor boundary faces: the ghost cell is on the neighbour rank, so
+    // only the local owner receives the contribution. Without this loop the
+    // pressure equation's RHS (= div(phiHbyA)) misses the proc-face flux at
+    // proc-adjacent cells; the resulting phantom source/sink drives a runaway
+    // dipole at every processor patch.
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, nTotalFaces},
+        NEON_LAMBDA(const localIdx i) {
+            auto own = faceCells[i - nInternalFaces];
+            ValueType valueOwn = faceFlux[i] * phiF[i];
+            Kokkos::atomic_add(&res[own], valueOwn);
+        },
+        "sumFluxesProcBoundary"
     );
 
     parallelFor(
@@ -135,6 +156,62 @@ void computeDivExp(
 
 NF_DECLARE_COMPUTE_EXP_DIV(scalar);
 NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
+
+
+template<typename ValueType>
+void computeDivProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+)
+{
+    if (!ls.hasNonLocalMatrix())
+    {
+        return;
+    }
+
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    auto faceFluxV = faceFlux.internalVector().view();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
+    const auto bweights = weights.internalVector().view();
+
+    auto bValues = ls.nonLocalMatrix().values().view();
+    auto values = ls.matrix().values().view();
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto totalFaces = faceFluxV.size();
+
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, totalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            auto bcfacei = facei - nInternalFaces;
+            auto bcfaceii = facei - (nInternalFaces + nBoundaryFaces);
+            auto cell = surfFaceCells[bcfacei];
+            auto c = operatorScaling[cell];
+
+            // Conservative upwind divergence at a processor boundary face.
+            // See full derivation in pre-merge 1059b7d81c gaussGreenDiv.cpp.
+            const auto F_local = faceFluxV[facei];
+            const auto w_local = bweights[facei];
+
+            const auto diagContrib = F_local * w_local * c * one<ValueType>();
+            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagContrib);
+
+            const auto offDiagContrib = F_local * (scalar(1) - w_local) * c * one<ValueType>();
+            bValues[bcfaceii] += offDiagContrib;
+        },
+        "computeProcInterfaceGaussGreenDivCoefficients"
+    );
+}
+
 
 template<typename ValueType>
 void computeDivBoundImp(
@@ -276,6 +353,13 @@ void computeDivIntImp(
         const dsl::Coeff                                                                           \
     );                                                                                             \
     template void computeDivBoundImp<TYPENAME>(                                                    \
+        la::LinearSystem<TYPENAME>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const dsl::Coeff                                                                           \
+    );                                                                                             \
+    template void computeDivProcBoundImpl<TYPENAME>(                                               \
         la::LinearSystem<TYPENAME>&,                                                               \
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \

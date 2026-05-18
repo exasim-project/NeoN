@@ -40,6 +40,15 @@ void computeDivBoundImp(
     const dsl::Coeff operatorScaling
 );
 
+template<typename ValueType>
+void computeDivProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+);
+
 /* @brief
  *
  */
@@ -109,6 +118,7 @@ public:
         const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
         computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
         computeDivBoundImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
