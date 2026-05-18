@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/core/macros.hpp"
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/segmentedVector.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
@@ -368,6 +369,58 @@ createDistributedSparsityPattern<CsrSparsityPattern<localIdx>, CooSparsityPatter
         createProcBoundarySparsityPattern<CooSparsityPattern<localIdx>>(mesh, *ftma, commPattern);
 
     return std::make_tuple(systemSp, ftma, nonLocalSp, boundarySp, commPattern);
+}
+
+// Additional explicit specializations for the symmetric Csr/Csr and Coo/Coo
+// matrix-type combinations exercised by the unit tests. The serial
+// createEmptyLinearSystem path never reaches createDistributedSparsityPattern
+// (the runtime guard is `mesh.boundaryMesh().isDistributed()`), but the
+// instantiations of createEmptyLinearSystem<scalar, CSRMatrix, CSRMatrix> and
+// <scalar, COOMatrix, COOMatrix> generate references to these symbols. The
+// Coo/Coo path is fully implemented; the Csr/Csr path throws if it is ever
+// reached at runtime because createProcBoundarySparsityPattern<Csr> is not
+// yet provided. Adding the Csr proc-boundary pattern is filed as follow-up.
+
+template<>
+std::tuple<
+    std::shared_ptr<const CooSparsityPattern<localIdx>>,
+    std::shared_ptr<const FaceToMatrixAddress>,
+    std::shared_ptr<const CooSparsityPattern<localIdx>>,
+    std::shared_ptr<const CooSparsityPattern<localIdx>>,
+    CommunicationPattern>
+createDistributedSparsityPattern<CooSparsityPattern<localIdx>, CooSparsityPattern<localIdx>>(
+    const UnstructuredMesh& mesh
+)
+{
+    auto [systemSp, ftma] =
+        createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(mesh);
+    auto boundarySp = createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(mesh, *ftma);
+
+    auto commPattern = computeCommunicationPattern(mesh);
+    auto nonLocalSp =
+        createProcBoundarySparsityPattern<CooSparsityPattern<localIdx>>(mesh, *ftma, commPattern);
+
+    return std::make_tuple(systemSp, ftma, nonLocalSp, boundarySp, commPattern);
+}
+
+template<>
+std::tuple<
+    std::shared_ptr<const CsrSparsityPattern<localIdx>>,
+    std::shared_ptr<const FaceToMatrixAddress>,
+    std::shared_ptr<const CsrSparsityPattern<localIdx>>,
+    std::shared_ptr<const CsrSparsityPattern<localIdx>>,
+    CommunicationPattern>
+createDistributedSparsityPattern<CsrSparsityPattern<localIdx>, CsrSparsityPattern<localIdx>>(
+    const UnstructuredMesh& /*mesh*/
+)
+{
+    // Distributed Csr/Csr is not yet implemented: createProcBoundarySparsityPattern
+    // has no Csr specialization. The serial createEmptyLinearSystem path never
+    // reaches here, so this throw exists only to satisfy the linker for the
+    // <scalar, CSRMatrix, CSRMatrix> instantiation.
+    NF_THROW("createDistributedSparsityPattern<Csr, Csr> not implemented "
+             "(missing createProcBoundarySparsityPattern<Csr>). "
+             "Use the default <Csr, Coo> instantiation for distributed cases.");
 }
 
 }
