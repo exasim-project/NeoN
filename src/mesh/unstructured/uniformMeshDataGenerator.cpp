@@ -296,7 +296,9 @@ BoundaryMesh generateBoundaryData(
         {exec, bndDelta},
         {exec, bndWeights},
         {exec, bndDeltaCoeffs},
-        offset
+        offset,
+        0, // nProcBoundaryPatches: serial / structured mesh — no proc patches
+        {} // neighbourRank: empty
     );
 
     return {std::move(boundaryMesh)};

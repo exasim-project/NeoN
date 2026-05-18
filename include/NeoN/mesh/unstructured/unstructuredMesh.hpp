@@ -9,6 +9,7 @@
 #include "NeoN/core/dictionary.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 
 namespace NeoN
@@ -190,6 +191,38 @@ public:
     localIdx nBoundaryFaces() const;
 
     /**
+     * @brief Get the number of processor-boundary faces (proc-tail) in the mesh.
+     *
+     * @return The number of processor-boundary faces; 0 when not distributed.
+     */
+    localIdx nProcBoundaryFaces() const;
+
+    /**
+     * @brief Get the total face count: nInternalFaces + nBoundaryFaces + nProcBoundaryFaces.
+     *
+     * Matches the size of SurfaceField::internalVector() on distributed runs.
+     *
+     * @return Total face count.
+     */
+    localIdx nTotalFaces() const;
+
+    /**
+     * @brief Get the global cell offset of the first cell on this rank.
+     *
+     * Returns 0 on non-distributed meshes. Computed via MPI_Allgather at mesh
+     * construction or set explicitly via setGlobalOffset() during distributed
+     * mesh assembly.
+     *
+     * @return Global cell offset for this rank.
+     */
+    localIdx globalOffset() const;
+
+    /**
+     * @brief Set the global cell offset (used during distributed mesh construction).
+     */
+    void setGlobalOffset(localIdx offset);
+
+    /**
      * @brief Get the number of boundaries in the mesh.
      *
      * @return The number of boundaries in the mesh.
@@ -209,6 +242,13 @@ public:
      * @return The boundary mesh.
      */
     const BoundaryMesh& boundaryMesh() const;
+
+    /**
+     * @brief Get the boundary mesh (non-const).
+     *
+     * @return The boundary mesh.
+     */
+    BoundaryMesh& boundaryMesh();
 
     /**
      * @brief Get the stencil data base.
@@ -310,6 +350,15 @@ private:
     BoundaryMesh boundaryMesh_;
 
     /**
+     * @brief Global cell offset for this rank in the distributed cell ordering.
+     *
+     * Default 0 for non-distributed meshes. Populated for distributed meshes
+     * either at construction (see uniformMeshDataGenerator) or via
+     * setGlobalOffset() during mesh assembly.
+     */
+    localIdx globalOffset_ = 0;
+
+    /**
      * @brief Stencil data base.
      *
      * The stencil data base is used to register stencils.
@@ -359,5 +408,23 @@ UnstructuredMesh create3DUniformMesh(
     scalar ly = 1.0,
     scalar lz = 1.0
 );
+
+/** @brief A factory function for a per-rank slice of a global 1D mesh.
+ *
+ * Builds the local part of a global 1D mesh on this rank; proc boundaries
+ * are appended after regular boundaries so that the SurfaceField/boundaryMesh
+ * compressed layout is consistent across ranks.
+ *
+ * @param nCells number of local cells on this rank
+ */
+UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells);
+
+/** @brief Given an unstructuredMesh this function computes the corresponding
+ *  communication pattern (sendCounts, recvIdx, MPI env) for distributed runs.
+ *
+ *  Returns a default-constructed (empty) CommunicationPattern when the mesh
+ *  has no processor boundary faces.
+ */
+CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh);
 
 } // namespace NeoN
