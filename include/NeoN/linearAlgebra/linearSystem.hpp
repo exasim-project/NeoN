@@ -9,7 +9,7 @@
 #include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
-
+#include "NeoN/linearAlgebra/matrixIterator.hpp"
 #include <string>
 #ifdef USE_JULIA
 
@@ -67,6 +67,10 @@ class LinearSystem
         NF_ASSERT(
             boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() != boundaryRHS.size()"
         );
+        if (meshIteratorContext_ == nullptr)
+        {
+            NF_ERROR_EXIT(" meshIteratorContext_ == nullptr");
+        }
     }
 
 public:
@@ -74,7 +78,8 @@ public:
     using LinearSystemIndexType = typename MatrixType::MatrixSparsityType::SparsityIndexType;
 
     LinearSystem(
-        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress
+        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress,
+        std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
     )
         : matrix_(
               Vector<ValueType>(
@@ -98,8 +103,10 @@ public:
               faceToMatrixAddress->boundaryNonZeros(),
               zero<ValueType>()
           ),
-          faceToMatrixAddress_(faceToMatrixAddress)
+          faceToMatrixAddress_(faceToMatrixAddress), meshIteratorContext_(nullptr)
     {
+        meshIteratorContext_ = std::make_shared<MeshIteratorContext>();
+        meshIteratorContext_->setStrategy(std::move(strategy));
         validate();
     }
 
@@ -108,18 +115,22 @@ public:
         const Vector<ValueType>& rhs,
         const MatrixType& boundaryMatrix,
         const Vector<ValueType>& boundaryRhs,
-        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi
+        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi,
+        std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
     )
         : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs),
-          faceToMatrixAddress_(mi)
+          faceToMatrixAddress_(mi), meshIteratorContext_(nullptr)
     {
         validate();
     }
 
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
-          boundaryRhs_(ls.boundaryRhs_), faceToMatrixAddress_(ls.faceToMatrixAddress_)
-    {}
+          boundaryRhs_(ls.boundaryRhs_), faceToMatrixAddress_(ls.faceToMatrixAddress_),
+          meshIteratorContext_(ls.meshIteratorContext_)
+    {
+        validate();
+    }
 
     ~LinearSystem() = default;
 #ifdef USE_JULIA
@@ -215,6 +226,15 @@ public:
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
+    std::shared_ptr<MeshIteratorContext> getMeshIterator()
+    {
+        if (meshIteratorContext_ == nullptr)
+        {
+            NF_ERROR_EXIT(" meshIteratorContext_ == nullptr");
+        }
+        return meshIteratorContext_;
+    }
+
     const Executor& exec() const { return matrix_.exec(); }
 
 private:
@@ -232,15 +252,20 @@ private:
     Dictionary auxiliaryCoefficients_;
 
     std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress_;
+
+    std::shared_ptr<MeshIteratorContext> meshIteratorContext_ = nullptr;
 };
 
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
 template<typename ValueType, typename MatrixType = CSRMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(const UnstructuredMesh& mesh)
+LinearSystem<ValueType, MatrixType> createEmptyLinearSystem(
+    const UnstructuredMesh& mesh,
+    std::shared_ptr<MeshIterationStrategy> meshIterationStrategy =
+        std::make_shared<FaceBasedIterator>()
+)
 {
-    return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh)};
+    return {createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh), meshIterationStrategy};
 }
-
 
 } // namespace NeoN::la
