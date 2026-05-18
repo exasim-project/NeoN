@@ -7,7 +7,6 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
@@ -25,7 +24,7 @@ void computeLaplacianExp(
 );
 
 template<typename ValueType>
-void computeLaplacianImpl(
+void computeLaplacianIntImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
@@ -41,16 +40,6 @@ void computeLaplacianBoundImpl(
     const dsl::Coeff operatorScaling,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 );
-
-template<typename ValueType>
-void computeLaplacianProcBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
-    const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
-);
-
 
 template<typename ValueType>
 class GaussGreenLaplacian :
@@ -121,9 +110,8 @@ public:
         const dsl::Coeff operatorScaling
     ) override
     {
-        computeLaplacianProcBoundImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
+        computeLaplacianIntImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
         computeLaplacianBoundImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
-        computeLaplacianImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
     };
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override
@@ -138,8 +126,7 @@ private:
     FaceNormalGradient<ValueType> faceNormalGradient_;
 };
 
-// instantiate the template class
-template class GaussGreenLaplacian<scalar>;
-template class GaussGreenLaplacian<Vec3>;
+extern template class GaussGreenLaplacian<scalar>;
+extern template class GaussGreenLaplacian<Vec3>;
 
 } // namespace NeoN

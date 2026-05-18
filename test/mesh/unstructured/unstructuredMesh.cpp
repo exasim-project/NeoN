@@ -40,7 +40,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 3);
         REQUIRE(mesh.nBoundaryFaces() == 2);
         REQUIRE(mesh.nBoundaries() == 2);
-        REQUIRE(mesh.nTotalFaces() == 5);
+        REQUIRE(mesh.nFaces() == 5);
 
         // Verify mesh points
         // bc  [   internal  ]  bc
@@ -97,7 +97,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 4);
         REQUIRE(mesh.nBoundaryFaces() == 8);
         REQUIRE(mesh.nBoundaries() == 4);
-        REQUIRE(mesh.nTotalFaces() == 12);
+        REQUIRE(mesh.nFaces() == 12);
 
         // Verify point count: two z-planes
         auto hostPoints = mesh.points().copyToHost();
@@ -161,9 +161,9 @@ TEST_CASE("Unstructured Mesh")
     {
         NeoN::localIdx nx = 3;
         NeoN::localIdx ny = 2;
-        NeoN::scalar Lx = 3.0;
-        NeoN::scalar Ly = 2.0;
-        auto mesh = NeoN::create2DUniformMesh(exec, nx, ny, Lx, Ly);
+        NeoN::scalar lx = 3.0;
+        NeoN::scalar ly = 2.0;
+        auto mesh = NeoN::create2DUniformMesh(exec, nx, ny, lx, ly);
 
         // 3x2 mesh: 6 hex cells, (3-1)*2 + 3*(2-1) = 4+3 = 7 internal faces
         // boundary: left(2) + right(2) + bottom(3) + top(3) = 10
@@ -171,7 +171,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 7);
         REQUIRE(mesh.nBoundaryFaces() == 10);
         REQUIRE(mesh.nBoundaries() == 4);
-        REQUIRE(mesh.nTotalFaces() == 17);
+        REQUIRE(mesh.nFaces() == 17);
 
         // Cell volume = (3/3) * (2/2) * 1.0 = 1.0
         auto cellVolumesExp = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -236,7 +236,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 12);
         REQUIRE(mesh.nBoundaryFaces() == 24);
         REQUIRE(mesh.nBoundaries() == 6);
-        REQUIRE(mesh.nTotalFaces() == 36);
+        REQUIRE(mesh.nFaces() == 36);
 
         auto hostPoints = mesh.points().copyToHost();
         REQUIRE(hostPoints.size() == 27);
@@ -272,10 +272,10 @@ TEST_CASE("Unstructured Mesh")
         NeoN::localIdx nx = 3;
         NeoN::localIdx ny = 2;
         NeoN::localIdx nz = 2;
-        NeoN::scalar Lx = 3.0;
-        NeoN::scalar Ly = 2.0;
-        NeoN::scalar Lz = 2.0;
-        auto mesh = NeoN::create3DUniformMesh(exec, nx, ny, nz, Lx, Ly, Lz);
+        NeoN::scalar lx = 3.0;
+        NeoN::scalar ly = 2.0;
+        NeoN::scalar lz = 2.0;
+        auto mesh = NeoN::create3DUniformMesh(exec, nx, ny, nz, lx, ly, lz);
 
         // 3x2x2: 12 cells
         // internal: x:(3-1)*2*2=8, y:3*(2-1)*2=6, z:3*2*(2-1)=6 → 20
@@ -284,7 +284,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 20);
         REQUIRE(mesh.nBoundaryFaces() == 32);
         REQUIRE(mesh.nBoundaries() == 6);
-        REQUIRE(mesh.nTotalFaces() == 52);
+        REQUIRE(mesh.nFaces() == 52);
 
         // Cell volume = (3/3) * (2/2) * (2/2) = 1.0
         auto cellVolumesExp =

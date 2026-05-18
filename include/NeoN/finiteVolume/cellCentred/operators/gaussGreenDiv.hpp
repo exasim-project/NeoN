@@ -7,7 +7,6 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
@@ -23,9 +22,8 @@ void computeDivExp(
     const dsl::Coeff operatorScaling
 );
 
-/** @brief assemble internal dofs*/
 template<typename ValueType>
-void computeDivImp(
+void computeDivIntImp(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
@@ -33,19 +31,8 @@ void computeDivImp(
     const dsl::Coeff operatorScaling
 );
 
-/** @brief assemble boundaries*/
 template<typename ValueType>
-void computeDivBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& faceFlux,
-    const VolumeField<ValueType>& phi,
-    const SurfaceField<scalar>& weights,
-    const dsl::Coeff operatorScaling
-);
-
-/** @brief assemble processor boundaries*/
-template<typename ValueType>
-void computeDivProcBoundImpl(
+void computeDivBoundImp(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
@@ -91,7 +78,7 @@ public:
             faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
         );
         return divPhi;
-    }
+    };
 
     virtual void
     div(VolumeField<ValueType>& divPhi,
@@ -111,7 +98,7 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         computeDivExp<ValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
-    }
+    };
 
     virtual void
     div(la::LinearSystem<ValueType>& ls,
@@ -120,10 +107,9 @@ public:
         const dsl::Coeff operatorScaling) const override
     {
         const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-        computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-        computeDivImp(ls, faceFlux, phi, weights, operatorScaling);
-        computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-    }
+        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivBoundImp(ls, faceFlux, phi, weights, operatorScaling);
+    };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
     {
@@ -135,7 +121,7 @@ private:
     SurfaceInterpolation<ValueType> surfaceInterpolation_;
 };
 
-template class GaussGreenDiv<scalar>;
-template class GaussGreenDiv<Vec3>;
+extern template class GaussGreenDiv<scalar>;
+extern template class GaussGreenDiv<Vec3>;
 
 } // namespace NeoN

@@ -15,7 +15,7 @@ using namespace NeoN::mpi;
 TEST_CASE("halfDuplexBuffer")
 {
 
-    Environment mpiEnviron;
+    MPIEnvironment mpiEnviron;
     std::vector<std::size_t> rankCommSize(mpiEnviron.sizeRank(), 1);
     HalfDuplexCommBuffer buffer(mpiEnviron, rankCommSize);
 
@@ -35,8 +35,7 @@ TEST_CASE("halfDuplexBuffer")
         REQUIRE(buffer.getCommName() == "Init Comm");
         buffer.finaliseComm();
         REQUIRE(buffer.getCommName() == "unassigned");
-        // a finalized buffer cannot be complete
-        // REQUIRE(true == buffer.isComplete());
+        REQUIRE(true == buffer.isComplete());
         REQUIRE(!buffer.isCommInit());
     }
 

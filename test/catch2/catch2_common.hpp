@@ -96,23 +96,6 @@ struct ApproxVec3
     }
 };
 
-// struct ApproxVector
-// {
-//     NeoN::Vec3 margin;
-
-//     ApproxVector(NeoN::Vec3 v) : margin(v) {}
-//     ApproxVector(NeoN::scalar v) : margin({v, v, v}) {}
-
-//     bool operator()(NeoN::Vec3 rhs, NeoN::Vec3 lhs) const
-//     {
-//         NeoN::Vec3 diff(rhs[0] - lhs[0], rhs[1] - lhs[1], rhs[2] - lhs[2]);
-
-//         return Catch::Approx(0).margin(margin[0]) == diff[0]
-//             && Catch::Approx(0).margin(margin[1]) == diff[1]
-//             && Catch::Approx(0).margin(margin[2]) == diff[2];
-//     }
-// };
-
 /** @brief Predicate for exact equality comparison using the built-in == operator.
  *
  * Used with @ref EqualsMatcher and @ref Equals to compare integer or
@@ -243,21 +226,6 @@ auto Equals(Expected expected, Predicate pred = Predicate {1e-32})
 
 namespace Catch
 {
-
-/**
- * @brief Disable Catch2's built-in range StringMaker for NeoN::Vector.
- *
- * NeoN::Vector exposes @c begin()/@c end() and is therefore detected as a range
- * by Catch2's @ref is_range trait. Without this specialization, both Catch2's
- * generic range StringMaker and the NeoN-specific one below match, producing
- * an "ambiguous partial specializations" error. Disabling the range trait lets
- * the NeoN-specific specialization win unambiguously and ensures
- * device-resident vectors are copied to host before stringification.
- */
-template<typename T>
-struct is_range<NeoN::Vector<T>> : std::false_type
-{
-};
 
 /**
  * @brief Catch2 string conversion for NeoN::Vector.

@@ -63,47 +63,15 @@ void computeGrad(
     );
 
     // Boundary faces: only the owner cell is on this rank.
-    const auto nBoundaryFaces = mesh.nBoundaryFaces();
     parallelFor(
         exec,
-        {nInternalFaces, nInternalFaces + nBoundaryFaces},
+        {nInternalFaces, surfPhif.size()},
         NEON_LAMBDA(const localIdx i) {
             auto own = surfFaceCells[i - nInternalFaces];
             Vec3 valueOwn = faceAreaS[i] * surfPhif[i]; // +S_f * φ_f (S_f outward from owner)
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeGradBoundary"
-    );
-
-    // Processor-boundary faces.
-    //
-    // Each proc face has its local owner cell on this rank and its ghost cell
-    // on the neighbour rank. The Green-Gauss gradient still needs +S_f * φ_f at
-    // the owner cell. The face value is the linear interpolation between own
-    // and ghost cell-centre values:
-    //     φ_f = w * φ_own + (1 - w) * φ_ghost
-    // The ghost value is in `in.boundaryData().value()` at the proc tail
-    // (populated by `in.correctBoundaryConditions()` before this call).
-    //
-    // surfPhif (the result of SurfaceInterpolation::interpolate) DOES populate
-    // proc-face entries (see linear.cpp), and the linear interpolation kernel
-    // uses the correct geometric weight from basicGeometryScheme. So we read
-    // surfPhif[i] for the face value (consistent with internal-face path).
-    //
-    // For the face area we MUST use bm.sf() (compressed boundary-tail layout
-    // matching bcfacei). mesh.faceAreas() is in OpenFOAM's full face list incl.
-    // empty patches; indexing it with the compressed proc-face index reads the
-    // wrong face's area.
-    parallelFor(
-        exec,
-        {nInternalFaces + nBoundaryFaces, surfPhif.size()},
-        NEON_LAMBDA(const localIdx i) {
-            const auto bcfacei = i - nInternalFaces;
-            const auto own = surfFaceCells[bcfacei];
-            Vec3 valueOwn = sBSf[bcfacei] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
-        },
-        "computeProcGradBoundary"
     );
 
     parallelFor(
@@ -275,15 +243,10 @@ void computeGradTensor(
         mesh.cellVolumes(),
         mesh.boundaryMesh().faceCells()
     );
-    // Boundary-tail face areas (compressed indexing). Use this for proc faces;
-    // mesh.faceAreas() is OF-full and reads the wrong face for compressed proc
-    // indices (which sit past the empty defaultFaces patch in OF).
-    const auto bcSf = mesh.boundaryMesh().sf().view();
 
     const localIdx nInt = mesh.nInternalFaces();
-    const localIdx nBnd = mesh.nBoundaryFaces();
-    const localIdx nProcBnd = mesh.boundaryMesh().nProcBoundaryFaces();
-    const localIdx nFaces = nInt + nBnd + nProcBnd;
+    const localIdx nBnd = mesh.boundaryMesh().offset().back();
+    const localIdx nFaces = nInt + nBnd;
 
     parallelFor(
         exec,
@@ -307,10 +270,9 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
-    // Physical (non-proc) boundary faces: OF and compressed indices coincide here.
     parallelFor(
         exec,
-        {nInt, nInt + nBnd},
+        {nInt, nFaces},
         NEON_LAMBDA(const localIdx f) {
             const localIdx bi = f - nInt;
             const auto o = bFaceCells[bi];
@@ -325,26 +287,6 @@ void computeGradTensor(
             }
         },
         "computeGradTensorBoundary"
-    );
-
-    // Processor boundary faces: read S_f from the compressed boundary-tail view.
-    parallelFor(
-        exec,
-        {nInt + nBnd, nFaces},
-        NEON_LAMBDA(const localIdx f) {
-            const localIdx bi = f - nInt;
-            const auto o = bFaceCells[bi];
-            const Vec3 sf = bcSf[bi];
-            const Vec3 uf = UfAll[f];
-            for (int row = 0; row < 3; ++row)
-            {
-                for (int col = 0; col < 3; ++col)
-                {
-                    atomicAddTensor(&gT[o], row, col, sf[col] * uf[row]);
-                }
-            }
-        },
-        "computeGradTensorProcBoundary"
     );
 
     parallelFor(

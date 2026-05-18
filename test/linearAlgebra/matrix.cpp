@@ -21,10 +21,10 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
     NeoN::Vector<NeoN::localIdx> colIdxSparse(exec, {0, 1, 2, 1});
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
     NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
-        valuesSparse, colIdxSparse, rowOffsSparse
+        valuesSparse, colIdxSparse, rowOffsSparse, {3, 3}
     );
     const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrixConst(
-        valuesSparse, colIdxSparse, rowOffsSparse
+        valuesSparse, colIdxSparse, rowOffsSparse, {3, 3}
     );
 
     // dense matrix
@@ -32,10 +32,10 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
     NeoN::Vector<NeoN::localIdx> colIdxDense(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     NeoN::Vector<NeoN::localIdx> rowOffsDense(exec, {0, 3, 6, 9});
     NeoN::la::CSRMatrix<TestType, NeoN::localIdx> denseMatrix(
-        valuesDense, colIdxDense, rowOffsDense
+        valuesDense, colIdxDense, rowOffsDense, {3, 3}
     );
     const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> denseMatrixConst(
-        valuesDense, colIdxDense, rowOffsDense
+        valuesDense, colIdxDense, rowOffsDense, {3, 3}
     );
 
     // NOTE: The purpose of this test is to detect changes in the order
@@ -124,7 +124,7 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
     // SECTION("Can computed scaledInverseDiagonal " + execName)
     // {
     //     auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
-    //     auto diag = scaledInverseDiag(denseMatrix, a);
+    //     auto diag = denseMatrix.scaledInverseDiag(denseMatria);
     //     auto diagH = diag.copyToHost();
 
     //     REQUIRE(diagH.view()[0] == 1.0);
@@ -273,10 +273,10 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::Vec3)
     NeoN::Vector<NeoN::localIdx> rowOffsSparse(exec, {0, 1, 3, 4});
 
     NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrix(
-        valuesSparse, colIdxSparse, rowOffsSparse
+        valuesSparse, colIdxSparse, rowOffsSparse, {3, 3}
     );
     const NeoN::la::CSRMatrix<TestType, NeoN::localIdx> sparseMatrixConst(
-        valuesSparse, colIdxSparse, rowOffsSparse
+        valuesSparse, colIdxSparse, rowOffsSparse, {3, 3}
     );
 
     SECTION("Read entry on " + execName)

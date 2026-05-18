@@ -14,7 +14,6 @@ namespace dsl = NeoN::dsl;
 
 TEMPLATE_TEST_CASE("SpatialOperator", "[template]", NeoN::scalar, NeoN::Vec3)
 {
-    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);

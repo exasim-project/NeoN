@@ -67,6 +67,130 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
             REQUIRE(outHostView[i] == zero<TestType>());
         }
     }
+
+    SECTION("Implicit operation " + execName)
+    {
+        if constexpr (std::is_same_v<TestType, scalar>)
+        {
+            Input input = Dictionary(
+                {{std::string("DivOperator"), std::string("Gauss")},
+                 {std::string("surfaceInterpolation"), std::string("linear")}}
+            );
+            auto op = fvcc::DivOperator(Operator::Type::Implicit, faceFlux, phi, input);
+            auto ls = la::createEmptyLinearSystem<TestType>(mesh);
+            op.implicitOperation(ls);
+
+            // the divergence of a uniform field under a conservative flux is zero,
+            // so A*phi - b must vanish for every cell
+            auto res = Vector<scalar>(exec, mesh.nCells(), 0.0);
+            computeResidual(ls.matrix(), ls.rhs(), phi.internalVector(), res);
+
+            auto resExp = std::vector<NeoN::scalar>(res.size(), 0);
+            REQUIRE_THAT(res, Equals(resExp, ApproxScalar {1e-12}));
+        }
+    }
 }
 
+TEST_CASE("DivOperator implicit boundary contributions are accumulated")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
+
+    fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
+    fill(faceFlux.internalVector(), 1.0);
+
+    Input input = TokenList({std::string("Gauss"), std::string("linear")});
+
+    SECTION("bRhs accumulates for fixedValue BC on " + execName)
+    {
+        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs;
+        bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(
+            mesh,
+            Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", NeoN::scalar(1.0)}}),
+            0
+        ));
+        bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(
+            mesh,
+            Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", NeoN::scalar(2.0)}}),
+            1
+        ));
+        auto phi = fvcc::VolumeField<NeoN::scalar>(exec, "phi", mesh, bcs);
+        fill(phi.internalVector(), NeoN::scalar(1.0));
+        phi.correctBoundaryConditions();
+
+        auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar>(mesh);
+        dsl::SpatialOperator divOp = dsl::imp::div(faceFlux, phi);
+        divOp.read(input);
+
+        divOp.implicitOperation(ls);
+        auto bRhsFirst = ls.boundaryRhs().copyToHost();
+
+        // second call without reset: bRhs must accumulate, not overwrite
+        divOp.implicitOperation(ls);
+        auto bRhsSecond = ls.boundaryRhs().copyToHost();
+
+        auto bRhsFirstV = bRhsFirst.view();
+        auto bRhsSecondV = bRhsSecond.view();
+        for (localIdx i = 0; i < bRhsFirstV.size(); i++)
+        {
+            REQUIRE(NeoN::mag(bRhsFirstV[i]) > 0);
+            REQUIRE(bRhsSecondV[i] == Catch::Approx(2.0 * bRhsFirstV[i]).margin(1e-8));
+        }
+    }
+
+    SECTION("bValues has correct sign and accumulates for fixedGradient BC on " + execName)
+    {
+        std::vector<fvcc::VolumeBoundary<NeoN::scalar>> bcs;
+        bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(
+            mesh,
+            Dictionary(
+                {{"type", std::string("fixedGradient")}, {"fixedGradient", NeoN::scalar(1.0)}}
+            ),
+            0
+        ));
+        bcs.push_back(fvcc::VolumeBoundary<NeoN::scalar>(
+            mesh,
+            Dictionary(
+                {{"type", std::string("fixedGradient")}, {"fixedGradient", NeoN::scalar(1.0)}}
+            ),
+            1
+        ));
+        auto phi = fvcc::VolumeField<NeoN::scalar>(exec, "phi", mesh, bcs);
+        fill(phi.internalVector(), NeoN::scalar(1.0));
+        phi.correctBoundaryConditions();
+
+        auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar>(mesh);
+        dsl::SpatialOperator divOp = dsl::imp::div(faceFlux, phi);
+        divOp.read(input);
+
+        divOp.implicitOperation(ls);
+        auto bValuesFirst = ls.boundaryMatrix().values().copyToHost();
+        auto bRhsFirst = ls.boundaryRhs().copyToHost();
+
+        // second call without reset: contributions must accumulate, not overwrite
+        divOp.implicitOperation(ls);
+        auto bValuesSecond = ls.boundaryMatrix().values().copyToHost();
+        auto bRhsSecond = ls.boundaryRhs().copyToHost();
+
+        auto bValuesFirstV = bValuesFirst.view();
+        auto bValuesSecondV = bValuesSecond.view();
+        auto bRhsFirstV = bRhsFirst.view();
+        auto bRhsSecondV = bRhsSecond.view();
+        for (localIdx i = 0; i < bValuesFirstV.size(); i++)
+        {
+            // bValues stores the inverse of the diagonal contribution (bValues -= valueMat)
+            // so bValues must be negative when the diagonal contribution is positive
+            REQUIRE(bValuesFirstV[i] < 0);
+            REQUIRE(bValuesSecondV[i] == Catch::Approx(2.0 * bValuesFirstV[i]).margin(1e-8));
+        }
+        for (localIdx i = 0; i < bRhsFirstV.size(); i++)
+        {
+            REQUIRE(bRhsSecondV[i] == Catch::Approx(2.0 * bRhsFirstV[i]).margin(1e-8));
+        }
+    }
 }
+
+} // namespace NeoN

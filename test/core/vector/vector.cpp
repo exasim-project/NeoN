@@ -281,36 +281,3 @@ TEST_CASE("getViews")
         REQUIRE(value == 5.0);
     }
 }
-
-
-TEST_CASE("copyMap")
-{
-    auto [execName, exec] = GENERATE(allAvailableExecutor());
-
-    NeoN::Vector<NeoN::scalar> a(exec, {1, 2, 3, 4, 5, 6});
-    NeoN::Vector<NeoN::localIdx> b(exec, {0, 2, 4});
-    NeoN::Vector<NeoN::scalar> c(exec, 3);
-
-    copy(a, b, c);
-
-    auto cH = c.copyToHost();
-
-    REQUIRE(cH.view()[0] == 1.0);
-    REQUIRE(cH.view()[1] == 3.0);
-    REQUIRE(cH.view()[2] == 5.0);
-}
-
-TEST_CASE("freeFunctions")
-{
-    auto [execName, exec] = GENERATE(allAvailableExecutor());
-
-    NeoN::Vector<NeoN::scalar> a(exec, {1, 2, 3, 4, 5, 6});
-
-    auto takeRes = take(a, 1, 4);
-    auto takeResH = takeRes.copyToHost();
-
-    REQUIRE(takeResH.size() == 3);
-    REQUIRE(takeResH.view()[0] == 2.0);
-    REQUIRE(takeResH.view()[1] == 3.0);
-    REQUIRE(takeResH.view()[2] == 4.0);
-}

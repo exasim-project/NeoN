@@ -79,8 +79,7 @@ TEST_CASE("RunTimeSelectionFactory")
 
     SECTION("classes are registered")
     {
-        // FIXME
-        CHECK(NeoN::BaseClassDocumentation::docTable().size() >= 2);
+        CHECK(NeoN::BaseClassDocumentation::docTable().size() == 2);
         for (const auto& it : NeoN::BaseClassDocumentation::docTable())
         {
             std::string baseClassName = it.first;

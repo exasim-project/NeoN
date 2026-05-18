@@ -2,39 +2,14 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <algorithm>
-#include <numeric>
-
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp"
 
-#include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 
-#include "NeoN/core/mpi/operators.hpp"
 
 namespace NeoN
 {
-
-localIdx computeGlobalOffset(const BoundaryMesh& boundaryMesh, localIdx localNCells)
-{
-    if (!boundaryMesh.isDistributed())
-    {
-        return 0;
-    }
-    mpi::Environment mpiEnviron;
-    const auto nRanks = mpiEnviron.sizeRank();
-    const auto myRank = mpiEnviron.rank();
-    auto allNCells = std::vector<int>(nRanks);
-    MPI_Allgather(&localNCells, 1, MPI_INT, allNCells.data(), 1, MPI_INT, mpiEnviron.comm());
-    std::vector<localIdx> globalOffset(nRanks + 1, 0);
-    for (int i = 0; i < nRanks; i++)
-    {
-        globalOffset[i + 1] = globalOffset[i] + allNCells[i];
-    }
-    return globalOffset[myRank];
-}
-
 UnstructuredMesh::UnstructuredMesh(
     Executor exec,
     vectorVector points,
@@ -45,13 +20,18 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector magFaceAreas,
     labelVector faceOwner,
     labelVector faceNeighbour,
+    localIdx nCells,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    localIdx nBoundaries,
+    localIdx nFaces,
     BoundaryMesh boundaryMesh
 )
     : exec_(exec), points_(points), cellVolumes_(cellVolumes), cellCentres_(cellCentres),
       faceAreas_(faceAreas), faceCentres_(faceCentres), magFaceAreas_(magFaceAreas),
-      faceOwner_(faceOwner), faceNeighbour_(faceNeighbour), nCells_(cellVolumes.size()),
-      nInternalFaces_(faceNeighbour.size()), boundaryMesh_(boundaryMesh),
-      globalOffset_(computeGlobalOffset(boundaryMesh, cellVolumes.size())), stencilDataBase_()
+      faceOwner_(faceOwner), faceNeighbour_(faceNeighbour), nCells_(nCells),
+      nInternalFaces_(nInternalFaces), nBoundaryFaces_(nBoundaryFaces), nBoundaries_(nBoundaries),
+      nFaces_(nFaces), boundaryMesh_(boundaryMesh), stencilDataBase_()
 {}
 
 UnstructuredMesh::UnstructuredMesh(
@@ -63,6 +43,11 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector magFaceAreas,
     labelVector faceOwner,
     labelVector faceNeighbour,
+    localIdx nCells,
+    localIdx nInternalFaces,
+    localIdx nBoundaryFaces,
+    localIdx nBoundaries,
+    localIdx nFaces,
     BoundaryMesh boundaryMesh
 )
     : UnstructuredMesh(
@@ -75,6 +60,11 @@ UnstructuredMesh::UnstructuredMesh(
         magFaceAreas,
         faceOwner,
         faceNeighbour,
+        nCells,
+        nInternalFaces,
+        nBoundaryFaces,
+        nBoundaries,
+        nFaces,
         boundaryMesh
     )
 {}
@@ -116,22 +106,13 @@ localIdx UnstructuredMesh::nCells() const { return nCells_; }
 
 localIdx UnstructuredMesh::nInternalFaces() const { return nInternalFaces_; }
 
-localIdx UnstructuredMesh::nBoundaryFaces() const { return boundaryMesh_.nBoundaryFaces(); }
+localIdx UnstructuredMesh::nBoundaryFaces() const { return nBoundaryFaces_; }
 
-localIdx UnstructuredMesh::nProcBoundaryFaces() const { return boundaryMesh_.nProcBoundaryFaces(); }
+localIdx UnstructuredMesh::nBoundaries() const { return nBoundaries_; }
 
-localIdx UnstructuredMesh::nBoundaries() const { return boundaryMesh_.nBoundaries(); }
-
-localIdx UnstructuredMesh::nTotalFaces() const
-{
-    return nInternalFaces() + nBoundaryFaces() + nProcBoundaryFaces();
-}
-
-localIdx UnstructuredMesh::globalOffset() const { return globalOffset_; }
+localIdx UnstructuredMesh::nFaces() const { return nFaces_; }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
-
-BoundaryMesh& UnstructuredMesh::boundaryMesh() { return boundaryMesh_; }
 
 Dictionary& UnstructuredMesh::stencilDB() const { return stencilDataBase_; }
 
@@ -161,9 +142,7 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         {exec, {{-0.5, 0.0, 0.0}, {0.0, 0.5, 0.0}, {0.5, 0.0, 0.0}, {0.0, -0.5, 0.0}}}, // delta
         {exec, {1, 1, 1, 1}},                                                           // weights
         {exec, {2.0, 2.0, 2.0, 2.0}}, // deltaCoeffs --> mag(1 / delta)
-        {0, 1, 2, 3, 4},              // offset
-        0,                            // number of proc boundary patches
-        {}                            // neighbourRank
+        {0, 1, 2, 3, 4}               // offset
     );
     return UnstructuredMesh(
         {exec, {{0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0}}}, // points,
@@ -174,31 +153,36 @@ UnstructuredMesh createSingleCellMesh(const Executor exec)
         magFaceAreas,
         {exec, {0, 0, 0, 0}}, // faceOwner
         {exec, {}},           // faceNeighbour,
+        1,                    // nCells
+        0,                    // nInternalFaces,
+        4,                    // nBoundaryFaces,
+        4,                    // nBoundaries,
+        4,                    // nFaces,
         boundaryMesh
     );
 }
 
-UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells, scalar Lx)
+UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells, scalar lx)
 {
-    return create3DUniformMesh(exec, nCells, 1, 1, Lx, 1.0, 1.0);
+    return create3DUniformMesh(exec, nCells, 1, 1, lx, 1.0, 1.0);
 }
 
 UnstructuredMesh
-create2DUniformMesh(const Executor exec, localIdx nx, localIdx ny, scalar Lx, scalar Ly)
+create2DUniformMesh(const Executor exec, localIdx nx, localIdx ny, scalar lx, scalar ly)
 {
-    return create3DUniformMesh(exec, nx, ny, 1, Lx, Ly, 1.0);
+    return create3DUniformMesh(exec, nx, ny, 1, lx, ly, 1.0);
 }
 
 UnstructuredMesh create3DUniformMesh(
-    const Executor exec, localIdx nx, localIdx ny, localIdx nz, scalar Lx, scalar Ly, scalar Lz
+    const Executor exec, localIdx nx, localIdx ny, localIdx nz, scalar lx, scalar ly, scalar lz
 )
 {
     // Validate input parameters
     NF_ASSERT(nx > 0 && ny > 0 && nz > 0, "Number of cells in each direction must be positive");
-    NF_ASSERT(Lx > 0 && Ly > 0 && Lz > 0, "Domain lengths must be positive");
+    NF_ASSERT(lx > 0 && ly > 0 && lz > 0, "Domain lengths must be positive");
 
     // Hold the mesh parameters
-    detail::MeshParams p {nx, ny, nz, Lx, Ly, Lz};
+    detail::MeshParams p {nx, ny, nz, lx, ly, lz};
 
     const auto points = detail::generatePoints(p);
     const auto [cellVolumes, cellCentres] = detail::generateCellData(p);
@@ -274,6 +258,11 @@ UnstructuredMesh create3DUniformMesh(
         {exec, std::move(faces.magnitudes)},
         {exec, std::move(faces.owner)},
         labelVector(exec, std::move(faces.neighbour)),
+        nCells,
+        nInternalFaces,
+        nBoundaryFaces,
+        offset.size() - 1, // nBoundaries
+        nFaces,
         std::move(boundaryMesh)
     );
 
@@ -281,237 +270,4 @@ UnstructuredMesh create3DUniformMesh(
 
     return mesh;
 }
-
-/* @brief helper to create a part of a global 1D mesh
- *
- */
-UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells)
-{
-    // FIXME make it an argument again
-    mpi::Environment mpiEnviron;
-    scalar rightBoundary {static_cast<scalar>(1.0) / mpiEnviron.sizeRank()};
-
-    localIdx nProcBoundaryFaces = 2;
-    if (mpiEnviron.rank() == 0 || mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
-    {
-        nProcBoundaryFaces = 1;
-    }
-
-    // regular boundary first, processor boundary follow
-    auto faceCellVec = std::vector<localIdx>();
-    auto boundaryWeights = std::vector<scalar>();
-    auto neighRanks = std::vector<localIdx>();
-    if (mpiEnviron.rank() != 0 && mpiEnviron.rank() != mpiEnviron.sizeRank() - 1)
-    {
-        faceCellVec.push_back(0);
-        faceCellVec.push_back(nCells - 1);
-        boundaryWeights.push_back(-1.0);
-        boundaryWeights.push_back(1.0);
-        neighRanks.push_back(mpiEnviron.rank() - 1);
-        neighRanks.push_back(mpiEnviron.rank() + 1);
-    }
-    // first rank
-    if (mpiEnviron.rank() == 0)
-    {
-        faceCellVec.push_back(0);
-        faceCellVec.push_back(nCells - 1);
-        boundaryWeights.push_back(-1.0);
-        boundaryWeights.push_back(1.0);
-        neighRanks.push_back(1);
-    }
-    // last rank
-    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
-    {
-        faceCellVec.push_back(nCells - 1);
-        faceCellVec.push_back(0);
-        boundaryWeights.push_back(1.0);
-        boundaryWeights.push_back(-1.0);
-        neighRanks.push_back(mpiEnviron.rank() - 1);
-    }
-
-    labelVector faceCells(exec, faceCellVec);
-
-    // The boundaryMesh stores boundary patches in the order they appear in
-    // faceCellVec ("regular boundary first, processor boundary follow"). On the
-    // last rank that order is [xmax_regular, proc_left], so the entry at index 0
-    // is the right-side face and the entry at index 1 is the left-side face —
-    // the opposite of rank 0 / middle ranks. cf/sf/nf must reflect this so that
-    // proc-face deltaCoeffs (which reads bm.cf()/bm.sf() in compressed indexing)
-    // computes 1/cellWidth instead of 7/cellWidth on the last rank.
-    std::vector<Vec3> bcCfVec {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}};
-    std::vector<Vec3> bcSfVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
-    std::vector<Vec3> bcNfVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
-    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
-    {
-        std::swap(bcCfVec[0], bcCfVec[1]);
-        std::swap(bcSfVec[0], bcSfVec[1]);
-        std::swap(bcNfVec[0], bcNfVec[1]);
-    }
-
-    auto tmp = create1DUniformMesh(exec, nCells, rightBoundary);
-    BoundaryMesh boundaryMesh(
-        exec,
-        faceCells,
-        {exec, bcCfVec},                  // cf
-        tmp.boundaryMesh().cn(),          // cn
-        {exec, bcSfVec},                  // sf
-        {exec, {1.0, 1.0}},               // magSf
-        {exec, bcNfVec},                  // nf
-        tmp.boundaryMesh().delta(),       // deltaCoeffs --> mag(1 / delta)
-        {exec, boundaryWeights},          // weights
-        tmp.boundaryMesh().deltaCoeffs(), // deltaCoeffs --> mag(1 / delta)
-        {0, 1, 2},                        // offset
-        nProcBoundaryFaces,               // number of proc boundary patches
-        neighRanks                        // neighbourRank
-    );
-    /*
-        auto tmp = create1DUniformMesh(exec, nCells, rightBoundary);
-        BoundaryMesh boundaryMesh(
-            exec,
-            faceCells,
-            {exec, {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}}}, // cf
-            tmp.boundaryMesh().cn(),                              // cn
-            {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}
-            },                  // sf FIXME the order of the rest is potentially wrong
-            {exec, {1.0, 1.0}}, // magSf
-            {exec, {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}}}, // nf
-            tmp.boundaryMesh().delta(),                  // deltaCoeffs --> mag(1 / delta)
-            {exec, boundaryWeights},                     // weights
-            tmp.boundaryMesh().deltaCoeffs(),            // deltaCoeffs --> mag(1 / delta)
-            {0, 1, 2},                                   // offset
-            nProcBoundaryFaces,                          // number of proc boundary patches
-            neighRanks                                   // neighbourRank
-        );
-    */
-    // NOTE on rank2 the face centres [-1] and [-2] needs to be switched
-    // since proc boundaries come first
-    auto faceCentresH = tmp.faceCentres().copyToHost();
-    auto faceAreasH = tmp.faceAreas().copyToHost();
-    if (mpiEnviron.rank() == mpiEnviron.sizeRank() - 1)
-    {
-        auto localCells = tmp.nCells();
-        auto tmpValue = faceCentresH.view()[localCells];
-        faceCentresH.view()[localCells] = faceCentresH.view()[localCells - 1];
-        faceCentresH.view()[localCells - 1] = tmpValue;
-        faceAreasH.view()[localCells] = {-1.0, 0.0, 0.0};
-        faceAreasH.view()[localCells - 1] = {1.0, 0.0, 0.0};
-    }
-
-    // Note on rank the proc boundary needs to be turned
-    return {
-        tmp.points(),
-        tmp.cellVolumes(),
-        tmp.cellCentres(),
-        faceAreasH.copyToExecutor(exec),
-        faceCentresH.copyToExecutor(exec),
-        tmp.magFaceAreas(),
-        tmp.faceOwner(),
-        tmp.faceNeighbour(),
-        boundaryMesh
-    };
-
-    // FIXME doesnt work on GPU
-    // if (mpiEnviron.rank() != 0)
-    // {
-    //     ret.boundaryMesh().nf().view()[0] = {-1.0, 0.0, 0.0};
-    //     ret.boundaryMesh().sf().view()[0] = {-1.0, 0.0, 0.0};
-    // }
-
-    // return ret;
-}
-
-CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
-{
-    mpi::Environment mpiEnviron;
-    // early return if not distributed
-    if (!mesh.boundaryMesh().isDistributed())
-    {
-        return {};
-    }
-
-    const auto nCells = mesh.nCells();
-    auto sendCounts = std::vector<int>(mpiEnviron.sizeRank() + 1, 0);
-
-    const auto neighbourRanks = mesh.boundaryMesh().neighbourRank();
-    const auto offsets = mesh.boundaryMesh().offset();
-    const auto nInnerBoundaries =
-        mesh.boundaryMesh().nBoundaries() - mesh.boundaryMesh().nProcBoundaryPatches();
-
-    for (int i = 0; i < neighbourRanks.size(); i++)
-    {
-        auto targetRank = neighbourRanks[i];
-        auto patchSize = offsets[nInnerBoundaries + i + 1] - offsets[nInnerBoundaries + i];
-        sendCounts[targetRank] = patchSize;
-        sendCounts[mpiEnviron.sizeRank()] += patchSize;
-    }
-
-    // Build send buffer in MESH-BOUNDARY order: each proc patch is appended in
-    // the order it appears in the boundary mesh (the natural layout of
-    // boundaryMesh().faceCells()).
-    //
-    // recvIdx is then naturally in MESH-BOUNDARY order on the receiving side,
-    // which is what the consumer in setProcBoundarySparsityPattern expects:
-    // procRowOffs[i] holds the local mesh-order owner of proc-face i, paired
-    // with procColIdx[i] = recvIdx[i] = the global ghost cell across that
-    // same proc-face i.
-    //
-    // The MPI Alltoallv displacement for rank r MUST therefore point at the
-    // mesh-order patch targeting rank r, NOT at the running cumulative sum of
-    // sendCounts (which only matches mesh-order on decompositions where
-    // neighbourRanks is already ascending). The previous implementation used
-    // the running-sum approach and shipped wrong data to wrong ranks on every
-    // non-ascending decomposition — and even after the data arrived at the
-    // right rank (in earlier sort-buffer-by-rank attempts) the recvIdx fell
-    // out of sync with mesh-order procRowOffs and corrupted the sparsity
-    // pattern. Doing the per-rank lookup here keeps both invariants intact.
-    auto globalOffset = mesh.globalOffset();
-    const auto faceCells = mesh.boundaryMesh().faceCells();
-    auto faceCellsH = faceCells.copyToHost();
-
-    auto buffer = std::vector<localIdx>();
-    buffer.reserve(mesh.boundaryMesh().nProcBoundaryFaces());
-    auto procStart = offsets[nInnerBoundaries];
-    for (int i = 0; i < mesh.boundaryMesh().nProcBoundaryFaces(); i++)
-    {
-        buffer.push_back(faceCellsH.view()[i + procStart] + globalOffset);
-    }
-
-    // For each mesh-order proc patch i with target rank neighbourRanks[i], the
-    // displacement into the proc-tail buffer for rank r is the patch start
-    // offset relative to procStart. Ranks that don't communicate keep the
-    // default 0 displacement (sendCounts[r] == 0 means no bytes are read).
-    auto sdispl = std::vector<localIdx>(mpiEnviron.sizeRank(), 0);
-    for (int i = 0; i < neighbourRanks.size(); i++)
-    {
-        const auto targetRank = neighbourRanks[i];
-        sdispl[targetRank] = offsets[nInnerBoundaries + i] - procStart;
-    }
-    auto recvIdx = std::vector<localIdx>(buffer.size());
-
-    // MPI-01 fix: derive per-rank recv counts by exchanging send counts.
-    auto recvCounts = std::vector<int>(mpiEnviron.sizeRank(), 0);
-    MPI_Alltoall(sendCounts.data(), 1, MPI_INT, recvCounts.data(), 1, MPI_INT, mpiEnviron.comm());
-    auto rdispl = std::vector<int>(mpiEnviron.sizeRank(), 0);
-    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
-        rdispl[r] = rdispl[r - 1] + recvCounts[r - 1];
-    int totalRecv = rdispl.back() + recvCounts.back();
-    recvIdx.resize(static_cast<std::size_t>(totalRecv));
-
-    MPI_Alltoallv(
-        buffer.data(),
-        sendCounts.data(),
-        sdispl.data(),
-        mpi::getType<localIdx>(),
-        recvIdx.data(),
-        recvCounts.data(),
-        rdispl.data(),
-        mpi::getType<localIdx>(),
-        mpiEnviron.comm()
-    );
-
-    // FIXME seems unused
-    std::vector<localIdx> boundaryMapVector;
-    return CommunicationPattern(sendCounts, recvIdx, boundaryMapVector, mpiEnviron);
-}
-
 } // namespace NeoN

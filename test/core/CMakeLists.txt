@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-if(NeoN_WITH_MPI)
+if(NeoN_ENABLE_MPI_SUPPORT)
   add_subdirectory(mpi)
 endif()
 
@@ -20,7 +20,7 @@ neon_unit_test(segmentedVector)
 
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace
-                                                      NeoN::NeoN NeoN::NeoN_public_api)
+                                                      NeoN::NeoN_public_api)
 if(WIN32)
   set_target_properties(
     runTimeSelectionFactory

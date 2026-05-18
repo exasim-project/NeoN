@@ -8,7 +8,6 @@
 #include "catch2/reporters/catch_reporter_registrars.hpp"
 #include "Kokkos_Core.hpp"
 
-#include "NeoN/core/initialization.hpp"
 #include "NeoN/core/mpi/environment.hpp"
 
 #include "mpiReporter.hpp"
@@ -18,7 +17,7 @@ CATCH_REGISTER_REPORTER("mpi", MpiReporter);
 
 int main(int argc, char* argv[])
 {
-    NeoN::mpi::Init mpi(argc, argv);
+    NeoN::mpi::MPIInit mpi(argc, argv);
 
     MPI_Comm_rank(COMM, &RANK);
     MPI_Comm_size(COMM, &COMM_SIZE);
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
     std::thread sequalizeIOThread {serializeIO, &threadShutdown};
 
     // Initialize Catch2
-    NeoN::initialize(argc, argv);
+    Kokkos::initialize(argc, argv);
 
     // ensure any kokkos initialization output will appear first
     std::cout << std::flush;
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
     threadShutdown = true;
     sequalizeIOThread.join();
 
-    NeoN::finalize();
+    Kokkos::finalize();
 
     return result;
 }

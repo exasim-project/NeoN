@@ -71,19 +71,18 @@ void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) c
         NF_ERROR_EXIT("Not implemented");
     }
     // Sp implicit: diagonal += scaling * spCoeff * volume
-    const auto matIt = ls.faceToMatrixAddress();
     const auto operatorScaling = this->getCoefficient();
     const auto vol = spCoeff_->mesh().cellVolumes().view();
-    const auto [diagOffs, coeff] = views(matIt->diagOffset(), spCoeff_->internalVector());
+    const auto [coeff] = views(spCoeff_->internalVector());
     auto values = ls.matrix().values().view();
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
         NEON_LAMBDA(const localIdx celli) {
-            localIdx idx = rowOffs[celli] + diagOffs[celli];
-            values[idx] += operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
+            values[ma.diagIdx(celli)] +=
+                operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
         },
         "Sp::implicitOperation"
     );

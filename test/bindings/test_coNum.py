@@ -5,10 +5,9 @@
 import neon
 
 
-def test_compute_co_num_on_uniform_mesh():
-    exec = neon.SerialExecutor()
-    n_cells = 4
-    mesh = neon.create_1d_uniform_mesh(exec, n_cells, neon.Vec3(0.0), neon.Vec3(1.0))
+def test_compute_co_num_on_uniform_mesh(executor):
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
 
     face_count = mesh.n_internal_faces() + mesh.n_boundary_faces()
     face_flux = neon.ScalarVector(exec, face_count)

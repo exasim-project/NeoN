@@ -13,7 +13,7 @@ using namespace NeoN;
 
 TEST_CASE("Communicator Vector Synchronization")
 {
-    mpi::Environment mpiEnviron;
+    mpi::MPIEnvironment mpiEnviron;
     Communicator comm;
 
     // first block send (size rank)
@@ -21,17 +21,16 @@ TEST_CASE("Communicator Vector Synchronization")
     // third block receive (size rank)
     Vector<int> field(SerialExecutor(), 3 * mpiEnviron.sizeRank());
 
-    auto fieldV = field.view();
     for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
         // we send the rank numbers
-        fieldV[rank] = static_cast<int>(rank);
+        field(rank) = static_cast<int>(rank);
 
         // just make sure its not a communicated value.
-        fieldV[rank + mpiEnviron.sizeRank()] = static_cast<int>(mpiEnviron.sizeRank() + rank);
+        field(rank + mpiEnviron.sizeRank()) = static_cast<int>(mpiEnviron.sizeRank() + rank);
 
         // set to 0.0 to check if the value is communicated
-        fieldV[rank + 2 * mpiEnviron.sizeRank()] = 0;
+        field(rank + 2 * mpiEnviron.sizeRank()) = 0;
     }
 
     // Set up buffer to local map, we will ignore global_idx
@@ -55,10 +54,10 @@ TEST_CASE("Communicator Vector Synchronization")
     // Check the values
     for (size_t rank = 0; rank < mpiEnviron.sizeRank(); rank++)
     {
-        REQUIRE(fieldV[rank] == static_cast<int>(rank));
+        REQUIRE(field(rank) == static_cast<int>(rank));
         REQUIRE(
-            fieldV[rank + mpiEnviron.sizeRank()] == static_cast<int>(mpiEnviron.sizeRank() + rank)
+            field(rank + mpiEnviron.sizeRank()) == static_cast<int>(mpiEnviron.sizeRank() + rank)
         );
-        REQUIRE(fieldV[rank + 2 * mpiEnviron.sizeRank()] == static_cast<int>(mpiEnviron.rank()));
+        REQUIRE(field(rank + 2 * mpiEnviron.sizeRank()) == static_cast<int>(mpiEnviron.rank()));
     }
 }

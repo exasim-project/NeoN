@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-if(NeoN_WITH_MPI)
+if(NeoN_ENABLE_MPI_SUPPORT)
   neon_unit_test(communicator MPI_SIZE 3)
 endif()
 

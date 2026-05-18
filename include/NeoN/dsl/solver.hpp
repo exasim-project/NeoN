@@ -19,7 +19,6 @@
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 
 namespace NeoN::dsl
@@ -27,7 +26,6 @@ namespace NeoN::dsl
 
 namespace detail
 {
-
 template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
@@ -57,17 +55,11 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    deviceSync(solution.exec());
+    fence(solution.exec());
 
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
-    auto stats = solver.solve(ls, solution.internalVector());
-    // Ginkgo solves on its own CUDA stream and calls exec->synchronize()
-    // (stream-specific) at the end. fence() here calls cudaDeviceSynchronize(),
-    // making the written solution globally visible to all subsequent Kokkos
-    // kernels across any stream.
-    deviceSync(solution.exec());
-    return stats;
+    return solver.solve(ls, solution.internalVector());
 }
 
 template<typename VectorType, typename IndexType>
@@ -80,7 +72,7 @@ la::SolverStats iterativeSolveImpl(
     std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
-    auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
+    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?
@@ -94,10 +86,8 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    deviceSync(solution.exec());
-    auto stats = solver.solve(ls, solution.internalVector());
-    deviceSync(solution.exec());
-    return stats;
+    fence(solution.exec());
+    return solver.solve(ls, solution.internalVector());
 }
 }
 

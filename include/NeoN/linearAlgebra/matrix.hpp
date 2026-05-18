@@ -5,8 +5,9 @@
 #pragma once
 
 #include "NeoN/core/vector/vector.hpp"
-#include "sparsityPattern.hpp"
-#include "faceToMatrixAddress.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 #include <type_traits>
 
@@ -18,7 +19,7 @@ namespace NeoN::la
  * @brief A view struct to allow easy read/write on all executors.
  *
  * @tparam ValueType The value type of the non-zero entries.
- * @tparam IndexType The index type of the rows and columns.
+ * @tparam SparsityViewType The type of the sparsity pattern, eg COO or CSR.
  */
 template<typename ValueType, typename SparsityViewType>
 struct MatrixView
@@ -74,6 +75,7 @@ class Matrix
     void validate()
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
+        // TODO this is not necessarily true for matrix types with padding like ELL
         NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
     }
 
@@ -101,13 +103,35 @@ public:
      */
     Matrix(
         const Vector<ValueType>& values,
-        const Vector<typename MatrixSparsityType::SparsityIndexType>& colIdxs,
-        const Vector<typename MatrixSparsityType::SparsityIndexType>& rowOffs
+        const Vector<typename SparsityType::SparsityIndexType>& colIdxs,
+        const Vector<typename SparsityType::SparsityIndexType>& rowOffs,
+        Dimensions dimensions
     )
         : values_(values),
           sparsityPattern_(
-              std::make_shared<const MatrixSparsityType>(Vector(colIdxs), Vector(rowOffs))
+              std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs), dimensions)
           )
+    {
+        validate();
+    }
+
+    /**
+     * @brief Constructor for Matrix with a FaceToMatrixAddress.
+     *
+     * The sparsity pattern and the face-to-matrix address are passed as independent objects.
+     * Only available for matrices whose index type is localIdx.
+     *
+     * @param values The non-zero values of the matrix.
+     * @param sparsity The sparsity pattern of the matrix.
+     * @param faceToMatrixAddress The face-to-matrix address mapping.
+     */
+    Matrix(
+        const Vector<ValueType>& values,
+        std::shared_ptr<const SparsityType> sparsity,
+        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress
+    )
+        requires std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
+        : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
     {
         validate();
     }
@@ -145,7 +169,7 @@ public:
      * @brief Get a reference to column indices vector.
      * @return Vector containing the column indices.
      */
-    [[nodiscard]] const Vector<typename MatrixSparsityType::SparsityIndexType>& colIdxs() const
+    [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& colIdxs() const
     {
         return sparsityPattern_->colIdxs();
     }
@@ -154,7 +178,7 @@ public:
      * @brief Get a reference to row offset vector.
      * @return Vector containing the row pointers.
      */
-    [[nodiscard]] const Vector<typename MatrixSparsityType::SparsityIndexType>& rowOffs() const
+    [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& rowOffs() const
     {
         return sparsityPattern_->rowOffs();
     }
@@ -178,7 +202,11 @@ public:
         }
         return {
             values_.copyToExecutor(dstExec),
-            std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec))
+            std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec)),
+            (faceToMatrixAddress_) ? std::make_shared<const FaceToMatrixAddress>(
+                this->faceToMatrixAddress_->copyToExecutor(dstExec)
+            )
+                                   : nullptr
         };
     }
 
@@ -189,11 +217,32 @@ public:
     [[nodiscard]] std::shared_ptr<const SparsityType> sparsity() const { return sparsityPattern_; }
 
     /**
+     * @brief Get the FaceToMatrixAddress associated with this matrix (may be null).
+     */
+    [[nodiscard]] std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
+    {
+        return faceToMatrixAddress_;
+    }
+
+    /**
      * @brief Copy the matrix to the host.
      * @return A copy of the matrix on the host.
      */
     [[nodiscard]] Matrix<ValueType, SparsityType> copyToHost() const
     {
+        if constexpr (std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>)
+        {
+            if (faceToMatrixAddress_)
+            {
+                auto hostSp = std::make_shared<const SparsityType>(sparsityPattern_->copyToHost());
+                auto hostFtma = std::make_shared<const FaceToMatrixAddress>(
+                    faceToMatrixAddress_->ownerOffset().copyToHost(),
+                    faceToMatrixAddress_->neighbourOffset().copyToHost(),
+                    faceToMatrixAddress_->diagOffset().copyToHost()
+                );
+                return {values_.copyToHost(), hostSp, hostFtma};
+            }
+        }
         return copyToExecutor(SerialExecutor());
     }
 
@@ -201,12 +250,10 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] MatrixView<
-        ValueType,
-        SparsityView<typename MatrixSparsityType::SparsityIndexType>>
+    [[nodiscard]] MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>
     view()
     {
-        return MatrixView<ValueType, SparsityView<typename MatrixSparsityType::SparsityIndexType>>(
+        return MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
             values_.view(), sparsityPattern_->view()
         );
     }
@@ -217,12 +264,10 @@ public:
      */
     [[nodiscard]] MatrixView<
         const ValueType,
-        SparsityView<typename MatrixSparsityType::SparsityIndexType>>
+        SparsityView<typename SparsityType::SparsityIndexType>>
     view() const
     {
-        return MatrixView<
-            const ValueType,
-            SparsityView<typename MatrixSparsityType::SparsityIndexType>>(
+        return MatrixView<const ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
             View<const ValueType>(values_.view()), sparsityPattern_->view()
         );
     }
@@ -233,19 +278,18 @@ public:
     [[nodiscard]] Vector<ValueType> diag() const;
 
 
-    /** @brief reset matrix by explicitly setting values to zero */
-    void reset() { fill(values_, zero<ValueType>()); }
-
 private:
 
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
 
     std::shared_ptr<const SparsityType> sparsityPattern_;
+
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress_;
 };
 
 
 template<typename ValueType, typename IndexType>
-using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
+using CSRMatrix = Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
 
 template<typename ValueType, typename IndexType>
 using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
@@ -255,7 +299,6 @@ using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
  */
 template<typename ValueType, typename IndexType>
 [[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>&);
-
 
 /** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
  * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
@@ -273,11 +316,11 @@ void scaledInverseDiag(
  * entries are identical
  */
 [[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress<localIdx>& mi, const Vector<scalar>&);
+scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
+    const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 );
@@ -303,5 +346,17 @@ void negLUx(
     Vector<Vec3>& out
 );
 
+/** @brief computes out = -(L+U) x
+ *
+ * @notes explicitly sets out values to zero
+ */
+void scaledInvDiagNegLUx(
+    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<Vec3>& b,
+    const Vector<scalar>& vol,
+    Vector<scalar>& rAU,
+    Vector<Vec3>& out
+);
 
 } // namespace NeoN
