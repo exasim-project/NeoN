@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 #include <tuple>
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
@@ -108,11 +110,41 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     const auto procPatchCount = bm.nProcBoundaryPatches();
     const auto firstProcPatch = totalPatches - procPatchCount;
 
+    const bool trace = (std::getenv("NF_PROC_BC_TRACE") != nullptr);
+    if (trace)
+    {
+        std::fprintf(
+            stderr,
+            "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC] nBC=%zu "
+            "totalPatches=%lld procPatchCount=%lld firstProcPatch=%lld nbrRanks.size=%zu\n",
+            mpiEnviron.rank(),
+            boundaryConditions_.size(),
+            (long long)totalPatches,
+            (long long)procPatchCount,
+            (long long)firstProcPatch,
+            nbrRanks.size()
+        );
+    }
+
     std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
     std::vector<int> targetRanks;
     for (auto& boundaryCondition : boundaryConditions_)
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
+        if (trace)
+        {
+            auto [bs, be] = boundaryCondition.range();
+            std::fprintf(
+                stderr,
+                "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC] BC patchID=%lld "
+                "range=[%lld,%lld) isProc=%d\n",
+                mpiEnviron.rank(),
+                (long long)boundaryCondition.patchID(),
+                (long long)bs,
+                (long long)be,
+                (int)(procPatchCount > 0 && boundaryCondition.patchID() >= firstProcPatch)
+            );
+        }
         if (procPatchCount > 0 && boundaryCondition.patchID() >= firstProcPatch)
         {
             const auto procIdx = boundaryCondition.patchID() - firstProcPatch;
@@ -122,11 +154,35 @@ void VolumeField<ValueType>::correctBoundaryConditions()
         }
     }
 
+    if (trace)
+    {
+        std::fprintf(
+            stderr,
+            "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC] procPatchOffset.size=%zu "
+            "communicateBoundaryData will %s\n",
+            mpiEnviron.rank(),
+            procPatchOffset.size(),
+            procPatchOffset.empty() ? "BE SKIPPED" : "RUN"
+        );
+    }
+
     if (!procPatchOffset.empty())
     {
         // FIXME dont recompute communication pattern
         // exchange processor boundary data
         auto commPattern = computeCommunicationPattern(this->mesh());
+        if (trace)
+        {
+            std::fprintf(
+                stderr,
+                "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC] commPattern: "
+                "sendCounts.size=%zu recvIdx.size=%zu boundaryMapVector.size=%zu\n",
+                mpiEnviron.rank(),
+                commPattern.sendCounts.size(),
+                commPattern.recvIdx.size(),
+                commPattern.boundaryMapVector.size()
+            );
+        }
         communicateBoundaryData(
             commPattern, procPatchOffset, targetRanks, this->field_.boundaryData().value()
         );
