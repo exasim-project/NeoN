@@ -12,8 +12,13 @@
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/core/mpi/operators.hpp"
 
+#include <cstdio>
+#include <cstdlib>
+#include <type_traits>
 #include <vector>
 #include <utility>
+
+#include <mpi.h>
 
 namespace NeoN
 {
@@ -296,6 +301,60 @@ void communicateBoundaryData(
     // Host-stage: D→H before MPI, H→D after (safe for non-CUDA-aware MPI / WSL2 OpenMPI)
     auto sendHost = boundaryData.copyToHost(); // Vector<ValueType> on SerialExecutor
     auto recvHost = Vector<ValueType>(SerialExecutor {}, static_cast<localIdx>(totalRecv));
+    const bool ccbdTrace = (std::getenv("NF_PROC_BC_TRACE") != nullptr);
+    if (ccbdTrace)
+    {
+        int rk = 0;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rk);
+        // Print first 4 entries from sendHost at the proc-patch offset for
+        // each target rank, so we can see what's actually being SENT.
+        std::fprintf(
+            stderr,
+            "[NF_PROC_BC_TRACE][rank %d][communicateBoundaryData] commRanks=%d "
+            "totalRecv=%d\n",
+            rk,
+            commRanks,
+            totalRecv
+        );
+        for (int r = 0; r < commRanks; ++r)
+        {
+            std::fprintf(
+                stderr,
+                "[NF_PROC_BC_TRACE][rank %d][communicateBoundaryData]   "
+                "to_rank=%d sendCount=%d sdispl=%d  recvCount=%d rdispl=%d\n",
+                rk,
+                r,
+                (int)commPattern.sendCounts[r],
+                sdispls[r],
+                recvCountsVec[r],
+                rdispls[r]
+            );
+        }
+        const auto sV = sendHost.view();
+        for (std::size_t p = 0; p < procPatchOffset.size(); ++p)
+        {
+            const auto s = procPatchOffset[p].first;
+            const auto e = procPatchOffset[p].second;
+            if constexpr (std::is_same_v<ValueType, NeoN::scalar>)
+            {
+                std::fprintf(
+                    stderr,
+                    "[NF_PROC_BC_TRACE][rank %d][communicateBoundaryData] "
+                    "send patch p=%zu to_rank=%d range=[%lld,%lld) "
+                    "first4=[%.6e %.6e %.6e %.6e]\n",
+                    rk,
+                    p,
+                    targetRanks[p],
+                    (long long)s,
+                    (long long)e,
+                    (e - s) > 0 ? (double)sV[s + 0] : 0.0,
+                    (e - s) > 1 ? (double)sV[s + 1] : 0.0,
+                    (e - s) > 2 ? (double)sV[s + 2] : 0.0,
+                    (e - s) > 3 ? (double)sV[s + 3] : 0.0
+                );
+            }
+        }
+    }
     MPI_Alltoallv(
         sendHost.data(),
         commPattern.sendCounts.data(),
@@ -307,6 +366,29 @@ void communicateBoundaryData(
         mpi::getType<ValueType>(),
         mpiEnv.comm()
     );
+    if (ccbdTrace)
+    {
+        int rk = 0;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rk);
+        const auto rV = recvHost.view();
+        if constexpr (std::is_same_v<ValueType, NeoN::scalar>)
+        {
+            std::fprintf(
+                stderr,
+                "[NF_PROC_BC_TRACE][rank %d][communicateBoundaryData] "
+                "POST-MPI recvHost first8=[%.6e %.6e %.6e %.6e %.6e %.6e %.6e %.6e]\n",
+                rk,
+                totalRecv > 0 ? (double)rV[0] : 0.0,
+                totalRecv > 1 ? (double)rV[1] : 0.0,
+                totalRecv > 2 ? (double)rV[2] : 0.0,
+                totalRecv > 3 ? (double)rV[3] : 0.0,
+                totalRecv > 4 ? (double)rV[4] : 0.0,
+                totalRecv > 5 ? (double)rV[5] : 0.0,
+                totalRecv > 6 ? (double)rV[6] : 0.0,
+                totalRecv > 7 ? (double)rV[7] : 0.0
+            );
+        }
+    }
     // H→D copy back; Vector(exec, hostVec) calls deepCopyVisitor host→device
     auto recvBuffer = Vector<ValueType>(boundaryData.exec(), recvHost);
 #endif
