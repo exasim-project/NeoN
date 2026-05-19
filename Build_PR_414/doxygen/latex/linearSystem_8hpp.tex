@@ -6,7 +6,8 @@
 {\ttfamily \#include "{}Neo\+N/core/mpi/operators.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/matrix.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/distributed/communication\+Pattern.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/linear\+Algebra/sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/coo\+Sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/csr\+Sparsity\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/face\+To\+Matrix\+Address.\+hpp"{}}\newline
 {\ttfamily \#include $<$string$>$}\newline
 \doxysubsubsection*{Classes}
@@ -14,7 +15,7 @@
 \item 
 struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Neo\+N\+::la\+::\+Linear\+System\+View$<$ Value\+Type, Matrix\+View\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em A view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System$<$ Value\+Type, Matrix\+Type, Boundary\+Matrix\+Type $>$}}
+class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System$<$ Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em A class representing a linear system of equations. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
@@ -27,8 +28,8 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
 \begin{DoxyCompactItemize}
 \item 
 {\footnotesize template$<$typename Value\+Type , typename Inner\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Inner\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a526ab6c1bb1faea9fac356aee0888256}{Neo\+N\+::la\+::create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
-\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5a0ad3d154c390bb75b1e2581b775fd9}{Neo\+N\+::la\+::remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls\+In)
-\begin{DoxyCompactList}\small\item\em for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{namespaceNeoN_1_1la_a6bfb83b8f18cb760ed98f0633b440df0}{Neo\+N\+::la\+::scaled\+Inv\+Diag\+Neg\+LUx}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&\mbox{\hyperlink{structa}{a}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&a\+Bound, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&r\+AU, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
+\begin{DoxyCompactList}\small\item\em creates a zero-\/initialised linear system based on a given mesh \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a10fbdbf45faca6abb0f998274df0fbcb}{Neo\+N\+::la\+::remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type $>$ \&ls\+In)
+\begin{DoxyCompactList}\small\item\em for testing purposes, reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1la_af5c1fc924c52470408113c5e4f2f2b9c}{Neo\+N\+::la\+::scaled\+Inv\+Diag\+Neg\+LUx}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&\mbox{\hyperlink{structa}{a}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&a\+Bound, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&r\+AU, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
 \end{DoxyCompactItemize}

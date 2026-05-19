@@ -11,5 +11,6 @@ var searchData=
   ['communicationpattern_8',['CommunicationPattern',['../structNeoN_1_1CommunicationPattern.html',1,'NeoN']]],
   ['coosparsitypattern_9',['CooSparsityPattern',['../classNeoN_1_1la_1_1CooSparsityPattern.html',1,'NeoN::la']]],
   ['cpuexecutor_10',['CPUExecutor',['../classNeoN_1_1CPUExecutor.html',1,'NeoN']]],
-  ['createfromexistingvector_11',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]]
+  ['createfromexistingvector_11',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['csrsparsitypattern_12',['CsrSparsityPattern',['../classNeoN_1_1la_1_1CsrSparsityPattern.html',1,'NeoN::la']]]
 ];

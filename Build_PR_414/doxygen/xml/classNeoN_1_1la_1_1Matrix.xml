@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="241" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="241" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="285" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="285" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1la_1_1Matrix_1a3423d6f69c8d65836939d37cbbec151a" prot="private" static="no" mutable="no">
         <type>std::shared_ptr&lt; const SparsityType &gt;</type>
@@ -69,7 +69,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="243" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="243" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="287" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="287" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1Matrix_1a00afe264464def72fec848ad7b08f421" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;const FaceToMatrixAddress&gt; NeoN::la::Matrix&lt; ValueType, SparsityType &gt;::faceToMatrixAddress_</definition>
+        <argsstring></argsstring>
+        <name>faceToMatrixAddress_</name>
+        <qualifiedname>NeoN::la::Matrix::faceToMatrixAddress_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="289" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="289" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -85,7 +99,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="74" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="74" bodyend="78"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="73" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="73" bodyend="78"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -130,10 +144,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="90" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="90" bodyend="94"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a3b827e40052906edf42cd953a932e2d4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a39def8d6a679b0ec449659ac2f9526f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>NeoN::la::Matrix&lt; ValueType, SparsityType &gt;::Matrix</definition>
-        <argsstring>(const Vector&lt; ValueType &gt; &amp;values, const Vector&lt; typename MatrixSparsityType::SparsityIndexType &gt; &amp;colIdxs, const Vector&lt; typename MatrixSparsityType::SparsityIndexType &gt; &amp;rowOffs)</argsstring>
+        <argsstring>(const Vector&lt; ValueType &gt; &amp;values, const Vector&lt; typename SparsityType::SparsityIndexType &gt; &amp;colIdxs, const Vector&lt; typename SparsityType::SparsityIndexType &gt; &amp;rowOffs, Dimensions dimensions)</argsstring>
         <name>Matrix</name>
         <qualifiedname>NeoN::la::Matrix::Matrix</qualifiedname>
         <param>
@@ -141,12 +155,16 @@
           <declname>values</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename MatrixSparsityType::SparsityIndexType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename SparsityType::SparsityIndexType &gt; &amp;</type>
           <declname>colIdxs</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename MatrixSparsityType::SparsityIndexType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename SparsityType::SparsityIndexType &gt; &amp;</type>
           <declname>rowOffs</declname>
+        </param>
+        <param>
+          <type><ref refid="structNeoN_1_1la_1_1Dimensions" kindref="compound">Dimensions</ref></type>
+          <declname>dimensions</declname>
         </param>
         <briefdescription>
 <para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>. </para>
@@ -181,7 +199,62 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="102" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="102" bodyend="113"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="102" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="102" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a879df51229be4d38c405c21a95c1fd44" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::Matrix&lt; ValueType, SparsityType &gt;::Matrix</definition>
+        <argsstring>(const Vector&lt; ValueType &gt; &amp;values, std::shared_ptr&lt; const SparsityType &gt; sparsity, std::shared_ptr&lt; const FaceToMatrixAddress &gt; faceToMatrixAddress)</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>NeoN::la::Matrix::Matrix</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; const SparsityType &gt;</type>
+          <declname>sparsity</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> &gt;</type>
+          <declname>faceToMatrixAddress</declname>
+        </param>
+    <requiresclause>std::is_same_v&lt;typename SparsityType::SparsityIndexType, localIdx&gt;    </requiresclause>
+        <briefdescription>
+<para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> with a <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The sparsity pattern and the face-to-matrix address are passed as independent objects. Only available for matrices whose index type is localIdx.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The non-zero values of the matrix. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sparsity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The sparsity pattern of the matrix. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>faceToMatrixAddress</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The face-to-matrix address mapping. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="126" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="126" bodyend="135"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1af2fb7061f12d0beab7f04f5dc333cbc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -196,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="118" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="140" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a6538dd5994e85714d24a4b92ed65fc68" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
@@ -214,7 +287,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="124" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="124" bodyend="124"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="146" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="146" bodyend="146"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a2f977c611cd68ce6c09cebbeb33fdd78" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -232,7 +305,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="130" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="130" bodyend="130"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="152" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="152" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1ac78ccc3a9a991a20c86d079a4ccc758a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -250,7 +323,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="136" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="136" bodyend="136"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="158" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="158" bodyend="158"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1aa1d6d042ecac3ad3bb7e4df66fec5707" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -268,7 +341,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="142" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="142" bodyend="142"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="164" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="164" bodyend="164"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a6284970135416ce67a4048bdc42991a1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename MatrixSparsityType::SparsityIndexType &gt; &amp;</type>
@@ -286,7 +359,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="148" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="148" bodyend="151"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="170" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="170" bodyend="173"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a069bf941be4de4d3cd3e4c13dbab9815" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; typename MatrixSparsityType::SparsityIndexType &gt; &amp;</type>
@@ -304,7 +377,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="157" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="157" bodyend="160"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="179" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="179" bodyend="182"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a1ea80482bb87bb33883dc3ccaa586f80" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
@@ -322,7 +395,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="166" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="166" bodyend="166"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="188" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="188" bodyend="188"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a792692a1b294335f418d830e36be9531" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, SparsityType &gt;</type>
@@ -353,7 +426,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="173" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="173" bodyend="183"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="195" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="195" bodyend="209"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1aae45d61e9077a6ccf5870200b777ebc2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::shared_ptr&lt; const SparsityType &gt;</type>
@@ -371,7 +444,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="189" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="189" bodyend="189"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="215" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="215" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a02b801ebe205b3f8e6194eb6bdfaf806" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; const FaceToMatrixAddress &gt; NeoN::la::Matrix&lt; ValueType, SparsityType &gt;::faceToMatrixAddress</definition>
+        <argsstring>() const</argsstring>
+        <name>faceToMatrixAddress</name>
+        <qualifiedname>NeoN::la::Matrix::faceToMatrixAddress</qualifiedname>
+        <briefdescription>
+<para>Get the <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> associated with this matrix (may be null). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="220" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="220" bodyend="223"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1ade03cbdf725d3518023963149d937b2e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; ValueType, SparsityType &gt;</type>
@@ -389,7 +477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="195" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="195" bodyend="198"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="229" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="229" bodyend="242"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a26448489bba73928143de9fcc6e795e8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView</ref>&lt; ValueType, <ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">SparsityView</ref>&lt; typename MatrixSparsityType::SparsityIndexType &gt; &gt;</type>
@@ -407,7 +495,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="207" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="207" bodyend="212"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="251" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="251" bodyend="256"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1aff8ab16c6c4c7ef753eda1169eeddb6e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structNeoN_1_1la_1_1MatrixView" kindref="compound">MatrixView</ref>&lt; const ValueType, <ref refid="structNeoN_1_1la_1_1SparsityView" kindref="compound">SparsityView</ref>&lt; typename MatrixSparsityType::SparsityIndexType &gt; &gt;</type>
@@ -425,7 +513,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="221" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="221" bodyend="228"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="265" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="265" bodyend="272"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a979c3429572d3ca0afad7dc8acf90475" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt;</type>
@@ -440,7 +528,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="233" column="13"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="277" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1la_1_1Matrix_1a2ce62bcdbef333ae01962e18af3c5930" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -455,7 +543,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="237" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="237" bodyend="237"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="281" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="281" bodyend="281"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -481,15 +569,18 @@
 </parameterlist>
 </para>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="71" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="72" bodyend="244"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="70" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="71" bodyend="290"/>
     <listofallmembers>
       <member refid="classNeoN_1_1la_1_1Matrix_1a6284970135416ce67a4048bdc42991a1" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>colIdxs</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1a792692a1b294335f418d830e36be9531" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>copyToExecutor</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1ade03cbdf725d3518023963149d937b2e" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>copyToHost</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1a979c3429572d3ca0afad7dc8acf90475" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>diag</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1a6538dd5994e85714d24a4b92ed65fc68" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>exec</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a02b801ebe205b3f8e6194eb6bdfaf806" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>faceToMatrixAddress</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a00afe264464def72fec848ad7b08f421" prot="private" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>faceToMatrixAddress_</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1afd4c9eb00414752315c70340966e6bea" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>Matrix</name></member>
-      <member refid="classNeoN_1_1la_1_1Matrix_1a3b827e40052906edf42cd953a932e2d4" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>Matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a39def8d6a679b0ec449659ac2f9526f4" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>Matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1Matrix_1a879df51229be4d38c405c21a95c1fd44" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>Matrix</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1a5ae20ec54af7a7443cbb96b0e147df39" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>MatrixSparsityType</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1a8bb539d7a92872c5fd57a7d62a23b52c" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>MatrixValueType</name></member>
       <member refid="classNeoN_1_1la_1_1Matrix_1ac78ccc3a9a991a20c86d079a4ccc758a" prot="public" virt="non-virtual"><scope>NeoN::la::Matrix</scope><name>nNonZeros</name></member>
