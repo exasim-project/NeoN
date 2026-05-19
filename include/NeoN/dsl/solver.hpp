@@ -24,6 +24,7 @@ namespace NeoN::dsl
 
 namespace detail
 {
+
 template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,

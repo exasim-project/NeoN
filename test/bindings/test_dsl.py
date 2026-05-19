@@ -84,6 +84,7 @@ def test_dsl_vector_operators(executor):
     # Setup
     name, exec = executor
     mesh = neon.create_1d_uniform_mesh(exec, 10)
+    mesh = neon.create_1d_uniform_mesh(exec, 10, neon.Vec3(0.0), neon.Vec3(1.0))
     phi = neon.VectorVolumeField(exec, "phi", mesh)
     coeff = neon.ScalarVolumeField(exec, "coeff", mesh)
 

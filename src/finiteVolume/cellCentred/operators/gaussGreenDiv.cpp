@@ -137,7 +137,97 @@ NF_DECLARE_COMPUTE_EXP_DIV(scalar);
 NF_DECLARE_COMPUTE_EXP_DIV(Vec3);
 
 template<typename ValueType>
-void computeDivBoundImp(
+void computeDivProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+)
+{
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    auto faceFluxV = faceFlux.internalVector().view();
+
+    const auto matIt = ls.faceToMatrixAddress();
+    const auto [rowOffs, diagOffs] =
+        views(matIt->sparsityPattern()->rowOffs(), matIt->diagOffset());
+
+    const auto [surfFaceCells, isOwner] =
+        views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().weights());
+
+    const auto [bweights] = views(weights.internalVector());
+
+    auto bValues = ls.nonLocalMatrix().values().view();
+    auto values = ls.matrix().values().view();
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    auto totalFaces = faceFluxV.size();
+    NeoN::mpi::Environment mpiEnviron;
+    parallelFor(
+        exec,
+        {nInternalFaces + nBoundaryFaces, totalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            auto bcfacei = facei - (nInternalFaces);
+            // FIXME this is weird needing two indices
+            auto bcfaceii = facei - (nInternalFaces + nBoundaryFaces);
+            auto cell = surfFaceCells[bcfacei];
+            auto rowStart = rowOffs[cell];
+            auto c = operatorScaling[cell];
+
+            // Conservative upwind divergence for processor boundary faces.
+            // S_f points from owner to neighbour by construction; F = faceFlux is signed.
+            //
+            // From the global computeDivImp for face f (own→nei, weight w = 0 or 1 for upwind):
+            //   A[own,own] -= w*F*c         (diagonal of owner)
+            //   A[own,nei] -= (1-w)*F*c     (off-diagonal: owner row, nei column)
+            //   A[nei,own] += w*F*c         (off-diagonal: nei row, own column)
+            //   A[nei,nei] += (1-w)*F*c     (diagonal of neighbour)
+            //
+            // Each rank uses the raw upwind weight: w_raw = (F >= 0) ? 1 : 0.
+            // The owner's diagonal coefficient is w_raw; the non-owner's is (1 - w_raw).
+            auto isOwnerFace = isOwner[bcfacei] > 0.0;
+            auto sign = isOwnerFace ? scalar(-1) : scalar(1);
+            auto w_raw = bweights[facei]; // use global face index, not boundary-local bcfacei
+            // Diagonal weight: owner uses w_raw, non-owner uses (1-w_raw)
+            auto w_diag = isOwnerFace ? w_raw : (scalar(1) - w_raw);
+            auto F = faceFluxV[facei];
+            auto value = sign * w_diag * F * c * one<ValueType>();
+
+            Kokkos::atomic_sub(&values[rowStart + diagOffs[cell]], value);
+            // bValues[bcfaceii] += value ; // this will be
+
+            // Off-diagonal (ghost coupling).
+            //
+            // Div is asymmetric: in the global computeDivImp the two off-diagonals
+            // around face (own, nei) are
+            //     M[own, nei] = +F * (1 - w) * c       (upper)
+            //     M[nei, own] = -F *  w      * c       (lower)
+            // i.e. they have opposite signs.
+            //
+            // On the owner-side rank we are storing M[local=own, ghost=nei]:
+            //   sign = -1, w_diag = w_raw, so we want valueOff = +F*(1-w_raw)*c
+            // On the non-owner-side rank we are storing M[local=nei, ghost=own]:
+            //   sign = +1, w_diag = (1 - w_raw), so we want valueOff = -F*w_raw*c
+            //                                              = -F*(1 - w_diag)*c
+            //
+            // Both cases are captured by negating `sign` in front of the magnitude:
+            //   owner:     -(-1) * (1 - w_raw)        = +(1 - w)
+            //   non-owner: -(+1) * (1 - (1-w_raw))    = -w
+            // This mirrors the diag formula `value = sign * w_diag * F * c`, which
+            // already encodes the asymmetric +diag[own]/-diag[nei] split correctly.
+            auto valueOff = -sign * (scalar(1) - w_diag) * F * c * one<ValueType>();
+            bValues[bcfaceii] += valueOff;
+        },
+        "computeProcInterfaceGaussGreenDivCoefficients"
+    );
+}
+
+
+template<typename ValueType>
+void computeDivBoundImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
@@ -233,6 +323,7 @@ void computeDivIntImp(
     );
     auto values = ls.matrix().values().view();
 
+    NeoN::mpi::Environment mpiEnviron;
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -275,7 +366,14 @@ void computeDivIntImp(
         const SurfaceField<scalar>&,                                                               \
         const dsl::Coeff                                                                           \
     );                                                                                             \
-    template void computeDivBoundImp<TYPENAME>(                                                    \
+    template void computeDivBoundImpl<TYPENAME>(                                                   \
+        la::LinearSystem<TYPENAME>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const dsl::Coeff                                                                           \
+    );                                                                                             \
+    template void computeDivProcBoundImpl<TYPENAME>(                                               \
         la::LinearSystem<TYPENAME>&,                                                               \
         const SurfaceField<scalar>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \

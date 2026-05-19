@@ -53,6 +53,12 @@ public:
     SolverFactory(const Executor& exec) : exec_(exec) {};
 
     virtual SolverStats
+    solveDist(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const = 0;
+
+    virtual SolverStats
+    solveDist(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const = 0;
+
+    virtual SolverStats
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const = 0;
 
     virtual SolverStats
@@ -86,13 +92,27 @@ public:
     SolverStats
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
     {
-        return solverInstance_->solve(ls, field);
+        if (ls.commPattern().sendCounts.size())
+        {
+            return solverInstance_->solveDist(ls, field);
+        }
+        else
+        {
+            return solverInstance_->solve(ls, field);
+        }
     }
 
     SolverStats
     solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
     {
-        return solverInstance_->solve(ls, field);
+        if (ls.commPattern().sendCounts.size())
+        {
+            return solverInstance_->solveDist(ls, field);
+        }
+        else
+        {
+            return solverInstance_->solve(ls, field);
+        }
     }
 
 private:

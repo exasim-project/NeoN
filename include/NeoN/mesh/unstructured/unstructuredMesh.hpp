@@ -10,6 +10,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vectorTypeDefs.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 
 namespace NeoN
 {
@@ -60,11 +61,6 @@ public:
         scalarVector magFaceAreas,
         labelVector faceOwner,
         labelVector faceNeighbour,
-        localIdx nCells,
-        localIdx nInternalFaces,
-        localIdx nBoundaryFaces,
-        localIdx nBoundaries,
-        localIdx nFaces,
         BoundaryMesh boundaryMesh
     );
 
@@ -96,11 +92,6 @@ public:
         scalarVector magFaceAreas,
         labelVector faceOwner,
         labelVector faceNeighbour,
-        localIdx nCells,
-        localIdx nInternalFaces,
-        localIdx nBoundaryFaces,
-        localIdx nBoundaries,
-        localIdx nFaces,
         BoundaryMesh boundaryMesh
     );
 
@@ -189,19 +180,28 @@ public:
      */
     localIdx nBoundaryFaces() const;
 
+    localIdx nProcBoundaryFaces() const;
+
     /**
-     * @brief Get the number of boundaries in the mesh.
+     * @brief Get the number of processor boundary faces in the mesh.
+     *
+     * @return The number of processor boundary faces in the mesh.
+     */
+    localIdx nTotalFaces() const;
+
+    /**
+     * @brief Get the number of boundaries patches in the mesh.
      *
      * @return The number of boundaries in the mesh.
      */
     localIdx nBoundaries() const;
 
     /**
-     * @brief Get the number of faces in the mesh.
+     * @brief
      *
-     * @return The number of faces in the mesh.
+     * @return
      */
-    localIdx nFaces() const;
+    localIdx globalOffset() const;
 
     /**
      * @brief Get the boundary mesh.
@@ -209,6 +209,8 @@ public:
      * @return The boundary mesh.
      */
     const BoundaryMesh& boundaryMesh() const;
+
+    BoundaryMesh& boundaryMesh();
 
     /**
      * @brief Get the stencil data base.
@@ -287,27 +289,15 @@ private:
     localIdx nInternalFaces_;
 
     /**
-     * @brief Number of boundary faces in the mesh.
-     */
-    localIdx nBoundaryFaces_;
-
-    /**
-     * @brief Number of boundaries in the mesh.
-     */
-    localIdx nBoundaries_;
-
-    /**
-     * @brief Number of faces in the mesh.
-     */
-    localIdx nFaces_;
-
-    /**
      * @brief Boundary mesh.
      *
      * The boundary mesh is a collection of boundary patches
      * that are used to define boundary conditions in the mesh.
      */
     BoundaryMesh boundaryMesh_;
+
+    //
+    localIdx globalOffset_;
 
     /**
      * @brief Stencil data base.
@@ -359,5 +349,18 @@ UnstructuredMesh create3DUniformMesh(
     scalar ly = 1.0,
     scalar lz = 1.0
 );
+
+/** @brief A factory function for a 1D mesh
+ *
+ * A 1D mesh in 3D space in which each cell has a left and a right face.
+ * The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.
+ *
+ * @param nCells number of local cells on this rank
+ */
+UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells);
+
+/** @brief Given an unstructuredMesh this function computes the corresponding communication pattern
+ */
+CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh);
 
 } // namespace NeoN

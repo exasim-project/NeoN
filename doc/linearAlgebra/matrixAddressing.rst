@@ -321,3 +321,79 @@ For the 8-cell example (bf0 → C0):
 
     bRowIdx = [0]    (owner cell = C0 = 0)
     bColIdx = [0]    (= C0 + diagOffset[C0] = 0 + 0 = 0)
+
+.. note::
+
+   The ``colIdx`` formula uses ``celli + diagOffset[celli]``, **not** the full flat CSR
+   index ``rowOffs[celli] + diagOffset[celli]``.  The two are equal only for cell 0.
+   This value is a **bookkeeping tag**, not a direct index into ``matrix_.values()``.
+   Physical boundary contributions are written directly to the CSR diagonal inside the
+   operator kernels (e.g. ``computeLaplacianBoundImpl``); the COO ``boundaryMatrix_``
+   tracks the face-to-cell mapping for other purposes.  Do **not** use ``bColIdx`` as a
+   flat CSR offset.
+
+Processor Boundary Contributions (COO)
+---------------------------------------
+
+A processor boundary face couples a cell on the local rank to a cell on a neighbouring rank.
+The remote cell's value is not stored locally; it arrives via MPI.  After the exchange, the
+received contribution is subtracted from the **diagonal** of the local owner cell.
+
+The sparsity is again COO, built in ``setProcBoundarySparsityPattern``
+(``faceToMatrixAddress.cpp``):
+
+.. code-block:: cpp
+
+    // For proc-boundary face bfacei touching local cell celli:
+    pColIdx[bfacei] = celli + diagOffset[celli];
+    pRowIdx[bfacei] = celli;
+
+For the 8-cell example (pf0 → C3):
+
+.. code-block:: text
+
+    pRowIdx = [3]    (owner cell = C3 = 3)
+    pColIdx = [4]    (= C3 + diagOffset[C3] = 3 + 1 = 4)
+
+The MPI exchange happens in ``LinearSystem::communicate()``
+(``linearSystem.hpp``):
+
+1. Copy processor-boundary values to send buffer.
+2. ``MPI_Alltoallv`` exchanges contributions with all neighbouring ranks.
+3. Subtract received values from the local CSR matrix diagonal via
+   ``sub(recvBuffer, boundaryMatrixMap, matrix_.values())``.
+
+.. note::
+
+   ``pColIdx = celli + diagOffset[celli]`` is a bookkeeping tag (not a flat CSR offset),
+   same as the physical-boundary case.  ``LinearSystem::communicate()`` does **not** use
+   this colIdx directly; instead it calls ``computeRowToDiagonalMap`` which correctly
+   resolves ``rowOffs[cell] + diagOffset[cell]`` at scatter time.
+   ``CommunicationPattern::boundaryMapVector`` is currently unused (see FIXME in
+   ``unstructuredMesh.cpp``).
+
+How to Access Values in Practice
+----------------------------------
+
+.. code-block:: cpp
+
+    auto mi     = ls.faceToMatrixAddress();    // FaceToMatrixAddress
+    auto values = ls.matrix().values().view(); // flat values array
+
+    // 1. Diagonal of cell i:
+    values[mi->diagIdx(i)] += contribution;
+
+    // 2. A[own, nei] (upper triangular) for internal face f:
+    values[mi->upperIdx(own, f)] += contribution;
+    // Equivalent direct form: values[rowOffs[own] + ownerOffset[f]] += contribution;
+
+    // 3. A[nei, own] (lower triangular) for internal face f:
+    values[mi->lowerIdx(nei, f)] += contribution;
+    // Equivalent direct form: values[rowOffs[nei] + neighbourOffset[f]] += contribution;
+
+    // 4. Physical boundary contribution:
+    //    Operator kernels (e.g. computeLaplacianBoundImpl) write directly to
+    //    the CSR diagonal and RHS — there is no automatic scatter from boundaryMatrix.
+    auto own = faceCells[bcFaceIdx];
+    Kokkos::atomic_sub(&values[mi->diagIdx(own)], diagonalContribution);
+    rhs[own] -= rhsContribution;

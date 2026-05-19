@@ -113,14 +113,7 @@ struct EqualInt
 
 
 /**
- * @brief Catch2 matcher for element-wise comparison between an actual field and expected values.
- *
- * This matcher compares a NeoN field (or any compatible range) against an
- * expected container using a user-provided predicate. The comparison is
- * performed element-wise via @c std::equal.
- *
- * If the @p actual argument represents a device-resident field, it is first
- * copied to host memory via @c copyToHost() before comparison.
+ * @brief Factory function that creates an @ref EqualsRangeMatcher for a NeoN field.
  *
  * Typical usage:
  * @code
@@ -226,6 +219,21 @@ auto Equals(Expected expected, Predicate pred = Predicate {1e-32})
 
 namespace Catch
 {
+
+/**
+ * @brief Disable Catch2's built-in range StringMaker for NeoN::Vector.
+ *
+ * NeoN::Vector exposes @c begin()/@c end() and is therefore detected as a range
+ * by Catch2's @ref is_range trait. Without this specialization, both Catch2's
+ * generic range StringMaker and the NeoN-specific one below match, producing
+ * an "ambiguous partial specializations" error. Disabling the range trait lets
+ * the NeoN-specific specialization win unambiguously and ensures
+ * device-resident vectors are copied to host before stringification.
+ */
+template<typename T>
+struct is_range<NeoN::Vector<T>> : std::false_type
+{
+};
 
 /**
  * @brief Catch2 string conversion for NeoN::Vector.

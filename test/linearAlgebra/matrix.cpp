@@ -124,7 +124,7 @@ TEMPLATE_TEST_CASE("Matrix", "[template]", NeoN::scalar)
     // SECTION("Can computed scaledInverseDiagonal " + execName)
     // {
     //     auto a = NeoN::Vector<TestType>(exec, {1.0, 2.0, 3.0});
-    //     auto diag = denseMatrix.scaledInverseDiag(denseMatria);
+    //     auto diag = scaledInverseDiag(denseMatrix, a);
     //     auto diagH = diag.copyToHost();
 
     //     REQUIRE(diagH.view()[0] == 1.0);

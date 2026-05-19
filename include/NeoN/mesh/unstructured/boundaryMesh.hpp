@@ -21,6 +21,9 @@ namespace NeoN
  * as face cells, face centres, face normals, face areas normals, magnitudes of
  * face areas normals, delta vectors, weights, delta coefficients, and offsets.
  *
+ * Boundary faces are organised such that regular boundaries are stored first, followed
+ * by the processor boundaries.
+ *
  * The class also provides getter methods to access the individual fields and
  * their components.
  *
@@ -29,6 +32,8 @@ namespace NeoN
 class BoundaryMesh
 {
 public:
+
+    void validate() const;
 
     /**
      * @brief Constructor for the BoundaryMesh class.
@@ -45,7 +50,10 @@ public:
      * @param weights A field of weights used in cell to face interpolation.
      * @param deltaCoeffs A field of the inverse of distances between boundary faces and their
      * neighboring cell centers
-     * @param offset The offset of the faces of each boundary
+     * @param offset The offsets of the boundary faces, i.e. offset[i], offset[i+1] define begging
+     * and end of a patch.
+     * @param deltaCoeffs A field of cell to face distances.
+     * @param neighbourRank corresponding mpiRank ouf neighbour
      */
     BoundaryMesh(
         const Executor& exec,
@@ -58,7 +66,9 @@ public:
         vectorVector delta,
         scalarVector weights,
         scalarVector deltaCoeffs,
-        std::vector<localIdx> offset
+        std::vector<localIdx> offset,
+        localIdx procBoundaryPatches,
+        std::vector<localIdx> neighbourRank
     );
 
 
@@ -117,6 +127,13 @@ public:
     const vectorVector& sf() const;
 
     /**
+     * @brief Get the field of face areas normals.
+     *
+     * @return A constant reference to the field of face areas normals.
+     */
+    vectorVector& sf();
+
+    /**
      * @brief Get a view of face areas normals for a specific boundary face.
      *
      * @param i The index of the boundary face.
@@ -148,6 +165,8 @@ public:
      * @return A constant reference to the field of face unit normals.
      */
     const vectorVector& nf() const;
+
+    vectorVector& nf();
 
     /**
      * @brief Get a view of face unit normals for a specific boundary face.
@@ -203,6 +222,13 @@ public:
     View<const scalar> deltaCoeffs(const localIdx i) const;
 
     /**
+     * @brief Given a patchId the corresponding neighbour Rank gets returned
+     *
+     * -1 for patches without a distributed neighbour
+     */
+    scalar neighbourRank(const localIdx i) const;
+
+    /**
      * @brief Get the offset of the boundary faces.
      *
      * @return A constant reference to the offset of the boundary faces.
@@ -210,6 +236,19 @@ public:
     // TODO consistent use of Vector on CPU
     const std::vector<localIdx>& offset() const;
 
+    /**@brief number of proc boundary patches */
+    localIdx nProcBoundaryPatches() const;
+
+    const std::vector<localIdx>& neighbourRank() const;
+
+    // FIXME
+    localIdx nBoundaries() const { return offset_.size() - 1; }
+
+    localIdx nBoundaryFaces() const { return faceCells_.size() - nProcBoundaryFaces(); }
+
+    localIdx nProcBoundaryFaces() const;
+
+    bool isDistributed() const { return nProcBoundaryFaces() > 0; }
 
 private:
 
@@ -279,6 +318,29 @@ private:
      */
     // TODO consistent use of Vector on CPU
     std::vector<localIdx> offset_;
+
+    /**
+     * @brief number of processor patches
+     *
+     * Vector of cell to face distances.
+     */
+    localIdx procBoundaryPatches_;
+
+    // /**
+    //  * @brief number of processor patches
+    //  *
+    //  * Vector of cell to face distances.
+    //  */
+    // localIdx procBoundaryFaces_;
+
+    /**
+     * @brief The mpi rank of the corresponding neighbour patch
+     */
+    std::vector<localIdx> neighbourRank_;
 };
+
+// FIXME is this actually used
+/* @brief   */
+std::vector<localIdx> computeBoundaryMatrixMapVector();
 
 } // namespace NeoN

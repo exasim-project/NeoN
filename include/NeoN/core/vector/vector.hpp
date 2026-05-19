@@ -220,6 +220,30 @@ public:
     [[nodiscard]] const ValueType* data() const { return data_; }
 
     /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] ValueType* begin() { return data_; }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] const ValueType* begin() const { return data_; }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] ValueType* end() { return data_ + size(); }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] const ValueType* end() const { return data_ + size(); }
+
+    /**
      * @brief Gets the executor associated with the field.
      * @return Reference to the executor.
      */

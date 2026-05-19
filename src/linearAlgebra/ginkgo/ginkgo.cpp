@@ -184,7 +184,6 @@ auto gkoCopyArray(std::shared_ptr<const gko::Executor> exec, std::span<T> values
     return gko::make_const_array_view(exec, values.size(), values.data()).copy_to_array();
 }
 
-
 /*@brief create a dense non const view into data given by ptr*/
 std::shared_ptr<gko::matrix::Dense<scalar>>
 gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s)
@@ -205,6 +204,28 @@ gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localId
     ));
 }
 
+/* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
+template<typename IndexType>
+std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtx(
+    std::shared_ptr<const gko::Executor> exec,
+    const LinearSystem<Vec3, CSRMatrix<Vec3, IndexType>>& sys
+)
+{
+    // NOTE we get a const view of the system but need a non const view to vals and indices
+    const auto mtx = sys.matrix();
+    const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
+    const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
+    const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+
+    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
+    return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
+        exec,
+        gko::dim<2> {nrows, nrows},
+        gkoCopyArray(exec, valuesCopy.view()),
+        gkoCopyArray(exec, colsCopy.view()),
+        gkoCopyArray(exec, rowsCopy.view())
+    ));
+}
 
 /* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
@@ -287,7 +308,6 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx)
     auto exec = getGkoExecutor(mtx.exec());
     return createGkoMtxImpl(exec, mtx);
 }
-
 /*@brief helper function to get a scalar dense value from a device back to the host*/
 template<typename InType>
 scalar retrieve(const InType& in)
@@ -355,29 +375,6 @@ SolverStats GinkgoSolver::solve(
     auto gkoMtx = createGkoMtx(sys.matrix());
     auto solver = factory_->generate(gkoMtx);
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
-}
-
-/* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
-template<typename IndexType>
-std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
-    std::shared_ptr<const gko::Executor> exec,
-    const LinearSystem<Vec3, CSRMatrix<Vec3, IndexType>>& sys
-)
-{
-    // NOTE we get a const view of the system but need a non const view to vals and indices
-    const auto mtx = sys.matrix();
-    const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
-    const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
-    const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
-
-    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
-    return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
-        exec,
-        gko::dim<2> {nrows, nrows},
-        gkoCopyArray(exec, valuesCopy.view()),
-        gkoCopyArray(exec, colsCopy.view()),
-        gkoCopyArray(exec, rowsCopy.view())
-    ));
 }
 
 // wrapper to solve a single component of a <vec3> equation

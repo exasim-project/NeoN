@@ -27,20 +27,23 @@ function(NeoN_unit_test TEST)
   endif()
   if(NOT DEFINED "NeoN_COMMAND")
     set(NeoN_COMMAND neon_test_${TEST})
+  else()
+    message(Warning "NeoN_command already defined ${NeoN_COMMAND}")
   endif()
 
-  add_executable(${NeoN_COMMAND} "${TEST}.cpp")
+  add_executable("${NeoN_COMMAND}" "${TEST}.cpp")
   install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_PETSC)
-    target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES})
     target_link_libraries(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARIES}
                                                   ${PETSc_LIBRARY_DIRS}/libkokkoscore.so mpi)
     target_include_directories(${NeoN_COMMAND} PRIVATE ${PETSc_INCLUDE_DIRS})
     target_link_directories(${NeoN_COMMAND} PRIVATE ${PETSc_LIBRARY_DIRS})
     link_directories(${PETSc_LIBRARY_DIRS})
   endif()
+
   target_include_directories(${NeoN_COMMAND} PRIVATE "${TEST_CATCH2_DIR}")
+  set_target_properties(${NeoN_COMMAND} PROPERTIES OUTPUT_NAME neon_test_${TEST})
 
   target_link_libraries(${NeoN_COMMAND} PRIVATE NeoN_warnings NeoN_options NeoN cpptrace::cpptrace)
   if(NOT NeoN_MPI_SIZE)
@@ -51,8 +54,8 @@ function(NeoN_unit_test TEST)
 
   if(NeoN_WITH_SUNDIALS)
     target_link_libraries(${NeoN_COMMAND} PRIVATE SUNDIALS::arkode)
-
   endif()
+
   if(WIN32)
     set_target_properties(
       ${NeoN_COMMAND}
@@ -77,16 +80,19 @@ function(NeoN_unit_test TEST)
       WORKING_DIRECTORY ${NeoN_WORKING_DIRECTORY})
     set_tests_properties(${TEST} PROPERTIES TIMEOUT 10)
     set_tests_properties(${TEST} PROPERTIES PROCESSORS ${NeoN_MPI_SIZE})
+    # target_link_libraries(${TEST} PRIVATE NeoN_warnings NeoN_options NeoN cpptrace::cpptrace)
     if(${MPIEXEC_MAX_NUMPROCS} LESS NeoN_MPI_SIZE)
       message(WARNING "Test <${TEST}> requested <${NeoN_MPI_SIZE}> processors, "
-                      "but only <${numberOfProcessors}> are available. Disabling test " "<${TEST}>")
-      set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
+                      "but only <${MPIEXEC_MAX_NUMPROCS}> are available. Disabling test "
+                      "<${TEST}>")
+      set_tests_properties(${NeoN_COMMAND} PROPERTIES DISABLED TRUE)
     endif()
   endif()
 endfunction()
 
 add_subdirectory(core)
 add_subdirectory(dsl)
+add_subdirectory(distributed)
 add_subdirectory(fields)
 add_subdirectory(finiteVolume)
 add_subdirectory(linearAlgebra)

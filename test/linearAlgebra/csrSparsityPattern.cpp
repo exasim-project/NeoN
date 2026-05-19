@@ -14,6 +14,7 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 namespace NeoN
 {
 
+// FIXME needs tests for COO and CSR sparsity pattern
 TEST_CASE("SparsityPattern")
 {
     using CsrSparsityType = NeoN::la::CsrSparsityPattern<NeoN::localIdx>;
@@ -22,7 +23,10 @@ TEST_CASE("SparsityPattern")
     auto nCells = 4;
 
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<CsrSparsityType>(mesh);
+    auto [mi, commPattern] =
+        NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    auto sp = mi->sparsityPattern();
+    // internal sparsity
 
     // clang-format off
     // Mesh:
@@ -44,12 +48,33 @@ TEST_CASE("SparsityPattern")
         REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
 
-    auto bsp = NeoN::la::createBoundarySparsityPattern<CsrSparsityType>(mesh, *mi);
+    auto bsp = mi->boundarySparsityPattern();
     SECTION("Can produce boundary rowOffs and colIdx " + execName)
     {
-        REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {0, 1, 1, 1, 2}, EqualInt()));
-        // REQUIRE_THAT(bsp->colIdxs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
+        // auto colIdxExp = Vector<localIdx>(exec, {0, 4});
+
+        REQUIRE_THAT(bsp->rowOffs(), Equals(I({0, 3}), EqualInt()));
+        // FIXME
+        // compare(bsp->colIdxs(), colIdxExp, EqualInt());
+    }
+
+    // since this is not an MPI test nonLocalMtx is empty
+    auto nonLocalSp = mi->nonLocalSparsityPattern();
+    SECTION("Can produce boundary rowOffs and colIdx " + execName)
+    {
+        auto rowPtrExp = std::vector<localIdx> {};
+        auto colIdxExp = std::vector<localIdx> {};
+
+        REQUIRE_THAT(nonLocalSp->rowOffs(), Equals(rowPtrExp, EqualInt()));
+        REQUIRE_THAT(nonLocalSp->colIdxs(), Equals(colIdxExp, EqualInt()));
+
+        auto bsp = NeoN::la::createBoundarySparsityPattern<CsrSparsityType>(mesh, *mi);
+        SECTION("Can produce boundary rowOffs and colIdx " + execName)
+        {
+            REQUIRE_THAT(bsp->rowOffs(), Equals(std::vector<localIdx> {0, 1, 1, 1, 2}, EqualInt()));
+            // REQUIRE_THAT(bsp->colIdxs(), Equals(std::vector<localIdx> {0, 3}, EqualInt()));
+        }
     }
 }
 
-}
+} // namespace NeoN

@@ -40,6 +40,8 @@ void registerBoundaryMesh(nb::module_& m)
                 NeoN::vectorVector,
                 NeoN::scalarVector,
                 NeoN::scalarVector,
+                std::vector<NeoN::localIdx>,
+                localIdx,
                 std::vector<NeoN::localIdx>>(),
             "exec"_a,
             "face_cells"_a,
@@ -52,6 +54,8 @@ void registerBoundaryMesh(nb::module_& m)
             "weights"_a,
             "delta_coeffs"_a,
             "offset"_a,
+            "procBoundaryPatches"_a,
+            "neighbourRank"_a,
             "Create a BoundaryMesh with all geometric data"
         )
 
@@ -129,11 +133,10 @@ void registerBoundaryMesh(nb::module_& m)
         )
         .def(
             "offset",
-            &NeoN::BoundaryMesh::offset,
+            nb::overload_cast<>(&NeoN::BoundaryMesh::offset, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the offset vector for accessing boundary-specific data"
         )
-
         .def(
             "__repr__",
             [](const NeoN::BoundaryMesh& bm)

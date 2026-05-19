@@ -22,7 +22,8 @@ TEST_CASE("SparsityPattern")
     auto nCells = 4;
 
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<CooSparsityType>(mesh);
+    auto [mi, commPattern] =
+        NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
 
     // clang-format off
     // Mesh:
@@ -37,10 +38,11 @@ TEST_CASE("SparsityPattern")
     // clang-format on
     SECTION("Can produce internal rowOffs and colIdx " + execName)
     {
-        auto rowIdxExp = std::vector<localIdx> {0, 0, 1, 1, 1, 2, 2, 2, 3, 3};
+        auto sp = mi->sparsityPattern();
+        auto rowPtrExp = std::vector<localIdx> {0, 2, 5, 8, 10};
         auto colIdxExp = std::vector<localIdx> {0, 1, 0, 1, 2, 1, 2, 3, 2, 3};
 
-        REQUIRE_THAT(sp->rowIdxs(), Equals(rowIdxExp, EqualInt()));
+        REQUIRE_THAT(sp->rowOffs(), Equals(rowPtrExp, EqualInt()));
         REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
 

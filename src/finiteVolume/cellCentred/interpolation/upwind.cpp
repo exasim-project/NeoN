@@ -72,8 +72,12 @@ void computeUpwindInterpolationWeights(
         src.mesh().faceNeighbour(),
         flux.internalVector()
     );
-    auto nInternalFaces = src.mesh().nInternalFaces();
 
+    NF_ASSERT(flux.internalVector().size() == weights.size(), "different size");
+
+    auto nInternalFaces = src.mesh().nInternalFaces();
+    auto nBoundaryFaces = src.mesh().nBoundaryFaces();
+    auto totalFaces = flux.size();
     parallelFor(
         exec,
         {0, weights.size()},
@@ -82,11 +86,17 @@ void computeUpwindInterpolationWeights(
             {
                 weightS[facei] = fluxS[facei] >= 0 ? 1 : 0;
             }
-            else
+            auto bcfacei = facei - nInternalFaces;
+            if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
             {
-                auto bcfacei = facei - nInternalFaces;
                 weightB[bcfacei] = 1.0;
                 weightS[facei] = 1.0;
+            }
+            if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
+            {
+                auto weight = fluxS[facei] >= 0 ? 1 : 0;
+                weightS[facei] = weight;
+                weightB[bcfacei] = weight;
             }
         },
         "computeUpwindInterpolation"

@@ -14,9 +14,13 @@ namespace dsl = NeoN::dsl;
 
 TEMPLATE_TEST_CASE("Expression", "[template]", NeoN::scalar, NeoN::Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = NeoN::createSingleCellMesh(exec);
+
+    auto [mi, commPattern] =
+        NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
 
     const size_t size {1};
     NeoN::BoundaryData<TestType> bf(exec, mesh.boundaryMesh().offset());

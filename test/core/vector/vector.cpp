@@ -281,3 +281,18 @@ TEST_CASE("getViews")
         REQUIRE(value == 5.0);
     }
 }
+
+TEST_CASE("take")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::Vector<NeoN::scalar> a(exec, {1, 2, 3, 4, 5, 6});
+
+    auto takeRes = take(a, 1, 4);
+    auto takeResH = takeRes.copyToHost();
+
+    REQUIRE(takeResH.size() == 3);
+    REQUIRE(takeResH.view()[0] == 2.0);
+    REQUIRE(takeResH.view()[1] == 3.0);
+    REQUIRE(takeResH.view()[2] == 4.0);
+}

@@ -69,7 +69,7 @@ public:
      * @param rankSendMap The rank send map.
      * @param rankReceiveMap The rank receive map.
      */
-    Communicator(mpi::MPIEnvironment mpiEnviron, CommMap rankSendMap, CommMap rankReceiveMap)
+    Communicator(mpi::Environment mpiEnviron, CommMap rankSendMap, CommMap rankReceiveMap)
         : mpiEnviron_(mpiEnviron), sendMap_(rankSendMap), receiveMap_(rankReceiveMap)
     {
         NF_DEBUG_ASSERT(
@@ -103,11 +103,12 @@ public:
         }
 
         CommBuffer_[commName]->initComm<valueType>(commName);
+        auto fieldV = field.view();
         for (size_t rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
         {
             auto rankBuffer = CommBuffer_[commName]->getSend<valueType>(rank);
             for (size_t data = 0; data < sendMap_[rank].size(); ++data)
-                rankBuffer[data] = field(static_cast<size_t>(sendMap_[rank][data].local_idx));
+                rankBuffer[data] = fieldV[static_cast<size_t>(sendMap_[rank][data].local_idx)];
         }
         CommBuffer_[commName]->startComm();
     }
@@ -134,11 +135,12 @@ public:
         );
 
         CommBuffer_[commName]->waitComplete();
+        auto fieldV = field.view();
         for (size_t rank = 0; rank < mpiEnviron_.sizeRank(); ++rank)
         {
             auto rankBuffer = CommBuffer_[commName]->getReceive<valueType>(rank);
             for (size_t data = 0; data < receiveMap_[rank].size(); ++data)
-                field(static_cast<size_t>(receiveMap_[rank][data].local_idx)) = rankBuffer[data];
+                fieldV[static_cast<size_t>(receiveMap_[rank][data].local_idx)] = rankBuffer[data];
         }
         CommBuffer_[commName]->finaliseComm();
         CommBuffer_[commName] = nullptr;
@@ -146,7 +148,7 @@ public:
 
 private:
 
-    mpi::MPIEnvironment mpiEnviron_; /**< The MPI environment. */
+    mpi::Environment mpiEnviron_;    /**< The MPI environment. */
     CommMap sendMap_;                /**< The rank send map. */
     CommMap receiveMap_;             /**< The rank receive map. */
     std::vector<bufferType> buffers; /**< Communication buffers. */

@@ -15,11 +15,13 @@
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
 #include "boundary/volume/symmetry.hpp"
+#include "boundary/volume/processor.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
 #include "boundary/surface/fixedValue.hpp"
 #include "boundary/surface/symmetry.hpp"
+#include "boundary/surface/processor.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -34,9 +36,16 @@ std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
     std::vector<BoundaryType> bcs;
     bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
 
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    auto processorBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
+    auto internalBoundaries = mesh.nBoundaries() - processorBoundaries;
+    for (localIdx patchID = 0; patchID < internalBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
+        bcs.emplace_back(mesh, patchDict, patchID);
+    }
+    for (localIdx patchID = internalBoundaries; patchID < mesh.nBoundaries(); patchID++)
+    {
+        Dictionary patchDict({{"type", std::string("processor")}});
         bcs.emplace_back(mesh, patchDict, patchID);
     }
     return bcs;
@@ -47,9 +56,16 @@ std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
     bcs.reserve(mesh.nBoundaries());
-    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    auto processorBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
+    auto internalBoundaries = mesh.nBoundaries() - processorBoundaries;
+    for (localIdx patchID = 0; patchID < internalBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("extrapolated")}});
+        bcs.emplace_back(mesh, patchDict, patchID);
+    }
+    for (localIdx patchID = internalBoundaries; patchID < mesh.nBoundaries(); patchID++)
+    {
+        Dictionary patchDict({{"type", std::string("processor")}});
         bcs.emplace_back(mesh, patchDict, patchID);
     }
     return bcs;
@@ -78,6 +94,9 @@ template class fvcc::volumeBoundary::Calculated<Vec3>;
 template class fvcc::volumeBoundary::Calculated<Tensor>;
 template class fvcc::volumeBoundary::Calculated<SymmTensor>;
 
+template class fvcc::volumeBoundary::Processor<scalar>;
+template class fvcc::volumeBoundary::Processor<Vec3>;
+
 template class fvcc::volumeBoundary::Extrapolated<scalar>;
 template class fvcc::volumeBoundary::Extrapolated<Vec3>;
 
@@ -105,5 +124,8 @@ template class fvcc::surfaceBoundary::Empty<Vec3>;
 
 template class fvcc::surfaceBoundary::Symmetry<scalar>;
 template class fvcc::surfaceBoundary::Symmetry<Vec3>;
+
+template class fvcc::surfaceBoundary::Processor<scalar>;
+template class fvcc::surfaceBoundary::Processor<Vec3>;
 
 }

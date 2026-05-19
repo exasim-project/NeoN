@@ -40,7 +40,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 3);
         REQUIRE(mesh.nBoundaryFaces() == 2);
         REQUIRE(mesh.nBoundaries() == 2);
-        REQUIRE(mesh.nFaces() == 5);
+        REQUIRE(mesh.nTotalFaces() == 5);
 
         // Verify mesh points
         // bc  [   internal  ]  bc
@@ -97,7 +97,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 4);
         REQUIRE(mesh.nBoundaryFaces() == 8);
         REQUIRE(mesh.nBoundaries() == 4);
-        REQUIRE(mesh.nFaces() == 12);
+        REQUIRE(mesh.nTotalFaces() == 12);
 
         // Verify point count: two z-planes
         auto hostPoints = mesh.points().copyToHost();
@@ -171,7 +171,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 7);
         REQUIRE(mesh.nBoundaryFaces() == 10);
         REQUIRE(mesh.nBoundaries() == 4);
-        REQUIRE(mesh.nFaces() == 17);
+        REQUIRE(mesh.nTotalFaces() == 17);
 
         // Cell volume = (3/3) * (2/2) * 1.0 = 1.0
         auto cellVolumesExp = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -236,7 +236,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 12);
         REQUIRE(mesh.nBoundaryFaces() == 24);
         REQUIRE(mesh.nBoundaries() == 6);
-        REQUIRE(mesh.nFaces() == 36);
+        REQUIRE(mesh.nTotalFaces() == 36);
 
         auto hostPoints = mesh.points().copyToHost();
         REQUIRE(hostPoints.size() == 27);
@@ -284,7 +284,7 @@ TEST_CASE("Unstructured Mesh")
         REQUIRE(mesh.nInternalFaces() == 20);
         REQUIRE(mesh.nBoundaryFaces() == 32);
         REQUIRE(mesh.nBoundaries() == 6);
-        REQUIRE(mesh.nFaces() == 52);
+        REQUIRE(mesh.nTotalFaces() == 52);
 
         // Cell volume = (3/3) * (2/2) * (2/2) = 1.0
         auto cellVolumesExp =

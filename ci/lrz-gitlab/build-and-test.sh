@@ -26,6 +26,7 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
     cmake --preset develop \
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
+        -DNeoN_WITH_MPI=ON \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
     ctest --preset develop -E bench --output-on-failure
@@ -40,6 +41,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
     echo "=== AMD GPU and compiler driver info ==="
     rocminfo | grep "AMD"
     hipcc --version
+    which mpirun
 
     echo "=== Configuring, building, and testing NeoN on AMD ==="
     cmake --preset develop \
@@ -51,6 +53,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
         -DCMAKE_HIP_ARCHITECTURES=gfx90a \
         -DKokkos_ARCH_AMD_GFX90A=ON \
         -DNeoN_WITH_THREADS=OFF \
+        -DNeoN_WITH_MPI=ON \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
     ctest --preset develop -E bench --output-on-failure
@@ -69,8 +72,12 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
         -DKokkos_ENABLE_SYCL=ON \
         -DKokkos_ARCH_INTEL_PVC=ON \
         -DNeoN_WITH_THREADS=OFF \
+        -DNeoN_WITH_MPI=ON \
         -DCMAKE_BUILD_TYPE="release" \
-        -DNeoN_BUILD_BENCHMARKS=ON
+        -DNeoN_BUILD_BENCHMARKS=ON \
+	-DMPIEXEC_EXECUTABLE="/opt/intel/oneapi/mpi/2021.17/bin/mpirun" \
+	-DMPI_CXX_COMPILER=/usr/bin/mpicxx \
+        -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
     ctest --preset develop -E bench --output-on-failure
 

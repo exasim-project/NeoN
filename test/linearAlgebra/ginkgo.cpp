@@ -114,6 +114,7 @@ TEST_CASE("MatrixConversion - Ginkgo")
 
 TEST_CASE("MatrixAssembly - Ginkgo")
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     gko::matrix_data<double, int> expected {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}};
@@ -131,7 +132,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         std::move(bColIdx), std::move(bRowOffs), Dimensions {0, 0}
     );
 
-    SECTION("Solve linear system scalar " + execName)
+    SECTION("Solve linear system wo boundary scalar " + execName)
     {
         Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
         CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
@@ -141,8 +142,49 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
 
+        NeoN::CommunicationPattern commPattern {};
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
-            csrMatrix, rhs, bCooMatrix, bRhs
+            csrMatrix, bCooMatrix, commPattern, rhs, bCooMatrix, bRhs
+        );
+
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+        };
+
+        // Create solver
+        auto solver = NeoN::la::Solver(exec, solverDict);
+
+        // Solve system
+        auto solverStats = solver.solve(linearSystem, x);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-8));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-8));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-8));
+        REQUIRE(numIter == 3);
+        REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
+        REQUIRE(finalResNorm < 1.0e-04);
+    }
+
+    SECTION("Solve linear system wo boundary scalar with multiple rhs " + execName)
+    {
+        Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+        CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+        Vector<scalar> rhs(exec, {1.0, 2.0, 3.0});
+
+        Vector<scalar> bValues(exec, {});
+        COOMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+        Vector<scalar> bRhs(exec, {});
+
+        NeoN::CommunicationPattern commPattern {};
+        auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
+            csrMatrix, bCsrMatrix, commPattern, rhs, bCsrMatrix, bRhs
         );
 
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
@@ -191,8 +233,9 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
         Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
+        NeoN::CommunicationPattern commPattern {};
         auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
-            csrMatrix, rhs, bCooMatrix, bRhs
+            csrMatrix, bCooMatrix, commPattern, rhs, bCooMatrix, bRhs
         );
 
         SECTION("Segregated" + execName)

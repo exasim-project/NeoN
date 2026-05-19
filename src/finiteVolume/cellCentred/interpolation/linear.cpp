@@ -19,16 +19,33 @@ void computeLinearInterpolation(
     SurfaceField<ValueType>& dst
 )
 {
+    NeoN::mpi::Environment mpiEnviron;
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
+    // Also populate dst.boundaryData().value(): callers that iterate the
+    // SurfaceField's per-patch boundary view (e.g. nf::compare with
+    // withBoundaries=true, or any operator that consumes the boundary
+    // representation of an interpolated surface field) need the boundary
+    // half to carry the same value the kernel writes into internalVector
+    // at boundary face indices.
+    auto dstBnd = dst.boundaryData().value().view();
+    const auto [srcS, weightS, ownerS, neighS, bcFaceCells, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
+        dst.mesh().boundaryMesh().faceCells(),
         src.boundaryData().value()
     );
-    auto nInternalFaces = dst.mesh().nInternalFaces();
+
+    auto nInternalFaces = src.mesh().nInternalFaces();
+    auto nBoundaryFaces = src.mesh().nBoundaryFaces();
+    auto totalFaces = src.mesh().nTotalFaces();
+
+    NF_ASSERT(dstS.size() == totalFaces, "Inconsistent size");
+    //    NF_ASSERT(dstS.size() == ownerS.size(), "Inconsistent size");
+    // NF_ASSERT(dstS.size() == neighS.size(), "Inconsistent size");
+    NF_ASSERT(dstS.size() == weightS.size(), "Inconsistent size");
 
     NeoN::parallelFor(
         exec,
@@ -38,11 +55,32 @@ void computeLinearInterpolation(
             {
                 auto own = ownerS[facei];
                 auto nei = neighS[facei];
-                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
+                dstS[facei] = weightS[facei] * srcS[own] + (1.0 - weightS[facei]) * srcS[nei];
             }
-            else
+            // regular boundary
+            if (facei >= nInternalFaces && facei < nInternalFaces + nBoundaryFaces)
             {
-                dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
+                auto bcfacei = facei - nInternalFaces;
+                dstS[facei] = weightS[facei] * boundS[bcfacei];
+                dstBnd[bcfacei] = dstS[facei];
+            }
+            // proc boundary
+            //
+            // Same linear blend as an internal face, but the neighbour cell
+            // lives on another rank. After VolumeField::correctBoundaryConditions
+            // the exchanged neighbour value sits in boundS[bcfacei].
+            //
+            // Use bm.faceCells() (compressed indexing matching the boundary tail
+            // of the surface field) for the owner cell. mesh.faceOwner() is in
+            // OpenFOAM's full face indexing which includes empty patches;
+            // indexing it with the compressed proc-face index reads the wrong
+            // (empty-patch) face's owner.
+            if (facei >= nInternalFaces + nBoundaryFaces && facei < totalFaces)
+            {
+                auto bcfacei = facei - nInternalFaces;
+                auto own = bcFaceCells[bcfacei];
+                dstS[facei] = (1 - weightS[facei]) * srcS[own] + weightS[facei] * boundS[bcfacei];
+                dstBnd[bcfacei] = dstS[facei];
             }
         },
         "computeLinearInterpolation"

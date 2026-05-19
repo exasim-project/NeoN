@@ -21,6 +21,7 @@ using I = std::initializer_list<T>;
 
 TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
 {
+    NeoN::mpi::Environment mpiEnviron;
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     const NeoN::localIdx nCells = 10;

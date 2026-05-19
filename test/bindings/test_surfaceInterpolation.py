@@ -7,7 +7,6 @@ import neon
 
 def test_surface_interpolation_scalar(executor):
     name, exec = executor
-
     mesh = neon.create_1d_uniform_mesh(exec, 4)
 
     volume = neon.ScalarVolumeField(exec, "phi", mesh)
@@ -23,10 +22,8 @@ def test_surface_interpolation_scalar(executor):
 
     assert surface.size() == mesh.n_internal_faces() + mesh.n_boundary_faces()
 
-
 def test_surface_interpolation_vector(executor):
     name, exec = executor
-
     mesh = neon.create_1d_uniform_mesh(exec, 4)
 
     volume = neon.VectorVolumeField(exec, "U", mesh)

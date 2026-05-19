@@ -23,6 +23,19 @@
 namespace NeoN::la::ginkgo
 {
 
+/*@brief create a array non const view into data given by ptr*/
+template<typename T>
+gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<T> values);
+
+std::shared_ptr<const gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, const scalar* ptr, localIdx s);
+
+std::shared_ptr<gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, scalar* ptr, localIdx s);
+
+template<typename InType>
+scalar retrieve(const InType& in);
+
 std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
 gko::config::pnode parse(const Dictionary& dict);
@@ -53,6 +66,16 @@ public:
     static std::string doc() { return "TBD"; }
 
     static std::string schema() { return "none"; }
+
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+
+    ) const final;
+
+    virtual SolverStats solveDist(
+        const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+
+    ) const final;
 
     virtual SolverStats solve(
         const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
