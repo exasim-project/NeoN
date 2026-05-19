@@ -184,8 +184,9 @@ public:
         int commRanks = mpiEnv.sizeRank();
 
         // auto boundaryMatrixMap = Vector<localIdx>(exec(), commPattern.boundaryMapVector);
-        auto nsp = faceToMatrixAddress_->nonLocalSparsityPattern();
-        auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), faceToMatrixAddress_);
+        auto ftma = matrix_.faceToMatrixAddress();
+        auto nsp = ftma->nonLocalSparsityPattern();
+        auto rowToDiagonalMap = la::computeRowToDiagonalMap(nsp->rowOffs(), ftma);
 
         // 1. copy bValues which need to be communicated into sendBuffer
         auto commSize = commPattern.sendCounts[mpiEnv.sizeRank()];
@@ -360,6 +361,7 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
     auto offDiagSp = std::make_shared<const typename BoundaryMatrixType::MatrixSparsityType>(
         std::move(offDiagColIdxs), std::move(offDiagRowIdxs), Dimensions {nCells, nCells}
     );
+}
 
     LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> ls {
         SystemMatrixType(Vector<ValueType>(sp->exec(), sp->nnz(), zero<ValueType>()), sp, mi),

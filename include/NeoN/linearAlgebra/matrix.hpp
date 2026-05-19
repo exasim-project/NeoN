@@ -266,9 +266,6 @@ using CSRMatrix = Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
 template<typename ValueType, typename IndexType>
 using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
 
-template<typename ValueType, typename IndexType>
-using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
-
 /** @brief extract the upper triangular of the matrix
  * @note this function is meant for testing purposes, it will recompute upper offsets
  */
@@ -334,4 +331,4 @@ void scaledInvDiagNegLUx(
     Vector<Vec3>& out
 );
 
-} // namespace NeoN
+} // namespace NeoN::la

@@ -74,10 +74,9 @@ NeoN::Array<uint8_t>& FaceToMatrixAddress::neighbourOffset() { return neighbourO
 NeoN::Array<uint8_t>& FaceToMatrixAddress::diagOffset() { return diagOffset_; }
 
 // ---------------------------------------------------------------------------
-// Internal helpers for building the sparsity data from a mesh
+// Internal helpers
 // ---------------------------------------------------------------------------
 
-/** @brief */
 template<typename IndexType>
 void setBoundarySparsityPatternImpl(
     const UnstructuredMesh& mesh,
@@ -145,7 +144,6 @@ void setOffDiagonalSparsityPatternImpl(
 
     // FIXME needs communication to other side
 }
-
 
 template<typename IndexType>
 void setSparsityPatternFaceToMatrixAddressSerial(
@@ -259,6 +257,10 @@ void setSparsityPatternFaceToMatrixAddressSerial(
     rowOffs = rowOffsH.copyToExecutor(exec);
 }
 
+// ---------------------------------------------------------------------------
+// createSparsityPatternFaceToMatrixAddress
+// ---------------------------------------------------------------------------
+
 template<typename IndexType>
 void setProcBoundarySparsityPattern(
     const UnstructuredMesh& mesh,
@@ -359,7 +361,7 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
 template<>
 std::shared_ptr<const CooSparsityPattern<localIdx>>
 createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(
-    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& ftma
 )
 {
     const auto exec = mesh.exec();
@@ -416,7 +418,7 @@ std::shared_ptr<const FaceToMatrixAddress<IndexType>> createSparsityPatternFaceT
 template<>
 std::shared_ptr<const CsrSparsityPattern<localIdx>>
 createBoundarySparsityPattern<CsrSparsityPattern<localIdx>>(
-    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& ftma
 )
 {
     const auto exec = mesh.exec();
@@ -475,11 +477,8 @@ createOffDiagonalSparsityPattern<CsrSparsityPattern<localIdx>>(
     );
 }
 
-// TODO currently CSR is hardcoded here
-template std::pair<
-    std::shared_ptr<const CsrSparsityPattern<localIdx>>,
-    std::shared_ptr<const FaceToMatrixAddress>>
-createSparsityPatternFaceToMatrixAddress<CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
+template std::pair<std::shared_ptr<const FaceToMatrixAddress>, CommunicationPattern>
+createSparsityPatternFaceToMatrixAddress<localIdx>(const UnstructuredMesh&);
 
 template std::shared_ptr<const FaceToMatrixAddress<localIdx>>
 createSparsityPatternFaceToMatrixAddressDist<localIdx>(
