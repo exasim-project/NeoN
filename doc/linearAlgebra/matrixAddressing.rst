@@ -139,7 +139,6 @@ It builds the arrays in five passes:
 
 Iterate all faces and increment the count for each owner and neighbour cell.
 
->>>>>>> origin/develop
 .. code-block:: text
 
     nFacesPerCell = [1, 1, 1, 1]
