@@ -157,15 +157,9 @@ Divergence convention
 With :math:`F_f > 0` meaning flux from owner P to neighbour N
 (valid because :math:`\mathbf{S}_f` points from owner to neighbour):
 
-<<<<<<< HEAD
-- **Owner row** P: total contribution **+F_f**
-  (:math:`\mathbf{S}_f` is outward from P → positive divergence at P).
-- **Neighbour row** N: total contribution **−F_f**
-=======
 - **Owner row** P: total contribution :math:`\mathbf{+F_f}`
-  (:math:`\mathbf{S}_f` is outward from P → positive divergence at P).
+(:math:`\mathbf{S}_f` is outward from P → positive divergence at P).
 - **Neighbour row** N: total contribution :math:`\mathbf{-F_f}`
->>>>>>> origin/develop
   (:math:`\mathbf{S}_f` is inward to N from this face → negative contribution at N).
 
 Global verification: :math:`+F_f - F_f = 0` per face ✓
@@ -233,15 +227,6 @@ Row-sum verification per face:
    :math:`-(1-w) F_f` to the neighbour diagonal, so the full sums converge to
    :math:`+F_f` and :math:`-F_f` respectively.
 
-<<<<<<< HEAD
-.. note::
-
-   **Matches OpenFOAM.**  OpenFOAM's ``gaussConvectionScheme`` sets
-   ``lower[f] = -w F_f``, ``upper[f] = (1-w) F_f``, then ``negSumDiag()`` gives
-   ``diag[own] += w F_f`` and ``diag[nei] -= (1-w) F_f`` — the **same structure**
-   as NeoN.
-=======
->>>>>>> origin/develop
 
 Physical boundary
 ^^^^^^^^^^^^^^^^^

@@ -375,14 +375,12 @@ A[own,nei] (via <code class="docutils literal notranslate"><span class="pre">own
 It builds the arrays in five passes:</p>
 <p><strong>Step 1 — count non-zeros per cell</strong> (initialised to 1 for the diagonal):</p>
 <p>Iterate all faces and increment the count for each owner and neighbour cell.</p>
-<p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/develop
-.. code-block:: text</p>
-<blockquote>
-<div><p>nFacesPerCell = [1, 1, 1, 1]
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>nFacesPerCell = [1, 1, 1, 1]
 f0: nFacesPerCell[C0]++, nFacesPerCell[C1]++  → [2, 2, 1, 1]
 f1: nFacesPerCell[C1]++, nFacesPerCell[C2]++  → [2, 3, 2, 1]
-f2: nFacesPerCell[C2]++, nFacesPerCell[C3]++  → [2, 3, 3, 2]</p>
-</div></blockquote>
+f2: nFacesPerCell[C2]++, nFacesPerCell[C3]++  → [2, 3, 3, 2]
+</pre></div>
+</div>
 <p><strong>Step 2 — compute row offsets</strong> (exclusive prefix sum):</p>
 <p>From the face per cell count the rowOffsets can be computed as a prefix sum.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>rowOffs = [0, 2, 5, 8, 10]
