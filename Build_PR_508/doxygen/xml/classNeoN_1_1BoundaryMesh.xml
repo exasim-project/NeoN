@@ -35,12 +35,12 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/boundaryMesh.hpp" line="226" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/boundaryMesh.hpp" bodystart="226" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classNeoN_1_1BoundaryMesh_1ac09cc11fe60f14e7ebcfbe8c70a777da" prot="private" static="no" mutable="no">
+      <memberdef kind="variable" id="classNeoN_1_1BoundaryMesh_1a6cee078e75711480119cdcdb52fda3f7" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
-        <definition>vectorVector NeoN::BoundaryMesh::Cf_</definition>
+        <definition>vectorVector NeoN::BoundaryMesh::faceCenters_</definition>
         <argsstring></argsstring>
-        <name>Cf_</name>
-        <qualifiedname>NeoN::BoundaryMesh::Cf_</qualifiedname>
+        <name>faceCenters_</name>
+        <qualifiedname>NeoN::BoundaryMesh::faceCenters_</qualifiedname>
         <briefdescription>
 <para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of face centres. </para>
         </briefdescription>
@@ -176,10 +176,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1BoundaryMesh_1a52b3b60458102994ffb3a7d9817fa5ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1BoundaryMesh_1a8bd095ffed220147d88cbe3d67f5c559" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>NeoN::BoundaryMesh::BoundaryMesh</definition>
-        <argsstring>(const Executor &amp;exec, labelVector faceCells, vectorVector cf, vectorVector cn, vectorVector sf, scalarVector magSf, vectorVector nf, vectorVector delta, scalarVector weights, scalarVector deltaCoeffs, std::vector&lt; localIdx &gt; offset)</argsstring>
+        <argsstring>(const Executor &amp;exec, labelVector faceCells, vectorVector faceCenters, vectorVector cn, vectorVector sf, scalarVector magSf, vectorVector nf, vectorVector delta, scalarVector weights, scalarVector deltaCoeffs, std::vector&lt; localIdx &gt; offset)</argsstring>
         <name>BoundaryMesh</name>
         <qualifiedname>NeoN::BoundaryMesh::BoundaryMesh</qualifiedname>
         <param>
@@ -192,7 +192,7 @@
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
-          <declname>cf</declname>
+          <declname>faceCenters</declname>
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a7184bc8b77652609bed6594f06b728e7" kindref="member">vectorVector</ref></type>
@@ -248,7 +248,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>Cf</parametername>
+<parametername>faceCenters</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>A field of face centres. </para>
@@ -804,8 +804,7 @@
     </detaileddescription>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/boundaryMesh.hpp" line="29" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/boundaryMesh.hpp" bodystart="30" bodyend="282"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1BoundaryMesh_1a52b3b60458102994ffb3a7d9817fa5ca" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>BoundaryMesh</name></member>
-      <member refid="classNeoN_1_1BoundaryMesh_1ac09cc11fe60f14e7ebcfbe8c70a777da" prot="private" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>Cf_</name></member>
+      <member refid="classNeoN_1_1BoundaryMesh_1a8bd095ffed220147d88cbe3d67f5c559" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>BoundaryMesh</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1af69db6c83ea0618d250a25a998497cb4" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>cn</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1aa9d81edc160741ab21fbea74d75269fe" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>cn</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1a73ab238384da26c968dc8e58d4f98654" prot="private" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>Cn_</name></member>
@@ -821,6 +820,7 @@
       <member refid="classNeoN_1_1BoundaryMesh_1aa2aad824564c5dd012d816cccd2983fb" prot="private" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>faceCells_</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1ad542449a6ebf93500d1541e6d2364e58" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>faceCenters</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1afdbedb7fa19329bac3e7e425cecf9231" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>faceCenters</name></member>
+      <member refid="classNeoN_1_1BoundaryMesh_1a6cee078e75711480119cdcdb52fda3f7" prot="private" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>faceCenters_</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1a8650bdda6efcdc3eddc7aa7124bbf53d" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>magSf</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1a034a854b39cc6ca44c678494f8314087" prot="public" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>magSf</name></member>
       <member refid="classNeoN_1_1BoundaryMesh_1a3ed6a152f2f764b328205e280cbf649d" prot="private" virt="non-virtual"><scope>NeoN::BoundaryMesh</scope><name>magSf_</name></member>
