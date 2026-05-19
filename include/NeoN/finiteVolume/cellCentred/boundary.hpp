@@ -33,17 +33,23 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename BoundaryType>
 std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 {
-    std::vector<BoundaryType> bcs;
-    bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
+    // mesh.nBoundaries() is REGULAR-only post-CooSparsity (NeoN Phase B
+    // 077396b993). Proc patches are appended after the regular ones,
+    // counted via mesh.boundaryMesh().nProcBoundaryPatches(). Total
+    // patches = nBoundaries() + nProcBoundaryPatches().
+    const auto regularBoundaries = mesh.nBoundaries();
+    const auto procBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
+    const auto totalBoundaries = regularBoundaries + procBoundaries;
 
-    auto processorBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
-    auto internalBoundaries = mesh.nBoundaries() - processorBoundaries;
-    for (localIdx patchID = 0; patchID < internalBoundaries; patchID++)
+    std::vector<BoundaryType> bcs;
+    bcs.reserve(static_cast<std::size_t>(totalBoundaries));
+
+    for (localIdx patchID = 0; patchID < regularBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("calculated")}});
         bcs.emplace_back(mesh, patchDict, patchID);
     }
-    for (localIdx patchID = internalBoundaries; patchID < mesh.nBoundaries(); patchID++)
+    for (localIdx patchID = regularBoundaries; patchID < totalBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("processor")}});
         bcs.emplace_back(mesh, patchDict, patchID);
@@ -54,16 +60,22 @@ std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 template<typename BoundaryType>
 std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 {
+    // mesh.nBoundaries() is REGULAR-only post-CooSparsity (NeoN Phase B
+    // 077396b993). Proc patches are appended after the regular ones,
+    // counted via mesh.boundaryMesh().nProcBoundaryPatches(). Total
+    // patches = nBoundaries() + nProcBoundaryPatches().
+    const auto regularBoundaries = mesh.nBoundaries();
+    const auto procBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
+    const auto totalBoundaries = regularBoundaries + procBoundaries;
+
     std::vector<BoundaryType> bcs;
-    bcs.reserve(mesh.nBoundaries());
-    auto processorBoundaries = mesh.boundaryMesh().nProcBoundaryPatches();
-    auto internalBoundaries = mesh.nBoundaries() - processorBoundaries;
-    for (localIdx patchID = 0; patchID < internalBoundaries; patchID++)
+    bcs.reserve(totalBoundaries);
+    for (localIdx patchID = 0; patchID < regularBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("extrapolated")}});
         bcs.emplace_back(mesh, patchDict, patchID);
     }
-    for (localIdx patchID = internalBoundaries; patchID < mesh.nBoundaries(); patchID++)
+    for (localIdx patchID = regularBoundaries; patchID < totalBoundaries; patchID++)
     {
         Dictionary patchDict({{"type", std::string("processor")}});
         bcs.emplace_back(mesh, patchDict, patchID);
