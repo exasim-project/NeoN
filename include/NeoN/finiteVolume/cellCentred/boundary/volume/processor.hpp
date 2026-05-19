@@ -4,6 +4,11 @@
 
 #pragma once
 
+#include <cstdio>
+#include <cstdlib>
+#include <type_traits>
+
+#include <mpi.h>
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
@@ -47,6 +52,64 @@ void setProcBoundaryValue(
         },
         "setProcBoundaryValue"
     );
+
+    if (std::getenv("NF_PROC_BC_TRACE"))
+    {
+        int r = 0;
+        MPI_Comm_rank(MPI_COMM_WORLD, &r);
+        // Pull the data we just wrote back to host so we can print it.
+        auto valueH = domainVector.boundaryData().value().copyToHost();
+        auto faceCellsH = mesh.boundaryMesh().faceCells().copyToHost();
+        auto iVecH = domainVector.internalVector().copyToHost();
+        const auto vV = valueH.view();
+        const auto fV = faceCellsH.view();
+        const auto iV = iVecH.view();
+        const localIdx nCells = static_cast<localIdx>(iVecH.size());
+        std::fprintf(
+            stderr,
+            "[NF_PROC_BC_TRACE][rank %d][setProcBoundaryValue] range=[%lld,%lld) "
+            "iVec.size=%lld\n",
+            r,
+            (long long)range.first,
+            (long long)range.second,
+            (long long)nCells
+        );
+        for (localIdx i = range.first; i < range.second; ++i)
+        {
+            const auto fc = fV[i];
+            const bool oob = (fc < 0 || fc >= nCells);
+            // Print first 4 entries + always print OOB
+            if (i - range.first < 4 || oob)
+            {
+                if constexpr (std::is_same_v<ValueType, NeoN::scalar>)
+                {
+                    std::fprintf(
+                        stderr,
+                        "[NF_PROC_BC_TRACE][rank %d][setProcBoundaryValue]   "
+                        "i=%lld faceCells[i]=%lld %s iVec[faceCells]=%.6e value[i]=%.6e\n",
+                        r,
+                        (long long)i,
+                        (long long)fc,
+                        oob ? "OOB!" : "",
+                        oob ? 0.0 : (double)iV[fc],
+                        (double)vV[i]
+                    );
+                }
+                else
+                {
+                    std::fprintf(
+                        stderr,
+                        "[NF_PROC_BC_TRACE][rank %d][setProcBoundaryValue]   "
+                        "i=%lld faceCells[i]=%lld %s (Vec3)\n",
+                        r,
+                        (long long)i,
+                        (long long)fc,
+                        oob ? "OOB!" : ""
+                    );
+                }
+            }
+        }
+    }
 }
 }
 
