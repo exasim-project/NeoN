@@ -77,7 +77,7 @@ TEST_CASE("Distributed")
     // assembly
     auto expr = dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U);
     expr.read(input);
-    auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
+    auto ls = expr.assemble(mesh, 1.0, 1.0);
 
     NeoN::mpi::Environment mpiEnviron;
     auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
@@ -96,7 +96,7 @@ TEST_CASE("Distributed")
 
     exprDist.read(inputPart);
 
-    auto [spDst, lsDst] = exprDist.assemble(meshPart, 1.0, 1.0);
+    auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0);
 
     fill(ls.rhs(), 2.0);
     fill(lsDst.rhs(), 2.0);

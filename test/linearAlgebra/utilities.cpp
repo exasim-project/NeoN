@@ -17,7 +17,6 @@ using NeoN::Vec3;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
 using NeoN::la::COOMatrix;
->>>>>>> origin/develop
 
 TEST_CASE("Utilities")
 {
@@ -143,8 +142,9 @@ TEST_CASE("Utilities")
         Vector<localIdx> bColIdx(exec, {0, 1, 2});
         Vector<localIdx> bRowOffs(exec, {0, 1, 2});
         COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs, {3, 1});
+        NeoN::CommunicationPattern commPattern {};
         LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
-            csrMatrix, rhs, bCooMatrix, rhs
+            csrMatrix, bCooMatrix, commPattern, rhs, bCooMatrix, rhs
         );
 
         NeoN::la::computeResidual(csrMatrix, rhs, x, res);

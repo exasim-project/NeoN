@@ -25,6 +25,7 @@ TEST_CASE("SparsityPattern")
     auto mesh = create1DUniformMesh(exec, nCells);
     auto [mi, commPattern] =
         NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    auto sp = mi->sparsityPattern();
     // internal sparsity
 
     // clang-format off
@@ -75,3 +76,5 @@ TEST_CASE("SparsityPattern")
         }
     }
 }
+
+} // namespace NeoN

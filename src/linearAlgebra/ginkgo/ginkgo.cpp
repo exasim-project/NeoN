@@ -251,8 +251,6 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<scal
     ));
 }
 
-<<<<<<< HEAD:src/linearAlgebra/ginkgo/ginkgo.cpp
-=======
 template<typename IndexType>
 std::shared_ptr<const gko::LinOp>
 createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const COOMatrix<scalar, IndexType>& mtx)
@@ -310,8 +308,6 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx)
     auto exec = getGkoExecutor(mtx.exec());
     return createGkoMtxImpl(exec, mtx);
 }
-
->>>>>>> origin/develop:src/linearAlgebra/ginkgo.cpp
 /*@brief helper function to get a scalar dense value from a device back to the host*/
 template<typename InType>
 scalar retrieve(const InType& in)
@@ -376,42 +372,11 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
-<<<<<<< HEAD:src/linearAlgebra/ginkgo/ginkgo.cpp
-    // TODO make that selectable via dictionary
-    auto gkoMtx = createGkoMtx(gkoExec_, sys.matrix());
-=======
     auto gkoMtx = createGkoMtx(sys.matrix());
->>>>>>> origin/develop:src/linearAlgebra/ginkgo.cpp
     auto solver = factory_->generate(gkoMtx);
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
 }
 
-<<<<<<< HEAD:src/linearAlgebra/ginkgo/ginkgo.cpp
-=======
-/* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
-template<typename IndexType>
-std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
-    std::shared_ptr<const gko::Executor> exec,
-    const LinearSystem<Vec3, CSRMatrix<Vec3, IndexType>>& sys
-)
-{
-    // NOTE we get a const view of the system but need a non const view to vals and indices
-    const auto mtx = sys.matrix();
-    const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
-    const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
-    const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
-
-    auto nrows = static_cast<gko::size_type>(computeNRows(sys));
-    return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
-        exec,
-        gko::dim<2> {nrows, nrows},
-        gkoCopyArray(exec, valuesCopy.view()),
-        gkoCopyArray(exec, colsCopy.view()),
-        gkoCopyArray(exec, rowsCopy.view())
-    ));
-}
-
->>>>>>> origin/develop:src/linearAlgebra/ginkgo.cpp
 // wrapper to solve a single component of a <vec3> equation
 template<unsigned int I>
 void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)

@@ -235,17 +235,12 @@ void computeLaplacianBoundImpl(
             auto bfi = facei - nInternalFaces;
             auto ownRow = surfFaceCells[bfi];
 
-            auto refValFrac = valueFraction[bfi];
-            auto refGradFrac = 1.0 - refValFrac;
-
+            auto ownCoeff = operatorScaling[ownRow];
             auto flux = gammaV[facei] * magFaceArea[facei];
             auto fluxContrib =
                 flux * ownCoeff * valueFraction[bfi] * deltaCoeffs[facei] * one<ValueType>();
 
-            auto ownDiagOffs = ownRowStart + static_cast<localIdx>(diagOffs[ownRow]);
-
             bValues[bfi] += fluxContrib;
-            // diagonal contribution
             Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], fluxContrib);
 
             // Explicit RHS contribution from the mixed BC:

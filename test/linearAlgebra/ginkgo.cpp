@@ -124,12 +124,6 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     Vector<localIdx> bColIdx(exec, {});
     Vector<localIdx> bRowOffs(exec, {});
 
-<<<<<<< HEAD
-    auto sparsity =
-        std::make_shared<SparsityPattern<localIdx>>(std::move(colIdx), std::move(rowOffs));
-    auto bSparsity =
-        std::make_shared<CooSparsityPattern<localIdx>>(std::move(bColIdx), std::move(bRowOffs));
-=======
     const auto nRows = static_cast<localIdx>(rowOffs.size()) - 1;
     auto sparsity = std::make_shared<CsrSparsityPattern<localIdx>>(
         std::move(colIdx), std::move(rowOffs), Dimensions {nRows, nRows}
@@ -137,7 +131,6 @@ TEST_CASE("MatrixAssembly - Ginkgo")
     auto bSparsity = std::make_shared<CooSparsityPattern<localIdx>>(
         std::move(bColIdx), std::move(bRowOffs), Dimensions {0, 0}
     );
->>>>>>> origin/develop
 
     SECTION("Solve linear system wo boundary scalar " + execName)
     {
@@ -151,7 +144,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         NeoN::CommunicationPattern commPattern {};
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
-            csrMatrix, bCsrMatrix, commPattern, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, bCooMatrix, commPattern, rhs, bCooMatrix, bRhs
         );
 
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
@@ -191,7 +184,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         NeoN::CommunicationPattern commPattern {};
         auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
-            csrMatrix, bCsrMatrix, commPattern, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, bCsrMatrix, commPattern, rhs, bCsrMatrix, bRhs
         );
 
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
@@ -242,7 +235,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
         NeoN::CommunicationPattern commPattern {};
         auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
-            csrMatrix, bCsrMatrix, commPattern, rhs, bCsrMatrix, bRhs, {}
+            csrMatrix, bCooMatrix, commPattern, rhs, bCooMatrix, bRhs
         );
 
         SECTION("Segregated" + execName)

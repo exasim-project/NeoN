@@ -101,15 +101,6 @@ public:
      */
     Matrix(
         const Vector<ValueType>& values,
-<<<<<<< HEAD
-        const Vector<typename MatrixSparsityType::SparsityIndexType>& colIdxs,
-        const Vector<typename MatrixSparsityType::SparsityIndexType>& rowOffs
-    )
-        : values_(values),
-          sparsityPattern_(
-              std::make_shared<const MatrixSparsityType>(Vector(colIdxs), Vector(rowOffs))
-          )
-=======
         const Vector<typename SparsityType::SparsityIndexType>& colIdxs,
         const Vector<typename SparsityType::SparsityIndexType>& rowOffs,
         Dimensions dimensions
@@ -139,7 +130,6 @@ public:
     )
         requires std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
         : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
->>>>>>> origin/develop
     {
         validate();
     }
@@ -243,11 +233,8 @@ public:
             if (faceToMatrixAddress_)
             {
                 auto hostSp = std::make_shared<const SparsityType>(sparsityPattern_->copyToHost());
-                auto hostFtma = std::make_shared<const FaceToMatrixAddress>(
-                    faceToMatrixAddress_->ownerOffset().copyToHost(),
-                    faceToMatrixAddress_->neighbourOffset().copyToHost(),
-                    faceToMatrixAddress_->diagOffset().copyToHost()
-                );
+                auto hostFtma =
+                    std::make_shared<const FaceToMatrixAddress>(faceToMatrixAddress_->copyToHost());
                 return {values_.copyToHost(), hostSp, hostFtma};
             }
         }
@@ -305,9 +292,6 @@ private:
 
 template<typename ValueType, typename IndexType>
 using CSRMatrix = Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
-
-template<typename ValueType, typename IndexType>
-using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
 
 template<typename ValueType, typename IndexType>
 using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
@@ -377,4 +361,4 @@ void scaledInvDiagNegLUx(
     Vector<Vec3>& out
 );
 
-} // namespace NeoN
+} // namespace NeoN::la

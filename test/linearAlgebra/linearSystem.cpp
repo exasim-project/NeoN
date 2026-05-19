@@ -36,10 +36,8 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     Vector<scalar> bvalues(exec, {1.0, 2.0, 3.0});
     Vector<localIdx> bcolIdx(exec, {0, 1, 2});
     Vector<localIdx> browOffs(exec, {0, 1, 2});
-
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
-    // FIXME
-    COOMatrix<scalar, localIdx> cooMatrix(bvalues, bcolIdx, browOffs);
+    COOMatrix<scalar, localIdx> cooMatrix(bvalues, bcolIdx, browOffs, {3, 3});
+    NeoN::CommunicationPattern commPattern {};
 
     SECTION("construct from values" + execName)
     {
@@ -47,7 +45,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         Vector<scalar> rhs(exec, 3, 0.0);
         Vector<scalar> bRhs(exec, 3, 0.0);
         LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, cooMatrix, rhs, bCooMatrix, bRhs
+            csrMatrix, cooMatrix, commPattern, rhs, bCooMatrix, bRhs
         );
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
@@ -80,30 +78,11 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         auto nnz = nCells + 2 * nFaces;
         auto mesh = create1DUniformMesh(exec, nCells);
 
-        using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
-
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, CSRMatrix, CSRMatrix>(mesh);
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
         REQUIRE(linearSystem.matrix().rowOffs().size() == nCells + 1);
-        REQUIRE(linearSystem.matrix().nRows() == nCells);
-        REQUIRE(linearSystem.rhs().size() == nCells);
-    }
-
-    SECTION("construct zero initialized from sparsity with COO matrix " + execName)
-    {
-        auto nCells = 10;
-        auto nFaces = 9;
-        auto nnz = nCells + 2 * nFaces;
-        auto mesh = create1DUniformMesh(exec, nCells);
-
-        using COOMatrix = NeoN::la::COOMatrix<scalar, localIdx>;
-
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, COOMatrix, COOMatrix>(mesh);
-
-        REQUIRE(linearSystem.matrix().values().size() == nnz);
-        REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
         REQUIRE(linearSystem.matrix().nRows() == nCells);
         REQUIRE(linearSystem.rhs().size() == nCells);
     }
@@ -114,7 +93,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
         Vector<scalar> bRhs(exec, {0.0, 0.0, 0.0});
         LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(
-            csrMatrix, cooMatrix, rhs, bCooMatrix, bRhs
+            csrMatrix, cooMatrix, commPattern, rhs, bCooMatrix, bRhs
         );
 
         auto lsView = ls.view();
