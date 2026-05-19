@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <tuple>
+#include <type_traits>
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/macros.hpp"
@@ -115,15 +116,22 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     {
         std::fprintf(
             stderr,
-            "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC] nBC=%zu "
-            "totalPatches=%lld procPatchCount=%lld firstProcPatch=%lld nbrRanks.size=%zu\n",
+            "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC field='%s'] nBC=%zu "
+            "totalPatches=%lld procPatchCount=%lld firstProcPatch=%lld nbrRanks.size=%zu "
+            "iVec.size=%lld value.size=%lld\n",
             mpiEnviron.rank(),
+            this->name.c_str(),
             boundaryConditions_.size(),
             (long long)totalPatches,
             (long long)procPatchCount,
             (long long)firstProcPatch,
-            nbrRanks.size()
+            nbrRanks.size(),
+            (long long)this->field_.internalVector().size(),
+            (long long)this->field_.boundaryData().value().size()
         );
+
+        // After loop: print first few proc-tail values of the field BEFORE
+        // and AFTER communicateBoundaryData. Done by capturing here pre-loop.
     }
 
     std::vector<std::pair<localIdx, localIdx>> procPatchOffset;
@@ -186,6 +194,32 @@ void VolumeField<ValueType>::correctBoundaryConditions()
         communicateBoundaryData(
             commPattern, procPatchOffset, targetRanks, this->field_.boundaryData().value()
         );
+        if (trace)
+        {
+            auto bvH = this->field_.boundaryData().value().copyToHost();
+            const auto bv = bvH.view();
+            const auto sz = bvH.size();
+            // Print first 6 entries at the proc-tail (start of first proc patch).
+            const auto procStart = procPatchOffset[0].first;
+            if constexpr (std::is_same_v<ValueType, NeoN::scalar>)
+            {
+                std::fprintf(
+                    stderr,
+                    "[NF_PROC_BC_TRACE][rank %d][VolumeField::correctBC field='%s'] "
+                    "POST-MPI boundaryValue[%lld..%lld) first6=[%.6e %.6e %.6e %.6e %.6e %.6e]\n",
+                    mpiEnviron.rank(),
+                    this->name.c_str(),
+                    (long long)procStart,
+                    (long long)sz,
+                    (procStart + 0 < sz) ? (double)bv[procStart + 0] : 0.0,
+                    (procStart + 1 < sz) ? (double)bv[procStart + 1] : 0.0,
+                    (procStart + 2 < sz) ? (double)bv[procStart + 2] : 0.0,
+                    (procStart + 3 < sz) ? (double)bv[procStart + 3] : 0.0,
+                    (procStart + 4 < sz) ? (double)bv[procStart + 4] : 0.0,
+                    (procStart + 5 < sz) ? (double)bv[procStart + 5] : 0.0
+                );
+            }
+        }
     }
 }
 
