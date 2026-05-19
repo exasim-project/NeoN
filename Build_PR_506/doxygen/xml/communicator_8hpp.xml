@@ -335,7 +335,7 @@
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>startComm(Vector&lt;valueType&gt;&amp;<sp/>field,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>commName)</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CommBuffer_.find(commName)<sp/>==<sp/>CommBuffer_.end()<sp/>||<sp/>(!CommBuffer_[commName]),</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!CommBuffer_.contains(commName)<sp/>||<sp/>(!CommBuffer_[commName]),</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;There<sp/>is<sp/>already<sp/>an<sp/>ongoing<sp/>communication<sp/>for<sp/>key<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>commName<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;.&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
@@ -361,7 +361,7 @@
 <codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>finaliseComm(Vector&lt;valueType&gt;&amp;<sp/>field,<sp/>std::string<sp/>commName)</highlight></codeline>
 <codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1af1af39ea56903b56ed322432441511b5" kindref="member">NF_DEBUG_ASSERT</ref>(</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CommBuffer_.find(commName)<sp/>!=<sp/>CommBuffer_.end()<sp/>&amp;&amp;<sp/>CommBuffer_[commName],</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CommBuffer_.contains(commName)<sp/>&amp;&amp;<sp/>CommBuffer_[commName],</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;No<sp/>communication<sp/>associated<sp/>with<sp/>key:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>commName</highlight></codeline>
 <codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"></highlight></codeline>

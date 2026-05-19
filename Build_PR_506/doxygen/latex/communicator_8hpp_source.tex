@@ -61,7 +61,7 @@
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keywordtype}{void}\ startComm(Vector<valueType>\&\ field,\ \textcolor{keyword}{const}\ std::string\&\ commName)}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00093}00093\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.find(commName)\ ==\ CommBuffer\_.end()\ ||\ (!CommBuffer\_[commName]),}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ !CommBuffer\_.contains(commName)\ ||\ (!CommBuffer\_[commName]),}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}There\ is\ already\ an\ ongoing\ communication\ for\ key\ "{}}\ <<\ commName\ <<\ \textcolor{stringliteral}{"{}."{}}}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00098}00098\ }
@@ -87,7 +87,7 @@
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00129}00129\ \ \ \ \ \textcolor{keywordtype}{void}\ finaliseComm(Vector<valueType>\&\ field,\ std::string\ commName)}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00130}00130\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_af1af39ea56903b56ed322432441511b5}{NF\_DEBUG\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.find(commName)\ !=\ CommBuffer\_.end()\ \&\&\ CommBuffer\_[commName],}
+\DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ CommBuffer\_.contains(commName)\ \&\&\ CommBuffer\_[commName],}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}No\ communication\ associated\ with\ key:\ "{}}\ <<\ commName}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{communicator_8hpp_source_l00135}00135\ }
