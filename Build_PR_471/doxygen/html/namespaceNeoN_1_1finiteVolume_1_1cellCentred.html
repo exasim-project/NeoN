@@ -99,6 +99,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes.html">BoundaryAttributes</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html">BoundaryContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries named field references for wall-function boundary conditions.  <a href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html">BoundaryPatchMixin</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A base class for implementing derived boundary conditions.  <a href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,15 +256,21 @@ Functions</h2></td></tr>
 <tr class="memitem:adebf18ffc07511e7a497371f83f92fc3" id="r_adebf18ffc07511e7a497371f83f92fc3"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:adebf18ffc07511e7a497371f83f92fc3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#adebf18ffc07511e7a497371f83f92fc3">computeDivExp</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;faceFlux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html">SurfaceInterpolation</a>&lt; ValueType &gt; &amp;surfInterp, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;divPhi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
 <tr class="separator:adebf18ffc07511e7a497371f83f92fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac16606526899c5dd302bf3d34a1dd541" id="r_ac16606526899c5dd302bf3d34a1dd541"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:ac16606526899c5dd302bf3d34a1dd541"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac16606526899c5dd302bf3d34a1dd541">computeDivImp</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;faceFlux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html">SurfaceInterpolation</a>&lt; ValueType &gt; &amp;surfInterp, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
-<tr class="separator:ac16606526899c5dd302bf3d34a1dd541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a6205d48249760b656e7c489e4643c" id="r_ad8a6205d48249760b656e7c489e4643c"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:ad8a6205d48249760b656e7c489e4643c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ad8a6205d48249760b656e7c489e4643c">computeDivIntImp</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;faceFlux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;weights, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
+<tr class="separator:ad8a6205d48249760b656e7c489e4643c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9705c659333dbf9ace2f59e35f51fc1c" id="r_a9705c659333dbf9ace2f59e35f51fc1c"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:a9705c659333dbf9ace2f59e35f51fc1c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a9705c659333dbf9ace2f59e35f51fc1c">computeDivBoundImp</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;faceFlux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;weights, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
+<tr class="separator:a9705c659333dbf9ace2f59e35f51fc1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1827d771a724a1436e1ece864c4fc8a7" id="r_a1827d771a724a1436e1ece864c4fc8a7"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a1827d771a724a1436e1ece864c4fc8a7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a1827d771a724a1436e1ece864c4fc8a7">computeLaplacianExp</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a>)</td></tr>
 <tr class="separator:a1827d771a724a1436e1ece864c4fc8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51a46d9902e6dd3ea863abaf3c7f9f33" id="r_a51a46d9902e6dd3ea863abaf3c7f9f33"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a51a46d9902e6dd3ea863abaf3c7f9f33"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a51a46d9902e6dd3ea863abaf3c7f9f33">computeLaplacianImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;faceNormalGradient)</td></tr>
-<tr class="separator:a51a46d9902e6dd3ea863abaf3c7f9f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2fc28dc59fe7e0c54eb7d373c4b8819" id="r_ac2fc28dc59fe7e0c54eb7d373c4b8819"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:ac2fc28dc59fe7e0c54eb7d373c4b8819"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac2fc28dc59fe7e0c54eb7d373c4b8819">computeLaplacianIntImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;faceNormalGradient)</td></tr>
+<tr class="separator:ac2fc28dc59fe7e0c54eb7d373c4b8819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cdfa69284ea8e53aabbb69135265ae4" id="r_a5cdfa69284ea8e53aabbb69135265ae4"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:a5cdfa69284ea8e53aabbb69135265ae4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a5cdfa69284ea8e53aabbb69135265ae4">computeLaplacianBoundImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;faceNormalGradient)</td></tr>
+<tr class="separator:a5cdfa69284ea8e53aabbb69135265ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae943e0d9df47132f4e227ceff274d664" id="r_ae943e0d9df47132f4e227ceff274d664"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ae943e0d9df47132f4e227ceff274d664"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ae943e0d9df47132f4e227ceff274d664">surfaceIntegrate</a> (const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;exec, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nInternalFaces, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const int &gt; neighbour, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const int &gt; owner, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const int &gt; faceCells, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const ValueType &gt; flux, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; v, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; ValueType &gt; res, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
 <tr class="separator:ae943e0d9df47132f4e227ceff274d664"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -351,7 +360,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09" name="a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09"></a>BDF2&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="ddtOperator_8hpp_source.html#l00018">18</a> of file <a class="el" href="ddtOperator_8hpp_source.html">ddtOperator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ddtOperator_8hpp_source.html#l00017">17</a> of file <a class="el" href="ddtOperator_8hpp_source.html">ddtOperator.hpp</a>.</p>
 
 </div>
 </div>
@@ -373,6 +382,54 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>&#160;</td>
           <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9705c659333dbf9ace2f59e35f51fc1c" name="a9705c659333dbf9ace2f59e35f51fc1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9705c659333dbf9ace2f59e35f51fc1c">&#9670;&#160;</a></span>computeDivBoundImp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::computeDivBoundImp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>faceFlux</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>phi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a>&#160;</td>
+          <td class="paramname"><em>operatorScaling</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -432,8 +489,8 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
-<a id="ac16606526899c5dd302bf3d34a1dd541" name="ac16606526899c5dd302bf3d34a1dd541"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac16606526899c5dd302bf3d34a1dd541">&#9670;&#160;</a></span>computeDivImp()</h2>
+<a id="ad8a6205d48249760b656e7c489e4643c" name="ad8a6205d48249760b656e7c489e4643c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8a6205d48249760b656e7c489e4643c">&#9670;&#160;</a></span>computeDivIntImp()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -441,7 +498,7 @@ template&lt;typename ValueType &gt; </div>
 template&lt;typename ValueType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void NeoN::finiteVolume::cellCentred::computeDivImp </td>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::computeDivIntImp </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;&#160;</td>
           <td class="paramname"><em>ls</em>, </td>
@@ -461,8 +518,8 @@ template&lt;typename ValueType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html">SurfaceInterpolation</a>&lt; ValueType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>surfInterp</em>, </td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -505,6 +562,54 @@ template&lt;typename ValueType &gt; </div>
           <td></td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;&#160;</td>
           <td class="paramname"><em>surfaceVector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5cdfa69284ea8e53aabbb69135265ae4" name="a5cdfa69284ea8e53aabbb69135265ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cdfa69284ea8e53aabbb69135265ae4">&#9670;&#160;</a></span>computeLaplacianBoundImpl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::computeLaplacianBoundImpl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>phi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a>&#160;</td>
+          <td class="paramname"><em>operatorScaling</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>faceNormalGradient</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -564,8 +669,8 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
-<a id="a51a46d9902e6dd3ea863abaf3c7f9f33" name="a51a46d9902e6dd3ea863abaf3c7f9f33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51a46d9902e6dd3ea863abaf3c7f9f33">&#9670;&#160;</a></span>computeLaplacianImpl()</h2>
+<a id="ac2fc28dc59fe7e0c54eb7d373c4b8819" name="ac2fc28dc59fe7e0c54eb7d373c4b8819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2fc28dc59fe7e0c54eb7d373c4b8819">&#9670;&#160;</a></span>computeLaplacianIntImpl()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -573,7 +678,7 @@ template&lt;typename ValueType &gt; </div>
 template&lt;typename ValueType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void NeoN::finiteVolume::cellCentred::computeLaplacianImpl </td>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::computeLaplacianIntImpl </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;&#160;</td>
           <td class="paramname"><em>ls</em>, </td>
@@ -744,7 +849,7 @@ template&lt;typename BoundaryType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundary_8hpp_source.html#l00030">30</a> of file <a class="el" href="boundary_8hpp_source.html">boundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundary_8hpp_source.html#l00032">32</a> of file <a class="el" href="boundary_8hpp_source.html">boundary.hpp</a>.</p>
 
 </div>
 </div>
@@ -766,7 +871,7 @@ template&lt;typename BoundaryType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundary_8hpp_source.html#l00044">44</a> of file <a class="el" href="boundary_8hpp_source.html">boundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundary_8hpp_source.html#l00046">46</a> of file <a class="el" href="boundary_8hpp_source.html">boundary.hpp</a>.</p>
 
 </div>
 </div>
@@ -1043,7 +1148,7 @@ template&lt;typename VectorType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="surfaceField_8hpp_source.html#l00168">168</a> of file <a class="el" href="surfaceField_8hpp_source.html">surfaceField.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="surfaceField_8hpp_source.html#l00169">169</a> of file <a class="el" href="surfaceField_8hpp_source.html">surfaceField.hpp</a>.</p>
 
 </div>
 </div>
