@@ -2,7 +2,7 @@ var searchData=
 [
   ['t_0',['T',['../classNeoN_1_1Tensor.html#ac69b2d22f51acf7b933e19e0b5a9c2bd',1,'NeoN::Tensor']]],
   ['table_1',['table',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#a691e0e155dc86b6757e922a8279c93ec',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
-  ['take_2',['take',['../namespaceNeoN.html#aba2db35ad9323773ab56a062046ec164',1,'NeoN']]],
+  ['take_2',['take',['../namespaceNeoN.html#aa79f11ad83001a4100ca685f0240654b',1,'NeoN']]],
   ['target_3',['Target',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299',1,'NeoN::Logging']]],
   ['temporaloperator_4',['temporaloperator',['../classNeoN_1_1dsl_1_1TemporalOperator.html',1,'NeoN::dsl::TemporalOperator&lt; ValueType &gt;'],['../classNeoN_1_1dsl_1_1TemporalOperator.html#aa8547a528d858e4e848ccd862a5af320',1,'NeoN::dsl::TemporalOperator::TemporalOperator(TemporalOperator &amp;&amp;eqnOperator)'],['../classNeoN_1_1dsl_1_1TemporalOperator.html#a123506bf619aa5d08e47c84310b788eb',1,'NeoN::dsl::TemporalOperator::TemporalOperator(const TemporalOperator &amp;eqnOperator)'],['../classNeoN_1_1dsl_1_1TemporalOperator.html#abb175059bcbc826532ec7f205def0569',1,'NeoN::dsl::TemporalOperator::TemporalOperator(T cls)']]],
   ['temporaloperator_2ehpp_5',['temporalOperator.hpp',['../temporalOperator_8hpp.html',1,'']]],

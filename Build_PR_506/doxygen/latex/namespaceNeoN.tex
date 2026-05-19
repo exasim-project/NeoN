@@ -329,8 +329,8 @@ requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b
 \begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function extracts a single component. \end{DoxyCompactList}\item 
 {\footnotesize template$<$unsigned int I$>$ }\\void \mbox{\hyperlink{namespaceNeoN_ad0362f6a606cb6fe7b96d0d6a77cc5f2}{set\+Component}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&in, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&out)
 \begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function sets a single component. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_aba2db35ad9323773ab56a062046ec164}{take}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} first, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} last)
-\begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, last\mbox{]} a subvector is created. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_aa79f11ad83001a4100ca685f0240654b}{take}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} first, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} length)
+\begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, first+length\mbox{]} a subvector is created. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename... Types$>$ \newline
 requires (has\+View$<$std\+::remove\+\_\+reference\+\_\+t$<$Types$>$$>$ \&\& ...)}\\auto \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}} (Types \&... args)
 \begin{DoxyCompactList}\small\item\em Unpacks all views of the passed classes. \end{DoxyCompactList}\item 
@@ -1564,16 +1564,16 @@ Symmetric part of a full tensor\+: ½(T + T\texorpdfstring{$^\wedge$}{\string^}T
 
 Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00225}{225}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_aba2db35ad9323773ab56a062046ec164}\label{namespaceNeoN_aba2db35ad9323773ab56a062046ec164} 
+\Hypertarget{namespaceNeoN_aa79f11ad83001a4100ca685f0240654b}\label{namespaceNeoN_aa79f11ad83001a4100ca685f0240654b} 
 \index{NeoN@{NeoN}!take@{take}}
 \index{take@{take}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{take()}{take()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::take (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{first,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{last }\end{DoxyParamCaption})}
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::take (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{first,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{length }\end{DoxyParamCaption})}
 
 
 
-Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, last\mbox{]} a subvector is created. 
+Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, first+length\mbox{]} a subvector is created. 
 
 \begin{DoxyReturn}{Returns}
 The resulting subset vector 
