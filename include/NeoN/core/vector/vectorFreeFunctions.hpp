@@ -75,18 +75,6 @@ template<unsigned int I>
 void setComponent(const Vector<scalar>& in, Vector<Vec3>& out);
 
 /**
- * @brief Given a Vector and a set of indizes values are copied to out
- */
-template<typename ValueType>
-void copy(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out);
-
-/**
- * @brief Given a Vector and a set of indizes values are copied to out
- */
-template<typename ValueType>
-void set(ValueType in, const Vector<localIdx>& idx, Vector<ValueType>& out);
-
-/**
  * @brief Given a Vector and an index range [first, last] a subvector is created
  */
 template<typename ValueType>

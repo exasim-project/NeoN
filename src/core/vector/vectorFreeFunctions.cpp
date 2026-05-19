@@ -191,35 +191,23 @@ template void setComponent<0>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<1>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
 
-template<typename ValueType>
-void copy(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out)
-{
-    NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
-    NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
-    NF_ASSERT(idx.size() == out.size(), "Size mismatch");
+// template<typename ValueType>
+// void copy(const Vector<ValueType>& in, const Vector<localIdx>& idx, Vector<ValueType>& out)
+// {
+//     NF_ASSERT(in.exec() == idx.exec(), "Executors are not the same");
+//     NF_ASSERT(in.exec() == out.exec(), "Executors are not the same");
+//     NF_ASSERT(idx.size() == out.size(), "Size mismatch");
 
-    const auto exec = in.exec();
-    const auto inV = in.view();
-    const auto idxV = idx.view();
-    auto outV = out.view();
+//     const auto exec = in.exec();
+//     const auto inV = in.view();
+//     const auto idxV = idx.view();
+//     auto outV = out.view();
 
-    NeoN::parallelFor(
-        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[i] = inV[idxV[i]]; }, "copyMap"
-    );
-};
-
-template<typename ValueType>
-void set(ValueType in, const Vector<localIdx>& idx, Vector<ValueType>& out)
-{
-
-    const auto exec = out.exec();
-    const auto idxV = idx.view();
-    auto outV = out.view();
-
-    NeoN::parallelFor(
-        exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[idxV[i]] = in; }, "copyMap"
-    );
-}
+//     NeoN::parallelFor(
+//         exec, {0, idx.size()}, NEON_LAMBDA(const localIdx i) { outV[i] = inV[idxV[i]]; },
+//         "copyMap"
+//     );
+// };
 
 template<typename ValueType>
 Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx last)
@@ -241,8 +229,6 @@ Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx las
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
-    template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
-    template void set<Type>(Type, const Vector<localIdx>&, Vector<Type>&);                         \
     template Vector<Type> take<Type>(const Vector<Type>&, localIdx, localIdx);                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
@@ -257,7 +243,6 @@ Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx las
 #define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
-    template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
     template Vector<Type> take<Type>(const Vector<Type>&, localIdx, localIdx);                     \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
