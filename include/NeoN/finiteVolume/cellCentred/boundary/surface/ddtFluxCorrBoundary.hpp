@@ -27,11 +27,37 @@ createFluxCorrBCsFromU(const UnstructuredMesh& mesh, const VolumeField<Vec3>& u)
 
     bcs.reserve(uBCs.size());
 
+    // Proc patches sit at the tail of uBCs (createCalculatedBCs /
+    // createExtrapolatedBCs / readVolBoundaryConditions all place proc
+    // patches after the regular ones). For ddtCorr the boundary at a
+    // proc face must be a `processor` BC so that
+    // SurfaceField::correctBoundaryConditions runs the Processor BC's
+    // `correctBoundaryCondition` and copies internalVector[proc-tail] into
+    // boundaryData.value()[proc-tail] (the dual-storage invariant — see
+    // project memory `project_surface_field_dual_storage`). Without that
+    // copy, ddtCorr.boundaryData().value() stays at default zero, and
+    // SurfaceField operator* (which multiplies BOTH internalVector AND
+    // boundaryData() element-wise) produces a result with zero
+    // boundaryData proc-tail — corrupting downstream consumers.
+    const auto procPatchCount = mesh.boundaryMesh().nProcBoundaryPatches();
+    const auto firstProcPatch =
+        static_cast<unsigned>(uBCs.size()) - static_cast<unsigned>(procPatchCount);
+
     for (auto patchID = 0u; patchID < uBCs.size(); ++patchID)
     {
-        const auto attrs = uBCs[patchID].attributes();
         Dictionary dict;
 
+        if (patchID >= firstProcPatch && procPatchCount > 0)
+        {
+            // Processor patch — must be a `processor` SurfaceBoundary so
+            // its correctBoundaryCondition syncs internalVector ->
+            // boundaryData proc-tail.
+            dict.insert("type", std::string("processor"));
+            bcs.emplace_back(mesh, dict, patchID);
+            continue;
+        }
+
+        const auto attrs = uBCs[patchID].attributes();
         if (attrs.fixesValue)
         {
             // Zero correction on U fixedValue patches
