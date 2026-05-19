@@ -218,8 +218,6 @@ Vector<ValueType> take(const Vector<ValueType>& in, localIdx first, localIdx las
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
-    template void copy<Type>(const Vector<Type>&, const Vector<localIdx>&, Vector<Type>&);         \
-    template void set<Type>(Type, const Vector<localIdx>&, Vector<Type>&);                         \
     template Vector<Type> take<Type>(const Vector<Type>&, localIdx, localIdx);                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
     template Vector<Type> take<Type>(const Vector<Type>&, std::pair<localIdx, localIdx>);          \
