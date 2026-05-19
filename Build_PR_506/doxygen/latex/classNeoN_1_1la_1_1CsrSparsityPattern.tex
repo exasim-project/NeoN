@@ -1,0 +1,232 @@
+\doxysection{NeoN\+::la\+::Csr\+Sparsity\+Pattern\texorpdfstring{$<$}{<} Index\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern}{}\label{classNeoN_1_1la_1_1CsrSparsityPattern}\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+
+
+row and column index representation of a mesh  
+
+
+
+
+{\ttfamily \#include $<$csr\+Sparsity\+Pattern.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a3cfcdcafb9fa4cd99966b76d267e079b}{Sparsity\+Index\+Type}} = Index\+Type
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a10c1cf4ecea5f45478311373d22e4f7f}{Csr\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}} \&sp)
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a5ad35eb774044103c9eae4e354522412}{Csr\+Sparsity\+Pattern}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\&col\+Idx, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\&\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a0e635f48adfc2f8470a157f72b02be04}{row\+Offs}}, \mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} dim)
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a6b29d8fdce2084639b6003e4132fbe9e}{copy\+To\+Host}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a5c4b77a6f1b74eba2c1b95f7c0b9b07d}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_ad41bc6c73a61c24bc76268ac2655e625}{\texorpdfstring{$\sim$}{\string~}\+Csr\+Sparsity\+Pattern}} ()=default
+\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_afe0ca6b800a99d0bba99e0d739dfd6c9}{exec}} () const
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a6cd3f6c199f4d889bc331882c5714eb1}{col\+Idxs}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_aa1acf654de25c6dda52f68eaaac6d80a}{col\+Idxs}} ()
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a0e635f48adfc2f8470a157f72b02be04}{row\+Offs}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_adee899b17e177a932d43eca69566dfdb}{row\+Offs}} ()
+\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_ab1306af17667af57eb0a8f06f037012d}{rows}} () const
+\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_a8a148250dac2ba9d049bb56bedeeff9e}{nnz}} () const
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_aa23624efa3185fa9c7710e5b31f159bb}{dimension}} () const
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern_aec8f6e23f92cd68c774f114757d5997a}{view}} () const
+\begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Index\+Type$>$\newline
+class Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern$<$ Index\+Type $>$}
+row and column index representation of a mesh 
+
+This class implements the finite volume 3/5/7 pt stencil specific generation of sparsity patterns from a given unstructured mesh 
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00021}{21}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a3cfcdcafb9fa4cd99966b76d267e079b}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a3cfcdcafb9fa4cd99966b76d267e079b} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!SparsityIndexType@{SparsityIndexType}}
+\index{SparsityIndexType@{SparsityIndexType}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{SparsityIndexType}{SparsityIndexType}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::\+Sparsity\+Index\+Type =  Index\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a10c1cf4ecea5f45478311373d22e4f7f}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a10c1cf4ecea5f45478311373d22e4f7f} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!CsrSparsityPattern@{CsrSparsityPattern}}
+\index{CsrSparsityPattern@{CsrSparsityPattern}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{CsrSparsityPattern()}{CsrSparsityPattern()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::\+Csr\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$ \&}]{sp }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a5ad35eb774044103c9eae4e354522412}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a5ad35eb774044103c9eae4e354522412} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!CsrSparsityPattern@{CsrSparsityPattern}}
+\index{CsrSparsityPattern@{CsrSparsityPattern}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{CsrSparsityPattern()}{CsrSparsityPattern()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::\+Csr\+Sparsity\+Pattern (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\&}]{col\+Idx,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\&}]{row\+Offs,  }\item[{\mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}}}]{dim }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_ad41bc6c73a61c24bc76268ac2655e625}\label{classNeoN_1_1la_1_1CsrSparsityPattern_ad41bc6c73a61c24bc76268ac2655e625} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!````~CsrSparsityPattern@{\texorpdfstring{$\sim$}{\string~}CsrSparsityPattern}}
+\index{````~CsrSparsityPattern@{\texorpdfstring{$\sim$}{\string~}CsrSparsityPattern}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CsrSparsityPattern()}{\string~CsrSparsityPattern()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_aa1acf654de25c6dda52f68eaaac6d80a}\label{classNeoN_1_1la_1_1CsrSparsityPattern_aa1acf654de25c6dda52f68eaaac6d80a} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!colIdxs@{colIdxs}}
+\index{colIdxs@{colIdxs}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{colIdxs()}{colIdxs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::col\+Idxs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a6cd3f6c199f4d889bc331882c5714eb1}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a6cd3f6c199f4d889bc331882c5714eb1} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!colIdxs@{colIdxs}}
+\index{colIdxs@{colIdxs}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{colIdxs()}{colIdxs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::col\+Idxs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a5c4b77a6f1b74eba2c1b95f7c0b9b07d}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a5c4b77a6f1b74eba2c1b95f7c0b9b07d} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!copyToExecutor@{copyToExecutor}}
+\index{copyToExecutor@{copyToExecutor}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{dst\+Exec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00044}{44}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a6b29d8fdce2084639b6003e4132fbe9e}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a6b29d8fdce2084639b6003e4132fbe9e} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!copyToHost@{copyToHost}}
+\index{copyToHost@{copyToHost}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToHost()}{copyToHost()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::copy\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00035}{35}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_aa23624efa3185fa9c7710e5b31f159bb}\label{classNeoN_1_1la_1_1CsrSparsityPattern_aa23624efa3185fa9c7710e5b31f159bb} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!dimension@{dimension}}
+\index{dimension@{dimension}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{dimension()}{dimension()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::dimension (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_afe0ca6b800a99d0bba99e0d739dfd6c9}\label{classNeoN_1_1la_1_1CsrSparsityPattern_afe0ca6b800a99d0bba99e0d739dfd6c9} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!exec@{exec}}
+\index{exec@{exec}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00055}{55}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a8a148250dac2ba9d049bb56bedeeff9e}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a8a148250dac2ba9d049bb56bedeeff9e} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!nnz@{nnz}}
+\index{nnz@{nnz}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{nnz()}{nnz()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::nnz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_adee899b17e177a932d43eca69566dfdb}\label{classNeoN_1_1la_1_1CsrSparsityPattern_adee899b17e177a932d43eca69566dfdb} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!rowOffs@{rowOffs}}
+\index{rowOffs@{rowOffs}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rowOffs()}{rowOffs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::row\+Offs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00066}{66}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_a0e635f48adfc2f8470a157f72b02be04}\label{classNeoN_1_1la_1_1CsrSparsityPattern_a0e635f48adfc2f8470a157f72b02be04} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!rowOffs@{rowOffs}}
+\index{rowOffs@{rowOffs}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rowOffs()}{rowOffs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::row\+Offs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00063}{63}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_ab1306af17667af57eb0a8f06f037012d}\label{classNeoN_1_1la_1_1CsrSparsityPattern_ab1306af17667af57eb0a8f06f037012d} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!rows@{rows}}
+\index{rows@{rows}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rows()}{rows()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::rows (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00068}{68}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CsrSparsityPattern_aec8f6e23f92cd68c774f114757d5997a}\label{classNeoN_1_1la_1_1CsrSparsityPattern_aec8f6e23f92cd68c774f114757d5997a} 
+\index{NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::CsrSparsityPattern$<$ IndexType $>$@{NeoN::la::CsrSparsityPattern$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{Neo\+N\+::la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a view representation of the matrix\textquotesingle{}s data. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View} for easy access to matrix elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{csrSparsityPattern_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{csrSparsityPattern_8hpp_source}{csr\+Sparsity\+Pattern.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{csrSparsityPattern_8hpp}{csr\+Sparsity\+Pattern.\+hpp}}\end{DoxyCompactItemize}
