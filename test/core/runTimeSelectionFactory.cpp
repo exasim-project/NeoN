@@ -79,7 +79,16 @@ TEST_CASE("RunTimeSelectionFactory")
 
     SECTION("classes are registered")
     {
-        CHECK(NeoN::BaseClassDocumentation::docTable().size() == 2);
+        // Test's own dummy BaseClass + BaseClass2 must be present. Linking the
+        // test executable against the full NeoN::NeoN shared library also pulls
+        // in static registrations from operator/scheme TUs (Gauss, linear,
+        // upwind, Ginkgo, ...), so the docTable can legitimately contain more
+        // than 2 entries. Assert presence of the expected entries instead of an
+        // exact count.
+        const auto& table = NeoN::BaseClassDocumentation::docTable();
+        CHECK(table.size() >= 2);
+        CHECK(table.contains("BaseClass"));
+        CHECK(table.contains("BaseClass2"));
         for (const auto& it : NeoN::BaseClassDocumentation::docTable())
         {
             std::string baseClassName = it.first;
