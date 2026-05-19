@@ -30,7 +30,7 @@ namespace NeoN
  *
  * @tparam ValueType The type of the underlying field values
  */
-template<typename T>
+template<typename ValueType>
 class BoundaryData
 {
 
@@ -40,7 +40,7 @@ public:
      * @brief Copy constructor.
      * @param rhs The boundaryVectors object to be copied.
      */
-    BoundaryData(const BoundaryData<T>& rhs)
+    BoundaryData(const BoundaryData<ValueType>& rhs)
         : exec_(rhs.exec_), value_(rhs.value_), refValue_(rhs.refValue_),
           valueFraction_(rhs.valueFraction_), refGrad_(rhs.refGrad_),
           boundaryTypes_(rhs.boundaryTypes_), offset_(rhs.offset_), nBoundaries_(rhs.nBoundaries_),
@@ -52,7 +52,7 @@ public:
      * @brief Copy constructor.
      * @param rhs The boundaryVectors object to be copied.
      */
-    BoundaryData(const Executor& exec, const BoundaryData<T>& rhs)
+    BoundaryData(const Executor& exec, const BoundaryData<ValueType>& rhs)
         : exec_(rhs.exec_), value_(exec, rhs.value_), refValue_(exec, rhs.refValue_),
           valueFraction_(exec, rhs.valueFraction_), refGrad_(exec, rhs.refGrad_),
           boundaryTypes_(exec, rhs.boundaryTypes_), offset_(SerialExecutor {}, rhs.offset_),
@@ -67,10 +67,12 @@ public:
      * @param nBoundaryType - The total number of boundary patches
      */
     BoundaryData(const Executor& exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)
-        : exec_(exec), value_(exec, nBoundaryFaces, T {}), refValue_(exec, nBoundaryFaces, T {}),
-          valueFraction_(exec, nBoundaryFaces, scalar(0)), refGrad_(exec, nBoundaryFaces, T {}),
+        : exec_(exec), value_(exec, nBoundaryFaces, ValueType {}),
+          refValue_(exec, nBoundaryFaces, ValueType {}),
+          valueFraction_(exec, nBoundaryFaces, scalar(0)),
+          refGrad_(exec, nBoundaryFaces, ValueType {}),
           boundaryTypes_(exec, nBoundaryTypes, int(0)),
-          offset_(SerialExecutor {}, nBoundaryTypes + 1, localIdx(0)), nBoundaries_(nBoundaryTypes),
+          offset_(SerialExecutor {}, nBoundaryTypes + 1), nBoundaries_(nBoundaryTypes),
           nBoundaryFaces_(nBoundaryFaces)
     {}
 
@@ -88,23 +90,23 @@ public:
 
 
     /** @copydoc BoundaryData::value()*/
-    const Vector<T>& value() const { return value_; }
+    const Vector<ValueType>& value() const { return value_; }
 
     /**
      * @brief Get the view storing the computed values from the boundary
      * condition.
      * @return The view storing the computed values.
      */
-    Vector<T>& value() { return value_; }
+    Vector<ValueType>& value() { return value_; }
 
     /** @copydoc BoundaryData::refValue()*/
-    const Vector<T>& refValue() const { return refValue_; }
+    const Vector<ValueType>& refValue() const { return refValue_; }
 
     /**
      * @brief Get the view storing the Dirichlet boundary values.
      * @return The view storing the Dirichlet boundary values.
      */
-    Vector<T>& refValue() { return refValue_; }
+    Vector<ValueType>& refValue() { return refValue_; }
 
     /** @copydoc BoundaryData::valueFraction()*/
     const Vector<scalar>& valueFraction() const { return valueFraction_; }
@@ -116,13 +118,13 @@ public:
     Vector<scalar>& valueFraction() { return valueFraction_; }
 
     /** @copydoc BoundaryData::refGrad()*/
-    const Vector<T>& refGrad() const { return refGrad_; }
+    const Vector<ValueType>& refGrad() const { return refGrad_; }
 
     /**
      * @brief Get the view storing the Neumann boundary values.
      * @return The view storing the Neumann boundary values.
      */
-    Vector<T>& refGrad() { return refGrad_; }
+    Vector<ValueType>& refGrad() { return refGrad_; }
 
     /**
      * @brief Get the view storing the boundary types.
@@ -159,7 +161,7 @@ public:
 
     const Executor& exec() { return exec_; }
 
-    BoundaryData<T>& operator=(const BoundaryData<T>& rhs)
+    BoundaryData<ValueType>& operator=(const BoundaryData<ValueType>& rhs)
     {
 
         // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
@@ -176,7 +178,7 @@ public:
         return *this;
     }
 
-    BoundaryData<T>& operator=(const BoundaryData<T>&& rhs)
+    BoundaryData<ValueType>& operator=(const BoundaryData<ValueType>&& rhs)
     {
 
         // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
@@ -204,13 +206,13 @@ public:
 
 private:
 
-    Executor exec_;      ///< The executor on which the field is stored
-    Vector<T> value_;    ///< The Vector storing the computed values from the
-                         ///< boundary condition.
-    Vector<T> refValue_; ///< The Vector storing the Dirichlet boundary values.
+    Executor exec_;              ///< The executor on which the field is stored
+    Vector<ValueType> value_;    ///< The Vector storing the computed values from the
+                                 ///< boundary condition.
+    Vector<ValueType> refValue_; ///< The Vector storing the Dirichlet boundary values.
     Vector<scalar>
         valueFraction_; ///< Fraction between Dirichlet (1.0) and Neuman (0.0) boundary value
-    Vector<T> refGrad_; ///< The Vector storing the Neumann boundary values.
+    Vector<ValueType> refGrad_; ///< The Vector storing the Neumann boundary values.
     Vector<int> boundaryTypes_; ///< The Vector storing the boundary types.
     Vector<localIdx> offset_;   ///< The Vector storing the offsets of each boundary.
     localIdx nBoundaries_;      ///< The number of boundaries.

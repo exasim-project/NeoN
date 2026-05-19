@@ -76,8 +76,8 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
                     (static_cast<scalar>(k) + 0.5) * dz
                 };
                 fMag[fi] = xArea;
-                fOwner[fi] = static_cast<label>(p.cellIdx(i, j, k));
-                fNeighbour[fi] = static_cast<label>(p.cellIdx(i + 1, j, k));
+                fOwner[fi] = p.cellIdx(i, j, k);
+                fNeighbour[fi] = p.cellIdx(i + 1, j, k);
                 ++faceId;
             }
 
@@ -95,8 +95,8 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
                     (static_cast<scalar>(k) + 0.5) * dz
                 };
                 fMag[fi] = yArea;
-                fOwner[fi] = static_cast<label>(p.cellIdx(i, j, k));
-                fNeighbour[fi] = static_cast<label>(p.cellIdx(i, j + 1, k));
+                fOwner[fi] = p.cellIdx(i, j, k);
+                fNeighbour[fi] = p.cellIdx(i, j + 1, k);
                 ++faceId;
             }
 
@@ -114,8 +114,8 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
                     static_cast<scalar>(k + 1) * dz
                 };
                 fMag[fi] = zArea;
-                fOwner[fi] = static_cast<label>(p.cellIdx(i, j, k));
-                fNeighbour[fi] = static_cast<label>(p.cellIdx(i, j, k + 1));
+                fOwner[fi] = p.cellIdx(i, j, k);
+                fNeighbour[fi] = p.cellIdx(i, j, k + 1);
                 ++faceId;
             }
 
@@ -301,6 +301,6 @@ BoundaryMesh generateBoundaryData(
         {}
     );
 
-    return {std::move(boundaryMesh)};
+    return boundaryMesh;
 }
 } // namespace NeoN::detail

@@ -26,8 +26,8 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeStencil() const
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Kokkos::atomic_inc(&nFacesPerCellView[static_cast<size_t>(faceOwner[i])]);
-            Kokkos::atomic_inc(&nFacesPerCellView[static_cast<size_t>(faceNeighbour[i])]);
+            Kokkos::atomic_inc(&nFacesPerCellView[faceOwner[i]]);
+            Kokkos::atomic_inc(&nFacesPerCellView[faceNeighbour[i]]);
         },
         "countFacesPerCellInternal"
     );

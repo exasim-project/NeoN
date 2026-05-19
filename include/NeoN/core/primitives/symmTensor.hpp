@@ -173,7 +173,9 @@ public:
     KOKKOS_INLINE_FUNCTION
     SymmTensor dev2() const
     {
-        const scalar tr23 = scalar(2.0 / 3.0) * trace();
+        // TODO in case of trace returning a float, when NeoN_DEFINE_DP_SCALAR = OFF, this will
+        // trigger a compiler warning
+        const scalar tr23 = (2.0 / 3.0) * trace();
         return SymmTensor(
             data_[0] - tr23, data_[1], data_[2], data_[3] - tr23, data_[4], data_[5] - tr23
         );
@@ -224,10 +226,10 @@ SymmTensor symm(const Tensor& t)
 {
     return SymmTensor(
         t(0, 0),
-        scalar(0.5) * (t(0, 1) + t(1, 0)),
-        scalar(0.5) * (t(0, 2) + t(2, 0)),
+        0.5 * (t(0, 1) + t(1, 0)),
+        0.5 * (t(0, 2) + t(2, 0)),
         t(1, 1),
-        scalar(0.5) * (t(1, 2) + t(2, 1)),
+        0.5 * (t(1, 2) + t(2, 1)),
         t(2, 2)
     );
 }

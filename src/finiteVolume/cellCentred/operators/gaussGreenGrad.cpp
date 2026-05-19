@@ -117,7 +117,9 @@ void computeGrad(
 }
 
 void computeBoundaryGrad(
-    const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi, const dsl::Coeff operatorScaling
+    const VolumeField<scalar>& phi,
+    VolumeField<Vec3>& gradPhi,
+    [[maybe_unused]] const dsl::Coeff operatorScaling
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
@@ -139,7 +141,7 @@ void computeBoundaryGrad(
 
     for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
     {
-        const auto attrs = boundaryConditions[patchID].attributes();
+        const auto attrs = boundaryConditions[static_cast<size_t>(patchID)].attributes();
         const auto [start, end] = phi.boundaryData().range(patchID);
 
         if (start == end)
@@ -241,13 +243,13 @@ GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorSc
 // ---- Tensor gradient implementation ----------------------------------------
 
 KOKKOS_INLINE_FUNCTION
-void atomicAddTensor(Tensor* target, int row, int col, scalar value)
+void atomicAddTensor(Tensor* target, size_t row, size_t col, scalar value)
 {
     Kokkos::atomic_add(&(*target)(row, col), value);
 }
 
 KOKKOS_INLINE_FUNCTION
-void atomicSubTensor(Tensor* target, int row, int col, scalar value)
+void atomicSubTensor(Tensor* target, size_t row, size_t col, scalar value)
 {
     Kokkos::atomic_sub(&(*target)(row, col), value);
 }
@@ -290,15 +292,15 @@ void computeGradTensor(
         {0, nInt},
         NEON_LAMBDA(const localIdx f) {
             const Vec3 sf = SfAll[f];
-            const Vec3 uf = UfAll[f];
+            const Vec3 faceU = UfAll[f];
             const auto o = owner[f];
             const auto n = nei[f];
             // gradU(row,col) += Sf[col] * U[row]  (Gauss-Green)
-            for (int row = 0; row < 3; ++row)
+            for (size_t row = 0; row < 3; ++row)
             {
-                for (int col = 0; col < 3; ++col)
+                for (size_t col = 0; col < 3; ++col)
                 {
-                    const scalar c = sf[col] * uf[row];
+                    const scalar c = sf[col] * faceU[row];
                     atomicAddTensor(&gT[o], row, col, c);
                     atomicSubTensor(&gT[n], row, col, c);
                 }
@@ -315,12 +317,12 @@ void computeGradTensor(
             const localIdx bi = f - nInt;
             const auto o = bFaceCells[bi];
             const Vec3 sf = SfAll[f];
-            const Vec3 uf = UfAll[f];
-            for (int row = 0; row < 3; ++row)
+            const Vec3 faceU = UfAll[f];
+            for (size_t row = 0; row < 3; ++row)
             {
-                for (int col = 0; col < 3; ++col)
+                for (size_t col = 0; col < 3; ++col)
                 {
-                    atomicAddTensor(&gT[o], row, col, sf[col] * uf[row]);
+                    atomicAddTensor(&gT[o], row, col, sf[col] * faceU[row]);
                 }
             }
         },
@@ -380,11 +382,11 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
 
     for (localIdx patchID = 0; patchID < static_cast<localIdx>(offsets.size() - 1); ++patchID)
     {
-        const localIdx start = offsets[patchID];
-        const localIdx end = offsets[patchID + 1];
+        const localIdx start = offsets[static_cast<size_t>(patchID)];
+        const localIdx end = offsets[static_cast<size_t>(patchID + 1)];
         if (start == end) continue;
 
-        const auto attrs = bcs[patchID].attributes();
+        const auto attrs = bcs[static_cast<size_t>(patchID)].attributes();
 
         parallelFor(
             exec,
@@ -400,7 +402,7 @@ void computeBoundaryGradTensor(const VolumeField<Vec3>& u, VolumeField<Tensor>& 
                     snGrad = URefGradB[i];
 
                 // Reconstruct each row: g(row,:) += n * (snGrad[row] - n · g(row,:))
-                for (int row = 0; row < 3; ++row)
+                for (size_t row = 0; row < 3; ++row)
                 {
                     const Vec3 gRow(g(row, 0), g(row, 1), g(row, 2));
                     const scalar nDotG = n[0] * gRow[0] + n[1] * gRow[1] + n[2] * gRow[2];

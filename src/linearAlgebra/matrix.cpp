@@ -10,8 +10,8 @@
 namespace NeoN::la
 {
 
-template<typename ValueType, typename IndexType>
-Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
+template<typename ValueType, typename SparsityType>
+Vector<ValueType> Matrix<ValueType, SparsityType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
     fill(diag, zero<ValueType>());
@@ -175,9 +175,7 @@ void scaledInverseDiag(
 }
 
 Vector<scalar> scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
-    const Vector<scalar>& a
+    const CSRMatrix<Vec3, localIdx>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
 )
 {
     auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
@@ -187,7 +185,7 @@ Vector<scalar> scaledInverseDiag(
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
+    const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 )
@@ -209,7 +207,7 @@ void scaledInverseDiag(
 }
 
 #define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
-    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>>;                            \
+    template class Matrix<VALUETYPE, la::CsrSparsityPattern<INTEGERTYPE>>;                         \
     template Vector<VALUETYPE>                                                                     \
     upper<VALUETYPE, INTEGERTYPE>(const CSRMatrix<VALUETYPE, INTEGERTYPE>&)
 

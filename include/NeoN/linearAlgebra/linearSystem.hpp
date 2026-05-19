@@ -10,7 +10,8 @@
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/linearAlgebra/matrix.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 #include <string>
@@ -57,7 +58,7 @@ struct LinearSystemView
  */
 template<
     typename ValueType,
-    typename MatrixType = CSRMatrix<ValueType, localIdx>,
+    typename SystemMatrixType = CSRMatrix<ValueType, localIdx>,
     typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
 class LinearSystem
 {
@@ -66,14 +67,15 @@ class LinearSystem
     {
         NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
         NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
-        NF_ASSERT(
-            boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() != boundaryRHS.size()"
-        );
+        // NF_ASSERT(
+        //     boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() !=
+        //     boundaryRHS.size()"
+        // );
     }
 
 public:
 
-    using LinearSystemIndexType = typename MatrixType::MatrixSparsityType::SparsityIndexType;
+    using LinearSystemIndexType = typename SystemMatrixType::MatrixSparsityType::SparsityIndexType;
 
     LinearSystem(
         std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress,
@@ -119,26 +121,24 @@ public:
         const CommunicationPattern commPattern,
         const Vector<ValueType>& rhs,
         const BoundaryMatrixType& boundaryMatrix,
-        const Vector<ValueType>& boundaryRhs,
-        std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> mi
+        const Vector<ValueType>& boundaryRhs
     )
         : matrix_(matrix), nonLocalMatrix_(nonLocalMatrix), commPattern_(commPattern), rhs_(rhs),
-          boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs), faceToMatrixAddress_(mi)
+          boundaryMatrix_(boundaryMatrix), boundaryRhs_(boundaryRhs)
     {
         validate();
     }
 
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), nonLocalMatrix_(ls.nonLocalMatrix_), commPattern_(ls.commPattern_),
-          rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_), boundaryRhs_(ls.boundaryRhs_),
-          faceToMatrixAddress_(ls.faceToMatrixAddress_)
+          rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_), boundaryRhs_(ls.boundaryRhs_)
     {}
 
     ~LinearSystem() = default;
 
-    [[nodiscard]] MatrixType& matrix() { return matrix_; }
+    [[nodiscard]] SystemMatrixType& matrix() { return matrix_; }
 
-    [[nodiscard]] const MatrixType& matrix() const { return matrix_; }
+    [[nodiscard]] const SystemMatrixType& matrix() const { return matrix_; }
 
     [[nodiscard]] BoundaryMatrixType& boundaryMatrix() { return boundaryMatrix_; }
 
@@ -156,7 +156,7 @@ public:
 
     [[nodiscard]] const Vector<ValueType>& boundaryRhs() const { return boundaryRhs_; }
 
-    [[nodiscard]] LinearSystem<ValueType, MatrixType> copyToHost() const
+    [[nodiscard]] LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> copyToHost() const
     {
         if (faceToMatrixAddress_ == nullptr)
         {
@@ -190,8 +190,7 @@ public:
             commPattern_,
             rhs_.copyToHost(),
             boundaryMatrix_.copyToHost(),
-            boundaryRhs_.copyToHost(),
-            mi
+            boundaryRhs_.copyToHost()
         };
     }
 
@@ -251,12 +250,16 @@ public:
 
     [[nodiscard]] LinearSystemView<
         ValueType,
-        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+        MatrixView<
+            ValueType,
+            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
     view() && = delete;
 
     [[nodiscard]] LinearSystemView<
         ValueType,
-        MatrixView<ValueType, SparsityView<typename MatrixType::MatrixSparsityType>>>
+        MatrixView<
+            ValueType,
+            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
     view() const&& = delete;
 
     [[nodiscard]] LinearSystemView<
@@ -267,9 +270,9 @@ public:
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
-    std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress() const
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
     {
-        return faceToMatrixAddress_;
+        return matrix_.faceToMatrixAddress();
     }
 
     [[nodiscard]] LinearSystemView<
@@ -287,7 +290,7 @@ public:
 private:
 
     // internal values
-    MatrixType matrix_;
+    SystemMatrixType matrix_;
 
     // store values on boundaries that are non local
     // eg on processor boundaries
@@ -297,139 +300,158 @@ private:
 
     Vector<ValueType> rhs_;
 
-    // store values on boundaries that are non local
+    // boundary values
     BoundaryMatrixType boundaryMatrix_;
 
     Vector<ValueType> boundaryRhs_;
 
     Dictionary auxiliaryCoefficients_;
-
-    std::shared_ptr<const FaceToMatrixAddress<LinearSystemIndexType>> faceToMatrixAddress_;
 };
 
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
-template<
-    typename ValueType,
-    typename InnerMatrixType = CSRMatrix<ValueType, localIdx>,
-    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
-createEmptyLinearSystem(const UnstructuredMesh& mesh)
+// template<
+typename InnerMatrixType = CSRMatrix<ValueType, localIdx>,
+         typename BoundaryMatrixType = COOMatrix < ValueType,
+         localIdx >> LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>
+             createEmptyLinearSystem(const UnstructuredMesh& mesh)
 {
     auto [faceToMatrixAddr, commPattern] =
         createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
     return LinearSystem<ValueType, InnerMatrixType, BoundaryMatrixType>(
         faceToMatrixAddr, commPattern
     );
-}
 
-/** @brief for testing purposes, this function reverses boundary contributions previously applied to
- * the matrix diagonal and RHS for some operators (e.g., div). **/
-template<typename ValueType>
-inline la::LinearSystem<ValueType>
-removeBoundaryContributions(const la::LinearSystem<ValueType>& lsIn)
-{
-    auto ls = la::LinearSystem<ValueType>(lsIn);
-    const auto matIt = ls.faceToMatrixAddress();
-    auto lsView = ls.view();
-    auto& matrix = lsView.matrix;
-    auto& rhs = lsView.rhs;
-    auto& bMatrix = lsView.boundaryMatrix;
-    auto& bRhs = lsView.boundaryRhs;
-    auto& mtx = ls.matrix();
-    const auto [diagOffs, rowOffs] = views(matIt->diagOffset(), mtx.rowOffs());
+    // template<
+    //     typename ValueType,
+    //     typename SystemMatrixType = CSRMatrix<ValueType, localIdx>,
+    //     typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
+    // LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType>
+    // createEmptyLinearSystem(const UnstructuredMesh& mesh)
+    // {
+    //     auto [systemSp, ftma] =
+    //         createSparsityPatternFaceToMatrixAddress<typename
+    //         SystemMatrixType::MatrixSparsityType>(mesh
+    //         );
+    //     auto bSp =
+    //         createBoundarySparsityPattern<typename BoundaryMatrixType::MatrixSparsityType>(mesh,
+    //         *ftma);
+    //     return {
+    //         SystemMatrixType(
+    //             Vector<ValueType>(systemSp->exec(), systemSp->nnz(), zero<ValueType>()),
+    //             systemSp, ftma
+    //         ),
+    //         Vector<ValueType>(systemSp->exec(), systemSp->rows(), zero<ValueType>()),
+    //         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()),
+    //         bSp), Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>())
+    //     };
+    // }
 
-    // Boundary matrix
-    parallelFor(
-        ls.exec(),
-        {0, bMatrix.values.size()},
-        NEON_LAMBDA(const localIdx facei) {
-            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
-            Kokkos::atomic_add(
-                &matrix.values[rowOffs[celli] + diagOffs[celli]], bMatrix.values[facei]
-            );
-            Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
-        },
-        "removeBoundaryContributions"
-    );
+    /** @brief for testing purposes, this function reverses boundary contributions previously
+     * applied to the matrix diagonal and RHS for some operators (e.g., div). **/
+    template<typename ValueType>
+    inline la::LinearSystem<ValueType> removeBoundaryContributions(
+        const la::LinearSystem<ValueType>& lsIn
+    )
+    {
+        auto ls = la::LinearSystem<ValueType>(lsIn);
+        auto lsView = ls.view();
+        auto& matrix = lsView.matrix;
+        auto& rhs = lsView.rhs;
+        auto& bMatrix = lsView.boundaryMatrix;
+        auto& bRhs = lsView.boundaryRhs;
 
-    return ls;
-}
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
-inline void scaledInvDiagNegLUx(
-    const la::LinearSystem<Vec3>& ls, // In,
-    const Vector<Vec3>& a,
-    const Vector<Vec3>& aBound,
-    const UnstructuredMesh& mesh,
-    Vector<scalar>& rAU,
-    Vector<Vec3>& out
-)
-{
-    // auto ls = removeBoundaryContributions(lsIn);
-    auto& mtx = ls.matrix();
+        // Boundary matrix
+        parallelFor(
+            ls.exec(),
+            {0, bMatrix.values.size()},
+            NEON_LAMBDA(const localIdx facei) {
+                const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+                Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
+                Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
+            },
+            "removeBoundaryContributions"
+        );
 
-    auto& vol = mesh.cellVolumes();
-    auto& bMesh = mesh.boundaryMesh();
-    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
-    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
+        return ls;
+    }
 
-    const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, aBoundV, bV] = views(
-        mtx.sparsity()->rowOffs(),
-        ls.matrix().sparsity()->colIdxs(),
-        mtx.values(),
-        rAU,
-        vol,
-        a,
-        aBound,
-        ls.rhs()
-    );
-    const auto [nonLocalMtx, nonLocalRows] =
-        views(ls.nonLocalMatrix().values(), ls.nonLocalMatrix().rowOffs());
-    auto outV = out.view();
+    inline void scaledInvDiagNegLUx(
+        const la::LinearSystem<Vec3>& ls, // In,
+        const Vector<Vec3>& a,
+        const Vector<Vec3>& aBound,
+        const UnstructuredMesh& mesh,
+        Vector<scalar>& rAU,
+        Vector<Vec3>& out
+    )
+    {
+        // auto ls = removeBoundaryContributions(lsIn);
+        auto& mtx = ls.matrix();
 
-    auto procFacesStart = bMesh.nBoundaryFaces();
+        auto& vol = mesh.cellVolumes();
+        auto& bMesh = mesh.boundaryMesh();
+        NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+        NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    // localIdx curNonLocalRow = 0;
-    parallelFor(
-        mtx.exec(),
-        {0, mtx.nRows()},
-        NEON_LAMBDA(const localIdx rowi) {
-            // local mtx first
-            outV[rowi] = zero<Vec3>();
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
-            {
-                auto colI = colIdxV[i];
-                if (rowi == colI)
+        const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, aBoundV, bV] = views(
+            mtx.sparsity()->rowOffs(),
+            ls.matrix().sparsity()->colIdxs(),
+            mtx.values(),
+            rAU,
+            vol,
+            a,
+            aBound,
+            ls.rhs()
+        );
+        const auto [nonLocalMtx, nonLocalRows] =
+            views(ls.nonLocalMatrix().values(), ls.nonLocalMatrix().rowOffs());
+        auto outV = out.view();
+
+        auto procFacesStart = bMesh.nBoundaryFaces();
+
+        // localIdx curNonLocalRow = 0;
+        parallelFor(
+            mtx.exec(),
+            {0, mtx.nRows()},
+            NEON_LAMBDA(const localIdx rowi) {
+                // local mtx first
+                outV[rowi] = zero<Vec3>();
+                for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
                 {
-                    rAUV[rowi] = volV[rowi] / matrixV[i][0];
+                    auto colI = colIdxV[i];
+                    if (rowi == colI)
+                    {
+                        rAUV[rowi] = volV[rowi] / matrixV[i][0];
+                    }
+                    else
+                    {
+                        outV[rowi] -= matrixV[i] * aV[colI];
+                    }
                 }
-                else
+
+                // check
+                // FIXME this scans everytime all boundary values
+                localIdx curNonLocalRow = 0;
+                auto nonLocalVal = zero<Vec3>();
+                for (auto i = 0; i < nonLocalRows.size(); i++)
                 {
-                    outV[rowi] -= matrixV[i] * aV[colI];
+                    if (nonLocalRows[i] == rowi)
+                    {
+                        nonLocalVal = nonLocalMtx[i];
+                        curNonLocalRow = i;
+                        // FIXME is the sign correct?
+                        outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];
+                        // curNonLocalRow = 0;
+                        // break;
+                    }
                 }
+
+                outV[rowi] += bV[rowi];
+                outV[rowi] *= rAUV[rowi] / volV[rowi];
             }
-
-            // check
-            // FIXME this scans everytime all boundary values
-            localIdx curNonLocalRow = 0;
-            auto nonLocalVal = zero<Vec3>();
-            for (auto i = 0; i < nonLocalRows.size(); i++)
-            {
-                if (nonLocalRows[i] == rowi)
-                {
-                    nonLocalVal = nonLocalMtx[i];
-                    curNonLocalRow = i;
-                    // FIXME is the sign correct?
-                    outV[rowi] -= nonLocalVal * aBoundV[procFacesStart + curNonLocalRow];
-                    // curNonLocalRow = 0;
-                    // break;
-                }
-            }
-
-            outV[rowi] += bV[rowi];
-            outV[rowi] *= rAUV[rowi] / volV[rowi];
-        }
-    );
-}
+        );
+    }
 
 } // namespace NeoN::la

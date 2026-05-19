@@ -42,7 +42,7 @@ void setNeonDefaultPattern(mpi::Environment& environment)
 #endif
 }
 
-void logImpl(std::string sv, Level level, [[maybe_unused]] std::string logName)
+void logImpl(std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName)
 {
 #if NF_WITH_SPDLOG
     spdlog::get(logName)->log(spdlog::level::level_enum(level), sv);

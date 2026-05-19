@@ -240,12 +240,10 @@ void computeDivBoundImpl(
 
     auto faceFluxV = faceFlux.internalVector().view();
 
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
     const auto [ownV, deltaCoeffs] =
         views(mesh.boundaryMesh().faceCells(), mesh.boundaryMesh().deltaCoeffs());
-
-    const auto matIt = ls.faceToMatrixAddress();
-    auto const rowOffs = matIt->sparsityPattern()->rowOffs().view();
-    auto const diagOffs = matIt->diagOffset().view();
 
     auto values = ls.matrix().values().view();
 
@@ -278,15 +276,11 @@ void computeDivBoundImpl(
             auto flux =
                 faceFluxV[facei] * -bweights[bfi] * ownCoeff * refGradFrac * one<ValueType>();
 
-            // Upper triangular - owner offsets
-            auto ownRowStart = rowOffs[ownRow];
-            auto ownDiagOffs = ownRowStart + static_cast<localIdx>(diagOffs[ownRow]);
-
             // since upper triangular value is "outside" of system matrix
             // it is stored separately in bMatrix
             bValues[bfi] += flux;
             // diagonal contribution
-            Kokkos::atomic_sub(&values[ownDiagOffs], flux);
+            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux);
 
             // Explicit RHS contribution from the mixed BC:
             //   φ_f = refValFrac * refValue               (Dirichlet part)
@@ -315,23 +309,18 @@ void computeDivIntImp(
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
-    const auto& matIt = ls.faceToMatrixAddress();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
 
-    const auto [fluxV, weightsV, ownV, neiV, surfFaceCells, diagOffs, ownOffs, neiOffs, rowOffs] =
-        views(
-            faceFlux.internalVector(),
-            weights.internalVector(),
-            mesh.faceOwner(),
-            mesh.faceNeighbour(),
-            mesh.boundaryMesh().faceCells(),
-            matIt->diagOffset(),
-            matIt->ownerOffset(),
-            matIt->neighbourOffset(),
-            matIt->sparsityPattern()->rowOffs()
-        );
-    auto rhs = ls.rhs().view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto [fluxV, weightsV, ownV, neiV, surfFaceCells] = views(
+        faceFlux.internalVector(),
+        weights.internalVector(),
+        mesh.faceOwner(),
+        mesh.faceNeighbour(),
+        mesh.boundaryMesh().faceCells()
+    );
     auto values = ls.matrix().values().view();
 
     NeoN::mpi::Environment mpiEnviron;
@@ -343,19 +332,9 @@ void computeDivIntImp(
             auto ownRow = ownV[facei];
             auto neiRow = neiV[facei];
 
-            auto ownRowStart = rowOffs[ownRow];
-            auto neiRowStart = rowOffs[neiRow];
-
             // operator sign coefficient  handles: = +/- div
             auto ownCoeff = coeff[ownRow];
             auto neiCoeff = coeff[neiRow];
-
-            // matrix value diagonal and column offsets
-            // NOTE TODO these are currently hardcode COO/CSR offsets
-            auto ownDiagOffs = ownRowStart + static_cast<localIdx>(diagOffs[ownRow]);
-            auto neiDiagOffs = neiRowStart + static_cast<localIdx>(diagOffs[neiRow]);
-            auto upperColOffs = ownRowStart + ownOffs[facei];
-            auto lowerColOffs = neiRowStart + neiOffs[facei];
 
             // Conservative Gauss-Green divergence assembly.
             // S_f points from owner to neighbour by construction, so F_f < 0 means
@@ -368,12 +347,12 @@ void computeDivIntImp(
             auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<ValueType>();
 
             // triangular coefficients - neighbour -> lower, owner -> upper
-            values[lowerColOffs] += ownFluxContrib * neiCoeff;
-            values[upperColOffs] += neiFluxContrib * ownCoeff;
+            values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
+            values[ma.upperIdx(ownRow, facei)] += neiFluxContrib * ownCoeff;
 
             // diagonal contribution is negative sum of offdiagonal coefficients
-            Kokkos::atomic_sub(&values[ownDiagOffs], ownFluxContrib * ownCoeff);
-            Kokkos::atomic_sub(&values[neiDiagOffs], neiFluxContrib * neiCoeff);
+            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownFluxContrib * ownCoeff);
+            Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], neiFluxContrib * neiCoeff);
         },
         "computeLocalGaussGreenDivCoefficients"
     );

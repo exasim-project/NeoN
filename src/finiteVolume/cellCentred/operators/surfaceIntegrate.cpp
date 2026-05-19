@@ -27,8 +27,8 @@ void surfaceIntegrate(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux[i]);
-            Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux[i]);
+            Kokkos::atomic_add(&res[owner[i]], flux[i]);
+            Kokkos::atomic_sub(&res[neighbour[i]], flux[i]);
         },
         "surfaceIntegrateInternalFaces"
     );

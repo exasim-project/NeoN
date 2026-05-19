@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <numeric>
+#include <ranges>
 #include <iostream> // for operator<<, basic_ostream, endl, cerr, ostream
 
 #include "NeoN/core/dictionary.hpp"
@@ -93,7 +94,7 @@ void Dictionary::insert(const std::string& key, const std::any& value) { data_[k
 
 void Dictionary::remove(const std::string& key) { data_.erase(key); }
 
-bool Dictionary::contains(const std::string& key) const { return data_.find(key) != data_.end(); }
+bool Dictionary::contains(const std::string& key) const { return data_.contains(key); }
 
 std::any& Dictionary::operator[](const std::string& key)
 {
@@ -136,12 +137,8 @@ bool Dictionary::isDict(const std::string& key) const { return isType<Dictionary
 // get keys of the dictionary
 std::vector<std::string> Dictionary::keys() const
 {
-    std::vector<std::string> keys;
-    for (const auto& pair : data_)
-    {
-        keys.push_back(pair.first);
-    }
-    return keys;
+    auto k = data_ | std::views::keys;
+    return {k.begin(), k.end()};
 }
 
 std::unordered_map<std::string, std::any>& Dictionary::getMap() { return data_; }

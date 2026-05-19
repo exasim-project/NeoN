@@ -7,7 +7,6 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
@@ -146,5 +145,9 @@ private:
 
     FaceNormalGradient<ValueType> faceNormalGradient_;
 };
+
+// FIXME is this needed
+extern template class GaussGreenLaplacian<scalar>;
+extern template class GaussGreenLaplacian<Vec3>;
 
 } // namespace NeoN

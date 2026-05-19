@@ -15,7 +15,9 @@ using NeoN::localIdx;
 using NeoN::Vector;
 using NeoN::Vec3;
 using NeoN::la::LinearSystem;
-using NeoN::la::Matrix;
+using NeoN::la::CSRMatrix;
+using NeoN::la::COOMatrix;
+>>>>>>> origin/develop
 
 TEST_CASE("Utilities")
 {
@@ -41,16 +43,7 @@ TEST_CASE("Utilities")
     );
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    // FIXME
-    // Matrix<scalar, localIdx> matrix(
-    //     Vector {values},
-    //     Vector {colIdx},
-    //     Vector {rowOffs},
-    //     Vector {values},
-    //     Vector {colIdx},
-    //     Vector {rowOffs},
-    //     mpiEnviron
-    // );
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs, {3, 3});
 
     // Sparse matrix variant of the above, i.e, not all rows contain
     // 3 entries
@@ -146,14 +139,43 @@ TEST_CASE("Utilities")
         Vector<scalar> rhs(exec, 3, 2.0);
         Vector<scalar> x(exec, 3, 1.0);
         Vector<scalar> res(exec, 3, 0.0);
-        // FIXME
-        // LinearSystem<scalar> linearSystem(
-        //     csrMatrix, rhs, csrMatrix, rhs, {}
-        // );
+        Vector<scalar> bValues(exec, {0.0, 0.0, 0.0});
+        Vector<localIdx> bColIdx(exec, {0, 1, 2});
+        Vector<localIdx> bRowOffs(exec, {0, 1, 2});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs, {3, 1});
+        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
+            csrMatrix, rhs, bCooMatrix, rhs
+        );
+
+        NeoN::la::computeResidual(csrMatrix, rhs, x, res);
 
         // FIXME avoid *<...>.get()
         // NeoN::la::computeResidual(*matrix.local().get(), rhs, x, res);
         auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
         REQUIRE_THAT(res, Equals(residualExp, ApproxScalar(1e-15)));
+    }
+
+    SECTION("Can convert empty rowsToRowOffs  " + execName)
+    {
+        auto rowIdx = Vector<localIdx>(exec, {});
+        auto rowOffs = NeoN::la::rowsToRowOffs(rowIdx);
+        auto rowIdxExp = std::vector<localIdx> {0};
+        REQUIRE_THAT(rowOffs, Equals(rowIdxExp, EqualInt()));
+    }
+
+    SECTION("Can convert non empty rowsToRowOffs  " + execName)
+    {
+        auto rowIdx = Vector<localIdx>(exec, {0, 1, 2});
+        auto rowOffs = NeoN::la::rowsToRowOffs(rowIdx);
+        auto rowIdxExp = std::vector<localIdx> {0, 1, 2, 3};
+        REQUIRE_THAT(rowOffs, Equals(rowIdxExp, EqualInt()));
+    }
+
+    SECTION("Can convert non empty with duplicates rowsToRowOffs  " + execName)
+    {
+        auto rowIdx = Vector<localIdx>(exec, {0, 0, 2, 2, 2});
+        auto rowOffs = NeoN::la::rowsToRowOffs(rowIdx);
+        auto rowIdxExp = std::vector<localIdx> {0, 2, 2, 5};
+        REQUIRE_THAT(rowOffs, Equals(rowIdxExp, EqualInt()));
     }
 }
