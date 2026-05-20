@@ -111,6 +111,13 @@ void registerSurfaceField(nb::module_& m)
             "Get the internal vector"
         )
         .def(
+            "boundary_value",
+            [](fvcc::SurfaceField<NeoN::scalar>& self) -> NeoN::Vector<NeoN::scalar>&
+            { return self.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary-face value vector (size = mesh.n_boundary_faces())"
+        )
+        .def(
             "mesh",
             &fvcc::SurfaceField<NeoN::scalar>::mesh,
             nb::rv_policy::reference_internal,
@@ -212,6 +219,13 @@ void registerSurfaceField(nb::module_& m)
                 &fvcc::SurfaceField<NeoN::Vec3>::internalVector
             ),
             nb::rv_policy::reference_internal
+        )
+        .def(
+            "boundary_value",
+            [](fvcc::SurfaceField<NeoN::Vec3>& self) -> NeoN::Vector<NeoN::Vec3>&
+            { return self.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary-face value vector (size = mesh.n_boundary_faces())"
         )
         .def("mesh", &fvcc::SurfaceField<NeoN::Vec3>::mesh, nb::rv_policy::reference_internal)
         .def("exec", &fvcc::SurfaceField<NeoN::Vec3>::exec, nb::rv_policy::reference_internal)
