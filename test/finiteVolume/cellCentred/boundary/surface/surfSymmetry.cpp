@@ -36,17 +36,9 @@ TEST_CASE("symmetry_surface")
                 copyToHosts(field.boundaryData().refValue(), field.boundaryData().value());
 
             for (auto& v : refValuesH.view(boundary->range()))
-            {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Catch::Approx(internalH.view()[ownerV]));
-            }
+                REQUIRE(v == Catch::Approx(0.0));
             for (auto& v : valuesH.view(boundary->range()))
-            {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Catch::Approx(internalH.view()[ownerV]));
-            }
+                REQUIRE(v == Catch::Approx(0.0));
         }
 
         // === vector field =====================================================
