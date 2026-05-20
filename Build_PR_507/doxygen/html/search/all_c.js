@@ -8,7 +8,7 @@ var searchData=
   ['neglux_5',['negLUx',['../namespaceNeoN_1_1la.html#a81ea5bf6450cb2402acf9f981d5583ab',1,'NeoN::la']]],
   ['neighbour_6',['neighbour',['../structNeoN_1_1detail_1_1FaceData.html#a95a9eca3feedc6a0419a5247f3838af6',1,'NeoN::detail::FaceData']]],
   ['neighbouroffset_7',['neighbouroffset',['../structNeoN_1_1la_1_1FaceToMatrixView.html#ae3737684bb67f8bb28c5d2bc5732ac6b',1,'NeoN::la::FaceToMatrixView::neighbourOffset'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a323a0e68aa9442dc4f238df016ee6cfc',1,'NeoN::la::FaceToMatrixAddress::neighbourOffset() const'],['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a1fa6ed32e200ac08cd296c02d3e83742',1,'NeoN::la::FaceToMatrixAddress::neighbourOffset()']]],
-  ['neighbourrank_8',['neighbourrank',['../classNeoN_1_1BoundaryMesh.html#a15f500c710e99436c0e7c12efa84892f',1,'NeoN::BoundaryMesh::neighbourRank(const localIdx i) const'],['../classNeoN_1_1BoundaryMesh.html#a69e62a927b8028e6d77d09a6dca8475c',1,'NeoN::BoundaryMesh::neighbourRank() const']]],
+  ['neighbourrank_8',['neighbourrank',['../classNeoN_1_1BoundaryMesh.html#a8b2d9d8cc2251da3e6aa996128017972',1,'NeoN::BoundaryMesh::neighbourRank(const localIdx i) const'],['../classNeoN_1_1BoundaryMesh.html#a69e62a927b8028e6d77d09a6dca8475c',1,'NeoN::BoundaryMesh::neighbourRank() const']]],
   ['neon_9',['NeoN',['../namespaceNeoN.html',1,'']]],
   ['neon_3a_3adetail_10',['detail',['../namespaceNeoN_1_1detail.html',1,'NeoN']]],
   ['neon_3a_3adsl_11',['dsl',['../namespaceNeoN_1_1dsl.html',1,'NeoN']]],
