@@ -279,6 +279,49 @@ void registerVolumeField(nb::module_& m)
         "Rotate old-time Vec3 volume field (φ^n → φ^{n-1}) — field must be registered in "
         "VectorCollection"
     );
+
+    m.def(
+        "register_volume_field",
+        [](NeoN::Database& db,
+           const std::string& collection_name,
+           fvcc::VolumeField<NeoN::scalar>& field) -> fvcc::VolumeField<NeoN::scalar>&
+        {
+            auto& collection = fvcc::VectorCollection::instance(db, collection_name);
+            return collection.registerVector<fvcc::VolumeField<NeoN::scalar>>(
+                fvcc::CreateFromExistingVector<fvcc::VolumeField<NeoN::scalar>> {
+                    .name = field.name,
+                    .field = field,
+                }
+            );
+        },
+        "db"_a,
+        "collection_name"_a,
+        "field"_a,
+        nb::rv_policy::reference,
+        "Register a scalar volume field in a database collection and return the registered "
+        "field"
+    );
+
+    m.def(
+        "register_volume_field",
+        [](NeoN::Database& db,
+           const std::string& collection_name,
+           fvcc::VolumeField<NeoN::Vec3>& field) -> fvcc::VolumeField<NeoN::Vec3>&
+        {
+            auto& collection = fvcc::VectorCollection::instance(db, collection_name);
+            return collection.registerVector<fvcc::VolumeField<NeoN::Vec3>>(
+                fvcc::CreateFromExistingVector<fvcc::VolumeField<NeoN::Vec3>> {
+                    .name = field.name,
+                    .field = field,
+                }
+            );
+        },
+        "db"_a,
+        "collection_name"_a,
+        "field"_a,
+        nb::rv_policy::reference,
+        "Register a Vec3 volume field in a database collection and return the registered field"
+    );
 }
 
 } // namespace NeoN::bindings

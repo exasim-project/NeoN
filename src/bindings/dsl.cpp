@@ -4,6 +4,7 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/tuple.h>
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/variant.h>
 #include <nanobind/operators.h>
@@ -134,6 +135,17 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
         )
         .def(
             "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
+        )
+        .def(
+            "assemble",
+            [](const Expr& expr, const UnstructuredMesh& mesh, scalar t, scalar dt)
+            {
+                auto [sparsity, linear_system] = expr.assemble(mesh, t, dt);
+                return std::make_tuple(*sparsity, std::move(linear_system));
+            },
+            "mesh"_a,
+            "t"_a,
+            "dt"_a
         )
         .def("size", &Expr::size);
 }

@@ -2,6 +2,11 @@
 #
 # SPDX-License-Identifier: Unlicense
 
+stages:
+  - build
+  - test
+  - deploy
+
 # ============================================================
 #  GPU-specific images and runner configuration
 # ============================================================
@@ -76,14 +81,37 @@
 #  Job templates
 # ============================================================
 .build-and-test:
+  variables:
+    CMAKE_BUILD_PARALLEL_LEVEL: "3"
   script:
     - ./ci/lrz-gitlab/build-and-test.sh
 
 .benchmark:
   extends:
     - .setup-for-benchmarking
+  variables:
+    CMAKE_BUILD_PARALLEL_LEVEL: "3"
   script:
     - ./ci/lrz-gitlab/benchmark.sh
+
+.build-python-wheel:
+  variables:
+    CMAKE_BUILD_PARALLEL_LEVEL: "3"
+  before_script:
+    - python3 -m pip install --user --break-system-packages build
+  script:
+    - python3 -m build --wheel
+    - python3 ci/smoke_test_wheel.py
+  artifacts:
+    paths:
+      - dist/*.whl
+
+.pixi-python-package:
+  image: ghcr.io/prefix-dev/pixi:latest
+  variables:
+    CMAKE_BUILD_PARALLEL_LEVEL: "1"
+  before_script:
+    - pixi install --locked
 
 # ============================================================
 #  NeoN - testing jobs
@@ -126,3 +154,42 @@ benchmark-neon-intel:
     - .gpu-intel
     - .rules-neon-benchmarking
     - .benchmark
+
+# ============================================================
+#  NeoN - Python packaging job
+# ============================================================
+build-python-wheel-nvidia:
+  extends:
+    - .gpu-nvidia
+    - .rules-neon-testing
+    - .build-python-wheel
+
+build-python-wheel-pixi:
+  extends:
+    - .pixi-python-package
+  stage: build
+  script:
+    - pixi run -e build smoke-test
+  artifacts:
+    paths:
+      - dist/*.whl
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+publish-python-wheel-pypi:
+  extends:
+    - .pixi-python-package
+  stage: deploy
+  needs:
+    - job: build-python-wheel-pixi
+      artifacts: true
+  id_tokens:
+    PYPI_ID_TOKEN:
+      aud: pypi
+  script:
+    - pixi run -e release twine upload dist/*
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v?[0-9]+\.[0-9]+\.[0-9]+$/'

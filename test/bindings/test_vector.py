@@ -9,6 +9,7 @@ except:
     has_jax = False
 
 import neon
+import numpy as np
 
 def test_scalar_vector(executor):
     name, exec = executor
@@ -68,8 +69,8 @@ def test_copy_to_host():
     assert vv1.size() == vv2.size()
 
 
-def test_jax_operations(executor):
-    """Test JAX operations on NeoN ScalarVectors.
+def test_array_operations(executor):
+    """Test array operations on NeoN ScalarVectors via numpy.
 
     For CPU executors (Serial/CPU): convert directly via __array__.
     For GPU executors: copy to host first, then convert.
@@ -81,12 +82,11 @@ def test_jax_operations(executor):
     values = [1.0, 2.0, 3.0, 4.0, 5.0]
     v = neon.ScalarVector(exec, values)
 
-    # GPU vectors must be copied to host before converting to JAX
     host_v = v.copy_to_host() if name == "gpu" else v
 
-    arr = jnp.asarray(host_v)
+    arr = np.asarray(host_v)
     assert arr.shape == (5,)
-    assert float(jnp.sum(arr)) == 15.0
-    assert float(jnp.mean(arr)) == 3.0
-    assert float(jnp.max(arr)) == 5.0
-    assert float(jnp.min(arr)) == 1.0
+    assert float(np.sum(arr)) == 15.0
+    assert float(np.mean(arr)) == 3.0
+    assert float(np.max(arr)) == 5.0
+    assert float(np.min(arr)) == 1.0

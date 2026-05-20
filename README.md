@@ -63,6 +63,24 @@ We provide a set of unit tests which can be executed via ctest or
 
     cmake --build . --target test
 
+### Pixi Workspace
+
+For reproducible local development environments, NeoN can also be driven via
+`pixi.toml`. Pixi is used here as the environment and task runner, while the
+actual compilation and wheel creation still go through CMake and
+`python -m build`.
+
+Typical commands are:
+
+    pixi install                 # creates pixi.lock
+    pixi run -e build build      # configure + build with -j3
+    pixi run -e py312 test       # run ctest in the Python 3.12 environment
+    pixi run -e build wheel      # build a wheel without build isolation
+    pixi run -e build smoke-test # install the built wheel in an isolated venv and run test_neon_package.py
+
+The generated `pixi.lock` should be committed so CI uses pinned tooling across
+platforms.
+
 
 ## Integration with other CFD Frameworks
 
