@@ -124,10 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5ee3506270fe6e45373c926d1080e428"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a390d7caf4502d7587a311da7db456d7e" id="r_a390d7caf4502d7587a311da7db456d7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a390d7caf4502d7587a311da7db456d7e">copyToHost</a> () const</td></tr>
 <tr class="separator:a390d7caf4502d7587a311da7db456d7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73e4cc6304f9eb9b051caef55a7b644f" id="r_a73e4cc6304f9eb9b051caef55a7b644f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a73e4cc6304f9eb9b051caef55a7b644f">communicate</a> (CommunicationPattern &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a49f33fa666aabdbc29134246317c98b5">commPattern</a>)</td></tr>
-<tr class="memdesc:a73e4cc6304f9eb9b051caef55a7b644f"><td class="mdescLeft">&#160;</td><td class="mdescRight">boundaryMatrixMap - bfaceIdx -&gt; matrixAddr  <br /></td></tr>
-<tr class="separator:a73e4cc6304f9eb9b051caef55a7b644f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa61ee720656a09e9c997c53158950e46" id="r_aa61ee720656a09e9c997c53158950e46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa61ee720656a09e9c997c53158950e46">reset</a> ()</td></tr>
+<tr class="memdesc:aa61ee720656a09e9c997c53158950e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exchange non-local matrix coefficients across MPI ranks.  <br /></td></tr>
 <tr class="separator:aa61ee720656a09e9c997c53158950e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5da85f89d2812882e67903efbd48c003" id="r_a5da85f89d2812882e67903efbd48c003"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename SystemMatrixType::MatrixSparsityType::SparsityIndexType &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5da85f89d2812882e67903efbd48c003">view</a> () &amp;&amp;=delete</td></tr>
 <tr class="separator:a5da85f89d2812882e67903efbd48c003"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -473,39 +471,7 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00263">263</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
-
-</div>
-</div>
-<a id="a73e4cc6304f9eb9b051caef55a7b644f" name="a73e4cc6304f9eb9b051caef55a7b644f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73e4cc6304f9eb9b051caef55a7b644f">&#9670;&#160;</a></span>communicate()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::communicate </td>
-          <td>(</td>
-          <td class="paramtype">CommunicationPattern &amp;&#160;</td>
-          <td class="paramname"><em>commPattern</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>boundaryMatrixMap - bfaceIdx -&gt; matrixAddr </p>
-
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00172">172</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00256">256</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -563,7 +529,7 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00261">261</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00254">254</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -592,7 +558,7 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00248">248</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00241">241</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -737,7 +703,9 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00217">217</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p>Exchange non-local matrix coefficients across MPI ranks. </p>
+
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00210">210</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -824,7 +792,7 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00243">243</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00236">236</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -880,7 +848,7 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00256">256</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00249">249</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>

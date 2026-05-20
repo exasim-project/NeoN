@@ -68,10 +68,11 @@ var searchData=
   ['nonlocalsparsitypattern_65',['nonLocalSparsityPattern',['../classNeoN_1_1la_1_1FaceToMatrixAddress.html#a484bf4ba8f64956efec4b05d104a6a74',1,'NeoN::la::FaceToMatrixAddress']]],
   ['nonorthcorrectionvec3s_66',['nonOrthCorrectionVec3s',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a1656f25cf00be0ff496ca4a771b38796',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
   ['nonorthdeltacoeffs_67',['nonOrthDeltaCoeffs',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab8f967c9d431f095144b519393913654',1,'NeoN::finiteVolume::cellCentred::GeometryScheme']]],
-  ['nrows_68',['nRows',['../classNeoN_1_1la_1_1Matrix.html#a2f977c611cd68ce6c09cebbeb33fdd78',1,'NeoN::la::Matrix']]],
-  ['numiter_69',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
-  ['numsegments_70',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]],
-  ['nx_71',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
-  ['ny_72',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],
-  ['nz_73',['nz',['../structNeoN_1_1detail_1_1MeshParams.html#a70327af024934248c1727eabbdbc719c',1,'NeoN::detail::MeshParams']]]
+  ['nprocboundaryfaces_68',['nProcBoundaryFaces',['../classNeoN_1_1UnstructuredMesh.html#a05144346e4df36fcd70f0a1713bd0028',1,'NeoN::UnstructuredMesh']]],
+  ['nrows_69',['nRows',['../classNeoN_1_1la_1_1Matrix.html#a2f977c611cd68ce6c09cebbeb33fdd78',1,'NeoN::la::Matrix']]],
+  ['numiter_70',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
+  ['numsegments_71',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]],
+  ['nx_72',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
+  ['ny_73',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],
+  ['nz_74',['nz',['../structNeoN_1_1detail_1_1MeshParams.html#a70327af024934248c1727eabbdbc719c',1,'NeoN::detail::MeshParams']]]
 ];
