@@ -84,8 +84,9 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="vector_8hpp_source.html">NeoN/core/vector/vector.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="dictionary_8hpp_source.html">NeoN/core/dictionary.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="matrix_8hpp_source.html">NeoN/linearAlgebra/matrix.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="cooSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/cooSparsityPattern.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="csrSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/csrSparsityPattern.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="matrixIterator_8hpp_source.html">NeoN/linearAlgebra/matrixIterator.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sparsityPattern_8hpp_source.html">NeoN/linearAlgebra/sparsityPattern.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="faceToMatrixAddress_8hpp_source.html">NeoN/linearAlgebra/faceToMatrixAddress.hpp</a>&quot;</code><br />
 <code>#include &lt;string&gt;</code><br />
 </div>
@@ -96,7 +97,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">NeoN::la::LinearSystemView&lt; ValueType, MatrixViewType &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A view linear into a linear system's data.  <a href="structNeoN_1_1la_1_1LinearSystemView.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem&lt; ValueType, MatrixType &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing a linear system of equations.  <a href="classNeoN_1_1la_1_1LinearSystem.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -109,9 +110,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa81b9ceffc9f88391607e0a46fa98e72" id="r_aa81b9ceffc9f88391607e0a46fa98e72"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
-<tr class="memitem:aa81b9ceffc9f88391607e0a46fa98e72"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, MatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa81b9ceffc9f88391607e0a46fa98e72">NeoN::la::createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; meshIterationStrategy=std::make_shared&lt; <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">FaceBasedIterator</a> &gt;())</td></tr>
-<tr class="separator:aa81b9ceffc9f88391607e0a46fa98e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa225acfa2621e5e29de5b705b1757afc" id="r_aa225acfa2621e5e29de5b705b1757afc"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
+<tr class="memitem:aa225acfa2621e5e29de5b705b1757afc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa225acfa2621e5e29de5b705b1757afc">NeoN::la::createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:aa225acfa2621e5e29de5b705b1757afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0ad3d154c390bb75b1e2581b775fd9" id="r_a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">NeoN::la::removeBoundaryContributions</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;lsIn)</td></tr>
 <tr class="memdesc:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div).  <br /></td></tr>
