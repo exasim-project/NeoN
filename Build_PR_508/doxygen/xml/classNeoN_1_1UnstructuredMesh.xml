@@ -111,12 +111,12 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="267" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" bodystart="267" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a79f2232d33db29303d1aa9bdef6d3da6" prot="private" static="no" mutable="no">
+      <memberdef kind="variable" id="classNeoN_1_1UnstructuredMesh_1a3858457552249cc3abe289902e6ac3fd" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
-        <definition>labelVector NeoN::UnstructuredMesh::faceOwner_</definition>
+        <definition>labelVector NeoN::UnstructuredMesh::faceOwners_</definition>
         <argsstring></argsstring>
-        <name>faceOwner_</name>
-        <qualifiedname>NeoN::UnstructuredMesh::faceOwner_</qualifiedname>
+        <name>faceOwners_</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceOwners_</qualifiedname>
         <briefdescription>
 <para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> of face owner cells. </para>
         </briefdescription>
@@ -250,10 +250,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1aea4410cff55dd84e31e1a22fdfca89bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a3b21e9cb95e69f76441af4bf7c96f9e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>NeoN::UnstructuredMesh::UnstructuredMesh</definition>
-        <argsstring>(Executor exec, vectorVector points, scalarVector cellVolumes, vectorVector cellCentres, vectorVector faceNormals, vectorVector faceCentres, scalarVector faceAreas, labelVector faceOwner, labelVector faceNeighbour, localIdx nCells, localIdx nInternalFaces, localIdx nBoundaryFaces, localIdx nBoundaries, localIdx nFaces, BoundaryMesh boundaryMesh)</argsstring>
+        <argsstring>(Executor exec, vectorVector points, scalarVector cellVolumes, vectorVector cellCentres, vectorVector faceNormals, vectorVector faceCentres, scalarVector faceAreas, labelVector faceOwners, labelVector faceNeighbour, localIdx nCells, localIdx nInternalFaces, localIdx nBoundaryFaces, localIdx nBoundaries, localIdx nFaces, BoundaryMesh boundaryMesh)</argsstring>
         <name>UnstructuredMesh</name>
         <qualifiedname>NeoN::UnstructuredMesh::UnstructuredMesh</qualifiedname>
         <param>
@@ -286,7 +286,7 @@
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
-          <declname>faceOwner</declname>
+          <declname>faceOwners</declname>
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
@@ -378,7 +378,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>faceOwner</parametername>
+<parametername>faceOwners</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>The field of face owner cells. </para>
@@ -447,10 +447,10 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="53" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1adebcea65bd8fcdc85db5ac9c6a7015fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1ae35f48e76551fc8849c80fcce75e781b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>NeoN::UnstructuredMesh::UnstructuredMesh</definition>
-        <argsstring>(vectorVector points, scalarVector cellVolumes, vectorVector cellCentres, vectorVector faceNormals, vectorVector faceCentres, scalarVector faceAreas, labelVector faceOwner, labelVector faceNeighbour, localIdx nCells, localIdx nInternalFaces, localIdx nBoundaryFaces, localIdx nBoundaries, localIdx nFaces, BoundaryMesh boundaryMesh)</argsstring>
+        <argsstring>(vectorVector points, scalarVector cellVolumes, vectorVector cellCentres, vectorVector faceNormals, vectorVector faceCentres, scalarVector faceAreas, labelVector faceOwners, labelVector faceNeighbour, localIdx nCells, localIdx nInternalFaces, localIdx nBoundaryFaces, localIdx nBoundaries, localIdx nFaces, BoundaryMesh boundaryMesh)</argsstring>
         <name>UnstructuredMesh</name>
         <qualifiedname>NeoN::UnstructuredMesh::UnstructuredMesh</qualifiedname>
         <param>
@@ -479,7 +479,7 @@
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
-          <declname>faceOwner</declname>
+          <declname>faceOwners</declname>
         </param>
         <param>
           <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref></type>
@@ -513,7 +513,7 @@
 <para>Constructor for the <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> class. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="note"><para>executor is determined from faceOwner</para>
+<para><simplesect kind="note"><para>executor is determined from faceOwners</para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -565,7 +565,7 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>faceOwner</parametername>
+<parametername>faceOwners</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>The list of face owner cells. </para>
@@ -826,12 +826,12 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="153" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1ad3274dbaf58fe30d569dea6a5f366274" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a071d4e601f493874249b7eda90596f02" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref> &amp;</type>
-        <definition>const labelVector &amp; NeoN::UnstructuredMesh::faceOwner</definition>
+        <definition>const labelVector &amp; NeoN::UnstructuredMesh::faceOwners</definition>
         <argsstring>() const</argsstring>
-        <name>faceOwner</name>
-        <qualifiedname>NeoN::UnstructuredMesh::faceOwner</qualifiedname>
+        <name>faceOwners</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceOwners</qualifiedname>
         <briefdescription>
 <para>Get the field of face owner cells. </para>
         </briefdescription>
@@ -844,12 +844,12 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/unstructuredMesh.hpp" line="160" column="23"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1a23992f9bf274a3b7692442571da7a35b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1UnstructuredMesh_1adab6134bb8c9c8a38ab1af069cc5d19b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1a6389e1f6465846887d6bc01ec8ea818d" kindref="member">labelVector</ref> &amp;</type>
-        <definition>labelVector &amp; NeoN::UnstructuredMesh::faceOwner</definition>
+        <definition>labelVector &amp; NeoN::UnstructuredMesh::faceOwners</definition>
         <argsstring>()</argsstring>
-        <name>faceOwner</name>
-        <qualifiedname>NeoN::UnstructuredMesh::faceOwner</qualifiedname>
+        <name>faceOwners</name>
+        <qualifiedname>NeoN::UnstructuredMesh::faceOwners</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1065,9 +1065,9 @@
       <member refid="classNeoN_1_1UnstructuredMesh_1a5a6efb11ead944eb788ae17e91ba7893" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceNormals</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1a6b1c32cd1a49962d4e751aaaad716125" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceNormals</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1ae1cf5b4f622c22c5854ee9f2a60a1160" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceNormals_</name></member>
-      <member refid="classNeoN_1_1UnstructuredMesh_1ad3274dbaf58fe30d569dea6a5f366274" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwner</name></member>
-      <member refid="classNeoN_1_1UnstructuredMesh_1a23992f9bf274a3b7692442571da7a35b" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwner</name></member>
-      <member refid="classNeoN_1_1UnstructuredMesh_1a79f2232d33db29303d1aa9bdef6d3da6" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwner_</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a071d4e601f493874249b7eda90596f02" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwners</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1adab6134bb8c9c8a38ab1af069cc5d19b" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwners</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a3858457552249cc3abe289902e6ac3fd" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>faceOwners_</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1a401abe2bb196b51465ea476e55a5622e" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaries</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1a282c4c6a0948662038e490ab49dbfa49" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaries_</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1a2cc40de21a651f18026027a53f13ce24" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>nBoundaryFaces</name></member>
@@ -1083,8 +1083,8 @@
       <member refid="classNeoN_1_1UnstructuredMesh_1ae4d4c52dae0c0557db24483b5024ce86" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>points_</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1af62762951bb58670f9229e6729b6a404" prot="private" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>stencilDataBase_</name></member>
       <member refid="classNeoN_1_1UnstructuredMesh_1a0d941c6f9fd1001bb00c8fde7a47876e" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>stencilDB</name></member>
-      <member refid="classNeoN_1_1UnstructuredMesh_1aea4410cff55dd84e31e1a22fdfca89bf" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>UnstructuredMesh</name></member>
-      <member refid="classNeoN_1_1UnstructuredMesh_1adebcea65bd8fcdc85db5ac9c6a7015fe" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>UnstructuredMesh</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1a3b21e9cb95e69f76441af4bf7c96f9e2" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>UnstructuredMesh</name></member>
+      <member refid="classNeoN_1_1UnstructuredMesh_1ae35f48e76551fc8849c80fcce75e781b" prot="public" virt="non-virtual"><scope>NeoN::UnstructuredMesh</scope><name>UnstructuredMesh</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
