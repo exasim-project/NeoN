@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoN: NeoN::la::LinearSystem&lt; ValueType, MatrixType &gt; Class Template Reference</title>
+<title>NeoN: NeoN::la::LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,7 +78,7 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classNeoN_1_1la_1_1LinearSystem-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">NeoN::la::LinearSystem&lt; ValueType, MatrixType &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">NeoN::la::LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -89,123 +89,91 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:abfbc2a7ff0529f2c42bf9fce51b9b4a9" id="r_abfbc2a7ff0529f2c42bf9fce51b9b4a9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> = typename MatrixType::MatrixSparsityType::SparsityIndexType</td></tr>
-<tr class="separator:abfbc2a7ff0529f2c42bf9fce51b9b4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa17f9336528287547f63c8262f81b29a" id="r_aa17f9336528287547f63c8262f81b29a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa17f9336528287547f63c8262f81b29a">LinearSystemIndexType</a> = typename SystemMatrixType::MatrixSparsityType::SparsityIndexType</td></tr>
+<tr class="separator:aa17f9336528287547f63c8262f81b29a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aeb6fcdf8f463762239e1d2bace05beb3" id="r_aeb6fcdf8f463762239e1d2bace05beb3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aeb6fcdf8f463762239e1d2bace05beb3">LinearSystem</a> (std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ab187457a3c92f2198346c8f84c49579c">faceToMatrixAddress</a>)</td></tr>
-<tr class="separator:aeb6fcdf8f463762239e1d2bace05beb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acba42d84b999940c55ee2ce4396b90fa" id="r_acba42d84b999940c55ee2ce4396b90fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#acba42d84b999940c55ee2ce4396b90fa">LinearSystem</a> (const MatrixType &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a2319e4cc9bc4ea33423c7f9a2048adc7">matrix</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a9c04e6dbddd20359bd60609de7bf3b35">rhs</a>, const MatrixType &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a2624dea8911eccbb31b39338821433ae">boundaryMatrix</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5cf0a45ff96a014cb4ba9fd5977fd9b8">boundaryRhs</a>, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; mi)</td></tr>
-<tr class="separator:acba42d84b999940c55ee2ce4396b90fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fbd9777e59cac0a05d8844243bde33d" id="r_a2fbd9777e59cac0a05d8844243bde33d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a2fbd9777e59cac0a05d8844243bde33d">LinearSystem</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a> &amp;ls)</td></tr>
-<tr class="separator:a2fbd9777e59cac0a05d8844243bde33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74dcd483ffd12e712cf8b97cb8295979" id="r_a74dcd483ffd12e712cf8b97cb8295979"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a74dcd483ffd12e712cf8b97cb8295979">~LinearSystem</a> ()=default</td></tr>
-<tr class="separator:a74dcd483ffd12e712cf8b97cb8295979"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2319e4cc9bc4ea33423c7f9a2048adc7" id="r_a2319e4cc9bc4ea33423c7f9a2048adc7"><td class="memItemLeft" align="right" valign="top">MatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a2319e4cc9bc4ea33423c7f9a2048adc7">matrix</a> ()</td></tr>
-<tr class="separator:a2319e4cc9bc4ea33423c7f9a2048adc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b2e6d616771f00903517f098ecc6dba" id="r_a5b2e6d616771f00903517f098ecc6dba"><td class="memItemLeft" align="right" valign="top">const MatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5b2e6d616771f00903517f098ecc6dba">matrix</a> () const</td></tr>
-<tr class="separator:a5b2e6d616771f00903517f098ecc6dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2624dea8911eccbb31b39338821433ae" id="r_a2624dea8911eccbb31b39338821433ae"><td class="memItemLeft" align="right" valign="top">MatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a2624dea8911eccbb31b39338821433ae">boundaryMatrix</a> ()</td></tr>
-<tr class="separator:a2624dea8911eccbb31b39338821433ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2934959e763fc3dd3987d0b174353373" id="r_a2934959e763fc3dd3987d0b174353373"><td class="memItemLeft" align="right" valign="top">const MatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a2934959e763fc3dd3987d0b174353373">boundaryMatrix</a> () const</td></tr>
-<tr class="separator:a2934959e763fc3dd3987d0b174353373"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c04e6dbddd20359bd60609de7bf3b35" id="r_a9c04e6dbddd20359bd60609de7bf3b35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a9c04e6dbddd20359bd60609de7bf3b35">rhs</a> ()</td></tr>
-<tr class="separator:a9c04e6dbddd20359bd60609de7bf3b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39b504c82aff18932d18960f00564272" id="r_a39b504c82aff18932d18960f00564272"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a39b504c82aff18932d18960f00564272">rhs</a> () const</td></tr>
-<tr class="separator:a39b504c82aff18932d18960f00564272"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cf0a45ff96a014cb4ba9fd5977fd9b8" id="r_a5cf0a45ff96a014cb4ba9fd5977fd9b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5cf0a45ff96a014cb4ba9fd5977fd9b8">boundaryRhs</a> ()</td></tr>
-<tr class="separator:a5cf0a45ff96a014cb4ba9fd5977fd9b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27b4ae43b97769ef71b07cee91440fcb" id="r_a27b4ae43b97769ef71b07cee91440fcb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a27b4ae43b97769ef71b07cee91440fcb">boundaryRhs</a> () const</td></tr>
-<tr class="separator:a27b4ae43b97769ef71b07cee91440fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ed8e715ef76dfb331e1157b5bbf8e6d" id="r_a9ed8e715ef76dfb331e1157b5bbf8e6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, MatrixType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a9ed8e715ef76dfb331e1157b5bbf8e6d">copyToHost</a> () const</td></tr>
-<tr class="separator:a9ed8e715ef76dfb331e1157b5bbf8e6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a507a4199c6687ea60428b76f1ea24712" id="r_a507a4199c6687ea60428b76f1ea24712"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a507a4199c6687ea60428b76f1ea24712">reset</a> ()</td></tr>
-<tr class="separator:a507a4199c6687ea60428b76f1ea24712"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8b2bce4fa0729992924b0a8daac523e" id="r_ac8b2bce4fa0729992924b0a8daac523e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename MatrixType::MatrixSparsityType &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ac8b2bce4fa0729992924b0a8daac523e">view</a> () &amp;&amp;=delete</td></tr>
-<tr class="separator:ac8b2bce4fa0729992924b0a8daac523e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc38b100f204f9c5215adc0e585c7e75" id="r_afc38b100f204f9c5215adc0e585c7e75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename MatrixType::MatrixSparsityType &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#afc38b100f204f9c5215adc0e585c7e75">view</a> () const &amp;&amp;=delete</td></tr>
-<tr class="separator:afc38b100f204f9c5215adc0e585c7e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66834a1701cb115f950e7e478b906ece" id="r_a66834a1701cb115f950e7e478b906ece"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a66834a1701cb115f950e7e478b906ece">view</a> () &amp;</td></tr>
-<tr class="separator:a66834a1701cb115f950e7e478b906ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab187457a3c92f2198346c8f84c49579c" id="r_ab187457a3c92f2198346c8f84c49579c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ab187457a3c92f2198346c8f84c49579c">faceToMatrixAddress</a> () const</td></tr>
-<tr class="separator:ab187457a3c92f2198346c8f84c49579c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5711b64549ffeb767bede5339a57f30e" id="r_a5711b64549ffeb767bede5339a57f30e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; const ValueType, const <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5711b64549ffeb767bede5339a57f30e">view</a> () const &amp;</td></tr>
-<tr class="separator:a5711b64549ffeb767bede5339a57f30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecee4146f3204e7aea1bf58d919d90bb" id="r_aecee4146f3204e7aea1bf58d919d90bb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aecee4146f3204e7aea1bf58d919d90bb">exec</a> () const</td></tr>
-<tr class="separator:aecee4146f3204e7aea1bf58d919d90bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31739d5ba85166bb81548928f80f73d" id="r_af31739d5ba85166bb81548928f80f73d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#af31739d5ba85166bb81548928f80f73d">LinearSystem</a> (const SystemMatrixType &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a6d02b79215a4c9413b06ae8f5fec34f9">matrix</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a9700a374ef0c3a6006dad956d08e9b93">rhs</a>, const BoundaryMatrixType &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a640f05d8dec46b43752b5dac5361c879">boundaryMatrix</a>, const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#afda87594599012767174ac89b66fcda9">boundaryRhs</a>)</td></tr>
+<tr class="separator:af31739d5ba85166bb81548928f80f73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a440a792b658eb4ece482e12c5c258683" id="r_a440a792b658eb4ece482e12c5c258683"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a440a792b658eb4ece482e12c5c258683">LinearSystem</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a> &amp;ls)</td></tr>
+<tr class="separator:a440a792b658eb4ece482e12c5c258683"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32d6f341b5926b55eae9792ef35d4413" id="r_a32d6f341b5926b55eae9792ef35d4413"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a32d6f341b5926b55eae9792ef35d4413">~LinearSystem</a> ()=default</td></tr>
+<tr class="separator:a32d6f341b5926b55eae9792ef35d4413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d02b79215a4c9413b06ae8f5fec34f9" id="r_a6d02b79215a4c9413b06ae8f5fec34f9"><td class="memItemLeft" align="right" valign="top">SystemMatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a6d02b79215a4c9413b06ae8f5fec34f9">matrix</a> ()</td></tr>
+<tr class="separator:a6d02b79215a4c9413b06ae8f5fec34f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae74ed48b98500f15570e27750fd44d5e" id="r_ae74ed48b98500f15570e27750fd44d5e"><td class="memItemLeft" align="right" valign="top">const SystemMatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ae74ed48b98500f15570e27750fd44d5e">matrix</a> () const</td></tr>
+<tr class="separator:ae74ed48b98500f15570e27750fd44d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a640f05d8dec46b43752b5dac5361c879" id="r_a640f05d8dec46b43752b5dac5361c879"><td class="memItemLeft" align="right" valign="top">BoundaryMatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a640f05d8dec46b43752b5dac5361c879">boundaryMatrix</a> ()</td></tr>
+<tr class="separator:a640f05d8dec46b43752b5dac5361c879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a1190d294498cb1636613ba7c275a7" id="r_ae4a1190d294498cb1636613ba7c275a7"><td class="memItemLeft" align="right" valign="top">const BoundaryMatrixType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ae4a1190d294498cb1636613ba7c275a7">boundaryMatrix</a> () const</td></tr>
+<tr class="separator:ae4a1190d294498cb1636613ba7c275a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9700a374ef0c3a6006dad956d08e9b93" id="r_a9700a374ef0c3a6006dad956d08e9b93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a9700a374ef0c3a6006dad956d08e9b93">rhs</a> ()</td></tr>
+<tr class="separator:a9700a374ef0c3a6006dad956d08e9b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cc39ef35b4537215616b7b6e05551a" id="r_a21cc39ef35b4537215616b7b6e05551a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a21cc39ef35b4537215616b7b6e05551a">rhs</a> () const</td></tr>
+<tr class="separator:a21cc39ef35b4537215616b7b6e05551a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda87594599012767174ac89b66fcda9" id="r_afda87594599012767174ac89b66fcda9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#afda87594599012767174ac89b66fcda9">boundaryRhs</a> ()</td></tr>
+<tr class="separator:afda87594599012767174ac89b66fcda9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee3506270fe6e45373c926d1080e428" id="r_a5ee3506270fe6e45373c926d1080e428"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5ee3506270fe6e45373c926d1080e428">boundaryRhs</a> () const</td></tr>
+<tr class="separator:a5ee3506270fe6e45373c926d1080e428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a390d7caf4502d7587a311da7db456d7e" id="r_a390d7caf4502d7587a311da7db456d7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a390d7caf4502d7587a311da7db456d7e">copyToHost</a> () const</td></tr>
+<tr class="separator:a390d7caf4502d7587a311da7db456d7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa61ee720656a09e9c997c53158950e46" id="r_aa61ee720656a09e9c997c53158950e46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa61ee720656a09e9c997c53158950e46">reset</a> ()</td></tr>
+<tr class="separator:aa61ee720656a09e9c997c53158950e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5da85f89d2812882e67903efbd48c003" id="r_a5da85f89d2812882e67903efbd48c003"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename SystemMatrixType::MatrixSparsityType::SparsityIndexType &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a5da85f89d2812882e67903efbd48c003">view</a> () &amp;&amp;=delete</td></tr>
+<tr class="separator:a5da85f89d2812882e67903efbd48c003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80949ba756d9a08e0dd99d23d8f88b42" id="r_a80949ba756d9a08e0dd99d23d8f88b42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename SystemMatrixType::MatrixSparsityType::SparsityIndexType &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a80949ba756d9a08e0dd99d23d8f88b42">view</a> () const &amp;&amp;=delete</td></tr>
+<tr class="separator:a80949ba756d9a08e0dd99d23d8f88b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7f13641b68d5f1c49da4e9e19a4cc68" id="r_ab7f13641b68d5f1c49da4e9e19a4cc68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa17f9336528287547f63c8262f81b29a">LinearSystemIndexType</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ab7f13641b68d5f1c49da4e9e19a4cc68">view</a> () &amp;</td></tr>
+<tr class="separator:ab7f13641b68d5f1c49da4e9e19a4cc68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a231020fcb5c1ee95469d437585ef078e" id="r_a231020fcb5c1ee95469d437585ef078e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a231020fcb5c1ee95469d437585ef078e">faceToMatrixAddress</a> () const</td></tr>
+<tr class="separator:a231020fcb5c1ee95469d437585ef078e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a183e49b6b1434b12642b937e4a9801a0" id="r_a183e49b6b1434b12642b937e4a9801a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; const ValueType, const <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa17f9336528287547f63c8262f81b29a">LinearSystemIndexType</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a183e49b6b1434b12642b937e4a9801a0">view</a> () const &amp;</td></tr>
+<tr class="separator:a183e49b6b1434b12642b937e4a9801a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af15a359819e12283095a1c0cc3af0f4c" id="r_af15a359819e12283095a1c0cc3af0f4c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#af15a359819e12283095a1c0cc3af0f4c">exec</a> () const</td></tr>
+<tr class="separator:af15a359819e12283095a1c0cc3af0f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename MatrixType = CSRMatrix&lt;ValueType, localIdx&gt;&gt;<br />
-class NeoN::la::LinearSystem&lt; ValueType, MatrixType &gt;</div><p>A class representing a linear system of equations. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename SystemMatrixType = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType = COOMatrix&lt;ValueType, localIdx&gt;&gt;<br />
+class NeoN::la::LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;</div><p>A class representing a linear system of equations. </p>
 <p>The <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html" title="A class representing a linear system of equations.">LinearSystem</a> class provides functionality to store and manipulate a linear system of equations. It supports the storage of the coefficient matrix and the right-hand side vector, as well as the solution vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00056">56</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00060">60</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="abfbc2a7ff0529f2c42bf9fce51b9b4a9" name="abfbc2a7ff0529f2c42bf9fce51b9b4a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abfbc2a7ff0529f2c42bf9fce51b9b4a9">&#9670;&#160;</a></span>LinearSystemIndexType</h2>
+<a id="aa17f9336528287547f63c8262f81b29a" name="aa17f9336528287547f63c8262f81b29a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa17f9336528287547f63c8262f81b29a">&#9670;&#160;</a></span>LinearSystemIndexType</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::LinearSystemIndexType =  typename MatrixType::MatrixSparsityType::SparsityIndexType</td>
+          <td class="memname">using <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::LinearSystemIndexType =  typename SystemMatrixType::MatrixSparsityType::SparsityIndexType</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00070">70</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00075">75</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aeb6fcdf8f463762239e1d2bace05beb3" name="aeb6fcdf8f463762239e1d2bace05beb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb6fcdf8f463762239e1d2bace05beb3">&#9670;&#160;</a></span>LinearSystem() <span class="overload">[1/3]</span></h2>
+<a id="af31739d5ba85166bb81548928f80f73d" name="af31739d5ba85166bb81548928f80f73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af31739d5ba85166bb81548928f80f73d">&#9670;&#160;</a></span>LinearSystem() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::LinearSystem </td>
+          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::LinearSystem </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt;&#160;</td>
-          <td class="paramname"><em>faceToMatrixAddress</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00072">72</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
-
-</div>
-</div>
-<a id="acba42d84b999940c55ee2ce4396b90fa" name="acba42d84b999940c55ee2ce4396b90fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acba42d84b999940c55ee2ce4396b90fa">&#9670;&#160;</a></span>LinearSystem() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::LinearSystem </td>
-          <td>(</td>
-          <td class="paramtype">const MatrixType &amp;&#160;</td>
+          <td class="paramtype">const SystemMatrixType &amp;&#160;</td>
           <td class="paramname"><em>matrix</em>, </td>
         </tr>
         <tr>
@@ -217,20 +185,14 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const MatrixType &amp;&#160;</td>
+          <td class="paramtype">const BoundaryMatrixType &amp;&#160;</td>
           <td class="paramname"><em>boundaryMatrix</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>boundaryRhs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt;&#160;</td>
-          <td class="paramname"><em>mi</em>&#160;</td>
+          <td class="paramname"><em>boundaryRhs</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -245,25 +207,25 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00100">100</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00077">77</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a2fbd9777e59cac0a05d8844243bde33d" name="a2fbd9777e59cac0a05d8844243bde33d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fbd9777e59cac0a05d8844243bde33d">&#9670;&#160;</a></span>LinearSystem() <span class="overload">[3/3]</span></h2>
+<a id="a440a792b658eb4ece482e12c5c258683" name="a440a792b658eb4ece482e12c5c258683"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a440a792b658eb4ece482e12c5c258683">&#9670;&#160;</a></span>LinearSystem() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::LinearSystem </td>
+          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::LinearSystem </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, MatrixType &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt; &amp;&#160;</td>
           <td class="paramname"><em>ls</em></td><td>)</td>
           <td></td>
         </tr>
@@ -275,23 +237,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00113">113</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00088">88</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a74dcd483ffd12e712cf8b97cb8295979" name="a74dcd483ffd12e712cf8b97cb8295979"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74dcd483ffd12e712cf8b97cb8295979">&#9670;&#160;</a></span>~LinearSystem()</h2>
+<a id="a32d6f341b5926b55eae9792ef35d4413" name="a32d6f341b5926b55eae9792ef35d4413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32d6f341b5926b55eae9792ef35d4413">&#9670;&#160;</a></span>~LinearSystem()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::~<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a> </td>
+          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::~<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -307,19 +269,19 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2624dea8911eccbb31b39338821433ae" name="a2624dea8911eccbb31b39338821433ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2624dea8911eccbb31b39338821433ae">&#9670;&#160;</a></span>boundaryMatrix() <span class="overload">[1/2]</span></h2>
+<a id="a640f05d8dec46b43752b5dac5361c879" name="a640f05d8dec46b43752b5dac5361c879"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a640f05d8dec46b43752b5dac5361c879">&#9670;&#160;</a></span>boundaryMatrix() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">MatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::boundaryMatrix </td>
+          <td class="memname">BoundaryMatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::boundaryMatrix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -332,23 +294,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00124">124</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00099">99</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a2934959e763fc3dd3987d0b174353373" name="a2934959e763fc3dd3987d0b174353373"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2934959e763fc3dd3987d0b174353373">&#9670;&#160;</a></span>boundaryMatrix() <span class="overload">[2/2]</span></h2>
+<a id="ae4a1190d294498cb1636613ba7c275a7" name="ae4a1190d294498cb1636613ba7c275a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a1190d294498cb1636613ba7c275a7">&#9670;&#160;</a></span>boundaryMatrix() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const MatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::boundaryMatrix </td>
+          <td class="memname">const BoundaryMatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::boundaryMatrix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -361,23 +323,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00126">126</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00101">101</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a5cf0a45ff96a014cb4ba9fd5977fd9b8" name="a5cf0a45ff96a014cb4ba9fd5977fd9b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5cf0a45ff96a014cb4ba9fd5977fd9b8">&#9670;&#160;</a></span>boundaryRhs() <span class="overload">[1/2]</span></h2>
+<a id="afda87594599012767174ac89b66fcda9" name="afda87594599012767174ac89b66fcda9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afda87594599012767174ac89b66fcda9">&#9670;&#160;</a></span>boundaryRhs() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::boundaryRhs </td>
+          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::boundaryRhs </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -390,23 +352,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00132">132</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00107">107</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a27b4ae43b97769ef71b07cee91440fcb" name="a27b4ae43b97769ef71b07cee91440fcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27b4ae43b97769ef71b07cee91440fcb">&#9670;&#160;</a></span>boundaryRhs() <span class="overload">[2/2]</span></h2>
+<a id="a5ee3506270fe6e45373c926d1080e428" name="a5ee3506270fe6e45373c926d1080e428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee3506270fe6e45373c926d1080e428">&#9670;&#160;</a></span>boundaryRhs() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::boundaryRhs </td>
+          <td class="memname">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::boundaryRhs </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -419,23 +381,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00134">134</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00109">109</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a9ed8e715ef76dfb331e1157b5bbf8e6d" name="a9ed8e715ef76dfb331e1157b5bbf8e6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ed8e715ef76dfb331e1157b5bbf8e6d">&#9670;&#160;</a></span>copyToHost()</h2>
+<a id="a390d7caf4502d7587a311da7db456d7e" name="a390d7caf4502d7587a311da7db456d7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a390d7caf4502d7587a311da7db456d7e">&#9670;&#160;</a></span>copyToHost()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, MatrixType &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::copyToHost </td>
+          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::copyToHost </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -448,23 +410,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00136">136</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00111">111</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="aecee4146f3204e7aea1bf58d919d90bb" name="aecee4146f3204e7aea1bf58d919d90bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecee4146f3204e7aea1bf58d919d90bb">&#9670;&#160;</a></span>exec()</h2>
+<a id="af15a359819e12283095a1c0cc3af0f4c" name="af15a359819e12283095a1c0cc3af0f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af15a359819e12283095a1c0cc3af0f4c">&#9670;&#160;</a></span>exec()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::exec </td>
+          <td class="memname">const <a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::exec </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -477,23 +439,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00207">207</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00164">164</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ab187457a3c92f2198346c8f84c49579c" name="ab187457a3c92f2198346c8f84c49579c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab187457a3c92f2198346c8f84c49579c">&#9670;&#160;</a></span>faceToMatrixAddress()</h2>
+<a id="a231020fcb5c1ee95469d437585ef078e" name="a231020fcb5c1ee95469d437585ef078e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a231020fcb5c1ee95469d437585ef078e">&#9670;&#160;</a></span>faceToMatrixAddress()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::faceToMatrixAddress </td>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::faceToMatrixAddress </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -506,23 +468,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00194">194</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00151">151</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a2319e4cc9bc4ea33423c7f9a2048adc7" name="a2319e4cc9bc4ea33423c7f9a2048adc7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2319e4cc9bc4ea33423c7f9a2048adc7">&#9670;&#160;</a></span>matrix() <span class="overload">[1/2]</span></h2>
+<a id="a6d02b79215a4c9413b06ae8f5fec34f9" name="a6d02b79215a4c9413b06ae8f5fec34f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d02b79215a4c9413b06ae8f5fec34f9">&#9670;&#160;</a></span>matrix() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">MatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::matrix </td>
+          <td class="memname">SystemMatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::matrix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -535,23 +497,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00120">120</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00095">95</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a5b2e6d616771f00903517f098ecc6dba" name="a5b2e6d616771f00903517f098ecc6dba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b2e6d616771f00903517f098ecc6dba">&#9670;&#160;</a></span>matrix() <span class="overload">[2/2]</span></h2>
+<a id="ae74ed48b98500f15570e27750fd44d5e" name="ae74ed48b98500f15570e27750fd44d5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae74ed48b98500f15570e27750fd44d5e">&#9670;&#160;</a></span>matrix() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const MatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::matrix </td>
+          <td class="memname">const SystemMatrixType &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::matrix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -564,23 +526,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00122">122</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00097">97</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a507a4199c6687ea60428b76f1ea24712" name="a507a4199c6687ea60428b76f1ea24712"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a507a4199c6687ea60428b76f1ea24712">&#9670;&#160;</a></span>reset()</h2>
+<a id="aa61ee720656a09e9c997c53158950e46" name="aa61ee720656a09e9c997c53158950e46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa61ee720656a09e9c997c53158950e46">&#9670;&#160;</a></span>reset()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::reset </td>
+          <td class="memname">void <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::reset </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -593,23 +555,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00168">168</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00121">121</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a9c04e6dbddd20359bd60609de7bf3b35" name="a9c04e6dbddd20359bd60609de7bf3b35"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c04e6dbddd20359bd60609de7bf3b35">&#9670;&#160;</a></span>rhs() <span class="overload">[1/2]</span></h2>
+<a id="a9700a374ef0c3a6006dad956d08e9b93" name="a9700a374ef0c3a6006dad956d08e9b93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9700a374ef0c3a6006dad956d08e9b93">&#9670;&#160;</a></span>rhs() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::rhs </td>
+          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::rhs </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -622,23 +584,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00128">128</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00103">103</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a39b504c82aff18932d18960f00564272" name="a39b504c82aff18932d18960f00564272"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39b504c82aff18932d18960f00564272">&#9670;&#160;</a></span>rhs() <span class="overload">[2/2]</span></h2>
+<a id="a21cc39ef35b4537215616b7b6e05551a" name="a21cc39ef35b4537215616b7b6e05551a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21cc39ef35b4537215616b7b6e05551a">&#9670;&#160;</a></span>rhs() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::rhs </td>
+          <td class="memname">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::rhs </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -651,23 +613,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00130">130</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00105">105</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a66834a1701cb115f950e7e478b906ece" name="a66834a1701cb115f950e7e478b906ece"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66834a1701cb115f950e7e478b906ece">&#9670;&#160;</a></span>view() <span class="overload">[1/4]</span></h2>
+<a id="ab7f13641b68d5f1c49da4e9e19a4cc68" name="ab7f13641b68d5f1c49da4e9e19a4cc68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7f13641b68d5f1c49da4e9e19a4cc68">&#9670;&#160;</a></span>view() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::view </td>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa17f9336528287547f63c8262f81b29a">LinearSystemIndexType</a> &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::view </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> &amp;</td>
@@ -680,23 +642,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00189">189</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00146">146</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ac8b2bce4fa0729992924b0a8daac523e" name="ac8b2bce4fa0729992924b0a8daac523e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8b2bce4fa0729992924b0a8daac523e">&#9670;&#160;</a></span>view() <span class="overload">[2/4]</span></h2>
+<a id="a5da85f89d2812882e67903efbd48c003" name="a5da85f89d2812882e67903efbd48c003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5da85f89d2812882e67903efbd48c003">&#9670;&#160;</a></span>view() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename MatrixType::MatrixSparsityType &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::view </td>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename SystemMatrixType::MatrixSparsityType::SparsityIndexType &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::view </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> &amp;&amp;</td>
@@ -711,19 +673,19 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 
 </div>
 </div>
-<a id="a5711b64549ffeb767bede5339a57f30e" name="a5711b64549ffeb767bede5339a57f30e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5711b64549ffeb767bede5339a57f30e">&#9670;&#160;</a></span>view() <span class="overload">[3/4]</span></h2>
+<a id="a183e49b6b1434b12642b937e4a9801a0" name="a183e49b6b1434b12642b937e4a9801a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a183e49b6b1434b12642b937e4a9801a0">&#9670;&#160;</a></span>view() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; const ValueType, const <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abfbc2a7ff0529f2c42bf9fce51b9b4a9">LinearSystemIndexType</a> &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::view </td>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; const ValueType, const <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#aa17f9336528287547f63c8262f81b29a">LinearSystemIndexType</a> &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::view </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const &amp;</td>
@@ -736,23 +698,23 @@ template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, 
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00202">202</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00159">159</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="afc38b100f204f9c5215adc0e585c7e75" name="afc38b100f204f9c5215adc0e585c7e75"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc38b100f204f9c5215adc0e585c7e75">&#9670;&#160;</a></span>view() <span class="overload">[4/4]</span></h2>
+<a id="a80949ba756d9a08e0dd99d23d8f88b42" name="a80949ba756d9a08e0dd99d23d8f88b42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80949ba756d9a08e0dd99d23d8f88b42">&#9670;&#160;</a></span>view() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ValueType , typename MatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;&gt; </div>
+template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename MatrixType::MatrixSparsityType &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, MatrixType &gt;::view </td>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">LinearSystemView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a>&lt; ValueType, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">SparsityView</a>&lt; typename SystemMatrixType::MatrixSparsityType::SparsityIndexType &gt; &gt; &gt; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;::view </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const &amp;&amp;</td>

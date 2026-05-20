@@ -21,8 +21,10 @@ using \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a5ae20ec54af7a7443cbb96b0e147df
 \item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_afd4c9eb00414752315c70340966e6bea}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ sp)
 \begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af9dbc06541c11e3a8e60a24b2fcbcc39}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a987054eb7aaf4e43fc94fe1429f6e7f5}{col\+Idxs}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a065a0778b84c27473a5115a7edd89e6a}{row\+Offs}})
+\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a39def8d6a679b0ec449659ac2f9526f4}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a987054eb7aaf4e43fc94fe1429f6e7f5}{col\+Idxs}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a065a0778b84c27473a5115a7edd89e6a}{row\+Offs}}, \mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} dimensions)
 \begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a879df51229be4d38c405c21a95c1fd44}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aae45d61e9077a6ccf5870200b777ebc2}{sparsity}}, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a02b801ebe205b3f8e6194eb6bdfaf806}{face\+To\+Matrix\+Address}})
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} with a \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af2fb7061f12d0beab7f04f5dc333cbc0}{\texorpdfstring{$\sim$}{\string~}\+Matrix}} ()=default
 \begin{DoxyCompactList}\small\item\em Default destructor. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a6538dd5994e85714d24a4b92ed65fc68}{exec}} () const
@@ -43,6 +45,8 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox
 \begin{DoxyCompactList}\small\item\em Copy the matrix to another executor. \end{DoxyCompactList}\item 
 std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aae45d61e9077a6ccf5870200b777ebc2}{sparsity}} () const
 \begin{DoxyCompactList}\small\item\em Get a reference to column indices vector. \end{DoxyCompactList}\item 
+std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a02b801ebe205b3f8e6194eb6bdfaf806}{face\+To\+Matrix\+Address}} () const
+\begin{DoxyCompactList}\small\item\em Get the \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address} associated with this matrix (may be null). \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, Sparsity\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_ade03cbdf725d3518023963149d937b2e}{copy\+To\+Host}} () const
 \begin{DoxyCompactList}\small\item\em Copy the matrix to the host. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a920ce0888254151496f57a0a939b6074}{view}} ()
@@ -67,7 +71,7 @@ Sparse matrix class with compact storage by row (CSR) format.
 \end{DoxyTemplParams}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 
 
@@ -100,7 +104,7 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00082}{82}} of file \mbo
 \Hypertarget{classNeoN_1_1la_1_1Matrix_afd4c9eb00414752315c70340966e6bea}\label{classNeoN_1_1la_1_1Matrix_afd4c9eb00414752315c70340966e6bea} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!Matrix@{Matrix}}
 \index{Matrix@{Matrix}!NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}}
-\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+Type $>$ \\
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Neo\+N\+::la\+::\+Matrix}}$<$ Value\+Type, Sparsity\+Type $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{values,  }\item[{std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$}]{sp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
@@ -119,12 +123,12 @@ Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}.
 
 Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
-\Hypertarget{classNeoN_1_1la_1_1Matrix_af9dbc06541c11e3a8e60a24b2fcbcc39}\label{classNeoN_1_1la_1_1Matrix_af9dbc06541c11e3a8e60a24b2fcbcc39} 
+\Hypertarget{classNeoN_1_1la_1_1Matrix_a39def8d6a679b0ec449659ac2f9526f4}\label{classNeoN_1_1la_1_1Matrix_a39def8d6a679b0ec449659ac2f9526f4} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!Matrix@{Matrix}}
 \index{Matrix@{Matrix}!NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}}
-\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+Type $>$ \\
-\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Neo\+N\+::la\+::\+Matrix}}$<$ Value\+Type, Sparsity\+Type $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{values,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&}]{col\+Idxs,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&}]{row\+Offs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Neo\+N\+::la\+::\+Matrix}}$<$ Value\+Type, Sparsity\+Type $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{values,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&}]{col\+Idxs,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&}]{row\+Offs,  }\item[{\mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}}}]{dimensions }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -142,6 +146,32 @@ Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}.
 
 
 Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1Matrix_a879df51229be4d38c405c21a95c1fd44}\label{classNeoN_1_1la_1_1Matrix_a879df51229be4d38c405c21a95c1fd44} 
+\index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Neo\+N\+::la\+::\+Matrix}}$<$ Value\+Type, Sparsity\+Type $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{values,  }\item[{std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$}]{sparsity,  }\item[{std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} with a \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}. 
+
+The sparsity pattern and the face-\/to-\/matrix address are passed as independent objects. Only available for matrices whose index type is local\+Idx.
+
+
+\begin{DoxyParams}{Parameters}
+{\em values} & The non-\/zero values of the matrix. \\
+\hline
+{\em sparsity} & The sparsity pattern of the matrix. \\
+\hline
+{\em face\+To\+Matrix\+Address} & The face-\/to-\/matrix address mapping. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00126}{126}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_af2fb7061f12d0beab7f04f5dc333cbc0}\label{classNeoN_1_1la_1_1Matrix_af2fb7061f12d0beab7f04f5dc333cbc0} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!````~Matrix@{\texorpdfstring{$\sim$}{\string~}Matrix}}
@@ -173,7 +203,7 @@ Get a reference to column indices vector.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00146}{146}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00170}{170}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a792692a1b294335f418d830e36be9531}\label{classNeoN_1_1la_1_1Matrix_a792692a1b294335f418d830e36be9531} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!copyToExecutor@{copyToExecutor}}
@@ -196,7 +226,7 @@ A copy of the matrix on the destination executor.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00171}{171}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00195}{195}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_ade03cbdf725d3518023963149d937b2e}\label{classNeoN_1_1la_1_1Matrix_ade03cbdf725d3518023963149d937b2e} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!copyToHost@{copyToHost}}
@@ -214,7 +244,7 @@ A copy of the matrix on the host.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00193}{193}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00229}{229}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a979c3429572d3ca0afad7dc8acf90475}\label{classNeoN_1_1la_1_1Matrix_a979c3429572d3ca0afad7dc8acf90475} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!diag@{diag}}
@@ -243,7 +273,22 @@ Reference to the executor.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00146}{146}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1Matrix_a02b801ebe205b3f8e6194eb6bdfaf806}\label{classNeoN_1_1la_1_1Matrix_a02b801ebe205b3f8e6194eb6bdfaf806} 
+\index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!faceToMatrixAddress@{faceToMatrixAddress}}
+\index{faceToMatrixAddress@{faceToMatrixAddress}!NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}}
+\doxysubsubsection{\texorpdfstring{faceToMatrixAddress()}{faceToMatrixAddress()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Sparsity\+Type $>$ \\
+std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Neo\+N\+::la\+::\+Matrix}}$<$ Value\+Type, Sparsity\+Type $>$\+::face\+To\+Matrix\+Address (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address} associated with this matrix (may be null). 
+
+
+
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00220}{220}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_ac78ccc3a9a991a20c86d079a4ccc758a}\label{classNeoN_1_1la_1_1Matrix_ac78ccc3a9a991a20c86d079a4ccc758a} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!nNonZeros@{nNonZeros}}
@@ -261,7 +306,7 @@ Number of non-\/zero values.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00134}{134}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00158}{158}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a2f977c611cd68ce6c09cebbeb33fdd78}\label{classNeoN_1_1la_1_1Matrix_a2f977c611cd68ce6c09cebbeb33fdd78} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!nRows@{nRows}}
@@ -279,7 +324,7 @@ Number of rows.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00128}{128}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00152}{152}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a065a0778b84c27473a5115a7edd89e6a}\label{classNeoN_1_1la_1_1Matrix_a065a0778b84c27473a5115a7edd89e6a} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!rowOffs@{rowOffs}}
@@ -297,7 +342,7 @@ Get a reference to row offset vector.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00155}{155}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00179}{179}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_aae45d61e9077a6ccf5870200b777ebc2}\label{classNeoN_1_1la_1_1Matrix_aae45d61e9077a6ccf5870200b777ebc2} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!sparsity@{sparsity}}
@@ -315,7 +360,7 @@ Get a reference to column indices vector.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00187}{187}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00215}{215}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}\label{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!values@{values}}
@@ -333,7 +378,7 @@ Get a reference to values vector.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00140}{140}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a1ea80482bb87bb33883dc3ccaa586f80}\label{classNeoN_1_1la_1_1Matrix_a1ea80482bb87bb33883dc3ccaa586f80} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!values@{values}}
@@ -351,7 +396,7 @@ Const vector containing the matrix values.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00188}{188}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a920ce0888254151496f57a0a939b6074}\label{classNeoN_1_1la_1_1Matrix_a920ce0888254151496f57a0a939b6074} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!view@{view}}
@@ -369,7 +414,7 @@ Get a view representation of the matrix\textquotesingle{}s data.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00203}{203}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00252}{252}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Matrix_a488a97b44869a29e6e0e901f8be3497f}\label{classNeoN_1_1la_1_1Matrix_a488a97b44869a29e6e0e901f8be3497f} 
 \index{NeoN::la::Matrix$<$ ValueType, SparsityType $>$@{NeoN::la::Matrix$<$ ValueType, SparsityType $>$}!view@{view}}
@@ -387,7 +432,7 @@ Const \doxylink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View} for read-\/only ac
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00217}{217}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00266}{266}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 
 
