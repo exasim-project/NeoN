@@ -1,0 +1,30 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/face\+To\+Matrix\+Address.hpp File Reference}
+\hypertarget{faceToMatrixAddress_8hpp}{}\label{faceToMatrixAddress_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/faceToMatrixAddress.hpp}}
+{\ttfamily \#include "{}Neo\+N/core/array.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/csr\+Sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/coo\+Sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/distributed/communication\+Pattern.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1FaceToMatrixView}{Neo\+N\+::la\+::\+Face\+To\+Matrix\+View}}
+\begin{DoxyCompactList}\small\item\em A device-\/accessible view into the face-\/to-\/matrix address mapping. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Neo\+N\+::la\+::\+Face\+To\+Matrix\+Address}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_acda84cc56f7898450577128df37b2efc}{Neo\+N\+::la\+::compute\+Row\+To\+Diagonal\+Map}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&rows, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ mat\+It)
+\begin{DoxyCompactList}\small\item\em given a set of rows this function computes the corresponding diagonal value offsets \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Index\+Type $>$ }\\std\+::pair$<$ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$, Communication\+Pattern $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aad7f7aa537c101f76181bea56e676f65}{Neo\+N\+::la\+::create\+Sparsity\+Pattern\+Face\+To\+Matrix\+Address}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+\begin{DoxyCompactList}\small\item\em Creates the local CSR, boundary COO and non\+Local COO sparsity patterns and packs them into a \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Sparsity\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a41c6612806132e44bf56efaecf9f41d5}{Neo\+N\+::la\+::create\+Boundary\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} \&ftma)
+\begin{DoxyCompactList}\small\item\em Creates the boundary sparsity pattern from a mesh and an existing \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}. \end{DoxyCompactList}\end{DoxyCompactItemize}
