@@ -33,7 +33,7 @@
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00029}00029\ \{}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iVector\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00031}00031\ }
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ faceCells]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ boundaryFaceOwners]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
@@ -47,7 +47,7 @@
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ range,}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ operator\ /\ is\ not\ defined\ for\ all\ ValueTypes}}
-\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ internalCellValue\ =\ iVector[faceCells[i]];}
+\DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ internalCellValue\ =\ iVector[boundaryFaceOwners[i]];}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ internalCellValue;}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 1.0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refValue}}
 \DoxyCodeLine{\Hypertarget{extrapolated_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ internalCellValue;\ \textcolor{comment}{//\ not\ used}}

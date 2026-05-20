@@ -24,7 +24,7 @@
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00020}00020\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<scalar>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ std::pair<size\_t,\ size\_t>\ range}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00021}00021\ )}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00022}00022\ \{}
-\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00023}00023\ \ \ \ \ \textcolor{keyword}{auto}\ [refValueV,\ valueV,\ internalValuesV,\ faceCellsV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00023}00023\ \ \ \ \ \textcolor{keyword}{auto}\ [refValueV,\ valueV,\ internalValuesV,\ boundaryFaceOwnersV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue(),}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00026}00026\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}(),}
@@ -35,7 +35,7 @@
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ range,}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ faceCellsV[i];}
+\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ v\ =\ internalValuesV[owner];}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00036}00036\ }
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ v;}
@@ -50,7 +50,7 @@
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00046}00046\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<Vec3>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ std::pair<size\_t,\ size\_t>\ range}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00047}00047\ )}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00048}00048\ \{}
-\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{auto}\ [refValueV,\ valueV,\ internalValuesV,\ faceCellsV,\ nHatV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{auto}\ [refValueV,\ valueV,\ internalValuesV,\ boundaryFaceOwnersV,\ faceUnitNormalsV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue(),}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}(),}
@@ -62,8 +62,8 @@
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ range,}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ faceCellsV[i];}
-\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ n\ =\ nHatV[i];}
+\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ owner\ =\ boundaryFaceOwnersV[i];}
+\DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ n\ =\ faceUnitNormalsV[i];}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00063}00063\ }
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ v\ =\ internalValuesV[owner];}
 \DoxyCodeLine{\Hypertarget{surface_2symmetry_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ vn\ =\ v\ \&\ n;\ \textcolor{comment}{//\ dot\ product}}
