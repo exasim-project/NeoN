@@ -13,7 +13,7 @@ def test_scalar_surface_field_and_bcs(executor):
     assert len(bcs) == mesh.n_boundaries()
 
     field = neon.ScalarSurfaceField(exec, "phi", mesh)
-    assert field.size() == mesh.n_internal_faces() + mesh.n_boundary_faces()
+    assert field.size() == mesh.n_internal_faces()
 
     neon.fill(field.internal_vector(), 1.0)
     assert neon.equal(field.internal_vector(), 1.0)

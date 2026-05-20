@@ -10,6 +10,7 @@
 #include <string>
 
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/auxiliary/coNum.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
@@ -32,7 +33,9 @@ void registerCoNum(nb::module_& m)
            const NeoN::Vector<NeoN::scalar>& faceFlux,
            NeoN::scalar dt) -> std::pair<NeoN::scalar, NeoN::scalar>
         {
-            const auto expected = mesh.nInternalFaces() + mesh.nBoundaryFaces();
+            const auto nInt = mesh.nInternalFaces();
+            const auto nBnd = mesh.nBoundaryFaces();
+            const auto expected = nInt + nBnd;
             if (faceFlux.size() != expected)
             {
                 throw std::runtime_error(
@@ -43,7 +46,24 @@ void registerCoNum(nb::module_& m)
 
             auto bcs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
             fvcc::SurfaceField<NeoN::scalar> flux(faceFlux.exec(), "faceFlux", mesh, bcs);
-            flux.internalVector() = faceFlux;
+
+            // Split flat vector into internalVector (first nInt) and boundaryData (last nBnd)
+            auto flatV = faceFlux.view();
+            auto intV = flux.internalVector().view();
+            auto bndV = flux.boundaryData().value().view();
+            NeoN::parallelFor(
+                faceFlux.exec(),
+                {NeoN::localIdx(0), nInt},
+                NEON_LAMBDA(const NeoN::localIdx i) { intV[i] = flatV[i]; },
+                "coNum::splitInternal"
+            );
+            NeoN::parallelFor(
+                faceFlux.exec(),
+                {NeoN::localIdx(0), nBnd},
+                NEON_LAMBDA(const NeoN::localIdx bfi) { bndV[bfi] = flatV[nInt + bfi]; },
+                "coNum::splitBoundary"
+            );
+
             return fvcc::computeCoNum(flux, dt);
         },
         "mesh"_a,

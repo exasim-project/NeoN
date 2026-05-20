@@ -36,7 +36,9 @@ void computeDiv(
     View<const localIdx> owner,
     View<const localIdx> faceCells,
     View<const scalar> faceFlux,
+    View<const scalar> bFaceFlux,
     View<const ValueType> phiF,
+    View<const ValueType> bPhiF,
     View<const scalar> v,
     View<ValueType> res,
     const dsl::Coeff operatorScaling
@@ -68,10 +70,10 @@ void computeDiv(
 
     parallelFor(
         exec,
-        {nInternalFaces, nInternalFaces + nBoundaryFaces},
-        NEON_LAMBDA(const localIdx i) {
-            auto own = faceCells[i - nInternalFaces];
-            ValueType valueOwn = faceFlux[i] * phiF[i];
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = faceCells[bfi];
+            ValueType valueOwn = bFaceFlux[bfi] * bPhiF[bfi];
             Kokkos::atomic_add(&res[own], valueOwn); // boundary face: F_f outward from owner
         },
         "sumFluxesBoundary"
@@ -116,11 +118,12 @@ void computeDivExp(
         mesh.faceOwner().view(),
         mesh.boundaryMesh().faceCells().view(),
         faceFlux.internalVector().view(),
+        faceFlux.boundaryData().value().view(),
         phif.internalVector().view(),
+        phif.boundaryData().value().view(),
         mesh.cellVolumes().view(),
         divPhi.view(),
         operatorScaling
-
     );
 }
 
@@ -148,8 +151,6 @@ void computeDivBoundImp(
     const auto exec = phi.exec();
     const auto& mesh = phi.mesh();
 
-    auto faceFluxV = faceFlux.internalVector().view();
-
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     const auto [ownV, deltaCoeffs] =
@@ -157,7 +158,8 @@ void computeDivBoundImp(
 
     auto values = ls.matrix().values().view();
 
-    auto [bweights, refGradient, valueFraction, refValue] = views(
+    auto [bFaceFluxV, bweights, refGradient, valueFraction, refValue] = views(
+        faceFlux.boundaryData().value(),
         weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().valueFraction(),
@@ -168,14 +170,11 @@ void computeDivBoundImp(
     auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
 
-    const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
-    auto totalFaces = nInternalFaces + nBoundaryFaces;
     parallelFor(
         exec,
-        {nInternalFaces, totalFaces},
-        NEON_LAMBDA(const localIdx facei) {
-            auto bfi = facei - nInternalFaces;
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
             auto ownRow = ownV[bfi];
 
             auto ownCoeff = operatorScaling[ownRow];
@@ -184,7 +183,7 @@ void computeDivBoundImp(
             auto refGradFrac = 1.0 - refValFrac;
 
             auto flux =
-                faceFluxV[facei] * -bweights[bfi] * ownCoeff * refGradFrac * one<ValueType>();
+                bFaceFluxV[bfi] * -bweights[bfi] * ownCoeff * refGradFrac * one<ValueType>();
 
             // since upper triangular value is "outside" of system matrix
             // it is stored separately in bMatrix
@@ -199,7 +198,7 @@ void computeDivBoundImp(
             // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
             // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
             auto valueRhs =
-                (bweights[bfi] * faceFluxV[facei] * ownCoeff * (refValFrac * refValue[bfi]))
+                (bweights[bfi] * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
                 + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
             Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
             bRhs[bfi] += valueRhs;

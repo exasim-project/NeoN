@@ -19,16 +19,11 @@ namespace detail
 // from a __device__ function is not allowed
 template<typename ValueType>
 void setFixedValue(
-    Field<ValueType>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<size_t, size_t> range,
-    ValueType fixedValue
+    Field<ValueType>& domainVector, std::pair<size_t, size_t> range, ValueType fixedValue
 )
 {
     auto refValue = domainVector.boundaryData().refValue().view();
     auto value = domainVector.boundaryData().value().view();
-    auto internalValues = domainVector.internalVector().view();
-    auto nInternalFaces = mesh.nInternalFaces();
 
     NeoN::parallelFor(
         domainVector.exec(),
@@ -36,7 +31,6 @@ void setFixedValue(
         NEON_LAMBDA(const localIdx i) {
             refValue[i] = fixedValue;
             value[i] = fixedValue;
-            internalValues[nInternalFaces + i] = fixedValue;
         },
         "setFixedValueSurface"
     );
@@ -52,12 +46,12 @@ class FixedValue :
 public:
 
     FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID), mesh_(mesh), fixedValue_(dict.get<ValueType>("fixedValue"))
+        : Base(mesh, dict, patchID), fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) override
     {
-        detail::setFixedValue(domainVector, mesh_, this->range(), fixedValue_);
+        detail::setFixedValue(domainVector, this->range(), fixedValue_);
     }
 
     static std::string name() { return "fixedValue"; }
@@ -73,7 +67,6 @@ public:
 
 private:
 
-    const UnstructuredMesh& mesh_;
     ValueType fixedValue_;
 };
 

@@ -49,9 +49,7 @@ public:
             exec,
             fieldName,
             mesh,
-            Field<ValueType>(
-                exec, mesh.nInternalFaces() + mesh.nBoundaryFaces(), mesh.boundaryMesh().offset()
-            )
+            Field<ValueType>(exec, mesh.nInternalFaces(), mesh.boundaryMesh().offset())
         ),
           FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}

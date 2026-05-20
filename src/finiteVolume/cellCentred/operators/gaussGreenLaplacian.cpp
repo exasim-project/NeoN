@@ -27,8 +27,10 @@ void computeLaplacianExp(
 
     const auto [result, faceArea, fnGrad, vol] =
         views(lapPhi, mesh.magFaceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
+    const auto fnGradB = faceNormalGrad.boundaryData().value().view();
 
     auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss Laplacian: ∇·(γ∇φ)_C = (1/V_C) * sum_f γ_f * |S_f| * (∂φ/∂n)_f
     //
@@ -59,11 +61,10 @@ void computeLaplacianExp(
     // Boundary faces: only the owner cell is on this rank.
     parallelFor(
         exec,
-        {nInternalFaces, fnGrad.size()},
-        NEON_LAMBDA(const localIdx i) {
-            auto own = surfFaceCells[i - nInternalFaces];
-            ValueType valueOwn =
-                faceArea[i] * fnGrad[i]; // +|S_f| * fnGrad (S_f outward from owner)
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = surfFaceCells[bfi];
+            ValueType valueOwn = faceArea[nInternalFaces + bfi] * fnGradB[bfi];
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
@@ -102,13 +103,11 @@ void computeLaplacianBoundImpl(
     const auto exec = phi.exec();
     const auto& mesh = phi.mesh();
 
-    auto gammaV = gamma.internalVector().view();
+    const auto [magFaceArea, surfFaceCells] =
+        views(mesh.magFaceAreas(), mesh.boundaryMesh().faceCells());
 
-    const auto [magFaceArea, surfFaceCells, deltaCoeffs] = views(
-        mesh.magFaceAreas(),
-        mesh.boundaryMesh().faceCells(),
-        faceNormalGradient.deltaCoeffs().internalVector()
-    );
+    const auto bGammaV = gamma.boundaryData().value().view();
+    const auto bDeltaCoeffs = faceNormalGradient.deltaCoeffs().boundaryData().value().view();
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
@@ -126,12 +125,10 @@ void computeLaplacianBoundImpl(
 
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
-    auto totalFaces = nInternalFaces + nBoundaryFaces;
     parallelFor(
         exec,
-        {nInternalFaces, totalFaces},
-        NEON_LAMBDA(const localIdx facei) {
-            auto bfi = facei - nInternalFaces;
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
             auto ownRow = surfFaceCells[bfi];
 
             auto ownRowCoeff = operatorScaling[ownRow];
@@ -139,9 +136,9 @@ void computeLaplacianBoundImpl(
             auto refValFrac = valueFraction[bfi];
             auto refGradFrac = 1.0 - refValFrac;
 
-            auto flux = gammaV[facei] * magFaceArea[facei];
+            auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
             auto fluxContrib =
-                flux * ownRowCoeff * refValFrac * deltaCoeffs[facei] * one<ValueType>();
+                flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<ValueType>();
 
             // since upper triangular value is "outside" of system matrix
             // it is stored separately in bMatrix
@@ -155,9 +152,9 @@ void computeLaplacianBoundImpl(
             // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
             // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
             // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
-            auto valueRhs = flux * ownRowCoeff
-                          * (refValFrac * deltaCoeffs[facei] * refValue[bfi]
-                             + refGradFrac * refGradient[bfi]);
+            auto valueRhs =
+                flux * ownRowCoeff
+                * (refValFrac * bDeltaCoeffs[bfi] * refValue[bfi] + refGradFrac * refGradient[bfi]);
             Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
             bRhs[bfi] += valueRhs;
         },

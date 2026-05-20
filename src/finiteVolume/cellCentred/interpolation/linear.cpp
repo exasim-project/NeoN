@@ -21,31 +21,34 @@ void computeLinearInterpolation(
 {
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS] = views(
+    auto dstB = dst.boundaryData().value().view();
+    const auto [srcS, weightS, weightB, ownerS, neighS, boundS] = views(
         src.internalVector(),
         weights.internalVector(),
+        weights.boundaryData().value(),
         dst.mesh().faceOwner(),
         dst.mesh().faceNeighbour(),
         src.boundaryData().value()
     );
     auto nInternalFaces = dst.mesh().nInternalFaces();
+    auto nBoundaryFaces = dst.mesh().nBoundaryFaces();
 
     NeoN::parallelFor(
         exec,
-        {0, dstS.size()},
+        {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (facei < nInternalFaces)
-            {
-                auto own = ownerS[facei];
-                auto nei = neighS[facei];
-                dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
-            }
-            else
-            {
-                dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
-            }
+            auto own = ownerS[facei];
+            auto nei = neighS[facei];
+            dstS[facei] = weightS[facei] * srcS[own] + (1 - weightS[facei]) * srcS[nei];
         },
-        "computeLinearInterpolation"
+        "computeLinearInterpolationInternal"
+    );
+
+    NeoN::parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) { dstB[bfi] = weightB[bfi] * boundS[bfi]; },
+        "computeLinearInterpolationBoundary"
     );
 }
 

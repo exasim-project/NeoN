@@ -15,42 +15,35 @@ namespace NeoN::finiteVolume::cellCentred::surfaceBoundary
 {
 namespace detail
 {
-// Scalar specialization --------------------------------------------------------
+// Scalar specialization: zero flux at the symmetry plane
 inline void applySymmetry(
-    Field<scalar>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
+    Field<scalar>& domainVector,
+    [[maybe_unused]] const UnstructuredMesh&,
+    std::pair<size_t, size_t> range
 )
 {
-    auto [refValueV, valueV, internalValuesV, faceCellsV] = views(
-        domainVector.boundaryData().refValue(),
-        domainVector.boundaryData().value(),
-        domainVector.internalVector(),
-        mesh.boundaryMesh().faceCells()
-    );
+    auto [refValueV, valueV] =
+        views(domainVector.boundaryData().refValue(), domainVector.boundaryData().value());
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
         NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCellsV[i];
-            const scalar v = internalValuesV[owner];
-
-            refValueV[i] = v;
-            valueV[i] = v;
+            refValueV[i] = 0;
+            valueV[i] = 0;
         },
         "computeSymmetryBoundaryScalar"
     );
 }
 
-// Vec3 specialization ----------------------------------------------------------
+// Vec3 specialization: zero the normal component of the existing face value
 inline void applySymmetry(
     Field<Vec3>& domainVector, const UnstructuredMesh& mesh, std::pair<size_t, size_t> range
 )
 {
-    auto [refValueV, valueV, internalValuesV, faceCellsV, nHatV] = views(
+    auto [refValueV, valueV, nHatV] = views(
         domainVector.boundaryData().refValue(),
         domainVector.boundaryData().value(),
-        domainVector.internalVector(),
-        mesh.boundaryMesh().faceCells(),
         mesh.boundaryMesh().nf()
     );
 
@@ -58,12 +51,10 @@ inline void applySymmetry(
         domainVector.exec(),
         range,
         NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCellsV[i];
             const Vec3 n = nHatV[i];
-
-            Vec3 v = internalValuesV[owner];
-            const scalar vn = v & n; // dot product
-            const auto vtan = v - n * vn;
+            const Vec3 v = valueV[i];
+            const scalar vn = v & n;
+            const Vec3 vtan = v - n * vn;
 
             refValueV[i] = vtan;
             valueV[i] = vtan;

@@ -47,8 +47,8 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         );
         auto uf0 = interp.interpolate(u0);
 
-        auto [uf0H, sfH] = copyToHosts(uf0.internalVector(), mesh.boundaryMesh().sf());
-        auto [uf0V, sfV] = views(uf0H, sfH);
+        auto [uf0BH, sfH] = copyToHosts(uf0.boundaryData().value(), mesh.boundaryMesh().sf());
+        auto [uf0BV, sfV] = views(uf0BH, sfH);
 
         // --- 4) Surface scalar field phi (with oldTime support)
         auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<Scalar>>(mesh);
@@ -73,16 +73,19 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         const Scalar dt = 0.2;
         const Scalar invDt = 1.0 / dt;
 
-        // Helper: expected values (host-side)
+        // For single-cell mesh all faces are boundary faces; the test uses nBoundaryFaces
+        const auto nBndFaces = mesh.nBoundaryFaces();
+
+        // Helper: expected values for boundary faces (host-side)
         auto expectedFrom = [&](const SurfScalar& flux0Field)
         {
-            std::vector<Scalar> e(static_cast<size_t>(mesh.nFaces()), 0.0);
-            auto flux0FieldH = flux0Field.internalVector().copyToHost();
+            std::vector<Scalar> e(static_cast<size_t>(nBndFaces), 0.0);
+            auto flux0FieldH = flux0Field.boundaryData().value().copyToHost();
             auto flux0FieldV = flux0FieldH.view();
 
-            for (auto i = 0; i < mesh.nFaces(); ++i)
+            for (NeoN::localIdx i = 0; i < nBndFaces; ++i)
             {
-                const Scalar d = (sfV[i] & uf0V[i]);
+                const Scalar d = (sfV[i] & uf0BV[i]);
                 const auto tfluxCorr = (flux0FieldV[i] - d);
                 const auto ratio = NeoN::mag(tfluxCorr) / (NeoN::mag(flux0FieldV[i]) + 1.0e-30);
                 const auto coeff = 1.0 - Kokkos::min(ratio, Scalar(1));
@@ -96,19 +99,20 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         // Case A: flux0 = sf·uf0  ⇒ correction ≈ 0
         // ─────────────────────────────────────────────
         {
-            auto [flux0V2, sfV2, uf0V2] =
-                views(flux0.internalVector(), mesh.boundaryMesh().sf(), uf0.internalVector());
+            auto [flux0BV2, sfV2, uf0BV2] = views(
+                flux0.boundaryData().value(), mesh.boundaryMesh().sf(), uf0.boundaryData().value()
+            );
 
             NeoN::parallelFor(
                 exec,
-                {size_t(0), mesh.nFaces()},
-                NEON_LAMBDA(const NeoN::localIdx i) { flux0V2[i] = (sfV2[i] & uf0V2[i]); }
+                {size_t(0), static_cast<size_t>(nBndFaces)},
+                NEON_LAMBDA(const NeoN::localIdx i) { flux0BV2[i] = (sfV2[i] & uf0BV2[i]); }
             );
 
-            flux.internalVector() = flux0.internalVector();
+            flux.boundaryData().value() = flux0.boundaryData().value();
 
             auto fluxCorr = fvcc::ddtFluxCorr(u, flux, dt, scheme);
-            auto corrH = fluxCorr.internalVector().copyToHost();
+            auto corrBH = fluxCorr.boundaryData().value().copyToHost();
 
             for (auto i = 0; i < mesh.nFaces(); ++i)
                 REQUIRE(corrH.view()[i] == Catch::Approx(0.0).margin(1e-12));
@@ -118,17 +122,18 @@ TEST_CASE("timeIntegration: ddtPhiCorr on single-cell mesh", "[timeIntegration][
         // Case B: flux0 = 0  ⇒ correction = -(sf·uf0)/dt
         // ─────────────────────────────────────────────
         {
-            flux0.internalVector() = Scalar {0.0};
-            flux.internalVector() = Scalar {0.0};
+            fill(flux0.boundaryData().value(), Scalar {0.0});
+            fill(flux.boundaryData().value(), Scalar {0.0});
 
             auto expected = expectedFrom(flux0);
             auto fluxCorr = fvcc::ddtFluxCorr(u, flux, dt, scheme);
-            auto corrH = fluxCorr.internalVector().copyToHost();
+            auto corrBH = fluxCorr.boundaryData().value().copyToHost();
 
-            for (auto i = 0; i < mesh.nFaces(); ++i)
+            for (auto i = 0; i < mesh.nFaces(); ++i) {
                 REQUIRE(
                     corrH.view()[i] == Catch::Approx(expected[static_cast<size_t>(i)]).margin(1e-12)
                 );
+	    }
         }
     }
 }

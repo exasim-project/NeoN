@@ -21,7 +21,7 @@ def test_surface_interpolation_scalar(executor):
     interp = neon.SurfaceInterpolationScalar(exec, mesh, token_list)
     surface = interp.interpolate(volume)
 
-    assert surface.size() == mesh.n_internal_faces() + mesh.n_boundary_faces()
+    assert surface.size() == mesh.n_internal_faces()
 
 
 def test_surface_interpolation_vector(executor):
@@ -40,4 +40,4 @@ def test_surface_interpolation_vector(executor):
     interp = neon.SurfaceInterpolationVec3(exec, mesh, token_list)
     surface = interp.interpolate(volume)
 
-    assert surface.size() == mesh.n_internal_faces() + mesh.n_boundary_faces()
+    assert surface.size() == mesh.n_internal_faces()

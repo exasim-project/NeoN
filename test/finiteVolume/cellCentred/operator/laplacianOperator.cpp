@@ -29,6 +29,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
     fill(gamma.internalVector(), 2.0);
+    fill(gamma.boundaryData().value(), 2.0);
 
     auto [boundaryType, firstValue, lastValue] = GENERATE(
         std::tuple<std::string, scalar, scalar> {"fixedValue", 0.5, 10.5},
@@ -146,6 +147,7 @@ TEMPLATE_TEST_CASE("laplacianOperator boundary contributions are accumulated", "
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
     fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
 
     std::vector<fvcc::VolumeBoundary<TestType>> bcs;
     bcs.push_back(fvcc::VolumeBoundary<TestType>(

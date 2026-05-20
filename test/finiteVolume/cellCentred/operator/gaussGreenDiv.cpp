@@ -27,12 +27,11 @@ TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     // TODO this should be handled outside of the unit test
     fvcc::SurfaceField<scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
     fill(faceFlux.internalVector(), 1.0);
-    auto boundFaceFlux = faceFlux.internalVector().view();
-    // face on the left side has different orientation
+    fill(faceFlux.boundaryData().value(), 1.0);
+    // left boundary face (patch 0) has opposite orientation to the flow
+    auto bFaceFlux = faceFlux.boundaryData().value().view();
     parallelFor(
-        exec,
-        {mesh.nCells() - 1, mesh.nCells()},
-        NEON_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
+        exec, {0, 1}, NEON_LAMBDA(const localIdx i) { bFaceFlux[i] = -1.0; }
     );
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
@@ -101,6 +100,7 @@ TEST_CASE("DivOperator implicit boundary contributions are accumulated")
 
     fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
     fill(faceFlux.internalVector(), 1.0);
+    fill(faceFlux.boundaryData().value(), 1.0);
 
     Input input = TokenList({std::string("Gauss"), std::string("linear")});
 
