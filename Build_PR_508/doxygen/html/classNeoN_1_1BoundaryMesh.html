@@ -92,10 +92,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a903f8ef72d071a340abba9df020fca25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the <a class="el" href="classNeoN_1_1BoundaryMesh.html" title="Represents boundaries of an unstructured mesh.">BoundaryMesh</a> class.  <br /></td></tr>
 <tr class="separator:a903f8ef72d071a340abba9df020fca25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abee97709eb5b6dc8013626b811bf62a5" id="r_abee97709eb5b6dc8013626b811bf62a5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceNeoN.html#a6389e1f6465846887d6bc01ec8ea818d">labelVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryMesh.html#abee97709eb5b6dc8013626b811bf62a5">faceOwners</a> () const</td></tr>
-<tr class="memdesc:abee97709eb5b6dc8013626b811bf62a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the field of owner cells of boundary faces.  <br /></td></tr>
+<tr class="memdesc:abee97709eb5b6dc8013626b811bf62a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the list of labels of owner cells of boundary faces.  <br /></td></tr>
 <tr class="separator:abee97709eb5b6dc8013626b811bf62a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f1c07ef2b7a0564617110e2894eb1a9" id="r_a0f1c07ef2b7a0564617110e2894eb1a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#afa6c1c30776d4f6ed4691b0f9d1ea416">label</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryMesh.html#a0f1c07ef2b7a0564617110e2894eb1a9">faceOwners</a> (const <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> i) const</td></tr>
-<tr class="memdesc:a0f1c07ef2b7a0564617110e2894eb1a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a view of owner cells for a specific boundary face.  <br /></td></tr>
+<tr class="memdesc:a0f1c07ef2b7a0564617110e2894eb1a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a view of labels of owner cells for a specific boundary face.  <br /></td></tr>
 <tr class="separator:a0f1c07ef2b7a0564617110e2894eb1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad542449a6ebf93500d1541e6d2364e58" id="r_ad542449a6ebf93500d1541e6d2364e58"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceNeoN.html#a7184bc8b77652609bed6594f06b728e7">vectorVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryMesh.html#ad542449a6ebf93500d1541e6d2364e58">faceCenters</a> () const</td></tr>
 <tr class="memdesc:ad542449a6ebf93500d1541e6d2364e58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the field of face centres.  <br /></td></tr>
@@ -246,7 +246,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">exec</td><td>The executor used for computations. </td></tr>
-    <tr><td class="paramname">faceOwners</td><td>A list of owner cells of boundary faces. </td></tr>
+    <tr><td class="paramname">faceOwners</td><td>A list of labels of owner cells of boundary faces. </td></tr>
     <tr><td class="paramname">faceCenters</td><td>A field of face centres. </td></tr>
     <tr><td class="paramname">Cn</td><td>A field of neighbor cell centers. </td></tr>
     <tr><td class="paramname">faceNormals</td><td>A field of face normal vectors. </td></tr>
@@ -560,7 +560,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get the field of owner cells of boundary faces. </p>
+<p>Get the list of labels of owner cells of boundary faces. </p>
 <dl class="section return"><dt>Returns</dt><dd>A constant reference to the field of owner cells. </dd></dl>
 
 </div>
@@ -581,14 +581,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get a view of owner cells for a specific boundary face. </p>
+<p>Get a view of labels of owner cells for a specific boundary face. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">i</td><td>The index of the boundary face. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A view of owner cells for the specified boundary face. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A view of labels of owner cells for the specified boundary face. </dd></dl>
 
 </div>
 </div>
