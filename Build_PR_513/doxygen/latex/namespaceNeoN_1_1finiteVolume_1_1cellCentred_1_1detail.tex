@@ -1,0 +1,44 @@
+\doxysection{NeoN\+::finite\+Volume\+::cell\+Centred\+::detail Namespace Reference}
+\hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail}{}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail}\index{NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a502b3efc47c2f41b6a4cfb9dbe7ada3b}{ddt\+Flux\+Corr\+Limiter}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} flux\+Mag, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} corr\+Mag)
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a3ab3efbc6f9cb22226affb2305cc93a5}{ddt\+Flux\+Corr\+BDF1\+Kernel}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&flux0, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&uf0, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&flux\+Corr, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a9fb27d788ee7ab453d5b5b4a2b5e0bfb}{ddt\+Flux\+Corr\+BDF2\+Kernel}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&flux0, const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&flux00, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&uf0, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&uf00, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&flux\+Corr, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a3ab3efbc6f9cb22226affb2305cc93a5}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a3ab3efbc6f9cb22226affb2305cc93a5} 
+\index{NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}!ddtFluxCorrBDF1Kernel@{ddtFluxCorrBDF1Kernel}}
+\index{ddtFluxCorrBDF1Kernel@{ddtFluxCorrBDF1Kernel}!NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}}
+\doxysubsubsection{\texorpdfstring{ddtFluxCorrBDF1Kernel()}{ddtFluxCorrBDF1Kernel()}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::ddt\+Flux\+Corr\+BDF1\+Kernel (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&}]{flux0,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{uf0,  }\item[{\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&}]{flux\+Corr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00034}{34}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a9fb27d788ee7ab453d5b5b4a2b5e0bfb}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a9fb27d788ee7ab453d5b5b4a2b5e0bfb} 
+\index{NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}!ddtFluxCorrBDF2Kernel@{ddtFluxCorrBDF2Kernel}}
+\index{ddtFluxCorrBDF2Kernel@{ddtFluxCorrBDF2Kernel}!NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}}
+\doxysubsubsection{\texorpdfstring{ddtFluxCorrBDF2Kernel()}{ddtFluxCorrBDF2Kernel()}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::ddt\+Flux\+Corr\+BDF2\+Kernel (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&}]{flux0,  }\item[{const \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&}]{flux00,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{uf0,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{uf00,  }\item[{\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab2724f0e93a4ccda728971a7922e4d92}{Surf\+Scalar\+Field}} \&}]{flux\+Corr,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00091}{91}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a502b3efc47c2f41b6a4cfb9dbe7ada3b}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_a502b3efc47c2f41b6a4cfb9dbe7ada3b} 
+\index{NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}!ddtFluxCorrLimiter@{ddtFluxCorrLimiter}}
+\index{ddtFluxCorrLimiter@{ddtFluxCorrLimiter}!NeoN::finiteVolume::cellCentred::detail@{NeoN::finiteVolume::cellCentred::detail}}
+\doxysubsubsection{\texorpdfstring{ddtFluxCorrLimiter()}{ddtFluxCorrLimiter()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} Neo\+N\+::finite\+Volume\+::cell\+Centred\+::detail\+::ddt\+Flux\+Corr\+Limiter (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{flux\+Mag,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{corr\+Mag }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
+
