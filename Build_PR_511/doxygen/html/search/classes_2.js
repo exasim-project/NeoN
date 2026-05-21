@@ -9,7 +9,8 @@ var searchData=
   ['collectionmixin_3c_20oldtimedocument_20_3e_6',['CollectionMixin&lt; OldTimeDocument &gt;',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
   ['collectionmixin_3c_20vectordocument_20_3e_7',['CollectionMixin&lt; VectorDocument &gt;',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
   ['coosparsitypattern_8',['CooSparsityPattern',['../classNeoN_1_1la_1_1CooSparsityPattern.html',1,'NeoN::la']]],
-  ['cpuexecutor_9',['CPUExecutor',['../classNeoN_1_1CPUExecutor.html',1,'NeoN']]],
-  ['createfromexistingvector_10',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['csrsparsitypattern_11',['CsrSparsityPattern',['../classNeoN_1_1la_1_1CsrSparsityPattern.html',1,'NeoN::la']]]
+  ['corrected_9',['Corrected',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['cpuexecutor_10',['CPUExecutor',['../classNeoN_1_1CPUExecutor.html',1,'NeoN']]],
+  ['createfromexistingvector_11',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['csrsparsitypattern_12',['CsrSparsityPattern',['../classNeoN_1_1la_1_1CsrSparsityPattern.html',1,'NeoN::la']]]
 ];
