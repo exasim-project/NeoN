@@ -117,6 +117,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac78ccc3a9a991a20c86d079a4ccc758a" id="r_ac78ccc3a9a991a20c86d079a4ccc758a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Matrix.html#ac78ccc3a9a991a20c86d079a4ccc758a">nNonZeros</a> () const</td></tr>
 <tr class="memdesc:ac78ccc3a9a991a20c86d079a4ccc758a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of non-zero values in the matrix.  <br /></td></tr>
 <tr class="separator:ac78ccc3a9a991a20c86d079a4ccc758a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce62bcdbef333ae01962e18af3c5930" id="r_a2ce62bcdbef333ae01962e18af3c5930"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Matrix.html#a2ce62bcdbef333ae01962e18af3c5930">reset</a> ()</td></tr>
+<tr class="separator:a2ce62bcdbef333ae01962e18af3c5930"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1d6d042ecac3ad3bb7e4df66fec5707" id="r_aa1d6d042ecac3ad3bb7e4df66fec5707"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Matrix.html#aa1d6d042ecac3ad3bb7e4df66fec5707">values</a> ()</td></tr>
 <tr class="memdesc:aa1d6d042ecac3ad3bb7e4df66fec5707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a reference to values vector.  <br /></td></tr>
 <tr class="separator:aa1d6d042ecac3ad3bb7e4df66fec5707"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -427,7 +429,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a reference to column indices vector. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> containing the column indices. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00170">170</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00175">175</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -466,7 +468,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the matrix on the destination executor. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00195">195</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00200">200</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -498,7 +500,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Copy the matrix to the host. </p>
 <dl class="section return"><dt>Returns</dt><dd>A copy of the matrix on the host. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00229">229</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00234">234</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -582,7 +584,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 
 <p>Get the <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> associated with this matrix (may be null). </p>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00220">220</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00225">225</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -650,6 +652,35 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 
 </div>
 </div>
+<a id="a2ce62bcdbef333ae01962e18af3c5930" name="a2ce62bcdbef333ae01962e18af3c5930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ce62bcdbef333ae01962e18af3c5930">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType , typename SparsityType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classNeoN_1_1la_1_1Matrix.html">NeoN::la::Matrix</a>&lt; ValueType, SparsityType &gt;::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00160">160</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a065a0778b84c27473a5115a7edd89e6a" name="a065a0778b84c27473a5115a7edd89e6a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a065a0778b84c27473a5115a7edd89e6a">&#9670;&#160;</a></span>rowOffs()</h2>
 
@@ -678,7 +709,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a reference to row offset vector. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> containing the row pointers. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00179">179</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00184">184</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -710,7 +741,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a reference to column indices vector. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> containing the column indices. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00215">215</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00220">220</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -742,7 +773,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a reference to values vector. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> containing the matrix values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00164">164</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00169">169</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -774,7 +805,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a const reference to values vector. </p>
 <dl class="section return"><dt>Returns</dt><dd>Const vector containing the matrix values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00188">188</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00193">193</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -806,7 +837,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a view representation of the matrix's data. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="structNeoN_1_1la_1_1MatrixView.html" title="A view struct to allow easy read/write on all executors.">MatrixView</a> for easy access to matrix elements. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00252">252</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00254">254</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -838,7 +869,7 @@ template&lt;typename ValueType , typename SparsityType &gt; </div>
 <p>Get a const view representation of the matrix's data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Const <a class="el" href="structNeoN_1_1la_1_1MatrixView.html" title="A view struct to allow easy read/write on all executors.">MatrixView</a> for read-only access to matrix elements. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00266">266</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00268">268</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
