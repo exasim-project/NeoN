@@ -81,30 +81,37 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>&gt;</code></p>
+<p>Abstract base class defining the interface for mesh iteration strategies.  
+ <a href="classNeoN_1_1la_1_1MeshIterationStrategy.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for NeoN::la::MeshIterationStrategy:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classNeoN_1_1la_1_1MeshIterationStrategy.png" usemap="#NeoN::la::MeshIterationStrategy_map" alt=""/>
   <map id="NeoN::la::MeshIterationStrategy_map" name="NeoN::la::MeshIterationStrategy_map">
-<area href="classNeoN_1_1la_1_1CellBasedIterator.html" alt="NeoN::la::CellBasedIterator" shape="rect" coords="0,56,189,80"/>
-<area href="classNeoN_1_1la_1_1FaceBasedIterator.html" alt="NeoN::la::FaceBasedIterator" shape="rect" coords="199,56,388,80"/>
+<area href="classNeoN_1_1la_1_1CellBasedIterator.html" title="Iteration strategy that traverses cells and their face stencils." alt="NeoN::la::CellBasedIterator" shape="rect" coords="0,56,189,80"/>
+<area href="classNeoN_1_1la_1_1FaceBasedIterator.html" title="Iteration strategy that traverses internal faces." alt="NeoN::la::FaceBasedIterator" shape="rect" coords="199,56,388,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1da28dca539a766ed516cd072cf80f29" id="r_a1da28dca539a766ed516cd072cf80f29"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html#a1da28dca539a766ed516cd072cf80f29">name</a> () const =0</td></tr>
+<tr class="memdesc:a1da28dca539a766ed516cd072cf80f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the strategy name.  <br /></td></tr>
 <tr class="separator:a1da28dca539a766ed516cd072cf80f29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6e72f5d0f80f12ea842efdcea7e3221" id="r_ac6e72f5d0f80f12ea842efdcea7e3221"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceNeoN.html#a5ea7bf3a45fbcf9c6ee454474ab13c06">size_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html#ac6e72f5d0f80f12ea842efdcea7e3221">size</a> () const =0</td></tr>
+<tr class="memdesc:ac6e72f5d0f80f12ea842efdcea7e3221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of iteration elements (cells or faces).  <br /></td></tr>
 <tr class="separator:ac6e72f5d0f80f12ea842efdcea7e3221"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae051ae1bf07dcb87de56145d830180c2" id="r_ae051ae1bf07dcb87de56145d830180c2"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html#ae051ae1bf07dcb87de56145d830180c2">~MeshIterationStrategy</a> ()</td></tr>
 <tr class="separator:ae051ae1bf07dcb87de56145d830180c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="matrixIterator_8hpp_source.html#l00017">17</a> of file <a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>.</p>
+<div class="textblock"><p>Abstract base class defining the interface for mesh iteration strategies. </p>
+<p>Concrete strategies (e.g. <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html" title="Iteration strategy that traverses internal faces.">FaceBasedIterator</a>, <a class="el" href="classNeoN_1_1la_1_1CellBasedIterator.html" title="Iteration strategy that traverses cells and their face stencils.">CellBasedIterator</a>) differ in how they traverse the mesh when assembling linear-system contributions. </p>
+
+<p class="definition">Definition at line <a class="el" href="meshIterationStrategies_8hpp_source.html#l00022">22</a> of file <a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae051ae1bf07dcb87de56145d830180c2" name="ae051ae1bf07dcb87de56145d830180c2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae051ae1bf07dcb87de56145d830180c2">&#9670;&#160;</a></span>~MeshIterationStrategy()</h2>
@@ -129,7 +136,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrixIterator_8hpp_source.html#l00027">27</a> of file <a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="meshIterationStrategies_8hpp_source.html#l00034">34</a> of file <a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a>.</p>
 
 </div>
 </div>
@@ -156,6 +163,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Returns the strategy name. </p>
 
 <p>Implemented in <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html#ae454dc0ad934fb949acdda414bfb1f68">NeoN::la::FaceBasedIterator</a>, and <a class="el" href="classNeoN_1_1la_1_1CellBasedIterator.html#a6e63fa28d84ccc3f590f2020a0143a82">NeoN::la::CellBasedIterator</a>.</p>
 
@@ -184,12 +193,14 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns the number of iteration elements (cells or faces). </p>
+
 <p>Implemented in <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html#a94397d87d6e38570098db0fd6326e2f7">NeoN::la::FaceBasedIterator</a>, and <a class="el" href="classNeoN_1_1la_1_1CellBasedIterator.html#ad12aca0167e8ea9765f9b1f96326dc3c">NeoN::la::CellBasedIterator</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/<a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a></li>
+<li>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/<a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

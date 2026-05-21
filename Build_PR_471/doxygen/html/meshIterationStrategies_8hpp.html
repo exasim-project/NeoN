@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>NeoN: /home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp File Reference</title>
+<title>NeoN: /home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,27 +77,33 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a>  </div>
-  <div class="headertitle"><div class="title">matrixIterator.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">meshIterationStrategies.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="segmentedVector_8hpp_source.html">NeoN/core/segmentedVector.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="csrSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/csrSparsityPattern.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="cooSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/cooSparsityPattern.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="faceToMatrixAddress_8hpp_source.html">NeoN/linearAlgebra/faceToMatrixAddress.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cellToFaceStencil_8hpp_source.html">NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp</a>&quot;</code><br />
 </div>
-<p><a href="matrixIterator_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="meshIterationStrategies_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">NeoN::la::MeshIterationStrategy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base class defining the interface for mesh iteration strategies.  <a href="classNeoN_1_1la_1_1MeshIterationStrategy.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html">NeoN::la::MeshIteratorContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds and exposes the active <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html" title="Abstract base class defining the interface for mesh iteration strategies.">MeshIterationStrategy</a>.  <a href="classNeoN_1_1la_1_1MeshIteratorContext.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">NeoN::la::FaceBasedIterator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iteration strategy that traverses internal faces.  <a href="classNeoN_1_1la_1_1FaceBasedIterator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1CellBasedIterator.html">NeoN::la::CellBasedIterator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iteration strategy that traverses cells and their face stencils.  <a href="classNeoN_1_1la_1_1CellBasedIterator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData.html">NeoN::la::CellBasedIterator::CellBasedData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pre-computed connectivity required for cell-based assembly.  <a href="structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>

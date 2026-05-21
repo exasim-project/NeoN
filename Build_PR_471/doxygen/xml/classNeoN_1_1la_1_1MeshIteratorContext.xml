@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classNeoN_1_1la_1_1MeshIteratorContext" kind="class" language="C++" prot="public">
     <compoundname>NeoN::la::MeshIteratorContext</compoundname>
-    <includes refid="matrixIterator_8hpp" local="no">matrixIterator.hpp</includes>
+    <includes refid="meshIterationStrategies_8hpp" local="no">meshIterationStrategies.hpp</includes>
     <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classNeoN_1_1la_1_1MeshIteratorContext_1a68dc0268e626a230531b6b560fc342f4" prot="private" static="no" mutable="no">
         <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1MeshIterationStrategy" kindref="compound">MeshIterationStrategy</ref> &gt;</type>
@@ -17,11 +17,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="33" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="33" bodyend="33"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" line="45" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" bodystart="45" bodyend="45"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1la_1_1MeshIteratorContext_1a1c8548292b5a36f51b0e8085398fa8bb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1MeshIteratorContext_1a1c8548292b5a36f51b0e8085398fa8bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void NeoN::la::MeshIteratorContext::setStrategy</definition>
         <argsstring>(std::shared_ptr&lt; MeshIterationStrategy &gt; strategy_)</argsstring>
@@ -32,48 +32,52 @@
           <declname>strategy_</declname>
         </param>
         <briefdescription>
+<para>Replaces the active strategy. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="37" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="37" bodyend="40"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" line="50" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1MeshIteratorContext_1af158dc5635d3ed823cd57d55d63cebed" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1MeshIteratorContext_1af158dc5635d3ed823cd57d55d63cebed" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1MeshIterationStrategy" kindref="compound">MeshIterationStrategy</ref> &gt;</type>
         <definition>std::shared_ptr&lt; MeshIterationStrategy &gt; NeoN::la::MeshIteratorContext::get</definition>
         <argsstring>() const</argsstring>
         <name>get</name>
         <qualifiedname>NeoN::la::MeshIteratorContext::get</qualifiedname>
         <briefdescription>
-<para>get underlying strategy </para>
+<para>Returns the active strategy, or nullptr if none has been set. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="43" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="43" bodyend="50"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" line="53" column="21"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1la_1_1MeshIteratorContext_1ad89b87589ed4fcbc0c1635fb7d28cce8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1MeshIteratorContext_1ad89b87589ed4fcbc0c1635fb7d28cce8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
         <definition>std::string NeoN::la::MeshIteratorContext::name</definition>
         <argsstring>() const</argsstring>
         <name>name</name>
         <qualifiedname>NeoN::la::MeshIteratorContext::name</qualifiedname>
         <briefdescription>
+<para>Returns the name of the active strategy, or an empty string if none is set. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="52" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="52" bodyend="59"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" line="56" column="17"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Holds and exposes the active <ref refid="classNeoN_1_1la_1_1MeshIterationStrategy" kindref="compound">MeshIterationStrategy</ref>. </para>
     </briefdescription>
     <detaileddescription>
+<para>Acts as a strategy context: callers set one concrete strategy and then query it uniformly through <ref refid="classNeoN_1_1la_1_1MeshIteratorContext_1af158dc5635d3ed823cd57d55d63cebed" kindref="member">get</ref> and <ref refid="classNeoN_1_1la_1_1MeshIteratorContext_1ad89b87589ed4fcbc0c1635fb7d28cce8" kindref="member">name</ref> without knowing the concrete type. </para>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" line="30" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrixIterator.hpp" bodystart="31" bodyend="60"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" line="42" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/meshIterationStrategies.hpp" bodystart="43" bodyend="57"/>
     <listofallmembers>
       <member refid="classNeoN_1_1la_1_1MeshIteratorContext_1af158dc5635d3ed823cd57d55d63cebed" prot="public" virt="non-virtual"><scope>NeoN::la::MeshIteratorContext</scope><name>get</name></member>
       <member refid="classNeoN_1_1la_1_1MeshIteratorContext_1ad89b87589ed4fcbc0c1635fb7d28cce8" prot="public" virt="non-virtual"><scope>NeoN::la::MeshIteratorContext</scope><name>name</name></member>

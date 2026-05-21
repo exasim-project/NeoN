@@ -81,30 +81,34 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>&gt;</code></p>
+<p>Holds and exposes the active <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html" title="Abstract base class defining the interface for mesh iteration strategies.">MeshIterationStrategy</a>.  
+ <a href="classNeoN_1_1la_1_1MeshIteratorContext.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c8548292b5a36f51b0e8085398fa8bb" id="r_a1c8548292b5a36f51b0e8085398fa8bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html#a1c8548292b5a36f51b0e8085398fa8bb">setStrategy</a> (std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; strategy_)</td></tr>
+<tr class="memdesc:a1c8548292b5a36f51b0e8085398fa8bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the active strategy.  <br /></td></tr>
 <tr class="separator:a1c8548292b5a36f51b0e8085398fa8bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af158dc5635d3ed823cd57d55d63cebed" id="r_af158dc5635d3ed823cd57d55d63cebed"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html#af158dc5635d3ed823cd57d55d63cebed">get</a> () const</td></tr>
-<tr class="memdesc:af158dc5635d3ed823cd57d55d63cebed"><td class="mdescLeft">&#160;</td><td class="mdescRight">get underlying strategy  <br /></td></tr>
+<tr class="memdesc:af158dc5635d3ed823cd57d55d63cebed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the active strategy, or nullptr if none has been set.  <br /></td></tr>
 <tr class="separator:af158dc5635d3ed823cd57d55d63cebed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad89b87589ed4fcbc0c1635fb7d28cce8" id="r_ad89b87589ed4fcbc0c1635fb7d28cce8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html#ad89b87589ed4fcbc0c1635fb7d28cce8">name</a> () const</td></tr>
+<tr class="memdesc:ad89b87589ed4fcbc0c1635fb7d28cce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the active strategy, or an empty string if none is set.  <br /></td></tr>
 <tr class="separator:ad89b87589ed4fcbc0c1635fb7d28cce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="matrixIterator_8hpp_source.html#l00030">30</a> of file <a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>.</p>
+<div class="textblock"><p>Holds and exposes the active <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html" title="Abstract base class defining the interface for mesh iteration strategies.">MeshIterationStrategy</a>. </p>
+<p>Acts as a strategy context: callers set one concrete strategy and then query it uniformly through <a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html#af158dc5635d3ed823cd57d55d63cebed">get</a> and <a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html#ad89b87589ed4fcbc0c1635fb7d28cce8">name</a> without knowing the concrete type. </p>
+
+<p class="definition">Definition at line <a class="el" href="meshIterationStrategies_8hpp_source.html#l00042">42</a> of file <a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="af158dc5635d3ed823cd57d55d63cebed" name="af158dc5635d3ed823cd57d55d63cebed"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af158dc5635d3ed823cd57d55d63cebed">&#9670;&#160;</a></span>get()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; NeoN::la::MeshIteratorContext::get </td>
@@ -113,16 +117,9 @@ Public Member Functions</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>get underlying strategy </p>
-
-<p class="definition">Definition at line <a class="el" href="matrixIterator_8hpp_source.html#l00043">43</a> of file <a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>.</p>
+<p>Returns the active strategy, or nullptr if none has been set. </p>
 
 </div>
 </div>
@@ -131,9 +128,6 @@ Public Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::string NeoN::la::MeshIteratorContext::name </td>
@@ -142,14 +136,9 @@ Public Member Functions</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrixIterator_8hpp_source.html#l00052">52</a> of file <a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>.</p>
+<p>Returns the name of the active strategy, or an empty string if none is set. </p>
 
 </div>
 </div>
@@ -158,9 +147,6 @@ Public Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void NeoN::la::MeshIteratorContext::setStrategy </td>
@@ -170,19 +156,14 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrixIterator_8hpp_source.html#l00037">37</a> of file <a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a>.</p>
+<p>Replaces the active strategy. </p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/<a class="el" href="matrixIterator_8hpp_source.html">matrixIterator.hpp</a></li>
+<li>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/<a class="el" href="meshIterationStrategies_8hpp_source.html">meshIterationStrategies.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
