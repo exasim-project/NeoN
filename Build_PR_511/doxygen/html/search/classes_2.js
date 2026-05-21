@@ -1,16 +1,18 @@
 var searchData=
 [
   ['calculated_0',['calculated',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Calculated.html',1,'NeoN::finiteVolume::cellCentred::surfaceBoundary::Calculated&lt; ValueType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Calculated.html',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::Calculated&lt; ValueType &gt;']]],
-  ['celldata_1',['CellData',['../structNeoN_1_1detail_1_1CellData.html',1,'NeoN::detail']]],
-  ['celltofacestencil_2',['CellToFaceStencil',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['coeff_3',['Coeff',['../classNeoN_1_1dsl_1_1Coeff.html',1,'NeoN::dsl']]],
-  ['collection_4',['Collection',['../classNeoN_1_1Collection.html',1,'NeoN']]],
-  ['collectionmixin_5',['CollectionMixin',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
-  ['collectionmixin_3c_20oldtimedocument_20_3e_6',['CollectionMixin&lt; OldTimeDocument &gt;',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
-  ['collectionmixin_3c_20vectordocument_20_3e_7',['CollectionMixin&lt; VectorDocument &gt;',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
-  ['coosparsitypattern_8',['CooSparsityPattern',['../classNeoN_1_1la_1_1CooSparsityPattern.html',1,'NeoN::la']]],
-  ['corrected_9',['Corrected',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['cpuexecutor_10',['CPUExecutor',['../classNeoN_1_1CPUExecutor.html',1,'NeoN']]],
-  ['createfromexistingvector_11',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['csrsparsitypattern_12',['CsrSparsityPattern',['../classNeoN_1_1la_1_1CsrSparsityPattern.html',1,'NeoN::la']]]
+  ['cellbaseddata_1',['CellBasedData',['../structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData.html',1,'NeoN::la::CellBasedIterator']]],
+  ['cellbasediterator_2',['CellBasedIterator',['../classNeoN_1_1la_1_1CellBasedIterator.html',1,'NeoN::la']]],
+  ['celldata_3',['CellData',['../structNeoN_1_1detail_1_1CellData.html',1,'NeoN::detail']]],
+  ['celltofacestencil_4',['CellToFaceStencil',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['coeff_5',['Coeff',['../classNeoN_1_1dsl_1_1Coeff.html',1,'NeoN::dsl']]],
+  ['collection_6',['Collection',['../classNeoN_1_1Collection.html',1,'NeoN']]],
+  ['collectionmixin_7',['CollectionMixin',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
+  ['collectionmixin_3c_20oldtimedocument_20_3e_8',['CollectionMixin&lt; OldTimeDocument &gt;',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
+  ['collectionmixin_3c_20vectordocument_20_3e_9',['CollectionMixin&lt; VectorDocument &gt;',['../classNeoN_1_1CollectionMixin.html',1,'NeoN']]],
+  ['coosparsitypattern_10',['CooSparsityPattern',['../classNeoN_1_1la_1_1CooSparsityPattern.html',1,'NeoN::la']]],
+  ['corrected_11',['Corrected',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['cpuexecutor_12',['CPUExecutor',['../classNeoN_1_1CPUExecutor.html',1,'NeoN']]],
+  ['createfromexistingvector_13',['CreateFromExistingVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['csrsparsitypattern_14',['CsrSparsityPattern',['../classNeoN_1_1la_1_1CsrSparsityPattern.html',1,'NeoN::la']]]
 ];
