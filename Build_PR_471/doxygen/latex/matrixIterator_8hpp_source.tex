@@ -133,11 +133,11 @@
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a91f561927648e0d9ca68cdde17feafc3}{exec}}();}
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ cellToFaceStencil\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil}{finiteVolume::cellCentred::CellToFaceStencil}}(mesh);}
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ cellFaces\ =\ cellToFaceStencil.computeInternalStencil();}
-\DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ owner\ =\ mesh.faceOwner();}
-\DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ neighbour\ =\ mesh.faceNeighbour();}
+\DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ owner\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a071d4e601f493874249b7eda90596f02}{faceOwners}}();}
+\DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ neighbour\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a726c447190ba78ecc64f380813ad95a1}{faceNeighbors}}();}
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00135}00135\ }
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Pre-\/compute\ face\ neighbour,\ sign,\ and\ matrix\ column\ indices}}
-\DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ totalFaceConnections\ =\ cellFaces.size();}
+\DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ totalFaceConnections\ =\ cellFaces.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}();}
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ faceNeighbour(exec,\ totalFaceConnections);}
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ faceSign(exec,\ totalFaceConnections);}
 \DoxyCodeLine{\Hypertarget{matrixIterator_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ matrixColumnIdx(exec,\ totalFaceConnections);}
