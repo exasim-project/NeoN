@@ -110,9 +110,9 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ phi,}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\textcolor{keyword}{\ const\ override}}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00108}00108\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ae6db8266b28875a28b6ba2649d0fda33}{getMeshIterator}}()-\/>name()\ ==\ \textcolor{stringliteral}{"{}CellBased"{}})}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{dynamic\_cast<}\textcolor{keyword}{const\ }CellBased*\textcolor{keyword}{>}(ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ae6db8266b28875a28b6ba2649d0fda33}{getMeshIterator}}())\ !=\ \textcolor{keyword}{nullptr})}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Cellbased\ iteration\ not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}CellBased\ iteration\ not\ implemented"{}});}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ weights\ =\ surfaceInterpolation\_.weight(faceFlux,\ phi);}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ad8a6205d48249760b656e7c489e4643c}{computeDivIntImp}}(ls,\ faceFlux,\ phi,\ weights,\ operatorScaling);}
