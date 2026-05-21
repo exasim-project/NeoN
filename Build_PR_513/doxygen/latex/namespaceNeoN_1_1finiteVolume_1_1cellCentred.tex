@@ -22,6 +22,8 @@ class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatch
 \begin{DoxyCompactList}\small\item\em A base class for implementing derived boundary conditions. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil}{Cell\+To\+Face\+Stencil}}
 \item 
+class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected}{Corrected}}
+\item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector}{Create\+From\+Existing\+Vector}}
 \begin{DoxyCompactList}\small\item\em Creates a \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VectorDocument}{Vector\+Document} from an existing field. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DdtOperator}{Ddt\+Operator}}
@@ -55,6 +57,8 @@ class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorF
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator}{Laplacian\+Operator}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory}{Laplacian\+Operator\+Factory}}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected}{Limited\+Corrected}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear}{Linear}}
 \item 
@@ -128,6 +132,14 @@ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}
 \item 
 std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{Surface\+Boundary}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a616a3a0d2d9285da79f5301efe88d399}{create\+Flux\+Corr\+BCs\+FromU}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&u)
 \begin{DoxyCompactList}\small\item\em Boundary condition to apply to ddt\+Flux\+Corr surface\+Scalar\+Field. It sets the flux correction to zero for all fixed\+Value velocity boundaries by calling .correct\+Boundary\+Conditions(). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a96e58e98b2d72fe6138bec16739c1658}{compute\+Corrected\+Face\+Normal\+Grad}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&vol\+Field, const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$ geometry\+Scheme, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&surface\+Field)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a7892cb0867950a5ee09a2f7099f9c346}{compute\+Correction\+Term}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&vol\+Field, const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$ geometry\+Scheme, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&corr\+Field)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3ca3f52de2754f3e590bb69cf57e76af}{compute\+Limited\+Corrected\+Face\+Normal\+Grad}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&vol\+Field, const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$ geometry\+Scheme, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} limit\+Coeff, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&surface\+Field)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a6c37a85194f9e07c20dfc103b5c45e29}{compute\+Limited\+Correction\+Term}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&vol\+Field, const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$ geometry\+Scheme, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} limit\+Coeff, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&corr\+Field)
+\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ad5c0aa904c7545c5c4ba1b1a833261c9}{compute\+Face\+Normal\+Grad}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&vol\+Vector, const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$ geometry\+Scheme, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&surface\+Vector)
 \item 
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aee25e9fd121df9a620046de2aeec8093}{operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&lhs, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&rhs)
@@ -153,6 +165,8 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Su
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac2fc28dc59fe7e0c54eb7d373c4b8819}{compute\+Laplacian\+Int\+Impl}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&gamma, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{Face\+Normal\+Gradient}}$<$ Value\+Type $>$ \&face\+Normal\+Gradient)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5cdfa69284ea8e53aabbb69135265ae4}{compute\+Laplacian\+Bound\+Impl}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&gamma, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{Face\+Normal\+Gradient}}$<$ Value\+Type $>$ \&face\+Normal\+Gradient)
+\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a83bca08d923795fdb2f1d2348ad50c44}{compute\+Laplacian\+Non\+Orth\+Corr\+Impl}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&gamma, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} coeff, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{Face\+Normal\+Gradient}}$<$ Value\+Type $>$ \&face\+Normal\+Gradient)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a904819718fb1984e4aab2c272c26cae7}{surface\+Integrate}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const int $>$ neighbors, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const int $>$ owners, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const int $>$ face\+Owners, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ flux, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ b\+Flux, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ v, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ Value\+Type $>$ res, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)
 \end{DoxyCompactItemize}
@@ -239,6 +253,20 @@ Definition at line \mbox{\hyperlink{ddtOperator_8hpp_source_l00017}{17}} of file
 \doxysubsubsection{\texorpdfstring{computeCoNum()}{computeCoNum()}}
 {\footnotesize\ttfamily std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Co\+Num (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{face\+Flux,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt }\end{DoxyParamCaption})}
 
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a96e58e98b2d72fe6138bec16739c1658}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a96e58e98b2d72fe6138bec16739c1658} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeCorrectedFaceNormalGrad@{computeCorrectedFaceNormalGrad}}
+\index{computeCorrectedFaceNormalGrad@{computeCorrectedFaceNormalGrad}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{computeCorrectedFaceNormalGrad()}{computeCorrectedFaceNormalGrad()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Corrected\+Face\+Normal\+Grad (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{vol\+Field,  }\item[{const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$}]{geometry\+Scheme,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&}]{surface\+Field }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a7892cb0867950a5ee09a2f7099f9c346}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a7892cb0867950a5ee09a2f7099f9c346} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeCorrectionTerm@{computeCorrectionTerm}}
+\index{computeCorrectionTerm@{computeCorrectionTerm}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{computeCorrectionTerm()}{computeCorrectionTerm()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Correction\+Term (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{vol\+Field,  }\item[{const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$}]{geometry\+Scheme,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&}]{corr\+Field }\end{DoxyParamCaption})}
+
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a9705c659333dbf9ace2f59e35f51fc1c}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a9705c659333dbf9ace2f59e35f51fc1c} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeDivBoundImp@{computeDivBoundImp}}
 \index{computeDivBoundImp@{computeDivBoundImp}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
@@ -287,6 +315,27 @@ void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Laplacian\+Exp (\begi
 \doxysubsubsection{\texorpdfstring{computeLaplacianIntImpl()}{computeLaplacianIntImpl()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Laplacian\+Int\+Impl (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{gamma,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{phi,  }\item[{const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}}}]{operator\+Scaling,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{Face\+Normal\+Gradient}}$<$ Value\+Type $>$ \&}]{face\+Normal\+Gradient }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a83bca08d923795fdb2f1d2348ad50c44}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a83bca08d923795fdb2f1d2348ad50c44} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeLaplacianNonOrthCorrImpl@{computeLaplacianNonOrthCorrImpl}}
+\index{computeLaplacianNonOrthCorrImpl@{computeLaplacianNonOrthCorrImpl}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{computeLaplacianNonOrthCorrImpl()}{computeLaplacianNonOrthCorrImpl()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Laplacian\+Non\+Orth\+Corr\+Impl (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{gamma,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{phi,  }\item[{const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}}}]{coeff,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{Face\+Normal\+Gradient}}$<$ Value\+Type $>$ \&}]{face\+Normal\+Gradient }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3ca3f52de2754f3e590bb69cf57e76af}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3ca3f52de2754f3e590bb69cf57e76af} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeLimitedCorrectedFaceNormalGrad@{computeLimitedCorrectedFaceNormalGrad}}
+\index{computeLimitedCorrectedFaceNormalGrad@{computeLimitedCorrectedFaceNormalGrad}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{computeLimitedCorrectedFaceNormalGrad()}{computeLimitedCorrectedFaceNormalGrad()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Limited\+Corrected\+Face\+Normal\+Grad (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{vol\+Field,  }\item[{const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$}]{geometry\+Scheme,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{limit\+Coeff,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&}]{surface\+Field }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a6c37a85194f9e07c20dfc103b5c45e29}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a6c37a85194f9e07c20dfc103b5c45e29} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeLimitedCorrectionTerm@{computeLimitedCorrectionTerm}}
+\index{computeLimitedCorrectionTerm@{computeLimitedCorrectionTerm}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{computeLimitedCorrectionTerm()}{computeLimitedCorrectionTerm()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Limited\+Correction\+Term (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&}]{vol\+Field,  }\item[{const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme}} $>$}]{geometry\+Scheme,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{limit\+Coeff,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Value\+Type $>$ \&}]{corr\+Field }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5ee2b2f0634716198d36459918063de3}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5ee2b2f0634716198d36459918063de3} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!computeLinearInterpolation@{computeLinearInterpolation}}
@@ -363,7 +412,7 @@ Definition at line \mbox{\hyperlink{ddtFluxCorrBoundary_8hpp_source_l00023}{23}}
 
 
 
-Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
+Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00159}{159}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aff55801e0df1fcf7be8f26668fa963e5}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aff55801e0df1fcf7be8f26668fa963e5} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!oldTime@{oldTime}}
