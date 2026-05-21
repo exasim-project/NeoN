@@ -3,6 +3,7 @@
   <compounddef id="classNeoN_1_1SupportsCopyTo" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>NeoN::SupportsCopyTo</compoundname>
     <derivedcompoundref refid="classNeoN_1_1SegmentedVector" prot="public" virt="non-virtual">NeoN::SegmentedVector&lt; localIdx, localIdx &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1la_1_1Matrix" prot="public" virt="non-virtual">NeoN::la::Matrix&lt; ValueType, localIdx &gt;</derivedcompoundref>
     <includes refid="copyTo_8hpp" local="no">copyTo.hpp</includes>
     <templateparamlist>
       <param>
@@ -30,6 +31,11 @@
         <argsstring>(Executor exec) const =0</argsstring>
         <name>copyToExecutor</name>
         <qualifiedname>NeoN::SupportsCopyTo::copyToExecutor</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1la_1_1CooSparsityPattern_1ae4f6cadc8faf39fc60936afb5d9c3cc5">copyToExecutor</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1la_1_1CsrSparsityPattern_1af905d31b724e76265e00cc7bed9c663c">copyToExecutor</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1la_1_1FaceToMatrixAddress_1aa7f162f291eedcb9b26b27e833249f77">copyToExecutor</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1la_1_1Matrix_1ab27fc5d5e14d12efff17578b79dd3a31">copyToExecutor</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1la_1_1Matrix_1ab27fc5d5e14d12efff17578b79dd3a31">copyToExecutor</reimplementedby>
         <reimplementedby refid="classNeoN_1_1SegmentedVector_1a355efde32c1cb1b4c52576985ef2d0b3">copyToExecutor</reimplementedby>
         <reimplementedby refid="classNeoN_1_1SegmentedVector_1a355efde32c1cb1b4c52576985ef2d0b3">copyToExecutor</reimplementedby>
         <param>
@@ -66,6 +72,12 @@
 <para>Requires copyToExecutor to be implemented, provides a copyToHost for free </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="3">
+        <label>NeoN::la::Matrix&lt; ValueType, localIdx &gt;</label>
+        <link refid="classNeoN_1_1la_1_1Matrix"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>NeoN::SupportsCopyTo&lt; HostType &gt;</label>
         <link refid="classNeoN_1_1SupportsCopyTo"/>
