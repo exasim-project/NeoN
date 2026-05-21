@@ -1,0 +1,191 @@
+\doxysection{NeoN\+::la\+::Cell\+Based\+Iterator Class Reference}
+\hypertarget{classNeoN_1_1la_1_1CellBasedIterator}{}\label{classNeoN_1_1la_1_1CellBasedIterator}\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+
+
+Iteration strategy that traverses cells and their face stencils.  
+
+
+
+
+{\ttfamily \#include $<$mesh\+Iteration\+Strategies.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::la\+::Cell\+Based\+Iterator\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1la_1_1CellBasedIterator}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}}
+\begin{DoxyCompactList}\small\item\em Pre-\/computed connectivity required for cell-\/based assembly. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1}{Cell\+Based\+Iterator}} ()
+\item 
+std\+::string \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82}{name}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the strategy name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c}{size}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the number of iteration elements (cells or faces). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1}{\texorpdfstring{$\sim$}{\string~}\+Cell\+Based\+Iterator}} () override
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f}{get\+Cell\+Based\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Returns the pre-\/computed connectivity data, or nullptr if not yet initialised. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Sparsity\+Type $>$ }\\void \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94}{set\+Compute\+Cell\+Based\+Data}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ sparsity\+Pattern, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{la\+::\+Face\+To\+Matrix\+Address}} $>$ face\+To\+Matrix\+Address)
+\begin{DoxyCompactList}\small\item\em Computes and stores the cell-\/based connectivity data. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Sparsity\+Type $>$ }\\std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801}{compute\+Cell\+Based\+Data}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ sparsity\+Pattern, const std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{la\+::\+Face\+To\+Matrix\+Address}} $>$ face\+To\+Matrix\+Address)
+\begin{DoxyCompactList}\small\item\em Builds and returns cell-\/based connectivity data without storing it. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Neo\+N\+::la\+::\+Mesh\+Iteration\+Strategy}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ae051ae1bf07dcb87de56145d830180c2}{\texorpdfstring{$\sim$}{\string~}\+Mesh\+Iteration\+Strategy}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47}{cell\+Based\+Iterator\+Data\+\_\+}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Iteration strategy that traverses cells and their face stencils. 
+
+Pre-\/computes a cell-\/centric connectivity table (\doxylink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}) so that each cell can independently gather all face contributions during assembly, which is better suited for GPU-\/parallel execution than the face-\/based approach. 
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00088}{88}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1}\label{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!CellBasedIterator@{CellBasedIterator}}
+\index{CellBasedIterator@{CellBasedIterator}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{CellBasedIterator()}{CellBasedIterator()}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Iterator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1}\label{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!````~CellBasedIterator@{\texorpdfstring{$\sim$}{\string~}CellBasedIterator}}
+\index{````~CellBasedIterator@{\texorpdfstring{$\sim$}{\string~}CellBasedIterator}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CellBasedIterator()}{\string~CellBasedIterator()}}
+{\footnotesize\ttfamily Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\texorpdfstring{$\sim$}{\string~}\+Cell\+Based\+Iterator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00124}{124}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801}\label{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!computeCellBasedData@{computeCellBasedData}}
+\index{computeCellBasedData@{computeCellBasedData}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{computeCellBasedData()}{computeCellBasedData()}}
+{\footnotesize\ttfamily template$<$typename Sparsity\+Type $>$ \\
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}} $>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::compute\+Cell\+Based\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$}]{sparsity\+Pattern,  }\item[{const std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{la\+::\+Face\+To\+Matrix\+Address}} $>$}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})}
+
+
+
+Builds and returns cell-\/based connectivity data without storing it. 
+
+Launches a parallel kernel that, for every cell, iterates over its face stencil and records the neighbour cell, the face sign, and the matrix column index for each face.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Sparsity\+Type} & Sparsity pattern type (e.\+g. \doxylink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}, \doxylink{classNeoN_1_1la_1_1CooSparsityPattern}{Coo\+Sparsity\+Pattern}). \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em mesh} & The mesh providing owner/neighbour topology. \\
+\hline
+{\em sparsity\+Pattern} & Sparsity pattern of the linear system. \\
+\hline
+{\em face\+To\+Matrix\+Address} & Mapping from faces to matrix row offsets. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Shared pointer to the newly allocated \doxylink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}. 
+\end{DoxyReturn}
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f}\label{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!getCellBasedData@{getCellBasedData}}
+\index{getCellBasedData@{getCellBasedData}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{getCellBasedData()}{getCellBasedData()}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}} $>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::get\+Cell\+Based\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the pre-\/computed connectivity data, or nullptr if not yet initialised. 
+
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82}\label{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!name@{name}}
+\index{name@{name}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily std\+::string Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the strategy name. 
+
+
+
+Implements \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_a1da28dca539a766ed516cd072cf80f29}{Neo\+N\+::la\+::\+Mesh\+Iteration\+Strategy}}.
+
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94}\label{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!setComputeCellBasedData@{setComputeCellBasedData}}
+\index{setComputeCellBasedData@{setComputeCellBasedData}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{setComputeCellBasedData()}{setComputeCellBasedData()}}
+{\footnotesize\ttfamily template$<$typename Sparsity\+Type $>$ \\
+void Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::set\+Compute\+Cell\+Based\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$}]{sparsity\+Pattern,  }\item[{std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{la\+::\+Face\+To\+Matrix\+Address}} $>$}]{face\+To\+Matrix\+Address }\end{DoxyParamCaption})}
+
+
+
+Computes and stores the cell-\/based connectivity data. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Sparsity\+Type} & Sparsity pattern type (e.\+g. \doxylink{classNeoN_1_1la_1_1CsrSparsityPattern}{Csr\+Sparsity\+Pattern}, \doxylink{classNeoN_1_1la_1_1CooSparsityPattern}{Coo\+Sparsity\+Pattern}). \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em mesh} & The mesh providing owner/neighbour topology. \\
+\hline
+{\em sparsity\+Pattern} & Sparsity pattern of the linear system. \\
+\hline
+{\em face\+To\+Matrix\+Address} & Mapping from faces to matrix row offsets. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c}\label{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!size@{size}}
+\index{size@{size}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the number of iteration elements (cells or faces). 
+
+
+
+Implements \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ac6e72f5d0f80f12ea842efdcea7e3221}{Neo\+N\+::la\+::\+Mesh\+Iteration\+Strategy}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47}\label{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47} 
+\index{NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}!cellBasedIteratorData\_@{cellBasedIteratorData\_}}
+\index{cellBasedIteratorData\_@{cellBasedIteratorData\_}!NeoN::la::CellBasedIterator@{NeoN::la::CellBasedIterator}}
+\doxysubsubsection{\texorpdfstring{cellBasedIteratorData\_}{cellBasedIteratorData\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{Cell\+Based\+Data}}$>$ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::cell\+Based\+Iterator\+Data\+\_\+}
+
+
+
+Definition at line \mbox{\hyperlink{meshIterationStrategies_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{meshIterationStrategies_8hpp_source}{mesh\+Iteration\+Strategies.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{meshIterationStrategies_8hpp}{mesh\+Iteration\+Strategies.\+hpp}}\end{DoxyCompactItemize}
