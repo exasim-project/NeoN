@@ -35,66 +35,46 @@ public:
     /**
      * @brief Prepare pointer to pass to julia
      */
-    jl_value_t* juliaPtr_gpu() const 
-	{
-		return jl_box_voidpointer((void*)data_);
-	}
-	jl_array_t* juliaPtr() const
+	jl_value_t* juliaPtr() const
     {
-        if constexpr (std::is_same_v<VectorValueType, float>)
-        {
-            // std::cout << "vector is float\n";
-            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
-            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
-            return julia_ptr;
+        if (std::holds_alternative<GPUExecutor>(exec_)) {
+        		return jl_box_voidpointer((void*)data_);
         }
-        else if constexpr (std::is_same_v<VectorValueType, double>)
-        {
-            // std::cout << "vector is double\n";
-            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
-            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
-            return julia_ptr;
-        }
-        else if constexpr (std::is_same_v<VectorValueType, label>)
-        {
-            // std::cout << "vector is label\n";
-            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
-            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
-            return julia_ptr;
-        }
-        else if constexpr (std::is_same_v<VectorValueType, localIdx>)
-        {
-            // std::cout << "vector is localIdx\n";
-            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
-            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
-            return julia_ptr;
-        }
-        else if constexpr (std::is_same_v<VectorValueType, NeoN::Vec3>)
-        {
-            // std::cout << "vector is Vec3\n";
-            jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
-            jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_ * 3, 0);
-            return julia_ptr;
-            // auto viewA = view();
-            // jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 2);
-
-            // size_t dims[2] = {3, size()};
-
-            // jl_array_t* julia_ptr = jl_alloc_array_nd(array_type, dims, 2);
-
-            // float* p = jl_array_data(julia_ptr, float);
-
-            // for (size_t i = 0; i < size(); ++i)
-            // {
-            //     p[0 + 3 * i] = viewA[i][0];
-            //     p[1 + 3 * i] = viewA[i][1];
-            //     p[2 + 3 * i] = viewA[i][2];
-            // }
-            // return julia_ptr;
-        }
-        else
-        {
-            std::cout << "unknown type" << std::endl;
+        else {
+            if constexpr (std::is_same_v<VectorValueType, float>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, double>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, label>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, localIdx>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_int32_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else if constexpr (std::is_same_v<VectorValueType, NeoN::Vec3>)
+            {
+                jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
+                jl_array_t* julia_ptr = jl_ptr_to_array_1d(array_type, data_, size_ * 3, 0);
+                return (jl_value_t*)julia_ptr;
+            }
+            else
+            {
+                std::cout << "unknown type" << std::endl;
+            }
         }
     }
 #endif
@@ -289,30 +269,6 @@ public:
      * @return Pointer to the first cell data in the field.
      */
     [[nodiscard]] const ValueType* data() const { return data_; }
-
-    /**
-     * @brief Direct access to the underlying field data
-     * @return Pointer to the first cell data in the field.
-     */
-    [[nodiscard]] ValueType* begin() { return data_; }
-
-    /**
-     * @brief Direct access to the underlying field data
-     * @return Pointer to the first cell data in the field.
-     */
-    [[nodiscard]] const ValueType* begin() const { return data_; }
-
-    /**
-     * @brief Direct access to the underlying field data
-     * @return Pointer to the first cell data in the field.
-     */
-    [[nodiscard]] ValueType* end() { return data_ + size(); }
-
-    /**
-     * @brief Direct access to the underlying field data
-     * @return Pointer to the first cell data in the field.
-     */
-    [[nodiscard]] const ValueType* end() const { return data_ + size(); }
 
     /**
      * @brief Gets the executor associated with the field.

@@ -144,12 +144,11 @@ public:
      */
     ~Matrix() = default;
 #ifdef USE_JULIA
-	jl_value_t* juliaPtr_gpu() {return values_.juliaPtr_gpu();}
     /**
      * @brief Prepare the pointer to hand to Julia.
      * @return Julia-friendly reference to the data.
      */
-    jl_array_t* juliaPtr() { return values_.juliaPtr(); }
+    jl_value_t* juliaPtr() { return values_.juliaPtr(); }
 #endif
 
     /**

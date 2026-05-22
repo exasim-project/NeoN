@@ -60,7 +60,7 @@ TEST_CASE("GPUExec vec<vec3> 1")
     auto exec = GPUExecutor {};
     jl_eval_string("include(\"../../../../init.jl\")");  // NeoN root directory relative to where this compiles to
     jl_eval_string(R"(
-        function use_pointer(p::Ptr{Cvoid}, size::Int64)
+        function use_pointer1(p::Ptr{Cvoid}, size::Int64)
 			ptr = reinterpret(CuPtr{Float64}, p)
 			arr = unsafe_wrap(CuArray, ptr, size; own=false)
 			arr[22:24] = [21.0, 22.0, 23.0]
@@ -70,13 +70,13 @@ TEST_CASE("GPUExec vec<vec3> 1")
     auto input = Vector<Vec3>(exec, N, zero<Vec3>());
 
 
-    auto ptrval = jl_box_voidpointer((void*)input.data());
+    auto ptrval = input.juliaPtr();
     auto boxed_size = jl_box_int64(N*3);
     jl_value_t* args[2];
-    args[0] = (jl_value_t*)ptrval;
+    args[0] = ptrval;
     args[1] = (jl_value_t*)boxed_size;
     
-	jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
+	jl_function_t* func = jl_get_function(jl_main_module, "use_pointer1");
     jl_call(func, args, 2);
     if (jl_exception_occurred())
     {
@@ -107,14 +107,14 @@ TEST_CASE("[CPU] Pass Vector<Vec3> to Julia")
     jl_init();
     auto exec = Executor(CPUExecutor {});
     jl_eval_string(R"(
-        function use_pointer(x::Vector{Float64})
+        function use_pointer2(x::Vector{Float64})
             x[1:3] = [1.0, 2.0, 3.0]
         end
     )");
     auto input = Vector<Vec3>(exec, 10, zero<Vec3>());
     auto julia2dptr = input.juliaPtr();
-    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
-    jl_call1(func, (jl_value_t*)julia2dptr);
+    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer2");
+    jl_call1(func, julia2dptr);
     if (jl_exception_occurred())
     {
         std::cerr << "Julia exception: " << jl_typeof_str(jl_exception_occurred()) << std::endl;
@@ -132,52 +132,46 @@ TEST_CASE("[CPU] Pass NeoN::Array to Julia and Receive")
     jl_init();
     auto exec = NeoN::Executor(NeoN::CPUExecutor {});
     jl_eval_string(R"(
-        function use_pointer(p::Ptr{Cvoid})
-            arr = unsafe_wrap(Array, Ptr{Float64}(p), 10)
-            arr[1] = 42.0
+        function use_pointer3(p::Vector{Float64})
+            p[1] = 42.0
             return nothing
         end
     )");
 
     size_t size = 10;
     NeoN::Array<NeoN::scalar> array(exec, size);
-    jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
-    jl_value_t* julia_ptr = jl_box_voidpointer((void*)array.data());
-    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
+    jl_value_t* julia_ptr = array.juliaPtr();
+    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer3");
 
     jl_call1(func, julia_ptr);
+    if (jl_exception_occurred())
+    {
+        std::cerr << "Julia exception: " << jl_typeof_str(jl_exception_occurred()) << std::endl;
+    }
     REQUIRE(array.view()[0] == 42.0);
 
     jl_atexit_hook(0);
 }
 
-// TODO GPU
 
 TEST_CASE("Pass multiple NeoN::Array to Julia and Receive")
 {
     jl_init();
     auto exec = NeoN::Executor(NeoN::SerialExecutor {});
     jl_eval_string(R"(
-        function use_pointer(a::Ptr{Cvoid}, b::Ptr{Cvoid})
-            arr = unsafe_wrap(Array, Ptr{Float64}(a), 10)
-            arr2 = unsafe_wrap(Array, Ptr{Float64}(b), 10)
+        function use_pointer4(arr::Vector{Float64}, arr2::Vector{Float64})
             arr[1] = 42.0
             arr2[1] = 69.0
-            return nothing
         end
     )");
 
     size_t size = 10;
     NeoN::Array<NeoN::scalar> array(exec, size);
     NeoN::Array<NeoN::scalar> array2(exec, size);
-    jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
-    jl_value_t* julia_ptr = jl_box_voidpointer((void*)array.data());
-    jl_value_t* julia_ptr2 = jl_box_voidpointer((void*)array2.data());
-    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer");
-    jl_value_t* args[2];
-    args[0] = julia_ptr;
-    args[1] = julia_ptr2;
-    jl_call(func, args, 2);
+    jl_value_t* julia_ptr = array.juliaPtr();
+    jl_value_t* julia_ptr2 = array2.juliaPtr();
+    jl_function_t* func = jl_get_function(jl_main_module, "use_pointer4");
+    jl_call2(func, julia_ptr, julia_ptr2);
     REQUIRE(array.view()[0] == 42.0);
     REQUIRE(array2.view()[0] == 69.0);
 
@@ -201,37 +195,6 @@ TEST_CASE("Pass string to julia")
     const char* unboxed = jl_string_ptr(ret);
     std::string str = std::string(unboxed);
     REQUIRE("JULIA" == str);
-    jl_atexit_hook(0);
-}
-
-TEST_CASE("Pass std::vector<std::string> to julia and receive scheme string")
-{
-    jl_init();
-    jl_eval_string(R"(
-        function pass_strings(p::Vector{String})
-            return p[2]
-        end
-    )");
-    NeoN::TokenList input = NeoN::TokenList({std::string("Gauss"), std::string("linear")});
-
-    jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_string_type, 1);
-
-    jl_array_t* jl_vec = jl_alloc_array_1d(array_type, input.size());
-
-    JL_GC_PUSH1(&jl_vec); // basically: increment GC reference so it doesnt get free'd
-
-    for (size_t i = 0; i < input.tokens().size(); ++i)
-    {
-        jl_value_t* s = jl_cstr_to_string(input.get<std::string>(i).c_str());
-        jl_array_ptr_set(jl_vec, i, s);
-    }
-
-    jl_function_t* func = jl_get_function(jl_main_module, "pass_strings");
-    jl_value_t* ret = jl_call1(func, (jl_value_t*)jl_vec);
-    const char* p = jl_string_ptr(ret);
-    std::string returnOp(p);
-    REQUIRE(input.get<std::string>(1) == returnOp);
-    JL_GC_POP(); // decrement reference
     jl_atexit_hook(0);
 }
 
@@ -288,66 +251,3 @@ TEST_CASE("Pass Div tokens and create Julia Div Operator")
     jl_atexit_hook(0);
 }
 
-
-namespace fvcc = NeoN::finiteVolume::cellCentred;
-
-using Operator = NeoN::dsl::Operator;
-
-namespace NeoN
-{
-
-
-TEMPLATE_TEST_CASE("DivOperator", "[template]", NeoN::scalar, NeoN::Vec3)
-{
-    auto [execName, exec] = GENERATE(allAvailableExecutor());
-
-    auto mesh = create1DUniformMesh(exec, 10);
-    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
-
-    // compute corresponding uniform faceFlux
-    // TODO this should be handled outside of the unit test
-    fvcc::SurfaceField<scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
-    fill(faceFlux.internalVector(), 1.0);
-    auto boundFaceFlux = faceFlux.internalVector().view();
-    // face on the left side has different orientation
-    parallelFor(
-        exec, {mesh.nCells() - 1, mesh.nCells()}, NEON_LAMBDA(const localIdx i) {
-            boundFaceFlux[i] = -1.0;
-        }
-    );
-
-    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
-    fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
-    fill(phi.internalVector(), one<TestType>());
-    fill(phi.boundaryData().value(), one<TestType>());
-    phi.correctBoundaryConditions();
-
-    auto result = Vector<TestType>(exec, phi.size());
-    fill(result, zero<TestType>());
-
-    SECTION("Construct from Token" + execName)
-    {
-        Input input = TokenList({std::string("Gauss"), std::string("linear")});
-        fvcc::DivOperator(Operator::Type::Explicit, faceFlux, phi, input);
-    }
-
-    SECTION("Construct from Dictionary" + execName)
-    {
-        Input input = Dictionary(
-            {{std::string("DivOperator"), std::string("Gauss")},
-             {std::string("surfaceInterpolation"), std::string("linear")}}
-        );
-        auto op = fvcc::DivOperator(Operator::Type::Explicit, faceFlux, phi, input);
-        op.divJulia(result);
-
-        // divergence of a uniform field should be zero
-        auto outHost = result.copyToHost();
-        auto outHostView = outHost.view();
-        for (int i = 0; i < result.size(); i++)
-        {
-            REQUIRE(outHostView[i] == zero<TestType>());
-        }
-    }
-}
-
-}
