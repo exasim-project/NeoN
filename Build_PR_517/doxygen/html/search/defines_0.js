@@ -15,8 +15,7 @@ var searchData=
   ['nf_5ferror_5fmessage_12',['NF_ERROR_MESSAGE',['../error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692',1,'error.hpp']]],
   ['nf_5finfo_13',['NF_INFO',['../info_8hpp.html#a76c3f5a3d808363a39d4f1f21561a587',1,'info.hpp']]],
   ['nf_5fthrow_14',['NF_THROW',['../error_8hpp.html#a01fd2dadf84a907b46bb93644bde393f',1,'error.hpp']]],
-  ['nn_5fdefine_5fimplicit_5fdiv_5fimpl_15',['NN_DEFINE_IMPLICIT_DIV_IMPL',['../gaussGreenDiv_8hpp.html#a353d6067e6a18ab2d23c367f70646eb8',1,'gaussGreenDiv.hpp']]],
-  ['nn_5ffor_5fall_5finteger_5ftypes_16',['NN_FOR_ALL_INTEGER_TYPES',['../macros_8hpp.html#abf8bf7e701b2199508316e38795f5b3b',1,'macros.hpp']]],
-  ['nn_5ffor_5fall_5fscalar_5ftypes_17',['NN_FOR_ALL_SCALAR_TYPES',['../macros_8hpp.html#ad7265fdbbd0832f95fb81378aae100a3',1,'macros.hpp']]],
-  ['nn_5ffor_5fall_5fvalue_5ftypes_18',['NN_FOR_ALL_VALUE_TYPES',['../macros_8hpp.html#af2b6b4d2bf83137ac1574a81f1f05470',1,'macros.hpp']]]
+  ['nn_5ffor_5fall_5finteger_5ftypes_15',['NN_FOR_ALL_INTEGER_TYPES',['../macros_8hpp.html#abf8bf7e701b2199508316e38795f5b3b',1,'macros.hpp']]],
+  ['nn_5ffor_5fall_5fscalar_5ftypes_16',['NN_FOR_ALL_SCALAR_TYPES',['../macros_8hpp.html#ad7265fdbbd0832f95fb81378aae100a3',1,'macros.hpp']]],
+  ['nn_5ffor_5fall_5fvalue_5ftypes_17',['NN_FOR_ALL_VALUE_TYPES',['../macros_8hpp.html#af2b6b4d2bf83137ac1574a81f1f05470',1,'macros.hpp']]]
 ];
