@@ -34,12 +34,12 @@
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00030}00030\ \{}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ iVector\ =\ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_ae32413ec190aa482b0cc96fb4a391b5e}{internalVector}}().view();}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00032}00032\ }
-\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ faceCells,\ deltaCoeffs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradient,\ value,\ valueFraction,\ refValue,\ boundaryFaceOwners,\ deltaCoeffs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue(),}
-\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_aae76ed2a48eb7c003c982762d366b04a}{faceCells}}(),}
+\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_abee97709eb5b6dc8013626b811bf62a5}{faceOwners}}(),}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a4d68eaf96298d79527149e34e1193d7b}{deltaCoeffs}}()}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00040}00040\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00041}00041\ }
@@ -49,7 +49,7 @@
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ refGradient[i]\ =\ fixedGradient;}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ operator\ /\ is\ not\ defined\ for\ all\ ValueTypes}}
-\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ iVector[faceCells[i]]\ +\ fixedGradient\ *\ (1\ /\ deltaCoeffs[i]);}
+\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ value[i]\ =\ iVector[boundaryFaceOwners[i]]\ +\ fixedGradient\ *\ (1\ /\ deltaCoeffs[i]);}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ valueFraction[i]\ =\ 0.0;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ use\ refGrad}}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ refValue[i]\ =\ zero<ValueType>();\ \textcolor{comment}{//\ not\ used}}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \},}
@@ -82,7 +82,7 @@
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00078}00078\ }
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00079}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_ab9d1a95148e66fbe09c81a9183844b72}{00079}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_ab9d1a95148e66fbe09c81a9183844b72}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fixedGradient"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00080}00080\ }
-\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_a71a31ee63ca462a455f11051107ab379}{00081}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_a71a31ee63ca462a455f11051107ab379}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_ab9d1a95148e66fbe09c81a9183844b72}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_a33f672a3ba5534200be83a3281706f0c}{00081}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_a33f672a3ba5534200be83a3281706f0c}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_ab9d1a95148e66fbe09c81a9183844b72}{name}}();\ \}}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00082}00082\ }
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_a681d83bafe45ac871b78f587bb45068e}{00083}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedGradient_a681d83bafe45ac871b78f587bb45068e}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Set\ a\ fixed\ gradient\ on\ the\ boundary."{}};\ \}}
 \DoxyCodeLine{\Hypertarget{fixedGradient_8hpp_source_l00084}00084\ }

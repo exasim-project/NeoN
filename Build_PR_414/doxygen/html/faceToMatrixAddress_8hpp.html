@@ -82,17 +82,16 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="array_8hpp_source.html">NeoN/core/array.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="csrSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/csrSparsityPattern.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="copyTo_8hpp_source.html">NeoN/core/copyTo.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cooSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/cooSparsityPattern.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="csrSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/csrSparsityPattern.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="unstructuredMesh_8hpp_source.html">NeoN/mesh/unstructured/unstructuredMesh.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="communicationPattern_8hpp_source.html">NeoN/distributed/communicationPattern.hpp</a>&quot;</code><br />
 </div>
 <p><a href="faceToMatrixAddress_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1FaceToMatrixView.html">NeoN::la::FaceToMatrixView</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A device-accessible view into the face-to-matrix address mapping.  <a href="structNeoN_1_1la_1_1FaceToMatrixView.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">NeoN::la::FaceToMatrixAddress</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,17 +105,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acda84cc56f7898450577128df37b2efc" id="r_acda84cc56f7898450577128df37b2efc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#acda84cc56f7898450577128df37b2efc">NeoN::la::computeRowToDiagonalMap</a> (const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;rows, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &gt; matIt)</td></tr>
-<tr class="memdesc:acda84cc56f7898450577128df37b2efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a set of rows this function computes the corresponding diagonal value offsets  <br /></td></tr>
-<tr class="separator:acda84cc56f7898450577128df37b2efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad7f7aa537c101f76181bea56e676f65" id="r_aad7f7aa537c101f76181bea56e676f65"><td class="memTemplParams" colspan="2">template&lt;typename IndexType &gt; </td></tr>
-<tr class="memitem:aad7f7aa537c101f76181bea56e676f65"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &gt;, <a class="el" href="structNeoN_1_1CommunicationPattern.html">CommunicationPattern</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aad7f7aa537c101f76181bea56e676f65">NeoN::la::createSparsityPatternFaceToMatrixAddress</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
-<tr class="memdesc:aad7f7aa537c101f76181bea56e676f65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the local CSR, boundary COO and nonLocal COO sparsity patterns and packs them into a <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>.  <br /></td></tr>
-<tr class="separator:aad7f7aa537c101f76181bea56e676f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41c6612806132e44bf56efaecf9f41d5" id="r_a41c6612806132e44bf56efaecf9f41d5"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
-<tr class="memitem:a41c6612806132e44bf56efaecf9f41d5"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a41c6612806132e44bf56efaecf9f41d5">NeoN::la::createBoundarySparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;ftma)</td></tr>
-<tr class="memdesc:a41c6612806132e44bf56efaecf9f41d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the boundary sparsity pattern from a mesh and an existing <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a>.  <br /></td></tr>
-<tr class="separator:a41c6612806132e44bf56efaecf9f41d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39fea8c16999d544a15d6d9cb8cb3cd6" id="r_a39fea8c16999d544a15d6d9cb8cb3cd6"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
+<tr class="memitem:a39fea8c16999d544a15d6d9cb8cb3cd6"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; std::shared_ptr&lt; const SparsityType &gt;, std::shared_ptr&lt; const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a39fea8c16999d544a15d6d9cb8cb3cd6">NeoN::la::createSparsityPatternFaceToMatrixAddress</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:a39fea8c16999d544a15d6d9cb8cb3cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04daaa5b354b0abc2e22487836cad4a7" id="r_a04daaa5b354b0abc2e22487836cad4a7"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
+<tr class="memitem:a04daaa5b354b0abc2e22487836cad4a7"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a04daaa5b354b0abc2e22487836cad4a7">NeoN::la::createBoundarySparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;faceToMatrixAddress)</td></tr>
+<tr class="separator:a04daaa5b354b0abc2e22487836cad4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
