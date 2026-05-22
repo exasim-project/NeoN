@@ -172,7 +172,8 @@ public:
             rhs_.copyToExecutor(exec),
             offDiagonalMatrix_.copyToExecutor(exec),
             boundaryMatrix_.copyToExecutor(exec),
-            boundaryRhs_.copyToExecutor(exec)
+            boundaryRhs_.copyToExecutor(exec),
+            offDiagonalMatrix_.copyToExecutor(exec)
         };
 #ifdef NF_WITH_MPI_SUPPORT
         ls.commPattern_ = commPattern_;
@@ -340,6 +341,7 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
         BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
         Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()),
+        BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
         strategy
     };
 

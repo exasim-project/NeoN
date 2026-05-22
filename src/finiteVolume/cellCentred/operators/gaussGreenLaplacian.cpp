@@ -99,13 +99,12 @@ void computeLaplacianProcBoundImpl(
     if (nProcBoundaryFaces == 0) return;
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
-    const auto [bGammaV, bDeltaCoeffs, boundaryFaceOwner] = views(
+    const auto [bGammaV, bDeltaCoeffs, surfFaceCells] = views(
         gamma.boundaryData().value(),
         faceNormalGradient.deltaCoeffs().boundaryData().value(),
         mesh.boundaryMesh().faceOwners()
     );
     const auto bcMagSf = mesh.boundaryMesh().faceAreas().view();
-
     auto bValues = ls.offDiagonalMatrix().values().view();
     // boundaryMatrix records the diagonal contribution so removeBoundaryContributions can reverse
     // it (proc slots live at [nBoundaryFaces, nBoundaryFaces + nProcBoundaryFaces)).
@@ -118,7 +117,7 @@ void computeLaplacianProcBoundImpl(
         {0, nProcBoundaryFaces},
         NEON_LAMBDA(const localIdx procFacei) {
             auto bcfacei = nBoundaryFaces + procFacei;
-            auto cell = boundaryFaceOwner[bcfacei];
+            auto cell = surfFaceCells[bcfacei];
             auto ownCoeff = coeff[cell];
 
             auto flux = bGammaV[bcfacei] * bcMagSf[bcfacei] * bDeltaCoeffs[bcfacei];
