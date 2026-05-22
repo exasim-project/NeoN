@@ -8,8 +8,8 @@
 
 #include <type_traits>
 #ifdef USE_JULIA
-
 #include <julia.h>
+#endif
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"

@@ -120,7 +120,7 @@ public:
             NF_ERROR_EXIT("CellBased iteration not implemented");
         }
         const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-        // computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
+        // computeDivImpGlobal(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
         computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
         computeDivBoundImp(ls, faceFlux, phi, weights, operatorScaling);
     };
