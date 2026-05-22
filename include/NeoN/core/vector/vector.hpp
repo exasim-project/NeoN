@@ -35,7 +35,11 @@ public:
     /**
      * @brief Prepare pointer to pass to julia
      */
-    jl_array_t* juliaPtr() const
+    jl_value_t* juliaPtr_gpu() const 
+	{
+		return jl_box_voidpointer((void*)data_);
+	}
+	jl_array_t* juliaPtr() const
     {
         if constexpr (std::is_same_v<VectorValueType, float>)
         {

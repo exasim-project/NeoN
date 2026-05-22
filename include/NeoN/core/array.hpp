@@ -34,6 +34,10 @@ public:
     using ArrayValueType = ValueType;
 #ifdef USE_JULIA
 
+	jl_value_t* juliaPtr_gpu() const {
+		return jl_box_voidpointer((void*)data_);
+	}
+
     /**
      * @brief Prepare pointer to pass to julia
      */
