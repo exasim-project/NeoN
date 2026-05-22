@@ -5,6 +5,7 @@
     <includes local="no">vector</includes>
     <includes refid="label_8hpp" local="yes">NeoN/core/primitives/label.hpp</includes>
     <includedby refid="boundaryData_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/fields/boundaryData.hpp</includedby>
+    <includedby refid="linearSystem_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</includedby>
     <incdepgraph>
       <node id="3">
         <label>NeoN/core/primitives/label.hpp</label>
@@ -64,6 +65,8 @@
         <link refid="communicationPattern_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
       </node>
       <node id="9">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/ddt.hpp</label>
@@ -93,6 +96,22 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp</label>
         <link refid="dsl_2solver_8hpp"/>
         <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/spatialOperator.hpp</label>
+        <link refid="spatialOperator_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
         </childnode>
       </node>
       <node id="51">
@@ -499,6 +518,44 @@
         <childnode refid="39" relation="include">
         </childnode>
       </node>
+      <node id="57">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/diagonalSolver.hpp</label>
+        <link refid="diagonalSolver_8hpp"/>
+      </node>
+      <node id="55">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp</label>
+        <link refid="linearSystem_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp</label>
+        <link refid="linearAlgebra_2solver_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
       <node id="54">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/communicator.hpp</label>
         <link refid="communicator_8hpp"/>
@@ -535,19 +592,19 @@
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="label_8hpp" kindref="compound">NeoN/core/primitives/label.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
-<codeline lineno="13"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="label_8hpp" kindref="compound">NeoN/core/primitives/label.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="environment_8hpp" kindref="compound">NeoN/core/mpi/environment.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17" refid="structNeoN_1_1CommunicationPattern" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref></highlight></codeline>
-<codeline lineno="18"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>indices<sp/>which<sp/>values<sp/>in<sp/>bMatrix<sp/>need<sp/>to<sp/>be<sp/>communicated</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>std::vector&lt;localIdx&gt;<sp/>commIdx;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
+<codeline lineno="16"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="structNeoN_1_1CommunicationPattern" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref></highlight></codeline>
+<codeline lineno="21"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>number<sp/>of<sp/>elements<sp/>to<sp/>send<sp/>neighbouring<sp/>ranks</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>where<sp/>sendCounts[comm.size]<sp/>=<sp/>total<sp/>number<sp/>of<sp/>send<sp/>elements</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="24" refid="structNeoN_1_1CommunicationPattern_1a5da383216da50923b22402c03aacf46d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structNeoN_1_1CommunicationPattern_1a5da383216da50923b22402c03aacf46d" kindref="member">sendCounts</ref>;</highlight></codeline>
@@ -557,11 +614,20 @@
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29" refid="structNeoN_1_1CommunicationPattern_1aba8dc4dfb133a8cb7820f3a002e0678b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;localIdx&gt;<sp/><ref refid="structNeoN_1_1CommunicationPattern_1aba8dc4dfb133a8cb7820f3a002e0678b" kindref="member">boundaryMapVector</ref>;</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31" refid="structNeoN_1_1CommunicationPattern_1acf05199003d0c5ec901110c58adefd46" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>mpi::Environment<sp/><ref refid="structNeoN_1_1CommunicationPattern_1acf05199003d0c5ec901110c58adefd46" kindref="member">env</ref>;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>mpi::Environment<sp/>env;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><ref refid="structNeoN_1_1CommunicationPattern" kindref="compound">CommunicationPattern</ref><sp/>computeCommunicationPattern(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/distributed/communicationPattern.hpp"/>
   </compounddef>
