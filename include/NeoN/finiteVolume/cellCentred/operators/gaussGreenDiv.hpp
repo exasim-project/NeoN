@@ -7,9 +7,9 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -24,11 +24,20 @@ void computeDivExp(
 );
 
 template<typename ValueType>
-void computeDivImp(
+void computeDivIntImp(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<ValueType>& phi,
-    const SurfaceInterpolation<ValueType>& surfInterp,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff operatorScaling
+);
+
+template<typename ValueType>
+void computeDivBoundImp(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<ValueType>& phi,
+    const SurfaceField<scalar>& weights,
     const dsl::Coeff operatorScaling
 );
 
@@ -105,8 +114,15 @@ public:
         const VolumeField<ValueType>& phi,
         const dsl::Coeff operatorScaling) const override
     {
-        std::cout << "gaussgreendiv\n";
-        computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
+        if (dynamic_cast<const la::CellBasedIterator*>(ls.getMeshIterator()->get().get())
+        != nullptr)
+        {
+            NF_ERROR_EXIT("CellBased iteration not implemented");
+        }
+        const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
+        // computeDivImp(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
+        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivBoundImp(ls, faceFlux, phi, weights, operatorScaling);
     };
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
@@ -119,7 +135,7 @@ private:
     SurfaceInterpolation<ValueType> surfaceInterpolation_;
 };
 
-template class GaussGreenDiv<scalar>;
-template class GaussGreenDiv<Vec3>;
+extern template class GaussGreenDiv<scalar>;
+extern template class GaussGreenDiv<Vec3>;
 
 } // namespace NeoN

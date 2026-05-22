@@ -7,6 +7,7 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp"
 #include "NeoN/core/database/fieldDatabase.hpp"
 
 #include <vector>
@@ -121,6 +122,8 @@ public:
      */
     void correctBoundaryConditions();
 
+    void correctBoundaryConditions(const BoundaryContext& ctx);
+
     std::vector<VolumeBoundary<ValueType>> boundaryConditions() const
     {
         return boundaryConditions_;
@@ -131,5 +134,4 @@ private:
     std::vector<VolumeBoundary<ValueType>> boundaryConditions_; // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
 };
-
 } // namespace NeoN

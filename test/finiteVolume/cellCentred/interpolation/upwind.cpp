@@ -47,15 +47,16 @@ TEMPLATE_TEST_CASE("upwind", "", NeoN::scalar, NeoN::Vec3)
 
     auto outHost = out.internalVector().copyToHost();
     auto nInternal = mesh.nInternalFaces();
-    auto nBoundary = mesh.nBoundaryFaces();
     for (NeoN::localIdx i = 0; i < nInternal; i++)
     {
         REQUIRE(outHost.view()[i] == one<TestType>());
     }
 
-    for (NeoN::localIdx i = nInternal; i < nInternal + nBoundary; i++)
+    // boundary face values are now in boundaryData().value()
+    auto outBHost = out.boundaryData().value().copyToHost();
+    for (NeoN::localIdx i = 0; i < mesh.nBoundaryFaces(); i++)
     {
-        REQUIRE(outHost.view()[i] == one<TestType>());
+        REQUIRE(outBHost.view()[i] == one<TestType>());
     }
 }
 

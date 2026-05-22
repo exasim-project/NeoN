@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -49,14 +50,14 @@ public:
     /* @brief compute grad
      *
      * @param phi [in] - field for which the gradient is computed
-     * @param operatorScaling [in] - scales operator by a coefficient
      * @param gradPhi [in,out] - resulting gradient field
+     * @param operatorScaling [in] - scales operator by a coefficient
      */
-    virtual void
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff coeff, VolumeField<Vec3>& in) const
-    {
-        grad(phi, coeff, in.internalVector());
-    }
+    virtual void grad(
+        const VolumeField<scalar>& phi,
+        VolumeField<Vec3>& gradPhi,
+        const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const;
 
     /* @brief compute explicit gradient operator and return result
      *
@@ -68,6 +69,15 @@ public:
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}
     ) const override;
 
+    void gradTensor(
+        const VolumeField<Vec3>& u,
+        VolumeField<Tensor>& gradU,
+        const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const;
+
+    VolumeField<Tensor>
+    gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
+
     virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const override
     {
         NF_ERROR_EXIT("Not implemented");
@@ -76,6 +86,7 @@ public:
 private:
 
     SurfaceInterpolation<scalar> surfaceInterpolation_;
+    SurfaceInterpolation<Vec3> surfaceInterpolationVec_;
 };
 
 } // namespace NeoN

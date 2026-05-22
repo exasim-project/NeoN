@@ -19,6 +19,8 @@ class Empty : public VolumeBoundaryFactory<ValueType>::template Register<Empty<V
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     Empty(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false})
     {}

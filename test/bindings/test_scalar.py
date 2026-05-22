@@ -13,11 +13,8 @@ import neon
 
 def test_scalar_imports():
     """Test that all scalar-related attributes can be accessed."""
-    # Constants
     assert hasattr(neon, 'ROOTVSMALL')
     assert hasattr(neon, 'DOUBLE_PRECISION')
-
-    # Functions
     assert hasattr(neon, 'scalar_mag')
     assert hasattr(neon, 'scalar_one')
     assert hasattr(neon, 'scalar_zero')
@@ -31,7 +28,6 @@ def test_rootvsmall():
 
 def test_double_precision_flag():
     """Test DOUBLE_PRECISION flag."""
-    # Should be a boolean
     assert isinstance(neon.DOUBLE_PRECISION, bool)
 
 
@@ -79,16 +75,3 @@ def test_scalar_mag_special_values():
     large = 1e15
     assert abs(neon.scalar_mag(large) - large) < 1e5
     assert abs(neon.scalar_mag(-large) - large) < 1e5
-
-
-if __name__ == "__main__":
-    # Run all tests
-    test_scalar_imports()
-    test_rootvsmall()
-    test_double_precision_flag()
-    test_scalar_one()
-    test_scalar_zero()
-    test_scalar_mag_positive()
-    test_scalar_mag_negative()
-    test_scalar_mag_zero()
-    test_scalar_mag_special_values()

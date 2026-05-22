@@ -10,8 +10,8 @@
 namespace NeoN::la
 {
 
-template<typename ValueType, typename IndexType>
-Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
+template<typename ValueType, typename SparsityType>
+Vector<ValueType> Matrix<ValueType, SparsityType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
     fill(diag, zero<ValueType>());
@@ -34,6 +34,25 @@ Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
         "copyDiag"
     );
     return diag;
+}
+
+
+template<typename ValueType, typename SparsityType>
+Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(Executor dstExec
+) const
+{
+    if (dstExec == values_.exec())
+    {
+        return *this;
+    }
+    return {
+        values_.copyToExecutor(dstExec),
+        std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec)),
+        (faceToMatrixAddress_) ? std::make_shared<const FaceToMatrixAddress>(
+            this->faceToMatrixAddress_->copyToExecutor(dstExec)
+        )
+                               : nullptr
+    };
 }
 
 
@@ -103,6 +122,7 @@ Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx)
     );
     return upper;
 }
+
 
 void negLUx(
     const CSRMatrix<Vec3, localIdx>& mtx,
@@ -214,9 +234,7 @@ void scaledInverseDiag(
 }
 
 Vector<scalar> scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
-    const Vector<scalar>& a
+    const CSRMatrix<Vec3, localIdx>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
 )
 {
     auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
@@ -226,7 +244,7 @@ Vector<scalar> scaledInverseDiag(
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
+    const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 )
@@ -247,12 +265,13 @@ void scaledInverseDiag(
     );
 }
 
-#define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
-    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>>;                            \
+#define NN_DECLARE_MATRIX(VALUETYPE, INTEGERTYPE)                                                  \
+    template class Matrix<VALUETYPE, la::CsrSparsityPattern<INTEGERTYPE>>;                         \
+    template class Matrix<VALUETYPE, la::CooSparsityPattern<INTEGERTYPE>>;                         \
     template Vector<VALUETYPE>                                                                     \
     upper<VALUETYPE, INTEGERTYPE>(const CSRMatrix<VALUETYPE, INTEGERTYPE>&)
 
-NN_DECLARE_CSRMATRIX(scalar, localIdx);
-NN_DECLARE_CSRMATRIX(Vec3, int);
+NN_DECLARE_MATRIX(scalar, localIdx);
+NN_DECLARE_MATRIX(Vec3, localIdx);
 
 }

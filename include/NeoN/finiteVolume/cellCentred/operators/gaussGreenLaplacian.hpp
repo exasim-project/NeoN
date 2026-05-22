@@ -6,7 +6,6 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
@@ -24,11 +23,29 @@ void computeLaplacianExp(
 );
 
 template<typename ValueType>
-void computeLaplacianImpl(
+void computeLaplacianIntImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
     const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+);
+
+template<typename ValueType>
+void computeLaplacianBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff operatorScaling,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+);
+
+template<typename ValueType>
+void computeLaplacianNonOrthCorrImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff coeff,
     const FaceNormalGradient<ValueType>& faceNormalGradient
 );
 
@@ -55,18 +72,16 @@ public:
         VolumeField<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
+        const dsl::Coeff coeff
     ) override
     {
         computeLaplacianExp<ValueType>(
-            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), operatorScaling
+            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff
         );
     };
 
     virtual VolumeField<ValueType> laplacian(
-        const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
+        const SurfaceField<scalar>& gamma, const VolumeField<ValueType>& phi, const dsl::Coeff coeff
     ) const override
     {
         std::string name = "laplacian(" + gamma.name + "," + phi.name + ")";
@@ -79,7 +94,7 @@ public:
         NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
         NeoN::fill(lapPhi.boundaryData().value(), zero<ValueType>());
         computeLaplacianExp<ValueType>(
-            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), operatorScaling
+            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff
         );
         return lapPhi;
     };
@@ -88,20 +103,22 @@ public:
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
+        const dsl::Coeff coeff
     ) override
     {
-        computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi, operatorScaling);
+        computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi, coeff);
     };
 
     virtual void laplacian(
         la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
+        const dsl::Coeff coeff
     ) override
     {
-        computeLaplacianImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
+        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     };
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override
@@ -118,8 +135,7 @@ private:
     FaceNormalGradient<ValueType> faceNormalGradient_;
 };
 
-// instantiate the template class
-template class GaussGreenLaplacian<scalar>;
-template class GaussGreenLaplacian<Vec3>;
+extern template class GaussGreenLaplacian<scalar>;
+extern template class GaussGreenLaplacian<Vec3>;
 
 } // namespace NeoN

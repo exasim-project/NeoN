@@ -14,6 +14,11 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+template<typename ValueType>
+class VolumeField;
+
+class BoundaryContext;
+
 /* collects attributes of a boundary for simple queries
  *
  */
@@ -45,6 +50,11 @@ public:
     virtual ~VolumeBoundaryFactory() = default;
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
+
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector, const BoundaryContext&)
+    {
+        correctBoundaryCondition(domainVector);
+    }
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
 
@@ -85,6 +95,12 @@ public:
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector)
     {
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
+    }
+
+    virtual void
+    correctBoundaryCondition(Field<ValueType>& domainVector, const BoundaryContext& ctx)
+    {
+        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector, ctx);
     }
 
     const BoundaryAttributes attributes() const

@@ -2,16 +2,20 @@
 #
 # SPDX-License-Identifier: MIT
 
+try:
+    import jax.numpy as jnp
+    has_jax = True
+except:
+    has_jax = False
+
 import neon
 
-
-def test_scalar_vector():
-    exec = neon.SerialExecutor()
+def test_scalar_vector(executor):
+    name, exec = executor
 
     v1 = neon.ScalarVector(exec, 10)
     assert v1.size() == len(v1) == 10
     assert not v1.empty()
-    assert neon.is_serial(v1.exec())
 
     v2 = neon.ScalarVector(exec, 5, 3.14)
     assert v2.size() == 5
@@ -26,8 +30,8 @@ def test_scalar_vector():
     assert v_empty.empty()
 
 
-def test_vector_vector():
-    exec = neon.SerialExecutor()
+def test_vector_vector(executor):
+    name, exec = executor
 
     vv1 = neon.VectorVector(exec, 10)
     assert vv1.size() == 10
@@ -39,8 +43,8 @@ def test_vector_vector():
     assert vv3.size() == 3
 
 
-def test_label_vector():
-    exec = neon.SerialExecutor()
+def test_label_vector(executor):
+    name, exec = executor
 
     lv1 = neon.LabelVector(exec, 10)
     assert lv1.size() == 10
@@ -62,3 +66,27 @@ def test_copy_to_host():
     vv1 = neon.VectorVector(exec, 5)
     vv2 = vv1.copy_to_host()
     assert vv1.size() == vv2.size()
+
+
+def test_jax_operations(executor):
+    """Test JAX operations on NeoN ScalarVectors.
+
+    For CPU executors (Serial/CPU): convert directly via __array__.
+    For GPU executors: copy to host first, then convert.
+    """
+    if not has_jax:
+        return
+    name, exec = executor
+
+    values = [1.0, 2.0, 3.0, 4.0, 5.0]
+    v = neon.ScalarVector(exec, values)
+
+    # GPU vectors must be copied to host before converting to JAX
+    host_v = v.copy_to_host() if name == "gpu" else v
+
+    arr = jnp.asarray(host_v)
+    assert arr.shape == (5,)
+    assert float(jnp.sum(arr)) == 15.0
+    assert float(jnp.mean(arr)) == 3.0
+    assert float(jnp.max(arr)) == 5.0
+    assert float(jnp.min(arr)) == 1.0

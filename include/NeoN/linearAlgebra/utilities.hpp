@@ -91,7 +91,7 @@ Vector<scalar> unpackMtxValues(
 );
 
 
-/* @brief given a linear system consisting of A, b and x the operator computes the residual vector
+/** @brief given a linear system consisting of A, b and x the operator computes the residual vector
  * Ax-b
  *
  * @param[in] mtx, the corresponding matrix
@@ -103,5 +103,10 @@ template<typename MatrixType>
 void computeResidual(
     const MatrixType& mtx, const Vector<scalar>& b, const Vector<scalar>& x, Vector<scalar>& res
 );
+
+/**@brief given a set off row idx this function converts to rowOffsets
+ */
+template<typename IndexType>
+[[nodiscard]] Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows);
 
 }

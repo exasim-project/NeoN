@@ -19,42 +19,72 @@ SourceTerm<ValueType>::SourceTerm(
     const VolumeField<ValueType>& field
 )
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
-      coefficients_(coefficients) {};
+      spCoeff_(&coefficients) {};
+
+template<typename ValueType>
+SourceTerm<ValueType>::SourceTerm(
+    dsl::Operator::Type termType, VolumeField<ValueType>& coefficients
+)
+    : dsl::OperatorMixin<VolumeField<ValueType>>(
+        coefficients.exec(), dsl::Coeff {1.0}, coefficients, termType
+    ),
+      spCoeff_(nullptr) {};
 
 template<typename ValueType>
 void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 {
     auto operatorScaling = this->getCoefficient();
-    auto [sourceView, fieldView, coeff] =
-        views(source, this->field_.internalVector(), coefficients_.internalVector());
-    NeoN::parallelFor(
-        source.exec(),
-        source.range(),
-        NEON_LAMBDA(const localIdx celli) {
-            sourceView[celli] += operatorScaling[celli] * coeff[celli] * fieldView[celli];
-        },
-        "sourceTerm::explicitOperation"
-    );
+    if (spCoeff_)
+    {
+        // Sp: source += scaling * spCoeff * field
+        auto [sourceView, fieldView, coeff] =
+            views(source, this->field_.internalVector(), spCoeff_->internalVector());
+        NeoN::parallelFor(
+            source.exec(),
+            source.range(),
+            NEON_LAMBDA(const localIdx celli) {
+                sourceView[celli] += operatorScaling[celli] * coeff[celli] * fieldView[celli];
+            },
+            "Sp::explicitOperation"
+        );
+    }
+    else
+    {
+        // Su: source += scaling * coeff  (field_ IS the coefficient for Su)
+        auto [sourceView, coeff] = views(source, this->field_.internalVector());
+        NeoN::parallelFor(
+            source.exec(),
+            source.range(),
+            NEON_LAMBDA(const localIdx celli) {
+                sourceView[celli] += operatorScaling[celli] * coeff[celli];
+            },
+            "Su::explicitOperation"
+        );
+    }
 }
 
 template<typename ValueType>
 void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    const auto matIt = ls.faceToMatrixAddress();
+    if (!spCoeff_)
+    {
+        NF_ERROR_EXIT("Not implemented");
+    }
+    // Sp implicit: diagonal += scaling * spCoeff * volume
     const auto operatorScaling = this->getCoefficient();
-    const auto vol = coefficients_.mesh().cellVolumes().view();
-    const auto [diagOffs, coeff] = views(matIt->diagOffset(), coefficients_.internalVector());
+    const auto vol = spCoeff_->mesh().cellVolumes().view();
+    const auto [coeff] = views(spCoeff_->internalVector());
     auto values = ls.matrix().values().view();
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
         NEON_LAMBDA(const localIdx celli) {
-            localIdx idx = rowOffs[celli] + diagOffs[celli];
-            values[idx] += operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
+            values[ma.diagIdx(celli)] +=
+                operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
         },
-        "sourceTerm::implicitOperation"
+        "Sp::implicitOperation"
     );
 }
 

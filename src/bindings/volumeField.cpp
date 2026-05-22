@@ -125,7 +125,9 @@ void registerVolumeField(nb::module_& m)
         .def("size", &fvcc::VolumeField<NeoN::scalar>::size, "Get the field size")
         .def(
             "correct_boundary_conditions",
-            &fvcc::VolumeField<NeoN::scalar>::correctBoundaryConditions,
+            static_cast<void (fvcc::VolumeField<NeoN::scalar>::*)()>(
+                &fvcc::VolumeField<NeoN::scalar>::correctBoundaryConditions
+            ),
             "Apply boundary conditions"
         )
         .def("has_database", &fvcc::VolumeField<NeoN::scalar>::hasDatabase)
@@ -211,7 +213,11 @@ void registerVolumeField(nb::module_& m)
         .def("exec", &fvcc::VolumeField<NeoN::Vec3>::exec, nb::rv_policy::reference_internal)
         .def("size", &fvcc::VolumeField<NeoN::Vec3>::size)
         .def(
-            "correct_boundary_conditions", &fvcc::VolumeField<NeoN::Vec3>::correctBoundaryConditions
+            "correct_boundary_conditions",
+            static_cast<void (fvcc::VolumeField<NeoN::Vec3>::*)()>(
+                &fvcc::VolumeField<NeoN::Vec3>::correctBoundaryConditions
+            ),
+            "Apply boundary conditions"
         )
         .def("has_database", &fvcc::VolumeField<NeoN::Vec3>::hasDatabase)
         .def_rw("name", &fvcc::VolumeField<NeoN::Vec3>::name)

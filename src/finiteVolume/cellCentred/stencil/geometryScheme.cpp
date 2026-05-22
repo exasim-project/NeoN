@@ -105,7 +105,7 @@ std::string GeometryScheme::name() const { return std::string("GeometryScheme");
 
 void GeometryScheme::update()
 {
-    if (mesh_.faceCentres().size() > 0)
+    if (mesh_.faceCenters().size() > 0)
     {
         std::visit(
             [&](const auto& exec)
@@ -113,7 +113,7 @@ void GeometryScheme::update()
                 kernel_->updateWeights(exec, weights_);
                 kernel_->updateDeltaCoeffs(exec, deltaCoeffs_);
                 kernel_->updateNonOrthDeltaCoeffs(exec, nonOrthDeltaCoeffs_);
-                // kernel_->updateNonOrthCorrectionVec3s(exec, nonOrthCorrectionVec3s_);
+                kernel_->updateNonOrthCorrectionVec3s(exec, nonOrthCorrectionVec3s_);
             },
             exec_
         );
@@ -124,10 +124,10 @@ void GeometryScheme::update()
 void GeometryScheme::reset() const
 {
     // TODO this needs a better approach
-    // ideally faceCentres are some kind of hostViewVector
-    Logging::warn("resetting face and cell centres");
-    const_cast<UnstructuredMesh&>(mesh_).faceCentres().resize(0);
-    const_cast<UnstructuredMesh&>(mesh_).cellCentres().resize(0);
+    // ideally faceCenters are some kind of hostViewVector
+    Logging::warn("resetting face and cell centers");
+    const_cast<UnstructuredMesh&>(mesh_).faceCenters().resize(0);
+    const_cast<UnstructuredMesh&>(mesh_).cellCenters().resize(0);
 }
 
 

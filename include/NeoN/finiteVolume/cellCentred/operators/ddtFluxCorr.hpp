@@ -40,25 +40,40 @@ inline void ddtFluxCorrBDF1Kernel(
     scalar dt
 )
 {
-    auto [outV, flux0V, uf0V, SfV] = views(
-        fluxCorr.internalVector(), flux0.internalVector(), uf0.internalVector(), mesh.faceAreas()
-    );
-
     const scalar a1 = scalar(1) / dt;
-    const auto n = outV.size();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
+    // Internal faces
+    auto [outV, flux0V, uf0V, SfV] = views(
+        fluxCorr.internalVector(), flux0.internalVector(), uf0.internalVector(), mesh.faceNormals()
+    );
     parallelFor(
         exec,
-        {size_t(0), n},
+        {size_t(0), static_cast<size_t>(nInternalFaces)},
         NEON_LAMBDA(const localIdx i) {
             const auto d = (SfV[i] & uf0V[i]);
             const auto corr = flux0V[i] - d;
-
             const scalar limiter = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr));
-
             outV[i] = limiter * a1 * corr;
         },
-        "ddtFluxCorr::BDF1"
+        "ddtFluxCorr::BDF1::internal"
+    );
+
+    // Boundary faces
+    auto [outBV, flux0BV, uf0BV] = views(
+        fluxCorr.boundaryData().value(), flux0.boundaryData().value(), uf0.boundaryData().value()
+    );
+    parallelFor(
+        exec,
+        {size_t(0), static_cast<size_t>(nBoundaryFaces)},
+        NEON_LAMBDA(const localIdx bfi) {
+            const auto d = (SfV[nInternalFaces + bfi] & uf0BV[bfi]);
+            const auto corr = flux0BV[bfi] - d;
+            const scalar limiter = ddtFluxCorrLimiter(mag(flux0BV[bfi]), mag(corr));
+            outBV[bfi] = limiter * a1 * corr;
+        },
+        "ddtFluxCorr::BDF1::boundary"
     );
 }
 
@@ -76,36 +91,66 @@ inline void ddtFluxCorrBDF2Kernel(
     scalar dt
 )
 {
-    auto [outV, flux0V, flux00V, uf0V, uf00V, SfV] = views(
-        fluxCorr.internalVector(),
-        flux0.internalVector(),
-        flux00.internalVector(),
-        uf0.internalVector(),
-        uf00.internalVector(),
-        mesh.faceAreas()
-    );
-
     const scalar a1 = 2.0 / dt;
     const scalar a2 = -0.5 / dt;
-    const auto n = outV.size();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
-    parallelFor(
-        exec,
-        {size_t(0), n},
-        NEON_LAMBDA(const localIdx i) {
-            const auto d1 = (SfV[i] & uf0V[i]);
-            const auto corr1 = flux0V[i] - d1;
+    // Internal faces
+    {
+        auto [outV, flux0V, flux00V, uf0V, uf00V, SfV] = views(
+            fluxCorr.internalVector(),
+            flux0.internalVector(),
+            flux00.internalVector(),
+            uf0.internalVector(),
+            uf00.internalVector(),
+            mesh.faceNormals()
+        );
+        parallelFor(
+            exec,
+            {size_t(0), static_cast<size_t>(nInternalFaces)},
+            NEON_LAMBDA(const localIdx i) {
+                const auto d1 = (SfV[i] & uf0V[i]);
+                const auto corr1 = flux0V[i] - d1;
 
-            const auto d2 = (SfV[i] & uf00V[i]);
-            const auto corr2 = flux00V[i] - d2;
+                const auto d2 = (SfV[i] & uf00V[i]);
+                const auto corr2 = flux00V[i] - d2;
 
-            const scalar limiter1 = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr1));
-            const scalar limiter2 = ddtFluxCorrLimiter(mag(flux00V[i]), mag(corr2));
+                const scalar limiter1 = ddtFluxCorrLimiter(mag(flux0V[i]), mag(corr1));
+                const scalar limiter2 = ddtFluxCorrLimiter(mag(flux00V[i]), mag(corr2));
 
-            outV[i] = limiter1 * a1 * corr1 + limiter2 * a2 * corr2;
-        },
-        "ddtFluxCorr::BDF2"
-    );
+                outV[i] = limiter1 * a1 * corr1 + limiter2 * a2 * corr2;
+            },
+            "ddtFluxCorr::BDF2::internal"
+        );
+    }
+
+    // Boundary faces
+    {
+        auto outBV = fluxCorr.boundaryData().value().view();
+        auto flux0BV = flux0.boundaryData().value().view();
+        auto flux00BV = flux00.boundaryData().value().view();
+        auto uf0BV = uf0.boundaryData().value().view();
+        auto uf00BV = uf00.boundaryData().value().view();
+        auto SfV = mesh.faceNormals().view();
+        parallelFor(
+            exec,
+            {size_t(0), static_cast<size_t>(nBoundaryFaces)},
+            NEON_LAMBDA(const localIdx bfi) {
+                const auto d1 = (SfV[nInternalFaces + bfi] & uf0BV[bfi]);
+                const auto corr1 = flux0BV[bfi] - d1;
+
+                const auto d2 = (SfV[nInternalFaces + bfi] & uf00BV[bfi]);
+                const auto corr2 = flux00BV[bfi] - d2;
+
+                const scalar limiter1 = ddtFluxCorrLimiter(mag(flux0BV[bfi]), mag(corr1));
+                const scalar limiter2 = ddtFluxCorrLimiter(mag(flux00BV[bfi]), mag(corr2));
+
+                outBV[bfi] = limiter1 * a1 * corr1 + limiter2 * a2 * corr2;
+            },
+            "ddtFluxCorr::BDF2::boundary"
+        );
+    }
 }
 
 } // namespace detail

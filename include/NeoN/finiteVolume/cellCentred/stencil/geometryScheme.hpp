@@ -30,8 +30,9 @@ public:
     virtual void
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) = 0;
 
-    virtual void
-    updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<Vec3>& nonOrthDeltaCoeffs) = 0;
+    virtual void updateNonOrthCorrectionVec3s(
+        const Executor& exec, SurfaceField<Vec3>& nonOrthCorrectionVec3s
+    ) = 0;
 };
 
 /* @class GeometryScheme

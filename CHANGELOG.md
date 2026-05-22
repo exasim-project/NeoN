@@ -1,7 +1,13 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
+- Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471)
+- Add experimental support for COO and CSR Matrices [#486](https://github.com/exasim-project/NeoN/pull/486)
 - Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
+- Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
+- Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
+- Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
 
 ### Misc
 - Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)

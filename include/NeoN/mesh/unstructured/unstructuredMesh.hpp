@@ -20,7 +20,7 @@ namespace NeoN
  *
  * The UnstructuredMesh class stores the data and provides access to the
  * properties of an unstructured mesh. It contains information such as mesh
- * points, cell volumes, cell centres, face areas, face centres, face owner
+ * points, cell volumes, cell centers, face areas, face centers, face owner
  * cells, face neighbour cells, and boundary information. It also provides
  * methods to retrieve the number of cells, internal faces, boundary faces,
  * boundaries, and faces in the mesh. Additionally, it includes a boundary mesh
@@ -37,70 +37,50 @@ public:
      * @param exec
      * @param points The field of mesh points.
      * @param cellVolumes The field of cell volumes in the mesh.
-     * @param cellCentres The field of cell centres in the mesh.
-     * @param faceAreas The field of area face normals.
-     * @param faceCentres The field of face centres.
-     * @param magFaceAreas The field of magnitudes of face areas.
-     * @param faceOwner The field of face owner cells.
-     * @param faceNeighbour The field of face neighbour cells.
-     * @param nCells The number of cells in the mesh.
-     * @param nInternalFaces The number of internal faces in the mesh.
-     * @param nBoundaryFaces The number of boundary faces in the mesh.
-     * @param nBoundaries The number of boundaries in the mesh.
-     * @param nFaces The number of faces in the mesh.
+     * @param cellCenters The field of cell centers in the mesh.
+     * @param faceNormals The field of face normal vectors.
+     * @param faceCenters The field of face centers.
+     * @param faceAreas The field of face areas.
+     * @param faceOwners The list of labels of face owner cells.
+     * @param faceNeighbors The list of labels of face neighbor cells.
      * @param boundaryMesh The boundary mesh.
      */
     UnstructuredMesh(
         Executor exec,
         vectorVector points,
         scalarVector cellVolumes,
-        vectorVector cellCentres,
-        vectorVector faceAreas,
-        vectorVector faceCentres,
-        scalarVector magFaceAreas,
-        labelVector faceOwner,
-        labelVector faceNeighbour,
-        localIdx nCells,
-        localIdx nInternalFaces,
-        localIdx nBoundaryFaces,
-        localIdx nBoundaries,
-        localIdx nFaces,
+        vectorVector cellCenters,
+        vectorVector faceNormals,
+        vectorVector faceCenters,
+        scalarVector faceAreas,
+        labelVector faceOwners,
+        labelVector faceNeighbors,
         BoundaryMesh boundaryMesh
     );
 
     /**
      * @brief Constructor for the UnstructuredMesh class.
-     * @note executor is determined from faceOwner
+     * @note executor is determined from faceOwners
      *
      * @param points The field of mesh points.
      * @param cellVolumes The field of cell volumes in the mesh.
-     * @param cellCentres The field of cell centres in the mesh.
-     * @param faceAreas The field of area face normals.
-     * @param faceCentres The field of face centres.
-     * @param magFaceAreas The field of magnitudes of face areas.
-     * @param faceOwner The field of face owner cells.
-     * @param faceNeighbour The field of face neighbour cells.
-     * @param nCells The number of cells in the mesh.
-     * @param nInternalFaces The number of internal faces in the mesh.
-     * @param nBoundaryFaces The number of boundary faces in the mesh.
-     * @param nBoundaries The number of boundaries in the mesh.
-     * @param nFaces The number of faces in the mesh.
+     * @param cellCenters The field of cell centers in the mesh.
+     * @param faceNormals The field of face normal vectors.
+     * @param faceCenters The field of face centers.
+     * @param faceAreas The field of face areas.
+     * @param faceOwners The list of labels of face owner cells.
+     * @param faceNeighbors The list of labels of face neighbor cells.
      * @param boundaryMesh The boundary mesh.
      */
     UnstructuredMesh(
         vectorVector points,
         scalarVector cellVolumes,
-        vectorVector cellCentres,
-        vectorVector faceAreas,
-        vectorVector faceCentres,
-        scalarVector magFaceAreas,
-        labelVector faceOwner,
-        labelVector faceNeighbour,
-        localIdx nCells,
-        localIdx nInternalFaces,
-        localIdx nBoundaryFaces,
-        localIdx nBoundaries,
-        localIdx nFaces,
+        vectorVector cellCenters,
+        vectorVector faceNormals,
+        vectorVector faceCenters,
+        scalarVector faceAreas,
+        labelVector faceOwners,
+        labelVector faceNeighbors,
         BoundaryMesh boundaryMesh
     );
 
@@ -121,52 +101,52 @@ public:
     scalarVector& cellVolumes();
 
     /**
-     * @brief Get the field of cell centres in the mesh.
+     * @brief Get the field of cell centers in the mesh.
      *
-     * @return The field of cell centres in the mesh.
+     * @return The field of cell centers in the mesh.
      */
-    const vectorVector& cellCentres() const;
-    vectorVector& cellCentres();
+    const vectorVector& cellCenters() const;
+    vectorVector& cellCenters();
 
     /**
-     * @brief Get the field of face centres.
+     * @brief Get the field of face centers.
      *
-     * @return The field of face centres.
+     * @return The field of face centers.
      */
-    const vectorVector& faceCentres() const;
-    vectorVector& faceCentres();
+    const vectorVector& faceCenters() const;
+    vectorVector& faceCenters();
 
     /**
-     * @brief Get the field of area face normals.
+     * @brief Get the field of face normal vectors.
      *
-     * @return The field of area face normals.
+     * @return The field of face normal vectors.
      */
-    const vectorVector& faceAreas() const;
-    vectorVector& faceAreas();
+    const vectorVector& faceNormals() const;
+    vectorVector& faceNormals();
 
     /**
-     * @brief Get the field of magnitudes of face areas.
+     * @brief Get the field of face areas.
      *
-     * @return The field of magnitudes of face areas.
+     * @return The field of face areas.
      */
-    const scalarVector& magFaceAreas() const;
-    scalarVector& magFaceAreas();
+    const scalarVector& faceAreas() const;
+    scalarVector& faceAreas();
 
     /**
-     * @brief Get the field of face owner cells.
+     * @brief Get the list of labels of face owner cells.
      *
-     * @return The field of face owner cells.
+     * @return The list of labels of face owner cells.
      */
-    const labelVector& faceOwner() const;
-    labelVector& faceOwner();
+    const labelVector& faceOwners() const;
+    labelVector& faceOwners();
 
     /**
-     * @brief Get the field of face neighbour cells.
+     * @brief Get the list of labels of face neighbor cells.
      *
-     * @return The field of face neighbour cells.
+     * @return The list of labels of face neighbor cells.
      */
-    const labelVector& faceNeighbour() const;
-    labelVector& faceNeighbour();
+    const labelVector& faceNeighbors() const;
+    labelVector& faceNeighbors();
 
     /**
      * @brief Get the number of cells in the mesh.
@@ -189,19 +169,28 @@ public:
      */
     localIdx nBoundaryFaces() const;
 
+    localIdx nProcBoundaryFaces() const;
+
     /**
-     * @brief Get the number of boundaries in the mesh.
+     * @brief Get the total number of faces including boundary and processor faces in the mesh.
+     *
+     * @return The  total number of faces in the mesh.
+     */
+    localIdx nTotalFaces() const;
+
+    /**
+     * @brief Get the number of boundaries patches in the mesh.
      *
      * @return The number of boundaries in the mesh.
      */
     localIdx nBoundaries() const;
 
     /**
-     * @brief Get the number of faces in the mesh.
+     * @brief the offset local cellIds for the global mesh.
      *
-     * @return The number of faces in the mesh.
+     * @return the global offset
      */
-    localIdx nFaces() const;
+    localIdx globalOffset() const;
 
     /**
      * @brief Get the boundary mesh.
@@ -209,6 +198,8 @@ public:
      * @return The boundary mesh.
      */
     const BoundaryMesh& boundaryMesh() const;
+
+    BoundaryMesh& boundaryMesh();
 
     /**
      * @brief Get the stencil data base.
@@ -244,37 +235,37 @@ private:
     scalarVector cellVolumes_;
 
     /**
-     * @brief Vector of cell centres in the mesh.
+     * @brief Vector of cell centers in the mesh.
      */
-    vectorVector cellCentres_;
+    vectorVector cellCenters_;
 
     /**
-     * @brief Vector of area face normals.
+     * @brief Vector of face normal vectors.
      *
-     * The area face normals are defined as the normal vector to the face
+     * The face normal vectors are defined as the normal vector to the face
      * with magnitude equal to the face area.
      */
-    vectorVector faceAreas_;
+    vectorVector faceNormals_;
 
     /**
-     * @brief Vector of face centres.
+     * @brief Vector of face centers.
      */
-    vectorVector faceCentres_;
+    vectorVector faceCenters_;
 
     /**
-     * @brief Vector of magnitudes of face areas.
+     * @brief Vector of face areas.
      */
-    scalarVector magFaceAreas_;
+    scalarVector faceAreas_;
 
     /**
-     * @brief Vector of face owner cells.
+     * @brief Vector of labels of face owner cells.
      */
-    labelVector faceOwner_;
+    labelVector faceOwners_;
 
     /**
-     * @brief Vector of face neighbour cells.
+     * @brief Vector of labels of face neighbor cells.
      */
-    labelVector faceNeighbour_;
+    labelVector faceNeighbors_;
 
     /**
      * @brief Number of cells in the mesh.
@@ -287,27 +278,15 @@ private:
     localIdx nInternalFaces_;
 
     /**
-     * @brief Number of boundary faces in the mesh.
-     */
-    localIdx nBoundaryFaces_;
-
-    /**
-     * @brief Number of boundaries in the mesh.
-     */
-    localIdx nBoundaries_;
-
-    /**
-     * @brief Number of faces in the mesh.
-     */
-    localIdx nFaces_;
-
-    /**
      * @brief Boundary mesh.
      *
      * The boundary mesh is a collection of boundary patches
      * that are used to define boundary conditions in the mesh.
      */
     BoundaryMesh boundaryMesh_;
+
+    //
+    localIdx globalOffset_;
 
     /**
      * @brief Stencil data base.
@@ -327,12 +306,37 @@ private:
  */
 UnstructuredMesh createSingleCellMesh(const Executor exec);
 
-/** @brief A factory function for a 1D mesh
+/** @brief A factory function for a 1D uniform mesh
  *
- * A 1D mesh in 3D space in which each cell has a left and a right face.
+ * A 1D mesh in 3D space in which each cell has a left and a right boundary face.
  * The 1D mesh is aligned with the x coordinate of Cartesian coordinate system.
  */
-UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells);
+UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells, scalar lx = 1.0);
 
+/** @brief A factory function for a 2D uniform mesh (OpenFOAM-style hex slab)
+ *
+ * Creates an nx × ny × 1 structured hex mesh on [0,Lx] × [0,Ly] × [0,1].
+ * One cell thick in z, like OpenFOAM 2D meshes.
+ * Four boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly)
+ */
+UnstructuredMesh create2DUniformMesh(
+    const Executor exec, localIdx nx, localIdx ny, scalar lx = 1.0, scalar ly = 1.0
+);
+
+/** @brief A factory function for a uniform 3D hex mesh
+ *
+ * Creates an nx × ny × nz structured hex mesh on [0,Lx] × [0,Ly] × [0,Lz].
+ * Six boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly),
+ * front (z=0), back (z=Lz).
+ */
+UnstructuredMesh create3DUniformMesh(
+    const Executor exec,
+    localIdx nx,
+    localIdx ny,
+    localIdx nz,
+    scalar lx = 1.0,
+    scalar ly = 1.0,
+    scalar lz = 1.0
+);
 
 } // namespace NeoN

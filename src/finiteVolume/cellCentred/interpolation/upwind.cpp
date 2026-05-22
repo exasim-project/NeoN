@@ -20,39 +20,39 @@ void computeUpwindInterpolation(
 {
     const auto exec = dst.exec();
     auto dstS = dst.internalVector().view();
-    const auto [srcS, weightS, ownerS, neighS, boundS, fluxS] = views(
+    auto dstB = dst.boundaryData().value().view();
+    const auto [srcS, weightB, ownerS, neighS, boundS, fluxS] = views(
         src.internalVector(),
-        weights.internalVector(),
-        dst.mesh().faceOwner(),
-        dst.mesh().faceNeighbour(),
+        weights.boundaryData().value(),
+        dst.mesh().faceOwners(),
+        dst.mesh().faceNeighbors(),
         src.boundaryData().value(),
         flux.internalVector()
     );
     auto nInternalFaces = dst.mesh().nInternalFaces();
+    auto nBoundaryFaces = dst.mesh().nBoundaryFaces();
 
     parallelFor(
         exec,
-        {0, dstS.size()},
+        {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            if (facei < nInternalFaces)
+            if (fluxS[facei] >= 0)
             {
-                if (fluxS[facei] >= 0)
-                {
-                    auto own = ownerS[facei];
-                    dstS[facei] = srcS[own];
-                }
-                else
-                {
-                    auto nei = neighS[facei];
-                    dstS[facei] = srcS[nei];
-                }
+                dstS[facei] = srcS[ownerS[facei]];
             }
             else
             {
-                dstS[facei] = weightS[facei] * boundS[facei - nInternalFaces];
+                dstS[facei] = srcS[neighS[facei]];
             }
         },
-        "computeUpwindInterpolation"
+        "computeUpwindInterpolationInternal"
+    );
+
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) { dstB[bfi] = weightB[bfi] * boundS[bfi]; },
+        "computeUpwindInterpolationBoundary"
     );
 }
 
@@ -65,31 +65,23 @@ void computeUpwindInterpolationWeights(
 )
 {
     const auto exec = src.exec();
-    const auto [weightS, weightB, ownerS, neighS, fluxS] = views(
-        weights.internalVector(),
-        weights.boundaryData().value(),
-        src.mesh().faceOwner(),
-        src.mesh().faceNeighbour(),
-        flux.internalVector()
-    );
+    const auto [weightS, weightB, fluxS] =
+        views(weights.internalVector(), weights.boundaryData().value(), flux.internalVector());
     auto nInternalFaces = src.mesh().nInternalFaces();
+    auto nBoundaryFaces = src.mesh().nBoundaryFaces();
 
     parallelFor(
         exec,
-        {0, weights.size()},
-        NEON_LAMBDA(const localIdx facei) {
-            if (facei < nInternalFaces)
-            {
-                weightS[facei] = fluxS[facei] >= 0 ? 1 : 0;
-            }
-            else
-            {
-                auto bcfacei = facei - nInternalFaces;
-                weightB[bcfacei] = 1.0;
-                weightS[facei] = 1.0;
-            }
-        },
-        "computeUpwindInterpolation"
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) { weightS[facei] = fluxS[facei] >= 0 ? 1 : 0; },
+        "computeUpwindWeightsInternal"
+    );
+
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) { weightB[bfi] = 1.0; },
+        "computeUpwindWeightsBoundary"
     );
 }
 

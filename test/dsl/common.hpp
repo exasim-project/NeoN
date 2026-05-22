@@ -5,6 +5,9 @@
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
+#include <catch2/catch_approx.hpp>
+
+#include <random>
 
 #include "NeoN/NeoN.hpp"
 
@@ -110,9 +113,9 @@ struct CreateSurfaceVector
     {
         using SF = NeoN::finiteVolume::cellCentred::SurfaceField<ValueType>;
 
-        // Face storage
+        // Face storage: internalVector holds only internal faces
         NeoN::Field<ValueType> domainField(
-            mesh.exec(), mesh.nFaces(), mesh.boundaryMesh().offset()
+            mesh.exec(), mesh.nInternalFaces(), mesh.boundaryMesh().offset()
         );
         NeoN::fill(domainField.internalVector(), value);
         NeoN::fill(domainField.boundaryData().refValue(), value);
@@ -281,4 +284,29 @@ ValueType getRhs(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, loca
 {
     auto hostLs = ls.copyToHost();
     return hostLs.rhs().view()[0];
+}
+
+
+template<typename VectorValueType>
+void randomizeVector(NeoN::Vector<VectorValueType>& a)
+{
+    // std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    // std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    // std::uniform_real_distribution<> dis(1.0, 2.0);
+
+    auto b = a.copyToHost();
+    auto bV = b.view();
+
+    for (int i = 0; i < b.size(); i++)
+    {
+        bV[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    }
+    auto c = b.copyToExecutor(a.exec());
+    a = c;
+}
+
+template<typename VectorValueType>
+void randomizeVector(fvcc::VolumeField<VectorValueType>& a)
+{
+    randomizeVector(a.internalVector());
 }

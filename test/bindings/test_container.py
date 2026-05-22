@@ -24,9 +24,9 @@ def test_container_imports():
 # fill tests for ScalarVector
 # ============================================================================
 
-def test_fill_scalar_vector():
+def test_fill_scalar_vector(executor):
     """Test fill function with ScalarVector."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     v = neon.ScalarVector(exec, 10)
 
     # Fill with a value
@@ -45,9 +45,9 @@ def test_fill_scalar_vector():
     assert not neon.equal(v, 3.14)
 
 
-def test_fill_range_scalar_vector():
+def test_fill_range_scalar_vector(executor):
     """Test fill_range function with ScalarVector."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     v = neon.ScalarVector(exec, 10, 0.0)  # Initialize with zeros
 
     # Fill a range with a value
@@ -64,9 +64,9 @@ def test_fill_range_scalar_vector():
 # fill tests for VectorVector (Vec3)
 # ============================================================================
 
-def test_fill_vector_vector():
+def test_fill_vector_vector(executor):
     """Test fill function with VectorVector (Vec3)."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     v = neon.VectorVector(exec, 10)
 
     # Fill with a Vec3 value
@@ -83,9 +83,9 @@ def test_fill_vector_vector():
     assert not neon.equal(v, fill_value)
 
 
-def test_fill_range_vector_vector():
+def test_fill_range_vector_vector(executor):
     """Test fill_range function with VectorVector."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     zero_vec = neon.Vec3(0.0, 0.0, 0.0)
     v = neon.VectorVector(exec, 10, zero_vec)
 
@@ -110,9 +110,9 @@ def test_fill_range_vector_vector():
 # fill tests for LabelVector
 # ============================================================================
 
-def test_fill_label_vector():
+def test_fill_label_vector(executor):
     """Test fill function with LabelVector."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     v = neon.LabelVector(exec, 10)
 
     # Fill with a label value
@@ -130,9 +130,9 @@ def test_fill_label_vector():
     assert not neon.equal(v, 42)
 
 
-def test_fill_range_label_vector():
+def test_fill_range_label_vector(executor):
     """Test fill_range function with LabelVector."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     v = neon.LabelVector(exec, 10, 0)  # Initialize with zeros
     assert neon.equal(v, 0)
 
@@ -149,9 +149,9 @@ def test_fill_range_label_vector():
 # equal tests for ScalarVector
 # ============================================================================
 
-def test_equal_scalar_vector_value():
+def test_equal_scalar_vector_value(executor):
     """Test equal function comparing ScalarVector to a value."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     # All same value
     v1 = neon.ScalarVector(exec, 5, 7.5)
@@ -159,9 +159,9 @@ def test_equal_scalar_vector_value():
     assert not neon.equal(v1, 0.0)
 
 
-def test_equal_scalar_vectors():
+def test_equal_scalar_vectors(executor):
     """Test equal function comparing two ScalarVectors."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     v1 = neon.ScalarVector(exec, 5, 3.14)
     v2 = neon.ScalarVector(exec, 5, 3.14)
@@ -171,9 +171,9 @@ def test_equal_scalar_vectors():
     assert not neon.equal(v1, v3)
 
 
-def test_equal_scalar_vectors_different_sizes():
+def test_equal_scalar_vectors_different_sizes(executor):
     """Test equal function with different sized vectors."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     v1 = neon.ScalarVector(exec, 5, 1.0)
     v2 = neon.ScalarVector(exec, 10, 1.0)
@@ -186,9 +186,9 @@ def test_equal_scalar_vectors_different_sizes():
 # equal tests for VectorVector
 # ============================================================================
 
-def test_equal_vector_vector_value():
+def test_equal_vector_vector_value(executor):
     """Test equal function comparing VectorVector to a Vec3 value."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     fill_val = neon.Vec3(1.0, 2.0, 3.0)
     v = neon.VectorVector(exec, 5, fill_val)
@@ -197,9 +197,9 @@ def test_equal_vector_vector_value():
     assert not neon.equal(v, neon.Vec3(0.0, 0.0, 0.0))
 
 
-def test_equal_vector_vectors():
+def test_equal_vector_vectors(executor):
     """Test equal function comparing two VectorVectors."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     val1 = neon.Vec3(1.0, 2.0, 3.0)
     val2 = neon.Vec3(4.0, 5.0, 6.0)
@@ -216,9 +216,9 @@ def test_equal_vector_vectors():
 # equal tests for LabelVector
 # ============================================================================
 
-def test_equal_label_vector_value():
+def test_equal_label_vector_value(executor):
     """Test equal function comparing LabelVector to a value."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     v = neon.LabelVector(exec, 5, 123)
 
@@ -226,9 +226,9 @@ def test_equal_label_vector_value():
     assert not neon.equal(v, 0)
 
 
-def test_equal_label_vectors():
+def test_equal_label_vectors(executor):
     """Test equal function comparing two LabelVectors."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     v1 = neon.LabelVector(exec, 5, 42)
     v2 = neon.LabelVector(exec, 5, 42)
@@ -242,9 +242,9 @@ def test_equal_label_vectors():
 # Edge cases
 # ============================================================================
 
-def test_fill_empty_vector():
+def test_fill_empty_vector(executor):
     """Test fill with an empty vector."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
     v = neon.ScalarVector(exec, 0)
 
     # Should not crash
@@ -254,9 +254,9 @@ def test_fill_empty_vector():
     assert v.size() == 0
 
 
-def test_equal_empty_vectors():
+def test_equal_empty_vectors(executor):
     """Test equal with empty vectors."""
-    exec = neon.SerialExecutor()
+    name, exec = executor
 
     v1 = neon.ScalarVector(exec, 0)
     v2 = neon.ScalarVector(exec, 0)

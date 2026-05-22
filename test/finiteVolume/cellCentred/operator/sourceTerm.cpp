@@ -68,4 +68,28 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     }
 }
 
+TEMPLATE_TEST_CASE("SourceTerm Su constructor", "[template]", NeoN::scalar, NeoN::Vec3)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = createSingleCellMesh(exec);
+
+    auto coeffBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+    fvcc::VolumeField<TestType> coeff(exec, "coeff", mesh, coeffBCs);
+    fill(coeff.internalVector(), 5 * one<TestType>());
+    fill(coeff.boundaryData().value(), zero<TestType>());
+    coeff.correctBoundaryConditions();
+
+    SECTION("explicit Su" + execName)
+    {
+        fvcc::SourceTerm<TestType> sTerm(Operator::Type::Explicit, coeff);
+
+        auto source = Vector<TestType>(exec, coeff.size(), zero<TestType>());
+        sTerm.explicitOperation(source);
+
+        auto exp = std::vector<TestType>(static_cast<size_t>(coeff.size()), 5 * one<TestType>());
+        REQUIRE_THAT(source, Equals(exp, EqualInt()));
+    }
+}
+
 }

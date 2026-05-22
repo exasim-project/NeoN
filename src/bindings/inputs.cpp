@@ -32,7 +32,9 @@ void registerInputs(nb::module_& m)
             {
                 new (&self) NeoN::TokenList();
                 for (const auto& s : strings)
+                {
                     self.insert(std::any(s));
+                }
             },
             "strings"_a,
             "Create a TokenList from a Python list of strings (e.g. TokenList(['linear']))"

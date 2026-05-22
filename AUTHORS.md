@@ -4,6 +4,7 @@ license, as specified in the repository's LICENSE file.
 Andrei Maftei <maftei.andrei@tum.de>, Technical University of Munich\
 Bevan Jones <bevanwsjones@gmail.com>\
 Chih-Ta Wang <chihta.wang@tum.de>, Technical University of Munich\
+Dheeraj Raghunathan <dheeraj.raghunathan@tum.de>, Technical University of Munich\
 Feiteng Meng <fitanium2018@outlook.com>, Harbin Engineering University\
 Gabriel Gerlero <ggerlero@cimec.unl.edu.ar>, Research Center for Computational Methods (CIMEC)\
 Gregor Olenik  <gregor.olenik@tum.de>, Technical University of Munich\

@@ -92,7 +92,7 @@ public:
     void startComm(Vector<valueType>& field, const std::string& commName)
     {
         NF_DEBUG_ASSERT(
-            CommBuffer_.find(commName) == CommBuffer_.end() || (!CommBuffer_[commName]),
+            !CommBuffer_.contains(commName) || (!CommBuffer_[commName]),
             "There is already an ongoing communication for key " << commName << "."
         );
 
@@ -129,7 +129,7 @@ public:
     void finaliseComm(Vector<valueType>& field, std::string commName)
     {
         NF_DEBUG_ASSERT(
-            CommBuffer_.find(commName) != CommBuffer_.end() && CommBuffer_[commName],
+            CommBuffer_.contains(commName) && CommBuffer_[commName],
             "No communication associated with key: " << commName
         );
 

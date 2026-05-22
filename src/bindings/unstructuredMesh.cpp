@@ -24,7 +24,7 @@ namespace NeoN::bindings
 void registerUnstructuredMesh(nb::module_& m)
 {
     // unstructured Mesh
-    // geometric data (cell volumes, centres, face areas, etc.) and topological
+    // geometric data (cell volumes, centers, face areas, etc.) and topological
     // connectivity (face owners, neighbors). It also contains a BoundaryMesh
     nb::class_<NeoN::UnstructuredMesh>(
         m, "UnstructuredMesh", "Unstructured mesh with cells, faces, and boundaries"
@@ -39,25 +39,15 @@ void registerUnstructuredMesh(nb::module_& m)
                 NeoN::scalarVector,
                 NeoN::labelVector,
                 NeoN::labelVector,
-                NeoN::localIdx,
-                NeoN::localIdx,
-                NeoN::localIdx,
-                NeoN::localIdx,
-                NeoN::localIdx,
                 NeoN::BoundaryMesh>(),
             "points"_a,
             "cell_volumes"_a,
-            "cell_centres"_a,
+            "cell_centers"_a,
+            "face_normals"_a,
+            "face_centers"_a,
             "face_areas"_a,
-            "face_centres"_a,
-            "mag_face_areas"_a,
-            "face_owner"_a,
-            "face_neighbour"_a,
-            "n_cells"_a,
-            "n_internal_faces"_a,
-            "n_boundary_faces"_a,
-            "n_boundaries"_a,
-            "n_faces"_a,
+            "face_owners"_a,
+            "face_neighbors"_a,
             "boundary_mesh"_a,
             "Create an UnstructuredMesh with all data"
         )
@@ -75,39 +65,39 @@ void registerUnstructuredMesh(nb::module_& m)
             "Get the vector of cell volumes"
         )
         .def_prop_ro(
-            "cell_centres",
-            nb::overload_cast<>(&NeoN::UnstructuredMesh::cellCentres, nb::const_),
+            "cell_centers",
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::cellCenters, nb::const_),
             nb::rv_policy::reference_internal,
-            "Get the vector of cell centres"
+            "Get the vector of cell centers"
         )
         .def_prop_ro(
-            "face_centres",
-            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceCentres, nb::const_),
+            "face_centers",
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceCenters, nb::const_),
             nb::rv_policy::reference_internal,
-            "Get the vector of face centres"
+            "Get the vector of face centers"
+        )
+        .def_prop_ro(
+            "face_normals",
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceNormals, nb::const_),
+            nb::rv_policy::reference_internal,
+            "Get the vector of face area normals"
         )
         .def_prop_ro(
             "face_areas",
             nb::overload_cast<>(&NeoN::UnstructuredMesh::faceAreas, nb::const_),
             nb::rv_policy::reference_internal,
-            "Get the vector of face area normals"
-        )
-        .def_prop_ro(
-            "mag_face_areas",
-            nb::overload_cast<>(&NeoN::UnstructuredMesh::magFaceAreas, nb::const_),
-            nb::rv_policy::reference_internal,
             "Get the vector of face area magnitudes"
         )
 
         .def_prop_ro(
-            "face_owner",
-            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceOwner, nb::const_),
+            "face_owners",
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceOwners, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face owner cell indices"
         )
         .def_prop_ro(
-            "face_neighbour",
-            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceNeighbour, nb::const_),
+            "face_neighbors",
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::faceNeighbors, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the vector of face neighbor cell indices"
         )
@@ -124,19 +114,18 @@ void registerUnstructuredMesh(nb::module_& m)
             "Get the number of boundary faces"
         )
         .def(
+            "n_total_faces",
+            &NeoN::UnstructuredMesh::nTotalFaces,
+            "Get the total number of faces (internal + boundary + processor faces)"
+        )
+        .def(
             "n_boundaries",
             &NeoN::UnstructuredMesh::nBoundaries,
             "Get the number of boundary patches"
         )
         .def(
-            "n_faces",
-            &NeoN::UnstructuredMesh::nFaces,
-            "Get the total number of faces (internal + boundary)"
-        )
-
-        .def(
             "boundary_mesh",
-            &NeoN::UnstructuredMesh::boundaryMesh,
+            nb::overload_cast<>(&NeoN::UnstructuredMesh::boundaryMesh, nb::const_),
             nb::rv_policy::reference_internal,
             "Get the boundary mesh"
         )
@@ -152,7 +141,7 @@ void registerUnstructuredMesh(nb::module_& m)
             [](const NeoN::UnstructuredMesh& mesh)
             {
                 return "<UnstructuredMesh: " + std::to_string(mesh.nCells()) + " cells, "
-                     + std::to_string(mesh.nFaces()) + " faces, "
+                     + std::to_string(mesh.nBoundaryFaces()) + " boundary faces, "
                      + std::to_string(mesh.nBoundaries()) + " boundaries>";
             }
         )
@@ -161,7 +150,8 @@ void registerUnstructuredMesh(nb::module_& m)
             [](const NeoN::UnstructuredMesh& mesh)
             {
                 return "UnstructuredMesh(cells=" + std::to_string(mesh.nCells())
-                     + ", faces=" + std::to_string(mesh.nFaces())
+                     + ", internal faces=" + std::to_string(mesh.nInternalFaces())
+                     + ", boundary faces=" + std::to_string(mesh.nBoundaryFaces())
                      + ", boundaries=" + std::to_string(mesh.nBoundaries()) + ")";
             }
         );
@@ -188,10 +178,12 @@ void registerUnstructuredMesh(nb::module_& m)
         &NeoN::create1DUniformMesh,
         "exec"_a,
         "n_cells"_a,
+        "Lx"_a = 1.0,
         "Create a uniform 1D mesh aligned with the x-axis.\n\n"
         "Args:\n"
         "    exec: Executor for parallel operations\n"
-        "    n_cells: Number of cells in the mesh\n\n"
+        "    n_cells: Number of cells in the mesh\n"
+        "    Lx: Length of the mesh in the x-direction (Default: 1.0)\n\n"
         "Each cell has a left and right face. Useful for 1D simulations\n"
         "and testing finite volume schemes."
     );

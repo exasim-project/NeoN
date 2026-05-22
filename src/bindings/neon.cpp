@@ -33,4 +33,17 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerDocument(m);
     NeoN::bindings::registerCollection(m);
     NeoN::bindings::registerDatabase(m);
+
+    // Expose build-time executor availability
+    m.attr("__has_serial__") = true;
+#if defined(KOKKOS_ENABLE_OPENMP) || defined(KOKKOS_ENABLE_THREADS)
+    m.attr("__has_cpu__") = true;
+#else
+    m.attr("__has_cpu__") = false;
+#endif
+#if defined(KOKKOS_ENABLE_CUDA) || defined(KOKKOS_ENABLE_HIP) || defined(KOKKOS_ENABLE_SYCL)
+    m.attr("__has_gpu__") = true;
+#else
+    m.attr("__has_gpu__") = false;
+#endif
 }

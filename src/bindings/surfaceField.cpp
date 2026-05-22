@@ -122,6 +122,13 @@ void registerSurfaceField(nb::module_& m)
             nb::rv_policy::reference_internal,
             "Get the executor"
         )
+        .def(
+            "boundary_data_value",
+            [](fvcc::SurfaceField<NeoN::scalar>& field) -> NeoN::Vector<NeoN::scalar>&
+            { return field.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary data value vector"
+        )
         .def("size", &fvcc::SurfaceField<NeoN::scalar>::size, "Get the field size")
         .def(
             "correct_boundary_conditions",

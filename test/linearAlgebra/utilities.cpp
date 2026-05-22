@@ -16,6 +16,7 @@ using NeoN::Vector;
 using NeoN::Vec3;
 using NeoN::la::LinearSystem;
 using NeoN::la::CSRMatrix;
+using NeoN::la::COOMatrix;
 
 TEST_CASE("Utilities")
 {
@@ -40,7 +41,7 @@ TEST_CASE("Utilities")
     );
     Vector<localIdx> colIdx(exec, {0, 1, 2, 0, 1, 2, 0, 1, 2});
     Vector<localIdx> rowOffs(exec, {0, 3, 6, 9});
-    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs);
+    CSRMatrix<scalar, localIdx> csrMatrix(values, colIdx, rowOffs, {3, 3});
 
     // Sparse matrix variant of the above, i.e, not all rows contain
     // 3 entries
@@ -65,14 +66,14 @@ TEST_CASE("Utilities")
     {
         auto res = NeoN::la::unpackRowOffs(rowOffs);
         auto rowOffsExp = std::vector<localIdx> {0, 3, 6, 9, 12, 15, 18, 21, 24, 27};
-        REQUIRE_THAT(rowOffsExp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(rowOffsExp, EqualInt()));
     }
 
     SECTION("Can unpackRowOffs2 " + execName)
     {
         auto res = NeoN::la::unpackRowOffs(rowOffsS);
         auto exp = std::vector<localIdx> {0, 2, 4, 6, 9, 12, 15, 17, 19, 21};
-        REQUIRE_THAT(exp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(exp, EqualInt()));
     }
 
     SECTION("Can unpack mtxValues " + execName)
@@ -82,7 +83,7 @@ TEST_CASE("Utilities")
         auto exp = std::vector<scalar> {1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0,
                                         4.0, 5.0, 6.0, 4.0, 5.0, 6.0, 4.0, 5.0, 6.0,
                                         7.0, 8.0, 9.0, 7.0, 8.0, 9.0, 7.0, 8.0, 9.0};
-        REQUIRE_THAT(exp, IsEqualTo(res));
+        REQUIRE_THAT(res, Equals(exp));
     }
 
     SECTION("Can unpackColIdx sparse " + execName)
@@ -103,7 +104,7 @@ TEST_CASE("Utilities")
             4, 7,    // row 8
             5, 8     // row 9
         };
-        REQUIRE_THAT(colIdxExp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(colIdxExp, EqualInt()));
     }
 
     SECTION("Can unpackColIdx dense " + execName)
@@ -124,7 +125,7 @@ TEST_CASE("Utilities")
             1, 4, 7, // row 8
             2, 5, 8  // row 9
         };
-        REQUIRE_THAT(colIdxExp, IsEqualTo(res, EqualInt()));
+        REQUIRE_THAT(res, Equals(colIdxExp, EqualInt()));
     }
 
     // Residual of scalar matrix
@@ -136,13 +137,41 @@ TEST_CASE("Utilities")
         Vector<scalar> rhs(exec, 3, 2.0);
         Vector<scalar> x(exec, 3, 1.0);
         Vector<scalar> res(exec, 3, 0.0);
+        Vector<scalar> bValues(exec, {0.0, 0.0, 0.0});
+        Vector<localIdx> bColIdx(exec, {0, 1, 2});
+        Vector<localIdx> bRowOffs(exec, {0, 1, 2});
+        COOMatrix<scalar, localIdx> bCooMatrix(bValues, bColIdx, bRowOffs, {3, 1});
         LinearSystem<scalar, CSRMatrix<scalar, localIdx>> linearSystem(
-            csrMatrix, rhs, csrMatrix, rhs, {}
+            csrMatrix, rhs, bCooMatrix, rhs
         );
 
         NeoN::la::computeResidual(csrMatrix, rhs, x, res);
 
         auto residualExp = std::vector<scalar> {4.0, 13.0, 22.0};
-        REQUIRE_THAT(residualExp, IsEqualTo(res, ApproxScalar(1e-15)));
+        REQUIRE_THAT(res, Equals(residualExp, Approx(1e-15)));
+    }
+
+    SECTION("Can convert empty rowsToRowOffs  " + execName)
+    {
+        auto rowIdx = Vector<localIdx>(exec, {});
+        auto rowOffs = NeoN::la::rowsToRowOffs(rowIdx);
+        auto rowIdxExp = std::vector<localIdx> {0};
+        REQUIRE_THAT(rowOffs, Equals(rowIdxExp, EqualInt()));
+    }
+
+    SECTION("Can convert non empty rowsToRowOffs  " + execName)
+    {
+        auto rowIdx = Vector<localIdx>(exec, {0, 1, 2});
+        auto rowOffs = NeoN::la::rowsToRowOffs(rowIdx);
+        auto rowIdxExp = std::vector<localIdx> {0, 1, 2, 3};
+        REQUIRE_THAT(rowOffs, Equals(rowIdxExp, EqualInt()));
+    }
+
+    SECTION("Can convert non empty with duplicates rowsToRowOffs  " + execName)
+    {
+        auto rowIdx = Vector<localIdx>(exec, {0, 0, 2, 2, 2});
+        auto rowOffs = NeoN::la::rowsToRowOffs(rowIdx);
+        auto rowIdxExp = std::vector<localIdx> {0, 2, 2, 5};
+        REQUIRE_THAT(rowOffs, Equals(rowIdxExp, EqualInt()));
     }
 }

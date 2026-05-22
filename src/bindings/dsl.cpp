@@ -172,7 +172,12 @@ void registerDSL(nb::module_& m)
     exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def("grad", &dsl::exp::grad);
-    exp_m.def("source", &dsl::exp::source<scalar>);
+    exp_m.def("source", [](ScalarVolField& coeff) { return dsl::exp::source<scalar>(coeff); });
+    exp_m.def(
+        "source",
+        [](const ScalarVolField& coeff, const ScalarVolField& phi)
+        { return dsl::exp::source<scalar>(coeff, phi); }
+    );
 
     // solve
     m.def(

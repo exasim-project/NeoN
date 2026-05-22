@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include <iostream>
 #include <memory>
-#include <type_traits>
 #include <utility>
 #include <concepts>
 
@@ -19,7 +17,6 @@
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 
 
 namespace NeoN::dsl
@@ -74,7 +71,7 @@ la::SolverStats iterativeSolveImpl(
     std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
 )
 {
-    auto [sparsity, ls] = exp.assemble(solution.mesh(), t, dt, ps);
+    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?

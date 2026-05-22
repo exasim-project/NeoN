@@ -41,10 +41,9 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
 {
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
-    const auto diagOffs = ls.faceToMatrixAddress()->diagOffset().view();
     const auto oldVector = oldTime(this->field_).internalVector().view();
     auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     const scalar a0a1 = 1.0 / dt;
 
@@ -52,9 +51,8 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            values[idx] += commonCoef * a0a1 * one<ValueType>();
+            values[ma.diagIdx(celli)] += commonCoef * a0a1 * one<ValueType>();
             rhs[celli] += commonCoef * a0a1 * oldVector[celli];
         },
         "ddtOperator::implicitOperation<BDF1>"
@@ -64,15 +62,14 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar, scalar dt) const
 {
-    const auto matIt = ls.faceToMatrixAddress();
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     auto& old = oldTime(this->field_);
     auto& oldOld = oldTime(old);
-    const auto [diagOffs, oldVector, oldOldVector] =
-        views(matIt->diagOffset(), old.internalVector(), oldOld.internalVector());
+    const auto [oldVector, oldOldVector] = views(old.internalVector(), oldOld.internalVector());
     auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     const scalar a0 = 1.5 / dt;
     const scalar a1 = 2.0 / dt;
@@ -82,9 +79,8 @@ void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar,
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            values[idx] += commonCoef * a0 * one<ValueType>();
+            values[ma.diagIdx(celli)] += commonCoef * a0 * one<ValueType>();
             rhs[celli] +=
                 commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
         },

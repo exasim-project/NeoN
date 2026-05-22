@@ -35,19 +35,19 @@ inline void setSymmetryValue<NeoN::scalar>(
 {
     const auto internalV = domainVector.internalVector().view();
 
-    auto [refGradV, valueV, valueFractionV, refValueV, faceCellsV] = views(
+    auto [refGradV, valueV, valueFractionV, refValueV, boundaryFaceOwnersV] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),
         domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceCells()
+        mesh.boundaryMesh().faceOwners()
     );
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
         NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCellsV[i];
+            const localIdx owner = boundaryFaceOwnersV[i];
             const auto v = internalV[owner];
 
             // Scalar symmetry → zero-gradient
@@ -70,22 +70,23 @@ inline void setSymmetryValue<NeoN::Vec3>(
 {
     const auto internalV = domainVector.internalVector().view();
 
-    auto [refGradV, valueV, valueFractionV, refValueV, faceCellsV, nHatV] = views(
-        domainVector.boundaryData().refGrad(),
-        domainVector.boundaryData().value(),
-        domainVector.boundaryData().valueFraction(),
-        domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceCells(),
-        mesh.boundaryMesh().nf()
-    );
+    auto [refGradV, valueV, valueFractionV, refValueV, boundaryFaceOwnersV, faceUnitNormalsV] =
+        views(
+            domainVector.boundaryData().refGrad(),
+            domainVector.boundaryData().value(),
+            domainVector.boundaryData().valueFraction(),
+            domainVector.boundaryData().refValue(),
+            mesh.boundaryMesh().faceOwners(),
+            mesh.boundaryMesh().faceUnitNormals()
+        );
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
         NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = faceCellsV[i];
+            const localIdx owner = boundaryFaceOwnersV[i];
             const auto v = internalV[owner];
-            const auto n = nHatV[i];
+            const auto n = faceUnitNormalsV[i];
 
             // Tangential projection (remove normal component)
             const auto vn = v & n;
@@ -109,6 +110,8 @@ class Symmetry : public VolumeBoundaryFactory<ValueType>::template Register<Symm
     using Base = typename VolumeBoundaryFactory<ValueType>::template Register<Symmetry<ValueType>>;
 
 public:
+
+    using Base::correctBoundaryCondition;
 
     using SymmetryType = Symmetry<ValueType>;
 

@@ -2,27 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-import os
-import sys
-from pathlib import Path
-import importlib.util
+"""
+Test configuration for NeoN Python bindings.
 
-_neon_so_dir = os.environ.get("NEON_BINDINGS_PATH")
-if _neon_so_dir:
-
-    _project_root = Path(__file__).parents[2]
-    _init_file = _project_root / "src" / "neon" / "__init__.py"
-
-    spec = importlib.util.spec_from_file_location(
-        "neon",
-        str(_init_file),
-        submodule_search_locations=[_neon_so_dir],
-    )
-    _neon_module = importlib.util.module_from_spec(spec)
-    sys.modules["neon"] = _neon_module
-    spec.loader.exec_module(_neon_module)
+This module automatically locates the neon package from the build directory
+and configures pytest fixtures for executor parameterization.
+"""
 
 import pytest
+
+# Set up path before importing neon
 import neon
 
 
@@ -39,10 +28,37 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "gpu: mark test as requiring GPU support")
 
 
+def get_available_executors():
+    """Get list of executors available at build time."""
+    executors = []
+    if neon.__has_serial__:
+        executors.append(("serial", neon.SerialExecutor))
+    if neon.__has_cpu__:
+        executors.append(("cpu", neon.CPUExecutor))
+    if neon.__has_gpu__:
+        executors.append(("gpu", neon.GPUExecutor))
+    return executors
+
+
+def pytest_generate_tests(metafunc):
+    """Auto-parameterize tests using 'executor' fixture."""
+    if "executor" in metafunc.fixturenames:
+        available = get_available_executors()
+        if not available:
+            pytest.skip("No executors available")
+        # Create instances directly in parametrization
+        executor_instances = [(name, exec_class()) for name, exec_class in available]
+        metafunc.parametrize(
+            "executor",
+            executor_instances,
+            ids=[name for name, _ in available]
+        )
+
+
 def pytest_collection_modifyitems(config, items):
     """Automatically skip GPU tests if GPU is not available."""
-    if not neon.gpu_available():
+    if hasattr(neon, '__has_gpu__') and not neon.__has_gpu__:
         skip_gpu = pytest.mark.skip(reason="GPU not available")
         for item in items:
-            if "gpu" in item.keywords:  # Finds @pytest.mark.gpu
-                item.add_marker(skip_gpu)  # Adds the skip automatically
+            if "gpu" in item.keywords:
+                item.add_marker(skip_gpu)

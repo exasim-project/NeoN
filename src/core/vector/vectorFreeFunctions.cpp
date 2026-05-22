@@ -7,6 +7,8 @@
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/primitives/symmTensor.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/macros.hpp"
 #include "NeoN/core/view.hpp"
@@ -19,7 +21,7 @@ template<typename ValueType>
 void scalarMul(Vector<ValueType>& vect, const scalar value)
     requires requires(ValueType a, scalar b) { a * b; }
 {
-    if constexpr (std::is_same_v<ValueType, Vec3>)
+    if constexpr (std::is_same_v<ValueType, Vec3> || std::is_same_v<ValueType, Tensor> || std::is_same_v<ValueType, SymmTensor>)
     {
         auto viewA = vect.view();
         parallelFor(vect, NEON_LAMBDA(const localIdx i)->ValueType { return viewA[i] * value; });
@@ -139,10 +141,18 @@ template void setComponent<0>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<1>(const Vector<scalar>&, Vector<Vec3>&);
 template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
 
+template<typename ValueType>
+Vector<ValueType> take(const Vector<ValueType>& in, std::pair<localIdx, localIdx> range)
+{
+    auto rangeView = in.view(range);
+    return {in.exec(), rangeView.data(), rangeView.size()};
+}
+
 // operator instantiation
 #define NN_VECTOR_OPERATOR_INSTANTIATION(Type)                                                     \
     /* free function operator with additional requirements  */                                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
+    template Vector<Type> take<Type>(const Vector<Type>&, std::pair<localIdx, localIdx>);          \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
@@ -153,6 +163,7 @@ template void setComponent<2>(const Vector<scalar>&, Vector<Vec3>&);
 #define NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Type)                                                \
     /* free function operator with additional requirements  */                                     \
     template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
+    template Vector<Type> take<Type>(const Vector<Type>&, std::pair<localIdx, localIdx>);          \
     template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
     template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
     template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
@@ -164,5 +175,16 @@ NN_FOR_ALL_INTEGER_TYPES(NN_VECTOR_OPERATOR_INSTANTIATION);
 NN_VECTOR_OPERATOR_INSTANTIATION(float);
 NN_VECTOR_OPERATOR_INSTANTIATION(double);
 NN_VECTOR_OPERATOR_INSTANTIATION_VEC3(Vec3);
+
+// Tensor types support +/-/scalarMul but not element-wise mul(Tensor,Tensor)
+#define NN_VECTOR_OPERATOR_INSTANTIATION_TENSOR(Type)                                              \
+    template void scalarMul<Type>(Vector<Type>&, const scalar);                                    \
+    template void add<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
+    template void add<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);             \
+    template void sub<Type>(Vector<Type>&, const std::type_identity_t<Type>&);                     \
+    template void sub<Type>(Vector<Type>&, const Vector<std::type_identity_t<Type>>&);
+
+NN_VECTOR_OPERATOR_INSTANTIATION_TENSOR(Tensor);
+NN_VECTOR_OPERATOR_INSTANTIATION_TENSOR(SymmTensor);
 
 } // namespace NeoN

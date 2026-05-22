@@ -18,8 +18,11 @@ namespace NeoN
  *
  * The BoundaryMesh class stores information about the boundary faces and their
  * properties in an unstructured mesh. It provides access to various fields such
- * as face cells, face centres, face normals, face areas normals, magnitudes of
+ * as face cells, face centers, face normals, face areas normals, magnitudes of
  * face areas normals, delta vectors, weights, delta coefficients, and offsets.
+ *
+ * Boundary faces are organised such that regular boundaries are stored first, followed
+ * by the processor boundaries.
  *
  * The class also provides getter methods to access the individual fields and
  * their components.
@@ -30,90 +33,96 @@ class BoundaryMesh
 {
 public:
 
+    void validate() const;
+
     /**
      * @brief Constructor for the BoundaryMesh class.
      *
      * @param exec The executor used for computations.
-     * @param faceCells A field with the neighbouring cell of each boundary
-     * face.
-     * @param Cf A field of face centres.
-     * @param Cn A field of neighbor cell centers.
-     * @param Sf A field of face areas normals.
-     * @param magSf A field of magnitudes of face areas normals.
-     * @param nf A field of face unit normals.
+     * @param faceOwners A list of labels of owner cells of boundary faces.
+     * @param faceCenters A field of face centers.
+     * @param ownerCellCenters A field of centers of owner cells of boundary faces.
+     * @param faceNormals A field of face normal vectors.
+     * @param faceAreas A field of face areas.
+     * @param faceUnitNormals A field of face unit normal vectors.
      * @param delta A field of delta vectors.
      * @param weights A field of weights used in cell to face interpolation.
-     * @param deltaCoeffs A field of cell to face distances.
-     * @param offset The offset of the boundary faces.
+     * @param deltaCoeffs A field of the inverse of distances between boundary faces and their
+     * neighboring cell centers
+     * @param offset The offsets of the boundary faces, i.e. offset[i], offset[i+1] define beginning
+     * and end of a patch.
+     * @param neighbourRank corresponding mpiRank ouf neighbour
      */
     BoundaryMesh(
         const Executor& exec,
-        labelVector faceCells,
-        vectorVector cf,
-        vectorVector cn,
-        vectorVector sf,
-        scalarVector magSf,
-        vectorVector nf,
+        labelVector faceOwners,
+        vectorVector faceCenters,
+        vectorVector ownerCellCenters,
+        vectorVector faceNormals,
+        scalarVector faceAreas,
+        vectorVector faceUnitNormals,
         vectorVector delta,
         scalarVector weights,
         scalarVector deltaCoeffs,
-        std::vector<localIdx> offset
+        std::vector<localIdx> offset,
+        localIdx procBoundaryPatches,
+        std::vector<localIdx> neighbourRank
     );
 
 
     /**
-     * @brief Get the field of face cells.
+     * @brief Get the list of labels of owner cells of boundary faces.
      *
-     * @return A constant reference to the field of face cells.
+     * @return A constant reference to the field of owner cells.
      */
-    const labelVector& faceCells() const;
+    const labelVector& faceOwners() const;
 
     // TODO either dont mix return types, ie dont use view and Vector
     // for functions with same name
     /**
-     * @brief Get a view of face cells for a specific boundary face.
+     * @brief Get a view of labels of owner cells for a specific boundary face.
      *
      * @param i The index of the boundary face.
-     * @return A view of face cells for the specified boundary face.
+     * @return A view of labels of owner cells for the specified boundary face.
      */
-    View<const label> faceCells(const localIdx i) const;
+    View<const label> faceOwners(const localIdx i) const;
 
     /**
-     * @brief Get the field of face centres.
+     * @brief Get the field of face centers.
      *
-     * @return A constant reference to the field of face centres.
+     * @return A constant reference to the field of face centers.
      */
-    const vectorVector& cf() const;
+    const vectorVector& faceCenters() const;
 
     /**
-     * @brief Get a view of face centres for a specific boundary face.
-     *
-     * @param i The index of the boundary face.
-     * @return A view of face centres for the specified boundary face.
-     */
-    View<const Vec3> cf(const localIdx i) const;
-
-    /**
-     * @brief Get the field of face normals.
-     *
-     * @return A constant reference to the field of face normals.
-     */
-    const vectorVector& cn() const;
-
-    /**
-     * @brief Get a view of face normals for a specific boundary face.
+     * @brief Get a view of face centers for a specific boundary face.
      *
      * @param i The index of the boundary face.
-     * @return A view of face normals for the specified boundary face.
+     * @return A view of face centers for the specified boundary face.
      */
-    View<const Vec3> cn(const localIdx i) const;
+    View<const Vec3> faceCenters(const localIdx i) const;
+
+    /**
+     * @brief Get the field of centers of owner cells of boundary faces.
+     *
+     * @return A constant reference to the field of owner cell centers.
+     */
+    const vectorVector& ownerCellCenters() const;
+
+    /**
+     * @brief Get a view of owner cell centers for a specific boundary face.
+     *
+     * @param i The index of the boundary face.
+     * @return A view of owner cell centers for the specified boundary face.
+     */
+    View<const Vec3> ownerCellCenters(const localIdx i) const;
 
     /**
      * @brief Get the field of face areas normals.
      *
      * @return A constant reference to the field of face areas normals.
      */
-    const vectorVector& sf() const;
+    const vectorVector& faceNormals() const;
 
     /**
      * @brief Get a view of face areas normals for a specific boundary face.
@@ -121,40 +130,37 @@ public:
      * @param i The index of the boundary face.
      * @return A view of face areas normals for the specified boundary face.
      */
-    View<const Vec3> sf(const localIdx i) const;
+    View<const Vec3> faceNormals(const localIdx i) const;
 
     /**
-     * @brief Get the field of magnitudes of face areas normals.
+     * @brief Get the field of face areas.
      *
-     * @return A constant reference to the field of magnitudes of face areas
-     * normals.
+     * @return A constant reference to the field of face areas.
      */
-    const scalarVector& magSf() const;
+    const scalarVector& faceAreas() const;
 
     /**
-     * @brief Get a view of magnitudes of face areas normals for a specific
-     * boundary face.
+     * @brief Get a view of face areas for a specific boundary face.
      *
      * @param i The index of the boundary face.
-     * @return A view of magnitudes of face areas normals for the specified
-     * boundary face.
+     * @return A view of face areas for the specified boundary face.
      */
-    View<const scalar> magSf(const localIdx i) const;
+    View<const scalar> faceAreas(const localIdx i) const;
 
     /**
-     * @brief Get the field of face unit normals.
+     * @brief Get the field of face unit normal vectors.
      *
-     * @return A constant reference to the field of face unit normals.
+     * @return A constant reference to the field of face unit normal vectors.
      */
-    const vectorVector& nf() const;
+    const vectorVector& faceUnitNormals() const;
 
     /**
-     * @brief Get a view of face unit normals for a specific boundary face.
+     * @brief Get a view of face unit normal vectors for a specific boundary face.
      *
      * @param i The index of the boundary face.
-     * @return A view of face unit normals for the specified boundary face.
+     * @return A view of face unit normal vectors for the specified boundary face.
      */
-    View<const Vec3> nf(const localIdx i) const;
+    View<const Vec3> faceUnitNormals(const localIdx i) const;
 
     /**
      * @brief Get the field of delta vectors.
@@ -202,6 +208,13 @@ public:
     View<const scalar> deltaCoeffs(const localIdx i) const;
 
     /**
+     * @brief Given a patchId the corresponding neighbour Rank gets returned
+     *
+     * -1 for patches without a distributed neighbour
+     */
+    localIdx neighbourRank(const localIdx i) const;
+
+    /**
      * @brief Get the offset of the boundary faces.
      *
      * @return A constant reference to the offset of the boundary faces.
@@ -209,6 +222,35 @@ public:
     // TODO consistent use of Vector on CPU
     const std::vector<localIdx>& offset() const;
 
+    /**@brief number of proc boundary patches */
+    localIdx nProcBoundaryPatches() const;
+
+    /**
+     * @brief Get the offset of the boundary faces.
+     *
+     * @return A constant reference to the offset of the boundary faces.
+     */
+    const std::vector<localIdx>& neighbourRank() const;
+
+    /**
+     * @brief Get the number of the boundaries.
+     */
+    localIdx nBoundaries() const { return offset_.size() - 1; }
+
+    /**
+     * @brief Get the number of the boundary faces.
+     */
+    localIdx nBoundaryFaces() const { return faceOwners_.size() - nProcBoundaryFaces(); }
+
+    /**
+     * @brief Get the number of the processor boundary faces.
+     */
+    localIdx nProcBoundaryFaces() const;
+
+    /**
+     * @brief Return whether this local mesh is a part of a global distributed mesh
+     */
+    bool isDistributed() const { return nProcBoundaryFaces() > 0; }
 
 private:
 
@@ -218,36 +260,36 @@ private:
     const Executor exec_;
 
     /**
-     * @brief Vector of face cells.
+     * @brief Vector of labels of face owner cells.
      *
-     * A field with the neighbouring cell of each boundary face.
+     * A list of labels of the owner cells of boundary faces.
      */
-    labelVector faceCells_;
+    labelVector faceOwners_;
 
     /**
-     * @brief Vector of face centres.
+     * @brief Vector of face centers.
      */
-    vectorVector Cf_;
+    vectorVector faceCenters_;
 
     /**
-     * @brief Vector of face normals.
+     * @brief Vector of centers of owner cells of boundary faces.
      */
-    vectorVector Cn_;
+    vectorVector ownerCellCenters_;
 
     /**
      * @brief Vector of face areas normals.
      */
-    vectorVector Sf_;
+    vectorVector faceNormals_;
 
     /**
-     * @brief Vector of magnitudes of face areas normals.
+     * @brief Vector of face areas.
      */
-    scalarVector magSf_;
+    scalarVector faceAreas_;
 
     /**
-     * @brief Vector of face unit normals.
+     * @brief Vector of face unit normal vectors.
      */
-    vectorVector nf_;
+    vectorVector faceUnitNormals_;
 
     /**
      * @brief Vector of delta vectors.
@@ -278,6 +320,18 @@ private:
      */
     // TODO consistent use of Vector on CPU
     std::vector<localIdx> offset_;
+
+    /**
+     * @brief number of processor patches
+     *
+     * Vector of cell to face distances.
+     */
+    localIdx procBoundaryPatches_;
+
+    /**
+     * @brief The mpi rank of the corresponding neighbour patch
+     */
+    std::vector<localIdx> neighbourRank_;
 };
 
 } // namespace NeoN

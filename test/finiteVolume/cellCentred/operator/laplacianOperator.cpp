@@ -29,6 +29,7 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
     fill(gamma.internalVector(), 2.0);
+    fill(gamma.boundaryData().value(), 2.0);
 
     auto [boundaryType, firstValue, lastValue] = GENERATE(
         std::tuple<std::string, scalar, scalar> {"fixedValue", 0.5, 10.5},
@@ -132,6 +133,101 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
                     REQUIRE(resV[celli] == Catch::Approx(0.0).margin(1e-8));
                 }
             }
+        }
+    }
+}
+
+TEMPLATE_TEST_CASE("laplacianOperator boundary contributions are accumulated", "[template]", scalar)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const NeoN::localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
+
+    std::vector<fvcc::VolumeBoundary<TestType>> bcs;
+    bcs.push_back(fvcc::VolumeBoundary<TestType>(
+        mesh,
+        Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", 0.5 * one<TestType>()}}),
+        0
+    ));
+    bcs.push_back(fvcc::VolumeBoundary<TestType>(
+        mesh,
+        Dictionary({{"type", std::string("fixedValue")}, {"fixedValue", 10.5 * one<TestType>()}}),
+        1
+    ));
+
+    auto phi = fvcc::VolumeField<TestType>(exec, "phi", mesh, bcs);
+    parallelFor(
+        phi.internalVector(),
+        NEON_LAMBDA(const localIdx i) { return scalar(i + 1) * one<TestType>(); }
+    );
+    phi.correctBoundaryConditions();
+
+    Input input =
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")});
+
+    if constexpr (std::is_same_v<TestType, scalar>)
+    {
+        SECTION("bValues and bRhs accumulate on repeated calls on " + execName)
+        {
+            auto ls = la::createEmptyLinearSystem<TestType>(mesh);
+            dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
+            lapOp.read(input);
+
+            lapOp.implicitOperation(ls);
+            auto bValuesFirst = ls.boundaryMatrix().values().copyToHost();
+            auto bRhsFirst = ls.boundaryRhs().copyToHost();
+
+            // second call without reset: bValues and bRhs must accumulate, not overwrite
+            lapOp.implicitOperation(ls);
+            auto bValuesSecond = ls.boundaryMatrix().values().copyToHost();
+            auto bRhsSecond = ls.boundaryRhs().copyToHost();
+
+            auto bValuesFirstV = bValuesFirst.view();
+            auto bValuesSecondV = bValuesSecond.view();
+            auto bRhsFirstV = bRhsFirst.view();
+            auto bRhsSecondV = bRhsSecond.view();
+
+            for (localIdx i = 0; i < bValuesFirstV.size(); i++)
+            {
+                // fixedValue BC: boundary contribution to diagonal is positive (atomic_sub
+                // counterpart stored in bValues with matching sign)
+                REQUIRE(bValuesFirstV[i] > 0);
+                REQUIRE(bValuesSecondV[i] == Catch::Approx(2.0 * bValuesFirstV[i]).margin(1e-8));
+            }
+            for (localIdx i = 0; i < bRhsFirstV.size(); i++)
+            {
+                REQUIRE(bRhsFirstV[i] > 0);
+                REQUIRE(bRhsSecondV[i] == Catch::Approx(2.0 * bRhsFirstV[i]).margin(1e-8));
+            }
+        }
+
+        SECTION("removeBoundaryContributions restores interior-only diagonal on " + execName)
+        {
+            auto ls = la::createEmptyLinearSystem<TestType>(mesh);
+            dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
+            lapOp.read(input);
+            lapOp.implicitOperation(ls);
+
+            auto lsNoBnd = la::removeBoundaryContributions(ls);
+            auto diagHost = lsNoBnd.matrix().diag().copyToHost();
+            auto diagV = diagHost.view();
+
+            // interior cells have 2 interior face neighbors; boundary cells have 1.
+            // after removing boundary contributions, each cell's diagonal reflects only
+            // interior face connections — boundary cells should have exactly half the
+            // magnitude of interior cells on a uniform 1D mesh.
+            for (localIdx i = 1; i < nCells - 1; i++)
+            {
+                REQUIRE(diagV[i] == Catch::Approx(diagV[1]).margin(1e-8));
+            }
+            REQUIRE(diagV[0] == Catch::Approx(0.5 * diagV[1]).margin(1e-8));
+            REQUIRE(diagV[nCells - 1] == Catch::Approx(0.5 * diagV[1]).margin(1e-8));
         }
     }
 }

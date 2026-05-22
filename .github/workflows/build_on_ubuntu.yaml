@@ -85,33 +85,39 @@ jobs:
           ninja --version
           cmake --version
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
+      - name: Install python package
+        run: |
+          # create virtual environment
+          python -m venv venv
+          source venv/bin/activate
+          pip install nanobind pytest numpy
+
       - name: Build NeoN without Ginkgo
         if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
         run: |
-          uv venv
-          uv sync --no-install-project --all-extras -v
-          source .venv/bin/activate
+          source venv/bin/activate
 
-          cmake --preset ${{matrix.preset}} \
-            -DNeoN_BUILD_TESTS=ON \
-            -DNeoN_BUILD_PYTHON_BINDINGS=ON \
-            -DNeoN_DEVEL_TOOLS=OFF \
-            -DNeoN_WITH_GINKGO=OFF \
-            -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}} \
+          CMAKE_FLAGS_ARR=(
+            -DNeoN_BUILD_TESTS=ON
+            -DNeoN_BUILD_PYTHON_BINDINGS=ON
+            -DNeoN_DEVEL_TOOLS=OFF
+            -DNeoN_WITH_GINKGO=OFF
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
-          cmake --build --preset ${{matrix.preset}}
+          )
+
+          CC=${{matrix.compiler.CC}}
+          CXX=${{matrix.compiler.CXX}}
+          cmake --preset ${{matrix.preset}} "${CMAKE_FLAGS_ARR[@]}"
+          cmake --build  --preset ${{matrix.preset}}
 
       - name: Execute unit tests NeoN
         run: |
-          source .venv/bin/activate
+          source venv/bin/activate
           ctest --preset ${{matrix.preset}} -E bench
 
       - name: Install NeoN

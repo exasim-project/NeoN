@@ -49,9 +49,7 @@ public:
             exec,
             fieldName,
             mesh,
-            Field<ValueType>(
-                exec, mesh.nInternalFaces() + mesh.nBoundaryFaces(), mesh.boundaryMesh().offset()
-            )
+            Field<ValueType>(exec, mesh.nInternalFaces(), mesh.boundaryMesh().offset())
         ),
           FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}
@@ -164,6 +162,7 @@ operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
     result.boundaryData().value() *= rhs.boundaryData().value();
     return result;
 }
+
 inline SurfaceField<scalar>
 operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {

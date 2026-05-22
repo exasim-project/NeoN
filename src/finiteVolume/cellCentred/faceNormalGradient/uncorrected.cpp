@@ -19,36 +19,36 @@ void computeFaceNormalGrad(
     const UnstructuredMesh& mesh = surfaceVector.mesh();
     const auto& exec = surfaceVector.exec();
 
-    const auto [owner, neighbour, surfFaceCells] =
-        views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
+    const auto [owners, neighbors, boundaryFaceOwners] =
+        views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-
-    const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = views(
+    const auto [phif, phifB, phi, phiBCValue, nonOrthDeltaCoeffs, nonOrthDeltaCoeffsB] = views(
         surfaceVector.internalVector(),
+        surfaceVector.boundaryData().value(),
         volVector.internalVector(),
         volVector.boundaryData().value(),
-        geometryScheme->nonOrthDeltaCoeffs().internalVector()
+        geometryScheme->nonOrthDeltaCoeffs().internalVector(),
+        geometryScheme->nonOrthDeltaCoeffs().boundaryData().value()
     );
 
     auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     NeoN::parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbour[facei]] - phi[owner[facei]]);
+            phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbors[facei]] - phi[owners[facei]]);
         },
         "computeFaceNormalGradInternal"
     );
 
     NeoN::parallelFor(
         exec,
-        {nInternalFaces, phif.size()},
-        NEON_LAMBDA(const localIdx facei) {
-            auto faceBCI = facei - nInternalFaces;
-            auto own = surfFaceCells[faceBCI];
-
-            phif[facei] = nonOrthDeltaCoeffs[facei] * (phiBCValue[faceBCI] - phi[own]);
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = boundaryFaceOwners[bfi];
+            phifB[bfi] = nonOrthDeltaCoeffsB[bfi] * (phiBCValue[bfi] - phi[own]);
         },
         "computeFaceNormalGradBoundary"
     );

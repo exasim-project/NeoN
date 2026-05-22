@@ -27,6 +27,11 @@ std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
 gko::config::pnode parse(const Dictionary& dict);
 
+
+/** @brief create a ginkgo matrix by creating views */
+template<typename NeoNMatrixType>
+std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
+
 class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 {
 

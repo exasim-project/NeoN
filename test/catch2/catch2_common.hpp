@@ -18,6 +18,14 @@
 template<typename T>
 using I = std::initializer_list<T>;
 
+/** @brief Detects whether T has a copyToHost() member function. */
+template<typename T, typename = void>
+inline constexpr bool hasCopyToHost = false;
+
+template<typename T>
+inline constexpr bool
+    hasCopyToHost<T, std::void_t<decltype(std::declval<const T&>().copyToHost())>> = true;
+
 /**
  * @brief Conditionally enters a Catch2 SECTION if the given condition is true.
  * @param COND The boolean condition to evaluate.
@@ -27,14 +35,53 @@ using I = std::initializer_list<T>;
     if (COND) SECTION(__VA_ARGS__)
 
 /**
- *  @brief Predicate for approximate floating-point comparison within a given margin.
+ * @brief Predicate for approximate comparison of NeoN::Vec3 values and floating-point comparison
+ * within a given margin.
  *
- * Used with @ref EqualsRangeMatcher and @ref IsEqualTo to compare scalar values
- * using Catch2's Approx mechanism, allowing for a configurable absolute tolerance.
+ * Performs component-wise floating-point comparison using Catch2's
+ * @ref Catch::Approx with a configurable absolute tolerance.
+ *
+ * This predicate is intended for use with @ref EqualsMatcher and
+ * @ref Equals when comparing vector-valued fields (e.g. cell centers,
+ * face centers, geometric quantities).
+ *
+ * Each component of the vector is compared independently using the same
+ * absolute tolerance.
+ *
+ * Example usage:
+ * @code
+ * std::vector<NeoN::Vec3> expected = {
+ *     {0.125, 0.5, 0.5},
+ *     {0.375, 0.5, 0.5}
+ * };
+ *
+ * REQUIRE_THAT(mesh.cellCenters(),
+ *              Equals(expected, Approx{1e-12}));
+ * @endcode
  */
-struct ApproxScalar
+struct Approx
 {
-    NeoN::scalar margin; ///< Absolute tolerance margin for the comparison.
+    NeoN::scalar margin; ///< Absolute tolerance used for each component.
+
+    /**
+     * @brief Returns true if vectors @p rhs and @p lhs are approximately equal.
+     *
+     * The comparison is performed component-wise using @ref Catch::Approx:
+     * \f[
+     * |rhs_i - lhs_i| \le \text{margin}, \quad i = 0,1,2
+     * \f]
+     *
+     * @param rhs Reference vector (used as the reference value in Catch::Approx).
+     * @param lhs Vector to compare against.
+     * @return @c true if all three components are approximately equal within
+     *         the specified tolerance.
+     */
+    bool operator()(const NeoN::Vec3& rhs, const NeoN::Vec3& lhs) const
+    {
+        return Catch::Approx(rhs[0]).margin(margin) == lhs[0]
+            && Catch::Approx(rhs[1]).margin(margin) == lhs[1]
+            && Catch::Approx(rhs[2]).margin(margin) == lhs[2];
+    }
 
     /**
      * @brief Returns true if @p rhs and @p lhs are equal within the stored margin.
@@ -49,7 +96,7 @@ struct ApproxScalar
 
 /** @brief Predicate for exact equality comparison using the built-in == operator.
  *
- * Used with @ref EqualsRangeMatcher and @ref IsEqualTo to compare integer or
+ * Used with @ref EqualsMatcher and @ref Equals to compare integer or
  * other exactly-comparable types (e.g. NeoN::Vec3, NeoN::label).
  */
 struct EqualInt
@@ -64,67 +111,185 @@ struct EqualInt
 
 
 /**
- * @brief Catch2 matcher that compares a NeoN device field against an expected std::vector.
+ * @brief Catch2 matcher for element-wise comparison between an actual field and expected values.
  *
- * Copies the field to host on construction, then element-wise compares it against
- * the expected vector using the supplied predicate.
+ * This matcher compares a NeoN field (or any compatible range) against an
+ * expected container using a user-provided predicate. The comparison is
+ * performed element-wise via @c std::equal.
  *
- * @tparam Range     A NeoN field type that exposes @c copyToHost() and @c view().
- * @tparam Predicate A binary callable returning @c bool, e.g. @ref ApproxScalar or @ref EqualInt.
- */
-template<typename Range, typename Predicate>
-struct EqualsRangeMatcher : Catch::Matchers::MatcherGenericBase
-{
-    /**
-     * @brief Constructs the matcher, copying @p range to host memory.
-     * @param range The device field to compare against.
-     * @param pred  The predicate used for element-wise comparison.
-     */
-    EqualsRangeMatcher(const Range range, Predicate pred) : range {range.copyToHost()}, pred_(pred)
-    {}
-
-    /** @brief Performs the element-wise comparison against @p other.
-     * @tparam ValueType Element type of the expected vector.
-     * @param other The expected values as a @c std::vector.
-     * @return @c true if all elements compare equal under the stored predicate.
-     */
-    template<typename ValueType>
-    bool match(const ValueType other) const
-    {
-        using std::begin;
-        using std::end;
-        return std::equal(begin(range.view()), end(range.view()), begin(other), end(other), pred_);
-    }
-
-    /** @brief Returns a human-readable description of the matcher for Catch2 failure
-     * messages. */
-    std::string describe() const override { return "!= " + Catch::rangeToString(range.view()); }
-
-private:
-
-    const Range range;     ///< Host copy of the device field.
-    const Predicate pred_; ///< Predicate used for element-wise comparison.
-};
-
-/**
- * @brief Factory function that creates an @ref EqualsRangeMatcher for a NeoN field.
+ * If the @p actual argument represents a device-resident field, it is first
+ * copied to host memory via @c copyToHost() before comparison.
  *
  * Typical usage:
  * @code
- * REQUIRE_THAT(expected_vec, IsEqualTo(mesh.faceOwner(), EqualInt()));
- * REQUIRE_THAT(expected_vec, IsEqualTo(field, ApproxScalar(1e-15)));
+ * std::vector<NeoN::Vec3> expected = { ... };
+ *
+ * REQUIRE_THAT(mesh.cellCenters(),
+ *              Equals(expected, ApproxVec3{1e-12}));
  * @endcode
  *
- * @tparam Range     A NeoN field type that exposes @c copyToHost() and @c view().
- * @tparam Predicate A binary callable returning @c bool (default: @ref ApproxScalar).
- * @param range The device field to compare against.
- * @param pred  The predicate used for element-wise comparison (default:
- * ApproxScalar(1e-32)).
- * @return An @ref EqualsRangeMatcher configured with the given field and predicate.
+ * @tparam Expected   Container type holding expected values (e.g. std::vector).
+ * @tparam Predicate  Binary callable returning @c bool for comparing two elements
+ *                    (e.g. @ref ApproxScalar, @ref ApproxVec3, @ref EqualInt).
  */
-template<typename Range, typename Predicate = ApproxScalar>
-auto IsEqualTo(const Range& range, Predicate pred = ApproxScalar(1e-32))
-    -> EqualsRangeMatcher<Range, Predicate>
+template<typename Expected, typename Predicate>
+struct EqualsMatcher : Catch::Matchers::MatcherGenericBase
 {
-    return EqualsRangeMatcher<Range, Predicate> {range, pred};
+    /**
+     * @brief Constructs the matcher with expected values and comparison predicate.
+     *
+     * @param expected Container holding the expected values.
+     * @param pred     Predicate used for element-wise comparison.
+     */
+    EqualsMatcher(Expected expected, Predicate pred) : expected_(std::move(expected)), pred_(pred)
+    {}
+
+    /**
+     * @brief Performs element-wise comparison against the @p actual argument.
+     *
+     * The @p actual object is assumed to be a NeoN field (or compatible type)
+     * exposing @c copyToHost() and @c view(). The data is copied to host memory
+     * and compared against @ref expected_ using @ref pred_.
+     *
+     * @tparam Actual Type of the actual object passed by Catch2.
+     * @param actual  The object under test (typically a NeoN field).
+     * @return @c true if all elements compare equal under the predicate,
+     *         @c false otherwise.
+     */
+    template<typename Actual>
+    bool match(const Actual& actual) const
+    {
+        using std::begin;
+        using std::end;
+
+        auto actualHost = actual.copyToHost();
+
+        if constexpr (hasCopyToHost<Expected>)
+        {
+            auto expectedHost = expected_.copyToHost();
+            return std::equal(
+                begin(actualHost.view()),
+                end(actualHost.view()),
+                begin(expectedHost.view()),
+                end(expectedHost.view()),
+                pred_
+            );
+        }
+        else
+        {
+            return std::equal(
+                begin(actualHost.view()),
+                end(actualHost.view()),
+                begin(expected_),
+                end(expected_),
+                pred_
+            );
+        }
+    }
+
+    /**
+     * @brief Returns a human-readable description of the matcher.
+     *
+     * This string is used by Catch2 when reporting assertion failures.
+     *
+     * @return Description of the expected values.
+     */
+    std::string describe() const override { return "equals " + Catch::rangeToString(expected_); }
+
+private:
+
+    Expected expected_; ///< Container holding expected values.
+    Predicate pred_;    ///< Predicate used for element-wise comparison.
+};
+
+
+/**
+ * @brief Factory function to create an @ref EqualsMatcher for element-wise comparison.
+ *
+ * This function constructs an @ref EqualsMatcher that compares an actual range
+ * (e.g. NeoN field or container) against an expected container using a
+ * user-defined predicate.
+ *
+ * It is intended for use with Catch2's @ref REQUIRE_THAT macro:
+ * @code
+ * REQUIRE_THAT(mesh.cellCenters(),
+ *              Equals(expectedCenters, ApproxVec3{1e-12}));
+ * @endcode
+ *
+ * If no predicate is provided, @ref ApproxScalar is used by default for
+ * floating-point comparisons with a small tolerance.
+ *
+ * @tparam Expected   Type of the expected container (e.g. std::vector<T>).
+ * @tparam Predicate  Binary predicate used for element-wise comparison.
+ *                    Defaults to @ref ApproxScalar.
+ *
+ * @param expected    Container holding the expected values.
+ * @param pred        Predicate used for comparison (default: ApproxScalar{1e-32}).
+ *
+ * @return An @ref EqualsMatcher configured with the provided expected values
+ *         and comparison predicate.
+ */
+template<typename Expected, typename Predicate = Approx>
+auto Equals(Expected expected, Predicate pred = Predicate {1e-32})
+{
+    return EqualsMatcher<Expected, Predicate> {std::move(expected), pred};
 }
+
+namespace Catch
+{
+
+/**
+ * @brief Disable Catch2's built-in range StringMaker for NeoN::Vector.
+ *
+ * NeoN::Vector exposes @c begin()/@c end() and is therefore detected as a range
+ * by Catch2's @ref is_range trait. Without this specialization, both Catch2's
+ * generic range StringMaker and the NeoN-specific one below match, producing
+ * an "ambiguous partial specializations" error. Disabling the range trait lets
+ * the NeoN-specific specialization win unambiguously and ensures
+ * device-resident vectors are copied to host before stringification.
+ */
+template<typename T>
+struct is_range<NeoN::Vector<T>> : std::false_type
+{
+};
+
+/**
+ * @brief Catch2 string conversion for NeoN::Vector.
+ *
+ * This specialization of @c Catch::StringMaker enables Catch2 to print
+ * @c NeoN::Vector objects in assertion messages. Without this, Catch2
+ * falls back to a placeholder ("{?}") because it does not know how to
+ * convert the type to a string.
+ *
+ * The vector is first copied from device to host memory (if applicable)
+ * using @c copyToHost(), and then converted to a string using
+ * @c Catch::rangeToString.
+ *
+ * This allows assertions such as:
+ * @code
+ * REQUIRE_THAT(checkSparse, Equals(I({1.0, 5.0, 7.0, 8.0})));
+ * @endcode
+ * to produce informative output like:
+ * @code
+ * { 1.0, 5.0, 6.999999, 8.0 } is equal to { 1.0, 5.0, 7.0, 8.0 }
+ * @endcode
+ *
+ * @tparam T Value type stored in the NeoN::Vector.
+ */
+template<typename T>
+struct StringMaker<NeoN::Vector<T>>
+{
+    /**
+     * @brief Converts a NeoN::Vector into a human-readable string.
+     *
+     * @param v The vector to convert (possibly device-resident).
+     * @return A string representation of the vector contents.
+     */
+    static std::string convert(const NeoN::Vector<T>& v)
+    {
+        auto host = v.copyToHost();
+        return rangeToString(host.view());
+    }
+};
+
+} // namespace Catch

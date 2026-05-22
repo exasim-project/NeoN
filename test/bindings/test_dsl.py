@@ -7,10 +7,10 @@ import neon
 from neon import exp, imp
 
 
-def test_dsl_scalar_operators():
+def test_dsl_scalar_operators(executor):
     # Setup
-    exec = neon.SerialExecutor()
-    mesh = neon.create_1d_uniform_mesh(exec, 10)
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10, 1.0)
     phi = neon.ScalarVolumeField(exec, "phi", mesh)
 
     # 1. Test Temporal Operator Construction
@@ -80,10 +80,10 @@ def test_dsl_scalar_operators():
     assert res_eqn.size() == 4
 
 
-def test_dsl_vector_operators():
+def test_dsl_vector_operators(executor):
     # Setup
-    exec = neon.SerialExecutor()
-    mesh = neon.create_1d_uniform_mesh(exec, 10)
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 10, 1.0)
     phi = neon.VectorVolumeField(exec, "phi", mesh)
     coeff = neon.ScalarVolumeField(exec, "coeff", mesh)
 
