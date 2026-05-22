@@ -14,33 +14,6 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
-void computeDivExp(
-    const SurfaceField<scalar>& faceFlux,
-    const VolumeField<ValueType>& phi,
-    const SurfaceInterpolation<ValueType>& surfInterp,
-    Vector<ValueType>& divPhi,
-    const dsl::Coeff operatorScaling
-);
-
-template<typename ValueType>
-void computeDivIntImp(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& faceFlux,
-    const VolumeField<ValueType>& phi,
-    const SurfaceField<scalar>& weights,
-    const dsl::Coeff operatorScaling
-);
-
-template<typename ValueType>
-void computeDivBoundImp(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& faceFlux,
-    const VolumeField<ValueType>& phi,
-    const SurfaceField<scalar>& weights,
-    const dsl::Coeff operatorScaling
-);
-
 /* @brief
  *
  */
@@ -71,59 +44,25 @@ public:
     virtual VolumeField<ValueType>
     div(const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override
-    {
-        std::string name = "div(" + faceFlux.name + "," + phi.name + ")";
-        VolumeField<ValueType> divPhi(
-            this->exec_,
-            name,
-            this->mesh_,
-            createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
-        );
-        NeoN::fill(divPhi.internalVector(), zero<ValueType>());
-        NeoN::fill(divPhi.boundaryData().value(), zero<ValueType>());
-        computeDivExp<ValueType>(
-            faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
-        );
-        return divPhi;
-    };
+        const dsl::Coeff operatorScaling) const override;
 
     virtual void
     div(VolumeField<ValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override
-    {
-        computeDivExp<ValueType>(
-            faceFlux, phi, surfaceInterpolation_, divPhi.internalVector(), operatorScaling
-        );
-    }
+        const dsl::Coeff operatorScaling) const override;
 
     virtual void
     div(Vector<ValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override
-    {
-        computeDivExp<ValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
-    };
+        const dsl::Coeff operatorScaling) const override;
 
     virtual void
     div(la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& faceFlux,
         const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling) const override
-    {
-        if (dynamic_cast<const la::CellBasedIterator*>(ls.getMeshIterator()->get().get())
-        != nullptr)
-        {
-            NF_ERROR_EXIT("CellBased iteration not implemented");
-        }
-        const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-        // computeDivImpGlobal(ls, faceFlux, phi, surfaceInterpolation_, operatorScaling);
-        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        computeDivBoundImp(ls, faceFlux, phi, weights, operatorScaling);
-    };
+        const dsl::Coeff operatorScaling) const override;
 
     std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
     {

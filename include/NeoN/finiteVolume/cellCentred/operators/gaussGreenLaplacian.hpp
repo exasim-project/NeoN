@@ -9,44 +9,18 @@
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
 void computeLaplacianExp(
-    const FaceNormalGradient<ValueType>&,
-    const SurfaceField<scalar>&,
-    const VolumeField<ValueType>&,
-    Vector<ValueType>&,
-    const dsl::Coeff
-);
-
-template<typename ValueType>
-void computeLaplacianIntImpl(
-    la::LinearSystem<ValueType>& ls,
+    const FaceNormalGradient<ValueType>& faceNormalGradient,
     const SurfaceField<scalar>& gamma,
     const VolumeField<ValueType>& phi,
-    const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
-);
-
-template<typename ValueType>
-void computeLaplacianBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
-    const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
-);
-
-template<typename ValueType>
-void computeLaplacianNonOrthCorrImpl(
-    la::LinearSystem<ValueType>& ls,
-    const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
-    const dsl::Coeff coeff,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    Vector<ValueType>& lapPhi,
+    const dsl::Coeff operatorScaling
 );
 
 template<typename ValueType>
@@ -73,53 +47,25 @@ public:
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff coeff
-    ) override
-    {
-        computeLaplacianExp<ValueType>(
-            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff
-        );
-    };
+    ) override;
 
     virtual VolumeField<ValueType> laplacian(
         const SurfaceField<scalar>& gamma, const VolumeField<ValueType>& phi, const dsl::Coeff coeff
-    ) const override
-    {
-        std::string name = "laplacian(" + gamma.name + "," + phi.name + ")";
-        VolumeField<ValueType> lapPhi(
-            this->exec_,
-            name,
-            this->mesh_,
-            createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
-        );
-        NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
-        NeoN::fill(lapPhi.boundaryData().value(), zero<ValueType>());
-        computeLaplacianExp<ValueType>(
-            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff
-        );
-        return lapPhi;
-    };
+    ) const override;
 
     virtual void laplacian(
         Vector<ValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff coeff
-    ) override
-    {
-        computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi, coeff);
-    };
+    ) override;
 
     virtual void laplacian(
         la::LinearSystem<ValueType>& ls,
         const SurfaceField<scalar>& gamma,
         const VolumeField<ValueType>& phi,
         const dsl::Coeff coeff
-    ) override
-    {
-        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-        computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-        computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    };
+    ) override;
 
     std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override
     {

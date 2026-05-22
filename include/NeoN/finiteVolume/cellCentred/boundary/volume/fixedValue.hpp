@@ -67,6 +67,8 @@ public:
 
     static std::string name() { return "fixedValue"; }
 
+    std::string getName() const override { return name(); }
+
     static std::string doc() { return "Set a fixed value on the boundary"; }
 
     static std::string schema() { return "none"; }

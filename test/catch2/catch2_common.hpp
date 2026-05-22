@@ -292,4 +292,27 @@ struct StringMaker<NeoN::Vector<T>>
     }
 };
 
+template<typename VectorValueType>
+void randomizeVector(NeoN::Vector<VectorValueType>& a)
+{
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_real_distribution<> dis(1.0, 2.0);
+
+    auto b = a.copyToHost();
+    auto bV = b.view();
+
+    for (int i = 0; i < b.size(); i++)
+    {
+        bV[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    }
+    auto c = b.copyToExecutor(a.exec());
+    a = c;
+}
+
+template<typename VectorValueType>
+void randomizeVector(fvcc::VolumeField<VectorValueType>& a)
+{
+    randomizeVector(a.internalVector());
+}
 } // namespace Catch

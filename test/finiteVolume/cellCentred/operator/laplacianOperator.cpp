@@ -232,4 +232,41 @@ TEMPLATE_TEST_CASE("laplacianOperator boundary contributions are accumulated", "
     }
 }
 
+TEMPLATE_TEST_CASE(
+    "Face based and cellbased iteration give same results", "[template]", NeoN::scalar
+)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+    fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Input input =
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")});
+
+    auto lsFaceBased = la::createEmptyLinearSystem<TestType>(mesh);
+
+    auto cellIterator = std::make_shared<la::CellBasedIterator>();
+    auto lsCellBased = la::createEmptyLinearSystem<TestType>(mesh, cellIterator);
+
+    dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
+    lapOp.read(input);
+    lapOp.implicitOperation(lsFaceBased);
+    lapOp.implicitOperation(lsCellBased);
+
+    REQUIRE_THAT(
+        lsFaceBased.matrix().values(), Equals(lsCellBased.matrix().values(), Approx {1e-12})
+    );
+}
+
 } // namespace NeoN

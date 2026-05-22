@@ -126,6 +126,8 @@ public:
 
     static std::string name() { return "symmetry"; }
 
+    std::string getName() const override { return name(); }
+
     static std::string doc()
     {
         return "Symmetry plane (scalar: zero-gradient; vector: tangential projection).";

@@ -31,6 +31,8 @@ public:
 
     static std::string name() { return "calculated"; }
 
+    std::string getName() const override { return name(); }
+
     static std::string doc() { return "TBD"; }
 
     static std::string schema() { return "none"; }

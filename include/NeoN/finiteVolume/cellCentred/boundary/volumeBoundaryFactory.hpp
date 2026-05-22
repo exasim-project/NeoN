@@ -25,7 +25,9 @@ class BoundaryContext;
 struct BoundaryAttributes
 {
     bool assignable; ///< whether values can be assigned to the boundary patch
-    bool fixesValue;
+    bool fixesValue; ///< whether the bc enforces a fixed field value (Dirichlet), not a
+                     ///< gradient/Neumann condition NOTE this is somewhat redundant to
+                     ///< valueFraction of boundaryData
 };
 
 template<typename ValueType>
@@ -57,6 +59,8 @@ public:
     }
 
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
+
+    virtual std::string getName() const = 0;
 
     BoundaryAttributes attributes() const { return attributes_; }
 
@@ -107,6 +111,8 @@ public:
     {
         return boundaryCorrectionStrategy_->attributes();
     }
+
+    const std::string name() const { return boundaryCorrectionStrategy_->getName(); }
 
 private:
 

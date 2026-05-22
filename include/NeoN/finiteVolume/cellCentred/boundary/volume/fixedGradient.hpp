@@ -39,7 +39,6 @@ void setGradientValue(
         mesh.boundaryMesh().deltaCoeffs()
     );
 
-
     NeoN::parallelFor(
         domainVector.exec(),
         range,
@@ -78,6 +77,8 @@ public:
     }
 
     static std::string name() { return "fixedGradient"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "Set a fixed gradient on the boundary."; }
 

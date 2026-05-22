@@ -193,4 +193,40 @@ TEST_CASE("DivOperator implicit boundary contributions are accumulated")
     }
 }
 
+TEMPLATE_TEST_CASE(
+    "Face based and cellbased iteration give same results", "[template]", NeoN::scalar
+)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
+
+    fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
+    fill(faceFlux.internalVector(), 1.0);
+    fill(faceFlux.boundaryData().value(), 1.0);
+
+    Input input = TokenList({std::string("Gauss"), std::string("linear")});
+
+    auto lsFaceBased = NeoN::la::createEmptyLinearSystem<NeoN::scalar>(mesh);
+
+    auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+    auto lsCellBased = NeoN::la::createEmptyLinearSystem<NeoN::scalar>(mesh, cellIterator);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+    fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    dsl::SpatialOperator divOp = dsl::imp::div(faceFlux, phi);
+    divOp.read(input);
+    divOp.implicitOperation(lsFaceBased);
+    divOp.implicitOperation(lsCellBased);
+
+    REQUIRE_THAT(
+        lsFaceBased.matrix().values(), Equals(lsCellBased.matrix().values(), Approx {1e-12})
+    );
+}
+
 } // namespace NeoN

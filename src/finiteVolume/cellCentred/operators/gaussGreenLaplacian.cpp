@@ -79,19 +79,6 @@ void computeLaplacianExp(
     );
 }
 
-#define NF_DECLARE_COMPUTE_EXP_LAP(TYPENAME)                                                       \
-    template void computeLaplacianExp<TYPENAME>(                                                   \
-        const FaceNormalGradient<TYPENAME>&,                                                       \
-        const SurfaceField<scalar>&,                                                               \
-        const VolumeField<TYPENAME>&,                                                              \
-        Vector<TYPENAME>&,                                                                         \
-        const dsl::Coeff                                                                           \
-    )
-
-NF_DECLARE_COMPUTE_EXP_LAP(scalar);
-NF_DECLARE_COMPUTE_EXP_LAP(Vec3);
-
-
 template<typename ValueType>
 void computeLaplacianBoundImpl(
     la::LinearSystem<ValueType>& ls,
@@ -261,16 +248,119 @@ void computeLaplacianIntImpl(
     );
 }
 
-#define NN_DECLARE_COMPUTE_IMP_LAP(TYPENAME)                                                                                                                      \
-    template void computeLaplacianIntImpl<                                                                                                                        \
-        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&); \
-    template void computeLaplacianBoundImpl<                                                                                                                      \
-        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&); \
-    template void computeLaplacianNonOrthCorrImpl<                                                                                                                \
-        TYPENAME>(la::LinearSystem<TYPENAME>&, const SurfaceField<scalar>&, const VolumeField<TYPENAME>&, const dsl::Coeff, const FaceNormalGradient<TYPENAME>&)
+template<typename ValueType>
+void computeLaplacianIntCellBasedImpl(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto exec = phi.exec();
 
-NN_DECLARE_COMPUTE_IMP_LAP(scalar);
-NN_DECLARE_COMPUTE_IMP_LAP(Vec3);
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    auto iterator = std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get());
+
+    const auto [gammaV, deltaCoeffs, magFaceArea] = views(
+        gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector(), mesh.faceAreas()
+    );
+
+    auto cellBasedData = iterator->getCellBasedData();
+    auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.views();
+    auto matrixColumnIdxV = cellBasedData->matrixColumnIdx.view();
+
+    auto values = ls.matrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, iterator->size()},
+        NEON_LAMBDA(const localIdx celli) {
+            auto diagValue = zero<ValueType>();
+            const auto numFaces = cellFacesSegments[celli + 1] - cellFacesSegments[celli];
+            const auto startIdx = cellFacesSegments[celli];
+            const auto cellCoeff = coeff[celli];
+
+            for (localIdx i = 0; i < numFaces; ++i)
+            {
+                const auto faceIdx = cellFacesValues[startIdx + i];
+                // Laplacian is symmetric: flux contribution is identical for owner and neighbor
+                const auto offDiag = deltaCoeffs[faceIdx] * gammaV[faceIdx] * magFaceArea[faceIdx]
+                                   * cellCoeff * one<ValueType>();
+
+                values[matrixColumnIdxV[startIdx + i]] += offDiag;
+                diagValue -= offDiag;
+            }
+
+            values[ma.diagIdx(celli)] += diagValue;
+        },
+        "cellBasedLaplacian::cellLoop"
+    );
+}
+
+template<typename ValueType>
+void GaussGreenLaplacian<ValueType>::laplacian(
+    VolumeField<ValueType>& lapPhi,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff coeff
+)
+{
+    computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff);
+}
+
+template<typename ValueType>
+VolumeField<ValueType> GaussGreenLaplacian<ValueType>::laplacian(
+    const SurfaceField<scalar>& gamma, const VolumeField<ValueType>& phi, const dsl::Coeff coeff
+) const
+{
+    std::string name = "laplacian(" + gamma.name + "," + phi.name + ")";
+    VolumeField<ValueType> lapPhi(
+        this->exec_, name, this->mesh_, createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
+    );
+    NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
+    NeoN::fill(lapPhi.boundaryData().value(), zero<ValueType>());
+    computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff);
+    return lapPhi;
+}
+
+template<typename ValueType>
+void GaussGreenLaplacian<ValueType>::laplacian(
+    Vector<ValueType>& lapPhi,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff coeff
+)
+{
+    computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi, coeff);
+}
+
+template<typename ValueType>
+void GaussGreenLaplacian<ValueType>::laplacian(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff coeff
+)
+{
+    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        if (!cellIter->getCellBasedData())
+        {
+            cellIter->setComputeCellBasedData(
+                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            );
+        }
+        computeLaplacianIntCellBasedImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    }
+    else
+    {
+        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    }
+    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+};
 
 template class GaussGreenLaplacian<scalar>;
 template class GaussGreenLaplacian<Vec3>;

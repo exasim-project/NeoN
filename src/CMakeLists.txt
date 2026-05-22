@@ -52,6 +52,8 @@ target_sources(
           "finiteVolume/cellCentred/stencil/cellToFaceStencil.cpp"
           "finiteVolume/cellCentred/boundary/boundary.cpp"
           "finiteVolume/cellCentred/boundary/boundaryContext.cpp"
+          "finiteVolume/cellCentred/boundary/surface/processor.cpp"
+          "finiteVolume/cellCentred/boundary/volume/processor.cpp"
           "finiteVolume/cellCentred/operators/ddtOperator.cpp"
           "finiteVolume/cellCentred/fields/volumeField.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
