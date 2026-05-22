@@ -39,7 +39,7 @@ target_sources(
           "executor/serialExecutor.cpp"
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
-          "linearAlgebra/ginkgo.cpp"
+          "linearAlgebra/ginkgo/ginkgo.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
           "linearAlgebra/cooSparsityPattern.cpp"
           "linearAlgebra/csrSparsityPattern.cpp"
@@ -72,8 +72,10 @@ target_sources(
 
 if(NeoN_WITH_MPI)
   target_sources(
-    NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp" "mesh/unstructured/communicator.cpp"
-                 "mesh/unstructured/distributedUnstructuredMesh.cpp")
+    NeoN
+    PRIVATE "core/mpi/halfDuplexCommBuffer.cpp" "mesh/unstructured/communicator.cpp"
+            "mesh/unstructured/distributedUnstructuredMesh.cpp"
+            "linearAlgebra/ginkgo/ginkgoDistributed.cpp" "linearAlgebra/ginkgo/ginkgoL1Stop.cpp")
 endif()
 
 if(NeoN_BUILD_PYTHON_BINDINGS)

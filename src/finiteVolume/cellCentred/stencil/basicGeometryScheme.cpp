@@ -237,17 +237,19 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
     {
-        const auto bFaceCenters = mesh_.boundaryMesh().faceCenters().view();
-        const auto bFaceNormals = mesh_.boundaryMesh().faceNormals().view();
-        const auto bFaceAreas = mesh_.boundaryMesh().faceAreas().view();
         const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
         const auto dNeiView = dNei.view();
+        const auto [bFaceNormals, bFaceArea, bFaceCenters] = views(
+            mesh_.boundaryMesh().faceNormals(),
+            mesh_.boundaryMesh().faceAreas(),
+            mesh_.boundaryMesh().faceCenters()
+        );
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
                 const localIdx bfi = nBoundaryFaces + procFacei;
-                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+                const Vec3 n = (1.0 / bFaceArea[bfi]) * bFaceNormals[bfi];
                 const Vec3 co = cellCenters[surfFaceCells[bfi]];
                 const scalar dOwn = std::abs(n & (bFaceCenters[bfi] - co));
                 nonOrthDeltaCoeffB[bfi] =

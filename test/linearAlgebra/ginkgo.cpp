@@ -90,6 +90,60 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
     }
 }
 
+TEST_CASE("gkoVecView - Ginkgo")
+{
+    NeoN::Executor exec = NeoN::SerialExecutor {};
+    auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+
+    SECTION("scalar mutable: 1-column non-owning Dense")
+    {
+        localIdx n = 4;
+        Vector<scalar> v(exec, {1.0, 2.0, 3.0, 4.0});
+        auto dense = NeoN::la::ginkgo::gkoVecView(gkoExec, v.data(), n);
+
+        CHECK(dense->get_size()[0] == static_cast<gko::size_type>(n));
+        CHECK(dense->get_size()[1] == gko::size_type {1});
+        CHECK(dense->get_stride() == gko::size_type {1});
+        CHECK(dense->get_values() == v.data());
+    }
+
+    SECTION("scalar const: 1-column non-owning Dense")
+    {
+        localIdx n = 4;
+        const Vector<scalar> v(exec, {1.0, 2.0, 3.0, 4.0});
+        auto dense = NeoN::la::ginkgo::gkoVecView(gkoExec, v.data(), n);
+
+        CHECK(dense->get_size()[0] == static_cast<gko::size_type>(n));
+        CHECK(dense->get_size()[1] == gko::size_type {1});
+        CHECK(dense->get_stride() == gko::size_type {1});
+        CHECK(dense->get_const_values() == v.data());
+    }
+
+    SECTION("Vec3 mutable: 3-column non-owning Dense")
+    {
+        localIdx n = 3;
+        Vector<Vec3> v(exec, {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
+        auto dense = NeoN::la::ginkgo::gkoVecView(gkoExec, v.data(), n);
+
+        CHECK(dense->get_size()[0] == static_cast<gko::size_type>(n));
+        CHECK(dense->get_size()[1] == gko::size_type {3});
+        CHECK(dense->get_stride() == gko::size_type {3});
+        CHECK(dense->get_values() == reinterpret_cast<scalar*>(v.data()));
+    }
+
+    SECTION("Vec3 const: 3-column non-owning Dense")
+    {
+        localIdx n = 3;
+        const Vector<Vec3> v(exec, {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
+        auto dense = NeoN::la::ginkgo::gkoVecView(gkoExec, v.data(), n);
+
+        CHECK(dense->get_size()[0] == static_cast<gko::size_type>(n));
+        CHECK(dense->get_size()[1] == gko::size_type {3});
+        CHECK(dense->get_stride() == gko::size_type {3});
+        CHECK(dense->get_const_values() == reinterpret_cast<const scalar*>(v.data()));
+    }
+}
+
 TEST_CASE("MatrixConversion - Ginkgo")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -268,6 +322,50 @@ TEST_CASE("MatrixAssembly - Ginkgo")
                 REQUIRE(initResNorm == Catch::Approx(6.4807406984).margin(1e-8));
                 REQUIRE(finalResNorm < 1.0e-04);
             }
+        }
+
+        SECTION("Solve linear system wo boundary scalar with multiple rhs " + execName)
+        {
+            Vector<scalar> values(exec, {1.0, -0.1, -0.1, 1.0, -0.1, -0.1, 1.0});
+            CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+            Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
+
+            Vector<scalar> bValues(exec, {});
+            COOMatrix<scalar, localIdx> bCsrMatrix(bValues, bSparsity);
+            Vector<Vec3> bRhs(exec, {});
+
+            auto linearSystem = LinearSystem<
+                scalar,
+                NeoN::la::CSRMatrix<scalar, NeoN::localIdx>,
+                NeoN::la::COOMatrix<scalar, NeoN::localIdx>,
+                NeoN::Vec3>(csrMatrix, rhs, bCsrMatrix, bRhs);
+
+            Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
+
+            Dictionary solverDict {
+                {{"solver", std::string {"Ginkgo"}},
+                 {"type", "solver::Cg"},
+                 {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+            };
+
+            // Create solver
+            auto solver = NeoN::la::Solver(exec, solverDict);
+
+            // Solve system
+            auto solverStats = solver.solve(linearSystem, x);
+            auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+            auto hostX = x.copyToHost();
+            auto hostXS = hostX.view();
+            for (int c = 0; c < 3; ++c)
+            {
+                REQUIRE((hostXS[0][c]) == Catch::Approx(1.24489796).margin(1e-8));
+                REQUIRE((hostXS[1][c]) == Catch::Approx(2.44897959).margin(1e-8));
+                REQUIRE((hostXS[2][c]) == Catch::Approx(3.24489796).margin(1e-8));
+            }
+            REQUIRE(numIter == 3);
+            REQUIRE(initResNorm == Catch::Approx(3.741657386).margin(1e-8));
+            REQUIRE(finalResNorm < 1.0e-04);
         }
     }
 }

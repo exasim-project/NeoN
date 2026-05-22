@@ -58,6 +58,27 @@ public:
     virtual SolverStats
     solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const = 0;
 
+    virtual SolverStats
+    solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&, Vector<Vec3>&)
+        const
+    {
+        NF_THROW("solve(scalar matrix, Vec3 rhs) not implemented for this solver");
+    }
+
+#ifdef NF_WITH_MPI_SUPPORT
+    virtual SolverStats
+    solveDist(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const
+    {
+        NF_THROW("solveDist not implemented for this solver");
+    }
+
+    virtual SolverStats
+    solveDist(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const
+    {
+        NF_THROW("solveDist not implemented for this solver");
+    }
+#endif
+
     // Pure virtual function for cloning
     virtual std::unique_ptr<SolverFactory> clone() const = 0;
 
@@ -86,11 +107,26 @@ public:
     SolverStats
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
     {
+#ifdef NF_WITH_MPI_SUPPORT
+        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
+#endif
         return solverInstance_->solve(ls, field);
     }
 
     SolverStats
     solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
+#endif
+        return solverInstance_->solve(ls, field);
+    }
+
+    SolverStats solve(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&
+            ls,
+        Vector<Vec3>& field
+    ) const
     {
         return solverInstance_->solve(ls, field);
     }

@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "NeoN/core/error.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/fields/field.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
@@ -16,6 +18,9 @@
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/core/mpi/environment.hpp"
+#endif
 
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -27,7 +32,64 @@ template<typename VectorType, typename IndexType>
 struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
-    virtual void operator()(la::LinearSystem<VectorType, la::CSRMatrix<VectorType, IndexType>>&) {};
+    virtual void
+    operator()(la::LinearSystem<VectorType, la::CSRMatrix<VectorType, IndexType>>&) const {};
+};
+
+/**
+ * @class SetReference
+ * @brief Post-assembly functor that pins one cell's value to a reference, removing the
+ *        constant null space that arises when all boundaries have Neumann (zero-gradient)
+ *        conditions on operators such as laplacian or div+laplacian.
+ *
+ * Modifies the assembled linear system in-place:
+ *   A[refCell, refCell] += A[refCell, refCell]   (doubles the diagonal)
+ *   rhs[refCell]        += A[refCell, refCell] * refValue
+ *
+ * For distributed systems only the rank that owns the reference cell (assumed to be
+ * rank 0 for local cell index 0) applies the modification; all other ranks skip it.
+ * For non-distributed systems every rank applies it independently (each holds a full copy).
+ */
+template<typename ValueType, typename IndexType = localIdx>
+class SetReference : public PostAssemblyBase<ValueType, IndexType>
+{
+public:
+
+    SetReference(localIdx refCell, ValueType refValue) : refCell_(refCell), refValue_(refValue) {}
+
+    void operator()(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
+    ) const override
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        // For distributed systems, only the rank owning refCell applies the constraint.
+        // For non-distributed systems (each rank holds a full copy), every rank applies it.
+        if (!ls.commPattern().sendCounts.empty())
+        {
+            mpi::Environment mpiEnv;
+            if (mpiEnv.isInitialized() && mpiEnv.rank() != 0) return;
+        }
+#endif
+        auto lsView = ls.view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+        auto refVal = refValue_;
+        auto refCell = refCell_;
+        parallelFor(
+            ls.exec(),
+            {refCell, refCell + 1},
+            NEON_LAMBDA(const localIdx celli) {
+                auto dIdx = ma.diagIdx(celli);
+                auto diagVal = lsView.matrix.values[dIdx];
+                lsView.rhs[celli] += diagVal * refVal;
+                lsView.matrix.values[dIdx] += diagVal;
+            },
+            "SetReference"
+        );
+    }
+
+private:
+
+    localIdx refCell_;
+    ValueType refValue_;
 };
 
 
@@ -128,14 +190,14 @@ public:
 
     /** @brief construct a linear system and force assembly
      *
-     * @param ps a vector of functor performing transformation on the created linear system
+     * @param ps post-assembly functors applied to the system after assembly
      * @return the assembled linear system
      */
     la::LinearSystem<ValueType> assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
-        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+        std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
         auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
@@ -145,22 +207,21 @@ public:
 
     /* @brief assemble into a given linear system
      *
-     * @param ps a vector of functor performing transformation on the created linear system
+     * @param ps post-assembly functors applied to the system after assembly
      */
     void assemble(
         scalar t,
         scalar dt,
         la::LinearSystem<ValueType>& ls,
-        std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
+        std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 
-        // perform post assembly transformations
-        for (auto p : ps)
+        for (const auto* p : ps)
         {
-            p(ls);
+            (*p)(ls);
         }
     }
 
