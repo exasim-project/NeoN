@@ -167,12 +167,12 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
 namespace NeoN::la::ginkgo
 {
 
-label computeNRows(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys)
+label computeNRows(const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys)
 {
     return 3 * sys.rhs().size();
 }
 
-label computeNRows(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys)
+label computeNRows(const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys)
 {
     return sys.rhs().size();
 }
@@ -314,9 +314,59 @@ SolverStatsEntry solve_impl(
     return {numIter, initResNorm, finalResNorm, duration};
 }
 
+SolverStatsEntry solve_impl(
+    std::shared_ptr<const gko::Executor> exec,
+    const Vector<Vec3>& rhs,
+    Vector<Vec3>& xIn,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::unique_ptr<gko::LinOp> solver
+)
+{
+    exec->synchronize();
+    auto startEval = std::chrono::steady_clock::now();
+
+    using vec = gko::matrix::Dense<scalar>;
+    label nrows = rhs.size();
+    const auto b = gkoVecView(exec, rhs.data(), nrows);
+    auto x = gkoVecView(exec, xIn.data(), nrows);
+
+    // create a copy of rhs so that we can inline compute
+    // the residual
+    auto rhsCopy = Vector<Vec3>(rhs);
+    auto res = gkoVecView(exec, rhsCopy.data(), nrows);
+
+    // compute Ax-b -> res
+    auto one = gko::initialize<vec>({1.0}, exec);
+    auto neg_one = gko::initialize<vec>({-1.0}, exec);
+    mtx->apply(one, x, neg_one, res);
+
+    auto init = gko::initialize<vec>({0.0}, exec);
+    res->compute_norm2(init);
+    scalar initResNorm = retrieve(init);
+
+    std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+        gko::log::Convergence<scalar>::create();
+    solver->add_logger(logger);
+    solver->apply(b, x);
+
+    // since we work on a copy we need to copy back
+    scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+
+    auto numIter = label(logger->get_num_iterations());
+    exec->synchronize();
+    auto endEval = std::chrono::steady_clock::now();
+    auto duration =
+        static_cast<scalar>(
+            std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+        )
+        / 1000.0;
+
+    return {numIter, initResNorm, finalResNorm, duration};
+}
+
 
 SolverStats GinkgoSolver::solve(
-    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
@@ -328,7 +378,7 @@ SolverStats GinkgoSolver::solve(
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
     std::shared_ptr<const gko::Executor> exec,
-    const LinearSystem<Vec3, CSRMatrix<Vec3, IndexType>>& sys
+    const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, IndexType>>& sys
 )
 {
     // NOTE we get a const view of the system but need a non const view to vals and indices
@@ -363,8 +413,9 @@ void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
     setComponent<I>(xcopy, x);
 }
 
-SolverStats
-GinkgoSolver::solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const
+SolverStats GinkgoSolver::solve(
+    const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+) const
 {
     if (coupled_)
     {
@@ -408,7 +459,7 @@ void solveVec3RhsComponent(
 }
 
 SolverStats GinkgoSolver::solve(
-    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>& sys,
+    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
     Vector<Vec3>& x
 ) const
 {

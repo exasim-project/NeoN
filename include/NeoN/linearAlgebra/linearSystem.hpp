@@ -71,12 +71,12 @@ struct LinearSystemView
  */
 template<
     typename MatrixValueType,
+    typename RHSValueType = MatrixValueType,
     typename SystemMatrixType = CSRMatrix<MatrixValueType, localIdx>,
-    typename BoundaryMatrixType = COOMatrix<MatrixValueType, localIdx>,
-    typename RHSValueType = MatrixValueType>
+    typename BoundaryMatrixType = COOMatrix<MatrixValueType, localIdx>>
 class LinearSystem :
     public NeoN::SupportsCopyTo<
-        LinearSystem<MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType>>
+        LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>>
 {
 
     void validate()
@@ -164,16 +164,15 @@ public:
 
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
 
-    [[nodiscard]] LinearSystem<MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType>
+    [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
     {
-        LinearSystem<MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType> ls {
+        LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
             matrix_.copyToExecutor(exec),
             rhs_.copyToExecutor(exec),
             offDiagonalMatrix_.copyToExecutor(exec),
             boundaryMatrix_.copyToExecutor(exec),
-            boundaryRhs_.copyToExecutor(exec),
-            offDiagonalMatrix_.copyToExecutor(exec)
+            boundaryRhs_.copyToExecutor(exec)
         };
 #ifdef NF_WITH_MPI_SUPPORT
         ls.commPattern_ = commPattern_;
@@ -272,9 +271,10 @@ private:
  */
 template<
     typename ValueType,
+    typename RHSValueType = ValueType,
     typename SystemMatrixType = CSRMatrix<ValueType, localIdx>,
     typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearSystem(
+LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearSystem(
     const UnstructuredMesh& mesh,
     std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
 )
@@ -335,13 +335,12 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
         std::move(offDiagColIdxs), std::move(offDiagRowIdxs), Dimensions {nCells, nCells}
     );
 
-    LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> ls {
+    LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
         SystemMatrixType(Vector<ValueType>(sp->exec(), sp->nnz(), zero<ValueType>()), sp, mi),
-        Vector<ValueType>(sp->exec(), sp->rows(), zero<ValueType>()),
+        Vector<RHSValueType>(sp->exec(), sp->rows(), zero<RHSValueType>()),
         BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
-        Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()),
-        BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
+        Vector<RHSValueType>(bSp->exec(), bSp->nnz(), zero<RHSValueType>()),
         strategy
     };
 

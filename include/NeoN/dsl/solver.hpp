@@ -27,9 +27,7 @@ namespace detail
 template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    la::LinearSystem<
-        typename VectorType::ElementType,
-        la::CSRMatrix<typename VectorType::ElementType, IndexType>>& ls,
+    la::LinearSystem<typename VectorType::ElementType>& ls,
     VectorType& solution,
     scalar t,
     scalar dt,

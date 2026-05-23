@@ -18,23 +18,25 @@ namespace NeoN::finiteVolume::cellCentred
 /* @class Factory class to create divergence operators by a given name using
  * using NeoNs runTimeFactory mechanism
  */
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class DivOperatorFactory :
     public RuntimeSelectionFactory<
-        DivOperatorFactory<ValueType>,
+        DivOperatorFactory<FieldValueType, AssemblyType>,
         Parameters<const Executor&, const UnstructuredMesh&, const Input&>>
 {
 
 public:
 
-    static std::unique_ptr<DivOperatorFactory<ValueType>>
+    static std::unique_ptr<DivOperatorFactory<FieldValueType, AssemblyType>>
     create(const Executor& exec, const UnstructuredMesh& uMesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<Dictionary>(inputs))
                             ? std::get<Dictionary>(inputs).get<std::string>("DivOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
-        DivOperatorFactory<ValueType>::keyExistsOrError(key);
-        return DivOperatorFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
+        DivOperatorFactory<FieldValueType, AssemblyType>::keyExistsOrError(key);
+        return DivOperatorFactory<FieldValueType, AssemblyType>::table().at(key)(
+            exec, uMesh, inputs
+        );
     }
 
     static std::string name() { return "DivOperatorFactory"; }
@@ -45,30 +47,30 @@ public:
     virtual ~DivOperatorFactory() {} // Virtual destructor
 
     virtual void
-    div(VolumeField<ValueType>& divPhi,
+    div(VolumeField<FieldValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
     virtual void
-    div(la::LinearSystem<ValueType>& ls,
+    div(la::LinearSystem<AssemblyType, FieldValueType>& ls,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
     virtual void
-    div(Vector<ValueType>& divPhi,
+    div(Vector<FieldValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
-    virtual VolumeField<ValueType>
+    virtual VolumeField<FieldValueType>
     div(const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
     // Pure virtual function for cloning
-    virtual std::unique_ptr<DivOperatorFactory<ValueType>> clone() const = 0;
+    virtual std::unique_ptr<DivOperatorFactory<FieldValueType, AssemblyType>> clone() const = 0;
 
 protected:
 
@@ -77,93 +79,115 @@ protected:
     const UnstructuredMesh& mesh_;
 };
 
-template<typename ValueType>
-class DivOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
+template<typename FieldValueType>
+class DivOperator : public dsl::OperatorMixin<VolumeField<FieldValueType>>
 {
 
 public:
 
-    using VectorValueType = ValueType;
+    using VectorValueType = FieldValueType;
 
     // copy constructor
     DivOperator(const DivOperator& divOp)
-        : dsl::OperatorMixin<VolumeField<ValueType>>(
+        : dsl::OperatorMixin<VolumeField<FieldValueType>>(
             divOp.exec_, divOp.coeffs_, divOp.field_, divOp.type_
         ),
           faceFlux_(divOp.faceFlux_),
-          divOperatorStrategy_(
-              divOp.divOperatorStrategy_ ? divOp.divOperatorStrategy_->clone() : nullptr
+          sameTypeStrategy_(divOp.sameTypeStrategy_ ? divOp.sameTypeStrategy_->clone() : nullptr),
+          scalarMtxStrategy_(
+              divOp.scalarMtxStrategy_ ? divOp.scalarMtxStrategy_->clone() : nullptr
           ) {};
 
     DivOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         Input input
     )
-        : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
+        : dsl::OperatorMixin<VolumeField<FieldValueType>>(
+            phi.exec(), dsl::Coeff(1.0), phi, termType
+        ),
           faceFlux_(faceFlux),
-          divOperatorStrategy_(DivOperatorFactory<ValueType>::create(phi.exec(), phi.mesh(), input)
-          ) {};
-
-    DivOperator(
-        dsl::Operator::Type termType,
-        const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
-        std::unique_ptr<DivOperatorFactory<ValueType>> divOperatorStrategy
-    )
-        : dsl::OperatorMixin<VolumeField<scalar>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
-          faceFlux_(faceFlux), divOperatorStrategy_(std::move(divOperatorStrategy)) {};
-
-    DivOperator(
-        dsl::Operator::Type termType,
-        const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi
-    )
-        : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
-          faceFlux_(faceFlux), divOperatorStrategy_(nullptr) {};
-
-
-    void explicitOperation(Vector<ValueType>& source) const
+          sameTypeStrategy_(DivOperatorFactory<FieldValueType, FieldValueType>::create(
+              phi.exec(), phi.mesh(), input
+          )),
+          scalarMtxStrategy_(nullptr)
     {
-        NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
-        auto tmpsource = Vector<ValueType>(source.exec(), source.size(), zero<ValueType>());
+        if constexpr (!std::is_same_v<FieldValueType, scalar>)
+        {
+            // The first create() consumed tokens; rewind the cursor so the second
+            // strategy can read the same scheme tokens from the start.
+            if (std::holds_alternative<NeoN::TokenList>(input))
+            {
+                std::get<NeoN::TokenList>(input).reset();
+            }
+            scalarMtxStrategy_ =
+                DivOperatorFactory<FieldValueType, scalar>::create(phi.exec(), phi.mesh(), input);
+        }
+    };
+
+    DivOperator(
+        dsl::Operator::Type termType,
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<FieldValueType>& phi
+    )
+        : dsl::OperatorMixin<VolumeField<FieldValueType>>(
+            phi.exec(), dsl::Coeff(1.0), phi, termType
+        ),
+          faceFlux_(faceFlux), sameTypeStrategy_(nullptr), scalarMtxStrategy_(nullptr) {};
+
+
+    void explicitOperation(Vector<FieldValueType>& source) const
+    {
+        NF_ASSERT(sameTypeStrategy_, "DivOperatorStrategy not initialized");
+        auto tmpsource =
+            Vector<FieldValueType>(source.exec(), source.size(), zero<FieldValueType>());
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(tmpsource, faceFlux_, this->getVector(), operatorScaling);
+        sameTypeStrategy_->div(tmpsource, faceFlux_, this->getVector(), operatorScaling);
         source += tmpsource;
     }
 
-    void implicitOperation(la::LinearSystem<ValueType>& ls) const
+    void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType>& ls) const
     {
-        NF_ASSERT(divOperatorStrategy_, "DivOperatorStrategy not initialized");
+        NF_ASSERT(sameTypeStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
+        sameTypeStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    [[deprecated("use explicit or implicit operation")]] void div(auto&&... args) const
+    /* @brief Implicit assembly into a scalar-matrix / FieldValueType-rhs linear system
+     *        (segregated vector-solve form). Only present when FieldValueType != scalar;
+     *        for scalar fields the same-type overload above already covers this signature.
+     */
+    template<typename F = FieldValueType>
+        requires(!std::is_same_v<F, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, FieldValueType>& ls) const
     {
+        NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(
-            std::forward<decltype(args)>(args)..., faceFlux_, this->getVector(), operatorScaling
-        );
+        scalarMtxStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
     void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->getVector().mesh();
+        NeoN::TokenList tokens;
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
-            auto tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
-            divOperatorStrategy_ =
-                DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
         }
         else
         {
-            auto tokens = std::get<NeoN::TokenList>(input);
-            divOperatorStrategy_ =
-                DivOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            tokens = std::get<NeoN::TokenList>(input);
+        }
+        sameTypeStrategy_ =
+            DivOperatorFactory<FieldValueType, FieldValueType>::create(this->exec(), mesh, tokens);
+        if constexpr (!std::is_same_v<FieldValueType, scalar>)
+        {
+            tokens.reset();
+            scalarMtxStrategy_ =
+                DivOperatorFactory<FieldValueType, scalar>::create(this->exec(), mesh, tokens);
         }
     }
 
@@ -173,7 +197,10 @@ private:
 
     const SurfaceField<NeoN::scalar>& faceFlux_;
 
-    std::unique_ptr<DivOperatorFactory<ValueType>> divOperatorStrategy_;
+    std::unique_ptr<DivOperatorFactory<FieldValueType, FieldValueType>> sameTypeStrategy_;
+    // Only initialized when FieldValueType != scalar; used to assemble into a
+    // LinearSystem<scalar, FieldValueType> for segregated vector solves.
+    std::unique_ptr<DivOperatorFactory<FieldValueType, scalar>> scalarMtxStrategy_;
 };
 
 

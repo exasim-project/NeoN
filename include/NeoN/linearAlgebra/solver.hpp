@@ -53,13 +53,14 @@ public:
     SolverFactory(const Executor& exec) : exec_(exec) {};
 
     virtual SolverStats
-    solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const = 0;
+    solve(const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&)
+        const = 0;
 
     virtual SolverStats
-    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const = 0;
+    solve(const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const = 0;
 
     virtual SolverStats
-    solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&, Vector<Vec3>&)
+    solve(const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&, Vector<Vec3>&)
         const
     {
         NF_THROW("solve(scalar matrix, Vec3 rhs) not implemented for this solver");
@@ -67,13 +68,14 @@ public:
 
 #ifdef NF_WITH_MPI_SUPPORT
     virtual SolverStats
-    solveDist(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&) const
+    solveDist(const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&)
+        const
     {
         NF_THROW("solveDist not implemented for this solver");
     }
 
     virtual SolverStats
-    solveDist(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const
+    solveDist(const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>&, Vector<Vec3>&) const
     {
         NF_THROW("solveDist not implemented for this solver");
     }
@@ -104,8 +106,9 @@ public:
     Solver(const Executor& exec, const Dictionary& dict)
         : exec_(exec), solverInstance_(SolverFactory::create(exec, dict)) {};
 
-    SolverStats
-    solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
+    SolverStats solve(
+        const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field
+    ) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
         if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
@@ -114,7 +117,7 @@ public:
     }
 
     SolverStats
-    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
+    solve(const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
         if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
@@ -128,7 +131,7 @@ public:
     ///       If distributed support is needed, add a solveDist virtual to SolverFactory and
     ///       implement it in every backend.
     SolverStats solve(
-        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&
+        const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&
             ls,
         Vector<Vec3>& field
     ) const

@@ -33,7 +33,8 @@ struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
     virtual void
-    operator()(la::LinearSystem<VectorType, la::CSRMatrix<VectorType, IndexType>>&) const {};
+    operator()(la::LinearSystem<VectorType, VectorType, la::CSRMatrix<VectorType, IndexType>>&)
+        const {};
 };
 
 /**
@@ -58,7 +59,7 @@ public:
 
     SetReference(localIdx refCell, ValueType refValue) : refCell_(refCell), refValue_(refValue) {}
 
-    void operator()(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
+    void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
     ) const override
     {
 #ifdef NF_WITH_MPI_SUPPORT
@@ -163,8 +164,9 @@ public:
         return source;
     }
 
-    /*@brief compute matrix coefficients based on all spatial operators */
-    void assembleSpatialOperator(la::LinearSystem<ValueType>& ls) const
+    /** @brief compute matrix coefficients based on all spatial operators */
+    template<typename AssemblyType = ValueType>
+    void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType>& ls) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -175,10 +177,13 @@ public:
         }
     }
 
-    /*@brief compute matrix coefficients based on all temporal operators
+    /** @brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    void assembleTemporalOperator(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const
+    template<typename AssemblyType = ValueType>
+    void assembleTemporalOperator(
+        la::LinearSystem<AssemblyType, ValueType>& ls, scalar t, scalar dt
+    ) const
     {
         for (auto& op : temporalOperators_)
         {
@@ -206,15 +211,16 @@ public:
      * @param ps post-assembly functors applied to the system after assembly
      * @return the assembled linear system
      */
-    la::LinearSystem<ValueType> assemble(
+    template<typename AssemblyType = ValueType>
+    la::LinearSystem<AssemblyType, ValueType> assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
-        assemble(t, dt, ls, mesh, ps);
+        auto ls = la::createEmptyLinearSystem<AssemblyType, ValueType>(mesh);
+        assemble<AssemblyType>(t, dt, ls, mesh, ps);
         return ls;
     }
 
@@ -238,19 +244,25 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
+    template<typename AssemblyType = ValueType>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType>& ls,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 
-        for (const auto* p : ps)
+        // Post-assembly functors operate on LinearSystem<ValueType, ValueType, ...>; they only
+        // apply when the matrix and RHS value types coincide (the default-AssemblyType path).
+        if constexpr (std::is_same_v<AssemblyType, ValueType>)
         {
-            (*p)(ls);
+            for (const auto* p : ps)
+            {
+                (*p)(ls);
+            }
         }
     }
 

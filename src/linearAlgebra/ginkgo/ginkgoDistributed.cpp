@@ -301,7 +301,7 @@ void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& sta
 }
 
 SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
     const CommunicationPattern& commPattern = sys.commPattern();
@@ -315,7 +315,7 @@ SolverStats GinkgoSolver::solveDist(
 }
 
 SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+    const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
     auto stats = SolverStats {};

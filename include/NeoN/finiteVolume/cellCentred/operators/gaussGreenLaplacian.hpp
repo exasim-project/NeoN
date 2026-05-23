@@ -16,12 +16,13 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class GaussGreenLaplacian :
-    public LaplacianOperatorFactory<ValueType>::template Register<GaussGreenLaplacian<ValueType>>
+    public LaplacianOperatorFactory<FieldValueType, AssemblyType>::template Register<
+        GaussGreenLaplacian<FieldValueType, AssemblyType>>
 {
-    using Base =
-        LaplacianOperatorFactory<ValueType>::template Register<GaussGreenLaplacian<ValueType>>;
+    using Base = LaplacianOperatorFactory<FieldValueType, AssemblyType>::template Register<
+        GaussGreenLaplacian<FieldValueType, AssemblyType>>;
 
 public:
 
@@ -36,40 +37,42 @@ public:
           faceNormalGradient_(exec, mesh, inputs) {};
 
     virtual void laplacian(
-        VolumeField<ValueType>& lapPhi,
+        VolumeField<FieldValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff coeff
     ) override;
 
-    virtual VolumeField<ValueType> laplacian(
-        const SurfaceField<scalar>& gamma, const VolumeField<ValueType>& phi, const dsl::Coeff coeff
+    virtual VolumeField<FieldValueType> laplacian(
+        const SurfaceField<scalar>& gamma,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff coeff
     ) const override;
 
     virtual void laplacian(
-        Vector<ValueType>& lapPhi,
+        Vector<FieldValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff coeff
     ) override;
 
     virtual void laplacian(
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, FieldValueType>& ls,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff coeff
     ) override;
 
-    std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override
+    std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>> clone() const override
     {
-        return std::make_unique<GaussGreenLaplacian<ValueType>>(*this);
+        return std::make_unique<GaussGreenLaplacian<FieldValueType, AssemblyType>>(*this);
     };
 
 private:
 
-    SurfaceInterpolation<ValueType> surfaceInterpolation_;
+    SurfaceInterpolation<FieldValueType> surfaceInterpolation_;
 
-    FaceNormalGradient<ValueType> faceNormalGradient_;
+    FaceNormalGradient<FieldValueType> faceNormalGradient_;
 };
 
 // Required on MSVC: without extern template, each TU (DLL and EXE) gets its own
@@ -77,5 +80,6 @@ private:
 // a different map than the one the test binary queries.
 extern template class GaussGreenLaplacian<scalar>;
 extern template class GaussGreenLaplacian<Vec3>;
+extern template class GaussGreenLaplacian<Vec3, scalar>;
 
 } // namespace NeoN

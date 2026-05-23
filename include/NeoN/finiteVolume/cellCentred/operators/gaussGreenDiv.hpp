@@ -17,11 +17,13 @@ namespace NeoN::finiteVolume::cellCentred
 /* @brief
  *
  */
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class GaussGreenDiv :
-    public DivOperatorFactory<ValueType>::template Register<GaussGreenDiv<ValueType>>
+    public DivOperatorFactory<FieldValueType, AssemblyType>::template Register<
+        GaussGreenDiv<FieldValueType, AssemblyType>>
 {
-    using Base = DivOperatorFactory<ValueType>::template Register<GaussGreenDiv<ValueType>>;
+    using Base = DivOperatorFactory<FieldValueType, AssemblyType>::template Register<
+        GaussGreenDiv<FieldValueType, AssemblyType>>;
 
 public:
 
@@ -34,37 +36,37 @@ public:
     GaussGreenDiv(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
         : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs) {};
 
-    virtual VolumeField<ValueType>
+    virtual VolumeField<FieldValueType>
     div(const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const override;
 
     virtual void
-    div(VolumeField<ValueType>& divPhi,
+    div(VolumeField<FieldValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const override;
 
     virtual void
-    div(Vector<ValueType>& divPhi,
+    div(Vector<FieldValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const override;
 
     virtual void
-    div(la::LinearSystem<ValueType>& ls,
+    div(la::LinearSystem<AssemblyType, FieldValueType>& ls,
         const SurfaceField<scalar>& faceFlux,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const override;
 
-    std::unique_ptr<DivOperatorFactory<ValueType>> clone() const override
+    std::unique_ptr<DivOperatorFactory<FieldValueType, AssemblyType>> clone() const override
     {
-        return std::make_unique<GaussGreenDiv<ValueType>>(*this);
+        return std::make_unique<GaussGreenDiv<FieldValueType, AssemblyType>>(*this);
     }
 
 private:
 
-    SurfaceInterpolation<ValueType> surfaceInterpolation_;
+    SurfaceInterpolation<FieldValueType> surfaceInterpolation_;
 };
 
 // Required on MSVC: without extern template, each TU (DLL and EXE) gets its own
@@ -72,5 +74,6 @@ private:
 // a different map than the one the test binary queries.
 extern template class GaussGreenDiv<scalar>;
 extern template class GaussGreenDiv<Vec3>;
+extern template class GaussGreenDiv<Vec3, scalar>;
 
 } // namespace NeoN

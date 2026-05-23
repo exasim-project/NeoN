@@ -35,9 +35,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     {
         Vector<scalar> rhs(exec, 3, 0.0);
         Vector<scalar> bRhs(exec, 3, 0.0);
-        LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
-        );
+        LinearSystem<scalar> linearSystem(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
         REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
@@ -71,7 +69,8 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
         using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
 
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, CSRMatrix, CSRMatrix>(mesh);
+        auto linearSystem =
+            NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix, CSRMatrix>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -89,7 +88,8 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
         using COOMatrix = NeoN::la::COOMatrix<scalar, localIdx>;
 
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, COOMatrix, COOMatrix>(mesh);
+        auto linearSystem =
+            NeoN::la::createEmptyLinearSystem<scalar, scalar, COOMatrix, COOMatrix>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -101,9 +101,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     {
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
         Vector<scalar> bRhs(exec, {0.0, 0.0, 0.0});
-        LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
-        );
+        LinearSystem<scalar> linearSystem(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
 
         auto lsView = linearSystem.view();
         auto hostLS = linearSystem.copyToHost();

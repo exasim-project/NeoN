@@ -17,26 +17,28 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-/* @class Factory class to create divergence operators by a given name using
+/* @class Factory class to create laplacian operators by a given name using
  * using NeoNs runTimeFactory mechanism
  */
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class LaplacianOperatorFactory :
     public RuntimeSelectionFactory<
-        LaplacianOperatorFactory<ValueType>,
+        LaplacianOperatorFactory<FieldValueType, AssemblyType>,
         Parameters<const Executor&, const UnstructuredMesh&, const Input&>>
 {
 
 public:
 
-    static std::unique_ptr<LaplacianOperatorFactory<ValueType>>
+    static std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>>
     create(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
     {
         std::string key = (std::holds_alternative<Dictionary>(inputs))
                             ? std::get<Dictionary>(inputs).get<std::string>("LaplacianOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
-        LaplacianOperatorFactory<ValueType>::keyExistsOrError(key);
-        return LaplacianOperatorFactory<ValueType>::table().at(key)(exec, mesh, inputs);
+        LaplacianOperatorFactory<FieldValueType, AssemblyType>::keyExistsOrError(key);
+        return LaplacianOperatorFactory<FieldValueType, AssemblyType>::table().at(key)(
+            exec, mesh, inputs
+        );
     }
 
     static std::string name() { return "LaplacianOperatorFactory"; }
@@ -47,34 +49,35 @@ public:
     virtual ~LaplacianOperatorFactory() {} // Virtual destructor
 
     virtual void laplacian(
-        VolumeField<ValueType>& lapPhi,
+        VolumeField<FieldValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
-    virtual VolumeField<ValueType> laplacian(
+    virtual VolumeField<FieldValueType> laplacian(
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling
     ) const = 0;
 
     virtual void laplacian(
-        Vector<ValueType>& lapPhi,
+        Vector<FieldValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     virtual void laplacian(
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, FieldValueType>& ls,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
+        const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
 
     // Pure virtual function for cloning
-    virtual std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const = 0;
+    virtual std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>>
+    clone() const = 0;
 
 protected:
 
@@ -83,104 +86,118 @@ protected:
     const UnstructuredMesh& mesh_;
 };
 
-template<typename ValueType>
-class LaplacianOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
+template<typename FieldValueType>
+class LaplacianOperator : public dsl::OperatorMixin<VolumeField<FieldValueType>>
 {
 
 public:
 
-    using VectorValueType = ValueType;
+    using VectorValueType = FieldValueType;
 
     // copy constructor
     LaplacianOperator(const LaplacianOperator& lapOp)
-        : dsl::OperatorMixin<VolumeField<ValueType>>(
+        : dsl::OperatorMixin<VolumeField<FieldValueType>>(
             lapOp.exec_, lapOp.coeffs_, lapOp.field_, lapOp.type_
         ),
           gamma_(lapOp.gamma_),
-          laplacianOperatorStrategy_(
-              lapOp.laplacianOperatorStrategy_ ? lapOp.laplacianOperatorStrategy_->clone() : nullptr
+          sameTypeStrategy_(lapOp.sameTypeStrategy_ ? lapOp.sameTypeStrategy_->clone() : nullptr),
+          scalarMtxStrategy_(
+              lapOp.scalarMtxStrategy_ ? lapOp.scalarMtxStrategy_->clone() : nullptr
           ) {};
 
     LaplacianOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
+        VolumeField<FieldValueType>& phi,
         Input input
     )
-        : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
+        : dsl::OperatorMixin<VolumeField<FieldValueType>>(
+            phi.exec(), dsl::Coeff(1.0), phi, termType
+        ),
           gamma_(gamma),
-          laplacianOperatorStrategy_(
-              LaplacianOperatorFactory<ValueType>::create(this->exec_, phi.mesh(), input)
-          ) {};
+          sameTypeStrategy_(LaplacianOperatorFactory<FieldValueType, FieldValueType>::create(
+              this->exec_, phi.mesh(), input
+          )),
+          scalarMtxStrategy_(nullptr)
+    {
+        if constexpr (!std::is_same_v<FieldValueType, scalar>)
+        {
+            // The first create() consumed tokens; rewind the cursor so the second
+            // strategy can read the same scheme tokens from the start.
+            if (std::holds_alternative<NeoN::TokenList>(input))
+            {
+                std::get<NeoN::TokenList>(input).reset();
+            }
+            scalarMtxStrategy_ = LaplacianOperatorFactory<FieldValueType, scalar>::create(
+                this->exec_, phi.mesh(), input
+            );
+        }
+    };
 
     LaplacianOperator(
         dsl::Operator::Type termType,
         const SurfaceField<scalar>& gamma,
-        VolumeField<ValueType>& phi,
-        std::unique_ptr<LaplacianOperatorFactory<ValueType>> laplacianOperatorStrategy
+        VolumeField<FieldValueType>& phi
     )
-        : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
-          gamma_(gamma), laplacianOperatorStrategy_(std::move(laplacianOperatorStrategy)) {};
-
-    LaplacianOperator(
-        dsl::Operator::Type termType, const SurfaceField<scalar>& gamma, VolumeField<ValueType>& phi
-    )
-        : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
-          gamma_(gamma), laplacianOperatorStrategy_(nullptr) {};
+        : dsl::OperatorMixin<VolumeField<FieldValueType>>(
+            phi.exec(), dsl::Coeff(1.0), phi, termType
+        ),
+          gamma_(gamma), sameTypeStrategy_(nullptr), scalarMtxStrategy_(nullptr) {};
 
 
-    void explicitOperation(Vector<ValueType>& source) const
+    void explicitOperation(Vector<FieldValueType>& source) const
     {
-        NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
+        NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        NeoN::Vector<ValueType> tmpsource(source.exec(), source.size(), zero<ValueType>());
-        laplacianOperatorStrategy_->laplacian(tmpsource, gamma_, this->field_, operatorScaling);
+        NeoN::Vector<FieldValueType> tmpsource(
+            source.exec(), source.size(), zero<FieldValueType>()
+        );
+        sameTypeStrategy_->laplacian(tmpsource, gamma_, this->field_, operatorScaling);
         source += tmpsource;
     }
 
-    void implicitOperation(la::LinearSystem<ValueType>& ls) const
+    void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType>& ls) const
     {
-        NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
+        NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        laplacianOperatorStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
+        sameTypeStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
     }
 
-    [[deprecated("use explicit or implicit operation")]] void laplacian(VolumeField<scalar>& lapPhi)
+    /* @brief Implicit assembly into a scalar-matrix / FieldValueType-rhs linear system
+     *        (segregated vector-solve form). Only present when FieldValueType != scalar.
+     */
+    template<typename F = FieldValueType>
+        requires(!std::is_same_v<F, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, FieldValueType>& ls) const
     {
+        NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
-        laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->getVector(), operatorScaling);
-    }
-
-    [[deprecated("use explicit or implicit operation")]] VolumeField<scalar> laplacian()
-    {
-        const auto operatorScaling = this->getCoefficient();
-        std::string name = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
-        VolumeField<scalar> lapPhi(
-            this->exec_,
-            name,
-            this->field_.mesh(),
-            createCalculatedBCs<VolumeBoundary<scalar>>(this->field_.mesh())
-        );
-        laplacianOperatorStrategy_->laplacian(lapPhi, gamma_, this->field_, operatorScaling);
-        return lapPhi;
+        scalarMtxStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
     }
 
     void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->field_.mesh();
+        NeoN::TokenList tokens;
         if (std::holds_alternative<NeoN::Dictionary>(input))
         {
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
-            auto tokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(schemeName);
-            laplacianOperatorStrategy_ =
-                LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            tokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(schemeName);
         }
         else
         {
-            auto tokens = std::get<NeoN::TokenList>(input);
-            laplacianOperatorStrategy_ =
-                LaplacianOperatorFactory<ValueType>::create(this->exec(), mesh, tokens);
+            tokens = std::get<NeoN::TokenList>(input);
+        }
+        sameTypeStrategy_ = LaplacianOperatorFactory<FieldValueType, FieldValueType>::create(
+            this->exec(), mesh, tokens
+        );
+        if constexpr (!std::is_same_v<FieldValueType, scalar>)
+        {
+            tokens.reset();
+            scalarMtxStrategy_ = LaplacianOperatorFactory<FieldValueType, scalar>::create(
+                this->exec(), mesh, tokens
+            );
         }
     }
 
@@ -190,7 +207,10 @@ private:
 
     const SurfaceField<scalar>& gamma_;
 
-    std::unique_ptr<LaplacianOperatorFactory<ValueType>> laplacianOperatorStrategy_;
+    std::unique_ptr<LaplacianOperatorFactory<FieldValueType, FieldValueType>> sameTypeStrategy_;
+    // Only initialized when FieldValueType != scalar; used to assemble into a
+    // LinearSystem<scalar, FieldValueType> for segregated vector solves.
+    std::unique_ptr<LaplacianOperatorFactory<FieldValueType, scalar>> scalarMtxStrategy_;
 };
 
 
