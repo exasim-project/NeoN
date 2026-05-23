@@ -112,40 +112,41 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="comment">// boundary index 1 is always the proc boundary for first/last ranks;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="comment">// middle ranks have all boundaries as proc.</span></div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> isProc = (i == 1) || isMiddle;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">auto</span> patchDict = Dictionary({{<span class="stringliteral">&quot;type&quot;</span>, isProc ? <span class="stringliteral">&quot;processor&quot;</span> : <span class="stringliteral">&quot;calculated&quot;</span>}});</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        ret.emplace_back(mesh, patchDict, i);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> ret;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>Vector&lt;ValueType&gt; partitionInternalVector(</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> Vector&lt;ValueType&gt;&amp; globalVector,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> UnstructuredMesh&amp; localMesh,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    NeoN::mpi::Environment mpiEnviron</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>)</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>{</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> localSize = <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a><span class="keyword">&gt;</span>(globalVector.size()) / mpiEnviron.sizeRank();</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> firstIdx = mpiEnviron.rank() * localMesh.nCells();</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceNeoN.html#ab0a6d37e5965553ba24ea28c2528e278">take</a>(globalVector, {firstIdx, firstIdx + localSize});</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> FieldType&gt;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>FieldType</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>oneDPartitionField(FieldType field, UnstructuredMesh&amp; mesh, NeoN::mpi::Environment mpiEnviron)</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>{</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">auto</span> internalVector = partitionInternalVector(field.internalVector(), mesh, mpiEnviron);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">auto</span> bcsPart = setProcessorBoundaryHelper(mesh, field.boundaryConditions(), mpiEnviron);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    FieldType ret(field.exec(), field.name + <span class="stringliteral">&quot;Part&quot;</span>, mesh, bcsPart);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    ret.internalVector() = internalVector;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">return</span> ret;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace detail</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>} <span class="comment">// namespace NeoN</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        std::string boundaryType = isProc ? <span class="stringliteral">&quot;processor&quot;</span> : <span class="stringliteral">&quot;calculated&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">auto</span> patchDict = Dictionary({{<span class="stringliteral">&quot;type&quot;</span>, boundaryType}});</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        ret.emplace_back(mesh, patchDict, i);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> ret;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>Vector&lt;ValueType&gt; partitionInternalVector(</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> Vector&lt;ValueType&gt;&amp; globalVector,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> UnstructuredMesh&amp; localMesh,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    NeoN::mpi::Environment mpiEnviron</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>{</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> localSize = <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a><span class="keyword">&gt;</span>(globalVector.size()) / mpiEnviron.sizeRank();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> firstIdx = mpiEnviron.rank() * localMesh.nCells();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceNeoN.html#ab0a6d37e5965553ba24ea28c2528e278">take</a>(globalVector, {firstIdx, firstIdx + localSize});</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> FieldType&gt;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>FieldType</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>oneDPartitionField(FieldType field, UnstructuredMesh&amp; mesh, NeoN::mpi::Environment mpiEnviron)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">auto</span> internalVector = partitionInternalVector(field.internalVector(), mesh, mpiEnviron);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">auto</span> bcsPart = setProcessorBoundaryHelper(mesh, field.boundaryConditions(), mpiEnviron);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    FieldType ret(field.exec(), field.name + <span class="stringliteral">&quot;Part&quot;</span>, mesh, bcsPart);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    ret.internalVector() = internalVector;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> ret;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>} <span class="comment">// namespace detail</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="alabel_8hpp_html"><div class="ttname"><a href="label_8hpp.html">label.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="array_8hpp_source.html#l00017">array.hpp:18</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a40785cd3c378b425dd30ae7f4d7dcabc"><div class="ttname"><a href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">NeoN::localIdx</a></div><div class="ttdeci">int32_t localIdx</div><div class="ttdef"><b>Definition</b> <a href="label_8hpp_source.html#l00032">label.hpp:32</a></div></div>
