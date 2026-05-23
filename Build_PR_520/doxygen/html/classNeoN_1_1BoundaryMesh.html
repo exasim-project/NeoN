@@ -159,6 +159,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a69e62a927b8028e6d77d09a6dca8475c" id="r_a69e62a927b8028e6d77d09a6dca8475c"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryMesh.html#a69e62a927b8028e6d77d09a6dca8475c">neighbourRank</a> () const</td></tr>
 <tr class="memdesc:a69e62a927b8028e6d77d09a6dca8475c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset of the boundary faces.  <br /></td></tr>
 <tr class="separator:a69e62a927b8028e6d77d09a6dca8475c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac685fcdbbdd1416aba16c00537448e33" id="r_ac685fcdbbdd1416aba16c00537448e33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryMesh.html#ac685fcdbbdd1416aba16c00537448e33">neighbourRankForRange</a> (std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range) const</td></tr>
+<tr class="memdesc:ac685fcdbbdd1416aba16c00537448e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the neighbour rank for the processor patch whose face range matches the given range.  <br /></td></tr>
+<tr class="separator:ac685fcdbbdd1416aba16c00537448e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd9b1b1906b836d58bcaf312194ae564" id="r_abd9b1b1906b836d58bcaf312194ae564"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryMesh.html#abd9b1b1906b836d58bcaf312194ae564">nBoundaries</a> () const</td></tr>
 <tr class="memdesc:abd9b1b1906b836d58bcaf312194ae564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of the boundaries.  <br /></td></tr>
 <tr class="separator:abd9b1b1906b836d58bcaf312194ae564"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -654,7 +657,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Return whether this local mesh is a part of a global distributed mesh. </p>
 
-<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00253">253</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00262">262</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -683,7 +686,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Get the number of the boundaries. </p>
 
-<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00238">238</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00247">247</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -712,7 +715,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Get the number of the boundary faces. </p>
 
-<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00243">243</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryMesh_8hpp_source.html#l00252">252</a> of file <a class="el" href="boundaryMesh_8hpp_source.html">boundaryMesh.hpp</a>.</p>
 
 </div>
 </div>
@@ -754,6 +757,33 @@ Public Member Functions</h2></td></tr>
 
 <p>Given a patchId the corresponding neighbour Rank gets returned. </p>
 <p>-1 for patches without a distributed neighbour </p>
+
+</div>
+</div>
+<a id="ac685fcdbbdd1416aba16c00537448e33" name="ac685fcdbbdd1416aba16c00537448e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac685fcdbbdd1416aba16c00537448e33">&#9670;&#160;</a></span>neighbourRankForRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> NeoN::BoundaryMesh::neighbourRankForRange </td>
+          <td>(</td>
+          <td class="paramtype">std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td>
+          <td class="paramname"><em>range</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the neighbour rank for the processor patch whose face range matches the given range. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">range</td><td>The [start, end) face index range of the processor patch. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The MPI rank of the neighbour for that patch. </dd></dl>
 
 </div>
 </div>
