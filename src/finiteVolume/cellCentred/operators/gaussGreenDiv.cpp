@@ -240,12 +240,6 @@ void computeDivBoundImpl(
             // diagonal contribution
             Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux);
 
-            // Explicit RHS contribution from the mixed BC:
-            //   φ_f = refValFrac * refValue               (Dirichlet part)
-            //       + refGradFrac * (φ_C + refGradient/δ)  (Neumann part)
-            // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
-            // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
-            // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
             auto valueRhs =
                 (bweights[bfi] * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
                 + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
@@ -253,6 +247,28 @@ void computeDivBoundImpl(
             bRhs[bfi] += valueRhs;
         },
         "computeInterfaceGaussGreenDivCoefficients"
+    );
+
+    // Proc boundary: contribution to diagonal only (no boundaryMatrix entry).
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        NEON_LAMBDA(const localIdx pbfi) {
+            const auto bfi = nBoundaryFaces + pbfi;
+            auto ownRow = ownV[bfi];
+            auto ownCoeff = operatorScaling[ownRow];
+            auto refValFrac = valueFraction[bfi];
+            auto refGradFrac = 1.0 - refValFrac;
+            auto flux =
+                bFaceFluxV[bfi] * -bweights[bfi] * ownCoeff * refGradFrac * one<ValueType>();
+            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux);
+            auto valueRhs =
+                (bweights[bfi] * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
+                + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
+            Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
+        },
+        "computeProcBoundaryGaussGreenDivCoefficients"
     );
 }
 

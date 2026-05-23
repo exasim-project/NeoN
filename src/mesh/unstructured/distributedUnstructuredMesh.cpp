@@ -75,6 +75,18 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 
     auto baseMesh = create1DUniformMesh(exec, nCells, rightBoundary);
 
+    // Physical boundary deltaCoeffs are cell-to-face (1/(0.5*dx)).
+    // Proc boundary deltaCoeffs must be cell-to-cell (1/dx = physical/2).
+    // Regular boundary faces are at indices [0, nRegularBoundary); proc faces follow.
+    auto physDeltaCoeffsH = tmp.boundaryMesh().deltaCoeffs().copyToHost();
+    const auto physDeltaCoeffsV = physDeltaCoeffsH.view();
+    const localIdx nTotalBoundaryFaces = 2;
+    std::vector<scalar> deltaCoeffsVec(nTotalBoundaryFaces);
+    for (localIdx i = 0; i < nTotalBoundaryFaces; i++)
+        deltaCoeffsVec[i] = physDeltaCoeffsV[i];
+    for (localIdx i = nRegularBoundary; i < nTotalBoundaryFaces; i++)
+        deltaCoeffsVec[i] = physDeltaCoeffsV[i] / 2.0;
+
     BoundaryMesh boundaryMesh(
         exec,
         faceCells,

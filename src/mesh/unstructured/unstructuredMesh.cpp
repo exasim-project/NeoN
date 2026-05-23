@@ -7,6 +7,10 @@
 
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
+#ifdef NF_WITH_MPI_SUPPORT
+#include <mpi.h>
+#include "NeoN/core/mpi/environment.hpp"
+#endif
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>

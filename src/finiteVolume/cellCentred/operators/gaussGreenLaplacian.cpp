@@ -281,6 +281,23 @@ void computeLaplacianIntImpl(
         },
         "computeInterfaceLaplacianCoefficients"
     );
+
+    // Proc boundary: mirror internal face assembly — always contribute full diagonal term.
+    // The neighbor cell is on another rank; its contribution will come via communication.
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    const auto bFaceAreas = mesh.boundaryMesh().faceAreas().view();
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        NEON_LAMBDA(const localIdx pbfi) {
+            const auto bfi = nBoundaryFaces + pbfi;
+            auto ownRow = boundaryFaceOwners[bfi];
+            auto ownRowCoeff = operatorScaling[ownRow];
+            auto flux = bGammaV[bfi] * bFaceAreas[bfi] * bDeltaCoeffs[bfi] * one<ValueType>();
+            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux * ownRowCoeff);
+        },
+        "computeProcBoundaryLaplacianCoefficients"
+    );
 }
 
 template<typename ValueType>

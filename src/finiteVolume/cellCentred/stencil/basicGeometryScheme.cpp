@@ -320,7 +320,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(
 
     parallelFor(
         exec,
-        {0, mesh_.nBoundaryFaces()},
+        {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = surfFaceCells[bfi];
             // TODO Issue #515
@@ -328,6 +328,18 @@ void BasicGeometryScheme::updateDeltaCoeffs(
             deltaCoeffB[bfi] = 1.0 / std::max(mag(cellToFaceDist), scalar(ROOTVSMALL));
         },
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
+    );
+
+    // proc boundary: use pre-computed cell-to-cell deltaCoeffs from BoundaryMesh
+    const auto meshDeltaCoeffs = mesh_.boundaryMesh().deltaCoeffs().view();
+    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        NEON_LAMBDA(const localIdx pbfi) {
+            deltaCoeffB[nBoundaryFaces + pbfi] = meshDeltaCoeffs[nBoundaryFaces + pbfi];
+        },
+        "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
     );
 }
 
