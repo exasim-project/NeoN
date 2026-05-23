@@ -9,9 +9,7 @@
     <includes refid="segmentedVector_8hpp" local="yes">NeoN/core/segmentedVector.hpp</includes>
     <includes refid="vector_8hpp" local="yes">NeoN/core/vector/vector.hpp</includes>
     <includes local="no">vector</includes>
-    <includedby refid="cellReconstruction_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/cellReconstruction.hpp</includedby>
     <includedby refid="faceTopology_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/faceTopology.hpp</includedby>
-    <includedby refid="nodeOrdering_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/nodeOrdering.hpp</includedby>
     <includedby refid="vtkExtraction_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/vtkExtraction.hpp</includedby>
     <includedby refid="meshConnectivity_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConnectivity.hpp</includedby>
     <incdepgraph>
@@ -292,20 +290,8 @@
     </incdepgraph>
     <invincdepgraph>
       <node id="2">
-        <label>/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/cellReconstruction.hpp</label>
-        <link refid="cellReconstruction_8hpp"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/faceTopology.hpp</label>
         <link refid="faceTopology_8hpp"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/nodeOrdering.hpp</label>
-        <link refid="nodeOrdering_8hpp"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
@@ -316,14 +302,10 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="5">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/vtkExtraction.hpp</label>
         <link refid="vtkExtraction_8hpp"/>
         <childnode refid="3" relation="include">
@@ -341,7 +323,6 @@
       </node>
     </invincdepgraph>
     <innerclass refid="structNeoN_1_1io_1_1CellConnectivity" prot="public">NeoN::io::CellConnectivity</innerclass>
-    <innerclass refid="structNeoN_1_1io_1_1CellInfo" prot="public">NeoN::io::CellInfo</innerclass>
     <innerclass refid="structNeoN_1_1io_1_1FaceTopology" prot="public">NeoN::io::FaceTopology</innerclass>
     <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1io">NeoN::io</innernamespace>
@@ -368,7 +349,7 @@
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1io" kindref="compound">NeoN::io</ref></highlight></codeline>
 <codeline lineno="17"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20" refid="structNeoN_1_1io_1_1CellConnectivity" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1io_1_1CellConnectivity" kindref="compound">CellConnectivity</ref></highlight></codeline>
+<codeline lineno="20" refid="structNeoN_1_1io_1_1CellConnectivity" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1io_1_1CellConnectivity" kindref="compound">CellConnectivity</ref></highlight></codeline>
 <codeline lineno="21"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="22" refid="structNeoN_1_1io_1_1CellConnectivity_1ab677766e310b21348e4e71325d3689f0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector&lt;localIdx, localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1CellConnectivity_1ab677766e310b21348e4e71325d3689f0" kindref="member">cellToNodes</ref>;<sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="23" refid="structNeoN_1_1io_1_1CellConnectivity_1a85abf50b33154ad5c3926f4c78573796" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;int32_t&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1CellConnectivity_1a85abf50b33154ad5c3926f4c78573796" kindref="member">cellTypes</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>VTK<sp/>cell<sp/>type<sp/>IDs<sp/>(10=TET,<sp/>12=HEX,<sp/>etc.)</highlight><highlight class="normal"></highlight></codeline>
@@ -376,24 +357,16 @@
 <codeline lineno="25"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight></codeline>
-<codeline lineno="30" refid="structNeoN_1_1io_1_1CellInfo" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1io_1_1CellInfo" kindref="compound">CellInfo</ref></highlight></codeline>
-<codeline lineno="31"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="32" refid="structNeoN_1_1io_1_1CellInfo_1a589a610c40210be3a94f35fc2488bc61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;localIdx&gt;<sp/><ref refid="structNeoN_1_1io_1_1CellInfo_1a589a610c40210be3a94f35fc2488bc61" kindref="member">nodeIds</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>unique<sp/>node<sp/>IDs<sp/>for<sp/>this<sp/>cell</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="33" refid="structNeoN_1_1io_1_1CellInfo_1a1ac2a5db27162a2fa365e52b4c0b53ec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;localIdx&gt;&gt;<sp/><ref refid="structNeoN_1_1io_1_1CellInfo_1a1ac2a5db27162a2fa365e52b4c0b53ec" kindref="member">cellFaceNodes</ref>;<sp/></highlight><highlight class="comment">//<sp/>nodes<sp/>of<sp/>each<sp/>face<sp/>of<sp/>this<sp/>cell</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="34" refid="structNeoN_1_1io_1_1CellInfo_1a968f90f3ba6886516e2796d82207ae14" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structNeoN_1_1io_1_1CellInfo_1a968f90f3ba6886516e2796d82207ae14" kindref="member">cellType</ref><sp/>{};<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>VTK<sp/>cell<sp/>type<sp/>ID</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="structNeoN_1_1io_1_1FaceTopology" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref></highlight></codeline>
+<codeline lineno="30"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="31" refid="structNeoN_1_1io_1_1FaceTopology_1ac588b058c86ac5de08904214b312776b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1ac588b058c86ac5de08904214b312776b" kindref="member">faceOwner</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec<sp/>(all<sp/>faces)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="structNeoN_1_1io_1_1FaceTopology_1aebbee64fc465b83f492e34ca44dd68d1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1aebbee64fc465b83f492e34ca44dd68d1" kindref="member">faceNeighbour</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec<sp/>(internal<sp/>faces<sp/>only)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structNeoN_1_1io_1_1FaceTopology_1a08577c986b43f2dcc57bbb71b862df5c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector&lt;localIdx, localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1a08577c986b43f2dcc57bbb71b862df5c" kindref="member">faceNodes</ref>;<sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="structNeoN_1_1io_1_1FaceTopology_1a84d41be5f847c1159e1132d7413d4f9a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1a84d41be5f847c1159e1132d7413d4f9a" kindref="member">nInternalFaces</ref><sp/>{};</highlight></codeline>
+<codeline lineno="35" refid="structNeoN_1_1io_1_1FaceTopology_1ab7b21e3373ad153eee5f0780abe26cda" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1ab7b21e3373ad153eee5f0780abe26cda" kindref="member">nBoundaryFaces</ref><sp/>{};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
-<codeline lineno="39" refid="structNeoN_1_1io_1_1FaceTopology" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structNeoN_1_1io_1_1FaceTopology" kindref="compound">FaceTopology</ref></highlight></codeline>
-<codeline lineno="40"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="41" refid="structNeoN_1_1io_1_1FaceTopology_1ac588b058c86ac5de08904214b312776b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1ac588b058c86ac5de08904214b312776b" kindref="member">faceOwner</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec<sp/>(all<sp/>faces)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="42" refid="structNeoN_1_1io_1_1FaceTopology_1aebbee64fc465b83f492e34ca44dd68d1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1aebbee64fc465b83f492e34ca44dd68d1" kindref="member">faceNeighbour</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec<sp/>(internal<sp/>faces<sp/>only)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="43" refid="structNeoN_1_1io_1_1FaceTopology_1a08577c986b43f2dcc57bbb71b862df5c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1SegmentedVector" kindref="compound">SegmentedVector&lt;localIdx, localIdx&gt;</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1a08577c986b43f2dcc57bbb71b862df5c" kindref="member">faceNodes</ref>;<sp/></highlight><highlight class="comment">//<sp/>on<sp/>exec</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="44" refid="structNeoN_1_1io_1_1FaceTopology_1a84d41be5f847c1159e1132d7413d4f9a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1a84d41be5f847c1159e1132d7413d4f9a" kindref="member">nInternalFaces</ref><sp/>{};</highlight></codeline>
-<codeline lineno="45" refid="structNeoN_1_1io_1_1FaceTopology_1ab7b21e3373ad153eee5f0780abe26cda" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/><ref refid="structNeoN_1_1io_1_1FaceTopology_1ab7b21e3373ad153eee5f0780abe26cda" kindref="member">nBoundaryFaces</ref><sp/>{};</highlight></codeline>
-<codeline lineno="46"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::io</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::io</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/connectivity/types.hpp"/>
   </compounddef>
