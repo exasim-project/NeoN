@@ -1,0 +1,47 @@
+\doxysection{mesh\+Converter.\+hpp}
+\hypertarget{meshConverter_8hpp_source}{}\label{meshConverter_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/io/meshConverter.hpp}}
+\mbox{\hyperlink{meshConverter_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshConnectivity_8hpp}{NeoN/mesh/unstructured/io/meshConnectivity.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshGeometry_8hpp}{NeoN/mesh/unstructured/io/meshGeometry.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{label_8hpp}{NeoN/core/primitives/label.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryMesh_8hpp}{NeoN/mesh/unstructured/boundaryMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <string\_view>}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00018}00018\ \textcolor{keyword}{class\ }vtkMultiBlockDataSet;}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1io}{NeoN::io}}}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00024}\mbox{\hyperlink{namespaceNeoN_1_1io_a2e985e3118a3b38425be2b9914325067}{00024}}\ \textcolor{keyword}{constexpr}\ std::string\_view\ \mbox{\hyperlink{namespaceNeoN_1_1io_a2e985e3118a3b38425be2b9914325067}{stencilFaceNodes}}\ =\ \textcolor{stringliteral}{"{}io::faceNodes"{}};}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00027}\mbox{\hyperlink{namespaceNeoN_1_1io_a19e71a61c08dfb935ab757b9fb11f01a}{00027}}\ \textcolor{keyword}{constexpr}\ std::string\_view\ \mbox{\hyperlink{namespaceNeoN_1_1io_a19e71a61c08dfb935ab757b9fb11f01a}{stencilPatchNames}}\ =\ \textcolor{stringliteral}{"{}io::patchNames"{}};}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00046}\mbox{\hyperlink{namespaceNeoN_1_1io_a8e7187268b2fcc883475b750d54ba2c9}{00046}}\ \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{BoundaryMesh}}\ \mbox{\hyperlink{namespaceNeoN_1_1io_a8e7187268b2fcc883475b750d54ba2c9}{buildBoundaryMesh}}(}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\&\ faceOwner,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ faceCenters,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ cellCenters,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ faceAreas,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ magFaceAreas,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00053}00053\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nInternalFaces,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00054}00054\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ nBoundaryFaces,}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<localIdx>\&\ patchOffsets}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00056}00056\ );}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00064}\mbox{\hyperlink{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}{00064}}\ std::vector<std::string>\ \mbox{\hyperlink{namespaceNeoN_1_1io_a8e515ebfe551ca22d2e5f442474d0f6b}{multiBlockPatchNames}}(vtkMultiBlockDataSet*\ boundary);}
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{meshConverter_8hpp_source_l00066}00066\ \}\ \textcolor{comment}{//\ namespace\ NeoN::io}}
+
+\end{DoxyCode}
