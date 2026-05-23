@@ -86,6 +86,22 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
+if(NeoN_WITH_VTK)
+  target_sources(
+    NeoN
+    PRIVATE "mesh/unstructured/io/connectivity/faceTopology.cpp"
+            "mesh/unstructured/io/connectivity/cellReconstruction.cpp"
+            "mesh/unstructured/io/connectivity/nodeOrdering.cpp"
+            "mesh/unstructured/io/connectivity/vtkExtraction.cpp"
+            "mesh/unstructured/io/geometry/faceGeometry.cpp"
+            "mesh/unstructured/io/geometry/cellGeometry.cpp"
+            "mesh/unstructured/io/geometry/computeGeometry.cpp"
+            "mesh/unstructured/io/meshConverter.cpp"
+            "mesh/unstructured/io/vtmMeshReader.cpp")
+  target_link_libraries(NeoN PUBLIC VTK::CommonCore VTK::CommonDataModel VTK::IOXML
+                                    VTK::FiltersCore)
+endif()
+
 if(WIN32)
   set_target_properties(
     NeoN

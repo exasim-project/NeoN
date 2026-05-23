@@ -292,6 +292,36 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
     YES)
 endif()
 
+if(${NeoN_WITH_VTK})
+  find_package(VTK ${NeoN_VTK_VERSION} QUIET COMPONENTS CommonCore CommonDataModel IOXML
+                                                        FiltersCore)
+  if(VTK_FOUND)
+    message(STATUS "Using system-installed VTK (version: ${VTK_VERSION})")
+  else()
+    message(STATUS "System VTK not found — fetching from GitHub via CPM.cmake...")
+    cpmaddpackage(
+      NAME
+      VTK
+      VERSION
+      ${NeoN_VTK_VERSION}
+      GITHUB_REPOSITORY
+      Kitware/VTK
+      GIT_TAG
+      v${NeoN_VTK_VERSION}
+      SYSTEM
+      YES
+      OPTIONS
+      "BUILD_TESTING OFF"
+      "VTK_BUILD_EXAMPLES OFF"
+      "VTK_GROUP_ENABLE_Rendering DONT_WANT"
+      "VTK_GROUP_ENABLE_StandAlone DONT_WANT"
+      "VTK_MODULE_ENABLE_VTK_CommonCore YES"
+      "VTK_MODULE_ENABLE_VTK_CommonDataModel YES"
+      "VTK_MODULE_ENABLE_VTK_IOXML YES"
+      "VTK_MODULE_ENABLE_VTK_FiltersCore YES")
+  endif()
+endif()
+
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)
   cpmaddpackage(
     NAME
