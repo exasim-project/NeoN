@@ -25,18 +25,6 @@ struct CellConnectivity
 };
 
 
-/**
- * Per-cell info with face-node lists for node ordering.
- * Host-side only: used during IO write path (node ordering, sequential graph traversal).
- */
-struct CellInfo
-{
-    std::vector<localIdx> nodeIds;                    // unique node IDs for this cell
-    std::vector<std::vector<localIdx>> cellFaceNodes; // nodes of each face of this cell
-    int cellType {};                                  // VTK cell type ID
-};
-
-
 /** Face topology: owner/neighbour, face-to-node, internal/boundary split. */
 struct FaceTopology
 {

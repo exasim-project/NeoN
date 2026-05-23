@@ -90,8 +90,6 @@ if(NeoN_WITH_VTK)
   target_sources(
     NeoN
     PRIVATE "mesh/unstructured/io/connectivity/faceTopology.cpp"
-            "mesh/unstructured/io/connectivity/cellReconstruction.cpp"
-            "mesh/unstructured/io/connectivity/nodeOrdering.cpp"
             "mesh/unstructured/io/connectivity/vtkExtraction.cpp"
             "mesh/unstructured/io/geometry/faceGeometry.cpp"
             "mesh/unstructured/io/geometry/cellGeometry.cpp"
