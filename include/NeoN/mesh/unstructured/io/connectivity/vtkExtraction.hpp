@@ -11,8 +11,10 @@ class vtkUnstructuredGrid;
 namespace NeoN::io
 {
 
-/// Extract cell connectivity from a VTK unstructured grid.
-/// Results are placed on exec (default: SerialExecutor).
+/**
+ * Extract cell connectivity from a VTK unstructured grid.
+ * Results are placed on exec (default: SerialExecutor).
+ */
 CellConnectivity
 extractCellConnectivity(vtkUnstructuredGrid* grid, const Executor& exec = SerialExecutor {});
 

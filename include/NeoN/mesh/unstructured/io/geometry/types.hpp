@@ -11,7 +11,7 @@
 namespace NeoN::io
 {
 
-/// Geometric quantities derived from mesh topology and point coordinates.
+/** Geometric quantities derived from mesh topology and point coordinates. */
 struct MeshGeometry
 {
     Vector<scalar> cellVolumes;

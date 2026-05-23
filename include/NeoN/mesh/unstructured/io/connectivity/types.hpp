@@ -16,7 +16,7 @@
 namespace NeoN::io
 {
 
-/// Cell connectivity: cell-to-node mapping and element type per cell.
+/** Cell connectivity: cell-to-node mapping and element type per cell. */
 struct CellConnectivity
 {
     SegmentedVector<localIdx, localIdx> cellToNodes; // on exec
@@ -25,8 +25,10 @@ struct CellConnectivity
 };
 
 
-/// Per-cell info with face-node lists for node ordering.
-/// Host-side only: used during IO write path (node ordering, sequential graph traversal).
+/**
+ * Per-cell info with face-node lists for node ordering.
+ * Host-side only: used during IO write path (node ordering, sequential graph traversal).
+ */
 struct CellInfo
 {
     std::vector<localIdx> nodeIds;                    // unique node IDs for this cell
@@ -35,7 +37,7 @@ struct CellInfo
 };
 
 
-/// Face topology: owner/neighbour, face-to-node, internal/boundary split.
+/** Face topology: owner/neighbour, face-to-node, internal/boundary split. */
 struct FaceTopology
 {
     Vector<localIdx> faceOwner;                    // on exec (all faces)

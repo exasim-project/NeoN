@@ -14,7 +14,7 @@
 namespace NeoN::io
 {
 
-/// Compute all geometric quantities from device vectors.
+/** Compute all geometric quantities from device vectors. */
 MeshGeometry computeGeometry(
     const Executor& exec,
     const Vector<Vec3>& points,

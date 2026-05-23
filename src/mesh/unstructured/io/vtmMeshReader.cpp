@@ -34,7 +34,7 @@ namespace NeoN::io
 namespace
 {
 
-/// Convert a Vector<localIdx> to a Vector<label> (may differ in signedness/width).
+/** Convert a Vector<localIdx> to a Vector<label> (may differ in signedness/width). */
 labelVector toLabel(const Executor& exec, const Vector<localIdx>& v)
 {
     auto h = v.copyToHost();
@@ -46,8 +46,10 @@ labelVector toLabel(const Executor& exec, const Vector<localIdx>& v)
     return labelVector(exec, buf);
 }
 
-/// Build a map from sorted face-node key → patch index, for every face in
-/// every sub-block of @p boundary.  Used during boundary-face matching.
+/**
+ * Build a map from sorted face-node key → patch index, for every face in
+ * every sub-block of @p boundary.  Used during boundary-face matching.
+ */
 std::map<std::vector<localIdx>, localIdx> buildFaceKeyToPatch(vtkMultiBlockDataSet* boundary)
 {
     std::map<std::vector<localIdx>, localIdx> keyMap;

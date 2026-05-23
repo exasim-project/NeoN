@@ -14,12 +14,12 @@
 namespace NeoN::io
 {
 
-/// Compute face centres as the average of face node positions.
+/** Compute face centres as the average of face node positions. */
 Vector<Vec3> computeFaceCentres(
     const Executor& exec, const Vector<Vec3>& points, SegmentedVector<localIdx, localIdx>& faceNodes
 );
 
-/// Compute face area vectors via triangulation from face centre.
+/** Compute face area vectors via triangulation from face centre. */
 Vector<Vec3> computeFaceAreas(
     const Executor& exec,
     const Vector<Vec3>& points,
@@ -27,7 +27,7 @@ Vector<Vec3> computeFaceAreas(
     const Vector<Vec3>& faceCentres
 );
 
-/// Compute magnitude of face area vectors.
+/** Compute magnitude of face area vectors. */
 Vector<scalar> computeMagFaceAreas(const Executor& exec, const Vector<Vec3>& faceAreas);
 
 } // namespace NeoN::io

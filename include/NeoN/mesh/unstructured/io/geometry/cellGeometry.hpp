@@ -14,7 +14,7 @@
 namespace NeoN::io
 {
 
-/// Build a cell-to-face mapping as a SegmentedVector.
+/** Build a cell-to-face mapping as a SegmentedVector. */
 SegmentedVector<localIdx, localIdx> buildCellToFaceMapping(
     const Executor& exec,
     const Vector<localIdx>& faceOwner,
@@ -23,7 +23,7 @@ SegmentedVector<localIdx, localIdx> buildCellToFaceMapping(
     localIdx nCells
 );
 
-/// Compute cell centres as average of face centres per cell.
+/** Compute cell centres as average of face centres per cell. */
 Vector<Vec3> computeCellCentres(
     const Executor& exec,
     const Vector<Vec3>& faceCentres,
@@ -31,7 +31,7 @@ Vector<Vec3> computeCellCentres(
     localIdx nCells
 );
 
-/// Compute cell volumes via tetrahedral decomposition.
+/** Compute cell volumes via tetrahedral decomposition. */
 Vector<scalar> computeCellVolumes(
     const Executor& exec,
     const Vector<Vec3>& points,

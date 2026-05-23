@@ -20,10 +20,10 @@ class vtkMultiBlockDataSet;
 namespace NeoN::io
 {
 
-/// StencilDB key for face-node connectivity (SegmentedVector<localIdx,localIdx>).
+/** StencilDB key for face-node connectivity (SegmentedVector<localIdx,localIdx>). */
 constexpr std::string_view stencilFaceNodes = "io::faceNodes";
 
-/// StencilDB key for patch names (std::vector<std::string>).
+/** StencilDB key for patch names (std::vector<std::string>). */
 constexpr std::string_view stencilPatchNames = "io::patchNames";
 
 /**
