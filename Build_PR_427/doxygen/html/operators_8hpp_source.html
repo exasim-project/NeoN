@@ -247,11 +247,51 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>(flag);</div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}</div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>} <span class="comment">// namespace mpi</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>}</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> valueType&gt;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span><span class="keywordtype">void</span> allToAll(</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">const</span> valueType* sendBuf,</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    mpi_label_t sendCount,</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    valueType* recvBuf,</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    mpi_label_t recvCount,</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    MPI_Comm comm</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>)</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>{</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a> err = MPI_Alltoall(</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        sendBuf, sendCount, getType&lt;valueType&gt;(), recvBuf, recvCount, getType&lt;valueType&gt;(), comm</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    );</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(err == MPI_SUCCESS, <span class="stringliteral">&quot;MPI_Alltoall failed.&quot;</span>);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>}</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> valueType&gt;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="keywordtype">void</span> allToAllV(</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keyword">const</span> valueType* sendBuf,</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keyword">const</span> mpi_label_t* sendCounts,</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keyword">const</span> mpi_label_t* sendDispls,</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    valueType* recvBuf,</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keyword">const</span> mpi_label_t* recvCounts,</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keyword">const</span> mpi_label_t* recvDispls,</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    MPI_Comm comm</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>)</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>{</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a> err = MPI_Alltoallv(</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        sendBuf,</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        sendCounts,</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        sendDispls,</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        getType&lt;valueType&gt;(),</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        recvBuf,</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        recvCounts,</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        recvDispls,</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        getType&lt;valueType&gt;(),</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        comm</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    );</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <a class="code hl_define" href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a>(err == MPI_SUCCESS, <span class="stringliteral">&quot;MPI_Alltoallv failed.&quot;</span>);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>}</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>} <span class="comment">// namespace mpi</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>}</div>
 <div class="ttc" id="aerror_8hpp_html"><div class="ttname"><a href="error_8hpp.html">error.hpp</a></div></div>
 <div class="ttc" id="aerror_8hpp_html_a8b8fc4329e5e6dfc3731ca28605a8a49"><div class="ttname"><a href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a></div><div class="ttdeci">#define NF_ERROR_EXIT(message)</div><div class="ttdoc">Macro for printing an error message and aborting the program.</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00110">error.hpp:110</a></div></div>
 <div class="ttc" id="aerror_8hpp_html_af1af39ea56903b56ed322432441511b5"><div class="ttname"><a href="error_8hpp.html#af1af39ea56903b56ed322432441511b5">NF_DEBUG_ASSERT</a></div><div class="ttdeci">#define NF_DEBUG_ASSERT(condition, message)</div><div class="ttdoc">Macro for asserting a condition and printing an error message if the condition is false (only in debu...</div><div class="ttdef"><b>Definition</b> <a href="error_8hpp_source.html#l00213">error.hpp:213</a></div></div>
