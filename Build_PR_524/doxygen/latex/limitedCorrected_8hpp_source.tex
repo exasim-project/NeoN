@@ -113,29 +113,25 @@
 \DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ verbose:\ "{}limited"{}\ "{}corrected"{}\ <coeff>}}
 \DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ factory\ has\ already\ consumed\ "{}limited"{};\ consume\ an\ optional}}
 \DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ "{}corrected"{}\ sub-\/scheme\ token\ if\ present,\ then\ read\ the\ coefficient.}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ next()\ does\ not\ advance\ on\ bad\_any\_cast,\ so\ a\ numeric\ next\ token}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ left\ in\ place\ for\ the\ scalar\ read\ below.}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ tl\ =\ std::get<NeoN::TokenList>(inputs);}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceNeoN_a037265804e35c82302cc863186ac1f29}{sub}}\ =\ tl.next<std::string>();}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a037265804e35c82302cc863186ac1f29}{sub}}\ ==\ \textcolor{stringliteral}{"{}corrected"{}},\ \textcolor{stringliteral}{"{}limited\ snGrad:\ only\ 'corrected'\ sub-\/scheme\ is\ supported"{}}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::bad\_any\_cast\&)}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tl.next<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>();}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00125}00125\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ tl\ =\ std::get<NeoN::TokenList>(inputs);}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tl.peekIs<std::string>())}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceNeoN_a037265804e35c82302cc863186ac1f29}{sub}}\ =\ tl.next<std::string>();}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a037265804e35c82302cc863186ac1f29}{sub}}\ ==\ \textcolor{stringliteral}{"{}corrected"{}},\ \textcolor{stringliteral}{"{}limited\ snGrad:\ only\ 'corrected'\ sub-\/scheme\ is\ supported"{}}}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tl.next<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>();}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00121}00121\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00124}00124\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ limitCoeff\_;}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00125}00125\ \};}
 \DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00126}00126\ }
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00128}00128\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ limitCoeff\_;}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00129}00129\ \};}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00127}00127\ \textcolor{comment}{//\ instantiate\ the\ template\ class}}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00128}00128\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }LimitedCorrected<scalar>;}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00129}00129\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }LimitedCorrected<Vec3>;}
 \DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00130}00130\ }
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00131}00131\ \textcolor{comment}{//\ instantiate\ the\ template\ class}}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00132}00132\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }LimitedCorrected<scalar>;}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00133}00133\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }LimitedCorrected<Vec3>;}
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00134}00134\ }
-\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00135}00135\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{limitedCorrected_8hpp_source_l00131}00131\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

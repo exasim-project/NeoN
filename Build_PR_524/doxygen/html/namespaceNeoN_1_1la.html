@@ -152,6 +152,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a04daaa5b354b0abc2e22487836cad4a7" id="r_a04daaa5b354b0abc2e22487836cad4a7"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
 <tr class="memitem:a04daaa5b354b0abc2e22487836cad4a7"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a04daaa5b354b0abc2e22487836cad4a7">createBoundarySparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;faceToMatrixAddress)</td></tr>
 <tr class="separator:a04daaa5b354b0abc2e22487836cad4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9fd5d1e4b81ca099097468430a2d32c" id="r_aa9fd5d1e4b81ca099097468430a2d32c"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
+<tr class="memitem:aa9fd5d1e4b81ca099097468430a2d32c"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa9fd5d1e4b81ca099097468430a2d32c">createOffDiagonalSparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;faceToMatrixAddress)</td></tr>
+<tr class="separator:aa9fd5d1e4b81ca099097468430a2d32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70b99b654275b82c0793671af73fe39a" id="r_a70b99b654275b82c0793671af73fe39a"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:a70b99b654275b82c0793671af73fe39a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a70b99b654275b82c0793671af73fe39a">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; strategy=std::make_shared&lt; <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">FaceBasedIterator</a> &gt;())</td></tr>
 <tr class="separator:a70b99b654275b82c0793671af73fe39a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -216,7 +219,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00257">257</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00260">260</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -234,7 +237,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00254">254</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00257">257</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -350,7 +353,37 @@ template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;Value
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00209">209</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00223">223</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+
+</div>
+</div>
+<a id="aa9fd5d1e4b81ca099097468430a2d32c" name="aa9fd5d1e4b81ca099097468430a2d32c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9fd5d1e4b81ca099097468430a2d32c">&#9670;&#160;</a></span>createOffDiagonalSparsityPattern()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SparsityType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const SparsityType &gt; NeoN::la::createOffDiagonalSparsityPattern </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;&#160;</td>
+          <td class="paramname"><em>faceToMatrixAddress</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -392,7 +425,7 @@ template&lt;unsigned int I&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00292">292</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00295">295</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -507,7 +540,7 @@ template&lt;typename ValueType &gt; </div>
 
 <p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00232">232</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00257">257</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
