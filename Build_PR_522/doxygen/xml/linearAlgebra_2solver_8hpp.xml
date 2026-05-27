@@ -689,22 +689,29 @@
 <codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solverInstance_-&gt;solve(ls,<sp/>field);</highlight></codeline>
 <codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"></highlight></codeline>
-<codeline lineno="125" refid="classNeoN_1_1la_1_1Solver_1aa1378fb05bcfb271c15064a21929974c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">SolverStats</ref><sp/><ref refid="classNeoN_1_1la_1_1Solver_1aa1378fb05bcfb271c15064a21929974c" kindref="member">solve</ref>(</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt;<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">CSRMatrix&lt;scalar, localIdx&gt;</ref>,<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">COOMatrix&lt;scalar, localIdx&gt;</ref>,<sp/><ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>&gt;&amp;</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls,</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>field</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="130"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solverInstance_-&gt;solve(ls,<sp/>field);</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"></highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/>solverInstance_;</highlight></codeline>
-<codeline lineno="138"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="130" refid="classNeoN_1_1la_1_1Solver_1aa1378fb05bcfb271c15064a21929974c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">SolverStats</ref><sp/><ref refid="classNeoN_1_1la_1_1Solver_1aa1378fb05bcfb271c15064a21929974c" kindref="member">solve</ref>(</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt;<ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>,<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">CSRMatrix&lt;scalar, localIdx&gt;</ref>,<sp/><ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">COOMatrix&lt;scalar, localIdx&gt;</ref>,<sp/><ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>&gt;&amp;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls,</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>field</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="135"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls.commPattern().sendCounts.empty(),</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;solve(scalar<sp/>matrix,<sp/>Vec3<sp/>rhs)<sp/>does<sp/>not<sp/>support<sp/>distributed<sp/>systems.<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Add<sp/>a<sp/>solveDist<sp/>overload<sp/>to<sp/>SolverFactory<sp/>to<sp/>enable<sp/>this.&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>solverInstance_-&gt;solve(ls,<sp/>field);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/>solverInstance_;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp"/>
   </compounddef>

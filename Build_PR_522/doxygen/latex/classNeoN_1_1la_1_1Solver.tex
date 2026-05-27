@@ -20,7 +20,7 @@
 \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a9f06254ae44a1165bcce2ba6419616a2}{solve}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&ls, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&field) const
 \item 
 \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aa1378fb05bcfb271c15064a21929974c}{solve}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&ls, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&field) const
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Solve a system with a scalar matrix and \doxylink{classNeoN_1_1Vec3}{Vec3} right-\/hand side. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -92,7 +92,14 @@ Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00108}{10
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00125}{125}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Solve a system with a scalar matrix and \doxylink{classNeoN_1_1Vec3}{Vec3} right-\/hand side. 
+
+\begin{DoxyNote}{Note}
+This overload is {\bfseries{local-\/only}}\+: it does not dispatch to solve\+Dist and must not be called on a distributed \doxylink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System} (one whose comm\+Pattern has non-\/empty send\+Counts). If distributed support is needed, add a solve\+Dist virtual to \doxylink{classNeoN_1_1la_1_1SolverFactory}{Solver\+Factory} and implement it in every backend. 
+\end{DoxyNote}
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00130}{130}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_a9f06254ae44a1165bcce2ba6419616a2}\label{classNeoN_1_1la_1_1Solver_a9f06254ae44a1165bcce2ba6419616a2} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!solve@{solve}}
