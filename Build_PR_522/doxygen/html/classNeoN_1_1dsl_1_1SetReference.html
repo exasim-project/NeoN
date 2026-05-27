@@ -111,9 +111,9 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename IndexType = localIdx&gt;<br />
 class NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;</div><p>Post-assembly functor that pins one cell's value to a reference, removing the constant null space that arises when all boundaries have Neumann (zero-gradient) conditions on operators such as laplacian or div+laplacian. </p>
 <p>Modifies the assembled linear system in-place: A[refCell, refCell] += A[refCell, refCell] (doubles the diagonal) rhs[refCell] += A[refCell, refCell] * refValue</p>
-<p>For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-distributed systems every rank applies it independently (each holds a full copy). </p>
+<p>For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-distributed systems every rank applies it independently (each holds a full copy). @TODO allow to set a refPoint instead of a refCell, make the refCell a global cellID </p>
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00054">54</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00055">55</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a16fe3252506407a8e19ef8782062a685" name="a16fe3252506407a8e19ef8782062a685"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a16fe3252506407a8e19ef8782062a685">&#9670;&#160;</a></span>SetReference()</h2>
@@ -151,7 +151,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00058">58</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00059">59</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00060">60</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00061">61</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
