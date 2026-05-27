@@ -1,0 +1,77 @@
+\doxysection{NeoN\+::dsl\+::Set\+Reference\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1dsl_1_1SetReference}{}\label{classNeoN_1_1dsl_1_1SetReference}\index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}}
+
+
+Post-\/assembly functor that pins one cell\textquotesingle{}s value to a reference, removing the constant null space that arises when all boundaries have Neumann (zero-\/gradient) conditions on operators such as laplacian or div+laplacian.  
+
+
+
+
+{\ttfamily \#include $<$expression.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::dsl\+::Set\+Reference\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1dsl_1_1SetReference}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_a16fe3252506407a8e19ef8782062a685}{Set\+Reference}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} ref\+Cell, Value\+Type ref\+Value)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_ab76f83c63e74e528246db556e9dd9799}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ $>$ \&ls) const override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Neo\+N\+::dsl\+::\+Post\+Assembly\+Base$<$ Vector\+Type, Index\+Type $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6ee1fd861a37f190bf64b4525f1ffbaa}{\texorpdfstring{$\sim$}{\string~}\+Post\+Assembly\+Base}} ()=default
+\item 
+virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a9284792a7d99d4347f8b6b1f805f66fc}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Vector\+Type, Index\+Type $>$ $>$ \&) const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, typename Index\+Type = local\+Idx$>$\newline
+class Neo\+N\+::dsl\+::\+Set\+Reference$<$ Value\+Type, Index\+Type $>$}
+Post-\/assembly functor that pins one cell\textquotesingle{}s value to a reference, removing the constant null space that arises when all boundaries have Neumann (zero-\/gradient) conditions on operators such as laplacian or div+laplacian. 
+
+Modifies the assembled linear system in-\/place\+: A\mbox{[}ref\+Cell, ref\+Cell\mbox{]} += A\mbox{[}ref\+Cell, ref\+Cell\mbox{]} (doubles the diagonal) rhs\mbox{[}ref\+Cell\mbox{]} += A\mbox{[}ref\+Cell, ref\+Cell\mbox{]} \texorpdfstring{$\ast$}{*} ref\+Value
+
+For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-\/distributed systems every rank applies it independently (each holds a full copy). 
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00054}{54}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1dsl_1_1SetReference_a16fe3252506407a8e19ef8782062a685}\label{classNeoN_1_1dsl_1_1SetReference_a16fe3252506407a8e19ef8782062a685} 
+\index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!SetReference@{SetReference}}
+\index{SetReference@{SetReference}!NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{SetReference()}{SetReference()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+Reference}}$<$ Value\+Type, Index\+Type $>$\+::\+Set\+Reference (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{ref\+Cell,  }\item[{Value\+Type}]{ref\+Value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00058}{58}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1dsl_1_1SetReference_ab76f83c63e74e528246db556e9dd9799}\label{classNeoN_1_1dsl_1_1SetReference_ab76f83c63e74e528246db556e9dd9799} 
+\index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+Reference}}$<$ Value\+Type, Index\+Type $>$\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/dsl/\mbox{\hyperlink{expression_8hpp}{expression.\+hpp}}\end{DoxyCompactItemize}
