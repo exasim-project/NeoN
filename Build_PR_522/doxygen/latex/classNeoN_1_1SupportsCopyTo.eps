@@ -5,7 +5,7 @@
 %%For: 
 %Magnification: 1.00
 %%Orientation: Portrait
-%%BoundingBox: 0 0 500 28.129395
+%%BoundingBox: 0 0 500 22.075056
 %%Pages: 0
 %%BeginSetup
 %%EndSetup
@@ -19,7 +19,7 @@
 /marginwidth 10 def
 /distx 20 def
 /disty 40 def
-/boundaspect 17.775000 def  % aspect ratio of the BoundingBox (width/height)
+/boundaspect 22.650000 def  % aspect ratio of the BoundingBox (width/height)
 /boundx 500 def
 /boundy boundx boundaspect div def
 /xspacing 0 def
@@ -175,8 +175,8 @@ boxfont setfont
 1 boundaspect scale
 (NeoN::SupportsCopyTo< HostType >) cw
 (NeoN::SegmentedVector< localIdx, localIdx >) cw
-(NeoN::la::Matrix< ValueType, localIdx >) cw
-(NeoN::la::LinearSystem< ValueType, SystemMatrixType, BoundaryMatrixType >) cw
+(NeoN::la::Matrix< MatrixValueType, localIdx >) cw
+(NeoN::la::LinearSystem< MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType >) cw
 /boxwidth boxwidth marginwidth 2 mul add def
 /xspacing boxwidth distx add def
 /yspacing boxheight disty add def
@@ -190,8 +190,8 @@ boundx scalefactor div boundy scalefactor div scale
 
  (NeoN::SupportsCopyTo< HostType >) 1.000000 1.000000 box
  (NeoN::SegmentedVector< localIdx, localIdx >) 0.000000 0.000000 box
- (NeoN::la::Matrix< ValueType, localIdx >) 1.000000 0.000000 box
- (NeoN::la::LinearSystem< ValueType, SystemMatrixType, BoundaryMatrixType >) 2.000000 0.000000 box
+ (NeoN::la::Matrix< MatrixValueType, localIdx >) 1.000000 0.000000 box
+ (NeoN::la::LinearSystem< MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType >) 2.000000 0.000000 box
 
 % ----- relations -----
 
