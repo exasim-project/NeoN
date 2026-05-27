@@ -122,12 +122,24 @@ public:
         return solverInstance_->solve(ls, field);
     }
 
+    /// @brief Solve a system with a scalar matrix and Vec3 right-hand side.
+    /// @note This overload is **local-only**: it does not dispatch to solveDist and must not be
+    ///       called on a distributed LinearSystem (one whose commPattern has non-empty sendCounts).
+    ///       If distributed support is needed, add a solveDist virtual to SolverFactory and
+    ///       implement it in every backend.
     SolverStats solve(
         const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&
             ls,
         Vector<Vec3>& field
     ) const
     {
+#ifdef NF_WITH_MPI_SUPPORT
+        NF_ASSERT(
+            ls.commPattern().sendCounts.empty(),
+            "solve(scalar matrix, Vec3 rhs) does not support distributed systems. "
+            "Add a solveDist overload to SolverFactory to enable this."
+        );
+#endif
         return solverInstance_->solve(ls, field);
     }
 
