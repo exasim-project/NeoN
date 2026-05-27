@@ -111,51 +111,46 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         exec, partition, comm.rank(), recv_connections
     );
 
+    // numNonLocalElements: unique remote columns (used as the COO column dimension).
+    // nNonLocalNnz: one entry per processor face (used as the COO nnz).
+    // These differ when a local cell couples to the same remote cell via >1 face.
     const auto numNonLocalElements = imap.get_non_local_size();
+    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
 
-    auto non_loc_vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.values().data()
-    );
+    auto non_loc_vals = gko::array<scalar>::const_view(exec, nNonLocalNnz, bmtx.values().data());
     // rowIdxs() holds global row indices; convert to local (subtract this rank's global offset).
     const auto globalOffset = static_cast<IndexType>(partition->get_range_bounds()[comm.rank()]);
-    gko::array<IndexType> non_loc_row {exec, static_cast<gko::size_type>(numNonLocalElements)};
+    gko::array<IndexType> non_loc_row {exec, nNonLocalNnz};
     {
         auto host = exec->get_master();
         auto srcView = gko::array<IndexType>::const_view(
-            exec,
-            static_cast<gko::size_type>(numNonLocalElements),
-            bmtx.sparsity()->rowIdxs().data()
+            exec, nNonLocalNnz, bmtx.sparsity()->rowIdxs().data()
         );
         auto srcArr = srcView.copy_to_array();
         srcArr.set_executor(host);
-        gko::array<IndexType> hostRow {host, static_cast<gko::size_type>(numNonLocalElements)};
+        gko::array<IndexType> hostRow {host, nNonLocalNnz};
         const auto* srcPtr = srcArr.get_const_data();
         auto* dstPtr = hostRow.get_data();
-        for (gko::size_type i = 0; i < static_cast<gko::size_type>(numNonLocalElements); ++i)
+        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
             dstPtr[i] = static_cast<IndexType>(srcPtr[i]) - globalOffset;
         non_loc_row = std::move(hostRow);
         non_loc_row.set_executor(exec);
     }
 
-    // Cast colIdxs (global neighbor indices, int32) to int64 for index_map::map_to_local
-    gko::array<global_index_type> non_loc_col {
-        exec, static_cast<gko::size_type>(numNonLocalElements)
-    };
+    // Cast colIdxs (global neighbour indices, int32) to int64 for index_map::map_to_local.
+    // imap deduplicates: multiple faces to the same remote cell map to the same local column.
+    gko::array<global_index_type> non_loc_col {exec, nNonLocalNnz};
     {
         auto host = exec->get_master();
         auto srcView = gko::array<IndexType>::const_view(
-            exec,
-            static_cast<gko::size_type>(numNonLocalElements),
-            bmtx.sparsity()->colIdxs().data()
+            exec, nNonLocalNnz, bmtx.sparsity()->colIdxs().data()
         );
         auto srcArr = srcView.copy_to_array();
         srcArr.set_executor(host);
-        gko::array<global_index_type> hostCol {
-            host, static_cast<gko::size_type>(numNonLocalElements)
-        };
+        gko::array<global_index_type> hostCol {host, nNonLocalNnz};
         const auto* srcPtr = srcArr.get_const_data();
         auto* dstPtr = hostCol.get_data();
-        for (gko::size_type i = 0; i < static_cast<gko::size_type>(numNonLocalElements); ++i)
+        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
             dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
         non_loc_col = std::move(hostCol);
         non_loc_col.set_executor(exec);
