@@ -49,6 +49,7 @@ struct PostAssemblyBase
  * For distributed systems only the rank that owns the reference cell (assumed to be
  * rank 0 for local cell index 0) applies the modification; all other ranks skip it.
  * For non-distributed systems every rank applies it independently (each holds a full copy).
+ * @TODO allow to set a refPoint instead of a refCell, make the refCell a global cellID
  */
 template<typename ValueType, typename IndexType = localIdx>
 class SetReference : public PostAssemblyBase<ValueType, IndexType>
