@@ -2,11 +2,8 @@ name: Python wheels
 
 on:
   push:
-    branches: [main, develop]
     tags:
       - "v*.*.*"
-  schedule:
-    - cron: "17 2 * * *"
   workflow_dispatch:
     inputs:
       build_gpu:

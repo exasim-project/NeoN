@@ -1,0 +1,44 @@
+name: Publish existing wheels
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Workflow run id that produced the wheel artifacts"
+        required: true
+        type: string
+      artifact_pattern:
+        description: "Artifact name pattern to publish"
+        required: true
+        default: "cpu-wheels-*"
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish existing wheel artifacts to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/andrei-maftei-testneon/
+    steps:
+      - name: Download wheel artifacts from selected run
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          pattern: ${{ inputs.artifact_pattern }}
+          path: wheelhouse
+          merge-multiple: true
+          github-token: ${{ github.token }}
+
+      - name: List wheels selected for publishing
+        run: ls -lh wheelhouse
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
