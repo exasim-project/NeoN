@@ -169,7 +169,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
             Vec3 cellToCellDist = cellCenters[neighbors[facei]] - cellCenters[owners[facei]];
-            deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
+            deltaCoeff[facei] = 1.0 / std::max(mag(cellToCellDist), scalar(ROOTVSMALL));
         },
         "basicGeometricScheme::updateDeltaCoeffsInternal"
     );
@@ -181,7 +181,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(
             auto own = surfFaceCells[bfi];
             // TODO Issue #515
             Vec3 cellToCellDist = faceCenters[nInternalFaces + bfi] - cellCenters[own];
-            deltaCoeffB[bfi] = 1.0 / mag(cellToCellDist);
+            deltaCoeffB[bfi] = 1.0 / std::max(mag(cellToCellDist), scalar(ROOTVSMALL));
         },
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
