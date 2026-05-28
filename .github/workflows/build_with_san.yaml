@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   build:
-    if: ${{contains(github.event.pull_request.labels.*.name, 'full-ci')}}
+    if: ${{ github.repository == 'exasim-project/NeoN' && contains(github.event.pull_request.labels.*.name, 'full-ci') }}
     name: Build NeoN with sanitizer
     strategy:
       fail-fast: false
