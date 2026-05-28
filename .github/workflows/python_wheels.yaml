@@ -16,10 +16,15 @@ on:
         required: false
         default: "cpu-wheels-*"
         type: string
+      build_wheels:
+        description: "Build wheels instead of publishing existing artifacts"
+        required: false
+        default: false
+        type: boolean
       build_gpu:
         description: "Build Linux CUDA wheel variants"
         required: false
-        default: true
+        default: false
         type: boolean
 
 permissions:
@@ -33,7 +38,7 @@ jobs:
   version:
     name: Resolve package version
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch' || inputs.publish_existing_run_id == ''
+    if: github.event_name != 'workflow_dispatch' || inputs.build_wheels
     outputs:
       channel: ${{ steps.version.outputs.channel }}
       version: ${{ steps.version.outputs.version }}
@@ -63,7 +68,7 @@ jobs:
     name: CPU wheels ${{ matrix.os }}
     needs: version
     runs-on: ${{ matrix.os }}
-    if: github.event_name != 'workflow_dispatch' || inputs.publish_existing_run_id == ''
+    if: github.event_name != 'workflow_dispatch' || inputs.build_wheels
     strategy:
       fail-fast: false
       matrix:
@@ -116,7 +121,7 @@ jobs:
     name: ${{ matrix.label }} wheels
     needs: version
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.build_gpu && inputs.publish_existing_run_id == ''
+    if: github.event_name == 'workflow_dispatch' && inputs.build_wheels && inputs.build_gpu
     strategy:
       fail-fast: false
       matrix:
@@ -222,6 +227,15 @@ jobs:
       actions: read
       id-token: write
     steps:
+      - name: Validate selected run id
+        shell: bash
+        run: |
+          if [[ ! "${{ inputs.publish_existing_run_id }}" =~ ^[0-9]+$ ]]; then
+            echo "publish_existing_run_id must contain only the numeric run id."
+            echo "Example: 26596572728"
+            exit 1
+          fi
+
       - name: Download wheel artifacts from selected run
         uses: actions/download-artifact@v4
         with:
