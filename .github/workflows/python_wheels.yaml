@@ -237,16 +237,31 @@ jobs:
           fi
 
       - name: Download wheel artifacts from selected run
-        uses: actions/download-artifact@v4
-        with:
-          run-id: ${{ inputs.publish_existing_run_id }}
-          pattern: ${{ inputs.artifact_pattern }}
-          path: wheelhouse
-          merge-multiple: true
-          github-token: ${{ github.token }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          rm -rf wheelhouse
+          mkdir -p wheelhouse
+          gh run download "${{ inputs.publish_existing_run_id }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "${{ inputs.artifact_pattern }}" \
+            --dir wheelhouse
+
+          find wheelhouse -mindepth 2 -type f -name "*.whl" -exec mv -t wheelhouse {} +
+          find wheelhouse -type d -empty -delete
+
+          if ! find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -quit | grep -q .; then
+            echo "No wheel files were downloaded."
+            echo "Run id: ${{ inputs.publish_existing_run_id }}"
+            echo "Artifact pattern: ${{ inputs.artifact_pattern }}"
+            echo "Use an exact artifact name if the pattern does not match, for example:"
+            echo "cpu-wheels-ubuntu-latest-x86_64"
+            exit 1
+          fi
 
       - name: List wheels selected for publishing
-        run: ls -lh wheelhouse
+        run: find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -exec ls -lh {} \;
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
