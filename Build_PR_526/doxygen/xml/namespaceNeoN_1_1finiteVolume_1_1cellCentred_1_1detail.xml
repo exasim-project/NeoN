@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail" kind="namespace" language="C++">
+    <compoundname>NeoN::finiteVolume::cellCentred::detail</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a502b3efc47c2f41b6a4cfb9dbe7ada3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+        <definition>KOKKOS_INLINE_FUNCTION scalar NeoN::finiteVolume::cellCentred::detail::ddtFluxCorrLimiter</definition>
+        <argsstring>(const scalar fluxMag, const scalar corrMag)</argsstring>
+        <name>ddtFluxCorrLimiter</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::detail::ddtFluxCorrLimiter</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>fluxMag</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>corrMag</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="24" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="24" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a3ab3efbc6f9cb22226affb2305cc93a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::detail::ddtFluxCorrBDF1Kernel</definition>
+        <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;mesh, const SurfScalarField &amp;flux0, const SurfaceField&lt; Vec3 &gt; &amp;uf0, SurfScalarField &amp;fluxCorr, scalar dt)</argsstring>
+        <name>ddtFluxCorrBDF1Kernel</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::detail::ddtFluxCorrBDF1Kernel</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref> &amp;</type>
+          <declname>flux0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>uf0</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref> &amp;</type>
+          <declname>fluxCorr</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="34" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="34" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail_1a9fb27d788ee7ab453d5b5b4a2b5e0bfb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::detail::ddtFluxCorrBDF2Kernel</definition>
+        <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;mesh, const SurfScalarField &amp;flux0, const SurfScalarField &amp;flux00, const SurfaceField&lt; Vec3 &gt; &amp;uf0, const SurfaceField&lt; Vec3 &gt; &amp;uf00, SurfScalarField &amp;fluxCorr, scalar dt)</argsstring>
+        <name>ddtFluxCorrBDF2Kernel</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::detail::ddtFluxCorrBDF2Kernel</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref> &amp;</type>
+          <declname>flux0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref> &amp;</type>
+          <declname>flux00</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>uf0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>uf00</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref> &amp;</type>
+          <declname>fluxCorr</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref></type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="85" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" bodystart="85" bodyend="159"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp" line="20" column="1"/>
+  </compounddef>
+</doxygen>
