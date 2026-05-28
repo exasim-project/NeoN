@@ -61,12 +61,6 @@ jobs:
         include:
           - os: ubuntu-latest
             archs: x86_64
-          - os: windows-latest
-            archs: AMD64
-          - os: macos-13
-            archs: x86_64
-          - os: macos-latest
-            archs: arm64
 
     steps:
       - name: Checkout repository
@@ -110,7 +104,7 @@ jobs:
     name: ${{ matrix.label }} wheels
     needs: version
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch' || inputs.build_gpu
+    if: github.event_name == 'workflow_dispatch' && inputs.build_gpu
     strategy:
       fail-fast: false
       matrix:
