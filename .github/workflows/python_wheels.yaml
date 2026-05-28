@@ -6,6 +6,16 @@ on:
       - "v*.*.*"
   workflow_dispatch:
     inputs:
+      publish_existing_run_id:
+        description: "Publish wheel artifacts from this existing run id instead of building"
+        required: false
+        default: ""
+        type: string
+      artifact_pattern:
+        description: "Artifact name pattern to publish when using publish_existing_run_id"
+        required: false
+        default: "cpu-wheels-*"
+        type: string
       build_gpu:
         description: "Build Linux CUDA wheel variants"
         required: false
@@ -23,6 +33,7 @@ jobs:
   version:
     name: Resolve package version
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || inputs.publish_existing_run_id == ''
     outputs:
       channel: ${{ steps.version.outputs.channel }}
       version: ${{ steps.version.outputs.version }}
@@ -52,6 +63,7 @@ jobs:
     name: CPU wheels ${{ matrix.os }}
     needs: version
     runs-on: ${{ matrix.os }}
+    if: github.event_name != 'workflow_dispatch' || inputs.publish_existing_run_id == ''
     strategy:
       fail-fast: false
       matrix:
@@ -104,7 +116,7 @@ jobs:
     name: ${{ matrix.label }} wheels
     needs: version
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.build_gpu
+    if: github.event_name == 'workflow_dispatch' && inputs.build_gpu && inputs.publish_existing_run_id == ''
     strategy:
       fail-fast: false
       matrix:
@@ -192,6 +204,35 @@ jobs:
           pattern: cpu-wheels-*
           path: wheelhouse
           merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
+
+  publish-existing-cpu-pypi:
+    name: Publish existing CPU wheel artifacts to PyPI
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_existing_run_id != ''
+    environment:
+      name: pypi
+      url: https://pypi.org/project/andrei-maftei-testneon/
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - name: Download wheel artifacts from selected run
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.publish_existing_run_id }}
+          pattern: ${{ inputs.artifact_pattern }}
+          path: wheelhouse
+          merge-multiple: true
+          github-token: ${{ github.token }}
+
+      - name: List wheels selected for publishing
+        run: ls -lh wheelhouse
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
