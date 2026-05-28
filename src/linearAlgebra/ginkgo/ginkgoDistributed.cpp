@@ -207,7 +207,13 @@ SolverStatsEntry solve_impl_dist(
     solver->add_logger(logger);
     solver->apply(b, x);
 
-    scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+    auto rhsCopyFinal = Vector<scalar>(rhs);
+    auto resFinal = gkoVecViewDist(exec, comm, rhsCopyFinal.data(), nrows);
+    mtx->apply(one, x, neg_one, resFinal);
+    auto finalNormVec = gko::initialize<vec>({0.0}, exec);
+    gko::as<dist_vec>(resFinal)->compute_norm2(finalNormVec);
+    scalar finalResNorm = retrieve(finalNormVec);
+
     auto numIter = label(logger->get_num_iterations());
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();

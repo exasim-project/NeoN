@@ -147,6 +147,34 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         NEON_LAMBDA(const localIdx bfi) { weightB[bfi] = 1.0; },
         "basicGeometricScheme::updateWeightsBoundary"
     );
+#ifdef NF_WITH_MPI_SUPPORT
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto surfFaceCells = mesh_.boundaryMesh().faceOwners().view();
+        const auto bFaceCenters = mesh_.boundaryMesh().faceCenters().view();
+        const auto bFaceNormals = mesh_.boundaryMesh().faceNormals().view();
+        const auto bFaceAreas = mesh_.boundaryMesh().faceAreas().view();
+        // dNei[procFacei] == |n & (Cf - Cnei)| received from the neighbouring rank
+        const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
+        const auto dNeiView = dNei.view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const localIdx bfi = nBoundaryFaces + procFacei;
+                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+                const Vec3 co = cellCenters[surfFaceCells[bfi]];
+                const scalar dOwn = std::abs(n & (bFaceCenters[bfi] - co));
+                const scalar dNeiF = dNeiView[procFacei];
+                const scalar sum = dOwn + dNeiF;
+                weightB[bfi] = (sum > ROOTVSMALL) ? dNeiF / sum : 0.5;
+            },
+            "basicGeometricScheme::updateWeightsProcBoundary"
+        );
+    }
+#endif
 }
 
 void BasicGeometryScheme::updateDeltaCoeffs(
