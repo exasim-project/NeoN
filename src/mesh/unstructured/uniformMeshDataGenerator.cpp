@@ -152,17 +152,17 @@ BoundaryMesh generateBoundaryData(
 
     localIdx faceId = nInternalFaces;
 
-    auto addBndFace = [&](localIdx bndId, localIdx ci, Vec3 area, Vec3 faceCentre)
+    auto addBndFace = [&](localIdx bndId, localIdx ci, Vec3 faceNormal, Vec3 faceCentre)
     {
         auto sz = static_cast<size_t>(bndId);
         auto fi = static_cast<size_t>(faceId);
         auto ciSizeT = static_cast<size_t>(ci);
         auto ciLabel = static_cast<label>(ci);
-        scalar magA = mag(area);
-        Vec3 normal = area * (1.0 / magA);
+        scalar magA = mag(faceNormal);
+        Vec3 faceUnitNormal = faceNormal * (1.0 / magA);
         Vec3 delta = faceCentre - centers[ciSizeT];
 
-        faces.areas[fi] = area;
+        faces.normals[fi] = faceNormal;
         faces.centers[fi] = faceCentre;
         faces.magnitudes[fi] = magA;
         faces.owner[fi] = ciLabel;
@@ -170,9 +170,9 @@ BoundaryMesh generateBoundaryData(
         bndFaceOwners[sz] = ciLabel;
         bndFaceCenters[sz] = faceCentre;
         bndCellCenters[sz] = centers[ciSizeT];
-        bndFaceNormals[sz] = area;
+        bndFaceNormals[sz] = faceNormal;
         bndFaceAreas[sz] = magA;
-        bndFaceUnitNormals[sz] = normal;
+        bndFaceUnitNormals[sz] = faceUnitNormal;
         bndDelta[sz] = delta;
         bndDeltaCoeffs[sz] = 1.0 / mag(delta);
     };

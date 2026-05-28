@@ -54,12 +54,12 @@ struct CellData
 
 /** @brief Face geometric and topological data for internal mesh faces
  *
- * Stores face areas, centroids, magnitudes, and owner-neighbour connectivity
+ * Stores face normals, centroids, magnitudes, and owner-neighbour connectivity
  * for all internal faces of a structured 3D uniform mesh.
  */
 struct FaceData
 {
-    std::vector<Vec3> areas;
+    std::vector<Vec3> normals;
     std::vector<Vec3> centers;
     std::vector<scalar> magnitudes;
     std::vector<label> owner;
@@ -88,7 +88,7 @@ CellData generateCellData(const MeshParams& p);
 
 /** @brief Generate internal face data for a 3D uniform mesh
  *
- * Constructs face areas, centers, magnitudes, and owner/neighbour connectivity
+ * Constructs face normals, centers, magnitudes, and owner/neighbour connectivity
  * for all internal faces in x-, y-, and z-directions.
  *
  * Face ordering:
