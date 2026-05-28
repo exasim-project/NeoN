@@ -25,7 +25,7 @@ void computeLaplacianExp(
     const auto [owners, neighbors, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-    const auto [result, faceArea, fnGrad, vol] =
+    const auto [result, faceAreas, fnGrad, vol] =
         views(lapPhi, mesh.faceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
     const auto fnGradB = faceNormalGrad.boundaryData().value().view();
 
@@ -47,7 +47,7 @@ void computeLaplacianExp(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            ValueType flux = faceArea[i] * fnGrad[i];
+            ValueType flux = faceAreas[i] * fnGrad[i];
             Kokkos::atomic_add(
                 &result[owners[i]], flux
             ); // +|S_f| * fnGrad (outward gradient from owner)
@@ -61,14 +61,16 @@ void computeLaplacianExp(
     // Physical (non-proc) boundary faces: only the owner cell is on this rank.
     // For non-proc patches, OpenFOAM's full face index and NeoN's compressed
     // index agree (empty patches like defaultFaces have size()==0 in fvPatch),
-    // so faceArea[i] = mesh.magFaceAreas()[i] is correct here.
+    // so faceAreas[i] = mesh.magFaceAreas()[i] is correct here.
+    const auto bFaceAreas = mesh.boundaryMesh().faceAreas().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            // TODO Issue #515 faceArea should not contain boundary data
-            ValueType valueOwn = faceArea[nInternalFaces + bfi] * fnGradB[bfi];
+            // TODO Issue #515 faceAreas should not contain boundary data
+            // ValueType valueOwn = faceAreas[nInternalFaces + bfi] * fnGradB[bfi];
+            ValueType valueOwn = bFaceAreas[bfi] * fnGradB[bfi];
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
@@ -163,6 +165,7 @@ void computeLaplacianBoundImpl(
 
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto bFaceAreas = mesh.boundaryMesh().faceAreas().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
@@ -174,7 +177,8 @@ void computeLaplacianBoundImpl(
             auto refValFrac = valueFraction[bfi];
             auto refGradFrac = 1.0 - refValFrac;
             // TODO Issue #515 magFaceArea should not contain boundary data
-            auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
+            // auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
+            auto flux = bGammaV[bfi] * bFaceAreas[bfi];
             auto fluxContrib =
                 flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<ValueType>();
 
