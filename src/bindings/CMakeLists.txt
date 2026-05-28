@@ -77,7 +77,7 @@ Note: Type stubs (_neon.pyi) are automatically generated during the build proces
 using nanobind-stubgen. This enables IDE autocomplete and type checking.
 \"\"\"
 
-__version__ = \"0.1.0\"
+__version__ = \"${NeoN_PACKAGE_VERSION}\"
 
 # Import the C++ extension module
 try:

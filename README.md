@@ -26,7 +26,6 @@ NeoN has the following requirements
 
 For GPU support
 * NVIDIA: CUDA _12+_
-* AMD: ROCm _6.4.1_
 * Intel: oneAPI Base Toolkit _2024.2_
 
 For development it is required to use [pre-commit](https://pre-commit.com/).
@@ -63,6 +62,42 @@ We provide a set of unit tests which can be executed via ctest or
 
     cmake --build . --target test
 
+### Pixi Workspace
+
+For local development, NeoN can be driven via `pixi.toml`. Pixi provides the
+developer tools, such as Python, CMake, Ninja, a C++ compiler, nanobind, pytest,
+and optional CUDA compiler packages, in an isolated environment.
+
+Typical commands are:
+
+    pixi install
+    pixi shell
+    pixi run build
+    pixi run test
+    pixi run -e cuda build-cuda
+    pixi run -e cuda test-cuda
+
+Pixi is only the local development leg. It is not used to publish Python wheels
+or upload releases.
+
+### Python Wheels
+
+The Python distribution name is `exasim-neon`, which produces wheel filenames
+starting with `exasim_neon`. The import package remains `neon`.
+
+The package version in `pyproject.toml` is the source of truth. CMake reads that
+version during configuration, and the generated `neon.__version__` uses the same
+value.
+
+GitHub Actions uses cibuildwheel to build wheels after pushes, nightly schedules,
+manual dispatches, and release tags. Stable releases use tags named like
+`v0.1.0`. Nightly builds use development versions like
+`0.1.1.dev202605270217123`.
+
+CPU wheels use the plain package version and are published to PyPI only for
+stable `v*.*.*` tags. CUDA wheels use local version suffixes such as
+`0.1.0+cuda128` and `0.1.0+cuda130`; these are uploaded to the GitHub Release
+for stable tags and are also available as workflow artifacts.
 
 ## Integration with other CFD Frameworks
 

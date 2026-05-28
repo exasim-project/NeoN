@@ -4,10 +4,22 @@
 
 cmake_minimum_required(VERSION 3.22.0)
 
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml" NeoN_PACKAGE_VERSION_LINE
+     REGEX "^version = \"[^\"]+\"")
+if(NOT NeoN_PACKAGE_VERSION_LINE)
+  message(FATAL_ERROR "Could not read project.version from pyproject.toml")
+endif()
+string(REGEX REPLACE "^version = \"([^\"]+)\".*" "\\1" NeoN_PACKAGE_VERSION
+                     "${NeoN_PACKAGE_VERSION_LINE}")
+string(REGEX MATCH "^[0-9]+(\\.[0-9]+)*" NeoN_CMAKE_VERSION "${NeoN_PACKAGE_VERSION}")
+if(NOT NeoN_CMAKE_VERSION)
+  message(FATAL_ERROR "Package version '${NeoN_PACKAGE_VERSION}' has no numeric CMake version")
+endif()
+
 project(
   NeoN
   LANGUAGES C CXX
-  VERSION 0.1.0
+  VERSION ${NeoN_CMAKE_VERSION}
   DESCRIPTION "A framework for CFD software")
 
 set(CMAKE_CXX_EXTENSIONS OFF)

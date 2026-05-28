@@ -1,0 +1,218 @@
+name: Python wheels
+
+on:
+  push:
+    branches: [main, develop]
+    tags:
+      - "v*.*.*"
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+    inputs:
+      build_gpu:
+        description: "Build Linux CUDA wheel variants"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  version:
+    name: Resolve package version
+    runs-on: ubuntu-latest
+    outputs:
+      channel: ${{ steps.version.outputs.channel }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve stable or nightly version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            channel="stable"
+          else
+            serial="$(date -u +%Y%m%d%H%M)${GITHUB_RUN_NUMBER}"
+            version="$(python scripts/set_package_version.py --nightly "${serial}")"
+            channel="nightly"
+          fi
+
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
+
+  build-cpu-wheels:
+    name: CPU wheels ${{ matrix.os }}
+    needs: version
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            archs: x86_64
+          - os: windows-latest
+            archs: AMD64
+          - os: macos-13
+            archs: x86_64
+          - os: macos-latest
+            archs: arm64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up build host Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Stamp package version
+        run: python scripts/set_package_version.py "${{ needs.version.outputs.version }}"
+
+      - name: Install cibuildwheel
+        run: python -m pip install "cibuildwheel>=3,<4"
+
+      - name: Build CPU wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_ARCHS: ${{ matrix.archs }}
+          CIBW_CONFIG_SETTINGS: >
+            cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+            cmake.define.NeoN_BUILD_TESTS=OFF
+            cmake.define.NeoN_WITH_MPI=OFF
+            cmake.define.NeoN_WITH_PETSC=OFF
+            cmake.define.NeoN_WITH_ADIOS2=OFF
+            cmake.define.NeoN_WITH_SUNDIALS=OFF
+            cmake.define.Kokkos_ENABLE_SERIAL=ON
+            cmake.define.Kokkos_ENABLE_CUDA=OFF
+            cmake.define.Kokkos_ENABLE_HIP=OFF
+
+      - name: Upload CPU wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-wheels-${{ matrix.os }}-${{ matrix.archs }}
+          path: wheelhouse/*.whl
+
+  build-gpu-wheels:
+    name: ${{ matrix.label }} wheels
+    needs: version
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || inputs.build_gpu
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: CUDA 12.8
+            suffix: cuda128
+            before_all: bash ci/install_cuda.sh 12.8
+            config_settings: >
+              cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+              cmake.define.NeoN_BUILD_TESTS=OFF
+              cmake.define.NeoN_WITH_MPI=OFF
+              cmake.define.NeoN_WITH_PETSC=OFF
+              cmake.define.NeoN_WITH_ADIOS2=OFF
+              cmake.define.NeoN_WITH_SUNDIALS=OFF
+              cmake.define.Kokkos_ENABLE_SERIAL=ON
+              cmake.define.Kokkos_ENABLE_CUDA=ON
+              cmake.define.Kokkos_ENABLE_HIP=OFF
+          - label: CUDA 13.0
+            suffix: cuda130
+            before_all: bash ci/install_cuda.sh 13.0
+            config_settings: >
+              cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+              cmake.define.NeoN_BUILD_TESTS=OFF
+              cmake.define.NeoN_WITH_MPI=OFF
+              cmake.define.NeoN_WITH_PETSC=OFF
+              cmake.define.NeoN_WITH_ADIOS2=OFF
+              cmake.define.NeoN_WITH_SUNDIALS=OFF
+              cmake.define.Kokkos_ENABLE_SERIAL=ON
+              cmake.define.Kokkos_ENABLE_CUDA=ON
+              cmake.define.Kokkos_ENABLE_HIP=OFF
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up build host Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Stamp GPU package version
+        run: python scripts/set_package_version.py "${{ needs.version.outputs.version }}+${{ matrix.suffix }}"
+
+      - name: Install cibuildwheel
+        run: python -m pip install "cibuildwheel>=3,<4"
+
+      - name: Build GPU wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_34
+          CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
+          CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
+          CIBW_ENVIRONMENT_LINUX: >
+            PATH=/usr/local/cuda/bin:$PATH
+            LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+            CUDAToolkit_ROOT=/usr/local/cuda
+
+      - name: Upload GPU wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-wheels-${{ matrix.suffix }}
+          path: wheelhouse/*.whl
+
+  publish-cpu-pypi:
+    name: Publish CPU wheels to PyPI
+    needs: build-cpu-wheels
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+    steps:
+      - name: Download CPU wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: cpu-wheels-*
+          path: wheelhouse
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
+
+  publish-gpu-github-release:
+    name: Attach GPU wheels to GitHub Release
+    needs: build-gpu-wheels
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download GPU wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: gpu-wheels-*
+          path: wheelhouse
+          merge-multiple: true
+
+      - name: Upload GPU wheels to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wheelhouse/*.whl
