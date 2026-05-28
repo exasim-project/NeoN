@@ -164,7 +164,7 @@ BoundaryMesh generateBoundaryData(
 
         faces.normals[fi] = faceNormal;
         faces.centers[fi] = faceCentre;
-        faces.magnitudes[fi] = magA;
+        faces.areas[fi] = magA;
         faces.owner[fi] = ciLabel;
 
         bndFaceOwners[sz] = ciLabel;

@@ -61,7 +61,7 @@ struct FaceData
 {
     std::vector<Vec3> normals;
     std::vector<Vec3> centers;
-    std::vector<scalar> magnitudes;
+    std::vector<scalar> areas;
     std::vector<label> owner;
     std::vector<label> neighbour;
 };
