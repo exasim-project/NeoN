@@ -182,7 +182,11 @@ jobs:
     needs: build-cpu-wheels
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/project/andrei-maftei-testneon/
     permissions:
+      contents: read
       id-token: write
     steps:
       - name: Download CPU wheel artifacts

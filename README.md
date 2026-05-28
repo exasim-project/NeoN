@@ -82,8 +82,9 @@ or upload releases.
 
 ### Python Wheels
 
-The Python distribution name is `exasim-neon`, which produces wheel filenames
-starting with `exasim_neon`. The import package remains `neon`.
+The Python distribution name in this test repository is
+`andrei-maftei-testneon`, which produces wheel filenames starting with
+`andrei_maftei_testneon`. The import package remains `neon`.
 
 The package version in `pyproject.toml` is the source of truth. CMake reads that
 version during configuration, and the generated `neon.__version__` uses the same
