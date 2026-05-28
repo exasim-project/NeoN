@@ -157,7 +157,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         views(mesh_.faceOwners(), mesh_.faceNeighbors(), mesh_.boundaryMesh().faceOwners());
 
 
-    const auto [faceCenters, cellCenters] = views(mesh_.faceCenters(), mesh_.cellCenters());
+    const auto [faceCenters, cellCenters] =
+        views(mesh_.boundaryMesh().faceCenters(), mesh_.cellCenters());
 
     auto deltaCoeff = deltaCoeffs.internalVector().view();
     auto deltaCoeffB = deltaCoeffs.boundaryData().value().view();
@@ -180,8 +181,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         NEON_LAMBDA(const localIdx bfi) {
             auto own = surfFaceCells[bfi];
             // TODO Issue #515
-            Vec3 cellToCellDist = faceCenters[nInternalFaces + bfi] - cellCenters[own];
-            deltaCoeffB[bfi] = 1.0 / std::max(mag(cellToCellDist), scalar(ROOTVSMALL));
+            Vec3 cellToFaceDist = faceCenters[bfi] - cellCenters[own];
+            deltaCoeffB[bfi] = 1.0 / std::max(mag(cellToFaceDist), scalar(ROOTVSMALL));
         },
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
