@@ -15,6 +15,7 @@
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>
 #include <optional>
+#include <unordered_map>
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -233,6 +234,25 @@ public:
             static_cast<mpi_label_t>(patchSize) * static_cast<mpi_label_t>(sizeof(ValueType));
         const auto neighborRankLabel = static_cast<mpi_label_t>(neighborRank);
 
+        // Disambiguate sends/recvs for multiple proc patches that share the same
+        // neighbour rank. The tag is a per-(neighbour-rank) sequence number that
+        // restarts at 0 on every waitAll(). A *per-neighbour* counter — not a
+        // global one — is necessary: a global counter desynchronises across ranks
+        // whenever the two sides have unequal traffic to OTHER peers between
+        // calls to the same neighbour.
+        //
+        // Correctness contract: within a single correctBoundaryConditions() pass,
+        // this rank and the neighbour must walk processor patches between THIS
+        // pair in the same canonical order. True today because both sides use
+        // OpenFOAM's lduInterfacePtrsList walk via meshAdapter; if a future
+        // adapter reorders patches independently per rank within a pair, this
+        // scheme silently matches messages to the wrong patch.
+        //
+        // TODO replace with a stable patch-pair-id sourced from BoundaryMesh once
+        //      processor-patch identity is plumbed through (see commPattern audit
+        //      REVIEW_2.md N-H4).
+        const int tag = perNeighbourTagCounter_[neighborRank]++;
+
         const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
 
         MPI_Request sendReq, recvReq;
@@ -243,7 +263,7 @@ public:
                 reinterpret_cast<const char*>(value_.data() + rangeStart),
                 byteCount,
                 neighborRankLabel,
-                0,
+                tag,
                 mpiEnv.comm(),
                 &sendReq
             );
@@ -251,7 +271,7 @@ public:
                 reinterpret_cast<char*>(buf.deviceRecvBuf->data()),
                 byteCount,
                 neighborRankLabel,
-                0,
+                tag,
                 mpiEnv.comm(),
                 &recvReq
             );
@@ -262,12 +282,14 @@ public:
             buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
             buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
             for (localIdx k = 0; k < patchSize; k++)
+            {
                 buf.sendBuf[static_cast<std::size_t>(k)] = valH.view()[rangeStart + k];
+            }
             mpi::isend<char>(
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
                 byteCount,
                 neighborRankLabel,
-                0,
+                tag,
                 mpiEnv.comm(),
                 &sendReq
             );
@@ -275,7 +297,7 @@ public:
                 reinterpret_cast<char*>(buf.recvBuf.data()),
                 byteCount,
                 neighborRankLabel,
-                0,
+                tag,
                 mpiEnv.comm(),
                 &recvReq
             );
@@ -336,6 +358,7 @@ public:
         requests_.clear();
         communicating_ = false;
         commBuffers_.clear();
+        perNeighbourTagCounter_.clear();
 #endif
     }
 
@@ -376,6 +399,8 @@ private:
     mutable std::vector<CommBuffer>
         commBuffers_; ///< Send/recv staging buffers for pending requests.
     mutable bool communicating_ = false;
+    mutable std::unordered_map<int, int>
+        perNeighbourTagCounter_; ///< Tag = call index per neighbour rank; reset by waitAll().
 #endif
 };
 
