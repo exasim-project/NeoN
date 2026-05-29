@@ -42,6 +42,20 @@ using CommMap = std::vector<RankCommMap>;
 /**
  * @class Communicator
  * @brief Manages communication between ranks in a parallel environment.
+ *
+ * @note **Roadmap stub.** As of 2026-05, this class is the intended canonical
+ *       halo-exchange API for the upcoming unification of NeoN's distributed
+ *       communication paths. It is currently *not wired into production code*:
+ *       field halo exchange runs through `BoundaryData::communicate` (per-patch
+ *       Isend/Irecv) and linear-system metadata runs through
+ *       `computeCommunicationPattern` (MPI_Alltoallv). Both paths will be
+ *       retired in favour of a `Communicator` built once per mesh partition
+ *       and reused across solves and field updates.
+ *
+ *       Do not delete this class without first deleting the corresponding
+ *       roadmap item; see `.planning/quick/20260528-comm-pattern-audit/REVIEW_2.md`
+ *       findings N-H1 and N-H5.
+ *
  * The Communicator class provides functionality to manage communication of field data exchange
  * between MPI ranks for unstructured meshes. The class maintains an MPI environment and maps for
  * rank-specific send and receive operations.
