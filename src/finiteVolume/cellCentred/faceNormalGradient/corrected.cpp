@@ -153,6 +153,26 @@ void computeCorrectedFaceNormalGrad(
             },
             "computeCorrectedFaceNormalGradBoundaryVec3"
         );
+
+        // Processor-boundary parity with the scalar path (review N3). Applies the
+        // orthogonal part only — the non-orthogonal correction at proc faces is
+        // deferred (review N4): the producer leaves proc-corrVec at zero, so this
+        // is self-consistent. See FaceNormalGradient header for the contract.
+        auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+        if (nProcBoundaryFaces > 0)
+        {
+            NeoN::parallelFor(
+                exec,
+                {0, nProcBoundaryFaces},
+                NEON_LAMBDA(const localIdx procFacei) {
+                    auto bcfacei = nBoundaryFaces + procFacei;
+                    auto own = boundaryFaceOwners[bcfacei];
+                    phifB[bcfacei] =
+                        nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                },
+                "computeCorrectedFaceNormalGradProcBoundaryVec3"
+            );
+        }
     }
 }
 
@@ -192,8 +212,11 @@ void computeCorrectionTerm(
             },
             "computeCorrectionTermInternal"
         );
-        // boundary correction is intentionally not written: the laplacian RHS update
-        // iterates only internal faces, so corrField.boundaryData() is never read.
+        // The Laplacian RHS update consumes only internal-face correction terms
+        // (corrField.boundaryData() is never read). Make that contract explicit and
+        // safe rather than relying on zero-init: zero the boundary so a future RHS
+        // change that iterates boundary faces reads a defined value (review N5).
+        NeoN::fill(corrField.boundaryData().value(), zero<ValueType>());
     }
     else if constexpr (std::is_same_v<ValueType, Vec3>)
     {
@@ -224,6 +247,8 @@ void computeCorrectionTerm(
             },
             "computeCorrectionTermInternalVec3"
         );
+        // boundary correction not consumed by the Laplacian RHS; zero it explicitly (review N5)
+        NeoN::fill(corrField.boundaryData().value(), zero<ValueType>());
     }
 }
 

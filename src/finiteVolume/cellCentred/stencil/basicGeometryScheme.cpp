@@ -361,9 +361,15 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
         "basicGeometricScheme::updateNonOrthCorrectionVec3sInternal"
     );
 
+    // corrVec is zero on ALL boundary faces: non-processor patches are one-sided so
+    // the snGrad reduces to the uncorrected form, and the non-orthogonal correction
+    // at processor faces is currently deferred (review N4). Zero both the non-proc
+    // and proc ranges explicitly so consumers may rely on the contract rather than
+    // on BoundaryData's zero-init (review N6).
+    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
     parallelFor(
         exec,
-        {0, nBoundaryFaces},
+        {0, nBoundaryFaces + nProcBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) { corrVecB[bfi] = zero<Vec3>(); },
         "basicGeometricScheme::updateNonOrthCorrectionVec3sBoundary"
     );
