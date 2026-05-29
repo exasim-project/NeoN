@@ -55,8 +55,10 @@ public:
 
     virtual const SurfaceField<scalar>& deltaCoeffs() const override
     {
-        // Orthogonal 1/|d|, matching OpenFOAM's uncorrectedSnGrad (review N1/N2).
-        return geometryScheme_->deltaCoeffs();
+        // OpenFOAM's uncorrectedSnGrad uses nonOrthDeltaCoeffs (1/(n.d)), NOT the orthogonal
+        // 1/|d| (verified against OF: uncorrectedSnGrad returns mesh().nonOrthDeltaCoeffs()). The
+        // review's N2 premise was incorrect — NeoN's original behaviour already matched OpenFOAM.
+        return geometryScheme_->nonOrthDeltaCoeffs();
     }
 
     std::unique_ptr<FaceNormalGradientFactory<ValueType>> clone() const override

@@ -85,11 +85,12 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
     }
 }
 
-// Non-orthogonal mesh (review T3 / N2): deltaCoeffs (1/|d|) and nonOrthDeltaCoeffs
-// (1/(n.d)) must genuinely diverge, and the non-orth correction must be non-zero.
-// This is the property that makes 'uncorrected' (deltaCoeffs) differ from 'corrected'
-// (nonOrthDeltaCoeffs) off the orthogonal limit. A sheared cube introduces the
-// non-orthogonality on x-normal faces while leaving y/z faces orthogonal.
+// Non-orthogonal mesh (review T3 / N2): the orthogonal deltaCoeffs (1/|d|) and the
+// over-relaxed nonOrthDeltaCoeffs (1/(n.d)) must genuinely diverge, and the non-orth
+// correction must be non-zero. nonOrthDeltaCoeffs is what every snGrad scheme uses to
+// match OpenFOAM, so this pins that the producer actually distinguishes the two off the
+// orthogonal limit. A sheared cube introduces the non-orthogonality on x-normal faces
+// while leaving y/z faces orthogonal.
 TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -138,11 +139,15 @@ TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
     REQUIRE(maxCorr > 1e-3);
 }
 
-// Pins the N1/N2 decision (review T5): 'uncorrected' must expose the orthogonal
-// deltaCoeffs (1/|d|, matching OpenFOAM's uncorrectedSnGrad), NOT the over-relaxed
-// nonOrthDeltaCoeffs. Checked by field identity, so it holds on any mesh and fails
-// loudly if anyone rewires the accessor.
-TEST_CASE("uncorrected snGrad exposes the orthogonal deltaCoeffs (N1/N2)")
+// Pins the N1/N2 wiring (review T5, corrected): 'uncorrected' must expose
+// nonOrthDeltaCoeffs (1/(n.d)), matching OpenFOAM's uncorrectedSnGrad which returns
+// mesh().nonOrthDeltaCoeffs(). The review's original N2 premise (that OF uses the
+// orthogonal 1/|d|) was verified false against the OF source, so this asserts the
+// opposite identity from the pre-revert version. The orthogonal deltaCoeffs is kept
+// on the GeometryScheme for API completeness but has no snGrad consumer, so it must
+// be a distinct field from what 'uncorrected' exposes. Checked by field identity, so
+// it holds on any mesh and fails loudly if anyone rewires the accessor.
+TEST_CASE("uncorrected snGrad exposes nonOrthDeltaCoeffs (N1/N2)")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
     INFO("executor: " << execName);
@@ -151,7 +156,7 @@ TEST_CASE("uncorrected snGrad exposes the orthogonal deltaCoeffs (N1/N2)")
     auto scheme = fvcc::GeometryScheme::readOrCreate(mesh);
     fvcc::Uncorrected<scalar> uncorrected(exec, mesh);
 
-    REQUIRE(&uncorrected.deltaCoeffs() == &scheme->deltaCoeffs());
-    REQUIRE(&uncorrected.deltaCoeffs() != &scheme->nonOrthDeltaCoeffs());
+    REQUIRE(&uncorrected.deltaCoeffs() == &scheme->nonOrthDeltaCoeffs());
+    REQUIRE(&uncorrected.deltaCoeffs() != &scheme->deltaCoeffs());
 }
 }

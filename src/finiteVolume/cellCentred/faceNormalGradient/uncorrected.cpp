@@ -22,18 +22,16 @@ void computeFaceNormalGrad(
     const auto [owners, neighbors, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-    // OpenFOAM's uncorrectedSnGrad uses the orthogonal deltaCoeffs (1/|d|), not the
-    // over-relaxed nonOrthDeltaCoeffs (1/(n.d)). Use deltaCoeffs here so NeoN's
-    // 'uncorrected' agrees with OF on non-orthogonal meshes (review N2) and so
-    // GeometryScheme::deltaCoeffs() has a real consumer (review N1). On orthogonal
-    // meshes n.d == |d|, so this is a no-op there.
+    // OpenFOAM's uncorrectedSnGrad uses nonOrthDeltaCoeffs (1/(n.d)) — verified against the OF
+    // source (uncorrectedSnGrad returns mesh().nonOrthDeltaCoeffs()). The review's N2 claim that
+    // OF uses the orthogonal 1/|d| was incorrect; NeoN's original behaviour already matched OF.
     const auto [phif, phifB, phi, phiBCValue, deltaCoeffs, deltaCoeffsB] = views(
         surfaceVector.internalVector(),
         surfaceVector.boundaryData().value(),
         volVector.internalVector(),
         volVector.boundaryData().value(),
-        geometryScheme->deltaCoeffs().internalVector(),
-        geometryScheme->deltaCoeffs().boundaryData().value()
+        geometryScheme->nonOrthDeltaCoeffs().internalVector(),
+        geometryScheme->nonOrthDeltaCoeffs().boundaryData().value()
     );
 
     auto nInternalFaces = mesh.nInternalFaces();
