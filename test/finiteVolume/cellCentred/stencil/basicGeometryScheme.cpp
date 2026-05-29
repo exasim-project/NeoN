@@ -84,4 +84,74 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
             REQUIRE(mag(cvBv[i]) < 1e-14);
     }
 }
+
+// Non-orthogonal mesh (review T3 / N2): deltaCoeffs (1/|d|) and nonOrthDeltaCoeffs
+// (1/(n.d)) must genuinely diverge, and the non-orth correction must be non-zero.
+// This is the property that makes 'uncorrected' (deltaCoeffs) differ from 'corrected'
+// (nonOrthDeltaCoeffs) off the orthogonal limit. A sheared cube introduces the
+// non-orthogonality on x-normal faces while leaving y/z faces orthogonal.
+TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    const localIdx n = 4;
+    auto mesh = create3DUniformMesh(exec, n, n, n);
+
+    // Shear cell centres: C.y += s * C.x. The cell-to-cell vector across an x-normal
+    // face gains a transverse y-component (n.d < |d|); face geometry is untouched.
+    const scalar s = 0.5;
+    {
+        auto ccH = mesh.cellCenters().copyToHost();
+        auto v = ccH.view();
+        for (localIdx i = 0; i < ccH.size(); ++i)
+        {
+            const Vec3 p = v[i];
+            v[i] = Vec3 {p[0], p[1] + s * p[0], p[2]};
+        }
+        mesh.cellCenters() = ccH.copyToExecutor(exec);
+    }
+
+    fvcc::GeometryScheme scheme(exec, mesh, std::make_unique<fvcc::BasicGeometryScheme>(mesh));
+
+    auto dc = scheme.deltaCoeffs().internalVector().copyToHost();
+    auto ndc = scheme.nonOrthDeltaCoeffs().internalVector().copyToHost();
+    auto cv = scheme.nonOrthCorrectionVec3s().internalVector().copyToHost();
+    const auto dcv = dc.view();
+    const auto ndcv = ndc.view();
+    const auto cvv = cv.view();
+
+    scalar maxDiff = 0.0;
+    scalar maxCorr = 0.0;
+    for (localIdx i = 0; i < dc.size(); ++i)
+    {
+        // mathematical invariant: 1/(n.d) >= 1/|d| since the projection <= magnitude
+        REQUIRE(ndcv[i] >= dcv[i] - 1e-12);
+        const scalar diff = ndcv[i] - dcv[i];
+        if (diff > maxDiff) maxDiff = diff;
+        const scalar c = mag(cvv[i]);
+        if (c > maxCorr) maxCorr = c;
+    }
+    // the sheared x-faces make the two delta fields genuinely diverge ...
+    REQUIRE(maxDiff > 1e-3);
+    // ... and produce a non-zero non-orthogonal correction vector
+    REQUIRE(maxCorr > 1e-3);
+}
+
+// Pins the N1/N2 decision (review T5): 'uncorrected' must expose the orthogonal
+// deltaCoeffs (1/|d|, matching OpenFOAM's uncorrectedSnGrad), NOT the over-relaxed
+// nonOrthDeltaCoeffs. Checked by field identity, so it holds on any mesh and fails
+// loudly if anyone rewires the accessor.
+TEST_CASE("uncorrected snGrad exposes the orthogonal deltaCoeffs (N1/N2)")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    auto mesh = create3DUniformMesh(exec, 3, 3, 3);
+    auto scheme = fvcc::GeometryScheme::readOrCreate(mesh);
+    fvcc::Uncorrected<scalar> uncorrected(exec, mesh);
+
+    REQUIRE(&uncorrected.deltaCoeffs() == &scheme->deltaCoeffs());
+    REQUIRE(&uncorrected.deltaCoeffs() != &scheme->nonOrthDeltaCoeffs());
+}
 }

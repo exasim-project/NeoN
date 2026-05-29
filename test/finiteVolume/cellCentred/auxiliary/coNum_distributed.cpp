@@ -12,7 +12,10 @@ TEST_CASE("Distributed Courant Number")
 {
     NeoN::mpi::Environment mpiEnviron;
 
-    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    // CPUExecutor only: one GPU on this machine, so a multi-rank test must not place
+    // data on the GPU (ranks would contend for the single device).
+    const std::string execName = "CPUExecutor";
+    const NeoN::Executor exec = NeoN::CPUExecutor {};
 
     SECTION("distributed computeCoNum matches serial result on partitioned 1D mesh: " + execName)
     {

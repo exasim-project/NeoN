@@ -14,7 +14,10 @@ namespace NeoN
 
 TEST_CASE("Distributed")
 {
-    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    // CPUExecutor only: one GPU on this machine, so a multi-rank test must not place
+    // data on the GPU (ranks would contend for the single device).
+    const std::string execName = "CPUExecutor";
+    const Executor exec = CPUExecutor {};
 
     const auto nCells = 12;
     NeoN::mpi::Environment mpiEnviron;
