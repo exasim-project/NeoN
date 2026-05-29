@@ -11,105 +11,126 @@
 \DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <cstddef>}}
 \DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <memory>}}
 \DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <string>}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00010}00010\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{segmentedVector_8hpp}{NeoN/core/segmentedVector.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00012}00012\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{csrSparsityPattern_8hpp}{NeoN/linearAlgebra/csrSparsityPattern.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cooSparsityPattern_8hpp}{NeoN/linearAlgebra/cooSparsityPattern.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceToMatrixAddress_8hpp}{NeoN/linearAlgebra/faceToMatrixAddress.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cellToFaceStencil_8hpp}{NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00018}00018\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00019}00019\ \{}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00020}00020\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00026}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{00026}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{MeshIterationStrategy}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00027}00027\ \{}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00028}00028\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00029}00029\ \textcolor{keyword}{protected}:}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00030}00030\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00031}00031\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00033}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_a1da28dca539a766ed516cd072cf80f29}{00033}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_a1da28dca539a766ed516cd072cf80f29}{name}}()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00034}00034\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00036}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ac6e72f5d0f80f12ea842efdcea7e3221}{00036}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ac6e72f5d0f80f12ea842efdcea7e3221}{size}}()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00037}00037\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00038}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ae051ae1bf07dcb87de56145d830180c2}{00038}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ae051ae1bf07dcb87de56145d830180c2}{\string~MeshIterationStrategy}}()\ \{\}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00039}00039\ \};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00040}00040\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext}{00046}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext}{MeshIteratorContext}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00047}00047\ \{}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00048}00048\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00049}00049\ \ \ \ \ std::shared\_ptr<MeshIterationStrategy>\ strategy\ \{\};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00050}00050\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00051}00051\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ac3404e359a1f8317c8b0239b2819e77b}{00054}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ac3404e359a1f8317c8b0239b2819e77b}{setStrategy}}(std::shared\_ptr<MeshIterationStrategy>\ strategy);}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_af158dc5635d3ed823cd57d55d63cebed}{00057}}\ \ \ \ \ std::shared\_ptr<MeshIterationStrategy>\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_af158dc5635d3ed823cd57d55d63cebed}{get}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00058}00058\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ad89b87589ed4fcbc0c1635fb7d28cce8}{00060}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ad89b87589ed4fcbc0c1635fb7d28cce8}{name}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00061}00061\ \};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{segmentedVector_8hpp}{NeoN/core/segmentedVector.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{csrSparsityPattern_8hpp}{NeoN/linearAlgebra/csrSparsityPattern.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cooSparsityPattern_8hpp}{NeoN/linearAlgebra/cooSparsityPattern.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceToMatrixAddress_8hpp}{NeoN/linearAlgebra/faceToMatrixAddress.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cellToFaceStencil_8hpp}{NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00027}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{00027}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{MeshIterationStrategy}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00030}00030\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00031}00031\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_a1da28dca539a766ed516cd072cf80f29}{00034}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_a1da28dca539a766ed516cd072cf80f29}{name}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ac6e72f5d0f80f12ea842efdcea7e3221}{00037}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ac6e72f5d0f80f12ea842efdcea7e3221}{size}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ae051ae1bf07dcb87de56145d830180c2}{00039}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy_ae051ae1bf07dcb87de56145d830180c2}{\string~MeshIterationStrategy}}()\ \{\}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00040}00040\ \};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext}{00047}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext}{MeshIteratorContext}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00048}00048\ \{}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00050}00050\ \ \ \ \ std::shared\_ptr<MeshIterationStrategy>\ strategy\ \{\};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00052}00052\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ac3404e359a1f8317c8b0239b2819e77b}{00055}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ac3404e359a1f8317c8b0239b2819e77b}{setStrategy}}(std::shared\_ptr<MeshIterationStrategy>\ strategy);}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_af158dc5635d3ed823cd57d55d63cebed}{00058}}\ \ \ \ \ std::shared\_ptr<MeshIterationStrategy>\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_af158dc5635d3ed823cd57d55d63cebed}{get}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ad89b87589ed4fcbc0c1635fb7d28cce8}{00061}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext_ad89b87589ed4fcbc0c1635fb7d28cce8}{name}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00062}00062\ \};}
 \DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00069}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{00069}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{FaceBasedIterator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{MeshIterationStrategy}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00070}00070\ \{}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00072}00072\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_ae454dc0ad934fb949acdda414bfb1f68}{00074}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_ae454dc0ad934fb949acdda414bfb1f68}{name}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}FaceBased"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a94397d87d6e38570098db0fd6326e2f7}{00076}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a94397d87d6e38570098db0fd6326e2f7}{size}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ 0;\ \}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00077}00077\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00078}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a7adf4830f092313424f091c091e6bb37}{00078}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a7adf4830f092313424f091c091e6bb37}{\string~FaceBasedIterator}}()\textcolor{keyword}{\ override\ }\{\}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00079}00079\ \};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{00070}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{FaceBasedIterator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{MeshIterationStrategy}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00071}00071\ \{}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00073}00073\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00075}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_ae454dc0ad934fb949acdda414bfb1f68}{00075}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_ae454dc0ad934fb949acdda414bfb1f68}{name}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}FaceBased"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a94397d87d6e38570098db0fd6326e2f7}{00077}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a94397d87d6e38570098db0fd6326e2f7}{size}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ 0;\ \}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00079}\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a7adf4830f092313424f091c091e6bb37}{00079}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator_a7adf4830f092313424f091c091e6bb37}{\string~FaceBasedIterator}}()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00080}00080\ \};}
 \DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00081}00081\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator}{00088}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator}{CellBasedIterator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{MeshIterationStrategy}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00089}00089\ \{}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00089}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator}{00089}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator}{CellBasedIterator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{MeshIterationStrategy}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00090}00090\ \{}
 \DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00091}00091\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00092}00092\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00093}00093\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00094}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1}{00094}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1}{CellBasedIterator}}();}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00102}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{00102}}\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{CellBasedData}}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00103}00103\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00104}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}{00104}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}{size}};\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00105}00105\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00107}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{00107}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector<localIdx,\ localIdx>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{cellFaces}};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00108}00108\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00110}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}{00110}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}{faceNeighbour}};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00111}00111\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ scalar\ is\ unreasonable\ large\ here}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00114}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}{00114}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}{faceSign}};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00115}00115\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00117}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}{00117}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}{matrixColumnIdx}};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00118}00118\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00120}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82}{00120}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82}{name}}()\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00121}00121\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00122}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c}{00122}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c}{size}}()\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00123}00123\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00124}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1}{00124}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1}{\string~CellBasedIterator}}()\textcolor{keyword}{\ override\ }\{\}}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00125}00125\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00127}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f}{00127}}\ \ \ \ \ std::shared\_ptr<CellBasedData>\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f}{getCellBasedData}}();}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00128}00128\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00137}00137\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00138}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94}{00138}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94}{setComputeCellBasedData}}(}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ SparsityType>\ sparsityPattern,}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ la::FaceToMatrixAddress>\ faceToMatrixAddress}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00142}00142\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00143}00143\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00157}00157\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00158}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801}{00158}}\ \ \ \ \ std::shared\_ptr<CellBasedData>\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801}{computeCellBasedData}}(}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ SparsityType>\ sparsityPattern,}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<const\ la::FaceToMatrixAddress>\ faceToMatrixAddress}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00162}00162\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00163}00163\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00164}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47}{00164}}\ \ \ \ \ std::shared\_ptr<CellBasedData>\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47}{cellBasedIteratorData\_}};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00165}00165\ \};}
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00166}00166\ }
-\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00167}00167\ \}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00093}00093\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1}{00095}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a1366dc4bf0f15cffdc55e3f9d0414ff1}{CellBasedIterator}}();}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00103}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{00103}}\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData}{CellBasedData}}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00104}00104\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00105}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a06215da690e88ca4862ade7f918c7da5}{00105}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a06215da690e88ca4862ade7f918c7da5}{CellBasedData}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ CellFaces,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ FaceNeighbour,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ FaceSign,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ MatrixColumnIdx>}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00127}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ad010bb2a5a90458ca9efaf14da189b4a}{00127}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ad010bb2a5a90458ca9efaf14da189b4a}{CellBasedData}}(}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ size\_,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ CellFaces\&\&\ cellFaces\_,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ FaceNeighbour\&\&\ faceNeighbour\_,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ FaceSign\&\&\ faceSign\_,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ MatrixColumnIdx\&\&\ matrixColumnIdx\_}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}{size}}(size\_),\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{cellFaces}}(std::forward<CellFaces>(cellFaces\_)),}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}{faceNeighbour}}(std::forward<FaceNeighbour>(faceNeighbour\_)),}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}{faceSign}}(std::forward<FaceSign>(faceSign\_)),}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}{matrixColumnIdx}}(std::forward<MatrixColumnIdx>(matrixColumnIdx\_))}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00140}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}{00140}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ab4abb7da1824731e7e85d261ce29baf2}{size}};\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00143}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{00143}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector<localIdx,\ localIdx>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a30829c4df80afa9bfe9ebf5993d6141b}{cellFaces}};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00146}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}{00146}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_aa0f71d1dbc3bc505552c04f9a58abe53}{faceNeighbour}};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00147}00147\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ scalar\ is\ unreasonable\ large\ here}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00150}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}{00150}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_a31dd09786d3e8997a6a549f13fd36587}{faceSign}};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00153}\mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}{00153}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<localIdx>}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData_ac78093a6c4855166765b54506badd037}{matrixColumnIdx}};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00154}00154\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00156}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82}{00156}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a6e63fa28d84ccc3f590f2020a0143a82}{name}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00158}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c}{00158}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_ad12aca0167e8ea9765f9b1f96326dc3c}{size}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00160}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1}{00160}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4ca7f7deee91f1de66bd24ffce9952b1}{\string~CellBasedIterator}}()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00161}00161\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00163}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f}{00163}}\ \ \ \ \ std::shared\_ptr<CellBasedData>\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a494f3880b640dde47e66e5a8dd0c4b0f}{getCellBasedData}}();}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00173}00173\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00174}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94}{00174}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_afe16a5570875797c59ad783bef6cbf94}{setComputeCellBasedData}}(}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ SparsityType>\ sparsityPattern,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ la::FaceToMatrixAddress>\ faceToMatrixAddress}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00178}00178\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SparsityType>}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00194}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801}{00194}}\ \ \ \ \ std::shared\_ptr<CellBasedData>\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a76bfb5ea98094fe35ec7c9eb67c18801}{computeCellBasedData}}(}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00195}00195\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ SparsityType>\ sparsityPattern,}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<const\ la::FaceToMatrixAddress>\ faceToMatrixAddress}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00198}00198\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00200}\mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47}{00200}}\ \ \ \ \ std::shared\_ptr<CellBasedData>\ \mbox{\hyperlink{classNeoN_1_1la_1_1CellBasedIterator_a4017259e8843187c956e846ae4ebcc47}{cellBasedIteratorData\_}};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00201}00201\ \};}
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{meshIterationStrategies_8hpp_source_l00203}00203\ \}}
 
 \end{DoxyCode}
