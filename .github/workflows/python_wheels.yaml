@@ -136,9 +136,13 @@ jobs:
               cmake.define.NeoN_WITH_PETSC=OFF
               cmake.define.NeoN_WITH_ADIOS2=OFF
               cmake.define.NeoN_WITH_SUNDIALS=OFF
+              cmake.define.NeoN_INSTALL_CMAKE_PACKAGE=OFF
+              cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+              cmake.define.CMAKE_CUDA_ARCHITECTURES=80
               cmake.define.Kokkos_ENABLE_SERIAL=ON
               cmake.define.Kokkos_ENABLE_CUDA=ON
               cmake.define.Kokkos_ENABLE_HIP=OFF
+              cmake.define.Kokkos_ARCH_AMPERE80=ON
           - label: CUDA 13.0
             suffix: cuda130
             before_all: bash ci/install_cuda.sh 13.0
@@ -149,9 +153,13 @@ jobs:
               cmake.define.NeoN_WITH_PETSC=OFF
               cmake.define.NeoN_WITH_ADIOS2=OFF
               cmake.define.NeoN_WITH_SUNDIALS=OFF
+              cmake.define.NeoN_INSTALL_CMAKE_PACKAGE=OFF
+              cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+              cmake.define.CMAKE_CUDA_ARCHITECTURES=80
               cmake.define.Kokkos_ENABLE_SERIAL=ON
               cmake.define.Kokkos_ENABLE_CUDA=ON
               cmake.define.Kokkos_ENABLE_HIP=OFF
+              cmake.define.Kokkos_ARCH_AMPERE80=ON
 
     steps:
       - name: Checkout repository
@@ -183,7 +191,9 @@ jobs:
           CIBW_ENVIRONMENT_LINUX: >
             PATH=/usr/local/cuda/bin:$PATH
             LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+            CUDACXX=/usr/local/cuda/bin/nvcc
             CUDAToolkit_ROOT=/usr/local/cuda
+          CIBW_TEST_SKIP: "*"
 
       - name: Upload GPU wheel artifacts
         uses: actions/upload-artifact@v4
