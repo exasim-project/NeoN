@@ -30,8 +30,12 @@ public:
     virtual void
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) = 0;
 
+    // nonOrthDeltaCoeffs is the precomputed 1/(n.d) field (must be updated first); the
+    // correction vectors read it rather than re-deriving the formula (review M3).
     virtual void updateNonOrthCorrectionVec3s(
-        const Executor& exec, SurfaceField<Vec3>& nonOrthCorrectionVec3s
+        const Executor& exec,
+        SurfaceField<Vec3>& nonOrthCorrectionVec3s,
+        const SurfaceField<scalar>& nonOrthDeltaCoeffs
     ) = 0;
 };
 
@@ -39,10 +43,11 @@ public:
  * @brief Implements access to compute deltaCoeffs, weights, and nonOrthDeltaCoeffs
  *
  * Where:
- *  - deltaCoeff: inverse owner to neighbour cell centre distance
+ *  - deltaCoeff: inverse owner-to-neighbour cell-centre distance, 1 / |cellToCellDist|
  *  - weight: the distance of the cell centre to face normalized by the distance to the neighbour
  * cell
- *  - nonOrthDeltaCoeff: faceNormal * cellToCellDist
+ *  - nonOrthDeltaCoeff: 1 / (faceNormal . cellToCellDist), the over-relaxed (non-orthogonal)
+ * inverse distance, floored at 1 / (0.05 * |cellToCellDist|)
  */
 class GeometryScheme
 {

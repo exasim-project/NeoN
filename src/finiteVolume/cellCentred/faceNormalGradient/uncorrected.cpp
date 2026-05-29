@@ -22,13 +22,18 @@ void computeFaceNormalGrad(
     const auto [owners, neighbors, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-    const auto [phif, phifB, phi, phiBCValue, nonOrthDeltaCoeffs, nonOrthDeltaCoeffsB] = views(
+    // OpenFOAM's uncorrectedSnGrad uses the orthogonal deltaCoeffs (1/|d|), not the
+    // over-relaxed nonOrthDeltaCoeffs (1/(n.d)). Use deltaCoeffs here so NeoN's
+    // 'uncorrected' agrees with OF on non-orthogonal meshes (review N2) and so
+    // GeometryScheme::deltaCoeffs() has a real consumer (review N1). On orthogonal
+    // meshes n.d == |d|, so this is a no-op there.
+    const auto [phif, phifB, phi, phiBCValue, deltaCoeffs, deltaCoeffsB] = views(
         surfaceVector.internalVector(),
         surfaceVector.boundaryData().value(),
         volVector.internalVector(),
         volVector.boundaryData().value(),
-        geometryScheme->nonOrthDeltaCoeffs().internalVector(),
-        geometryScheme->nonOrthDeltaCoeffs().boundaryData().value()
+        geometryScheme->deltaCoeffs().internalVector(),
+        geometryScheme->deltaCoeffs().boundaryData().value()
     );
 
     auto nInternalFaces = mesh.nInternalFaces();
@@ -38,7 +43,7 @@ void computeFaceNormalGrad(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbors[facei]] - phi[owners[facei]]);
+            phif[facei] = deltaCoeffs[facei] * (phi[neighbors[facei]] - phi[owners[facei]]);
         },
         "computeFaceNormalGradInternal"
     );
@@ -48,7 +53,7 @@ void computeFaceNormalGrad(
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            phifB[bfi] = nonOrthDeltaCoeffsB[bfi] * (phiBCValue[bfi] - phi[own]);
+            phifB[bfi] = deltaCoeffsB[bfi] * (phiBCValue[bfi] - phi[own]);
         },
         "computeFaceNormalGradBoundary"
     );
@@ -62,7 +67,7 @@ void computeFaceNormalGrad(
             NEON_LAMBDA(const localIdx procFacei) {
                 auto bcfacei = nBoundaryFaces + procFacei;
                 auto own = boundaryFaceOwners[bcfacei];
-                phifB[bcfacei] = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                phifB[bcfacei] = deltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
             },
             "computeFaceNormalGradProcBoundary"
         );

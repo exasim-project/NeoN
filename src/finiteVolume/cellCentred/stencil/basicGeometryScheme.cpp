@@ -181,9 +181,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
 #endif
 }
 
-void BasicGeometryScheme::updateDeltaCoeffs(
-    [[maybe_unused]] const Executor& exec, [[maybe_unused]] SurfaceField<scalar>& deltaCoeffs
-)
+void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& deltaCoeffs)
 {
     const auto [owners, neighbors, surfFaceCells] =
         views(mesh_.faceOwners(), mesh_.faceNeighbors(), mesh_.boundaryMesh().faceOwners());
@@ -217,11 +215,42 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         },
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
+
+#ifdef NF_WITH_MPI_SUPPORT
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        // Processor-boundary deltaCoeffs (review GEOM-03 / H1-remainder). Uses the
+        // face-normal-projected owner+neighbour distance (dOwn + dNei). On an
+        // orthogonal proc face this equals 1/|d| (OF's coupled deltaCoeffs); on a
+        // non-orthogonal proc face it coincides with nonOrthDeltaCoeffs instead of
+        // OF's euclidean 1/|d|. Recovering exact 1/|d| there needs the full
+        // neighbour cell centre exchanged (deferred). Leaving these at zero — the
+        // pre-fix behaviour — is strictly worse (zero diffusive flux across ranks).
+        const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
+        const auto dNeiView = dNei.view();
+        const auto [bFaceNormals, bFaceArea] =
+            views(mesh_.boundaryMesh().faceNormals(), mesh_.boundaryMesh().faceAreas());
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const localIdx bfi = nBoundaryFaces + procFacei;
+                const Vec3 n = (1.0 / bFaceArea[bfi]) * bFaceNormals[bfi];
+                const scalar dOwn =
+                    std::abs(n & (faceCenters[bfi] - cellCenters[surfFaceCells[bfi]]));
+                deltaCoeffB[bfi] = 1.0 / std::max(dOwn + dNeiView[procFacei], scalar(ROOTVSMALL));
+            },
+            "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
+        );
+    }
+#endif
 }
 
 
 void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
-    [[maybe_unused]] const Executor& exec, [[maybe_unused]] SurfaceField<scalar>& nonOrthDeltaCoeffs
+    const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs
 )
 {
     const auto [owners, neighbors, surfFaceCells] =
@@ -233,7 +262,6 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 
     auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
     auto nonOrthDeltaCoeffB = nonOrthDeltaCoeffs.boundaryData().value().view();
-    fill(nonOrthDeltaCoeffs.internalVector(), 0.0);
 
     const auto nInternalFaces = mesh_.nInternalFaces();
 
@@ -244,7 +272,10 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             Vec3 cellToCellDist = cellCenters[neighbors[facei]] - cellCenters[owners[facei]];
             Vec3 faceUnitNormal = 1 / faceAreas[facei] * faceNormals[facei];
             scalar orthoDist = faceUnitNormal & cellToCellDist;
-            nonOrthDeltaCoeff[facei] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
+            // floor with ROOTVSMALL so a degenerate (coincident-centre) face cannot
+            // produce 1/0 -> inf (review H3)
+            nonOrthDeltaCoeff[facei] =
+                1.0 / std::max(orthoDist, std::max(0.05 * mag(cellToCellDist), scalar(ROOTVSMALL)));
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsInternal"
     );
@@ -260,7 +291,9 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             Vec3 cellToCellDist = bFaceCenters[bfi] - cellCenters[own];
             Vec3 bFaceUnitNormal = 1 / bFaceAreas[bfi] * bFaceNormals[bfi];
             scalar orthoDist = bFaceUnitNormal & cellToCellDist;
-            nonOrthDeltaCoeffB[bfi] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));
+            // floor with ROOTVSMALL (review H3)
+            nonOrthDeltaCoeffB[bfi] =
+                1.0 / std::max(orthoDist, std::max(0.05 * mag(cellToCellDist), scalar(ROOTVSMALL)));
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
     );
@@ -296,7 +329,9 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
 
 
 void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
-    const Executor& exec, SurfaceField<Vec3>& nonOrthCorrectionVec3s
+    const Executor& exec,
+    SurfaceField<Vec3>& nonOrthCorrectionVec3s,
+    const SurfaceField<scalar>& nonOrthDeltaCoeffs
 )
 {
     const auto [owners, neighbors] = views(mesh_.faceOwners(), mesh_.faceNeighbors());
@@ -307,6 +342,10 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
     const auto [corrVec, corrVecB] = views(
         nonOrthCorrectionVec3s.internalVector(), nonOrthCorrectionVec3s.boundaryData().value()
     );
+    // read the precomputed nonOrthDeltaCoeff instead of re-deriving the
+    // 1/max(n.d, 0.05|d|) formula (review M3 — single source of truth; also
+    // inherits the ROOTVSMALL floor added for H3)
+    const auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
 
     const auto nInternalFaces = mesh_.nInternalFaces();
     const auto nBoundaryFaces = mesh_.nBoundaryFaces();
@@ -317,9 +356,7 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
         NEON_LAMBDA(const localIdx facei) {
             Vec3 delta = cellCenters[neighbors[facei]] - cellCenters[owners[facei]];
             Vec3 n = (1.0 / faceAreas[facei]) * faceNormals[facei];
-            scalar orthoDist = n & delta;
-            scalar nonOrthDeltaCoeff = 1.0 / std::max(orthoDist, scalar(0.05) * mag(delta));
-            corrVec[facei] = n - delta * nonOrthDeltaCoeff;
+            corrVec[facei] = n - delta * nonOrthDeltaCoeff[facei];
         },
         "basicGeometricScheme::updateNonOrthCorrectionVec3sInternal"
     );

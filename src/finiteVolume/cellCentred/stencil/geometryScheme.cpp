@@ -113,7 +113,9 @@ void GeometryScheme::update()
                 kernel_->updateWeights(exec, weights_);
                 kernel_->updateDeltaCoeffs(exec, deltaCoeffs_);
                 kernel_->updateNonOrthDeltaCoeffs(exec, nonOrthDeltaCoeffs_);
-                kernel_->updateNonOrthCorrectionVec3s(exec, nonOrthCorrectionVec3s_);
+                kernel_->updateNonOrthCorrectionVec3s(
+                    exec, nonOrthCorrectionVec3s_, nonOrthDeltaCoeffs_
+                );
             },
             exec_
         );

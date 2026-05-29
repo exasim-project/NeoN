@@ -28,7 +28,9 @@ public:
         override;
 
     void updateNonOrthCorrectionVec3s(
-        const Executor& exec, SurfaceField<Vec3>& nonOrthCorrectionVec3s
+        const Executor& exec,
+        SurfaceField<Vec3>& nonOrthCorrectionVec3s,
+        const SurfaceField<scalar>& nonOrthDeltaCoeffs
     ) override;
 
 
