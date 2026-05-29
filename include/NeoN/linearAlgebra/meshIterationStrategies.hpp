@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "NeoN/core/segmentedVector.hpp"
 
@@ -101,6 +102,41 @@ public:
      */
     struct CellBasedData
     {
+        CellBasedData() = default;
+
+        /** @brief Construct from pre-computed connectivity arrays.
+         *
+         * A user-declared constructor is required (rather than relying on
+         * aggregate initialisation) because @c std::make_shared builds the
+         * object through @c std::construct_at, which performs parenthesised
+         * placement-new: @c new(p)\ CellBasedData(args...). Parenthesised
+         * initialisation of aggregates (C++20 P0960) is not implemented by the
+         * CUDA 12.4 nvcc/EDG front-end, so @c make_shared<CellBasedData>(...)
+         * fails there with "no instance of constructor ... matches".
+         *
+         * The container parameters are templated so the constructor adapts to
+         * however the connectivity arrays are spelled at the call site
+         * (@c Vector<localIdx> or @c Vector<label>), avoiding a brittle exact
+         * type match across NeoN revisions.
+         */
+        template<
+            typename CellFaces,
+            typename FaceNeighbour,
+            typename FaceSign,
+            typename MatrixColumnIdx>
+        CellBasedData(
+            localIdx size_,
+            CellFaces&& cellFaces_,
+            FaceNeighbour&& faceNeighbour_,
+            FaceSign&& faceSign_,
+            MatrixColumnIdx&& matrixColumnIdx_
+        )
+            : size(size_), cellFaces(std::forward<CellFaces>(cellFaces_)),
+              faceNeighbour(std::forward<FaceNeighbour>(faceNeighbour_)),
+              faceSign(std::forward<FaceSign>(faceSign_)),
+              matrixColumnIdx(std::forward<MatrixColumnIdx>(matrixColumnIdx_))
+        {}
+
         localIdx size; ///< Number of cells.
 
         /** @brief Cell-to-face stencil; segments correspond to cells, values are face indices. */
