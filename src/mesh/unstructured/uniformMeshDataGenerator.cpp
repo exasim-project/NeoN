@@ -53,7 +53,8 @@ generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const 
     std::vector<Vec3> fAreas(static_cast<size_t>(nFaces));
     std::vector<Vec3> fCenters(static_cast<size_t>(nFaces));
     std::vector<scalar> fMag(static_cast<size_t>(nFaces));
-    std::vector<label> fOwner(static_cast<size_t>(nFaces));
+    // std::vector<label> fOwner(static_cast<size_t>(nFaces));
+    std::vector<label> fOwner(static_cast<size_t>(nInternalFaces));
     std::vector<label> fNeighbour(static_cast<size_t>(nInternalFaces));
 
     localIdx faceId = 0;
@@ -165,7 +166,7 @@ BoundaryMesh generateBoundaryData(
         // faces.normals[fi] = faceNormal;
         // faces.centers[fi] = faceCenter;
         // faces.areas[fi] = magA;
-        faces.owner[fi] = ciLabel;
+        // faces.owner[fi] = ciLabel;
 
         bndFaceOwners[sz] = ciLabel;
         bndFaceCenters[sz] = faceCenter;
