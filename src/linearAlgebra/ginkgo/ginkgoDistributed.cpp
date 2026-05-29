@@ -119,7 +119,11 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
 
     auto non_loc_vals = gko::array<scalar>::const_view(exec, nNonLocalNnz, bmtx.values().data());
     // rowIdxs() holds global row indices; convert to local (subtract this rank's global offset).
-    const auto globalOffset = static_cast<IndexType>(partition->get_range_bounds()[comm.rank()]);
+    // get_range_bounds() points into the partition's executor memory (device memory when `exec`
+    // is a GPU executor), so it must NOT be indexed directly on the host — doing so dereferences
+    // a device pointer and segfaults on CUDA. Pull the single value off the device safely.
+    const auto globalOffset =
+        static_cast<IndexType>(exec->copy_val_to_host(partition->get_range_bounds() + comm.rank()));
     gko::array<IndexType> non_loc_row {exec, nNonLocalNnz};
     {
         auto host = exec->get_master();
