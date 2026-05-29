@@ -19,7 +19,7 @@ class GeometrySchemeFactory
 
 public:
 
-    GeometrySchemeFactory(const UnstructuredMesh& mesh);
+    GeometrySchemeFactory();
 
     virtual ~GeometrySchemeFactory() = default;
 
@@ -83,6 +83,8 @@ public:
 
     void update();
 
+    // Frees the mesh's per-cell/face centre arrays after update() to save device memory;
+    // they are not needed once the geometry-scheme fields are cached.
     void reset() const;
 
     std::string name() const;

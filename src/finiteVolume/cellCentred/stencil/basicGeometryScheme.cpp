@@ -13,6 +13,11 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+// Over-relaxed non-orthogonal correction clamp factor (review L1): bounds
+// nonOrthDeltaCoeffs away from a vanishing denominator on highly skewed faces.
+// Matches OpenFOAM's surfaceInterpolation default.
+constexpr scalar nonOrthDeltaClamp = 0.05;
+
 #ifdef NF_WITH_MPI_SUPPORT
 namespace
 {
@@ -37,37 +42,50 @@ std::vector<std::pair<localIdx, localIdx>> collectProcPatchRanges(const Unstruct
  *  processor boundary face, exchanges these distances with the neighbouring ranks via
  *  non-blocking MPI, and returns the received neighbour distances as a device Vector of
  *  size nProcBoundaryFaces. */
+// Tag for the geometry-scheme processor-owner-distance halo exchange. Distinct from
+// BoundaryData::communicate (tag 0) so the two cannot mismatch if they ever overlap on
+// the same rank pair (review M5).
+constexpr mpi_label_t procOwnerDistanceTag = 0x6764; // 'gd'
+
 Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const UnstructuredMesh& mesh)
 {
+    const auto nProcFaces = mesh.nProcBoundaryFaces();
+    // L7: nothing to exchange on a serial / interior-only partition
+    if (nProcFaces == 0) return Vector<scalar>(exec, 0, scalar(0));
+
     const auto& bMesh = mesh.boundaryMesh();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
-    const auto nProcFaces = mesh.nProcBoundaryFaces();
 
-    auto bFaceCentersH = bMesh.faceCenters().copyToHost();
-    auto bFaceNormalsH = bMesh.faceNormals().copyToHost();
-    auto bFaceAreasH = bMesh.faceAreas().copyToHost();
-    auto bFaceOwnersH = bMesh.faceOwners().copyToHost();
-    auto cellCentersH = mesh.cellCenters().copyToHost();
-
-    const auto bFaceCenters = bFaceCentersH.view();
-    const auto bFaceNormals = bFaceNormalsH.view();
-    const auto bFaceAreas = bFaceAreasH.view();
-    const auto bFaceOwners = bFaceOwnersH.view();
-    const auto cellCenters = cellCentersH.view();
-
-    std::vector<scalar> dOwn(static_cast<std::size_t>(nProcFaces));
-    std::vector<scalar> dNei(static_cast<std::size_t>(nProcFaces), scalar(0));
-    for (localIdx i = 0; i < nProcFaces; ++i)
+    // H4: compute the owner projected distance for each processor face on the device,
+    // reading only device-resident geometry. This avoids the full mesh.cellCenters() D->H
+    // copy (GB-scale on an industrial mesh) plus the four boundary-array host copies — only
+    // the nProcFaces scalars actually exchanged are moved to the host.
+    Vector<scalar> dOwnDev(exec, nProcFaces, scalar(0));
     {
-        const localIdx bfi = nBoundaryFaces + i;
-        const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
-        dOwn[static_cast<std::size_t>(i)] =
-            std::abs(n & (bFaceCenters[bfi] - cellCenters[bFaceOwners[bfi]]));
+        auto dOwnView = dOwnDev.view();
+        const auto cellCenters = mesh.cellCenters().view();
+        const auto bFaceCenters = bMesh.faceCenters().view();
+        const auto bFaceNormals = bMesh.faceNormals().view();
+        const auto bFaceAreas = bMesh.faceAreas().view();
+        const auto bFaceOwners = bMesh.faceOwners().view();
+        parallelFor(
+            exec,
+            {0, nProcFaces},
+            NEON_LAMBDA(const localIdx i) {
+                const localIdx bfi = nBoundaryFaces + i;
+                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+                dOwnView[i] = std::abs(n & (bFaceCenters[bfi] - cellCenters[bFaceOwners[bfi]]));
+            },
+            "basicGeometricScheme::exchangeProcOwnerDistanceOwner"
+        );
     }
 
-    // Use a dedicated tag distinct from the tag=0 used by BoundaryData::communicate so that
-    // geometry-exchange messages are never accidentally matched by field-halo receives.
-    constexpr mpi_label_t GEOM_EXCHANGE_TAG = 2;
+    auto dOwnH = dOwnDev.copyToHost();
+    const auto dOwnHView = dOwnH.view();
+    std::vector<scalar> dOwn(static_cast<std::size_t>(nProcFaces));
+    for (localIdx i = 0; i < nProcFaces; ++i)
+        dOwn[static_cast<std::size_t>(i)] = dOwnHView[i];
+    std::vector<scalar> dNei(static_cast<std::size_t>(nProcFaces), scalar(0));
 
     const auto ranges = collectProcPatchRanges(mesh);
     std::vector<MPI_Request> requests(2 * ranges.size(), MPI_REQUEST_NULL);
@@ -77,20 +95,21 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
         const auto [rangeStart, rangeEnd] = ranges[p];
         const localIdx patchOff = rangeStart - nBoundaryFaces;
         const auto neighborRank = static_cast<mpi_label_t>(bMesh.neighbourRankForRange(ranges[p]));
-        const auto byteCount = static_cast<mpi_label_t>((rangeEnd - rangeStart) * sizeof(scalar));
-        mpi::isend<char>(
-            reinterpret_cast<const char*>(dOwn.data() + patchOff),
-            byteCount,
+        const auto count = static_cast<mpi_label_t>(rangeEnd - rangeStart);
+        // M5: typed scalar send/recv (MPI selects the datatype) with a meaningful tag
+        mpi::isend<scalar>(
+            dOwn.data() + patchOff,
+            count,
             neighborRank,
-            GEOM_EXCHANGE_TAG,
+            procOwnerDistanceTag,
             mpiEnv.comm(),
             &requests[2 * p]
         );
-        mpi::irecv<char>(
-            reinterpret_cast<char*>(dNei.data() + patchOff),
-            byteCount,
+        mpi::irecv<scalar>(
+            dNei.data() + patchOff,
+            count,
             neighborRank,
-            GEOM_EXCHANGE_TAG,
+            procOwnerDistanceTag,
             mpiEnv.comm(),
             &requests[2 * p + 1]
         );
@@ -98,18 +117,15 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
     if (!requests.empty())
         MPI_Waitall(static_cast<int>(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
 
-    Vector<scalar> result(SerialExecutor {}, nProcFaces, scalar(0));
-    auto resultView = result.view();
-    for (localIdx i = 0; i < nProcFaces; ++i)
-        resultView[i] = dNei[static_cast<std::size_t>(i)];
-    return result.copyToExecutor(exec);
+    // M6: allocate the result directly on exec from the host buffer (no SerialExecutor detour)
+    return Vector<scalar>(exec, dNei);
 }
 
 } // anonymous namespace
 #endif
 
 BasicGeometryScheme::BasicGeometryScheme(const UnstructuredMesh& mesh)
-    : GeometrySchemeFactory(mesh), mesh_(mesh)
+    : GeometrySchemeFactory(), mesh_(mesh)
 {}
 
 void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scalar>& weights)
@@ -128,6 +144,11 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
+            // M8: both projections are intrinsically positive on a well-formed mesh (owner and
+            // neighbour centres sit on opposite sides of the face along its normal). std::abs is
+            // a deliberate robustness guard against a locally flipped/strongly-twisted face
+            // yielding a negative projection and hence a nonsensical weight; the alternative
+            // (failing loud) is impractical inside a device kernel.
             scalar sfdOwn =
                 std::abs(faceNormals[facei] & (faceCenters[facei] - cellCenters[owners[facei]]));
             scalar sfdNei =
@@ -210,6 +231,9 @@ void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<s
         {0, mesh_.nBoundaryFaces()},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = surfFaceCells[bfi];
+            // Boundary deltaCoeffs is the one-sided cell-centre-to-face-centre inverse
+            // distance (no neighbour cell across a physical patch).
+            // TODO(#515): revisit when the boundary delta convention is unified.
             Vec3 cellToFaceDist = bFaceCenters[bfi] - cellCenters[own];
             deltaCoeffB[bfi] = 1.0 / std::max(mag(cellToFaceDist), scalar(ROOTVSMALL));
         },
@@ -239,7 +263,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<s
                 const localIdx bfi = nBoundaryFaces + procFacei;
                 const Vec3 n = (1.0 / bFaceArea[bfi]) * bFaceNormals[bfi];
                 const scalar dOwn =
-                    std::abs(n & (faceCenters[bfi] - cellCenters[surfFaceCells[bfi]]));
+                    std::abs(n & (bFaceCenters[bfi] - cellCenters[surfFaceCells[bfi]]));
                 deltaCoeffB[bfi] = 1.0 / std::max(dOwn + dNeiView[procFacei], scalar(ROOTVSMALL));
             },
             "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
@@ -257,17 +281,17 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
         views(mesh_.faceOwners(), mesh_.faceNeighbors(), mesh_.boundaryMesh().faceOwners());
 
 
-    const auto [faceCenters, cellCenters, faceNormals, faceAreas] =
-        views(mesh_.faceCenters(), mesh_.cellCenters(), mesh_.faceNormals(), mesh_.faceAreas());
+    // Internal faces only (post boundaryMesh dedup): mesh_.faceNormals()/faceAreas() are sized to
+    // the internal-face count; boundary-face geometry comes from the boundary mesh views below.
+    const auto [cellCenters, faceNormals, faceAreas] =
+        views(mesh_.cellCenters(), mesh_.faceNormals(), mesh_.faceAreas());
 
     auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
     auto nonOrthDeltaCoeffB = nonOrthDeltaCoeffs.boundaryData().value().view();
 
-    const auto nInternalFaces = mesh_.nInternalFaces();
-
     parallelFor(
         exec,
-        {0, nInternalFaces},
+        {0, mesh_.nInternalFaces()},
         NEON_LAMBDA(const localIdx facei) {
             Vec3 cellToCellDist = cellCenters[neighbors[facei]] - cellCenters[owners[facei]];
             Vec3 faceUnitNormal = 1 / faceAreas[facei] * faceNormals[facei];
@@ -275,7 +299,10 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             // floor with ROOTVSMALL so a degenerate (coincident-centre) face cannot
             // produce 1/0 -> inf (review H3)
             nonOrthDeltaCoeff[facei] =
-                1.0 / std::max(orthoDist, std::max(0.05 * mag(cellToCellDist), scalar(ROOTVSMALL)));
+                1.0
+                / std::max(
+                    orthoDist, std::max(nonOrthDeltaClamp * mag(cellToCellDist), scalar(ROOTVSMALL))
+                );
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsInternal"
     );
@@ -288,12 +315,15 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
         {0, mesh_.nBoundaryFaces()},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = surfFaceCells[bfi];
-            Vec3 cellToCellDist = bFaceCenters[bfi] - cellCenters[own];
-            Vec3 bFaceUnitNormal = 1 / bFaceAreas[bfi] * bFaceNormals[bfi];
-            scalar orthoDist = bFaceUnitNormal & cellToCellDist;
+            Vec3 cellToFaceDist = bFaceCenters[bfi] - cellCenters[own];
+            Vec3 faceNormal = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+            scalar orthoDist = faceNormal & cellToFaceDist;
             // floor with ROOTVSMALL (review H3)
             nonOrthDeltaCoeffB[bfi] =
-                1.0 / std::max(orthoDist, std::max(0.05 * mag(cellToCellDist), scalar(ROOTVSMALL)));
+                1.0
+                / std::max(
+                    orthoDist, std::max(nonOrthDeltaClamp * mag(cellToFaceDist), scalar(ROOTVSMALL))
+                );
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
     );
@@ -305,17 +335,12 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     {
         const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
         const auto dNeiView = dNei.view();
-        const auto [bFaceNormals, bFaceArea, bFaceCenters] = views(
-            mesh_.boundaryMesh().faceNormals(),
-            mesh_.boundaryMesh().faceAreas(),
-            mesh_.boundaryMesh().faceCenters()
-        );
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
                 const localIdx bfi = nBoundaryFaces + procFacei;
-                const Vec3 n = (1.0 / bFaceArea[bfi]) * bFaceNormals[bfi];
+                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
                 const Vec3 co = cellCenters[surfFaceCells[bfi]];
                 const scalar dOwn = std::abs(n & (bFaceCenters[bfi] - co));
                 nonOrthDeltaCoeffB[bfi] =

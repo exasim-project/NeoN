@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/core/logging.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
@@ -12,7 +11,7 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-GeometrySchemeFactory::GeometrySchemeFactory([[maybe_unused]] const UnstructuredMesh& mesh) {}
+GeometrySchemeFactory::GeometrySchemeFactory() {}
 
 
 const std::shared_ptr<GeometryScheme> GeometryScheme::readOrCreate(const UnstructuredMesh& mesh)
@@ -125,9 +124,12 @@ void GeometryScheme::update()
 
 void GeometryScheme::reset() const
 {
-    // TODO this needs a better approach
-    // ideally faceCenters are some kind of hostViewVector
-    Logging::warn("resetting face and cell centers");
+    // Free the per-cell/face geometry on the device once the geometry scheme has consumed it.
+    // weights / deltaCoeffs / nonOrthDeltaCoeffs / corrVec are now cached in this object, so the
+    // cellCentres/faceCentres arrays are no longer needed for subsequent computations and
+    // freeing them saves device memory on large meshes (revisit for moving/rotating meshes).
+    // The const_cast is safe while the underlying mesh object is non-const, which holds for all
+    // current construction paths (review M1: warn dropped, const_cast retained + justified).
     const_cast<UnstructuredMesh&>(mesh_).faceCenters().resize(0);
     const_cast<UnstructuredMesh&>(mesh_).cellCenters().resize(0);
 }
