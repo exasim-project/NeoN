@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Kokkos_Sort.hpp"
 
 #include "NeoN/core/dictionary.hpp"
@@ -55,7 +57,8 @@ public:
         scalarVector faceAreas,
         labelVector faceOwners,
         labelVector faceNeighbors,
-        BoundaryMesh boundaryMesh
+        BoundaryMesh boundaryMesh,
+        std::vector<localIdx> foamGlobalCellIds = {}
     );
 
     /**
@@ -71,6 +74,14 @@ public:
      * @param faceOwners The list of labels of face owner cells.
      * @param faceNeighbors The list of labels of face neighbor cells.
      * @param boundaryMesh The boundary mesh.
+     * @param foamGlobalCellIds Optional. For each local cell, the global cell ID in
+     *        the **original** undecomposed OpenFOAM mesh (the contents of OF's
+     *        `constant/polyMesh/cellProcAddressing`). Empty if no OF addressing
+     *        is available (default, e.g. for purely synthetic meshes); in that
+     *        case OF-round-tripping APIs return empty / no-op.  Does not affect
+     *        any NeoN-internal global numbering used for linear solver assembly
+     *        or halo communication (those still use `globalOffset()`-based
+     *        contiguous IDs derived from an MPI_Scan of local cell counts).
      */
     UnstructuredMesh(
         vectorVector points,
@@ -81,7 +92,8 @@ public:
         scalarVector faceAreas,
         labelVector faceOwners,
         labelVector faceNeighbors,
-        BoundaryMesh boundaryMesh
+        BoundaryMesh boundaryMesh,
+        std::vector<localIdx> foamGlobalCellIds = {}
     );
 
     /**
@@ -198,6 +210,32 @@ public:
     localIdx globalOffset() const;
 
     /**
+     * @brief Per-local-cell global cell ID in the original undecomposed OpenFOAM mesh.
+     *
+     * Populated from OpenFOAM's `constant/polyMesh/cellProcAddressing` by the
+     * NeoFOAM mesh adapter when reading a decomposed case. Empty when no OF
+     * addressing is available (purely synthetic meshes, single-rank runs without
+     * a polyMesh on disk).
+     *
+     * **Not** used by NeoN's internal halo communication or by Ginkgo's
+     * distributed linear-algebra path: both of those operate on the contiguous
+     * MPI_Scan-based numbering exposed via `globalOffset()`. `foamGlobalCellIds`
+     * exists so that future code paths can round-trip cell identity back to OF
+     * (reconstruction, checkpoint loading, AMI/overset coupling).
+     *
+     * @return The OF-original global cell IDs, or an empty vector if not available.
+     */
+    const std::vector<localIdx>& foamGlobalCellIds() const;
+
+    /**
+     * @brief Whether OpenFOAM `cellProcAddressing` is available for this mesh.
+     *
+     * Equivalent to `!foamGlobalCellIds().empty()`. Use as a guard in code that
+     * relies on OF-round-trip identity.
+     */
+    bool hasFoamAddressing() const;
+
+    /**
      * @brief Get the boundary mesh.
      *
      * @return The boundary mesh.
@@ -292,6 +330,14 @@ private:
 
     //
     localIdx globalOffset_;
+
+    /**
+     * @brief OF-original global cell IDs per local cell.
+     *
+     * Populated from `cellProcAddressing` by the NeoFOAM mesh adapter when
+     * reading a decomposed OF case; empty otherwise. See `foamGlobalCellIds()`.
+     */
+    std::vector<localIdx> foamGlobalCellIds_;
 
     /**
      * @brief Stencil data base.

@@ -44,14 +44,22 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector faceAreas,
     labelVector faceOwners,
     labelVector faceNeighbors,
-    BoundaryMesh boundaryMesh
+    BoundaryMesh boundaryMesh,
+    std::vector<localIdx> foamGlobalCellIds
 )
     : exec_(exec), points_(points), cellVolumes_(cellVolumes), cellCenters_(cellCenters),
       faceNormals_(faceNormals), faceCenters_(faceCenters), faceAreas_(faceAreas),
       faceOwners_(faceOwners), faceNeighbors_(faceNeighbors), nCells_(cellVolumes.size()),
       nInternalFaces_(faceNeighbors.size()), boundaryMesh_(boundaryMesh),
-      globalOffset_(computeGlobalOffset(boundaryMesh, cellVolumes.size())), stencilDataBase_()
-{}
+      globalOffset_(computeGlobalOffset(boundaryMesh, cellVolumes.size())),
+      foamGlobalCellIds_(std::move(foamGlobalCellIds)), stencilDataBase_()
+{
+    NF_ASSERT(
+        foamGlobalCellIds_.empty()
+            || foamGlobalCellIds_.size() == static_cast<std::size_t>(nCells_),
+        "foamGlobalCellIds size must match nCells when provided."
+    );
+}
 
 UnstructuredMesh::UnstructuredMesh(
     vectorVector points,
@@ -62,7 +70,8 @@ UnstructuredMesh::UnstructuredMesh(
     scalarVector faceAreas,
     labelVector faceOwners,
     labelVector faceNeighbors,
-    BoundaryMesh boundaryMesh
+    BoundaryMesh boundaryMesh,
+    std::vector<localIdx> foamGlobalCellIds
 )
     : UnstructuredMesh(
         faceOwners.exec(),
@@ -74,7 +83,8 @@ UnstructuredMesh::UnstructuredMesh(
         faceAreas,
         faceOwners,
         faceNeighbors,
-        boundaryMesh
+        boundaryMesh,
+        std::move(foamGlobalCellIds)
     )
 {}
 
@@ -127,6 +137,13 @@ localIdx UnstructuredMesh::nTotalFaces() const
 }
 
 localIdx UnstructuredMesh::globalOffset() const { return globalOffset_; }
+
+const std::vector<localIdx>& UnstructuredMesh::foamGlobalCellIds() const
+{
+    return foamGlobalCellIds_;
+}
+
+bool UnstructuredMesh::hasFoamAddressing() const { return !foamGlobalCellIds_.empty(); }
 
 const BoundaryMesh& UnstructuredMesh::boundaryMesh() const { return boundaryMesh_; }
 

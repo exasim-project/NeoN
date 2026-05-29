@@ -362,4 +362,51 @@ TEST_CASE("Unstructured Mesh")
             REQUIRE(hostFaceCenters.view()[f][2] == Catch::Approx(zmax).margin(1e-10));
         }
     }
+
+    // Default-constructed meshes (synthetic uniform meshes from create*UniformMesh
+    // helpers) carry no OpenFOAM addressing — `foamGlobalCellIds()` returns an
+    // empty vector and `hasFoamAddressing()` returns false.
+    SECTION("Synthetic meshes carry no foam addressing " + execName)
+    {
+        auto mesh = NeoN::create1DUniformMesh(exec, 4);
+        REQUIRE_FALSE(mesh.hasFoamAddressing());
+        REQUIRE(mesh.foamGlobalCellIds().empty());
+    }
+
+    // When `foamGlobalCellIds` is provided to the constructor, the mesh exposes
+    // it verbatim through the accessor. This is the contract the NeoFOAM mesh
+    // adapter relies on after reading `cellProcAddressing` from disk.
+    //
+    // Crucially, populating `foamGlobalCellIds` must NOT change the values
+    // returned by `globalOffset()` — that field continues to come from the
+    // MPI_Scan-based contiguous numbering and is what Ginkgo and the halo
+    // communication path consume.
+    SECTION("Constructor stores foamGlobalCellIds verbatim " + execName)
+    {
+        const std::vector<NeoN::localIdx> cyclicIds {0, 3, 6, 9};
+        const NeoN::localIdx nCells = static_cast<NeoN::localIdx>(cyclicIds.size());
+
+        // Re-use the generated 1D mesh's geometry / boundary mesh so we only
+        // have to construct one new top-level UnstructuredMesh wired with the
+        // addressing vector.
+        auto reference = NeoN::create1DUniformMesh(exec, nCells);
+        NeoN::UnstructuredMesh meshWithAddressing(
+            exec,
+            reference.points(),
+            reference.cellVolumes(),
+            reference.cellCenters(),
+            reference.faceNormals(),
+            reference.faceCenters(),
+            reference.faceAreas(),
+            reference.faceOwners(),
+            reference.faceNeighbors(),
+            NeoN::BoundaryMesh(reference.boundaryMesh()),
+            cyclicIds
+        );
+
+        REQUIRE(meshWithAddressing.hasFoamAddressing());
+        REQUIRE(meshWithAddressing.foamGlobalCellIds() == cyclicIds);
+        // The MPI_Scan-based offset is independent of the OF-addressing field.
+        REQUIRE(meshWithAddressing.globalOffset() == reference.globalOffset());
+    }
 }
