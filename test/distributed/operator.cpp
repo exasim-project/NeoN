@@ -157,6 +157,12 @@ TEST_CASE("Distributed Operator")
     }
 
 #if NF_WITH_GINKGO
+    // [T2] End-to-end regression: solver.solve(lsDst, xPart) only enters the
+    // distributed Ginkgo path if Solver::solve dispatches via
+    // commPattern.isDistributed(). Comparing the partitioned solution against
+    // the canonical local solution catches any drift in the dispatch logic
+    // (see commPattern audit N-H2), the off-diagonal sparsity construction,
+    // or the recvIdx contract between ranks.
     Dictionary solverDict {
         {{"solver", std::string {"Ginkgo"}},
          {"type", "solver::Gmres"},

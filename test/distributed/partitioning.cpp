@@ -76,6 +76,124 @@ TEST_CASE("Distributed")
             REQUIRE(commPattern.sendCounts == sendCountsExp);
             REQUIRE(commPattern.recvIdx == recvIdxExp);
         }
+
+        // [T1] Regression test for commPattern audit N-H2: isDistributed() must be the
+        // authoritative dispatch question, returning true on every rank of a multi-rank
+        // job — independent of whether the local sendCounts/recvIdx are non-empty.
+        // Previously the dispatch used `!sendCounts.empty()`, which silently returned
+        // false on any rank that happened to have no processor faces, deadlocking the
+        // job when peers entered distributed collectives that this rank never joined.
+        SECTION("isDistributed() agrees across ranks " + execName)
+        {
+            const int local = commPattern.isDistributed() ? 1 : 0;
+            int globalAnd = 0;
+            int globalOr = 0;
+            MPI_Allreduce(&local, &globalAnd, 1, MPI_INT, MPI_BAND, mpiEnviron.comm());
+            MPI_Allreduce(&local, &globalOr, 1, MPI_INT, MPI_BOR, mpiEnviron.comm());
+            // Every rank must answer the same question identically.
+            REQUIRE(globalAnd == globalOr);
+            // On a 3-rank job, every rank must dispatch to the distributed path.
+            REQUIRE(local == 1);
+        }
+
+        // [T1.b] Pattern with no local proc faces but `isPartitioned` set must
+        // still dispatch to the distributed path. This simulates the rare Scotch
+        // corner case where a rank's partition is bounded entirely by physical
+        // patches; that rank still has to enter every distributed collective its
+        // peers do, otherwise the job deadlocks. `isPartitioned` is the
+        // dispatch-determining bit, set globally via MPI_Allreduce in
+        // `computeCommunicationPattern` so that all ranks agree.
+        SECTION(
+            "isDistributed() true for partitioned pattern with empty local sendCounts " + execName
+        )
+        {
+            CommunicationPattern empty;
+            empty.env = mpiEnviron;
+            empty.isPartitioned = true; // as if computeCommunicationPattern set it
+            REQUIRE(empty.sendCounts.empty());
+            REQUIRE(empty.recvIdx.empty());
+            REQUIRE(empty.isDistributed() == true);
+        }
+
+        // [T1.c] A default-constructed pattern (no Allreduce, no mesh hint) is
+        // treated as non-distributed. This corresponds to a multi-rank job
+        // carrying a LinearSystem built from a per-rank full copy of the global
+        // mesh (e.g. the canonical local `ls` used as a sanity-check baseline
+        // against `lsDst` in the operator test): every rank must take the local
+        // solve branch.
+        SECTION("isDistributed() false for default-constructed pattern " + execName)
+        {
+            CommunicationPattern defaulted;
+            REQUIRE(defaulted.isDistributed() == false);
+        }
+
+        // [T3] Symmetric round-trip via the pattern: every value in recvIdx on this
+        // rank must equal a value the neighbour sent. We re-send the global cell
+        // indices that we shipped originally and confirm receivers get back what we
+        // claimed to send. Together with the rank-by-rank recvIdx assertions above,
+        // this catches one-side malformed patterns.
+        SECTION("Pattern round-trips global cell ids " + execName)
+        {
+            const int nRanks = mpiEnviron.sizeRank();
+            const auto globalOffset = static_cast<int>(meshPart.globalOffset());
+
+            // sendCounts[0..nRanks) are face counts per destination rank.
+            std::vector<int> sendCounts(
+                commPattern.sendCounts.begin(), commPattern.sendCounts.begin() + nRanks
+            );
+            std::vector<int> sdispl(nRanks, 0);
+            for (int r = 1; r < nRanks; ++r)
+            {
+                sdispl[r] = sdispl[r - 1] + sendCounts[r - 1];
+            }
+            const int totalSend = sdispl.back() + sendCounts.back();
+
+            // Build the send buffer in the SAME ordering the pattern uses
+            // internally: walk proc faces in patch order, dispatched by neighbour
+            // rank. Each rank announces "I am sending you my global cell id X".
+            std::vector<int> sendBuf(totalSend, 0);
+            const auto& neighbourRanks = meshPart.boundaryMesh().neighbourRank();
+            const auto& offsets = meshPart.boundaryMesh().offset();
+            const auto nInner = meshPart.boundaryMesh().nBoundaries()
+                              - meshPart.boundaryMesh().nProcBoundaryPatches();
+            const auto faceCellsH = meshPart.boundaryMesh().faceOwners().copyToHost();
+            const auto procStart = offsets[static_cast<std::size_t>(nInner)];
+            std::vector<int> cursor(nRanks, 0);
+            for (std::size_t i = 0; i < neighbourRanks.size(); ++i)
+            {
+                const int dst = static_cast<int>(neighbourRanks[i]);
+                const auto patchStart = offsets[static_cast<std::size_t>(nInner + i)];
+                const auto patchEnd = offsets[static_cast<std::size_t>(nInner + i + 1)];
+                for (auto k = patchStart; k < patchEnd; ++k)
+                {
+                    const int slot = sdispl[dst] + cursor[dst]++;
+                    sendBuf[slot] = static_cast<int>(faceCellsH.view()[k]) + globalOffset;
+                }
+            }
+
+            std::vector<int> recvCounts(nRanks, 0);
+            mpi::allToAll<int>(sendCounts.data(), 1, recvCounts.data(), 1, mpiEnviron.comm());
+            std::vector<int> rdispl(nRanks, 0);
+            for (int r = 1; r < nRanks; ++r)
+            {
+                rdispl[r] = rdispl[r - 1] + recvCounts[r - 1];
+            }
+            const int totalRecv = rdispl.back() + recvCounts.back();
+            std::vector<int> recvBuf(totalRecv, 0);
+            mpi::allToAllV<int>(
+                sendBuf.data(),
+                sendCounts.data(),
+                sdispl.data(),
+                recvBuf.data(),
+                recvCounts.data(),
+                rdispl.data(),
+                mpiEnviron.comm()
+            );
+
+            // The reconstructed recv buffer must equal the pattern's stored recvIdx,
+            // proving that what the neighbour announces matches what we recorded.
+            REQUIRE(recvBuf == commPattern.recvIdx);
+        }
     }
 
     auto mesh = create1DUniformMesh(exec, nCells);
