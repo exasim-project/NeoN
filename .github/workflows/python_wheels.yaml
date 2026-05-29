@@ -21,11 +21,31 @@ on:
         required: false
         default: false
         type: boolean
+      build_cpu:
+        description: "Build Linux CPU wheels"
+        required: false
+        default: false
+        type: boolean
       build_gpu:
         description: "Build Linux CUDA wheel variants"
         required: false
         default: false
         type: boolean
+      publish_existing_gpu_run_id:
+        description: "Attach GPU wheel artifacts from this existing run id to a GitHub Release"
+        required: false
+        default: ""
+        type: string
+      gpu_artifact_pattern:
+        description: "GPU artifact name pattern to attach when using publish_existing_gpu_run_id"
+        required: false
+        default: "gpu-wheels-*"
+        type: string
+      release_tag:
+        description: "GitHub Release tag for uploaded GPU wheels, for example v0.1.1"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -68,7 +88,7 @@ jobs:
     name: CPU wheels ${{ matrix.os }}
     needs: version
     runs-on: ${{ matrix.os }}
-    if: github.event_name != 'workflow_dispatch' || inputs.build_wheels
+    if: github.event_name != 'workflow_dispatch' || (inputs.build_wheels && inputs.build_cpu)
     strategy:
       fail-fast: false
       matrix:
@@ -277,6 +297,61 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: wheelhouse
+
+  publish-existing-gpu-github-release:
+    name: Attach existing GPU wheel artifacts to GitHub Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_existing_gpu_run_id != ''
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Validate selected run id and release tag
+        shell: bash
+        run: |
+          if [[ ! "${{ inputs.publish_existing_gpu_run_id }}" =~ ^[0-9]+$ ]]; then
+            echo "publish_existing_gpu_run_id must contain only the numeric run id."
+            exit 1
+          fi
+
+          if [[ -z "${{ inputs.release_tag }}" ]]; then
+            echo "release_tag is required when publishing GPU wheels to a GitHub Release."
+            echo "Example: v0.1.1"
+            exit 1
+          fi
+
+      - name: Download GPU wheel artifacts from selected run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          rm -rf wheelhouse
+          mkdir -p wheelhouse
+          gh run download "${{ inputs.publish_existing_gpu_run_id }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "${{ inputs.gpu_artifact_pattern }}" \
+            --dir wheelhouse
+
+          find wheelhouse -mindepth 2 -type f -name "*.whl" -exec mv -t wheelhouse {} +
+          find wheelhouse -type d -empty -delete
+
+          if ! find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -quit | grep -q .; then
+            echo "No GPU wheel files were downloaded."
+            echo "Run id: ${{ inputs.publish_existing_gpu_run_id }}"
+            echo "Artifact pattern: ${{ inputs.gpu_artifact_pattern }}"
+            echo "Use an exact artifact name if the pattern does not match, for example:"
+            echo "gpu-wheels-cuda128"
+            exit 1
+          fi
+
+      - name: List GPU wheels selected for release upload
+        run: find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -exec ls -lh {} \;
+
+      - name: Upload GPU wheels to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: wheelhouse/*.whl
 
   publish-gpu-github-release:
     name: Attach GPU wheels to GitHub Release
