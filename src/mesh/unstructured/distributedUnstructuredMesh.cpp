@@ -140,9 +140,39 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
 {
     mpi::Environment mpiEnviron;
+
+    // Agree across the job on whether this LinearSystem should dispatch to the
+    // distributed solver path. Local presence of processor faces is not enough:
+    // an irregular partition can leave a rank with only physical boundaries
+    // (isPartitioned still true), while a multi-rank job may also carry a
+    // non-partitioned LinearSystem built from a per-rank full copy of the mesh
+    // (isPartitioned false). One MPI_Allreduce per pattern construction; the
+    // pattern is built once per LinearSystem, not per solve, so the overhead is
+    // negligible compared to the deadlocks the agreement prevents.
+    //
+    // Many serial unit tests call this path without ever initialising MPI; skip
+    // the collective in that case (the local fast path below handles them).
+    bool patternIsPartitioned = false;
+    if (mpiEnviron.isInitialized())
+    {
+        int localHasProcFaces = mesh.boundaryMesh().isDistributed() ? 1 : 0;
+        int anyHasProcFaces = 0;
+        MPI_Allreduce(&localHasProcFaces, &anyHasProcFaces, 1, MPI_INT, MPI_LOR, mpiEnviron.comm());
+        patternIsPartitioned = (anyHasProcFaces != 0);
+    }
+
     if (!mesh.boundaryMesh().isDistributed())
     {
-        return {};
+        // Either a single-rank build, or a multi-rank build holding a non-partitioned
+        // mesh (sanity-check copy), or — in the rare Scotch corner case — a rank
+        // whose partition is bounded entirely by physical patches. The dispatch
+        // decision differs between the latter two, so isPartitioned (set above
+        // via Allreduce) discriminates them; sendCounts/recvIdx remain empty on
+        // this rank in either case.
+        CommunicationPattern empty;
+        empty.env = mpiEnviron;
+        empty.isPartitioned = patternIsPartitioned;
+        return empty;
     }
 
     auto sendCounts = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank() + 1), 0);
@@ -210,7 +240,13 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     );
 
     std::vector<localIdx> boundaryMapVector;
-    return CommunicationPattern {sendCounts, recvIdx, boundaryMapVector, mpiEnviron};
+    return CommunicationPattern {
+        sendCounts,
+        recvIdx,
+        boundaryMapVector,
+        mpiEnviron,
+        /*isPartitioned=*/true
+    };
 }
 
 } // namespace NeoN

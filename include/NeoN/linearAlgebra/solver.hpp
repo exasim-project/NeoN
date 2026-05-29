@@ -108,7 +108,10 @@ public:
     solve(const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& ls, Vector<scalar>& field) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
-        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
+        // Dispatch based on whether the job runs distributed (sizeRank > 1), NOT on
+        // whether this rank has non-empty sendCounts: a rank without processor faces
+        // must still join the distributed collectives or the job deadlocks.
+        if (ls.commPattern().isDistributed()) return solverInstance_->solveDist(ls, field);
 #endif
         return solverInstance_->solve(ls, field);
     }
@@ -117,14 +120,14 @@ public:
     solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& ls, Vector<Vec3>& field) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
-        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
+        if (ls.commPattern().isDistributed()) return solverInstance_->solveDist(ls, field);
 #endif
         return solverInstance_->solve(ls, field);
     }
 
     /// @brief Solve a system with a scalar matrix and Vec3 right-hand side.
     /// @note This overload is **local-only**: it does not dispatch to solveDist and must not be
-    ///       called on a distributed LinearSystem (one whose commPattern has non-empty sendCounts).
+    ///       called on a distributed LinearSystem (one whose commPattern reports isDistributed()).
     ///       If distributed support is needed, add a solveDist virtual to SolverFactory and
     ///       implement it in every backend.
     SolverStats solve(
@@ -135,7 +138,7 @@ public:
     {
 #ifdef NF_WITH_MPI_SUPPORT
         NF_ASSERT(
-            ls.commPattern().sendCounts.empty(),
+            !ls.commPattern().isDistributed(),
             "solve(scalar matrix, Vec3 rhs) does not support distributed systems. "
             "Add a solveDist overload to SolverFactory to enable this."
         );

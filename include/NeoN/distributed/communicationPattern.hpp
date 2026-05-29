@@ -47,6 +47,27 @@ struct CommunicationPattern
 
     /** @brief MPI environment captured at pattern-construction time. */
     mpi::Environment env;
+
+    /** @brief Set by `computeCommunicationPattern` after an `MPI_Allreduce`
+     *  so every rank in the job agrees on the dispatch decision.  True iff
+     *  the mesh used to build this pattern was a partition (some rank in
+     *  the job has processor faces), false for non-partitioned meshes
+     *  (e.g. a per-rank full copy of the global mesh used for sanity checks).
+     */
+    bool isPartitioned = false;
+
+    /** @brief Whether the owning LinearSystem participates in a distributed solve.
+     *
+     *  Authoritative dispatch question for solvers and post-assembly functors.
+     *  Crucially, NOT equivalent to:
+     *   - "this rank has processor faces" — would deadlock against peers when
+     *     an irregular Scotch partition gives this rank an island bounded only
+     *     by physical patches;
+     *   - "the job runs multi-rank" — a multi-rank job can carry a
+     *     non-partitioned LinearSystem (e.g. a sanity-check copy of the global
+     *     mesh held by every rank) that must be solved locally.
+     */
+    bool isDistributed() const { return isPartitioned; }
 };
 
 /**

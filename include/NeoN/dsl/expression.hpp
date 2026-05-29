@@ -63,8 +63,15 @@ public:
     {
 #ifdef NF_WITH_MPI_SUPPORT
         // For distributed systems, only the rank owning refCell applies the constraint.
-        // For non-distributed systems (each rank holds a full copy), every rank applies it.
-        if (!ls.commPattern().sendCounts.empty())
+        // For serial / single-rank runs every rank trivially applies it.
+        // Dispatch on isDistributed() (sizeRank > 1), NOT on sendCounts.empty(): a rank
+        // with no processor faces still participates in a distributed job and must take
+        // the same branch as its peers.
+        // TODO refCell_ is currently a *local* cell index assumed to live on rank 0.
+        //      For Scotch-style decompositions this maps to an arbitrary original-mesh
+        //      cell. Once globalCellId is plumbed through the mesh, gate this on
+        //      "rank that owns the global refCell" instead of hard-coded rank 0.
+        if (ls.commPattern().isDistributed())
         {
             mpi::Environment mpiEnv;
             if (mpiEnv.isInitialized() && mpiEnv.rank() != 0) return;
