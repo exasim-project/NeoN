@@ -23,6 +23,7 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
     nvcc --version
 
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
+    export CUDA_VISIBLE_DEVICES=0
     cmake --preset develop \
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
