@@ -21,6 +21,13 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     mpi::Environment mpiEnviron;
     scalar rightBoundary {static_cast<scalar>(1.0) / mpiEnviron.sizeRank()};
 
+    // Place this rank's slab at its true position in the global [0, 1] domain. A faithful
+    // decomposition shares one global coordinate system across ranks (as decomposePar produces),
+    // which is required for any cross-rank coordinate exchange — e.g. the geometry scheme's
+    // exact processor-face owner-to-neighbour distance |Cnei - Cown|. Without the offset every
+    // rank would sit at [0, rightBoundary] and neighbour cell centres would be in the wrong frame.
+    const scalar xOffset = static_cast<scalar>(mpiEnviron.rank()) * rightBoundary;
+
     const bool isFirst = mpiEnviron.rank() == 0;
     const bool isLast = mpiEnviron.rank() == mpiEnviron.sizeRank() - 1;
     const localIdx nProcBoundaryFaces = (isFirst || isLast) ? 1 : 2;
@@ -61,7 +68,7 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     // Face geometry data for each boundary slot (2 slots regardless of rank).
     // For the last rank the boundary face ordering is [xmax, proc-left] — the
     // face data vectors are in that order too (swapped relative to rank-0/mid).
-    std::vector<Vec3> bcFaceCentersVec {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}};
+    std::vector<Vec3> bcFaceCentersVec {{xOffset, 0.0, 0.0}, {xOffset + rightBoundary, 0.0, 0.0}};
     std::vector<Vec3> bcFaceNormalsVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
     std::vector<scalar> bcFaceAreasVec {1.0, 1.0};
     std::vector<Vec3> bcFaceUnitNormalsVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
@@ -75,11 +82,36 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 
     auto baseMesh = create1DUniformMesh(exec, nCells, rightBoundary);
 
+    // Shift the rank-local mesh geometry into its global position (see xOffset above). Only
+    // positions move; areas, normals, volumes and cell-to-cell / cell-to-face differences are
+    // unchanged, so frame-independent quantities (fluxes, Courant number, gradients, projected
+    // distances) are unaffected.
+    auto shiftXInPlace = [&](Vector<Vec3>& v)
+    {
+        auto h = v.copyToHost();
+        auto hv = h.view();
+        for (localIdx i = 0; i < h.size(); ++i)
+            hv[i][0] += xOffset;
+        v = h.copyToExecutor(exec);
+    };
+    shiftXInPlace(baseMesh.points());
+    shiftXInPlace(baseMesh.cellCenters());
+    shiftXInPlace(baseMesh.faceCenters());
+
+    // Owner-cell centres held on the boundary mesh need the same shift (const accessor → copy).
+    auto ownerCellCentersH = baseMesh.boundaryMesh().ownerCellCenters().copyToHost();
+    {
+        auto v = ownerCellCentersH.view();
+        for (localIdx i = 0; i < ownerCellCentersH.size(); ++i)
+            v[i][0] += xOffset;
+    }
+    auto ownerCellCentersGlobal = ownerCellCentersH.copyToExecutor(exec);
+
     BoundaryMesh boundaryMesh(
         exec,
         faceCells,
         {exec, bcFaceCentersVec},
-        baseMesh.boundaryMesh().ownerCellCenters(),
+        ownerCellCentersGlobal,
         {exec, bcFaceNormalsVec},
         {exec, bcFaceAreasVec},
         {exec, bcFaceUnitNormalsVec},

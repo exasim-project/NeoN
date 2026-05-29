@@ -121,6 +121,93 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
     return Vector<scalar>(exec, dNei);
 }
 
+// Tag for the geometry-scheme processor neighbour-cell-centre halo exchange (review v2a).
+constexpr mpi_label_t procNeighbourCentreTag = 0x6763; // 'gc'
+
+/** @brief Exchanges owner cell centres across processor boundaries: each rank sends, for every
+ *  processor face, the centre of the cell owning that face, and receives the neighbouring rank's
+ *  owner-cell centre. The returned device Vector (size nProcBoundaryFaces) holds, per processor
+ *  face, the centre of the cell on the far side of the rank boundary (Cnei). Plain processor
+ *  patches share the global coordinate system, so Cnei is directly comparable to the local owner
+ *  centre. Enables exact owner-to-neighbour geometry (|Cnei - Cown|, non-orth correction) at
+ *  processor faces on non-orthogonal meshes. */
+Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const UnstructuredMesh& mesh)
+{
+    const auto nProcFaces = mesh.nProcBoundaryFaces();
+    if (nProcFaces == 0) return Vector<Vec3>(exec, 0, zero<Vec3>());
+
+    const auto& bMesh = mesh.boundaryMesh();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+
+    // Gather the owner-cell centre of each processor face on the device (H4: only nProcFaces
+    // Vec3s reach the host).
+    Vector<Vec3> ownCentreDev(exec, nProcFaces, zero<Vec3>());
+    {
+        auto ownView = ownCentreDev.view();
+        const auto cellCenters = mesh.cellCenters().view();
+        const auto bFaceOwners = bMesh.faceOwners().view();
+        parallelFor(
+            exec,
+            {0, nProcFaces},
+            NEON_LAMBDA(const localIdx i) {
+                ownView[i] = cellCenters[bFaceOwners[nBoundaryFaces + i]];
+            },
+            "basicGeometricScheme::exchangeProcNeighbourCellCentreOwner"
+        );
+    }
+
+    auto ownH = ownCentreDev.copyToHost();
+    const auto ownHView = ownH.view();
+    // Flatten to contiguous [x, y, z] scalars per face for the typed MPI exchange.
+    std::vector<scalar> sendBuf(static_cast<std::size_t>(3 * nProcFaces));
+    for (localIdx i = 0; i < nProcFaces; ++i)
+    {
+        const Vec3 c = ownHView[i];
+        sendBuf[static_cast<std::size_t>(3 * i + 0)] = c[0];
+        sendBuf[static_cast<std::size_t>(3 * i + 1)] = c[1];
+        sendBuf[static_cast<std::size_t>(3 * i + 2)] = c[2];
+    }
+    std::vector<scalar> recvBuf(static_cast<std::size_t>(3 * nProcFaces), scalar(0));
+
+    const auto ranges = collectProcPatchRanges(mesh);
+    std::vector<MPI_Request> requests(2 * ranges.size(), MPI_REQUEST_NULL);
+    mpi::Environment mpiEnv;
+    for (std::size_t p = 0; p < ranges.size(); ++p)
+    {
+        const auto [rangeStart, rangeEnd] = ranges[p];
+        const localIdx patchOff = 3 * (rangeStart - nBoundaryFaces);
+        const auto neighborRank = static_cast<mpi_label_t>(bMesh.neighbourRankForRange(ranges[p]));
+        const auto count = static_cast<mpi_label_t>(3 * (rangeEnd - rangeStart));
+        mpi::isend<scalar>(
+            sendBuf.data() + patchOff,
+            count,
+            neighborRank,
+            procNeighbourCentreTag,
+            mpiEnv.comm(),
+            &requests[2 * p]
+        );
+        mpi::irecv<scalar>(
+            recvBuf.data() + patchOff,
+            count,
+            neighborRank,
+            procNeighbourCentreTag,
+            mpiEnv.comm(),
+            &requests[2 * p + 1]
+        );
+    }
+    if (!requests.empty())
+        MPI_Waitall(static_cast<int>(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
+
+    std::vector<Vec3> neiCentre(static_cast<std::size_t>(nProcFaces));
+    for (localIdx i = 0; i < nProcFaces; ++i)
+        neiCentre[static_cast<std::size_t>(i)] = Vec3 {
+            recvBuf[static_cast<std::size_t>(3 * i + 0)],
+            recvBuf[static_cast<std::size_t>(3 * i + 1)],
+            recvBuf[static_cast<std::size_t>(3 * i + 2)]
+        };
+    return Vector<Vec3>(exec, neiCentre);
+}
+
 } // anonymous namespace
 #endif
 
@@ -245,26 +332,19 @@ void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<s
     const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
     {
-        // Processor-boundary deltaCoeffs (review GEOM-03 / H1-remainder). Uses the
-        // face-normal-projected owner+neighbour distance (dOwn + dNei). On an
-        // orthogonal proc face this equals 1/|d| (OF's coupled deltaCoeffs); on a
-        // non-orthogonal proc face it coincides with nonOrthDeltaCoeffs instead of
-        // OF's euclidean 1/|d|. Recovering exact 1/|d| there needs the full
-        // neighbour cell centre exchanged (deferred). Leaving these at zero — the
-        // pre-fix behaviour — is strictly worse (zero diffusive flux across ranks).
-        const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
-        const auto dNeiView = dNei.view();
-        const auto [bFaceNormals, bFaceArea] =
-            views(mesh_.boundaryMesh().faceNormals(), mesh_.boundaryMesh().faceAreas());
+        // Exact processor-boundary deltaCoeffs (review v2a / GEOM-03): the orthogonal
+        // deltaCoeffs is 1/|Cnei - Cown| across the rank boundary (OpenFOAM's coupled
+        // deltaCoeffs). Exchanging the neighbour cell centre makes this exact on
+        // non-orthogonal processor faces too (previously a face-normal projection was used).
+        const auto Cnei = exchangeProcNeighbourCellCentre(exec, mesh_);
+        const auto CneiView = Cnei.view();
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
                 const localIdx bfi = nBoundaryFaces + procFacei;
-                const Vec3 n = (1.0 / bFaceArea[bfi]) * bFaceNormals[bfi];
-                const scalar dOwn =
-                    std::abs(n & (bFaceCenters[bfi] - cellCenters[surfFaceCells[bfi]]));
-                deltaCoeffB[bfi] = 1.0 / std::max(dOwn + dNeiView[procFacei], scalar(ROOTVSMALL));
+                const Vec3 delta = CneiView[procFacei] - cellCenters[surfFaceCells[bfi]];
+                deltaCoeffB[bfi] = 1.0 / std::max(mag(delta), scalar(ROOTVSMALL));
             },
             "basicGeometricScheme::updateDeltaCoeffsProcBoundary"
         );
@@ -386,18 +466,43 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
         "basicGeometricScheme::updateNonOrthCorrectionVec3sInternal"
     );
 
-    // corrVec is zero on ALL boundary faces: non-processor patches are one-sided so
-    // the snGrad reduces to the uncorrected form, and the non-orthogonal correction
-    // at processor faces is currently deferred (review N4). Zero both the non-proc
-    // and proc ranges explicitly so consumers may rely on the contract rather than
-    // on BoundaryData's zero-init (review N6).
-    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
+    // Non-processor patches are one-sided, so corrVec is zero there (the snGrad reduces to the
+    // uncorrected form). Zero them explicitly so consumers may rely on the contract rather than on
+    // BoundaryData's zero-init (review N6).
     parallelFor(
         exec,
-        {0, nBoundaryFaces + nProcBoundaryFaces},
+        {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) { corrVecB[bfi] = zero<Vec3>(); },
         "basicGeometricScheme::updateNonOrthCorrectionVec3sBoundary"
     );
+
+#ifdef NF_WITH_MPI_SUPPORT
+    // Processor faces have a real neighbour cell across the rank boundary, so on a non-orthogonal
+    // mesh the correction is non-zero there (review v2a / N4). Compute it with the same form as the
+    // internal loop, using the exchanged neighbour cell centre and the precomputed processor
+    // nonOrthDeltaCoeff. On an orthogonal proc face this evaluates to zero, as before.
+    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto nonOrthDeltaCoeffB = nonOrthDeltaCoeffs.boundaryData().value().view();
+        const auto surfFaceCells = mesh_.boundaryMesh().faceOwners().view();
+        const auto [bFaceNormals, bFaceAreas] =
+            views(mesh_.boundaryMesh().faceNormals(), mesh_.boundaryMesh().faceAreas());
+        const auto Cnei = exchangeProcNeighbourCellCentre(exec, mesh_);
+        const auto CneiView = Cnei.view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const localIdx bfi = nBoundaryFaces + procFacei;
+                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+                const Vec3 delta = CneiView[procFacei] - cellCenters[surfFaceCells[bfi]];
+                corrVecB[bfi] = n - delta * nonOrthDeltaCoeffB[bfi];
+            },
+            "basicGeometricScheme::updateNonOrthCorrectionVec3sProcBoundary"
+        );
+    }
+#endif
 }
 
 } // namespace NeoN
