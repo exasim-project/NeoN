@@ -59,9 +59,9 @@
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00055}00055\ }
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_a994f86a6c6d51e240428fe3461f1ee3c}{00056}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_a994f86a6c6d51e240428fe3461f1ee3c}{deltaCoeffs}}()\textcolor{keyword}{\ const\ override}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00057}00057\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ OpenFOAM's\ uncorrectedSnGrad\ uses\ nonOrthDeltaCoeffs\ (1/(n.d)),\ NOT\ the\ orthogonal}}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1/|d|\ (verified\ against\ OF:\ uncorrectedSnGrad\ returns\ mesh().nonOrthDeltaCoeffs()).\ The}}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ review's\ N2\ premise\ was\ incorrect\ —\ NeoN's\ original\ behaviour\ already\ matched\ OpenFOAM.}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ uncorrected\ surface-\/normal\ gradient\ uses\ nonOrthDeltaCoeffs\ (1/(n.d)),\ NOT\ the}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ orthogonal\ 1/|d|:\ on\ a\ non-\/orthogonal\ mesh\ 1/(n.d)\ is\ the\ consistent\ normal-\/gradient}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ coefficient.\ The\ two\ coincide\ on\ orthogonal\ meshes.}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ geometryScheme\_-\/>nonOrthDeltaCoeffs();}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00062}00062\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00063}00063\ }

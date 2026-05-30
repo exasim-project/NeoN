@@ -115,14 +115,15 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Default <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html">GeometryScheme</a> kernel: computes weights, deltaCoeffs, nonOrthDeltaCoeffs and the non-orthogonal correction vectors directly from the mesh geometry. </p>
-<p>Assumptions baked into this kernel (review L8):</p><ul>
-<li>deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d| (matches OpenFOAM's uncorrectedSnGrad); nonOrthDeltaCoeffs is the over-relaxed 1/(n.d) floored by nonOrthDeltaClamp.</li>
+<p>Scheme definitions baked into this kernel:</p><ul>
+<li>deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d|; nonOrthDeltaCoeffs is the over-relaxed inverse face-normal distance 1/(n.d), floored by nonOrthDeltaClamp. The snGrad schemes consume nonOrthDeltaCoeffs; deltaCoeffs has no production consumer today (see <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#a6af0a7a7cb1cd03664de988346579112">GeometryScheme::deltaCoeffs</a>) and equals nonOrthDeltaCoeffs on orthogonal meshes.</li>
 <li>boundary weights are 1 (one-sided physical patches); processor weights are dN/(dO+dN).</li>
-<li>processor-boundary deltaCoeffs/nonOrthDeltaCoeffs use the face-normal-projected owner+neighbour distance (exact on orthogonal proc faces); the non-orthogonal correction is not applied at processor faces (see <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a> docs).</li>
+<li>processor-boundary deltaCoeffs are 1/|Cnei - Cown| using the neighbour cell centre Cnei halo-exchanged across the rank boundary, so they are exact on non-orthogonal processor faces too; processor nonOrthDeltaCoeffs are 1/(dO+dN) from the exchanged owner face-normal distances.</li>
+<li>non-orthogonal correction vectors are zero on physical (one-sided) boundary faces, but non-zero on non-orthogonal processor faces: a processor face has a real neighbour cell, so the corrected/limited snGrad applies the full correction there (it vanishes on orthogonal processor faces). See <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a> docs.</li>
 </ul>
 <p>Marked final to enable devirtualisation of the kernel calls in <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme.html#ab67d199285124264e5183829810892a3">GeometryScheme::update()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="basicGeometryScheme_8hpp_source.html#l00031">31</a> of file <a class="el" href="basicGeometryScheme_8hpp_source.html">basicGeometryScheme.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="basicGeometryScheme_8hpp_source.html#l00037">37</a> of file <a class="el" href="basicGeometryScheme_8hpp_source.html">basicGeometryScheme.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac2abd0666f6615d92c8a5d82e0b1827c" name="ac2abd0666f6615d92c8a5d82e0b1827c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac2abd0666f6615d92c8a5d82e0b1827c">&#9670;&#160;</a></span>BasicGeometryScheme()</h2>

@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="54" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" bodystart="54" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="60" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" bodystart="60" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="36" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="42" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_1ae46444eb51c3c48da44fa1ae8e825c2c" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="38" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="44" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_1a640d2f90ccacc5f884452588945538f3" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
@@ -83,7 +83,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="40" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="46" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_1a4ff2f71165b946bc41be364c11406568" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="43" column="5"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="49" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_1a58a72268ab5f3fdc37c03451bb4e5766" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
@@ -133,17 +133,18 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="45" column="10"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="51" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
 <para>Default <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme" kindref="compound">GeometryScheme</ref> kernel: computes weights, deltaCoeffs, nonOrthDeltaCoeffs and the non-orthogonal correction vectors directly from the mesh geometry. </para>
     </briefdescription>
     <detaileddescription>
-<para>Assumptions baked into this kernel (review L8):<itemizedlist>
-<listitem><para>deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d| (matches OpenFOAM&apos;s uncorrectedSnGrad); nonOrthDeltaCoeffs is the over-relaxed 1/(n.d) floored by nonOrthDeltaClamp.</para>
+<para>Scheme definitions baked into this kernel:<itemizedlist>
+<listitem><para>deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d|; nonOrthDeltaCoeffs is the over-relaxed inverse face-normal distance 1/(n.d), floored by nonOrthDeltaClamp. The snGrad schemes consume nonOrthDeltaCoeffs; deltaCoeffs has no production consumer today (see <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a6af0a7a7cb1cd03664de988346579112" kindref="member">GeometryScheme::deltaCoeffs</ref>) and equals nonOrthDeltaCoeffs on orthogonal meshes.</para>
 </listitem><listitem><para>boundary weights are 1 (one-sided physical patches); processor weights are dN/(dO+dN).</para>
-</listitem><listitem><para>processor-boundary deltaCoeffs/nonOrthDeltaCoeffs use the face-normal-projected owner+neighbour distance (exact on orthogonal proc faces); the non-orthogonal correction is not applied at processor faces (see <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient</ref> docs).</para>
+</listitem><listitem><para>processor-boundary deltaCoeffs are 1/|Cnei - Cown| using the neighbour cell centre Cnei halo-exchanged across the rank boundary, so they are exact on non-orthogonal processor faces too; processor nonOrthDeltaCoeffs are 1/(dO+dN) from the exchanged owner face-normal distances.</para>
+</listitem><listitem><para>non-orthogonal correction vectors are zero on physical (one-sided) boundary faces, but non-zero on non-orthogonal processor faces: a processor face has a real neighbour cell, so the corrected/limited snGrad applies the full correction there (it vanishes on orthogonal processor faces). See <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient</ref> docs.</para>
 </listitem></itemizedlist>
 </para>
 <para>Marked final to enable devirtualisation of the kernel calls in <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ab67d199285124264e5183829810892a3" kindref="member">GeometryScheme::update()</ref>. </para>
@@ -172,7 +173,7 @@
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="31" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" bodystart="32" bodyend="55"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" line="37" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp" bodystart="38" bodyend="61"/>
     <listofallmembers>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_1ac2abd0666f6615d92c8a5d82e0b1827c" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::BasicGeometryScheme</scope><name>BasicGeometryScheme</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_1a36f89f64414c4fb1734ef1b0efd03038" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::BasicGeometryScheme</scope><name>GeometrySchemeFactory</name></member>
