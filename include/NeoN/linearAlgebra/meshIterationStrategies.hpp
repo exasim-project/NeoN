@@ -125,16 +125,16 @@ public:
             typename FaceSign,
             typename MatrixColumnIdx>
         CellBasedData(
-            localIdx size_,
-            CellFaces&& cellFaces_,
-            FaceNeighbour&& faceNeighbour_,
-            FaceSign&& faceSign_,
-            MatrixColumnIdx&& matrixColumnIdx_
+            localIdx sizeIn,
+            CellFaces&& cellFacesIn,
+            FaceNeighbour&& faceNeighbourIn,
+            FaceSign&& faceSignIn,
+            MatrixColumnIdx&& matrixColumnIdxIn
         )
-            : size(size_), cellFaces(std::forward<CellFaces>(cellFaces_)),
-              faceNeighbour(std::forward<FaceNeighbour>(faceNeighbour_)),
-              faceSign(std::forward<FaceSign>(faceSign_)),
-              matrixColumnIdx(std::forward<MatrixColumnIdx>(matrixColumnIdx_))
+            : size(sizeIn), cellFaces(std::forward<CellFaces>(cellFacesIn)),
+              faceNeighbour(std::forward<FaceNeighbour>(faceNeighbourIn)),
+              faceSign(std::forward<FaceSign>(faceSignIn)),
+              matrixColumnIdx(std::forward<MatrixColumnIdx>(matrixColumnIdxIn))
         {}
 
         localIdx size; ///< Number of cells.
