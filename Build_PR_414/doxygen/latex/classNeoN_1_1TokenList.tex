@@ -38,6 +38,8 @@ bool \mbox{\hyperlink{classNeoN_1_1TokenList_a0b2e988afbe75233622a6c998c9e7ae9}{
 \begin{DoxyCompactList}\small\item\em Retrieves the value associated with the given index, casting it to the specified type. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Return\+Type $>$ }\\const Return\+Type \& \mbox{\hyperlink{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6}{next}} () const
 \begin{DoxyCompactList}\small\item\em Retrieves the value associated with the next\+Index, casting it to the specified type. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Return\+Type $>$ }\\bool \mbox{\hyperlink{classNeoN_1_1TokenList_ae2b92686bfe2ffcd626229ff89733224}{peek\+Is}} () const
+\begin{DoxyCompactList}\small\item\em Checks whether the next token (the one a subsequent \doxylink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next()} would return) holds a value of the given type. Does not advance the index and does not emit any logging — safe to use as a speculative peek when the caller wants to consume the token conditionally. \end{DoxyCompactList}\item 
 std\+::any \& \mbox{\hyperlink{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75}{operator\mbox{[}$\,$\mbox{]}}} (const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \&idx)
 \begin{DoxyCompactList}\small\item\em Retrieves the value associated with the given index. \end{DoxyCompactList}\item 
 std\+::vector$<$ std\+::any $>$ \& \mbox{\hyperlink{classNeoN_1_1TokenList_a425275584ae4a65106260e1f1d7057b1}{tokens}} ()
@@ -247,6 +249,21 @@ Retrieves the value associated with the given index.
 \begin{DoxyReturn}{Returns}
 A reference to the value associated with the index. 
 \end{DoxyReturn}
+\Hypertarget{classNeoN_1_1TokenList_ae2b92686bfe2ffcd626229ff89733224}\label{classNeoN_1_1TokenList_ae2b92686bfe2ffcd626229ff89733224} 
+\index{NeoN::TokenList@{NeoN::TokenList}!peekIs@{peekIs}}
+\index{peekIs@{peekIs}!NeoN::TokenList@{NeoN::TokenList}}
+\doxysubsubsection{\texorpdfstring{peekIs()}{peekIs()}}
+{\footnotesize\ttfamily template$<$typename Return\+Type $>$ \\
+bool Neo\+N\+::\+Token\+List\+::peek\+Is (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Checks whether the next token (the one a subsequent \doxylink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next()} would return) holds a value of the given type. Does not advance the index and does not emit any logging — safe to use as a speculative peek when the caller wants to consume the token conditionally. 
+
+
+
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+
 \Hypertarget{classNeoN_1_1TokenList_a3a154481207aea8d59bb67f5668a7a47}\label{classNeoN_1_1TokenList_a3a154481207aea8d59bb67f5668a7a47} 
 \index{NeoN::TokenList@{NeoN::TokenList}!popFront@{popFront}}
 \index{popFront@{popFront}!NeoN::TokenList@{NeoN::TokenList}}

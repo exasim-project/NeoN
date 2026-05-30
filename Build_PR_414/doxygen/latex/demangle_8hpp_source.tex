@@ -23,13 +23,10 @@
 \DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00019}00019\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Container,\ \textcolor{keyword}{typename}\ Key>}
 \DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00020}\mbox{\hyperlink{namespaceNeoN_af36e4b5b8ea30fdc52a7f31cff8136d1}{00020}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_af36e4b5b8ea30fdc52a7f31cff8136d1}{logBadAnyCast}}(\textcolor{keyword}{const}\ std::bad\_any\_cast\&\ e,\ \textcolor{keyword}{const}\ Key\&\ key,\ \textcolor{keyword}{const}\ Container\&\ data)}
 \DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00021}00021\ \{}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00022}00022\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Caught\ a\ bad\_any\_cast\ exception:\ \(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}key\ "{}}\ <<\ key\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00024}00024\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}requested\ type\ "{}}\ <<\ \mbox{\hyperlink{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9}{demangle}}(\textcolor{keyword}{typeid}(T).\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}())\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00025}00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}actual\ type\ "{}}\ <<\ \mbox{\hyperlink{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9}{demangle}}(data.at(key).type().name())\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00026}00026\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ e.what()\ <<\ std::endl;}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00027}00027\ \}}
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00028}00028\ }
-\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00029}00029\ \}}
+\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00022}00022\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}bad\_any\_cast:\ key='"{}}\ <<\ key\ <<\ \textcolor{stringliteral}{"{}',\ requested='"{}}\ <<\ \mbox{\hyperlink{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9}{demangle}}(\textcolor{keyword}{typeid}(T).\mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}())}
+\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00023}00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}',\ actual='"{}}\ <<\ \mbox{\hyperlink{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9}{demangle}}(data.at(key).type().name())\ <<\ \textcolor{stringliteral}{"{}':\ "{}}\ <<\ e.what()\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00024}00024\ \}}
+\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{demangle_8hpp_source_l00026}00026\ \}}
 
 \end{DoxyCode}

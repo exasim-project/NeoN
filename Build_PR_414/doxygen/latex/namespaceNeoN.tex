@@ -38,8 +38,6 @@ class \mbox{\hyperlink{classNeoN_1_1Collection}{Collection}}
 \begin{DoxyCompactList}\small\item\em A type-\/erased interface collection types. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1CollectionMixin}{Collection\+Mixin}}
 \begin{DoxyCompactList}\small\item\em A mixin class for collection of documents in a database to simplify the implementation of common operations. \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}}
-\item 
 class \mbox{\hyperlink{classNeoN_1_1CPUExecutor}{CPUExecutor}}
 \begin{DoxyCompactList}\small\item\em Executor for handling multicore CPU based parallelization. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1Database}{Database}}
@@ -313,21 +311,25 @@ void \mbox{\hyperlink{namespaceNeoN_a32239764f88da7b65079e346a5f3c1f8}{log\+Out\
 {\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_a44e55549c34b75c79d8e9ce48fc3600a}{operator-\/}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ lhs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&rhs)
 \begin{DoxyCompactList}\small\item\em Arithmetic subtraction operator, subtraction one field from another. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ \newline
-requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} b) \{ \mbox{\hyperlink{structa}{a}}\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a7bc13d96001ba8567668541abb6a903a}{scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} value)
+requires requires(Value\+Type a, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a7bc13d96001ba8567668541abb6a903a}{scalar\+Mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} value)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a3d9148833016bbd426f887c34a25d527}{add}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae255d4cb51b4cf5413b9aa3dff5c3f41}{add}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
 \item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1a6991cc19bd156d4a8b291c0f1c5124}{add}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&idx, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&out)
+\begin{DoxyCompactList}\small\item\em add with idx map \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a037265804e35c82302cc863186ac1f29}{sub}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aae5ddb58ac2b4264a756d55de4fcc777}{sub}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
 \item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ac50fff3f3010c662dcda21309594eeb9}{sub}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&idx, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&out)
+\begin{DoxyCompactList}\small\item\em add with idx map \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ \newline
-requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, Value\+Type b) \{ \mbox{\hyperlink{structa}{a}}\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
+requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a4c2ec1eca1c5dc5f7756d47e9baad38c}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&value)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ \newline
-requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, Value\+Type b) \{ \mbox{\hyperlink{structa}{a}}\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
+requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}}\\void \mbox{\hyperlink{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70}{mul}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&vect1, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&vect2)
 \item 
 {\footnotesize template$<$unsigned int I$>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_ac687cbbc59fcd44df919c83894149aec}{get\+Component}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&in)
 \begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function extracts a single component. \end{DoxyCompactList}\item 
@@ -335,16 +337,16 @@ requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, Value\+Type b) \{ \
 \begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} of \doxylink{classNeoN_1_1Vec3}{Vec3} this function sets a single component. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_ab0a6d37e5965553ba24ea28c2528e278}{take}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range)
 \begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, first+length\mbox{]} a subvector is created. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_aba2db35ad9323773ab56a062046ec164}{take}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&in, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} first, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} last)
+\begin{DoxyCompactList}\small\item\em Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, last\mbox{]} a subvector is created. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename... Types$>$ \newline
 requires (has\+View$<$std\+::remove\+\_\+reference\+\_\+t$<$Types$>$$>$ \&\& ...)}\\auto \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}} (Types \&... args)
 \begin{DoxyCompactList}\small\item\em Unpacks all views of the passed classes. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_aae274afc3d21628e67087bbac45b10c9}{partition\+Vol\+Field}} (Field\+Type field, const Mesh\+Type \&mesh, Bc\+Type bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ)
-\begin{DoxyCompactList}\small\item\em helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ }\\Field\+Type \mbox{\hyperlink{namespaceNeoN_ab3822d77e5f5fba2211499c8bc313eda}{partition\+Surface\+Field}} (Field\+Type field, Mesh\+Type \&mesh, Bc\+Type bcs, Neo\+N\+::mpi\+::\+Environment mpi\+Environ, bool flip=false)
-\begin{DoxyCompactList}\small\item\em helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a10d82fabbf91b0830afb044e0f9082f3}{communicate\+Boundary\+Data}} (const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&comm\+Pattern, const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&boundary\+Data)
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a10d82fabbf91b0830afb044e0f9082f3}{communicate\+Boundary\+Data}} (const Communication\+Pattern \&comm\+Pattern, const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&boundary\+Data)
 \begin{DoxyCompactList}\small\item\em exchange values on processor boundaries \end{DoxyCompactList}\item 
-template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_acd7cde72a86d9a1ac45448e07234c690}{communicate\+Boundary\+Data}} (const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&comm\+Pattern, const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&boundary\+Data)
+template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_acd7cde72a86d9a1ac45448e07234c690}{communicate\+Boundary\+Data}} (const Communication\+Pattern \&comm\+Pattern, const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ proc\+Patch\+Offset, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&boundary\+Data)
+\item 
+std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_a21e591c80791e44b4750aa9654717512}{compute\+Boundary\+Matrix\+Map\+Vector}} ()
 \item 
 \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \mbox{\hyperlink{namespaceNeoN_a8e4ff733c9dc00a516d09fbdacb127f4}{create\+Single\+Cell\+Mesh}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec)
 \begin{DoxyCompactList}\small\item\em creates a mesh containing only a single cell @warn currently this is only a 2D mesh \end{DoxyCompactList}\item 
@@ -552,17 +554,28 @@ Definition at line \mbox{\hyperlink{allocator_8hpp_source_l00016}{16}} of file \
 
 
 \doxysubsection{Function Documentation}
+\Hypertarget{namespaceNeoN_a1a6991cc19bd156d4a8b291c0f1c5124}\label{namespaceNeoN_a1a6991cc19bd156d4a8b291c0f1c5124} 
+\index{NeoN@{NeoN}!add@{add}}
+\index{add@{add}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{idx,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{out }\end{DoxyParamCaption})}
+
+
+
+add with idx map 
+
 \Hypertarget{namespaceNeoN_a3d9148833016bbd426f887c34a25d527}\label{namespaceNeoN_a3d9148833016bbd426f887c34a25d527} 
 \index{NeoN@{NeoN}!add@{add}}
 \index{add@{add}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&}]{value }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_ae255d4cb51b4cf5413b9aa3dff5c3f41}\label{namespaceNeoN_ae255d4cb51b4cf5413b9aa3dff5c3f41} 
 \index{NeoN@{NeoN}!add@{add}}
 \index{add@{add}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
 
@@ -571,7 +584,7 @@ void Neo\+N\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_
 \index{communicateBoundaryData@{communicateBoundaryData}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{communicateBoundaryData()}{communicateBoundaryData()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void Neo\+N\+::communicate\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&}]{comm\+Pattern,  }\item[{const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{proc\+Patch\+Offset,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{boundary\+Data }\end{DoxyParamCaption})}
+void Neo\+N\+::communicate\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const Communication\+Pattern \&}]{comm\+Pattern,  }\item[{const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{proc\+Patch\+Offset,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{boundary\+Data }\end{DoxyParamCaption})}
 
 
 
@@ -579,18 +592,24 @@ exchange values on processor boundaries
 
 
 
-Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00224}{224}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00387}{387}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_acd7cde72a86d9a1ac45448e07234c690}\label{namespaceNeoN_acd7cde72a86d9a1ac45448e07234c690} 
 \index{NeoN@{NeoN}!communicateBoundaryData@{communicateBoundaryData}}
 \index{communicateBoundaryData@{communicateBoundaryData}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{communicateBoundaryData()}{communicateBoundaryData()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$$>$ \\
-void Neo\+N\+::communicate\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1CommunicationPattern}{Communication\+Pattern}} \&}]{comm\+Pattern,  }\item[{const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{proc\+Patch\+Offset,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{boundary\+Data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+void Neo\+N\+::communicate\+Boundary\+Data (\begin{DoxyParamCaption}\item[{const Communication\+Pattern \&}]{comm\+Pattern,  }\item[{const std\+::vector$<$ std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$}]{proc\+Patch\+Offset,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{boundary\+Data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00286}{286}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundaryData_8hpp_source_l00449}{449}} of file \mbox{\hyperlink{boundaryData_8hpp_source}{boundary\+Data.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a21e591c80791e44b4750aa9654717512}\label{namespaceNeoN_a21e591c80791e44b4750aa9654717512} 
+\index{NeoN@{NeoN}!computeBoundaryMatrixMapVector@{computeBoundaryMatrixMapVector}}
+\index{computeBoundaryMatrixMapVector@{computeBoundaryMatrixMapVector}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{computeBoundaryMatrixMapVector()}{computeBoundaryMatrixMapVector()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ Neo\+N\+::compute\+Boundary\+Matrix\+Map\+Vector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_a811ed2574204e6c20fde99a7f7d6fa52}\label{namespaceNeoN_a811ed2574204e6c20fde99a7f7d6fa52} 
 \index{NeoN@{NeoN}!copyToHosts@{copyToHosts}}
@@ -1014,7 +1033,7 @@ Definition at line \mbox{\hyperlink{executor_8hpp_source_l00063}{63}} of file \m
 \index{mul@{mul}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{mul()}{mul()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \newline
-requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, Value\+Type b) \{ \mbox{\hyperlink{structa}{a}}\texorpdfstring{$\ast$}{*} b; \}\\
+requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}\\
 void Neo\+N\+::mul (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&}]{value }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70}\label{namespaceNeoN_a6ab1b2ea6d003b9225b4975421295b70} 
@@ -1022,7 +1041,7 @@ void Neo\+N\+::mul (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_
 \index{mul@{mul}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{mul()}{mul()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \newline
-requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, Value\+Type b) \{ \mbox{\hyperlink{structa}{a}}\texorpdfstring{$\ast$}{*} b; \}\\
+requires requires(Value\+Type a, Value\+Type b) \{ a\texorpdfstring{$\ast$}{*} b; \}\\
 void Neo\+N\+::mul (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}\label{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d} 
@@ -1483,36 +1502,6 @@ void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyper
 
 Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00256}{256}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ab3822d77e5f5fba2211499c8bc313eda}\label{namespaceNeoN_ab3822d77e5f5fba2211499c8bc313eda} 
-\index{NeoN@{NeoN}!partitionSurfaceField@{partitionSurfaceField}}
-\index{partitionSurfaceField@{partitionSurfaceField}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{partitionSurfaceField()}{partitionSurfaceField()}}
-{\footnotesize\ttfamily template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ \\
-Field\+Type Neo\+N\+::partition\+Surface\+Field (\begin{DoxyParamCaption}\item[{Field\+Type}]{field,  }\item[{Mesh\+Type \&}]{mesh,  }\item[{Bc\+Type}]{bcs,  }\item[{Neo\+N\+::mpi\+::\+Environment}]{mpi\+Environ,  }\item[{bool}]{flip = {\ttfamily false} }\end{DoxyParamCaption})}
-
-
-
-helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank 
-
-
-
-Definition at line \mbox{\hyperlink{partitioning_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{partitioning_8hpp_source}{partitioning.\+hpp}}.
-
-\Hypertarget{namespaceNeoN_aae274afc3d21628e67087bbac45b10c9}\label{namespaceNeoN_aae274afc3d21628e67087bbac45b10c9} 
-\index{NeoN@{NeoN}!partitionVolField@{partitionVolField}}
-\index{partitionVolField@{partitionVolField}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{partitionVolField()}{partitionVolField()}}
-{\footnotesize\ttfamily template$<$typename Field\+Type , typename Mesh\+Type , typename Bc\+Type $>$ \\
-Field\+Type Neo\+N\+::partition\+Vol\+Field (\begin{DoxyParamCaption}\item[{Field\+Type}]{field,  }\item[{const Mesh\+Type \&}]{mesh,  }\item[{Bc\+Type}]{bcs,  }\item[{Neo\+N\+::mpi\+::\+Environment}]{mpi\+Environ }\end{DoxyParamCaption})}
-
-
-
-helper function given a 1D uniform mesh and a rank it will return the part of the mesh owned by this rank 
-
-
-
-Definition at line \mbox{\hyperlink{partitioning_8hpp_source_l00015}{15}} of file \mbox{\hyperlink{partitioning_8hpp_source}{partitioning.\+hpp}}.
-
 \Hypertarget{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}\label{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce} 
 \index{NeoN@{NeoN}!read@{read}}
 \index{read@{read}!NeoN@{NeoN}}
@@ -1529,7 +1518,7 @@ Definition at line \mbox{\hyperlink{input_8hpp_source_l00018}{18}} of file \mbox
 \index{scalarMul@{scalarMul}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{scalarMul()}{scalarMul()}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \newline
-requires requires(Value\+Type \mbox{\hyperlink{structa}{a}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} b) \{ \mbox{\hyperlink{structa}{a}}\texorpdfstring{$\ast$}{*} b; \}\\
+requires requires(Value\+Type a, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} b) \{ a\texorpdfstring{$\ast$}{*} b; \}\\
 void Neo\+N\+::scalar\+Mul (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{value }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_a6ae1b9a7ec028b25e69bbbe4f3f32753}\label{namespaceNeoN_a6ae1b9a7ec028b25e69bbbe4f3f32753} 
@@ -1604,17 +1593,28 @@ Definition at line \mbox{\hyperlink{containerFreeFunctions_8hpp_source_l00105}{1
 
 Definition at line \mbox{\hyperlink{executor_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_ac50fff3f3010c662dcda21309594eeb9}\label{namespaceNeoN_ac50fff3f3010c662dcda21309594eeb9} 
+\index{NeoN@{NeoN}!sub@{sub}}
+\index{sub@{sub}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{idx,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{out }\end{DoxyParamCaption})}
+
+
+
+add with idx map 
+
 \Hypertarget{namespaceNeoN_a037265804e35c82302cc863186ac1f29}\label{namespaceNeoN_a037265804e35c82302cc863186ac1f29} 
 \index{NeoN@{NeoN}!sub@{sub}}
 \index{sub@{sub}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect,  }\item[{const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ \&}]{value }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_aae5ddb58ac2b4264a756d55de4fcc777}\label{namespaceNeoN_aae5ddb58ac2b4264a756d55de4fcc777} 
 \index{NeoN@{NeoN}!sub@{sub}}
 \index{sub@{sub}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{sub()}{sub()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void Neo\+N\+::sub (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{vect1,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ $>$ \&}]{vect2 }\end{DoxyParamCaption})}
 
@@ -1632,10 +1632,21 @@ Symmetric part of a full tensor\+: ½(T + T\texorpdfstring{$^\wedge$}{\string^}T
 
 Definition at line \mbox{\hyperlink{symmTensor_8hpp_source_l00225}{225}} of file \mbox{\hyperlink{symmTensor_8hpp_source}{symm\+Tensor.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_aba2db35ad9323773ab56a062046ec164}\label{namespaceNeoN_aba2db35ad9323773ab56a062046ec164} 
+\index{NeoN@{NeoN}!take@{take}}
+\index{take@{take}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{take()}{take()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::take (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{first,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{last }\end{DoxyParamCaption})}
+
+
+
+Given a \doxylink{classNeoN_1_1Vector}{Vector} and an index range \mbox{[}first, last\mbox{]} a subvector is created. 
+
 \Hypertarget{namespaceNeoN_ab0a6d37e5965553ba24ea28c2528e278}\label{namespaceNeoN_ab0a6d37e5965553ba24ea28c2528e278} 
 \index{NeoN@{NeoN}!take@{take}}
 \index{take@{take}!NeoN@{NeoN}}
-\doxysubsubsection{\texorpdfstring{take()}{take()}}
+\doxysubsubsection{\texorpdfstring{take()}{take()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ Neo\+N\+::take (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{in,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range }\end{DoxyParamCaption})}
 

@@ -60,10 +60,14 @@ const \mbox{\hyperlink{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d}{label\+V
 \begin{DoxyCompactList}\small\item\em Get the total number of faces including boundary and processor faces in the mesh. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{n\+Boundaries}} () const
 \begin{DoxyCompactList}\small\item\em Get the number of boundaries patches in the mesh. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028}{n\+Proc\+Boundary\+Faces}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of processor-\/boundary faces (inter-\/rank faces). \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_aa833ed1870b3b2cf358d56784530d7ce}{global\+Offset}} () const
 \begin{DoxyCompactList}\small\item\em the offset local cell\+Ids for the global mesh. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \& \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundary\+Mesh}} () const
 \begin{DoxyCompactList}\small\item\em Get the boundary mesh. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \& \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ad0683245554ed8a83e4dcea7cfdf3b57}{boundary\+Mesh}} ()
+\item 
 \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \& \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ad0683245554ed8a83e4dcea7cfdf3b57}{boundary\+Mesh}} ()
 \item 
 \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \& \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a0d941c6f9fd1001bb00c8fde7a47876e}{stencil\+DB}} () const
@@ -77,7 +81,7 @@ Represents an unstructured mesh in \doxylink{namespaceNeoN}{NeoN}.
 
 The \doxylink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh} class stores the data and provides access to the properties of an unstructured mesh. It contains information such as mesh points, cell volumes, cell centers, face areas, face centers, face owner cells, face neighbour cells, and boundary information. It also provides methods to retrieve the number of cells, internal faces, boundary faces, boundaries, and faces in the mesh. Additionally, it includes a boundary mesh and a stencil data base. The executor is used to run parallel operations on the mesh. 
 
-Definition at line \mbox{\hyperlink{unstructuredMesh_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{unstructuredMesh_8hpp_source}{unstructured\+Mesh.\+hpp}}.
+Definition at line \mbox{\hyperlink{unstructuredMesh_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{unstructuredMesh_8hpp_source}{unstructured\+Mesh.\+hpp}}.
 
 
 
@@ -155,13 +159,19 @@ executor is determined from face\+Owners
 \Hypertarget{classNeoN_1_1UnstructuredMesh_ad0683245554ed8a83e4dcea7cfdf3b57}\label{classNeoN_1_1UnstructuredMesh_ad0683245554ed8a83e4dcea7cfdf3b57} 
 \index{NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}!boundaryMesh@{boundaryMesh}}
 \index{boundaryMesh@{boundaryMesh}!NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}}
-\doxysubsubsection{\texorpdfstring{boundaryMesh()}{boundaryMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{boundaryMesh()}{boundaryMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \& Neo\+N\+::\+Unstructured\+Mesh\+::boundary\+Mesh (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{classNeoN_1_1UnstructuredMesh_ad0683245554ed8a83e4dcea7cfdf3b57}\label{classNeoN_1_1UnstructuredMesh_ad0683245554ed8a83e4dcea7cfdf3b57} 
+\index{NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}!boundaryMesh@{boundaryMesh}}
+\index{boundaryMesh@{boundaryMesh}!NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}}
+\doxysubsubsection{\texorpdfstring{boundaryMesh()}{boundaryMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \& Neo\+N\+::\+Unstructured\+Mesh\+::boundary\+Mesh (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 \Hypertarget{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}\label{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301} 
 \index{NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}!boundaryMesh@{boundaryMesh}}
 \index{boundaryMesh@{boundaryMesh}!NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}}
-\doxysubsubsection{\texorpdfstring{boundaryMesh()}{boundaryMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{boundaryMesh()}{boundaryMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \& Neo\+N\+::\+Unstructured\+Mesh\+::boundary\+Mesh (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
@@ -385,10 +395,20 @@ The number of internal faces in the mesh.
 \Hypertarget{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028}\label{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028} 
 \index{NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}!nProcBoundaryFaces@{nProcBoundaryFaces}}
 \index{nProcBoundaryFaces@{nProcBoundaryFaces}!NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}}
-\doxysubsubsection{\texorpdfstring{nProcBoundaryFaces()}{nProcBoundaryFaces()}}
+\doxysubsubsection{\texorpdfstring{nProcBoundaryFaces()}{nProcBoundaryFaces()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Unstructured\+Mesh\+::n\+Proc\+Boundary\+Faces (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-\Hypertarget{classNeoN_1_1UnstructuredMesh_ae862466f7a61edc2e01199c40bf74a3b}\label{classNeoN_1_1UnstructuredMesh_ae862466f7a61edc2e01199c40bf74a3b} 
+\Hypertarget{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028}\label{classNeoN_1_1UnstructuredMesh_a05144346e4df36fcd70f0a1713bd0028} 
+\index{NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}!nProcBoundaryFaces@{nProcBoundaryFaces}}
+\index{nProcBoundaryFaces@{nProcBoundaryFaces}!NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}}
+\doxysubsubsection{\texorpdfstring{nProcBoundaryFaces()}{nProcBoundaryFaces()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} Neo\+N\+::\+Unstructured\+Mesh\+::n\+Proc\+Boundary\+Faces (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the number of processor-\/boundary faces (inter-\/rank faces). 
+
+Returns 0 for single-\/process runs. \Hypertarget{classNeoN_1_1UnstructuredMesh_ae862466f7a61edc2e01199c40bf74a3b}\label{classNeoN_1_1UnstructuredMesh_ae862466f7a61edc2e01199c40bf74a3b} 
 \index{NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}!nTotalFaces@{nTotalFaces}}
 \index{nTotalFaces@{nTotalFaces}!NeoN::UnstructuredMesh@{NeoN::UnstructuredMesh}}
 \doxysubsubsection{\texorpdfstring{nTotalFaces()}{nTotalFaces()}}

@@ -82,15 +82,21 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>A device-accessible view into the face-to-matrix address mapping.  
+ <a href="structNeoN_1_1la_1_1FaceToMatrixView.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a47d2aa052306de6384cc8299e95eff5d" id="r_a47d2aa052306de6384cc8299e95eff5d"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1FaceToMatrixView.html#a47d2aa052306de6384cc8299e95eff5d">diagIdx</a> (<a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> celli) const</td></tr>
+<tr class="memdesc:a47d2aa052306de6384cc8299e95eff5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">flat values-array index of the diagonal entry for cell celli  <br /></td></tr>
 <tr class="separator:a47d2aa052306de6384cc8299e95eff5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a181679a45381c34feaf055745c483c9d" id="r_a181679a45381c34feaf055745c483c9d"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1FaceToMatrixView.html#a181679a45381c34feaf055745c483c9d">upperIdx</a> (<a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> own, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> faceIdx) const</td></tr>
+<tr class="memdesc:a181679a45381c34feaf055745c483c9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">flat values-array index of the upper-triangular entry A[own, nei]  <br /></td></tr>
 <tr class="separator:a181679a45381c34feaf055745c483c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22ca2d20507e6a0b2e07ca7499260bb6" id="r_a22ca2d20507e6a0b2e07ca7499260bb6"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1FaceToMatrixView.html#a22ca2d20507e6a0b2e07ca7499260bb6">lowerIdx</a> (<a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nei, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> faceIdx) const</td></tr>
+<tr class="memdesc:a22ca2d20507e6a0b2e07ca7499260bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">flat values-array index of the lower-triangular entry A[nei, own]  <br /></td></tr>
 <tr class="separator:a22ca2d20507e6a0b2e07ca7499260bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -105,8 +111,10 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a49d5e70dee13c8678c28f1679870b400"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00016">16</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<div class="textblock"><p>A device-accessible view into the face-to-matrix address mapping. </p>
+<p>Holds lightweight Kokkos views (no ownership) of the offset arrays and the row-offset array borrowed from the associated CSR sparsity pattern. All members are safe to use inside Kokkos kernels. </p>
+
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00026">26</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a47d2aa052306de6384cc8299e95eff5d" name="a47d2aa052306de6384cc8299e95eff5d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a47d2aa052306de6384cc8299e95eff5d">&#9670;&#160;</a></span>diagIdx()</h2>
@@ -132,7 +140,9 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00023">23</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p>flat values-array index of the diagonal entry for cell celli </p>
+
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00030">30</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>
@@ -170,7 +180,9 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00047">47</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p>flat values-array index of the lower-triangular entry A[nei, own] </p>
+
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00042">42</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>
@@ -208,7 +220,9 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00035">35</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p>flat values-array index of the upper-triangular entry A[own, nei] </p>
+
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00036">36</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>
@@ -225,7 +239,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00057">57</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00049">49</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>
@@ -241,7 +255,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00055">55</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00048">48</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>
@@ -257,7 +271,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00053">53</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00047">47</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>
@@ -273,7 +287,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00060">60</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceToMatrixAddress_8hpp_source.html#l00050">50</a> of file <a class="el" href="faceToMatrixAddress_8hpp_source.html">faceToMatrixAddress.hpp</a>.</p>
 
 </div>
 </div>

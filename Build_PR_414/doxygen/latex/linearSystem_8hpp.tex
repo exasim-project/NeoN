@@ -8,14 +8,13 @@
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/csr\+Sparsity\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/mesh\+Iteration\+Strategies.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/face\+To\+Matrix\+Address.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/distributed/communication\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include $<$string$>$}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Neo\+N\+::la\+::\+Linear\+System\+View$<$ Value\+Type, Matrix\+View\+Type $>$}}
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Neo\+N\+::la\+::\+Linear\+System\+View$<$ RHSValue\+Type, Matrix\+View\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em A view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
-class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System$<$ Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$}}
+class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System$<$ Matrix\+Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type, RHSValue\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em A class representing a linear system of equations. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
@@ -29,5 +28,40 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
 \item 
 {\footnotesize template$<$typename Value\+Type , typename System\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a70b99b654275b82c0793671af73fe39a}{Neo\+N\+::la\+::create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$ strategy=std\+::make\+\_\+shared$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}} $>$())
 \item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5a0ad3d154c390bb75b1e2581b775fd9}{Neo\+N\+::la\+::remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls\+In)
-\begin{DoxyCompactList}\small\item\em for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). \end{DoxyCompactList}\end{DoxyCompactItemize}
+{\footnotesize template$<$typename Value\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \mbox{\hyperlink{linearSystem_8hpp_ac6ed30067bf30baf67da94032e506a5b}{remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls\+In)
+\begin{DoxyCompactList}\small\item\em for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{linearSystem_8hpp_a3cbcffeb30c8d18244b185c398228bc5}{scaled\+Inv\+Diag\+Neg\+LUx}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vec3 $>$ \&ls, const Vector$<$ Vec3 $>$ \&a, const Vector$<$ Vec3 $>$ \&a\+Bound, const Unstructured\+Mesh \&mesh, Vector$<$ scalar $>$ \&r\+AU, Vector$<$ Vec3 $>$ \&out)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5a1362b264d0ddad8fbcf4d2a203f089}{Neo\+N\+::la\+::ls}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{linearSystem_8hpp_ac6ed30067bf30baf67da94032e506a5b}\label{linearSystem_8hpp_ac6ed30067bf30baf67da94032e506a5b} 
+\index{linearSystem.hpp@{linearSystem.hpp}!removeBoundaryContributions@{removeBoundaryContributions}}
+\index{removeBoundaryContributions@{removeBoundaryContributions}!linearSystem.hpp@{linearSystem.hpp}}
+\doxysubsubsection{\texorpdfstring{removeBoundaryContributions()}{removeBoundaryContributions()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ remove\+Boundary\+Contributions (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls\+In }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). 
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00386}{386}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{linearSystem_8hpp_a3cbcffeb30c8d18244b185c398228bc5}\label{linearSystem_8hpp_a3cbcffeb30c8d18244b185c398228bc5} 
+\index{linearSystem.hpp@{linearSystem.hpp}!scaledInvDiagNegLUx@{scaledInvDiagNegLUx}}
+\index{scaledInvDiagNegLUx@{scaledInvDiagNegLUx}!linearSystem.hpp@{linearSystem.hpp}}
+\doxysubsubsection{\texorpdfstring{scaledInvDiagNegLUx()}{scaledInvDiagNegLUx()}}
+{\footnotesize\ttfamily void scaled\+Inv\+Diag\+Neg\+LUx (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vec3 $>$ \&}]{ls,  }\item[{const Vector$<$ Vec3 $>$ \&}]{a,  }\item[{const Vector$<$ Vec3 $>$ \&}]{a\+Bound,  }\item[{const Unstructured\+Mesh \&}]{mesh,  }\item[{Vector$<$ scalar $>$ \&}]{r\+AU,  }\item[{Vector$<$ Vec3 $>$ \&}]{out }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00412}{412}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+

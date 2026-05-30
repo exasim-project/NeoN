@@ -12,7 +12,7 @@
       <node id="60">
         <label>NeoN/core/array.hpp</label>
         <link refid="array_8hpp"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -127,10 +127,10 @@
         <childnode refid="49" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>NeoN/core/error.hpp</label>
         <link refid="error_8hpp"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
@@ -176,7 +176,7 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
@@ -230,7 +230,7 @@
       <node id="21">
         <label>NeoN/core/memory/allocator.hpp</label>
         <link refid="allocator_8hpp"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
@@ -248,6 +248,8 @@
         <link refid="environment_8hpp"/>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="20" relation="include">
         </childnode>
       </node>
@@ -258,7 +260,7 @@
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="41" relation="include">
         </childnode>
@@ -380,7 +382,7 @@
       <node id="30">
         <label>NeoN/core/vector/vector.hpp</label>
         <link refid="vector_8hpp"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -710,6 +712,8 @@
         </childnode>
         <childnode refid="43" relation="include">
         </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
       </node>
       <node id="100">
         <label>boundary/volume/symmetry.hpp</label>
@@ -886,6 +890,8 @@
         </childnode>
         <childnode refid="43" relation="include">
         </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
       </node>
       <node id="53">
         <label>NeoN/linearAlgebra/linearSystem.hpp</label>
@@ -905,8 +911,6 @@
         <childnode refid="63" relation="include">
         </childnode>
         <childnode refid="59" relation="include">
-        </childnode>
-        <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -931,6 +935,8 @@
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
         </childnode>
         <childnode refid="65" relation="include">
         </childnode>
@@ -972,6 +978,8 @@
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
       </node>
       <node id="22">
         <label>Kokkos_Core.hpp</label>
@@ -1006,7 +1014,7 @@
       <node id="27">
         <label>cstdint</label>
       </node>
-      <node id="17">
+      <node id="16">
         <label>cstdlib</label>
       </node>
       <node id="18">
@@ -1151,10 +1159,13 @@
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation&lt;ValueType&gt;</ref><sp/>surfaceInterpolation_;</highlight></codeline>
 <codeline lineno="68"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"></highlight></codeline>
-<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;scalar&gt;;</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;Vec3&gt;;</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight></codeline>
-<codeline lineno="73"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Required<sp/>on<sp/>MSVC:<sp/>without<sp/>extern<sp/>template,<sp/>each<sp/>TU<sp/>(DLL<sp/>and<sp/>EXE)<sp/>gets<sp/>its<sp/>own</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">//<sp/>instantiation<sp/>of<sp/>table()<sp/>static<sp/>local,<sp/>so<sp/>the<sp/>DLL&apos;s<sp/>addSubType()<sp/>inserts<sp/>into</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment">//<sp/>a<sp/>different<sp/>map<sp/>than<sp/>the<sp/>one<sp/>the<sp/>test<sp/>binary<sp/>queries.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;scalar&gt;;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;Vec3&gt;;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"/>
   </compounddef>

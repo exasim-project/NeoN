@@ -77,7 +77,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">linearSystem.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -89,17 +90,16 @@ $(function() {
 <code>#include &quot;<a class="el" href="csrSparsityPattern_8hpp_source.html">NeoN/linearAlgebra/csrSparsityPattern.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="meshIterationStrategies_8hpp_source.html">NeoN/linearAlgebra/meshIterationStrategies.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="faceToMatrixAddress_8hpp_source.html">NeoN/linearAlgebra/faceToMatrixAddress.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="communicationPattern_8hpp_source.html">NeoN/distributed/communicationPattern.hpp</a>&quot;</code><br />
 <code>#include &lt;string&gt;</code><br />
 </div>
 <p><a href="linearSystem_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">NeoN::la::LinearSystemView&lt; ValueType, MatrixViewType &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1LinearSystemView.html">NeoN::la::LinearSystemView&lt; RHSValueType, MatrixViewType &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A view linear into a linear system's data.  <a href="structNeoN_1_1la_1_1LinearSystemView.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem&lt; MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing a linear system of equations.  <a href="classNeoN_1_1la_1_1LinearSystem.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -115,11 +115,113 @@ Functions</h2></td></tr>
 <tr class="memitem:a70b99b654275b82c0793671af73fe39a" id="r_a70b99b654275b82c0793671af73fe39a"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:a70b99b654275b82c0793671af73fe39a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a70b99b654275b82c0793671af73fe39a">NeoN::la::createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; strategy=std::make_shared&lt; <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">FaceBasedIterator</a> &gt;())</td></tr>
 <tr class="separator:a70b99b654275b82c0793671af73fe39a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a0ad3d154c390bb75b1e2581b775fd9" id="r_a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">NeoN::la::removeBoundaryContributions</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;lsIn)</td></tr>
-<tr class="memdesc:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div).  <br /></td></tr>
-<tr class="separator:a5a0ad3d154c390bb75b1e2581b775fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ed30067bf30baf67da94032e506a5b" id="r_ac6ed30067bf30baf67da94032e506a5b"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:ac6ed30067bf30baf67da94032e506a5b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="linearSystem_8hpp.html#ac6ed30067bf30baf67da94032e506a5b">removeBoundaryContributions</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;lsIn)</td></tr>
+<tr class="memdesc:ac6ed30067bf30baf67da94032e506a5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div).  <br /></td></tr>
+<tr class="separator:ac6ed30067bf30baf67da94032e506a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cbcffeb30c8d18244b185c398228bc5" id="r_a3cbcffeb30c8d18244b185c398228bc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linearSystem_8hpp.html#a3cbcffeb30c8d18244b185c398228bc5">scaledInvDiagNegLUx</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; Vec3 &gt; &amp;ls, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;aBound, const UnstructuredMesh &amp;mesh, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</td></tr>
+<tr class="separator:a3cbcffeb30c8d18244b185c398228bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a5a1362b264d0ddad8fbcf4d2a203f089" id="r_a5a1362b264d0ddad8fbcf4d2a203f089"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a5a1362b264d0ddad8fbcf4d2a203f089">NeoN::la::ls</a></td></tr>
+<tr class="separator:a5a1362b264d0ddad8fbcf4d2a203f089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ac6ed30067bf30baf67da94032e506a5b" name="ac6ed30067bf30baf67da94032e506a5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6ed30067bf30baf67da94032e506a5b">&#9670;&#160;</a></span>removeBoundaryContributions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; removeBoundaryContributions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lsIn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
+
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00386">386</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a3cbcffeb30c8d18244b185c398228bc5" name="a3cbcffeb30c8d18244b185c398228bc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cbcffeb30c8d18244b185c398228bc5">&#9670;&#160;</a></span>scaledInvDiagNegLUx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void scaledInvDiagNegLUx </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; Vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Vector&lt; Vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Vector&lt; Vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>aBound</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const UnstructuredMesh &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Vector&lt; scalar &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rAU</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Vector&lt; Vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00412">412</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
