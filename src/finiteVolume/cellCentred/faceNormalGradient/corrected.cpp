@@ -7,6 +7,7 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/processorGradientHalo.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -79,21 +80,36 @@ void computeCorrectedFaceNormalGrad(
             "computeCorrectedFaceNormalGradBoundary"
         );
 
+#ifdef NF_WITH_MPI_SUPPORT
+        // Processor faces: full non-orthogonal correction, matching OpenFOAM (v2b / N4):
+        //   snGrad = nonOrthDeltaCoeffs*(phiNei - phiOwn) + corrVec . interpolate(grad).
+        // The interpolated cell gradient needs the neighbour cell gradient across the rank
+        // boundary, which is halo-exchanged here.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {
+            const auto gradNei =
+                detail::exchangeProcNeighbourGradient(exec, mesh, gradPhi.internalVector());
+            const auto [weightsB, corrVecB, gradNeiV] = views(
+                geometryScheme->weights().boundaryData().value(),
+                geometryScheme->nonOrthCorrectionVec3s().boundaryData().value(),
+                gradNei
+            );
             NeoN::parallelFor(
                 exec,
                 {0, nProcBoundaryFaces},
                 NEON_LAMBDA(const localIdx procFacei) {
                     auto bcfacei = nBoundaryFaces + procFacei;
                     auto own = boundaryFaceOwners[bcfacei];
-                    phifB[bcfacei] =
-                        nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    scalar ortho = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    Vec3 interpGrad = weightsB[bcfacei] * gradPhiV[own]
+                                    + (scalar(1) - weightsB[bcfacei]) * gradNeiV[procFacei];
+                    phifB[bcfacei] = ortho + (interpGrad & corrVecB[bcfacei]);
                 },
                 "computeCorrectedFaceNormalGradProcBoundary"
             );
         }
+#endif
     }
     else if constexpr (std::is_same_v<ValueType, Vec3>)
     {
@@ -154,25 +170,35 @@ void computeCorrectedFaceNormalGrad(
             "computeCorrectedFaceNormalGradBoundaryVec3"
         );
 
-        // Processor-boundary parity with the scalar path (review N3). Applies the
-        // orthogonal part only — the non-orthogonal correction at proc faces is
-        // deferred (review N4): the producer leaves proc-corrVec at zero, so this
-        // is self-consistent. See FaceNormalGradient header for the contract.
+#ifdef NF_WITH_MPI_SUPPORT
+        // Processor faces: full non-orthogonal correction (v2b / N4), matching OpenFOAM's
+        // component-wise corrected snGrad. interpGrad is the interpolated cell gradient tensor;
+        // the neighbour gradient is halo-exchanged. (interpGrad & corrVec) is a Vec3.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {
+            const auto gradNei =
+                detail::exchangeProcNeighbourGradient(exec, mesh, gradPhi.internalVector());
+            const auto [weightsB, corrVecB, gradNeiV] = views(
+                geometryScheme->weights().boundaryData().value(),
+                geometryScheme->nonOrthCorrectionVec3s().boundaryData().value(),
+                gradNei
+            );
             NeoN::parallelFor(
                 exec,
                 {0, nProcBoundaryFaces},
                 NEON_LAMBDA(const localIdx procFacei) {
                     auto bcfacei = nBoundaryFaces + procFacei;
                     auto own = boundaryFaceOwners[bcfacei];
-                    phifB[bcfacei] =
-                        nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    Vec3 ortho = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    Tensor interpGrad = weightsB[bcfacei] * gradPhiV[own]
+                                      + (scalar(1) - weightsB[bcfacei]) * gradNeiV[procFacei];
+                    phifB[bcfacei] = ortho + (interpGrad & corrVecB[bcfacei]);
                 },
                 "computeCorrectedFaceNormalGradProcBoundaryVec3"
             );
         }
+#endif
     }
 }
 

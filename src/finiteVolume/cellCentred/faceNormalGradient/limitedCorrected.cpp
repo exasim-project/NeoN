@@ -7,6 +7,7 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp"
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/processorGradientHalo.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -92,21 +93,41 @@ void computeLimitedCorrectedFaceNormalGrad(
             "computeLimitedCorrectedFaceNormalGradBoundary"
         );
 
+#ifdef NF_WITH_MPI_SUPPORT
+        // Processor faces: full limited non-orthogonal correction (v2b / N4), matching OpenFOAM.
+        // Same form as the internal loop, with the neighbour cell gradient halo-exchanged.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {
+            const auto gradNei =
+                detail::exchangeProcNeighbourGradient(exec, mesh, gradPhi.internalVector());
+            const auto [weightsB, corrVecB, gradNeiV] = views(
+                geometryScheme->weights().boundaryData().value(),
+                geometryScheme->nonOrthCorrectionVec3s().boundaryData().value(),
+                gradNei
+            );
             NeoN::parallelFor(
                 exec,
                 {0, nProcBoundaryFaces},
                 NEON_LAMBDA(const localIdx procFacei) {
                     auto bcfacei = nBoundaryFaces + procFacei;
                     auto own = boundaryFaceOwners[bcfacei];
-                    phifB[bcfacei] =
-                        nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    scalar ortho = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    Vec3 interpGrad = weightsB[bcfacei] * gradPhiV[own]
+                                    + (scalar(1) - weightsB[bcfacei]) * gradNeiV[procFacei];
+                    scalar corr = corrVecB[bcfacei] & interpGrad;
+                    scalar absCorr = std::abs(corr);
+                    scalar limiter =
+                        (absCorr > scalar(0)) ? std::min(
+                            lc * std::abs(ortho) / (oneMinusLc * absCorr + ROOTVSMALL), scalar(1)
+                        )
+                                              : scalar(1);
+                    phifB[bcfacei] = ortho + limiter * corr;
                 },
                 "computeLimitedCorrectedFaceNormalGradProcBoundary"
             );
         }
+#endif
     }
     else if constexpr (std::is_same_v<ValueType, Vec3>)
     {
@@ -178,25 +199,41 @@ void computeLimitedCorrectedFaceNormalGrad(
             "computeLimitedCorrectedFaceNormalGradBoundaryVec3"
         );
 
-        // Processor-boundary parity with the scalar path (review N3). Orthogonal
-        // part only; non-orth proc correction deferred (review N4). The limiter
-        // applies only to the internal correction, so proc faces reduce to the
-        // uncorrected form exactly as in the scalar path.
+#ifdef NF_WITH_MPI_SUPPORT
+        // Processor faces: full limited non-orthogonal correction (v2b / N4), matching OpenFOAM's
+        // component-wise corrected snGrad. Neighbour gradient tensor halo-exchanged.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {
+            const auto gradNei =
+                detail::exchangeProcNeighbourGradient(exec, mesh, gradPhi.internalVector());
+            const auto [weightsB, corrVecB, gradNeiV] = views(
+                geometryScheme->weights().boundaryData().value(),
+                geometryScheme->nonOrthCorrectionVec3s().boundaryData().value(),
+                gradNei
+            );
             NeoN::parallelFor(
                 exec,
                 {0, nProcBoundaryFaces},
                 NEON_LAMBDA(const localIdx procFacei) {
                     auto bcfacei = nBoundaryFaces + procFacei;
                     auto own = boundaryFaceOwners[bcfacei];
-                    phifB[bcfacei] =
-                        nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    Vec3 ortho = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                    Tensor interpGrad = weightsB[bcfacei] * gradPhiV[own]
+                                      + (scalar(1) - weightsB[bcfacei]) * gradNeiV[procFacei];
+                    Vec3 corr = interpGrad & corrVecB[bcfacei];
+                    scalar absCorr = mag(corr);
+                    scalar limiter =
+                        (absCorr > scalar(0)) ? std::min(
+                            lc * mag(ortho) / (oneMinusLc * absCorr + ROOTVSMALL), scalar(1)
+                        )
+                                              : scalar(1);
+                    phifB[bcfacei] = ortho + limiter * corr;
                 },
                 "computeLimitedCorrectedFaceNormalGradProcBoundaryVec3"
             );
         }
+#endif
     }
 }
 

@@ -49,14 +49,12 @@ public:
 
     virtual ~FaceNormalGradientFactory() {} // Virtual destructor
 
-    // Processor-boundary semantics (review N3/N4): at processor faces every scheme
-    // (uncorrected, corrected, limitedCorrected) applies the orthogonal part only,
-    //   snGrad = deltaCoeffs * (phiNei - phiOwn),
-    // and the scalar and Vec3 code paths are kept in parity. The non-orthogonal
-    // correction across rank boundaries is NOT applied: the producer
-    // (BasicGeometryScheme) leaves processor-face correction vectors at zero, so
-    // producer and consumer are self-consistent. Recovering the proc non-orth
-    // correction needs the neighbour cell centre exchanged and is deferred.
+    // Processor-boundary semantics (review N3/N4, v2a/v2b): processor faces are treated like
+    // internal faces, matching OpenFOAM's coupled-patch snGrad. uncorrected uses the exact
+    // owner-to-neighbour deltaCoeffs 1/|Cnei - Cown| (v2a); corrected and limitedCorrected
+    // additionally apply the non-orthogonal correction corrVec . interpolate(grad). This needs
+    // the neighbour cell centre (producer, BasicGeometryScheme) and the neighbour cell gradient
+    // (consumer) halo-exchanged across the rank boundary. Scalar and Vec3 paths are in parity.
     virtual void faceNormalGrad(
         const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const = 0;
