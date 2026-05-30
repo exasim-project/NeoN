@@ -94,7 +94,7 @@ void computeLimitedCorrectedFaceNormalGrad(
         );
 
 #ifdef NF_WITH_MPI_SUPPORT
-        // Processor faces: full limited non-orthogonal correction (v2b / N4), matching OpenFOAM.
+        // Processor faces: full limited non-orthogonal correction (v2b / N4).
         // Same form as the internal loop, with the neighbour cell gradient halo-exchanged.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
@@ -200,8 +200,8 @@ void computeLimitedCorrectedFaceNormalGrad(
         );
 
 #ifdef NF_WITH_MPI_SUPPORT
-        // Processor faces: full limited non-orthogonal correction (v2b / N4), matching OpenFOAM's
-        // component-wise corrected snGrad. Neighbour gradient tensor halo-exchanged.
+        // Processor faces: full limited non-orthogonal correction (v2b / N4), the component-wise
+        // corrected snGrad. Neighbour gradient tensor halo-exchanged.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {

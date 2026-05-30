@@ -98,8 +98,7 @@ Vector<GradType> exchangeProcNeighbourGradient(
             &requests[2 * p + 1]
         );
     }
-    if (!requests.empty())
-        MPI_Waitall(static_cast<int>(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
+    mpi::waitAll(requests);
 
     std::vector<GradType> neiGrad(static_cast<std::size_t>(nProcFaces));
     for (localIdx i = 0; i < nProcFaces; ++i)

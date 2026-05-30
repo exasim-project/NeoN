@@ -15,7 +15,7 @@ namespace NeoN::finiteVolume::cellCentred
 
 // Over-relaxed non-orthogonal correction clamp factor (review L1): bounds
 // nonOrthDeltaCoeffs away from a vanishing denominator on highly skewed faces.
-// Matches OpenFOAM's surfaceInterpolation default.
+// 0.05 is the conventional over-relaxed non-orthogonal clamp value.
 constexpr scalar nonOrthDeltaClamp = 0.05;
 
 #ifdef NF_WITH_MPI_SUPPORT
@@ -114,8 +114,7 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
             &requests[2 * p + 1]
         );
     }
-    if (!requests.empty())
-        MPI_Waitall(static_cast<int>(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
+    mpi::waitAll(requests);
 
     // M6: allocate the result directly on exec from the host buffer (no SerialExecutor detour)
     return Vector<scalar>(exec, dNei);
@@ -195,8 +194,7 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
             &requests[2 * p + 1]
         );
     }
-    if (!requests.empty())
-        MPI_Waitall(static_cast<int>(requests.size()), requests.data(), MPI_STATUSES_IGNORE);
+    mpi::waitAll(requests);
 
     std::vector<Vec3> neiCentre(static_cast<std::size_t>(nProcFaces));
     for (localIdx i = 0; i < nProcFaces; ++i)
@@ -333,7 +331,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(const Executor& exec, SurfaceField<s
     if (nProcBoundaryFaces > 0)
     {
         // Exact processor-boundary deltaCoeffs (review v2a / GEOM-03): the orthogonal
-        // deltaCoeffs is 1/|Cnei - Cown| across the rank boundary (OpenFOAM's coupled
+        // deltaCoeffs is 1/|Cnei - Cown| across the rank boundary (the coupled-patch
         // deltaCoeffs). Exchanging the neighbour cell centre makes this exact on
         // non-orthogonal processor faces too (previously a face-normal projection was used).
         const auto Cnei = exchangeProcNeighbourCellCentre(exec, mesh_);

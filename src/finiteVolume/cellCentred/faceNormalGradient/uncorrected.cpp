@@ -22,9 +22,9 @@ void computeFaceNormalGrad(
     const auto [owners, neighbors, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-    // OpenFOAM's uncorrectedSnGrad uses nonOrthDeltaCoeffs (1/(n.d)) — verified against the OF
-    // source (uncorrectedSnGrad returns mesh().nonOrthDeltaCoeffs()). The review's N2 claim that
-    // OF uses the orthogonal 1/|d| was incorrect; NeoN's original behaviour already matched OF.
+    // The uncorrected surface-normal gradient uses nonOrthDeltaCoeffs (1/(n.d)), the over-relaxed
+    // face-normal distance, NOT the orthogonal 1/|d|. On a non-orthogonal mesh 1/(n.d) is the
+    // consistent first-order normal-gradient coefficient; the two coincide on orthogonal meshes.
     const auto [phif, phifB, phi, phiBCValue, deltaCoeffs, deltaCoeffsB] = views(
         surfaceVector.internalVector(),
         surfaceVector.boundaryData().value(),

@@ -59,9 +59,9 @@ void computeLaplacianExp(
     );
 
     // Physical (non-proc) boundary faces: only the owner cell is on this rank.
-    // For non-proc patches, OpenFOAM's full face index and NeoN's compressed
-    // index agree (empty patches like defaultFaces have size()==0 in fvPatch),
-    // so faceAreas[i] = mesh.magFaceAreas()[i] is correct here.
+    // For non-proc patches the mesh's full face index and NeoN's compressed
+    // boundary index agree (empty patches contribute zero faces),
+    // so bFaceAreas[bfi] = mesh.magFaceAreas()[bfi] is correct here.
     const auto bFaceAreas = mesh.boundaryMesh().faceAreas().view();
     parallelFor(
         exec,

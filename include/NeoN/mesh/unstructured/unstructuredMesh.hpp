@@ -318,10 +318,10 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
  */
 UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells, scalar lx = 1.0);
 
-/** @brief A factory function for a 2D uniform mesh (OpenFOAM-style hex slab)
+/** @brief A factory function for a 2D uniform mesh (single-layer hex slab)
  *
  * Creates an nx × ny × 1 structured hex mesh on [0,Lx] × [0,Ly] × [0,1].
- * One cell thick in z, like OpenFOAM 2D meshes.
+ * One cell thick in z, the standard quasi-2D finite-volume convention.
  * Four boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly)
  */
 UnstructuredMesh create2DUniformMesh(

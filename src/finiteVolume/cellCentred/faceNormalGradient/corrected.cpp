@@ -81,7 +81,7 @@ void computeCorrectedFaceNormalGrad(
         );
 
 #ifdef NF_WITH_MPI_SUPPORT
-        // Processor faces: full non-orthogonal correction, matching OpenFOAM (v2b / N4):
+        // Processor faces: full non-orthogonal correction (v2b / N4):
         //   snGrad = nonOrthDeltaCoeffs*(phiNei - phiOwn) + corrVec . interpolate(grad).
         // The interpolated cell gradient needs the neighbour cell gradient across the rank
         // boundary, which is halo-exchanged here.
@@ -171,8 +171,8 @@ void computeCorrectedFaceNormalGrad(
         );
 
 #ifdef NF_WITH_MPI_SUPPORT
-        // Processor faces: full non-orthogonal correction (v2b / N4), matching OpenFOAM's
-        // component-wise corrected snGrad. interpGrad is the interpolated cell gradient tensor;
+        // Processor faces: full non-orthogonal correction (v2b / N4), the component-wise
+        // corrected snGrad. interpGrad is the interpolated cell gradient tensor;
         // the neighbour gradient is halo-exchanged. (interpGrad & corrVec) is a Vec3.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)

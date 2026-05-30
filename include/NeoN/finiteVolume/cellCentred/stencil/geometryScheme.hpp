@@ -77,9 +77,9 @@ public:
 
     // Orthogonal inverse cell-to-cell distance, 1/|d|. NOTE: this has no production consumer
     // today — all snGrad schemes (uncorrected/corrected/limitedCorrected) use nonOrthDeltaCoeffs
-    // to match OpenFOAM (the review's N1/N2 premise that 'uncorrected' should expose 1/|d| was
-    // incorrect; see uncorrected.cpp). It is still computed and exposed for API completeness and
-    // potential future consumers; on orthogonal meshes it equals nonOrthDeltaCoeffs.
+    // (1/(n.d)), which is the consistent normal-gradient coefficient on non-orthogonal meshes
+    // (see uncorrected.cpp). It is still computed and exposed for API completeness and potential
+    // future consumers; on orthogonal meshes it equals nonOrthDeltaCoeffs.
     const SurfaceField<scalar>& deltaCoeffs() const;
 
     const SurfaceField<scalar>& nonOrthDeltaCoeffs() const;

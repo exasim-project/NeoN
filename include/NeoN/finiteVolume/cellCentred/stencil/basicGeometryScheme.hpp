@@ -17,14 +17,20 @@ namespace NeoN::finiteVolume::cellCentred
  *  @brief Default GeometryScheme kernel: computes weights, deltaCoeffs, nonOrthDeltaCoeffs and
  *  the non-orthogonal correction vectors directly from the mesh geometry.
  *
- *  Assumptions baked into this kernel (review L8):
- *   - deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d| (matches OpenFOAM's
- *     uncorrectedSnGrad); nonOrthDeltaCoeffs is the over-relaxed 1/(n.d) floored by
- *     nonOrthDeltaClamp.
+ *  Scheme definitions baked into this kernel:
+ *   - deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d|; nonOrthDeltaCoeffs is the
+ *     over-relaxed inverse face-normal distance 1/(n.d), floored by nonOrthDeltaClamp. The snGrad
+ *     schemes consume nonOrthDeltaCoeffs; deltaCoeffs has no production consumer today (see
+ *     GeometryScheme::deltaCoeffs) and equals nonOrthDeltaCoeffs on orthogonal meshes.
  *   - boundary weights are 1 (one-sided physical patches); processor weights are dN/(dO+dN).
- *   - processor-boundary deltaCoeffs/nonOrthDeltaCoeffs use the face-normal-projected
- *     owner+neighbour distance (exact on orthogonal proc faces); the non-orthogonal correction
- *     is not applied at processor faces (see FaceNormalGradient docs).
+ *   - processor-boundary deltaCoeffs are 1/|Cnei - Cown| using the neighbour cell centre Cnei
+ *     halo-exchanged across the rank boundary, so they are exact on non-orthogonal processor faces
+ *     too; processor nonOrthDeltaCoeffs are 1/(dO+dN) from the exchanged owner face-normal
+ *     distances.
+ *   - non-orthogonal correction vectors are zero on physical (one-sided) boundary faces, but
+ *     non-zero on non-orthogonal processor faces: a processor face has a real neighbour cell, so
+ *     the corrected/limited snGrad applies the full correction there (it vanishes on orthogonal
+ *     processor faces). See FaceNormalGradient docs.
  *
  *  Marked final to enable devirtualisation of the kernel calls in GeometryScheme::update().
  */
