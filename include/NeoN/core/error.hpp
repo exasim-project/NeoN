@@ -20,6 +20,7 @@
 // #include <source_location>
 // #include <experimental/source_location>
 
+// #include "logging.hpp"
 #include "info.hpp"
 
 #ifdef NF_DEBUG_MESSAGING
@@ -98,12 +99,13 @@ private:
  * @param message The error message to be printed.
  */
 
-#ifdef NF_WITH_MPI_SUPPORT
+#if defined(NF_WITH_MPI_SUPPORT) && defined(NF_DEBUG_MESSAGING)
 #define NF_ERROR_EXIT(message)                                                                     \
     do                                                                                             \
     {                                                                                              \
-        std::cerr << NF_ERROR_MESSAGE(message);                                                    \
-        MPI_Abort(MPI_COMM_WORLD, 1);                                                              \
+        std::cout << "Error in: " << __FILE__ << ":" << __LINE__ << " " << message << "\n";        \
+        cpptrace::generate_trace().print();                                                        \
+        /*MPI_Abort(MPI_COMM_WORLD, 1); */                                                         \
     }                                                                                              \
     while (false)
 #else
@@ -146,7 +148,10 @@ private:
     {                                                                                              \
         if (!(condition)) [[unlikely]]                                                             \
         {                                                                                          \
-            NF_ERROR_EXIT("Assertion `" #condition "` failed.\n       " << message);               \
+            NF_ERROR_EXIT(                                                                         \
+                "Assertion `" #condition " in " << __FILE__ << ":" << __LINE__                     \
+                                                << "` failed.\n       " << message                 \
+            );                                                                                     \
         }                                                                                          \
     }                                                                                              \
     while (false)
