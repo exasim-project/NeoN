@@ -147,6 +147,34 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         NEON_LAMBDA(const localIdx bfi) { weightB[bfi] = 1.0; },
         "basicGeometricScheme::updateWeightsBoundary"
     );
+#ifdef NF_WITH_MPI_SUPPORT
+    const auto nBoundaryFaces = mesh_.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto surfFaceCells = mesh_.boundaryMesh().faceOwners().view();
+        const auto bFaceCenters = mesh_.boundaryMesh().faceCenters().view();
+        const auto bFaceNormals = mesh_.boundaryMesh().faceNormals().view();
+        const auto bFaceAreas = mesh_.boundaryMesh().faceAreas().view();
+        // dNei[procFacei] == |n & (Cf - Cnei)| received from the neighbouring rank
+        const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
+        const auto dNeiView = dNei.view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const localIdx bfi = nBoundaryFaces + procFacei;
+                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+                const Vec3 co = cellCenters[surfFaceCells[bfi]];
+                const scalar dOwn = std::abs(n & (bFaceCenters[bfi] - co));
+                const scalar dNeiF = dNeiView[procFacei];
+                const scalar sum = dOwn + dNeiF;
+                weightB[bfi] = (sum > ROOTVSMALL) ? dNeiF / sum : 0.5;
+            },
+            "basicGeometricScheme::updateWeightsProcBoundary"
+        );
+    }
+#endif
 }
 
 void BasicGeometryScheme::updateDeltaCoeffs(
@@ -157,7 +185,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         views(mesh_.faceOwners(), mesh_.faceNeighbors(), mesh_.boundaryMesh().faceOwners());
 
 
-    const auto [faceCenters, cellCenters] = views(mesh_.faceCenters(), mesh_.cellCenters());
+    const auto [faceCenters, cellCenters] =
+        views(mesh_.boundaryMesh().faceCenters(), mesh_.cellCenters());
 
     auto deltaCoeff = deltaCoeffs.internalVector().view();
     auto deltaCoeffB = deltaCoeffs.boundaryData().value().view();
@@ -169,7 +198,7 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
             Vec3 cellToCellDist = cellCenters[neighbors[facei]] - cellCenters[owners[facei]];
-            deltaCoeff[facei] = 1.0 / mag(cellToCellDist);
+            deltaCoeff[facei] = 1.0 / std::max(mag(cellToCellDist), scalar(ROOTVSMALL));
         },
         "basicGeometricScheme::updateDeltaCoeffsInternal"
     );
@@ -180,8 +209,8 @@ void BasicGeometryScheme::updateDeltaCoeffs(
         NEON_LAMBDA(const localIdx bfi) {
             auto own = surfFaceCells[bfi];
             // TODO Issue #515
-            Vec3 cellToCellDist = faceCenters[nInternalFaces + bfi] - cellCenters[own];
-            deltaCoeffB[bfi] = 1.0 / mag(cellToCellDist);
+            Vec3 cellToFaceDist = faceCenters[bfi] - cellCenters[own];
+            deltaCoeffB[bfi] = 1.0 / std::max(mag(cellToFaceDist), scalar(ROOTVSMALL));
         },
         "basicGeometricScheme::updateDeltaCoeffsBoundary"
     );
@@ -237,17 +266,19 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
     const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
     {
-        const auto bFaceCenters = mesh_.boundaryMesh().faceCenters().view();
-        const auto bFaceNormals = mesh_.boundaryMesh().faceNormals().view();
-        const auto bFaceAreas = mesh_.boundaryMesh().faceAreas().view();
         const auto dNei = exchangeProcOwnerDistance(exec, mesh_);
         const auto dNeiView = dNei.view();
+        const auto [bFaceNormals, bFaceArea, bFaceCenters] = views(
+            mesh_.boundaryMesh().faceNormals(),
+            mesh_.boundaryMesh().faceAreas(),
+            mesh_.boundaryMesh().faceCenters()
+        );
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
                 const localIdx bfi = nBoundaryFaces + procFacei;
-                const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
+                const Vec3 n = (1.0 / bFaceArea[bfi]) * bFaceNormals[bfi];
                 const Vec3 co = cellCenters[surfFaceCells[bfi]];
                 const scalar dOwn = std::abs(n & (bFaceCenters[bfi] - co));
                 nonOrthDeltaCoeffB[bfi] =

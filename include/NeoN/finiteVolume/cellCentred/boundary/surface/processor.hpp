@@ -43,6 +43,7 @@ public:
     {
         detail::setProcBoundaryValue(domainVector, mesh_, this->range());
 #ifdef NF_WITH_MPI_SUPPORT
+        fence(domainVector.exec());
         const int neighborRank =
             static_cast<int>(mesh_.boundaryMesh().neighbourRankForRange(this->range()));
         domainVector.boundaryData().communicate(this->range(), neighborRank);

@@ -35,7 +35,7 @@ la::SolverStats iterativeSolveImpl(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
+    std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
     exp.read(fvSchemes);
@@ -67,7 +67,7 @@ la::SolverStats iterativeSolveImpl(
     scalar t,
     scalar dt,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
+    std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
     auto ls = exp.assemble(solution.mesh(), t, dt, ps);
@@ -107,7 +107,7 @@ la::SolverStats solve(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> p = {}
+    std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> p = {}
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)

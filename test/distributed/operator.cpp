@@ -69,12 +69,14 @@ TEST_CASE("Distributed Operator")
     // assembly on global mesh
     auto expr = dsl::imp::div(phi, u) - dsl::imp::laplacian(gamma, u);
     expr.read(input);
-    auto ls = expr.assemble(mesh, 1.0, 1.0);
+    dsl::SetReference<scalar, localIdx> setRef(0, 0.0);
+    auto ls = expr.assemble(mesh, 1.0, 1.0, {&setRef});
 
     NeoN::mpi::Environment mpiEnviron;
     auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
 
     auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto pPart = detail::oneDPartitionField(p, meshPart, mpiEnviron);
     auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
     auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
 
@@ -82,7 +84,7 @@ TEST_CASE("Distributed Operator")
 
     exprDist.read(inputPart);
 
-    auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0);
+    auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0, {&setRef});
 
     fill(ls.rhs(), 2.0);
     fill(lsDst.rhs(), 2.0);
@@ -157,8 +159,8 @@ TEST_CASE("Distributed Operator")
 #if NF_WITH_GINKGO
     Dictionary solverDict {
         {{"solver", std::string {"Ginkgo"}},
-         {"type", "solver::Cg"},
-         {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+         {"type", "solver::Gmres"},
+         {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-7}}}}}
     };
 
     auto solver = NeoN::la::Solver(exec, solverDict);
@@ -171,14 +173,23 @@ TEST_CASE("Distributed Operator")
     auto solverStats = solver.solve(ls, x);
     auto solverStatsDist = solver.solve(lsDst, xPart);
 
-    auto [numIterDist, initResNormDist, finalResNormDist, solveTimeDist] =
-        solverStatsDist.entries[0];
-    auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+    scalar finalResNorm = solverStats.entries[0].finalResNorm;
+    scalar finalResNormDist = solverStatsDist.entries[0].finalResNorm;
 
-    // TODO: add solution and residual norm checks once MPI-distributed Ginkgo solve is supported.
-    // The local solver operates per-rank; a global distributed solve requires MPI communication
-    // during CG iterations which is not yet implemented.
-    REQUIRE(numIterDist != 0);
+    REQUIRE(finalResNormDist == Catch::Approx(finalResNorm).margin(1e-6));
+
+    SECTION_IF(mpiEnviron.rank() == 0, "Correct solution on rank 0")
+    {
+        REQUIRE_THAT(xPart, Equals(take(x, {0, 4}), Approx {1e-4}));
+    }
+    SECTION_IF(mpiEnviron.rank() == 1, "Correct solution on rank 1")
+    {
+        REQUIRE_THAT(xPart, Equals(take(x, {4, 8}), Approx {1e-4}));
+    }
+    SECTION_IF(mpiEnviron.rank() == 2, "Correct solution on rank 2")
+    {
+        REQUIRE_THAT(xPart, Equals(take(x, {8, 12}), Approx {1e-4}));
+    }
 #endif
 }
 

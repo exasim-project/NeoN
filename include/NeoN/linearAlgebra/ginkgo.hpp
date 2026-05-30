@@ -27,10 +27,54 @@ std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
 gko::config::pnode parse(const Dictionary& dict);
 
-
 /** @brief create a ginkgo matrix by creating views */
 template<typename NeoNMatrixType>
 std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
+
+template<typename T>
+gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
+{
+    return gko::make_array_view(exec, values.size(), values.data());
+}
+
+/** @brief Non-owning mutable Dense view; 1 column for scalar*, 3 columns for Vec3* */
+template<typename T>
+std::shared_ptr<gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, T* ptr, localIdx s)
+{
+    constexpr std::size_t cols = std::is_same_v<T, Vec3> ? 3 : 1;
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(gko::matrix::Dense<scalar>::create(
+        exec,
+        gko::dim<2> {size, cols},
+        gkoArrayView<scalar>(exec, std::span<scalar> {reinterpret_cast<scalar*>(ptr), cols * size}),
+        cols
+    ));
+}
+
+/** @brief Non-owning const Dense view; 1 column for scalar*, 3 columns for Vec3* */
+template<typename T>
+std::shared_ptr<const gko::matrix::Dense<scalar>>
+gkoVecView(std::shared_ptr<const gko::Executor> exec, const T* ptr, localIdx s)
+{
+    constexpr std::size_t cols = std::is_same_v<T, Vec3> ? 3 : 1;
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(gko::matrix::Dense<scalar>::create_const(
+        exec,
+        gko::dim<2> {size, cols},
+        gko::array<scalar>::const_view(exec, cols * size, reinterpret_cast<const scalar*>(ptr)),
+        cols
+    ));
+}
+
+/** @brief retrieve a scalar value from a ginkgo dense matrix on any executor */
+template<typename InType>
+scalar retrieve(const InType& in)
+{
+    using vec = gko::matrix::Dense<scalar>;
+    auto host = vec::create(in->get_executor()->get_master(), gko::dim<2> {1});
+    return host->copy_from(in)->at(0);
+}
 
 class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 {
@@ -60,6 +104,22 @@ public:
 
     virtual SolverStats
     solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const final;
+
+    virtual SolverStats solve(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&
+            sys,
+        Vector<Vec3>& x
+    ) const final;
+
+#ifdef NF_WITH_MPI_SUPPORT
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
+
+    virtual SolverStats solveDist(
+        const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+    ) const final;
+#endif
 
     // TODO why use a smart pointer here?
     virtual std::unique_ptr<SolverFactory> clone() const final
