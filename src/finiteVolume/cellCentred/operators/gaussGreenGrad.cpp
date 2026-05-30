@@ -310,6 +310,36 @@ void computeGradTensor(
         "computeGradTensorBoundary"
     );
 
+    // Processor faces: add the proc-face flux to the owner cell's gradient, exactly as the scalar
+    // computeGradScalar does. This block was MISSING from the tensor path, so the cell gradient at
+    // every processor-adjacent cell omitted its proc-face contribution — corrupting the Vec3
+    // corrected/limited snGrad at proc-adjacent internal faces (the uncorrected scheme, which does
+    // not use the cell gradient, was unaffected). Proc faces are compressed: use the boundary
+    // mesh's own faceNormals indexed by nBoundaryFaces+procFacei, NOT the OF-full SfAll.
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bSf = mesh.boundaryMesh().faceNormals().view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bcfacei = nBnd + procFacei;
+                const auto o = bFaceCells[bcfacei];
+                const Vec3 sf = bSf[bcfacei];
+                const Vec3 faceU = ufBound[bcfacei];
+                for (size_t row = 0; row < 3; ++row)
+                {
+                    for (size_t col = 0; col < 3; ++col)
+                    {
+                        atomicAddTensor(&gT[o], row, col, sf[col] * faceU[row]);
+                    }
+                }
+            },
+            "computeGradTensorProcBoundary"
+        );
+    }
+
     parallelFor(
         exec,
         {0, mesh.nCells()},

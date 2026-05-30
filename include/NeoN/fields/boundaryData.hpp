@@ -11,6 +11,8 @@
 
 #include <vector>
 #include <utility>
+#include <cstdio>
+#include <algorithm>
 
 #ifdef NF_WITH_MPI_SUPPORT
 #include <mpi.h>
@@ -121,6 +123,18 @@ public:
         waitAll();
         return value_;
     }
+
+    /**
+     * @brief Non-draining access to the value storage.
+     * @warning Does NOT call waitAll(), so any in-flight processor-halo exchange is left pending.
+     * Used by the processor boundary condition to SEED the owner value before posting its
+     * isend/irecv: seeding must NOT drain a previous patch's exchange, because completing and
+     * clearing the comm buffers patch-by-patch (mid correctBoundaryConditions loop) serialises the
+     * halo exchange and, on a rank with two proc patches, leaves the second patch's recv
+     * unmatched — the halo then silently keeps its owner seed. All patches must post first; the
+     * single waitAll() triggered by the next real value() read then completes them together.
+     */
+    Vector<ValueType>& valueNoWait() { return value_; }
 
     /** @copydoc BoundaryData::refValue()*/
     const Vector<ValueType>& refValue() const { return refValue_; }
@@ -233,6 +247,22 @@ public:
             static_cast<mpi_label_t>(patchSize) * static_cast<mpi_label_t>(sizeof(ValueType));
         const auto neighborRankLabel = static_cast<mpi_label_t>(neighborRank);
 
+        // Deterministic, symmetric tag for the processor patch shared by (myRank, neighborRank).
+        // Previously EVERY patch was posted with tag 0; a rank with two proc patches (e.g. the
+        // middle/scotch-shared rank) then has two distinct send/recv pairs that MPI matches only by
+        // (peer-rank, tag). The per-patch eager waitAll() (triggered when the next patch's
+        // setProcBoundaryValue reads boundaryData().value()) serialises the exchange
+        // patch-by-patch; under tag 0 the SECOND patch's irecv then completes against a
+        // stale/unexpected message and the halo silently keeps its owner seed (the deterministic
+        // "first patch OK, second patch no-op" failure observed on scotch / Y-split cuts). A unique
+        // tag per unordered rank pair, identical on both sides, makes each isend/irecv match its
+        // true partner regardless of posting order. min*P+max is symmetric so both ranks of the
+        // pair compute the same tag.
+        const auto nProcs = static_cast<mpi_label_t>(mpiEnv.sizeRank());
+        const auto myRankLabel = static_cast<mpi_label_t>(mpiEnv.rank());
+        const mpi_label_t pairTag = std::min(myRankLabel, neighborRankLabel) * nProcs
+                                  + std::max(myRankLabel, neighborRankLabel);
+
         const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
 
         MPI_Request sendReq, recvReq;
@@ -243,7 +273,7 @@ public:
                 reinterpret_cast<const char*>(value_.data() + rangeStart),
                 byteCount,
                 neighborRankLabel,
-                0,
+                pairTag,
                 mpiEnv.comm(),
                 &sendReq
             );
@@ -251,7 +281,7 @@ public:
                 reinterpret_cast<char*>(buf.deviceRecvBuf->data()),
                 byteCount,
                 neighborRankLabel,
-                0,
+                pairTag,
                 mpiEnv.comm(),
                 &recvReq
             );
@@ -267,7 +297,7 @@ public:
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
                 byteCount,
                 neighborRankLabel,
-                0,
+                pairTag,
                 mpiEnv.comm(),
                 &sendReq
             );
@@ -275,7 +305,7 @@ public:
                 reinterpret_cast<char*>(buf.recvBuf.data()),
                 byteCount,
                 neighborRankLabel,
-                0,
+                pairTag,
                 mpiEnv.comm(),
                 &recvReq
             );

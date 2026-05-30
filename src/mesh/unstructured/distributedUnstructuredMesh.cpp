@@ -483,6 +483,13 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     const auto nInnerBoundaries =
         mesh.boundaryMesh().nBoundaries() - mesh.boundaryMesh().nProcBoundaryPatches();
 
+    // Per-proc-patch face count (in fvBoundaryMesh proc-patch / offset order).
+    auto patchSizes = std::vector<int>(neighbourRanks.size(), 0);
+
+    // ACCUMULATE per target rank. A single rank may own more than one proc patch to the SAME
+    // neighbour rank (typical on the middle rank of a Y-split / sheared cut); the previous code
+    // assigned sendCounts[targetRank] = patchSize, silently overwriting the first patch's count
+    // with the second. allToAllV needs the TOTAL count per peer, so accumulate with +=.
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
         const auto targetRank = static_cast<int>(neighbourRanks[static_cast<std::size_t>(i)]);
@@ -490,27 +497,45 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
             offsets[static_cast<std::size_t>(nInnerBoundaries + i + 1)]
             - offsets[static_cast<std::size_t>(nInnerBoundaries + i)]
         );
-        sendCounts[static_cast<std::size_t>(targetRank)] = patchSize;
+        patchSizes[static_cast<std::size_t>(i)] = patchSize;
+        sendCounts[static_cast<std::size_t>(targetRank)] += patchSize;
         sendCounts[static_cast<std::size_t>(mpiEnviron.sizeRank())] += patchSize;
     }
 
     const auto globalOffset = mesh.globalOffset();
     const auto faceCellsH = mesh.boundaryMesh().faceOwners().copyToHost();
 
-    auto buffer = std::vector<localIdx>();
-    buffer.reserve(static_cast<std::size_t>(mesh.boundaryMesh().nProcBoundaryFaces()));
-    const auto procStart = offsets[static_cast<std::size_t>(nInnerBoundaries)];
-    for (int i = 0; i < mesh.boundaryMesh().nProcBoundaryFaces(); i++)
+    // Send-displacement = prefix sum of per-rank send counts. This defines a contiguous block per
+    // peer in the send buffer, so a peer that receives from two non-adjacent proc patches still
+    // gets a single contiguous run (allToAllV cannot express a gapped per-peer region).
+    auto sdispl = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
+    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
     {
-        buffer.push_back(faceCellsH.view()[i + procStart] + globalOffset);
+        sdispl[static_cast<std::size_t>(r)] =
+            sdispl[static_cast<std::size_t>(r - 1)] + sendCounts[static_cast<std::size_t>(r - 1)];
     }
 
-    auto sdispl = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
+    // Pack the send buffer GROUPED BY TARGET RANK, honouring sdispl. A per-rank write cursor lets
+    // multiple proc patches to the same neighbour land contiguously (in proc-patch order) within
+    // that rank's block.
+    auto writeCursor = sdispl; // copy: running write position per rank
+    std::vector<int> sendBuffer(
+        static_cast<std::size_t>(sendCounts[static_cast<std::size_t>(mpiEnviron.sizeRank())])
+    );
+    const auto faceCellsView = faceCellsH.view();
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
-        const auto targetRank = static_cast<int>(neighbourRanks[static_cast<std::size_t>(i)]);
-        sdispl[static_cast<std::size_t>(targetRank)] =
-            static_cast<int>(offsets[static_cast<std::size_t>(nInnerBoundaries + i)] - procStart);
+        const auto targetRank =
+            static_cast<std::size_t>(neighbourRanks[static_cast<std::size_t>(i)]);
+        const localIdx patchStart = offsets[static_cast<std::size_t>(nInnerBoundaries + i)];
+        const int patchSize = patchSizes[static_cast<std::size_t>(i)];
+        for (int k = 0; k < patchSize; ++k)
+        {
+            const auto globalCell = static_cast<int>(
+                faceCellsView[patchStart + static_cast<localIdx>(k)] + globalOffset
+            );
+            sendBuffer[static_cast<std::size_t>(writeCursor[targetRank]++)] = globalCell;
+        }
     }
 
     auto recvCounts = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
@@ -525,10 +550,6 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     int totalRecv = rdispl.back() + recvCounts.back();
 
     auto recvIdx = std::vector<int>(static_cast<std::size_t>(totalRecv));
-
-    std::vector<int> sendBuffer(buffer.size());
-    for (std::size_t i = 0; i < buffer.size(); ++i)
-        sendBuffer[i] = static_cast<int>(buffer[i]);
 
     mpi::allToAllV<int>(
         sendBuffer.data(),

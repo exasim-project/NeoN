@@ -140,6 +140,9 @@ public:
         {
             boundaryCondition.correctBoundaryCondition(this->field_);
         }
+        // Drain any processor-halo exchange once, after all proc patches have posted. See
+        // VolumeField::correctBoundaryConditions for the rationale (batched post-then-wait).
+        this->field_.boundaryData().waitAll();
     }
 
     std::vector<SurfaceBoundary<ValueType>> boundaryConditions() const

@@ -18,10 +18,12 @@ void setProcBoundaryValue(
 )
 {
     const auto internalVector = domainVector.internalVector().view();
+    // valueNoWait(): see volume/processor.cpp — seeding must not drain a pending proc-patch
+    // exchange, or the second proc patch on a multi-patch rank loses its halo.
     auto [refGradient, valueFraction, value, refValue, faceCells] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().valueFraction(),
-        domainVector.boundaryData().value(),
+        domainVector.boundaryData().valueNoWait(),
         domainVector.boundaryData().refValue(),
         mesh.boundaryMesh().faceOwners()
     );

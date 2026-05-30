@@ -96,6 +96,14 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     {
         boundaryCondition.correctBoundaryCondition(this->field_);
     }
+    // Complete any processor-halo exchange posted above. Each processor BC seeds its owner value
+    // and posts a non-blocking isend/irecv WITHOUT draining (valueNoWait), so that ALL proc
+    // patches are in flight before any completes — completing patch-by-patch mid-loop serialises
+    // the exchange and drops the second patch's halo on a rank that owns more than one. Draining
+    // once here leaves boundaryData().value() holding the true neighbour values on return; without
+    // this the result would depend on whether a later value() read happens to drain before the
+    // next re-seed (it often does not), silently leaving the owner seed at processor faces.
+    this->field_.boundaryData().waitAll();
 }
 
 template<typename ValueType>
@@ -105,6 +113,7 @@ void VolumeField<ValueType>::correctBoundaryConditions(const BoundaryContext& ct
     {
         boundaryCondition.correctBoundaryCondition(this->field_, ctx);
     }
+    this->field_.boundaryData().waitAll();
 }
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>
