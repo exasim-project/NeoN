@@ -15,6 +15,7 @@
 
 ### Misc
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
+- Build the distributed off-diagonal matrix with local row indices and widen non-local columns on the executor, removing host round-trips in the Ginkgo distributed matrix assembly
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
 - Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
 - Support AssemblyType != ValueType for Vec3 fields [#536](https://github.com/exasim-project/NeoN/pull/536)

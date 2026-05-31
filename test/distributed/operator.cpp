@@ -119,21 +119,23 @@ TEST_CASE("Distributed Operator - scalar")
     // row 11: 2 entries). Proc-boundary off-diagonal entries sit at:
     //   off(3,4)=global[10], off(4,3)=global[11], off(7,8)=global[22], off(8,7)=global[23].
     // These are excluded from each rank's main matrix and stored in offDiagonalMatrix instead.
+    //
+    // rowIdxs are stored as LOCAL row indices (no global offset applied), colIdxs stay global as
+    // they identify the remote neighbour cell.
     SECTION("Correct offDiagonalMatrix on partitioned mesh")
     {
-        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 offDiagonalMatrix matches global off(3,4)")
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 offDiagonalMatrix matches off(3,4)")
         {
             REQUIRE_THAT(
                 lsDst.offDiagonalMatrix().values(), Equals(take(ls.matrix().values(), {10, 11}))
             );
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
+            // global offset on rank 0 is 0, so local row index equals global cell 3
             REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {3}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {4}, EqualInt()));
         }
-        SECTION_IF(
-            mpiEnviron.rank() == 1, "Rank 1 offDiagonalMatrix matches global off(4,3) and off(7,8)"
-        )
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 offDiagonalMatrix matches off(4,3) and off(7,8)")
         {
             auto globalHost = ls.matrix().values().copyToHost();
             auto globalView = globalHost.view();
@@ -141,17 +143,19 @@ TEST_CASE("Distributed Operator - scalar")
             REQUIRE_THAT(lsDst.offDiagonalMatrix().values(), Equals(expected));
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {4, 7}, EqualInt()));
+            // global offset on rank 1 is 4, so global cells 4 and 7 map to local rows 0 and 3
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0, 3}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {3, 8}, EqualInt()));
         }
-        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 offDiagonalMatrix matches global off(8,7)")
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 offDiagonalMatrix matches off(8,7)")
         {
             REQUIRE_THAT(
                 lsDst.offDiagonalMatrix().values(), Equals(take(ls.matrix().values(), {23, 24}))
             );
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {8}, EqualInt()));
+            // global offset on rank 2 is 8, so global cell 8 maps to local row 0
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {7}, EqualInt()));
         }
     }

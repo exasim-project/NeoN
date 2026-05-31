@@ -13,6 +13,8 @@
 #include <memory>
 #include <vector>
 
+#include "NeoN/core/parallelAlgorithms.hpp"
+
 namespace NeoN::la::ginkgo
 {
 
@@ -51,9 +53,97 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
         )
     ));
 }
-
+/* @brief create a ginkgo csr matrix by creating views into Csr<scalar> avoiding copies */
 template<typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    const CSRMatrix<scalar, IndexType>& mtx,
+    const COOMatrix<scalar, IndexType>& bmtx,
+    const CommunicationPattern& commPattern
+)
+{
+    using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, label>;
+    const auto [coeffsV, sparsityV] = mtx.view();
+
+    // NOTE we get a const view of the system but need a non const view to vals and indices
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(coeffsV.size()), mtx.values().data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
+        mtx.sparsity()->colIdxs().data()
+    );
+    auto row = gko::array<IndexType>::const_view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
+        mtx.sparsity()->rowOffs().data()
+    );
+
+    auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
+
+    // TODO dont recreate
+    auto partition =
+        gko::share(gko::experimental::distributed::build_partition_from_local_size<label, label>(
+            exec, comm, nrows
+        ));
+
+    std::shared_ptr<const gko::LinOp> localMtx =
+        gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
+            exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+        ));
+
+    // Non local part of matrix
+    auto numNonLocalElements = commPattern.sendCounts[commPattern.sendCounts.size() - 1];
+
+    // recv_connections, ie the send_idxs of the neighbouring ranks in global indexing
+    auto bmtxv = bmtx.sparsity()->colIdxs();
+
+    gko::array<int> recv_connections = gko::make_array_view(exec, bmtxv.size(), bmtxv.data());
+
+    auto imap = gko::experimental::distributed::index_map<label, label>(
+        exec, partition, comm.rank(), recv_connections
+    );
+
+    auto non_loc_vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.values().data()
+    );
+    auto non_loc_row = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(numNonLocalElements), bmtx.sparsity()->rowOffs().data()
+    );
+
+    auto non_loc_col = gko::array<IndexType>::const_view(
+                           exec,
+                           static_cast<gko::size_type>(numNonLocalElements),
+                           bmtx.sparsity()->colIdxs().data()
+    )
+                           .copy_to_array();
+
+    auto comp_non_loc_col =
+        imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
+
+    // NOTE currently we copy recompute the non local column indices thus we also clone the matrix
+    // here to avoid any dangling pointer
+    auto nonLocalMtx = gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
+                                      exec,
+                                      gko::dim<2> {nrows, numNonLocalElements},
+                                      std::move(non_loc_vals),
+                                      comp_non_loc_col.as_const_view(),
+                                      std::move(non_loc_row)
+    )
+                                      ->clone());
+
+    // writeToDisk("localA" + std::to_string(comm.rank()) + ".mtx", localMtx);
+    // writeToDisk("nonLocalA" + std::to_string(comm.rank()) + ".mtx", nonLocalMtx);
+    // NOTE we need to const_pointer_cast here to cast from const gko::LinOp to LinOp
+    return gko::share(dist_mtx::create(
+        exec, comm, imap, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtx
+    ));
+}
+
+template<typename IndexType>
+std::shared_ptr<const gko::LinOp> createGkoMtxDist2(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
     const CSRMatrix<scalar, IndexType>& mtx,
@@ -91,81 +181,48 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
         ));
 
-    // recv_connections: global cell indices of neighbor cells (stored in bmtx colIdxs),
-    // cast to int64 as required by gko::experimental::distributed::index_map.
-    const auto& bmtxColIdxs = bmtx.sparsity()->colIdxs();
-    const auto nRecv = static_cast<gko::size_type>(bmtxColIdxs.size());
+    // Non-local columns hold the global neighbour cell indices (stored in bmtx colIdxs).
+    // gko::experimental::distributed::index_map (and map_to_local) require them as
+    // global_index_type (int64). The off-diagonal matrix stores indices as IndexType, so the
+    // widening happens here on the executor (no host round-trip); when IndexType already equals
+    // global_index_type it is a straight copy. The same array serves both as the index_map's
+    // recv_connections and as the columns mapped to local non-local indices.
+    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
 
-    gko::array<global_index_type> recv_connections {exec, nRecv};
+    gko::array<global_index_type> globalCols {exec, nNonLocalNnz};
     {
-        auto host = exec->get_master();
-        auto srcView = gko::array<IndexType>::const_view(exec, nRecv, bmtxColIdxs.data());
-        auto srcArr = srcView.copy_to_array();
-        srcArr.set_executor(host);
-        gko::array<global_index_type> hostRecv {host, nRecv};
-        const auto* srcPtr = srcArr.get_const_data();
-        auto* dstPtr = hostRecv.get_data();
-        for (gko::size_type i = 0; i < nRecv; ++i)
-            dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
-        recv_connections = std::move(hostRecv);
-        recv_connections.set_executor(exec);
+        auto* dst = globalCols.get_data();
+        auto src = bmtx.sparsity()->colIdxs().view();
+        parallelFor(
+            bmtx.exec(),
+            {0, static_cast<localIdx>(nNonLocalNnz)},
+            KOKKOS_LAMBDA(const localIdx i) { dst[i] = static_cast<global_index_type>(src[i]); },
+            "widenOffDiagonalColumns"
+        );
+        // ensure the widened columns are written before Ginkgo consumes the buffer
+        fence(bmtx.exec());
     }
 
     auto imap = gko::experimental::distributed::index_map<label, global_index_type>(
-        exec, partition, comm.rank(), recv_connections
+        exec, partition, comm.rank(), globalCols
     );
 
     // numNonLocalElements: unique remote columns (used as the COO column dimension).
     // nNonLocalNnz: one entry per processor face (used as the COO nnz).
     // These differ when a local cell couples to the same remote cell via >1 face.
     const auto numNonLocalElements = imap.get_non_local_size();
-    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
 
     auto non_loc_vals = gko::array<scalar>::const_view(exec, nNonLocalNnz, bmtx.values().data());
-    // rowIdxs() holds global row indices; convert to local (subtract this rank's global offset).
-    // get_range_bounds() points into the partition's executor memory (device memory when `exec`
-    // is a GPU executor), so it must NOT be indexed directly on the host — doing so dereferences
-    // a device pointer and segfaults on CUDA. Pull the single value off the device safely.
-    const auto globalOffset =
-        static_cast<IndexType>(exec->copy_val_to_host(partition->get_range_bounds() + comm.rank()));
-    gko::array<IndexType> non_loc_row {exec, nNonLocalNnz};
-    {
-        auto host = exec->get_master();
-        auto srcView = gko::array<IndexType>::const_view(
-            exec, nNonLocalNnz, bmtx.sparsity()->rowIdxs().data()
-        );
-        auto srcArr = srcView.copy_to_array();
-        srcArr.set_executor(host);
-        gko::array<IndexType> hostRow {host, nNonLocalNnz};
-        const auto* srcPtr = srcArr.get_const_data();
-        auto* dstPtr = hostRow.get_data();
-        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
-            dstPtr[i] = static_cast<IndexType>(srcPtr[i]) - globalOffset;
-        non_loc_row = std::move(hostRow);
-        non_loc_row.set_executor(exec);
-    }
 
-    // Cast colIdxs (global neighbour indices, int32) to int64 for index_map::map_to_local.
+    // rowIdxs() already holds local row indices: the global offset is no longer applied during
+    // matrix creation on the NeoN side, so the row indices can be viewed directly without a host
+    // round-trip or an offset subtraction.
+    auto non_loc_row =
+        gko::array<IndexType>::const_view(exec, nNonLocalNnz, bmtx.sparsity()->rowIdxs().data());
+
     // imap deduplicates: multiple faces to the same remote cell map to the same local column.
-    gko::array<global_index_type> non_loc_col {exec, nNonLocalNnz};
-    {
-        auto host = exec->get_master();
-        auto srcView = gko::array<IndexType>::const_view(
-            exec, nNonLocalNnz, bmtx.sparsity()->colIdxs().data()
-        );
-        auto srcArr = srcView.copy_to_array();
-        srcArr.set_executor(host);
-        gko::array<global_index_type> hostCol {host, nNonLocalNnz};
-        const auto* srcPtr = srcArr.get_const_data();
-        auto* dstPtr = hostCol.get_data();
-        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
-            dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
-        non_loc_col = std::move(hostCol);
-        non_loc_col.set_executor(exec);
-    }
-
     auto comp_non_loc_col =
-        imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
+        imap.map_to_local(globalCols, gko::experimental::distributed::index_space::non_local);
 
     // The non-local (off-diagonal) COO must be sorted by row for Ginkgo's CUDA Coo::apply2: its
     // warp segmented-scan incorrectly reduces non-contiguous same-row entries otherwise, making the

@@ -310,10 +310,13 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
         Vector<IndexType> colH(SerialExecutor {}, nProcFaces, 0);
         auto rowHV = rowH.view();
         auto colHV = colH.view();
-        const auto globalOffset = static_cast<IndexType>(mesh.globalOffset());
         for (localIdx i = 0; i < nProcFaces; ++i)
         {
-            rowHV[i] = faceOwnersV[nBoundaryFaces + i] + globalOffset;
+            // Store the local row index directly. The global offset used to be added here and
+            // subtracted again on the Ginkgo side; keeping the rows local avoids that round-trip.
+            // The column index stays global (it identifies a remote cell) and is consumed by
+            // Ginkgo's distributed index_map.
+            rowHV[i] = faceOwnersV[nBoundaryFaces + i];
             colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
         }
         offDiagRowIdxs = rowH.copyToExecutor(exec);
