@@ -17,15 +17,24 @@ void setProcBoundaryValue(
     std::pair<localIdx, localIdx> range
 )
 {
-    const auto internalVector = domainVector.internalVector().view();
-    // valueNoWait(): see volume/processor.cpp — seeding must not drain a pending proc-patch
-    // exchange, or the second proc patch on a multi-patch rank loses its halo.
-    auto [refGradient, valueFraction, value, refValue, faceCells] = views(
+    // Unlike the volume processor BC, a SurfaceField's proc-tail already holds the LOCAL
+    // face value to be sent to the neighbour: it is written by the operator that produced
+    // the field (flux() / updateFaceVelocity() / interpolation) or by constructFrom() at
+    // construction. There is no owner-cell -> face reconstruction to perform here.
+    //
+    // The volume BC seeds value[i] = internalVector[faceCells[i]] (owner-cell value ->
+    // ghost). Copying that verbatim into the surface BC is WRONG: a surface field's
+    // internalVector() is FACE data (size nInternalFaces) while faceCells[i] is an
+    // owner-CELL id, so it reads an unrelated internal face's flux and ships garbage to
+    // the neighbour. On a rank with >= 2 processor patches this corrupts the exchanged
+    // proc-face flux (e.g. the t=0 phi = flux(U) exchange), inflating the reported Courant
+    // number and perturbing the distributed solution. So leave value_ untouched and only
+    // normalise the unused mixed-BC fields. value_ is NOT accessed (no valueNoWait/value),
+    // so no pending proc-patch exchange is drained.
+    auto [refGradient, valueFraction, refValue] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().valueFraction(),
-        domainVector.boundaryData().valueNoWait(),
-        domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceOwners()
+        domainVector.boundaryData().refValue()
     );
 
     NeoN::parallelFor(
@@ -34,7 +43,6 @@ void setProcBoundaryValue(
         NEON_LAMBDA(const localIdx i) {
             refGradient[i] = zero<ValueType>();
             valueFraction[i] = 0.0;
-            value[i] = internalVector[faceCells[i]];
             refValue[i] = zero<ValueType>();
         },
         "setProcBoundaryValue"
