@@ -9,6 +9,10 @@
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
+#include <algorithm>
+#include <numeric>
+#include <vector>
+
 namespace NeoN::la::ginkgo
 {
 
@@ -163,14 +167,59 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     auto comp_non_loc_col =
         imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
 
-    auto nonLocalMtx = gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
-                                      exec,
-                                      gko::dim<2> {nrows, numNonLocalElements},
-                                      std::move(non_loc_vals),
-                                      comp_non_loc_col.as_const_view(),
-                                      non_loc_row.as_const_view()
-    )
-                                      ->clone());
+    // Ginkgo's CUDA Coo::apply2 (used for the non-local/halo part of the distributed apply) assumes
+    // the COO entries are sorted by row; its warp segmented-scan incorrectly reduces non-contiguous
+    // same-row entries otherwise. NeoN builds the off-diagonal in processor-face order, which is
+    // not row-sorted, so on the GPU executor the non-local apply becomes non-symmetric and the
+    // (distributed) pressure CG stalls/diverges — worse with more processor faces (i.e. higher rank
+    // counts). The Reference/CPU apply2 is order-robust, so CPU was unaffected. Sorting the
+    // (row, col, value) triples by row makes the CUDA apply correct and is a no-op for the matrix
+    // (a COO is an unordered set of entries).
+    gko::array<scalar> sortedVals {exec, nNonLocalNnz};
+    gko::array<IndexType> sortedCol {exec, nNonLocalNnz};
+    gko::array<IndexType> sortedRow {exec, nNonLocalNnz};
+    {
+        auto host = exec->get_master();
+        auto rowH = non_loc_row;
+        rowH.set_executor(host);
+        auto colH = comp_non_loc_col;
+        colH.set_executor(host);
+        auto valH = non_loc_vals.copy_to_array();
+        valH.set_executor(host);
+        std::vector<gko::size_type> perm(nNonLocalNnz);
+        std::iota(perm.begin(), perm.end(), gko::size_type {0});
+        const auto* rp = rowH.get_const_data();
+        std::stable_sort(
+            perm.begin(),
+            perm.end(),
+            [&](gko::size_type a, gko::size_type b) { return rp[a] < rp[b]; }
+        );
+        gko::array<scalar> vS {host, nNonLocalNnz};
+        gko::array<IndexType> cS {host, nNonLocalNnz};
+        gko::array<IndexType> rS {host, nNonLocalNnz};
+        const auto* cp = colH.get_const_data();
+        const auto* vp = valH.get_const_data();
+        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
+        {
+            rS.get_data()[i] = rp[perm[i]];
+            cS.get_data()[i] = static_cast<IndexType>(cp[perm[i]]);
+            vS.get_data()[i] = vp[perm[i]];
+        }
+        vS.set_executor(exec);
+        cS.set_executor(exec);
+        rS.set_executor(exec);
+        sortedVals = std::move(vS);
+        sortedCol = std::move(cS);
+        sortedRow = std::move(rS);
+    }
+
+    auto nonLocalMtx = gko::share(gko::matrix::Coo<scalar, IndexType>::create(
+        exec,
+        gko::dim<2> {nrows, numNonLocalElements},
+        std::move(sortedVals),
+        std::move(sortedCol),
+        std::move(sortedRow)
+    ));
 
     return gko::share(dist_mtx::create(
         exec, comm, imap, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtx
