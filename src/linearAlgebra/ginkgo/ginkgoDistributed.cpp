@@ -15,6 +15,9 @@
 
 #include "NeoN/core/parallelAlgorithms.hpp"
 
+#include <algorithm>
+#include <numeric>
+
 namespace NeoN::la::ginkgo
 {
 
@@ -62,9 +65,16 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const CommunicationPattern& commPattern
 )
 {
+    // commPattern is currently unused here: all the connectivity information needed to build
+    // the distributed matrix is already encoded in the row/column indices of `mtx` (local block)
+    // and `bmtx` (off-diagonal/processor coupling).
+    static_cast<void>(commPattern);
+
     using global_index_type = gko::int64;
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, global_index_type>;
 
+    // Local block: zero-copy CSR views over the existing NeoN storage. The local matrix is by far
+    // the largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
     auto vals = gko::array<scalar>::const_view(
         exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
     );
@@ -79,7 +89,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         mtx.sparsity()->rowOffs().data()
     );
 
-    auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
+    const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
 
     auto partition = gko::share(
         gko::experimental::distributed::build_partition_from_local_size<label, global_index_type>(
@@ -92,101 +102,98 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
         ));
 
-    // Non-local columns hold the global neighbour cell indices (stored in bmtx colIdxs).
-    // gko::experimental::distributed::index_map (and map_to_local) require them as
-    // global_index_type (int64). The off-diagonal matrix stores indices as IndexType, so the
-    // widening happens here on the executor (no host round-trip); when IndexType already equals
-    // global_index_type it is a straight copy. The same array serves both as the index_map's
-    // recv_connections and as the columns mapped to local non-local indices.
-    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
+    // First global row index owned by this rank. get_range_bounds() points into the partition's
+    // executor memory (device memory when `exec` is a GPU executor), so the single value is pulled
+    // off the device safely rather than dereferenced directly on the host.
+    const auto globalOffset = exec->copy_val_to_host(partition->get_range_bounds() + comm.rank());
 
-    gko::array<global_index_type> globalCols {exec, nNonLocalNnz};
+    // Off-diagonal block: rowIdxs()/colIdxs() hold global indices (owning cell's global row and the
+    // neighbour cell's global column). Only this (small) block is processed per solve.
+    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
+    auto host = exec->get_master();
+
+    // FIXME Do this on device
+    const auto bColH = bmtx.sparsity()->colIdxs().copyToHost();
+    const auto bRowH = bmtx.sparsity()->rowIdxs().copyToHost();
+    const auto bValH = bmtx.values().copyToHost();
+
+    // recv_connections are the global neighbour-column indices; index_map deduplicates and keeps
+    // only those it owns remotely, defining the non-local column space.
+    gko::array<global_index_type> recv_connections {host, nNonLocalNnz};
     {
-        auto* dst = globalCols.get_data();
-        auto src = bmtx.sparsity()->colIdxs().view();
-        parallelFor(
-            bmtx.exec(),
-            {0, static_cast<localIdx>(nNonLocalNnz)},
-            KOKKOS_LAMBDA(const localIdx i) { dst[i] = static_cast<global_index_type>(src[i]); },
-            "widenOffDiagonalColumns"
-        );
-        // ensure the widened columns are written before Ginkgo consumes the buffer
-        fence(bmtx.exec());
+        auto* dst = recv_connections.get_data();
+        const auto* src = bColH.data();
+        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
+            dst[i] = static_cast<global_index_type>(src[i]);
     }
+    recv_connections.set_executor(exec);
 
     auto imap = gko::experimental::distributed::index_map<label, global_index_type>(
-        exec, partition, comm.rank(), globalCols
+        exec, partition, comm.rank(), recv_connections
     );
-
-    // numNonLocalElements: unique remote columns (used as the COO column dimension).
-    // nNonLocalNnz: one entry per processor face (used as the COO nnz).
-    // These differ when a local cell couples to the same remote cell via >1 face.
     const auto numNonLocalElements = imap.get_non_local_size();
 
-    auto non_loc_vals = gko::array<scalar>::const_view(exec, nNonLocalNnz, bmtx.values().data());
+    // Map every off-diagonal column into the non-local index space. A column the index_map does not
+    // classify as a known remote column (e.g. one that resolves into this rank's own range) maps to
+    // invalid_index. Such a coupling is already represented in the local block, so it is dropped
+    // here rather than fed into the COO, where invalid_index would become an out-of-bounds column.
+    auto mapped =
+        imap.map_to_local(recv_connections, gko::experimental::distributed::index_space::non_local);
+    const auto mappedH = gko::array<label>(host, mapped);
+    const auto* mappedPtr = mappedH.get_const_data();
+    const auto* rowPtr = bRowH.data();
+    const auto* valPtr = bValH.data();
 
-    // rowIdxs() already holds local row indices: the global offset is no longer applied during
-    // matrix creation on the NeoN side, so the row indices can be viewed directly without a host
-    // round-trip or an offset subtraction.
-    auto non_loc_row =
-        gko::array<IndexType>::const_view(exec, nNonLocalNnz, bmtx.sparsity()->rowIdxs().data());
+    gko::array<IndexType> nlCol {host, nNonLocalNnz};
+    gko::array<IndexType> nlRow {host, nNonLocalNnz};
+    gko::array<scalar> nlVal {host, nNonLocalNnz};
+    auto* nlColPtr = nlCol.get_data();
+    auto* nlRowPtr = nlRow.get_data();
+    auto* nlValPtr = nlVal.get_data();
 
-    // imap deduplicates: multiple faces to the same remote cell map to the same local column.
-    auto comp_non_loc_col =
-        imap.map_to_local(globalCols, gko::experimental::distributed::index_space::non_local);
-
-    // The non-local (off-diagonal) COO must be sorted by row for Ginkgo's CUDA Coo::apply2: its
-    // warp segmented-scan incorrectly reduces non-contiguous same-row entries otherwise, making the
-    // GPU non-local apply non-symmetric (the distributed pressure CG then stalls/diverges, worse
-    // with more processor faces). The Reference/CPU apply2 is order-robust. NeoN builds the
-    // off-diagonal in processor-face order; the row-sort permutation is precomputed once when the
-    // off-diagonal sparsity is created (CommunicationPattern::offDiagRowSortPerm), so here we only
-    // gather (row, col, value) through it — no per-build sort. Row-sorting is a no-op for the
-    // matrix (a COO is an unordered set of entries).
-    const auto& offDiagRowSortPerm = commPattern.offDiagRowSortPerm;
-    NF_ASSERT(
-        offDiagRowSortPerm.size() == nNonLocalNnz,
-        "offDiagRowSortPerm size mismatch: expected one entry per processor face"
-    );
-    gko::array<scalar> sortedVals {exec, nNonLocalNnz};
-    gko::array<IndexType> sortedCol {exec, nNonLocalNnz};
-    gko::array<IndexType> sortedRow {exec, nNonLocalNnz};
+    constexpr auto invalid = gko::invalid_index<label>();
+    gko::size_type kept = 0;
+    for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
     {
-        auto host = exec->get_master();
-        auto rowH = non_loc_row;
-        rowH.set_executor(host);
-        auto colH = comp_non_loc_col;
-        colH.set_executor(host);
-        auto valH = non_loc_vals.copy_to_array();
-        valH.set_executor(host);
-        gko::array<scalar> vS {host, nNonLocalNnz};
-        gko::array<IndexType> cS {host, nNonLocalNnz};
-        gko::array<IndexType> rS {host, nNonLocalNnz};
-        const auto* rp = rowH.get_const_data();
-        const auto* cp = colH.get_const_data();
-        const auto* vp = valH.get_const_data();
-        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
-        {
-            const auto src = static_cast<gko::size_type>(offDiagRowSortPerm[i]);
-            rS.get_data()[i] = rp[src];
-            cS.get_data()[i] = static_cast<IndexType>(cp[src]);
-            vS.get_data()[i] = vp[src];
-        }
-        vS.set_executor(exec);
-        cS.set_executor(exec);
-        rS.set_executor(exec);
-        sortedVals = std::move(vS);
-        sortedCol = std::move(cS);
-        sortedRow = std::move(rS);
+        if (mappedPtr[i] == invalid) continue;
+        nlColPtr[kept] = static_cast<IndexType>(mappedPtr[i]);
+        nlRowPtr[kept] =
+            static_cast<IndexType>(static_cast<global_index_type>(rowPtr[i]) - globalOffset);
+        nlValPtr[kept] = valPtr[i];
+        ++kept;
     }
 
-    auto nonLocalMtx = gko::share(gko::matrix::Coo<scalar, IndexType>::create(
-        exec,
-        gko::dim<2> {nrows, numNonLocalElements},
-        std::move(sortedVals),
-        std::move(sortedCol),
-        std::move(sortedRow)
-    ));
+    // Sort COO by row for Ginkgo's CUDA Coo::apply2: its warp segmented-scan incorrectly reduces
+    // non-contiguous same-row entries, making the GPU non-local apply non-symmetric. The
+    // Reference/CPU apply2 is order-robust. All data is on the host here, so we sort in-place.
+    std::vector<gko::size_type> perm(kept);
+    std::iota(perm.begin(), perm.end(), 0);
+    std::stable_sort(
+        perm.begin(), perm.end(), [&](gko::size_type a, gko::size_type b)
+        { return nlRowPtr[a] < nlRowPtr[b]; }
+    );
+    gko::array<IndexType> sRow {host, kept};
+    gko::array<IndexType> sCol {host, kept};
+    gko::array<scalar> sVal {host, kept};
+    for (gko::size_type i = 0; i < kept; ++i)
+    {
+        sRow.get_data()[i] = nlRowPtr[perm[i]];
+        sCol.get_data()[i] = nlColPtr[perm[i]];
+        sVal.get_data()[i] = nlValPtr[perm[i]];
+    }
+    sRow.set_executor(exec);
+    sCol.set_executor(exec);
+    sVal.set_executor(exec);
+
+    auto nonLocalMtx =
+        gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
+                       exec,
+                       gko::dim<2> {nrows, numNonLocalElements},
+                       gko::array<scalar>::const_view(exec, kept, sVal.get_const_data()),
+                       gko::array<IndexType>::const_view(exec, kept, sCol.get_const_data()),
+                       gko::array<IndexType>::const_view(exec, kept, sRow.get_const_data())
+        )
+                       ->clone());
 
     return gko::share(dist_mtx::create(
         exec, comm, imap, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtx
