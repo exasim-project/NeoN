@@ -249,7 +249,7 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="62">
+      <node id="63">
         <label>NeoN/core/segmentedVector.hpp</label>
         <link refid="segmentedVector_8hpp"/>
         <childnode refid="41" relation="include">
@@ -313,12 +313,12 @@
         <childnode refid="37" relation="include">
         </childnode>
       </node>
-      <node id="63">
+      <node id="64">
         <label>NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp</label>
         <link refid="cellToFaceStencil_8hpp"/>
         <childnode refid="49" relation="include">
         </childnode>
-        <childnode refid="62" relation="include">
+        <childnode refid="63" relation="include">
         </childnode>
       </node>
       <node id="47">
@@ -416,13 +416,15 @@
         </childnode>
         <childnode refid="62" relation="include">
         </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
         <childnode refid="55" relation="include">
         </childnode>
         <childnode refid="47" relation="include">
         </childnode>
         <childnode refid="56" relation="include">
         </childnode>
-        <childnode refid="63" relation="include">
+        <childnode refid="64" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -534,6 +536,9 @@
       <node id="14">
         <label>unordered_map</label>
       </node>
+      <node id="62">
+        <label>utility</label>
+      </node>
       <node id="12">
         <label>variant</label>
       </node>
@@ -581,10 +586,10 @@
 <codeline lineno="30"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>start<sp/>=<sp/>std::chrono::steady_clock::now();</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rhs<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a9700a374ef0c3a6006dad956d08e9b93" kindref="member">rhs</ref>();</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtx<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a6d02b79215a4c9413b06ae8f5fec34f9" kindref="member">matrix</ref>();</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rhs<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ab51c207dee70d9e981539f712521808a" kindref="member">rhs</ref>();</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtx<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac51573fe94ceada6ecf3050eb3e66cdc" kindref="member">matrix</ref>();</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtxV<sp/>=<sp/>mtx.view();</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[colIdx,<sp/>rowOffs]<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a6d02b79215a4c9413b06ae8f5fec34f9" kindref="member">matrix</ref>().sparsity()-&gt;view();</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[colIdx,<sp/>rowOffs]<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac51573fe94ceada6ecf3050eb3e66cdc" kindref="member">matrix</ref>().sparsity()-&gt;view();</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[xV,<sp/>bV]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(x,<sp/>rhs);</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(bV.size()<sp/>+<sp/>1<sp/>==<sp/>rowOffs.size(),<sp/></highlight><highlight class="stringliteral">&quot;Inconsistent<sp/>rowOffs.size()&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -629,10 +634,10 @@
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>--------<sp/>Vec3<sp/>--------</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="79" refid="classNeoN_1_1la_1_1DiagonalSolver_1a53aec0db1ee1911a0cbc32033c1fe9f1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structNeoN_1_1la_1_1SolverStats" kindref="compound">SolverStats</ref><sp/><ref refid="classNeoN_1_1la_1_1DiagonalSolver_1a53aec0db1ee1911a0cbc32033c1fe9f1" kindref="member">solve</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;Vec3&gt;</ref>&amp;<sp/>sys,<sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;Vec3&gt;</ref>&amp;<sp/>x)</highlight><highlight class="keyword"><sp/>const<sp/>override</highlight></codeline>
 <codeline lineno="80"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rhs<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a9700a374ef0c3a6006dad956d08e9b93" kindref="member">rhs</ref>();</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtx<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a6d02b79215a4c9413b06ae8f5fec34f9" kindref="member">matrix</ref>();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rhs<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ab51c207dee70d9e981539f712521808a" kindref="member">rhs</ref>();</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtx<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac51573fe94ceada6ecf3050eb3e66cdc" kindref="member">matrix</ref>();</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mtxV<sp/>=<sp/>mtx.view();</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[colIdx,<sp/>rowOffs]<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a6d02b79215a4c9413b06ae8f5fec34f9" kindref="member">matrix</ref>().sparsity()-&gt;view();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[colIdx,<sp/>rowOffs]<sp/>=<sp/>sys.<ref refid="classNeoN_1_1la_1_1LinearSystem_1ac51573fe94ceada6ecf3050eb3e66cdc" kindref="member">matrix</ref>().sparsity()-&gt;view();</highlight></codeline>
 <codeline lineno="85"><highlight class="normal"></highlight></codeline>
 <codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[xV,<sp/>bV]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(x,<sp/>rhs);</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"></highlight></codeline>
