@@ -162,11 +162,6 @@ BoundaryMesh generateBoundaryData(
         Vec3 faceUnitNormal = faceNormal * (1.0 / magA);
         Vec3 delta = faceCenter - centers[ciSizeT];
 
-        // faces.normals[fi] = faceNormal;
-        // faces.centers[fi] = faceCenter;
-        // faces.areas[fi] = magA;
-        // faces.owner[fi] = ciLabel;
-
         bndFaceOwners[sz] = ciLabel;
         bndFaceCenters[sz] = faceCenter;
         bndCellCenters[sz] = centers[ciSizeT];

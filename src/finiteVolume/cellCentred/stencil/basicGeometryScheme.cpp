@@ -253,9 +253,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
         {0, mesh_.nBoundaryFaces()},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = surfFaceCells[bfi];
-            // TODO Issue #515
             Vec3 cellToCellDist = bFaceCenters[bfi] - cellCenters[own];
-            // Vec3 faceNormal = 1 / faceAreas[nInternalFaces + bfi] * bFaceNormals[bfi];
             Vec3 faceNormal = 1 / bFaceAreas[bfi] * bFaceNormals[bfi];
             scalar orthoDist = faceNormal & cellToCellDist;
             nonOrthDeltaCoeffB[bfi] = 1.0 / std::max(orthoDist, 0.05 * mag(cellToCellDist));

@@ -63,7 +63,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
         auto sPhifB = phifBHost.view();
         // left boundary (bfi=0): gradient is -10.0
         REQUIRE(NeoN::mag(sPhifB[0] + 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8));
-        // right boundary (bfi=1): gradient is 10.0uncorrectr
+        // right boundary (bfi=1): gradient is 10.0
         REQUIRE(NeoN::mag(sPhifB[1] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8));
     }
 }
