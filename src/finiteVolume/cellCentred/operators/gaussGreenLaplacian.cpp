@@ -107,6 +107,9 @@ void computeLaplacianProcBoundImpl(
     const auto bcMagSf = mesh.boundaryMesh().faceAreas().view();
 
     auto bValues = ls.offDiagonalMatrix().values().view();
+    // boundaryMatrix records the diagonal contribution so removeBoundaryContributions can reverse
+    // it (proc slots live at [nBoundaryFaces, nBoundaryFaces + nProcBoundaryFaces)).
+    auto bndDiagValues = ls.boundaryMatrix().values().view();
 
     auto values = ls.matrix().values().view();
 
@@ -123,6 +126,7 @@ void computeLaplacianProcBoundImpl(
 
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], value);
             bValues[procFacei] += value;
+            bndDiagValues[bcfacei] += value;
         },
         "computeInterfaceLaplacianCoefficients"
     );
