@@ -68,8 +68,6 @@ void computeLaplacianExp(
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            // TODO Issue #515 faceAreas should not contain boundary data
-            // ValueType valueOwn = faceAreas[nInternalFaces + bfi] * fnGradB[bfi];
             ValueType valueOwn = bFaceAreas[bfi] * fnGradB[bfi];
             Kokkos::atomic_add(&result[own], valueOwn);
         },
@@ -176,8 +174,6 @@ void computeLaplacianBoundImpl(
 
             auto refValFrac = valueFraction[bfi];
             auto refGradFrac = 1.0 - refValFrac;
-            // TODO Issue #515 magFaceArea should not contain boundary data
-            // auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
             auto flux = bGammaV[bfi] * bFaceAreas[bfi];
             auto fluxContrib =
                 flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<ValueType>();
