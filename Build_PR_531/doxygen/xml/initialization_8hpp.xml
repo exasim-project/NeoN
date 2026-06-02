@@ -138,34 +138,38 @@
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" kindref="member">initialize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>argv[])</highlight></codeline>
 <codeline lineno="23"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::initialize(argc,<sp/>argv).set_print_configuration(</highlight><highlight class="keyword">true</highlight><highlight class="normal">).set_map_device_id_by(</highlight><highlight class="stringliteral">&quot;mpi_rank&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>cpptrace::register_terminate_handler();</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>mpi::Environment<sp/>mpiEnviron;</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1aa310704584bd7a5c2ae0ba0ff28b6a0a" kindref="member">Logging::setNeonDefaultPattern</ref>(mpiEnviron);</highlight></codeline>
-<codeline lineno="29"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" kindref="member">finalize</ref>()</highlight></codeline>
-<codeline lineno="32"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1a5cda3c98d8ab9c8e1c2facbc93e58f5c" kindref="member">Logging::info</ref>(</highlight><highlight class="stringliteral">&quot;Finalizing<sp/>NeoN&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::finalize();</highlight></codeline>
-<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="37" refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" kindref="member">initialize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>argv[])</highlight></codeline>
-<codeline lineno="38"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::initialize(argc,<sp/>argv).set_print_configuration(</highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1aa310704584bd7a5c2ae0ba0ff28b6a0a" kindref="member">Logging::setNeonDefaultPattern</ref>(mpiEnviron);</highlight></codeline>
-<codeline lineno="41"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight></codeline>
-<codeline lineno="43" refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" kindref="member">finalize</ref>()</highlight></codeline>
-<codeline lineno="44"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1a5cda3c98d8ab9c8e1c2facbc93e58f5c" kindref="member">Logging::info</ref>(</highlight><highlight class="stringliteral">&quot;Finalizing<sp/>NeoN&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::finalize();</highlight></codeline>
-<codeline lineno="47"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>NOTE:<sp/>Kokkos::initialize(argc,<sp/>argv)<sp/>returns<sp/>void,<sp/>so<sp/>the<sp/>builder<sp/>methods</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(set_print_configuration<sp/>/<sp/>set_map_device_id_by)<sp/>cannot<sp/>be<sp/>chained<sp/>onto<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Plain<sp/>init<sp/>also<sp/>avoids<sp/>Kokkos<sp/>printing<sp/>its<sp/>configuration<sp/>on<sp/>every<sp/>rank.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::initialize(argc,<sp/>argv);</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>cpptrace::register_terminate_handler();</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>mpi::Environment<sp/>mpiEnviron;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1aa310704584bd7a5c2ae0ba0ff28b6a0a" kindref="member">Logging::setNeonDefaultPattern</ref>(mpiEnviron);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" kindref="member">finalize</ref>()</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1a5cda3c98d8ab9c8e1c2facbc93e58f5c" kindref="member">Logging::info</ref>(</highlight><highlight class="stringliteral">&quot;Finalizing<sp/>NeoN&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::finalize();</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1aa8bb18687be355a802575d548fd7f292" kindref="member">initialize</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>argv[])</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>See<sp/>note<sp/>above:<sp/>Kokkos::initialize(argc,<sp/>argv)<sp/>returns<sp/>void.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::initialize(argc,<sp/>argv);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1aa310704584bd7a5c2ae0ba0ff28b6a0a" kindref="member">Logging::setNeonDefaultPattern</ref>(mpiEnviron);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" kindref="member">finalize</ref>()</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1Logging_1a5cda3c98d8ab9c8e1c2facbc93e58f5c" kindref="member">Logging::info</ref>(</highlight><highlight class="stringliteral">&quot;Finalizing<sp/>NeoN&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>Kokkos::finalize();</highlight></codeline>
 <codeline lineno="51"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal">}</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp"/>
   </compounddef>
