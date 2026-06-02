@@ -21,7 +21,10 @@ namespace NeoN
 #ifdef NF_WITH_MPI_SUPPORT
 inline void initialize(int argc, char* argv[])
 {
-    Kokkos::initialize(argc, argv).set_print_configuration(true).set_map_device_id_by("mpi_rank");
+    // NOTE: Kokkos::initialize(argc, argv) returns void, so the builder methods
+    // (set_print_configuration / set_map_device_id_by) cannot be chained onto it.
+    // Plain init also avoids Kokkos printing its configuration on every rank.
+    Kokkos::initialize(argc, argv);
 
     cpptrace::register_terminate_handler();
     mpi::Environment mpiEnviron;
@@ -36,7 +39,8 @@ inline void finalize()
 #else
 inline void initialize(int argc, char* argv[])
 {
-    Kokkos::initialize(argc, argv).set_print_configuration(true);
+    // See note above: Kokkos::initialize(argc, argv) returns void.
+    Kokkos::initialize(argc, argv);
     Logging::setNeonDefaultPattern(mpiEnviron);
 }
 
