@@ -47,6 +47,18 @@ struct CommunicationPattern
 
     /** @brief MPI environment captured at pattern-construction time. */
     mpi::Environment env;
+
+    /** @brief Row-sort permutation for the off-diagonal (processor-face) matrix entries.
+     *
+     *  `offDiagRowSortPerm[i]` is the processor-face (assembly / proc-face order) index whose
+     *  off-diagonal value belongs at sorted position `i`. Computed once when the off-diagonal
+     *  sparsity is created (see `createEmptyLinearSystem`) so the non-local COO handed to Ginkgo
+     *  can be row-sorted without re-sorting on every matrix build. Ginkgo's CUDA `Coo::apply2`
+     *  (the non-local/halo apply) requires row-sorted entries; the Reference/CPU apply is
+     *  order-robust. Empty when there are no processor faces. Kept last so existing positional
+     *  aggregate initialisations of CommunicationPattern remain valid.
+     */
+    std::vector<localIdx> offDiagRowSortPerm;
 };
 
 /**

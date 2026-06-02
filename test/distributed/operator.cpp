@@ -36,10 +36,7 @@ TEST_CASE("Distributed Operator")
 {
     float epsilon = 1e-32;
 
-    // CPUExecutor only: one GPU on this machine, so a multi-rank test must not place
-    // data on the GPU (ranks would contend for the single device).
-    const std::string execName = "CPUExecutor";
-    const Executor exec = CPUExecutor {};
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto input = GENERATE_INPUT("upwind", "");
     auto inputPart = GENERATE_INPUT("upwind", "Part");

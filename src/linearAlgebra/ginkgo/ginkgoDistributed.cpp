@@ -8,9 +8,8 @@
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/error.hpp"
 
-#include <algorithm>
-#include <numeric>
 #include <vector>
 
 namespace NeoN::la::ginkgo
@@ -167,14 +166,19 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     auto comp_non_loc_col =
         imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
 
-    // Ginkgo's CUDA Coo::apply2 (used for the non-local/halo part of the distributed apply) assumes
-    // the COO entries are sorted by row; its warp segmented-scan incorrectly reduces non-contiguous
-    // same-row entries otherwise. NeoN builds the off-diagonal in processor-face order, which is
-    // not row-sorted, so on the GPU executor the non-local apply becomes non-symmetric and the
-    // (distributed) pressure CG stalls/diverges — worse with more processor faces (i.e. higher rank
-    // counts). The Reference/CPU apply2 is order-robust, so CPU was unaffected. Sorting the
-    // (row, col, value) triples by row makes the CUDA apply correct and is a no-op for the matrix
-    // (a COO is an unordered set of entries).
+    // The non-local (off-diagonal) COO must be sorted by row for Ginkgo's CUDA Coo::apply2: its
+    // warp segmented-scan incorrectly reduces non-contiguous same-row entries otherwise, making the
+    // GPU non-local apply non-symmetric (the distributed pressure CG then stalls/diverges, worse
+    // with more processor faces). The Reference/CPU apply2 is order-robust. NeoN builds the
+    // off-diagonal in processor-face order; the row-sort permutation is precomputed once when the
+    // off-diagonal sparsity is created (CommunicationPattern::offDiagRowSortPerm), so here we only
+    // gather (row, col, value) through it — no per-build sort. Row-sorting is a no-op for the
+    // matrix (a COO is an unordered set of entries).
+    const auto& offDiagRowSortPerm = commPattern.offDiagRowSortPerm;
+    NF_ASSERT(
+        offDiagRowSortPerm.size() == nNonLocalNnz,
+        "offDiagRowSortPerm size mismatch: expected one entry per processor face"
+    );
     gko::array<scalar> sortedVals {exec, nNonLocalNnz};
     gko::array<IndexType> sortedCol {exec, nNonLocalNnz};
     gko::array<IndexType> sortedRow {exec, nNonLocalNnz};
@@ -186,24 +190,18 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         colH.set_executor(host);
         auto valH = non_loc_vals.copy_to_array();
         valH.set_executor(host);
-        std::vector<gko::size_type> perm(nNonLocalNnz);
-        std::iota(perm.begin(), perm.end(), gko::size_type {0});
-        const auto* rp = rowH.get_const_data();
-        std::stable_sort(
-            perm.begin(),
-            perm.end(),
-            [&](gko::size_type a, gko::size_type b) { return rp[a] < rp[b]; }
-        );
         gko::array<scalar> vS {host, nNonLocalNnz};
         gko::array<IndexType> cS {host, nNonLocalNnz};
         gko::array<IndexType> rS {host, nNonLocalNnz};
+        const auto* rp = rowH.get_const_data();
         const auto* cp = colH.get_const_data();
         const auto* vp = valH.get_const_data();
         for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
         {
-            rS.get_data()[i] = rp[perm[i]];
-            cS.get_data()[i] = static_cast<IndexType>(cp[perm[i]]);
-            vS.get_data()[i] = vp[perm[i]];
+            const auto src = static_cast<gko::size_type>(offDiagRowSortPerm[i]);
+            rS.get_data()[i] = rp[src];
+            cS.get_data()[i] = static_cast<IndexType>(cp[src]);
+            vS.get_data()[i] = vp[src];
         }
         vS.set_executor(exec);
         cS.set_executor(exec);
