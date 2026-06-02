@@ -85,12 +85,24 @@ void logImpl(
     std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName = "NeoN"
 );
 
+/* @brief Returns whether a message at the given level would actually be emitted
+ *        by the named logger.
+ *
+ * The convenience helpers below call this BEFORE building the message so that on
+ * muted ranks (non-root MPI ranks log at error level only) no string formatting
+ * happens at all — keeping the hot path free of cost in distributed runs. It is
+ * also null-safe: if the logger is not registered yet it returns false instead
+ * of dereferencing a null pointer.
+ */
+bool shouldLog(Level level, std::string logName = "NeoN");
+
 void terminate();
 
 /*@brief convenience function to call spdlogs info with std::format */
 template<typename... Args>
 void info(std::string formatString, Args... args)
 {
+    if (!shouldLog(Level::Info)) return;
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Info);
 }
 
@@ -98,13 +110,15 @@ void info(std::string formatString, Args... args)
 template<typename... Args>
 void warn(std::string formatString, Args... args)
 {
-    logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Info);
+    if (!shouldLog(Level::Warning)) return;
+    logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Warning);
 }
 
 /*@brief convenience function to call spdlogs debug with std::format */
 template<typename... Args>
 void debug(std::string formatString, Args... args)
 {
+    if (!shouldLog(Level::Debug)) return;
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Debug);
 }
 
@@ -112,7 +126,12 @@ void debug(std::string formatString, Args... args)
 template<typename... Args>
 void error(std::string formatString, Args... args)
 {
-    logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Error);
+    // Errors print on every rank (non-root loggers run at error level), but only
+    // build the message when it will actually be emitted. terminate() always runs.
+    if (shouldLog(Level::Error))
+    {
+        logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Error);
+    }
     terminate();
 }
 
