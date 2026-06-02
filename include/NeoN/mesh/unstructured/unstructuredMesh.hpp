@@ -353,6 +353,23 @@ UnstructuredMesh create3DUniformMesh(
  *  Reads the current rank from the MPI environment.
  */
 UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells);
+
+/** @brief Factory function that builds the local 2D mesh partition for a given rank.
+ *
+ *  Builds the rank-local part of a 2D uniform mesh that is partitioned into a
+ *  @p ranksXPart × @p ranksYPart grid of square subdomains, where
+ *  @p totalRanks == ranksXPart * ranksXPart and ranksXPart == ranksYPart.
+ *  Each part is an nCells × nCells (one cell thick in z) hex slab.  Patches on
+ *  the global domain boundary stay regular; patches shared with a neighbouring
+ *  partition become processor-boundary patches.  Regular patches are stored
+ *  before processor patches, matching create1DUniformMeshPart.
+ *
+ *  Unlike create1DUniformMeshPart the rank is passed explicitly so that a part
+ *  can be built for any rank of the @p ranksXPart × @p ranksYPart grid.
+ */
+UnstructuredMesh create2DUniformMeshPart(
+    const Executor exec, const localIdx nCells, const localIdx totalRanks, const localIdx rank
+);
 #endif
 
 } // namespace NeoN
