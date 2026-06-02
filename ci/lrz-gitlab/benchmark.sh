@@ -65,7 +65,11 @@ build_and_benchmark() {
 
     echo ">>> Configuring build"
     if [[ "$GPU_VENDOR" == "nvidia" ]]; then
-        cmake --preset $PRESET -DCMAKE_CUDA_ARCHITECTURES=90 -DNeoN_WITH_THREADS=OFF
+        export CUDA_VISIBLE_DEVICES=0
+        cmake --preset $PRESET \
+            -DCMAKE_CUDA_ARCHITECTURES=89 \
+            -DNeoN_WITH_THREADS=OFF \
+            -DNeoN_WITH_MPI=ON
     elif [[ "$GPU_VENDOR" == "amd" ]]; then
         # Set up environment
         export CXX_COMPILER_PATH="$(which g++)"
@@ -80,7 +84,8 @@ build_and_benchmark() {
             -DCMAKE_EXE_LINKER_FLAGS="-L${CXX_LIBDIR}" \
             -DCMAKE_HIP_ARCHITECTURES=gfx90a \
             -DKokkos_ARCH_AMD_GFX90A=ON \
-            -DNeoN_WITH_THREADS=OFF
+            -DNeoN_WITH_THREADS=OFF \
+            -DNeoN_WITH_MPI=ON
     elif [[ "$GPU_VENDOR" == "intel" ]]; then
         cmake --preset $PRESET \
             -DCMAKE_CXX_COMPILER=icpx \
@@ -88,6 +93,7 @@ build_and_benchmark() {
             -DKokkos_ENABLE_SYCL=ON \
             -DKokkos_ARCH_INTEL_PVC=ON \
             -DNeoN_WITH_THREADS=OFF \
+            -DNeoN_WITH_MPI=OFF \
             -DCMAKE_BUILD_TYPE="release"
     else
         cmake --preset $PRESET -DNeoN_WITH_THREADS=OFF
@@ -95,6 +101,10 @@ build_and_benchmark() {
 
     echo ">>> Building"
     cmake --build --preset $PRESET
+    # The CI OpenMPI uses the shared-memory transport (mca_btl_vader) which is
+    # not CUDA-aware.  Force staging through host buffers to avoid a SIGSEGV
+    # when device pointers are passed to MPI_Isend.
+    export NEON_FORCE_HOST_BUFFER=1
 
     echo ">>> Running benchmarks..."
     ctest --preset $PRESET
