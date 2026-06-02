@@ -263,53 +263,161 @@ UnstructuredMesh create2DUniformMeshPart(
         neighRanks
     );
 
-    // Build the main face arrays: internal faces followed by the regular boundary
-    // faces (in the reordered patch order).  Processor-boundary faces are excluded
-    // from the main face arrays; they live only in the boundary mesh.
-    auto faceNormalsH = baseMesh.faceNormals().copyToHost();
-    auto faceCentersH = baseMesh.faceCenters().copyToHost();
-    auto faceAreasH = baseMesh.faceAreas().copyToHost();
-    auto faceOwnersMainH = baseMesh.faceOwners().copyToHost();
+    UnstructuredMesh mesh(
+        exec,
+        baseMesh.points(),
+        baseMesh.cellVolumes(),
+        baseMesh.cellCenters(),
+        baseMesh.faceNormals(),
+        baseMesh.faceCenters(),
+        baseMesh.faceAreas(),
+        baseMesh.faceOwners(),
+        baseMesh.faceNeighbors(),
+        std::move(boundaryMesh)
+    );
 
-    const auto mNormals = faceNormalsH.view();
-    const auto mCenters = faceCentersH.view();
-    const auto mAreas = faceAreasH.view();
-    const auto mOwners = faceOwnersMainH.view();
+    return mesh;
+}
 
-    auto mainNormals = std::vector<Vec3>();
-    auto mainCenters = std::vector<Vec3>();
-    auto mainAreas = std::vector<scalar>();
-    auto mainOwners = std::vector<label>();
-    for (localIdx i = 0; i < nInternalFaces; ++i)
+/** @brief Builds the local 2D mesh partition for a given rank using x-only decomposition.
+ *
+ *  The global domain is the unit square [0,1] x [0,1] partitioned into
+ *  totalRanks x 1 strips along x.  Each part is an nCells x nCells hex slab
+ *  (one cell thick in z) of width 1/totalRanks.  ymin and ymax patches are
+ *  always regular; xmin is regular only on rank 0 and xmax only on the last rank.
+ */
+UnstructuredMesh create2DUniformMeshPartX(
+    const Executor exec, const localIdx nCells, const localIdx totalRanks, const localIdx rank
+)
+{
+    const localIdx ranksXPart = totalRanks;
+
+    const scalar lx = static_cast<scalar>(1.0) / static_cast<scalar>(ranksXPart);
+    const scalar ly = static_cast<scalar>(1.0);
+
+    auto baseMesh = create2DUniformMesh(exec, nCells, nCells, lx, ly);
+
+    const localIdx nFacesPerPatch = nCells;
+    const localIdx nInternalFaces = baseMesh.nInternalFaces();
+
+    struct PatchInfo
     {
-        mainNormals.push_back(mNormals[i]);
-        mainCenters.push_back(mCenters[i]);
-        mainAreas.push_back(mAreas[i]);
-        mainOwners.push_back(mOwners[i]);
-    }
-    for (const auto& patch : ordered)
+        localIdx baseIndex;
+        bool isProc;
+        localIdx neighRank;
+        scalar normalSign;
+    };
+
+    const bool isFirst = (rank == 0);
+    const bool isLast = (rank == ranksXPart - 1);
+
+    const PatchInfo patches[4] = {
+        {0, !isFirst, rank - 1, -1.0}, // xmin
+        {1, !isLast, rank + 1, 1.0},   // xmax
+        {2, false, -1, -1.0},          // ymin (always regular)
+        {3, false, -1, 1.0},           // ymax (always regular)
+    };
+
+    std::vector<PatchInfo> ordered;
+    ordered.reserve(4);
+    auto neighRanks = std::vector<localIdx>();
+    for (const auto& patch : patches)
+        if (!patch.isProc) ordered.push_back(patch);
+    for (const auto& patch : patches)
     {
-        if (patch.isProc) continue;
-        const localIdx start = nInternalFaces + patch.baseIndex * nFacesPerPatch;
-        for (localIdx f = 0; f < nFacesPerPatch; ++f)
+        if (patch.isProc)
         {
-            const localIdx mi = start + f;
-            mainNormals.push_back(mNormals[mi]);
-            mainCenters.push_back(mCenters[mi]);
-            mainAreas.push_back(mAreas[mi]);
-            mainOwners.push_back(mOwners[mi]);
+            ordered.push_back(patch);
+            neighRanks.push_back(patch.neighRank);
         }
     }
+    const localIdx nProcPatches = static_cast<localIdx>(neighRanks.size());
+
+    auto bOwnersH = baseMesh.boundaryMesh().faceOwners().copyToHost();
+    auto bCentersH = baseMesh.boundaryMesh().faceCenters().copyToHost();
+    auto bOwnerCCH = baseMesh.boundaryMesh().ownerCellCenters().copyToHost();
+    auto bNormalsH = baseMesh.boundaryMesh().faceNormals().copyToHost();
+    auto bAreasH = baseMesh.boundaryMesh().faceAreas().copyToHost();
+    auto bUnitNormalsH = baseMesh.boundaryMesh().faceUnitNormals().copyToHost();
+    auto bDeltaH = baseMesh.boundaryMesh().delta().copyToHost();
+    auto bDeltaCoeffsH = baseMesh.boundaryMesh().deltaCoeffs().copyToHost();
+
+    const auto bOwners = bOwnersH.view();
+    const auto bCenters = bCentersH.view();
+    const auto bOwnerCC = bOwnerCCH.view();
+    const auto bNormals = bNormalsH.view();
+    const auto bAreas = bAreasH.view();
+    const auto bUnitNormals = bUnitNormalsH.view();
+    const auto bDelta = bDeltaH.view();
+    const auto bDeltaCoeffs = bDeltaCoeffsH.view();
+
+    const auto nBoundaryFaces = static_cast<std::size_t>(4 * nFacesPerPatch);
+    auto faceOwnersVec = std::vector<label>();
+    auto faceCentersVec = std::vector<Vec3>();
+    auto ownerCentersVec = std::vector<Vec3>();
+    auto faceNormalsVec = std::vector<Vec3>();
+    auto faceAreasVec = std::vector<scalar>();
+    auto faceUnitNormalsVec = std::vector<Vec3>();
+    auto deltaVec = std::vector<Vec3>();
+    auto weightsVec = std::vector<scalar>();
+    auto deltaCoeffsVec = std::vector<scalar>();
+    faceOwnersVec.reserve(nBoundaryFaces);
+    faceCentersVec.reserve(nBoundaryFaces);
+    ownerCentersVec.reserve(nBoundaryFaces);
+    faceNormalsVec.reserve(nBoundaryFaces);
+    faceAreasVec.reserve(nBoundaryFaces);
+    faceUnitNormalsVec.reserve(nBoundaryFaces);
+    deltaVec.reserve(nBoundaryFaces);
+    weightsVec.reserve(nBoundaryFaces);
+    deltaCoeffsVec.reserve(nBoundaryFaces);
+
+    for (const auto& patch : ordered)
+    {
+        const localIdx start = patch.baseIndex * nFacesPerPatch;
+        for (localIdx f = 0; f < nFacesPerPatch; ++f)
+        {
+            const localIdx bi = start + f;
+            faceOwnersVec.push_back(bOwners[bi]);
+            faceCentersVec.push_back(bCenters[bi]);
+            ownerCentersVec.push_back(bOwnerCC[bi]);
+            faceNormalsVec.push_back(bNormals[bi]);
+            faceAreasVec.push_back(bAreas[bi]);
+            faceUnitNormalsVec.push_back(bUnitNormals[bi]);
+            deltaVec.push_back(bDelta[bi]);
+            weightsVec.push_back(patch.normalSign);
+            deltaCoeffsVec.push_back(bDeltaCoeffs[bi]);
+        }
+    }
+
+    auto offset = std::vector<localIdx> {
+        0, nFacesPerPatch, 2 * nFacesPerPatch, 3 * nFacesPerPatch, 4 * nFacesPerPatch
+    };
+
+    BoundaryMesh boundaryMesh(
+        exec,
+        {exec, faceOwnersVec},
+        {exec, faceCentersVec},
+        {exec, ownerCentersVec},
+        {exec, faceNormalsVec},
+        {exec, faceAreasVec},
+        {exec, faceUnitNormalsVec},
+        {exec, deltaVec},
+        {exec, weightsVec},
+        {exec, deltaCoeffsVec},
+        offset,
+        nProcPatches,
+        neighRanks
+    );
 
     UnstructuredMesh mesh(
         exec,
         baseMesh.points(),
         baseMesh.cellVolumes(),
         baseMesh.cellCenters(),
-        {exec, mainNormals},
-        {exec, mainCenters},
-        {exec, mainAreas},
-        {exec, mainOwners},
+        baseMesh.faceNormals(),
+        baseMesh.faceCenters(),
+        baseMesh.faceAreas(),
+        baseMesh.faceOwners(),
         baseMesh.faceNeighbors(),
         std::move(boundaryMesh)
     );

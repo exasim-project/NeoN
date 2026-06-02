@@ -23,7 +23,8 @@ inline void initialize(int argc, char* argv[])
     // NOTE: Kokkos::initialize(argc, argv) returns void, so the builder methods
     // (set_print_configuration / set_map_device_id_by) cannot be chained onto it.
     // Plain init also avoids Kokkos printing its configuration on every rank.
-    Kokkos::initialize(argc, argv);
+    // Kokkos::initialize(argc, argv);
+    Kokkos::initialize(Kokkos::InitializationSettings().set_map_device_id_by("random"));
 
     cpptrace::register_terminate_handler();
     // setNeonDefaultPattern() reads the MPI rank internally (when MPI is up) to

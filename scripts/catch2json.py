@@ -22,6 +22,8 @@ def parse_xml_dict(d):
         benchmark_name = name_parts[0]
         dimension = name_parts[1] if len(name_parts) > 1 else ""
 
+        if "Section" not in cases:
+            continue
         sections = cases["Section"]
         if isinstance(sections, dict):
             sections = [sections]
@@ -62,12 +64,37 @@ def main():
             continue
         try:
             with open(xml_file, "r") as fh:
-                d = xmltodict.parse(fh.read())
-                res = parse_xml_dict(d)
+                print(f"reading {xml_file}")
+                content = fh.read()
+            # Strip any non-XML preamble (e.g. "Initializing NeoN") that
+            # appears before the XML declaration so the parser sees valid XML.
+            xml_start = content.find("<?xml")
+            if xml_start > 0:
+                content = content[xml_start:]
+            # Truncate at the XML root closing tag so that trailing stdout
+            # noise (e.g. "Finalizing NeoN" from NeoN::finalize() when spdlog
+            # is disabled) does not cause the XML parser to fail.
+            root_close = "</Catch2TestRun>"
+            idx = content.rfind(root_close)
+            if idx != -1:
+                content = content[: idx + len(root_close)]
+            else:
+                # Root closing tag is absent — the benchmark crashed mid-run
+                # (e.g. MPI_ERR_TRUNCATE). Salvage every complete <TestCase>
+                # by truncating after the last </TestCase> and appending the
+                # missing root close.  If there are no complete test cases the
+                # parse below will fail and the file is skipped as usual.
+                tc_close = "</TestCase>"
+                idx = content.rfind(tc_close)
+                if idx != -1:
+                    content = content[: idx + len(tc_close)] + "\n</Catch2TestRun>"
+            print(f"parsing {xml_file}")
+            d = xmltodict.parse(content)
+            res = parse_xml_dict(d)
             with open(xml_file.replace(".xml", ".json"), "w") as outfile:
                 json.dump(res, outfile)
         except Exception as e:
-            print(e)
+            print("skipping", xml_file, e)
 
 
 if __name__ == "__main__":
