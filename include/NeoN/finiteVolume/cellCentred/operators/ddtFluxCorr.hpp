@@ -75,11 +75,8 @@ inline void ddtFluxCorrBDF1Kernel(
     // value survives the fluxCorr.correctBoundaryConditions() call below. See
     // project_neon_compressed_face_indexing and the matching proc-face loop in
     // pressureVelocityCoupling::flux.
-    auto [outBV, flux0BV, uf0BV, bSfV] = views(
-        fluxCorr.boundaryData().value(),
-        flux0.boundaryData().value(),
-        uf0.boundaryData().value(),
-        mesh.boundaryMesh().faceNormals()
+    auto [outBV, flux0BV, uf0BV] = views(
+        fluxCorr.boundaryData().value(), flux0.boundaryData().value(), uf0.boundaryData().value()
     );
     const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
