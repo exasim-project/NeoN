@@ -1,5 +1,10 @@
 \doxysection{NeoN\+::Logging Namespace Reference}
 \hypertarget{namespaceNeoN_1_1Logging}{}\label{namespaceNeoN_1_1Logging}\index{NeoN::Logging@{NeoN::Logging}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail}{detail}}
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
@@ -31,6 +36,8 @@ enum \mbox{\hyperlink{namespaceNeoN_1_1Logging_a985a1d2ccfde4912ab06beb25ee7d299
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
+void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}{log\+Fatal}} (const std\+::string \&message)
+\item 
 void \mbox{\hyperlink{namespaceNeoN_1_1Logging_aa310704584bd7a5c2ae0ba0ff28b6a0a}{set\+Neon\+Default\+Pattern}} (Neo\+N\+::mpi\+::\+Environment \&environment)
 \item 
 void \mbox{\hyperlink{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}{log\+Impl}} (std\+::string sv, \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}} level, std\+::string log\+Name="{}Neo\+N"{})
@@ -45,7 +52,7 @@ void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a99fdb43e89116eee5836bdb16d1fa283
 \item 
 {\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_ae28b3319e1d8e1ac105229bfded869ec}{debug}} (std\+::string format\+String, Args... args)
 \item 
-{\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a24a416dbe359564546e023e3616eacca}{error}} (std\+::string format\+String, Args... args)
+{\footnotesize template$<$typename... Args$>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a6062fe746358ab37c80f03caff1564c1}{error}} (\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat}{detail\+::\+Fatal\+Format}} fmt\+Loc, Args... args)
 \item 
 void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3}{log}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Logging_1_1BaseLogger}{Base\+Logger}} $>$ logger, \mbox{\hyperlink{classNeoN_1_1Logging_1_1LogEvent}{Log\+Event}} \&event, std\+::string\+\_\+view delim="{},"{})
 \item 
@@ -122,18 +129,18 @@ void Neo\+N\+::\+Logging\+::debug (\begin{DoxyParamCaption}\item[{std\+::string}
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00126}{126}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1Logging_a24a416dbe359564546e023e3616eacca}\label{namespaceNeoN_1_1Logging_a24a416dbe359564546e023e3616eacca} 
+\Hypertarget{namespaceNeoN_1_1Logging_a6062fe746358ab37c80f03caff1564c1}\label{namespaceNeoN_1_1Logging_a6062fe746358ab37c80f03caff1564c1} 
 \index{NeoN::Logging@{NeoN::Logging}!error@{error}}
 \index{error@{error}!NeoN::Logging@{NeoN::Logging}}
 \doxysubsubsection{\texorpdfstring{error()}{error()}}
 {\footnotesize\ttfamily template$<$typename... Args$>$ \\
-void Neo\+N\+::\+Logging\+::error (\begin{DoxyParamCaption}\item[{std\+::string}]{format\+String,  }\item[{Args...}]{args }\end{DoxyParamCaption})}
+void Neo\+N\+::\+Logging\+::error (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structNeoN_1_1Logging_1_1detail_1_1FatalFormat}{detail\+::\+Fatal\+Format}}}]{fmt\+Loc,  }\item[{Args...}]{args }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00127}{127}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}\label{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c} 
 \index{NeoN::Logging@{NeoN::Logging}!info@{info}}
@@ -144,7 +151,7 @@ void Neo\+N\+::\+Logging\+::info (\begin{DoxyParamCaption}\item[{std\+::string}]
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00110}{110}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3}\label{namespaceNeoN_1_1Logging_a1a041df8e9d32fdec6253944cbd348a3} 
 \index{NeoN::Logging@{NeoN::Logging}!log@{log}}
@@ -154,7 +161,13 @@ Definition at line \mbox{\hyperlink{logging_8hpp_source_l00103}{103}} of file \m
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00159}{159}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00183}{183}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}\label{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998} 
+\index{NeoN::Logging@{NeoN::Logging}!logFatal@{logFatal}}
+\index{logFatal@{logFatal}!NeoN::Logging@{NeoN::Logging}}
+\doxysubsubsection{\texorpdfstring{logFatal()}{logFatal()}}
+{\footnotesize\ttfamily void Neo\+N\+::\+Logging\+::log\+Fatal (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message }\end{DoxyParamCaption})}
 
 \Hypertarget{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0}\label{namespaceNeoN_1_1Logging_af557590585d10fa3012ddd3beb9078e0} 
 \index{NeoN::Logging@{NeoN::Logging}!logImpl@{logImpl}}
@@ -171,7 +184,7 @@ void Neo\+N\+::\+Logging\+::set\+Logger (\begin{DoxyParamCaption}\item[{Call\+Cl
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00209}{209}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00233}{233}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1Logging_aa310704584bd7a5c2ae0ba0ff28b6a0a}\label{namespaceNeoN_1_1Logging_aa310704584bd7a5c2ae0ba0ff28b6a0a} 
 \index{NeoN::Logging@{NeoN::Logging}!setNeonDefaultPattern@{setNeonDefaultPattern}}
@@ -200,5 +213,5 @@ void Neo\+N\+::\+Logging\+::warn (\begin{DoxyParamCaption}\item[{std\+::string}]
 
 
 
-Definition at line \mbox{\hyperlink{logging_8hpp_source_l00111}{111}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
+Definition at line \mbox{\hyperlink{logging_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{logging_8hpp_source}{logging.\+hpp}}.
 
