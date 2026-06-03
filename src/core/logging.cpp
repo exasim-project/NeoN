@@ -29,23 +29,40 @@ std::shared_ptr<const BaseLogger> SupportsLoggingMixin::getLogger() const { retu
 namespace
 {
 // Rank-based logging policy, honoured in BOTH the spdlog and the (default)
-// no-spdlog builds. Set once by setNeonDefaultPattern -> never on the hot path.
-// On non-root MPI ranks the minimum level is raised to Error, so info/warn/debug
-// are muted there, and a "[rank N] " prefix tags the error output that remains.
+// no-spdlog builds. On non-root MPI ranks the minimum level is raised to Error,
+// so info/warn/debug are muted there, and a "[rank N] " prefix tags the error
+// output that remains.
 Level minLevel = Level::Info;
 std::string rankPrefix; // empty on rank 0 / serial
+// Whether an MPI-aware policy has been applied yet. NeoN::initialize may run the
+// default-pattern setup BEFORE the host (e.g. OpenFOAM) has initialized MPI; in
+// that case the rank is unknown and the policy is resolved lazily on the first
+// log once MPI is up. This makes muting independent of the init order.
+bool policyResolved = false;
+
+void applyRankPolicy(std::size_t rank)
+{
+    const bool nonRoot = rank != 0;
+    minLevel = nonRoot ? Level::Error : Level::Info;
+    rankPrefix = nonRoot ? fmt::format("[rank {}] ", rank) : std::string {};
+}
 }
 
 void setNeonDefaultPattern([[maybe_unused]] mpi::Environment& environment)
 {
-    const bool nonRoot = environment.isInitialized() && environment.rank() != 0;
-    minLevel = nonRoot ? Level::Error : Level::Info;
-    rankPrefix = nonRoot ? fmt::format("[rank {}] ", environment.rank()) : std::string {};
+    const bool mpiUp = environment.isInitialized();
+    if (mpiUp)
+    {
+        applyRankPolicy(environment.rank());
+        policyResolved = true;
+    }
+    // else: MPI is not up yet (host inits it after NeoN); keep the permissive
+    // default and let shouldLog() resolve the rank policy lazily once MPI is up.
 
 #if NF_WITH_SPDLOG
     // logger->set_pattern("%-120v[%^%l%$][%o]");
     auto logger = spdlog::stdout_color_mt("NeoN");
-    if (nonRoot)
+    if (mpiUp && environment.rank() != 0)
     {
         // only errors are emitted on non-root ranks; tag them with the rank so
         // distributed error output stays attributable
@@ -72,6 +89,19 @@ bool shouldLog([[maybe_unused]] Level level, [[maybe_unused]] std::string logNam
     auto logger = spdlog::get(logName);
     return logger && logger->should_log(spdlog::level::level_enum(level));
 #else
+#ifdef NF_WITH_MPI_SUPPORT
+    // Resolve the rank policy lazily if NeoN was initialized before MPI came up.
+    // Cheap (MPI_Initialized + rank) and only until the first post-MPI log.
+    if (!policyResolved)
+    {
+        mpi::Environment env;
+        if (env.isInitialized())
+        {
+            applyRankPolicy(env.rank());
+            policyResolved = true;
+        }
+    }
+#endif
     return level >= minLevel;
 #endif
 }
