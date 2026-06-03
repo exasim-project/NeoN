@@ -17,7 +17,10 @@ auto noAssert = []() {};
 #include "spdlog/async.h"
 #endif
 
+#include <cstdlib>
 #include <iostream>
+
+#include "cpptrace/cpptrace.hpp"
 
 namespace NeoN::Logging
 {
@@ -31,14 +34,12 @@ namespace
 // Rank-based logging policy, honoured in BOTH the spdlog and the (default)
 // no-spdlog builds. On non-root MPI ranks the minimum level is raised to Error,
 // so info/warn/debug are muted there, and a "[rank N] " prefix tags the error
-// output that remains.
+// output that remains. Resolved once in setNeonDefaultPattern -> shouldLog() is a
+// plain comparison with no per-call MPI query (hot-path free, serial included).
+// NOTE: for rank-aware muting, MPI must be initialized before NeoN::initialize
+// runs (as in neoIcoFoam/neoPisoFoam, which call setRootCase.H first).
 Level minLevel = Level::Info;
 std::string rankPrefix; // empty on rank 0 / serial
-// Whether an MPI-aware policy has been applied yet. NeoN::initialize may run the
-// default-pattern setup BEFORE the host (e.g. OpenFOAM) has initialized MPI; in
-// that case the rank is unknown and the policy is resolved lazily on the first
-// log once MPI is up. This makes muting independent of the init order.
-bool policyResolved = false;
 
 void applyRankPolicy(std::size_t rank)
 {
@@ -51,13 +52,9 @@ void applyRankPolicy(std::size_t rank)
 void setNeonDefaultPattern([[maybe_unused]] mpi::Environment& environment)
 {
     const bool mpiUp = environment.isInitialized();
-    if (mpiUp)
-    {
-        applyRankPolicy(environment.rank());
-        policyResolved = true;
-    }
-    // else: MPI is not up yet (host inits it after NeoN); keep the permissive
-    // default and let shouldLog() resolve the rank policy lazily once MPI is up.
+    // Resolve the rank policy now. In serial (or before MPI is up) the permissive
+    // default applies, which is correct for a single-rank run.
+    if (mpiUp) applyRankPolicy(environment.rank());
 
 #if NF_WITH_SPDLOG
     // logger->set_pattern("%-120v[%^%l%$][%o]");
@@ -89,19 +86,6 @@ bool shouldLog([[maybe_unused]] Level level, [[maybe_unused]] std::string logNam
     auto logger = spdlog::get(logName);
     return logger && logger->should_log(spdlog::level::level_enum(level));
 #else
-#ifdef NF_WITH_MPI_SUPPORT
-    // Resolve the rank policy lazily if NeoN was initialized before MPI came up.
-    // Cheap (MPI_Initialized + rank) and only until the first post-MPI log.
-    if (!policyResolved)
-    {
-        mpi::Environment env;
-        if (env.isInitialized())
-        {
-            applyRankPolicy(env.rank());
-            policyResolved = true;
-        }
-    }
-#endif
     return level >= minLevel;
 #endif
 }
@@ -150,11 +134,26 @@ Logger::~Logger()
 
 void terminate()
 {
-#if defined(NF_WITH_MPI_SUPPORT) && defined(NF_DEBUG_MESSAGING)
+    // Always emit a stack trace (cpptrace is an unconditional dependency).
     cpptrace::generate_trace().print();
-    MPI_Abort(MPI_COMM_WORLD, 1);
+#ifdef NF_WITH_MPI_SUPPORT
+    // In MPI runs a single failing rank must tear the whole job down, otherwise
+    // peers block forever on a collective. Abort the communicator in ALL MPI
+    // builds (previously only under debug messaging, and even then commented out).
+    int initialized = 0;
+    MPI_Initialized(&initialized);
+    if (initialized) MPI_Abort(MPI_COMM_WORLD, 1);
 #endif
-    std::terminate();
+    std::abort();
+}
+
+void logFatal(const std::string& message)
+{
+    // Fatal path: print directly (rank-tagged) without going through spdlog so it
+    // works even before the logger is set up, then abort. Errors are rare, so the
+    // direct std::cerr write is fine.
+    std::cerr << rankPrefix << message << std::endl;
+    terminate();
 }
 
 }

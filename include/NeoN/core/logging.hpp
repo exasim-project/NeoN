@@ -96,7 +96,14 @@ void logImpl(
  */
 bool shouldLog(Level level, std::string logName = "NeoN");
 
-void terminate();
+[[noreturn]] void terminate();
+
+/* @brief Log a fatal message (rank-tagged) and terminate the program.
+ *
+ * In MPI runs this aborts the communicator so peers do not deadlock on a
+ * collective. Used by NF_ERROR_EXIT / NF_ASSERT (core/error.hpp) and error().
+ */
+[[noreturn]] void logFatal(const std::string& message);
 
 /*@brief convenience function to call spdlogs info with std::format */
 template<typename... Args>
@@ -122,17 +129,34 @@ void debug(std::string formatString, Args... args)
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Debug);
 }
 
-/*@brief convenience function to call spdlogs debug with std::format */
-template<typename... Args>
-void error(std::string formatString, Args... args)
+namespace detail
 {
-    // Errors print on every rank (non-root loggers run at error level), but only
-    // build the message when it will actually be emitted. terminate() always runs.
-    if (shouldLog(Level::Error))
-    {
-        logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Error);
-    }
-    terminate();
+/* Wraps a format string with the call-site source location. The default
+ * source_location argument is evaluated where the implicit conversion from the
+ * format string happens — i.e. at the error() call site — so error() captures the
+ * caller's file/line without an explicit argument. */
+struct FatalFormat
+{
+    std::string_view fmt;
+    std::source_location loc;
+    FatalFormat(const char* f, std::source_location l = std::source_location::current())
+        : fmt(f), loc(l)
+    {}
+    FatalFormat(std::string_view f, std::source_location l = std::source_location::current())
+        : fmt(f), loc(l)
+    {}
+    FatalFormat(const std::string& f, std::source_location l = std::source_location::current())
+        : fmt(f), loc(l)
+    {}
+};
+}
+
+/*@brief Log a fatal formatted message (with the caller's file:line) and abort. */
+template<typename... Args>
+[[noreturn]] void error(detail::FatalFormat fmtLoc, Args... args)
+{
+    auto message = fmt::format(fmt::runtime(fmtLoc.fmt), args...);
+    logFatal(fmt::format("{}:{} {}", fmtLoc.loc.file_name(), fmtLoc.loc.line(), message));
 }
 
 /* @class A base class to build additional loggers
