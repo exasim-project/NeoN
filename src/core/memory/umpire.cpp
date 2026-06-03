@@ -9,6 +9,7 @@
 #endif
 
 #include "NeoN/core/memory/umpire.hpp"
+#include "NeoN/core/logging.hpp"
 
 
 namespace NeoN
@@ -56,6 +57,44 @@ void UmpireMempoolHandler::setupUmpirePool(MemorySpace memSpace, size_t size)
     default:
         NF_ERROR_EXIT("Unknown memory space");
     }
+}
+
+std::size_t UmpireMempoolHandler::actualSize(MemorySpace memSpace)
+{
+    if (!hasPool(memSpace)) return 0;
+    return getUmpirePool(memSpace).getActualSize();
+}
+
+std::size_t UmpireMempoolHandler::currentSize(MemorySpace memSpace)
+{
+    if (!hasPool(memSpace)) return 0;
+    return getUmpirePool(memSpace).getCurrentSize();
+}
+
+std::size_t UmpireMempoolHandler::highWatermark(MemorySpace memSpace)
+{
+    if (!hasPool(memSpace)) return 0;
+    return getUmpirePool(memSpace).getHighWatermark();
+}
+
+void UmpireMempoolHandler::logStats(MemorySpace memSpace, const std::string& label)
+{
+    const char* space = (memSpace == MemorySpace::GPU) ? "DEVICE" : "HOST";
+    if (!hasPool(memSpace))
+    {
+        NeoN::Logging::info("[mempool {}] no {} pool", label, space);
+        return;
+    }
+    auto pool = getUmpirePool(memSpace);
+    constexpr double toMB = 1.0 / (1024.0 * 1024.0);
+    NeoN::Logging::info(
+        "[mempool {}] {}_POOL in-use {:.1f} MB | reserved {:.1f} MB | high-water {:.1f} MB",
+        label,
+        space,
+        static_cast<double>(pool.getCurrentSize()) * toMB,
+        static_cast<double>(pool.getActualSize()) * toMB,
+        static_cast<double>(pool.getHighWatermark()) * toMB
+    );
 }
 
 

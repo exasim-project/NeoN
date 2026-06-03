@@ -18,6 +18,10 @@ neon_unit_test(parallelAlgorithms)
 neon_unit_test(view)
 neon_unit_test(segmentedVector)
 
+if(NeoN_WITH_UMPIRE)
+  neon_unit_test(memoryPool)
+endif()
+
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace
                                                       NeoN::NeoN_public_api)

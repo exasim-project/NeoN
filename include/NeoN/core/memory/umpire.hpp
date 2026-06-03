@@ -11,6 +11,9 @@
 #include "umpire/ResourceManager.hpp"
 #endif
 
+#include <cstddef>
+#include <string>
+
 namespace NeoN
 {
 
@@ -34,6 +37,27 @@ public:
         }
         return rm.getAllocator("HOST_POOL");
     }
+
+    /** @brief Bytes the pool currently reserves from the device — its real ceiling.
+     *  0 if the pool does not exist.
+     *
+     *  Note: a QuickPool only ever returns *whole, completely-free* blocks to the device
+     *  (and only via an explicit release, not implemented here). It cannot hand back the
+     *  unused space inside a block that still holds any live allocation, so a pool
+     *  pre-sized to the device maximum stays fully reserved for the whole run. These
+     *  accessors exist to *report* that ceiling, not to change it — to fit more cells
+     *  the peak working set itself must shrink. */
+    static std::size_t actualSize(MemorySpace memSpace);
+
+    /** @brief Bytes currently handed out (in use) from the pool. 0 if no pool. */
+    static std::size_t currentSize(MemorySpace memSpace);
+
+    /** @brief High-water mark of in-use bytes over the pool's lifetime. 0 if no pool. */
+    static std::size_t highWatermark(MemorySpace memSpace);
+
+    /** @brief Log in-use / reserved / high-water pool sizes (MB) at info level so the
+     *  device-memory ceiling that limits cells-per-GPU is visible during a run. */
+    static void logStats(MemorySpace memSpace, const std::string& label = "");
 
     static void destroyUmpirePool(MemorySpace memSpace)
     {
