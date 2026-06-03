@@ -93,32 +93,15 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 
     // For the last rank, the baseMesh boundary faces need to be physically swapped so
     // that regular (xmax) comes before the proc face in the internal face arrays.
-    auto faceCentersH = baseMesh.faceCenters().copyToHost();
-    auto faceNormalsH = baseMesh.faceNormals().copyToHost();
-    if (isLast)
-    {
-        const auto localCells = baseMesh.nCells();
-        std::swap(faceCentersH.view()[localCells - 1], faceCentersH.view()[localCells]);
-        faceNormalsH.view()[localCells - 1] = {1.0, 0.0, 0.0}; // xmax
-        faceNormalsH.view()[localCells] = {-1.0, 0.0, 0.0};    // proc left
-    }
-
-    const localIdx nFacesPart = baseMesh.nInternalFaces() + nRegularBoundary;
-
-    auto faceCentersPart = take(faceCentersH.copyToExecutor(exec), {0, nFacesPart});
-    auto faceNormalsPart = take(faceNormalsH.copyToExecutor(exec), {0, nFacesPart});
-    auto faceAreasPart = take(baseMesh.faceAreas(), {0, nFacesPart});
-    auto faceOwnersPart = take(baseMesh.faceOwners(), {0, nFacesPart});
-
     UnstructuredMesh mesh(
         exec,
         baseMesh.points(),
         baseMesh.cellVolumes(),
         baseMesh.cellCenters(),
-        faceNormalsPart,
-        faceCentersPart,
-        faceAreasPart,
-        faceOwnersPart,
+        baseMesh.faceNormals(),
+        baseMesh.faceCenters(),
+        baseMesh.faceAreas(),
+        baseMesh.faceOwners(),
         baseMesh.faceNeighbors(),
         std::move(boundaryMesh)
     );

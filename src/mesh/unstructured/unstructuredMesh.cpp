@@ -265,9 +265,9 @@ UnstructuredMesh create3DUniformMesh(
         vectorVector(exec, std::move(points)),
         scalarVector(exec, std::move(cellVolumes)),
         vectorVector(exec, std::move(cellCenters)),
-        {exec, std::move(faces.areas)},
+        {exec, std::move(faces.normals)},
         {exec, std::move(faces.centers)},
-        {exec, std::move(faces.magnitudes)},
+        {exec, std::move(faces.areas)},
         {exec, std::move(faces.owner)},
         labelVector(exec, std::move(faces.neighbour)),
         std::move(boundaryMesh)

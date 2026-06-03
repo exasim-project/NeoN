@@ -33,7 +33,7 @@ void computeGrad(
 
     auto surfGradPhi = out.view();
 
-    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceAreaS, surfV] = views(
+    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceNormals, surfV] = views(
         mesh.boundaryMesh().faceOwners(),
         mesh.faceOwners(),
         mesh.faceNeighbors(),
@@ -56,7 +56,7 @@ void computeGrad(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Vec3 flux = faceAreaS[i] * surfPhif[i];
+            Vec3 flux = faceNormals[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);    // +S_f * φ_f
             Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux); // −S_f * φ_f
         },
@@ -64,12 +64,13 @@ void computeGrad(
     );
 
     // Boundary faces: only the owner cell is on this rank.
+    const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            Vec3 valueOwn = faceAreaS[nInternalFaces + bfi] * surfPhifB[bfi];
+            Vec3 valueOwn = bFaceNormals[bfi] * surfPhifB[bfi];
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeGradBoundary"
@@ -290,13 +291,13 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
+    const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
         {0, nBnd},
         NEON_LAMBDA(const localIdx bi) {
             const auto o = bFaceCells[bi];
-            // TODO Issue #515
-            const Vec3 sf = SfAll[nInt + bi];
+            const Vec3 sf = bFaceNormals[bi];
             const Vec3 faceU = ufBound[bi];
             for (size_t row = 0; row < 3; ++row)
             {
