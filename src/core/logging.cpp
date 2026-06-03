@@ -49,29 +49,23 @@ void applyRankPolicy(std::size_t rank)
 }
 }
 
-void setNeonDefaultPattern([[maybe_unused]] mpi::Environment& environment)
+void setNeonDefaultPattern()
 {
-    const bool mpiUp = environment.isInitialized();
     // Resolve the rank policy now. In serial (or before MPI is up) the permissive
-    // default applies, which is correct for a single-rank run.
-    if (mpiUp) applyRankPolicy(environment.rank());
+    // default applies, which is correct for a single-rank run. Done once here so
+    // shouldLog() stays a plain comparison with no per-call MPI query.
+#ifdef NF_WITH_MPI_SUPPORT
+    mpi::Environment environment;
+    if (environment.isInitialized()) applyRankPolicy(environment.rank());
+#endif
 
 #if NF_WITH_SPDLOG
-    // logger->set_pattern("%-120v[%^%l%$][%o]");
     auto logger = spdlog::stdout_color_mt("NeoN");
-    if (mpiUp && environment.rank() != 0)
-    {
-        // only errors are emitted on non-root ranks; tag them with the rank so
-        // distributed error output stays attributable
-        logger->set_pattern(fmt::format("[rank {}] %v", environment.rank()));
-        logger->set_level(spdlog::level::err);
-    }
-    else
-    {
-        // rank 0 (or serial) keeps clean, OpenFOAM-master-style output
-        logger->set_pattern("%v");
-        logger->set_level(spdlog::level::info);
-    }
+    // Derive pattern/level from the rank policy: rankPrefix is "[rank N] " on
+    // non-root ranks (empty otherwise); minLevel is Error there so only errors
+    // are emitted and stay rank-attributable.
+    logger->set_pattern(rankPrefix + "%v");
+    logger->set_level(minLevel == Level::Error ? spdlog::level::err : spdlog::level::info);
     logger->info("Initializing NeoN");
 #else
     if (shouldLog(Level::Info))

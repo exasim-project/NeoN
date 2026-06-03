@@ -79,7 +79,11 @@ public:
     }
 };
 
-void setNeonDefaultPattern(NeoN::mpi::Environment& environment);
+// Configure the default "NeoN" logger and the rank-based mute policy. Reads the
+// MPI rank internally (when MPI support is enabled and MPI is initialized), so it
+// works with or without MPI and needs no argument. Call after the host has
+// initialized MPI so the rank is known.
+void setNeonDefaultPattern();
 
 void logImpl(
     std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName = "NeoN"

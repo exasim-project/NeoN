@@ -18,7 +18,6 @@
 namespace NeoN
 {
 
-#ifdef NF_WITH_MPI_SUPPORT
 inline void initialize(int argc, char* argv[])
 {
     // NOTE: Kokkos::initialize(argc, argv) returns void, so the builder methods
@@ -27,8 +26,10 @@ inline void initialize(int argc, char* argv[])
     Kokkos::initialize(argc, argv);
 
     cpptrace::register_terminate_handler();
-    mpi::Environment mpiEnviron;
-    Logging::setNeonDefaultPattern(mpiEnviron);
+    // setNeonDefaultPattern() reads the MPI rank internally (when MPI is up) to
+    // mute non-root ranks; it works with or without MPI support. Call it after the
+    // host has initialized MPI so the rank is known.
+    Logging::setNeonDefaultPattern();
 }
 
 inline void finalize()
@@ -36,20 +37,6 @@ inline void finalize()
     Logging::info("Finalizing NeoN");
     Kokkos::finalize();
 }
-#else
-inline void initialize(int argc, char* argv[])
-{
-    // See note above: Kokkos::initialize(argc, argv) returns void.
-    Kokkos::initialize(argc, argv);
-    Logging::setNeonDefaultPattern(mpiEnviron);
-}
-
-inline void finalize()
-{
-    Logging::info("Finalizing NeoN");
-    Kokkos::finalize();
-}
-#endif
 
 
 }
