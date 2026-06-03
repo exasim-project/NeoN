@@ -79,12 +79,19 @@ TEST_CASE("RunTimeSelectionFactory")
 
     SECTION("classes are registered")
     {
-        CHECK(NeoN::BaseClassDocumentation::docTable().size() == 2);
-        for (const auto& it : NeoN::BaseClassDocumentation::docTable())
+        // docTable() is a process-global singleton that accumulates every base class registered
+        // anywhere in the linked NeoN library, so its total size is not a stable quantity to assert
+        // on. Instead verify that the two base classes registered by this test are present and that
+        // their derived classes carry non-empty documentation and schema.
+        const auto& docTable = NeoN::BaseClassDocumentation::docTable();
+        CHECK(docTable.contains("BaseClass"));
+        CHECK(docTable.contains("BaseClass2"));
+
+        for (const auto& baseClassName : {std::string("BaseClass"), std::string("BaseClass2")})
         {
-            std::string baseClassName = it.first;
             std::cout << "baseClassName " << baseClassName << std::endl;
             auto entries = NeoN::BaseClassDocumentation::entries(baseClassName);
+            CHECK(!entries.empty());
             for (const auto& derivedClass : entries)
             {
                 std::cout << "   - " << derivedClass << std::endl;
