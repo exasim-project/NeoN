@@ -141,7 +141,7 @@ jobs:
     name: ${{ matrix.label }} wheels
     needs: version
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.build_wheels && inputs.build_gpu
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.build_wheels && inputs.build_gpu)
     strategy:
       fail-fast: false
       matrix:
@@ -159,7 +159,11 @@ jobs:
               cmake.define.NeoN_WITH_UMPIRE=OFF
               cmake.define.NeoN_INSTALL_CMAKE_PACKAGE=OFF
               cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+              cmake.define.CMAKE_CUDA_HOST_COMPILER=/usr/local/bin/g++
               cmake.define.CMAKE_CUDA_ARCHITECTURES=80
+              cmake.define.CMAKE_CUDA_STANDARD=20
+              cmake.define.CMAKE_CUDA_STANDARD_REQUIRED=ON
+              cmake.define.CMAKE_CUDA_EXTENSIONS=OFF
               cmake.define.Kokkos_ENABLE_SERIAL=ON
               cmake.define.Kokkos_ENABLE_CUDA=ON
               cmake.define.Kokkos_ENABLE_HIP=OFF
@@ -179,7 +183,11 @@ jobs:
               cmake.define.NeoN_WITH_UMPIRE=OFF
               cmake.define.NeoN_INSTALL_CMAKE_PACKAGE=OFF
               cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+              cmake.define.CMAKE_CUDA_HOST_COMPILER=/usr/local/bin/g++
               cmake.define.CMAKE_CUDA_ARCHITECTURES=80
+              cmake.define.CMAKE_CUDA_STANDARD=20
+              cmake.define.CMAKE_CUDA_STANDARD_REQUIRED=ON
+              cmake.define.CMAKE_CUDA_EXTENSIONS=OFF
               cmake.define.Kokkos_ENABLE_SERIAL=ON
               cmake.define.Kokkos_ENABLE_CUDA=ON
               cmake.define.Kokkos_ENABLE_HIP=OFF
@@ -218,10 +226,22 @@ jobs:
             PATH=/usr/local/cuda/bin:$PATH
             LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
             CUDACXX=/usr/local/cuda/bin/nvcc
+            CUDAHOSTCXX=/usr/local/bin/g++
             CUDAToolkit_ROOT=/usr/local/cuda
             CMAKE_BUILD_PARALLEL_LEVEL=2
           CIBW_BUILD_VERBOSITY: 1
           CIBW_TEST_SKIP: "*"
+
+      - name: Upload GPU build failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-build-logs-${{ matrix.suffix }}
+          path: |
+            _skbuild/**/CMake*.log
+            _skbuild/**/CMakeConfigureLog.yaml
+            _skbuild/**/*.log
+          if-no-files-found: ignore
 
       - name: Upload GPU wheel artifacts
         uses: actions/upload-artifact@v4
