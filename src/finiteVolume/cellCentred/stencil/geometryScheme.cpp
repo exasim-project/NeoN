@@ -124,12 +124,15 @@ void GeometryScheme::update()
 
 void GeometryScheme::reset() const
 {
-    // Free the per-cell/face geometry on the device once the geometry scheme has consumed it.
-    // weights / deltaCoeffs / nonOrthDeltaCoeffs / corrVec are now cached in this object, so the
-    // cellCentres/faceCentres arrays are no longer needed for subsequent computations and
-    // freeing them saves device memory on large meshes (revisit for moving/rotating meshes).
-    // The const_cast is safe while the underlying mesh object is non-const, which holds for all
-    // current construction paths (review M1: warn dropped, const_cast retained + justified).
+    // Free the per-point/cell/face geometry on the device once the geometry scheme has consumed
+    // it. weights / nonOrthDeltaCoeffs / corrVec are now cached in this object, so the
+    // points/cellCentres/faceCentres arrays are no longer needed for subsequent computations and
+    // freeing them saves device memory on large meshes (revisit for moving/rotating meshes, which
+    // would repopulate all three). points() is read only during construction/partitioning, never
+    // after this point. The const_cast is safe while the underlying mesh object is non-const,
+    // which holds for all current construction paths (review M1: warn dropped, const_cast
+    // retained + justified).
+    const_cast<UnstructuredMesh&>(mesh_).points().resize(0);
     const_cast<UnstructuredMesh&>(mesh_).faceCenters().resize(0);
     const_cast<UnstructuredMesh&>(mesh_).cellCenters().resize(0);
 }
