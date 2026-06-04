@@ -23,6 +23,13 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("coupled");
     }
 
+    // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
+    // residual reporting; it is not a Ginkgo config key.
+    if (dict.contains("reportName"))
+    {
+        dict.remove("reportName");
+    }
+
     // check if an external file name is given
     if (dict.contains("configFile"))
     {
