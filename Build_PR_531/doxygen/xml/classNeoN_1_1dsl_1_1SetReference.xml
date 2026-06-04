@@ -89,7 +89,7 @@
 <para>Post-assembly functor that pins one cell&apos;s value to a reference, removing the constant null space that arises when all boundaries have Neumann (zero-gradient) conditions on operators such as laplacian or div+laplacian. </para>
     </briefdescription>
     <detaileddescription>
-<para>Modifies the assembled linear system in-place: A[refCell, refCell] += A[refCell, refCell] (doubles the diagonal) rhs[refCell] += A[refCell, refCell] * refValue</para>
+<para>Modifies the assembled linear system in-place: <ref refid="classA" kindref="compound">A</ref>[refCell, refCell] += <ref refid="classA" kindref="compound">A</ref>[refCell, refCell] (doubles the diagonal) rhs[refCell] += <ref refid="classA" kindref="compound">A</ref>[refCell, refCell] * refValue</para>
 <para>For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-distributed systems every rank applies it independently (each holds a full copy). @TODO allow to set a refPoint instead of a refCell, make the refCell a global cellID </para>
     </detaileddescription>
     <inheritancegraph>

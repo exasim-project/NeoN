@@ -38,8 +38,10 @@
           <defval>&quot;NeoN&quot;</defval>
         </param>
         <briefdescription>
+<para>Returns whether a message at the given level would actually be emitted by the named logger. </para>
         </briefdescription>
         <detaileddescription>
+<para>The convenience helpers below call this BEFORE building the message so that on muted ranks (non-root MPI ranks log at error level only) no string formatting happens at all — keeping the hot path free of cost in distributed runs. It is also null-safe: if the logger is not registered yet it returns false instead of dereferencing a null pointer. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

@@ -58,7 +58,7 @@ Neo\+N\+::la\+::\+Cell\+Based\+Iterator\+::\+Cell\+Based\+Data\+::\+Cell\+Based\
 
 Construct from pre-\/computed connectivity arrays. 
 
-A user-\/declared constructor is required (rather than relying on aggregate initialisation) because {\ttfamily std\+::make\+\_\+shared} builds the object through {\ttfamily std\+::construct\+\_\+at}, which performs parenthesised placement-\/new\+: {\ttfamily new(p)\textbackslash{}} Cell\+Based\+Data(args...). Parenthesised initialisation of aggregates (C++20 P0960) is not implemented by the CUDA 12.\+4 nvcc/\+EDG front-\/end, so {\ttfamily make\+\_\+shared$<$\+Cell\+Based\+Data$>$(...)} fails there with "{}no instance of constructor ... matches"{}.
+\doxylink{classA}{A} user-\/declared constructor is required (rather than relying on aggregate initialisation) because {\ttfamily std\+::make\+\_\+shared} builds the object through {\ttfamily std\+::construct\+\_\+at}, which performs parenthesised placement-\/new\+: {\ttfamily new(p)\textbackslash{}} Cell\+Based\+Data(args...). Parenthesised initialisation of aggregates (C++20 P0960) is not implemented by the CUDA 12.\+4 nvcc/\+EDG front-\/end, so {\ttfamily make\+\_\+shared$<$\+Cell\+Based\+Data$>$(...)} fails there with "{}no instance of constructor ... matches"{}.
 
 The container parameters are templated so the constructor adapts to however the connectivity arrays are spelled at the call site ({\ttfamily \doxylink{classNeoN_1_1Vector}{Vector$<$local\+Idx$>$}} or {\ttfamily \doxylink{classNeoN_1_1Vector}{Vector$<$label$>$}}), avoiding a brittle exact type match across \doxylink{namespaceNeoN}{NeoN} revisions. 
 

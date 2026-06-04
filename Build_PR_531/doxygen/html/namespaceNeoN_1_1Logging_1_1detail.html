@@ -91,6 +91,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ae21753e01f652e0f034771427422e817" id="r_ae21753e01f652e0f034771427422e817"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging_1_1detail.html#ae21753e01f652e0f034771427422e817">logFatal</a> (const std::string &amp;message)</td></tr>
 <tr class="separator:ae21753e01f652e0f034771427422e817"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e73addd14a38aa9ed6d117a4ea987df" id="r_a7e73addd14a38aa9ed6d117a4ea987df"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging_1_1detail.html#a7e73addd14a38aa9ed6d117a4ea987df">shouldLog</a> (<a class="el" href="namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214">Level</a> level, std::string logName=&quot;NeoN&quot;)</td></tr>
+<tr class="memdesc:a7e73addd14a38aa9ed6d117a4ea987df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a message at the given level would actually be emitted by the named logger.  <br /></td></tr>
 <tr class="separator:a7e73addd14a38aa9ed6d117a4ea987df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -137,6 +138,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns whether a message at the given level would actually be emitted by the named logger. </p>
+<p>The convenience helpers below call this BEFORE building the message so that on muted ranks (non-root MPI ranks log at error level only) no string formatting happens at all — keeping the hot path free of cost in distributed runs. It is also null-safe: if the logger is not registered yet it returns false instead of dereferencing a null pointer. </p>
 
 </div>
 </div>
