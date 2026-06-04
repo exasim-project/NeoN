@@ -35,7 +35,7 @@ enum Target
     File
 };
 
-/* @brief A class to represent a LogEvent
+/** @brief A class to represent a LogEvent
  *
  */
 class LogEvent
@@ -57,7 +57,7 @@ public:
 
     std::chrono::time_point<std::chrono::steady_clock> creationTS; // store time of constructor call
 
-    /* @brief convert event to a json string */
+    /** @brief convert event to a json string */
     std::string toJson(std::string_view delim)
     {
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -79,7 +79,7 @@ public:
     }
 };
 
-/* Configure the default "NeoN" logger and the rank-based mute policy. Reads the
+/** Configure the default "NeoN" logger and the rank-based mute policy. Reads the
  * MPI rank internally (when MPI support is enabled and MPI is initialized), so it
  * works with or without MPI and needs no argument. Call after the host has
  * initialized MPI so the rank is known.
@@ -95,7 +95,7 @@ void logImpl(
 namespace detail
 {
 
-/* @brief Returns whether a message at the given level would actually be emitted
+/** @brief Returns whether a message at the given level would actually be emitted
  *        by the named logger.
  *
  * The convenience helpers below call this BEFORE building the message so that on
@@ -115,7 +115,7 @@ bool shouldLog(Level level, std::string logName = "NeoN");
 
 }
 
-/*@brief convenience function to call spdlogs info with std::format */
+/** @brief convenience function to call spdlogs info with std::format */
 template<typename... Args>
 void info(std::string formatString, Args... args)
 {
@@ -123,7 +123,7 @@ void info(std::string formatString, Args... args)
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Info);
 }
 
-/*@brief convenience function to call spdlogs warn with std::format */
+/** @brief convenience function to call spdlogs warn with std::format */
 template<typename... Args>
 void warn(std::string formatString, Args... args)
 {
@@ -131,7 +131,7 @@ void warn(std::string formatString, Args... args)
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Warning);
 }
 
-/*@brief convenience function to call spdlogs debug with std::format */
+/** @brief convenience function to call spdlogs debug with std::format */
 template<typename... Args>
 void debug(std::string formatString, Args... args)
 {
@@ -141,7 +141,7 @@ void debug(std::string formatString, Args... args)
 
 namespace detail
 {
-/* Wraps a format string with the call-site source location. The default
+/** Wraps a format string with the call-site source location. The default
  * source_location argument is evaluated where the implicit conversion from the
  * format string happens — i.e. at the error() call site — so error() captures the
  * caller's file/line without an explicit argument. */
@@ -161,7 +161,7 @@ struct FatalFormat
 };
 }
 
-/*@brief Log a fatal formatted message (with the caller's file:line) and abort. */
+/** @brief Log a fatal formatted message (with the caller's file:line) and abort. */
 template<typename... Args>
 [[noreturn]] void error(detail::FatalFormat fmtLoc, Args... args)
 {
@@ -169,7 +169,7 @@ template<typename... Args>
     detail::logFatal(fmt::format("{}:{} {}", fmtLoc.loc.file_name(), fmtLoc.loc.line(), message));
 }
 
-/* @class A base class to build additional loggers
+/** @class A base class to build additional loggers
  */
 class BaseLogger
 {
@@ -189,7 +189,7 @@ public:
     Target getTarget() const { return target_; };
 };
 
-/*@brief convenience function to call log on logger with std::format */
+/** @brief convenience function to call log on logger with std::format */
 inline void log(std::shared_ptr<BaseLogger> logger, LogEvent& event, std::string_view delim = ",")
 {
     if (logger != nullptr)
@@ -203,7 +203,7 @@ inline void log(std::shared_ptr<BaseLogger> logger, LogEvent& event, std::string
 }
 
 
-/* @class A class for fine-grained logging
+/** @class A class for fine-grained logging
  */
 class Logger : public BaseLogger
 {
@@ -224,7 +224,7 @@ private:
     Level level_;
 };
 
-/*@brief a Logging Mixin class that allows to attach logger to certain classes*/
+/** @brief a Logging Mixin class that allows to attach logger to certain classes*/
 class SupportsLoggingMixin
 {
 
