@@ -161,9 +161,12 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
     );
 }
 
-template<typename MatrixType>
+template<typename MatrixType, typename ValueType>
 void computeResidual(
-    const MatrixType& mtx, const Vector<scalar>& bV, const Vector<scalar>& xV, Vector<scalar>& resV
+    const MatrixType& mtx,
+    const Vector<ValueType>& bV,
+    const Vector<ValueType>& xV,
+    Vector<ValueType>& resV
 )
 {
     auto [res, b, x] = views(resV, bV, xV);
@@ -175,7 +178,9 @@ void computeResidual(
         NEON_LAMBDA(const localIdx rowi) {
             auto rowStart = sparsity.rowOffs[rowi];
             auto rowEnd = sparsity.rowOffs[rowi + 1];
-            scalar sum = 0.0;
+            // ValueType sum: scalar coeffs * Vec3 x broadcasts to each component for
+            // the segregated vector-solve form (scalar matrix, Vec3 rhs)
+            ValueType sum = zero<ValueType>();
             for (localIdx coli = rowStart; coli < rowEnd; coli++)
             {
                 sum += coeffs[coli] * x[sparsity.colIdxs[coli]];
@@ -186,9 +191,13 @@ void computeResidual(
     );
 }
 
-template void computeResidual<CSRMatrix<
-    scalar,
-    localIdx>>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
+template void computeResidual<
+    CSRMatrix<scalar, localIdx>,
+    scalar>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
+
+template void computeResidual<
+    CSRMatrix<scalar, localIdx>,
+    Vec3>(const CSRMatrix<scalar, localIdx>&, const Vector<Vec3>&, const Vector<Vec3>&, Vector<Vec3>&);
 
 template<typename IndexType>
 Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows)

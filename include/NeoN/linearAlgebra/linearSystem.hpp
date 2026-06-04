@@ -352,12 +352,24 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
 }
 
 /** @brief for testing purposes, this function reverses boundary contributions previously applied to
- * the matrix diagonal and RHS for some operators (e.g., div). **/
-template<typename ValueType>
-inline la::LinearSystem<ValueType>
-removeBoundaryContributions(const la::LinearSystem<ValueType>& lsIn)
+ * the matrix diagonal and RHS for some operators (e.g., div).
+ *
+ * @note templated on the full LinearSystem parameter set so it also accepts the segregated
+ * vector-solve form (scalar matrix, Vec3 rhs): the scalar boundary diagonal is reversed on the
+ * scalar matrix while the rhs reversal uses the field (RHS) value type. **/
+template<
+    typename MatrixValueType,
+    typename RHSValueType,
+    typename SystemMatrixType,
+    typename BoundaryMatrixType>
+inline la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
+removeBoundaryContributions(
+    const la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>&
+        lsIn
+)
 {
-    auto ls = la::LinearSystem<ValueType>(lsIn);
+    auto ls =
+        la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>(lsIn);
     auto lsView = ls.view();
     auto& matrix = lsView.matrix;
     auto& rhs = lsView.rhs;
