@@ -57,14 +57,16 @@ nanobind_add_module(_neon NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
-# Generate Python type stubs (.pyi) after building the module
-add_custom_command(
-  TARGET _neon
-  POST_BUILD
-  COMMAND ${Python_EXECUTABLE} -m nanobind.stubgen -m _neon -O ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -i
-          ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -D
-  COMMENT "Generating type hints (_neon.pyi) for neon..."
-  VERBATIM)
+if(NOT NeoN_ENABLE_CUDA)
+  # Stub generation imports _neon. CUDA wheels can be built without an NVIDIA driver present.
+  add_custom_command(
+    TARGET _neon
+    POST_BUILD
+    COMMAND ${Python_EXECUTABLE} -m nanobind.stubgen -m _neon -O ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+            -i ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -D
+    COMMENT "Generating type hints (_neon.pyi) for neon..."
+    VERBATIM)
+endif()
 
 # Generate __init__.py file
 file(
