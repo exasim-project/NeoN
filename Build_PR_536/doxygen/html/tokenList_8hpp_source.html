@@ -133,105 +133,108 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a0d4febf5e08758a5bc181e66226b7e14">   84</a></span>    [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code hl_function" href="classNeoN_1_1TokenList.html#a0d4febf5e08758a5bc181e66226b7e14">size</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
-<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a3aaccdfa99b1390e7feba098408a7eb2">   95</a></span>    [[nodiscard]] ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a3aaccdfa99b1390e7feba098408a7eb2">get</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp; idx)</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">return</span> std::any_cast&lt;ReturnType&amp;&gt;(data_.at(idx));</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp; e)</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            logBadAnyCast&lt;ReturnType&gt;(e, idx, data_);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="keywordflow">throw</span> e;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        }</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::out_of_range&amp; e)</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <a class="code hl_function" href="namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339">logOutRange</a>(e, idx, data_);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keywordflow">throw</span> e;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a6a47f86719698d40405cf62a2debc0f7">   90</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1TokenList.html#a6a47f86719698d40405cf62a2debc0f7">reset</a>()<span class="keyword"> const </span>{ nextIndex_ = 0; }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a3aaccdfa99b1390e7feba098408a7eb2">  101</a></span>    [[nodiscard]] ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a3aaccdfa99b1390e7feba098408a7eb2">get</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp; idx)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> std::any_cast&lt;ReturnType&amp;&gt;(data_.at(idx));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp; e)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            logBadAnyCast&lt;ReturnType&gt;(e, idx, data_);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordflow">throw</span> e;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::out_of_range&amp; e)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <a class="code hl_function" href="namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339">logOutRange</a>(e, idx, data_);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keywordflow">throw</span> e;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
 </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
-<div class="foldopen" id="foldopen00121" data-start="{" data-end="}">
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f">  121</a></span>    ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f">next</a>()</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        ReturnType&amp; retValue = get&lt;ReturnType&amp;&gt;(nextIndex_);</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        nextIndex_++;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordflow">return</span> retValue;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
+<div class="foldopen" id="foldopen00127" data-start="{" data-end="}">
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f">  127</a></span>    ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f">next</a>()</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        ReturnType&amp; retValue = get&lt;ReturnType&amp;&gt;(nextIndex_);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        nextIndex_++;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">return</span> retValue;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
 </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
-<div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a673b7e1c3b79ecd2889a69f05e32e677">  137</a></span>    [[nodiscard]] <span class="keyword">const</span> ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a673b7e1c3b79ecd2889a69f05e32e677">get</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp; idx)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        {</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            <span class="keywordflow">return</span> std::any_cast&lt;const ReturnType&amp;&gt;(data_.at(idx));</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        }</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp; e)</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        {</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            logBadAnyCast&lt;ReturnType&gt;(e, idx, data_);</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <span class="keywordflow">throw</span> e;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        }</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::out_of_range&amp; e)</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        {</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <a class="code hl_function" href="namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339">logOutRange</a>(e, idx, data_);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="keywordflow">throw</span> e;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        }</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
+<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a673b7e1c3b79ecd2889a69f05e32e677">  143</a></span>    [[nodiscard]] <span class="keyword">const</span> ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a673b7e1c3b79ecd2889a69f05e32e677">get</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp; idx)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">return</span> std::any_cast&lt;const ReturnType&amp;&gt;(data_.at(idx));</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp; e)</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            logBadAnyCast&lt;ReturnType&gt;(e, idx, data_);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <span class="keywordflow">throw</span> e;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::out_of_range&amp; e)</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <a class="code hl_function" href="namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339">logOutRange</a>(e, idx, data_);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <span class="keywordflow">throw</span> e;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    }</div>
 </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
-<div class="foldopen" id="foldopen00163" data-start="{" data-end="}">
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6">  163</a></span>    <span class="keyword">const</span> ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6">next</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keyword">const</span> ReturnType&amp; retValue = get&lt;ReturnType&gt;(nextIndex_);</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        nextIndex_++;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keywordflow">return</span> retValue;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
+<div class="foldopen" id="foldopen00169" data-start="{" data-end="}">
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6">  169</a></span>    <span class="keyword">const</span> ReturnType&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6">next</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">const</span> ReturnType&amp; retValue = get&lt;ReturnType&gt;(nextIndex_);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        nextIndex_++;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">return</span> retValue;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
 </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
-<div class="foldopen" id="foldopen00177" data-start="{" data-end="}">
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#ae2b92686bfe2ffcd626229ff89733224">  177</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classNeoN_1_1TokenList.html#ae2b92686bfe2ffcd626229ff89733224">peekIs</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">return</span> nextIndex_ &lt; data_.size() &amp;&amp; data_[nextIndex_].type() == <span class="keyword">typeid</span>(ReturnType);</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ReturnType&gt;</div>
+<div class="foldopen" id="foldopen00183" data-start="{" data-end="}">
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#ae2b92686bfe2ffcd626229ff89733224">  183</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classNeoN_1_1TokenList.html#ae2b92686bfe2ffcd626229ff89733224">peekIs</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">return</span> nextIndex_ &lt; data_.size() &amp;&amp; data_[nextIndex_].type() == <span class="keyword">typeid</span>(ReturnType);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }</div>
 </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a69172da9b405bbb67b0bf6ca0f41cc75">  187</a></span>    [[nodiscard]] std::any&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a69172da9b405bbb67b0bf6ca0f41cc75">operator[]</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp; idx);</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1">  189</a></span>    [[nodiscard]] std::vector&lt;std::any&gt;&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1">tokens</a>();</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    std::vector&lt;std::any&gt; data_;</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">mutable</span> <span class="keywordtype">size_t</span> nextIndex_;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>};</div>
-</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a69172da9b405bbb67b0bf6ca0f41cc75">  193</a></span>    [[nodiscard]] std::any&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a69172da9b405bbb67b0bf6ca0f41cc75">operator[]</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span>&amp; idx);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1">  195</a></span>    [[nodiscard]] std::vector&lt;std::any&gt;&amp; <a class="code hl_function" href="classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1">tokens</a>();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>} <span class="comment">// namespace NeoN</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    std::vector&lt;std::any&gt; data_;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keyword">mutable</span> <span class="keywordtype">size_t</span> nextIndex_;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>};</div>
+</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>} <span class="comment">// namespace NeoN</span></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html"><div class="ttname"><a href="classNeoN_1_1TokenList.html">NeoN::TokenList</a></div><div class="ttdoc">A class representing a list of tokens.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00028">tokenList.hpp:29</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a0b2e988afbe75233622a6c998c9e7ae9"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a0b2e988afbe75233622a6c998c9e7ae9">NeoN::TokenList::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdoc">Checks if the token list is empty.</div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a0d4febf5e08758a5bc181e66226b7e14"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a0d4febf5e08758a5bc181e66226b7e14">NeoN::TokenList::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdoc">Retrieves the size of the token list.</div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a3a154481207aea8d59bb67f5668a7a47"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a3a154481207aea8d59bb67f5668a7a47">NeoN::TokenList::popFront</a></div><div class="ttdeci">ReturnType popFront()</div><div class="ttdoc">Removes first entry of TokenList and returns it.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00073">tokenList.hpp:73</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1TokenList_html_a3aaccdfa99b1390e7feba098408a7eb2"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a3aaccdfa99b1390e7feba098408a7eb2">NeoN::TokenList::get</a></div><div class="ttdeci">ReturnType &amp; get(const size_t &amp;idx)</div><div class="ttdoc">Retrieves the value associated with the given index, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00095">tokenList.hpp:95</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1TokenList_html_a3aaccdfa99b1390e7feba098408a7eb2"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a3aaccdfa99b1390e7feba098408a7eb2">NeoN::TokenList::get</a></div><div class="ttdeci">ReturnType &amp; get(const size_t &amp;idx)</div><div class="ttdoc">Retrieves the value associated with the given index, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00101">tokenList.hpp:101</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a425275584ae4a65106260e1f1d7057b1"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a425275584ae4a65106260e1f1d7057b1">NeoN::TokenList::tokens</a></div><div class="ttdeci">std::vector&lt; std::any &gt; &amp; tokens()</div></div>
-<div class="ttc" id="aclassNeoN_1_1TokenList_html_a673b7e1c3b79ecd2889a69f05e32e677"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a673b7e1c3b79ecd2889a69f05e32e677">NeoN::TokenList::get</a></div><div class="ttdeci">const ReturnType &amp; get(const size_t &amp;idx) const</div><div class="ttdoc">Retrieves the value associated with the given index, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00137">tokenList.hpp:137</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1TokenList_html_a673b7e1c3b79ecd2889a69f05e32e677"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a673b7e1c3b79ecd2889a69f05e32e677">NeoN::TokenList::get</a></div><div class="ttdeci">const ReturnType &amp; get(const size_t &amp;idx) const</div><div class="ttdoc">Retrieves the value associated with the given index, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00143">tokenList.hpp:143</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a69172da9b405bbb67b0bf6ca0f41cc75"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a69172da9b405bbb67b0bf6ca0f41cc75">NeoN::TokenList::operator[]</a></div><div class="ttdeci">std::any &amp; operator[](const size_t &amp;idx)</div><div class="ttdoc">Retrieves the value associated with the given index.</div></div>
+<div class="ttc" id="aclassNeoN_1_1TokenList_html_a6a47f86719698d40405cf62a2debc0f7"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a6a47f86719698d40405cf62a2debc0f7">NeoN::TokenList::reset</a></div><div class="ttdeci">void reset() const</div><div class="ttdoc">Rewind the read cursor used by next&lt;&gt;() so the list can be iterated again from the beginning.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00090">tokenList.hpp:90</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a7c544efc78031acfcdd8a6bec2710bb7"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a7c544efc78031acfcdd8a6bec2710bb7">NeoN::TokenList::insert</a></div><div class="ttdeci">void insert(const std::any &amp;value)</div><div class="ttdoc">Inserts a value into the token list.</div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_a8182d8f5284751acc63601d034cf878f"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a8182d8f5284751acc63601d034cf878f">NeoN::TokenList::TokenList</a></div><div class="ttdeci">TokenList()</div></div>
-<div class="ttc" id="aclassNeoN_1_1TokenList_html_a904185b715739ed4b1c9e28134fab94f"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f">NeoN::TokenList::next</a></div><div class="ttdeci">ReturnType &amp; next()</div><div class="ttdoc">Retrieves the value associated with the nextIndex, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00121">tokenList.hpp:121</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1TokenList_html_a904185b715739ed4b1c9e28134fab94f"><div class="ttname"><a href="classNeoN_1_1TokenList.html#a904185b715739ed4b1c9e28134fab94f">NeoN::TokenList::next</a></div><div class="ttdeci">ReturnType &amp; next()</div><div class="ttdoc">Retrieves the value associated with the nextIndex, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00127">tokenList.hpp:127</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_aacecba4d4ad598f8200a54b2b5902388"><div class="ttname"><a href="classNeoN_1_1TokenList.html#aacecba4d4ad598f8200a54b2b5902388">NeoN::TokenList::TokenList</a></div><div class="ttdeci">TokenList(const TokenList &amp;)</div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_aafc9278edc9dcc6db3400d69ca8a79ed"><div class="ttname"><a href="classNeoN_1_1TokenList.html#aafc9278edc9dcc6db3400d69ca8a79ed">NeoN::TokenList::TokenList</a></div><div class="ttdeci">TokenList(const std::initializer_list&lt; std::any &gt; &amp;initList)</div><div class="ttdoc">Construct a TokenList object from an initializer list of std::any.</div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_ab18b639ac9728b182802418daf6e731c"><div class="ttname"><a href="classNeoN_1_1TokenList.html#ab18b639ac9728b182802418daf6e731c">NeoN::TokenList::remove</a></div><div class="ttdeci">void remove(size_t index)</div><div class="ttdoc">Removes a value from the token list based on the specified index.</div></div>
-<div class="ttc" id="aclassNeoN_1_1TokenList_html_ab8719773710f0ea044a0949c034a70b6"><div class="ttname"><a href="classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6">NeoN::TokenList::next</a></div><div class="ttdeci">const ReturnType &amp; next() const</div><div class="ttdoc">Retrieves the value associated with the nextIndex, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00163">tokenList.hpp:163</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1TokenList_html_ae2b92686bfe2ffcd626229ff89733224"><div class="ttname"><a href="classNeoN_1_1TokenList.html#ae2b92686bfe2ffcd626229ff89733224">NeoN::TokenList::peekIs</a></div><div class="ttdeci">bool peekIs() const</div><div class="ttdoc">Checks whether the next token (the one a subsequent next() would return) holds a value of the given t...</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00177">tokenList.hpp:177</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1TokenList_html_ab8719773710f0ea044a0949c034a70b6"><div class="ttname"><a href="classNeoN_1_1TokenList.html#ab8719773710f0ea044a0949c034a70b6">NeoN::TokenList::next</a></div><div class="ttdeci">const ReturnType &amp; next() const</div><div class="ttdoc">Retrieves the value associated with the nextIndex, casting it to the specified type.</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00169">tokenList.hpp:169</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1TokenList_html_ae2b92686bfe2ffcd626229ff89733224"><div class="ttname"><a href="classNeoN_1_1TokenList.html#ae2b92686bfe2ffcd626229ff89733224">NeoN::TokenList::peekIs</a></div><div class="ttdeci">bool peekIs() const</div><div class="ttdoc">Checks whether the next token (the one a subsequent next() would return) holds a value of the given t...</div><div class="ttdef"><b>Definition</b> <a href="tokenList_8hpp_source.html#l00183">tokenList.hpp:183</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1TokenList_html_af1e8537d6a6b6513de5847ca41c2633a"><div class="ttname"><a href="classNeoN_1_1TokenList.html#af1e8537d6a6b6513de5847ca41c2633a">NeoN::TokenList::TokenList</a></div><div class="ttdeci">TokenList(const std::vector&lt; std::any &gt; &amp;data, size_t nextIndex=0)</div><div class="ttdoc">Construct a TokenList object from a vector of std::any.</div></div>
 <div class="ttc" id="ademangle_8hpp_html"><div class="ttname"><a href="demangle_8hpp.html">demangle.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html"><div class="ttname"><a href="namespaceNeoN.html">NeoN</a></div><div class="ttdef"><b>Definition</b> <a href="array_8hpp_source.html#l00017">array.hpp:18</a></div></div>
