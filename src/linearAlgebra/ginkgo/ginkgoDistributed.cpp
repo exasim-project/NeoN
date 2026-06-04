@@ -177,6 +177,22 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         gko::array<global_index_type>::const_view(exec, nNonLocalNnz, widenedCols.data())
             .copy_to_array();
 
+    Vector<global_index_type> widenedCols(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
+    auto widenedColsView = widenedCols.view();
+    auto offDiagColsView = bmtx.sparsity()->colIdxs().view();
+    parallelFor(
+        bmtx.exec(),
+        {0, static_cast<localIdx>(nNonLocalNnz)},
+        KOKKOS_LAMBDA(const localIdx i) {
+            widenedColsView[i] = static_cast<global_index_type>(offDiagColsView[i]);
+        },
+        "widenOffDiagonalColumns"
+    );
+    fence(bmtx.exec());
+
+    auto globalCols =
+        gko::array<global_index_type>::const_view(exec, nNonLocalNnz, widenedCols.data())
+            .copy_to_array();
     auto imap = gko::experimental::distributed::index_map<label, global_index_type>(
         exec, partition, comm.rank(), recv_connections
     );
