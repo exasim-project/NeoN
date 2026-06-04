@@ -21,15 +21,15 @@ namespace NeoN::finiteVolume::cellCentred
 void computeGrad(
     const VolumeField<scalar>& in,
     const SurfaceInterpolation<scalar>& surfInterp,
+    SurfaceField<scalar>& phif,
     Vector<Vec3>& out,
     const dsl::Coeff operatorScaling
 )
 {
     const UnstructuredMesh& mesh = in.mesh();
     const auto exec = out.exec();
-    SurfaceField<scalar> phif(
-        exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
-    );
+    // phif is supplied by the caller (cached on the operator) so repeated grad evaluations
+    // reuse the same face-interpolation buffer instead of allocating one per call.
     surfInterp.interpolate(in, phif);
 
     auto surfGradPhi = out.view();
@@ -104,6 +104,88 @@ void computeGrad(
     );
 }
 
+/* @brief volume-integrated explicit gradient.
+**
+** Accumulates  sum_f operatorScaling * S_f * phi_f  into @p out WITHOUT the trailing 1/V_C
+** division that computeGrad applies. The result is therefore exactly V_C * grad(phi)_C, i.e. the
+** volume-integrated contribution a finite-volume right-hand side expects. Folding the operator
+** scaling into the per-face flux (rather than a trailing per-cell multiply) keeps this a pure
+** accumulation: @p out may already hold other rhs contributions and is only added to, so no
+** separate gradient buffer is needed. Mirrors computeGrad's internal/boundary/processor face
+** handling; only the /V is dropped and the scaling is moved per-face.
+*/
+void computeGradVolIntegrated(
+    const VolumeField<scalar>& in,
+    const SurfaceInterpolation<scalar>& surfInterp,
+    SurfaceField<scalar>& phif,
+    Vector<Vec3>& out,
+    const dsl::Coeff operatorScaling
+)
+{
+    const UnstructuredMesh& mesh = in.mesh();
+    const auto exec = out.exec();
+    surfInterp.interpolate(in, phif);
+
+    auto surfGradPhi = out.view();
+
+    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceNormals] = views(
+        mesh.boundaryMesh().faceOwners(),
+        mesh.faceOwners(),
+        mesh.faceNeighbors(),
+        mesh.faceNormals()
+    );
+    const auto surfPhif = phif.internalVector().view();
+    const auto surfPhifB = phif.boundaryData().value().view();
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+
+    // Internal faces: S_f points owner->neighbour, so owner gets +S_f phi_f, neighbour -S_f phi_f.
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx i) {
+            const Vec3 flux = faceNormals[i] * surfPhif[i];
+            const auto own = faceOwners[i];
+            const auto nei = faceNeighbors[i];
+            Kokkos::atomic_add(&surfGradPhi[own], operatorScaling[own] * flux);
+            Kokkos::atomic_sub(&surfGradPhi[nei], operatorScaling[nei] * flux);
+        },
+        "computeGradVolIntegratedInternal"
+    );
+
+    const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            const auto own = boundaryFaceOwners[bfi];
+            Kokkos::atomic_add(
+                &surfGradPhi[own], operatorScaling[own] * (bFaceNormals[bfi] * surfPhifB[bfi])
+            );
+        },
+        "computeGradVolIntegratedBoundary"
+    );
+
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bcfacei = nBoundaryFaces + procFacei;
+                const auto own = boundaryFaceOwners[bcfacei];
+                Kokkos::atomic_add(
+                    &surfGradPhi[own],
+                    operatorScaling[own] * (bFaceNormals[bcfacei] * surfPhifB[bcfacei])
+                );
+            },
+            "computeGradVolIntegratedProcBoundary"
+        );
+    }
+}
+
 void computeBoundaryGrad(
     const VolumeField<scalar>& phi,
     VolumeField<Vec3>& gradPhi,
@@ -168,7 +250,8 @@ GaussGreenGrad::GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mes
       surfaceInterpolation_(exec, mesh, std::make_unique<Linear<scalar>>(exec, mesh, Dictionary())),
       surfaceInterpolationVec_(
           exec, mesh, std::make_unique<Linear<Vec3>>(exec, mesh, Dictionary())
-      ) {};
+      ),
+      phif_(exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)) {};
 
 GaussGreenGrad::GaussGreenGrad(
     const Executor& exec, const UnstructuredMesh& mesh, const Input& /* inputs */
@@ -180,7 +263,14 @@ void GaussGreenGrad::grad(
     const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
 ) const
 {
-    computeGrad(phi, surfaceInterpolation_, gradPhi, operatorScaling);
+    computeGrad(phi, surfaceInterpolation_, phif_, gradPhi, operatorScaling);
+};
+
+void GaussGreenGrad::gradVolIntegrated(
+    const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+) const
+{
+    computeGradVolIntegrated(phi, surfaceInterpolation_, phif_, gradPhi, operatorScaling);
 };
 
 void GaussGreenGrad::grad(
@@ -189,7 +279,7 @@ void GaussGreenGrad::grad(
 {
     fill(gradPhi.internalVector(), zero<Vec3>());
 
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    computeGrad(phi, surfaceInterpolation_, phif_, gradPhi.internalVector(), operatorScaling);
     computeBoundaryGrad(phi, gradPhi, operatorScaling);
 }
 
@@ -202,7 +292,7 @@ GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorSc
     auto gradBCs = createCalculatedProcBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    computeGrad(phi, surfaceInterpolation_, phif_, gradPhi.internalVector(), operatorScaling);
     computeBoundaryGrad(phi, gradPhi, operatorScaling);
     return gradPhi;
 }

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/fields/field.hpp"
+#include "NeoN/core/error.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/error.hpp"
@@ -67,6 +68,22 @@ public:
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
     ) const = 0;
+
+    /* @brief accumulate the volume-integrated explicit gradient (V * grad(phi)) into gradPhi
+     *
+     * Adds sum_f operatorScaling * S_f phi_f without the trailing 1/V, i.e. the volume-integrated
+     * gradient a finite-volume rhs expects. Defaults to an error so strategies opt in explicitly.
+     *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @param gradPhi [in,out] - accumulator the volume-integrated gradient is added to
+     */
+    virtual void gradVolIntegrated(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+    ) const
+    {
+        NF_ERROR_EXIT("gradVolIntegrated is not implemented for this gradient operator");
+    }
 
     /* @brief compute explicit gradient operator and return result
      *
@@ -153,6 +170,18 @@ public:
         const auto operatorScaling = this->getCoefficient();
         gradOperatorStrategy_->grad(this->getVector(), operatorScaling, tmpsource);
         source += tmpsource;
+    }
+
+    /* @brief accumulate the volume-integrated explicit gradient (V * grad(phi)) into source
+     *
+     * Unlike explicitOperation this skips the /V (and so needs no temporary, no per-cell rescale,
+     * and lets the rhs assembly skip its own * V). Used by the momentum predictor's -grad(p) rhs.
+     */
+    void explicitOperationVolIntegrated(Vector<Vec3>& source) const
+    {
+        NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        gradOperatorStrategy_->gradVolIntegrated(this->getVector(), operatorScaling, source);
     }
 
     /* @brief forwards to implicit gradOperatorStrategy_->grad() with arguments */

@@ -9,6 +9,7 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -55,6 +56,20 @@ public:
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
     ) const override;
 
+    /* @brief volume-integrated explicit gradient: accumulate operatorScaling * V * grad(phi)
+     *
+     * Writes sum_f operatorScaling * S_f phi_f into @p gradPhi without dividing by the cell
+     * volume, i.e. the contribution a finite-volume rhs expects. Accumulates, reusing the cached
+     * face buffer; lets callers skip a separate gradient field and the /V (grad) * V (rhs) trip.
+     *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @param gradPhi [in,out] - accumulator the volume-integrated gradient is added to
+     */
+    virtual void gradVolIntegrated(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+    ) const override;
+
     /* @brief compute grad
      *
      * @param phi [in] - field for which the gradient is computed
@@ -96,6 +111,11 @@ private:
 
     SurfaceInterpolation<scalar> surfaceInterpolation_;
     SurfaceInterpolation<Vec3> surfaceInterpolationVec_;
+
+    // Reused face-interpolation buffer for the scalar gradient, so repeated grad evaluations
+    // (e.g. the per-iteration momentum predictor -grad(p)) do not reallocate a SurfaceField.
+    // mutable: the grad operations are logically const but overwrite this scratch each call.
+    mutable SurfaceField<scalar> phif_;
 };
 
 } // namespace NeoN

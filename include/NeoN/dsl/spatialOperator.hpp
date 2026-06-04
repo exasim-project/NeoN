@@ -46,6 +46,16 @@ concept HasImplicitOperatorScalarMtx = requires(T const t) {
     } -> std::same_as<void>;
 };
 
+/* @brief Concept satisfied when T can accumulate its volume-integrated explicit contribution
+ *        (e.g. V * grad(phi)) into a source vector.
+ */
+template<typename T>
+concept HasExplicitVolIntegratedOperator = requires(T const t) {
+    {
+        t.explicitOperationVolIntegrated(std::declval<Vector<typename T::VectorValueType>&>())
+    } -> std::same_as<void>;
+};
+
 template<typename T>
 concept IsSpatialOperator =
     HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>;
@@ -84,6 +94,17 @@ public:
     }
 
     void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
+
+    /* @brief accumulate the operator's volume-integrated explicit contribution into source, e.g.
+     * V * grad(phi) for the gradient, i.e. the explicit result before the division by the cell
+     * volume. A finite-volume rhs can then subtract it directly, without dividing by V and
+     * multiplying by V again. Only implemented by operators that opt in (e.g. the gradient);
+     * others error out.
+     */
+    void explicitOperationVolIntegrated(Vector<ValueType>& source) const
+    {
+        model_->explicitOperationVolIntegrated(source);
+    }
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const { model_->implicitOperation(ls); }
 
@@ -126,6 +147,8 @@ private:
         virtual ~OperatorConcept() = default;
 
         virtual void explicitOperation(Vector<ValueType>& source) const = 0;
+
+        virtual void explicitOperationVolIntegrated(Vector<ValueType>& source) const = 0;
 
         virtual void implicitOperation(la::LinearSystem<ValueType>& ls) const = 0;
 
@@ -175,6 +198,21 @@ private:
             if constexpr (HasExplicitOperator<ConcreteOperatorType>)
             {
                 concreteOp_.explicitOperation(source);
+            }
+        }
+
+        virtual void explicitOperationVolIntegrated(Vector<ValueType>& source) const override
+        {
+            if constexpr (HasExplicitVolIntegratedOperator<ConcreteOperatorType>)
+            {
+                concreteOp_.explicitOperationVolIntegrated(source);
+            }
+            else
+            {
+                NF_ERROR_EXIT(
+                    "explicitOperationVolIntegrated is not implemented for this operator; "
+                    "only operators that opt in (e.g. the gradient) support it"
+                );
             }
         }
 
