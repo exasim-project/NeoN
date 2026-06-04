@@ -1,0 +1,165 @@
+\doxysection{solver.\+hpp}
+\hypertarget{linearAlgebra_2solver_8hpp_source}{}\label{linearAlgebra_2solver_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/solver.hpp}}
+\mbox{\hyperlink{linearAlgebra_2solver_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2025\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{input_8hpp}{NeoN/core/input.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{runtimeSelectionFactory_8hpp}{NeoN/core/runtimeSelectionFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linearSystem_8hpp}{NeoN/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1la}{NeoN::la}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00014}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry}{00014}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry}{SolverStatsEntry}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00015}00015\ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00016}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_acbb96ec996ec12e705c379ba5c7f5003}{00016}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_acbb96ec996ec12e705c379ba5c7f5003}{numIter}};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00017}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_aee83338874c2ac4a7997e11b0725f54d}{00017}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_aee83338874c2ac4a7997e11b0725f54d}{initResNorm}};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00018}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_a026a040331e54ab553c8f44fc3357b55}{00018}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_a026a040331e54ab553c8f44fc3357b55}{finalResNorm}};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00019}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_aacb3f3e80c3f7faa799baea6c87377b1}{00019}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry_aacb3f3e80c3f7faa799baea6c87377b1}{solveTime}};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00020}00020\ \};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00022}00022\ \textcolor{comment}{/*\ @brief\ A\ helper\ to\ collect\ statistics\ of\ the\ solver\ */}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00023}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{00023}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00025}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ae7746b192003088d7c73975a46289132}{00025}}\ \ \ \ \ std::vector<SolverStatsEntry>\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ae7746b192003088d7c73975a46289132}{entries}};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00027}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ace15234ae8158f83d4ad8300125e6d88}{00027}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ace15234ae8158f83d4ad8300125e6d88}{SolverStats}}()\ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ae7746b192003088d7c73975a46289132}{entries}}()\ \{\}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00029}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_aa3b89e671d8687913311b18ae1a3cc95}{00029}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_aa3b89e671d8687913311b18ae1a3cc95}{SolverStats}}(\textcolor{keywordtype}{int}\ numIter,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ initResNorm,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ finalResNorm,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ solveTime)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ae7746b192003088d7c73975a46289132}{entries}}(\{\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry}{SolverStatsEntry}}\ \{numIter,\ initResNorm,\ finalResNorm,\ solveTime\}\})}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00031}00031\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00033}\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_a8e28abf083c97e348baf0ac767ff1693}{00033}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_a8e28abf083c97e348baf0ac767ff1693}{SolverStats}}(\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStatsEntry}{SolverStatsEntry}}\ entry)\ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats_ae7746b192003088d7c73975a46289132}{entries}}(\{entry\})\ \{\}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00034}00034\ \};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00036}00036\ \textcolor{comment}{/*\ @class\ SolverFactory}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00037}00037\ \textcolor{comment}{**}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00038}00038\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory}{00039}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory}{SolverFactory}}\ :}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1RuntimeSelectionFactory}{RuntimeSelectionFactory}}<SolverFactory,\ Parameters<const\ Executor\&,\ const\ Dictionary\&>>}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00041}00041\ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00042}00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_ac7149d28babc9bec50f39c4a8b70e9d9}{00044}}\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<SolverFactory>\ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_ac7149d28babc9bec50f39c4a8b70e9d9}{create}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00045}00045\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ key\ =\ dict.\mbox{\hyperlink{classNeoN_1_1Dictionary_a2d6fe1f82f4da120f3cd76261873baed}{get}}<std::string>(\textcolor{stringliteral}{"{}solver"{}});}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ SolverFactory::keyExistsOrError(key);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SolverFactory::table().at(key)(exec,\ dict);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00049}00049\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00051}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a063c3317c351451b23cc6eda37982efb}{00051}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a063c3317c351451b23cc6eda37982efb}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SolverFactory"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a9d310e6367b0b6e549627ce4aae14f10}{00053}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a9d310e6367b0b6e549627ce4aae14f10}{SolverFactory}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec)\ :\ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_aea4dda19e968627d3ce9d78d0816be18}{exec\_}}(exec)\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a898c003466e5b9f0c45f1151bac6781b}{00056}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a898c003466e5b9f0c45f1151bac6781b}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<scalar,\ localIdx>}}>\&,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a93c016a94e9746a2716b6368975b44fe}{00060}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a93c016a94e9746a2716b6368975b44fe}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<Vec3,\ localIdx>}}>\&,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a0ce603b9ed725d24b72129a4883cf2eb}{00063}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a0ce603b9ed725d24b72129a4883cf2eb}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<scalar,\ localIdx>}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{COOMatrix<scalar,\ localIdx>}}>\&,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&)\textcolor{keyword}{}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00064}00064\ \textcolor{keyword}{\ \ \ \ \ \ \ \ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00065}00065\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(\textcolor{stringliteral}{"{}solve(scalar\ matrix,\ Vec3\ rhs)\ not\ implemented\ for\ this\ solver"{}});}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00067}00067\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00069}00069\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00071}00071\ \ \ \ \ solveDist(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<scalar,\ localIdx>}}>\&,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&)\textcolor{keyword}{}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00072}00072\ \textcolor{keyword}{\ \ \ \ \ \ \ \ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00073}00073\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(\textcolor{stringliteral}{"{}solveDist\ not\ implemented\ for\ this\ solver"{}});}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00075}00075\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00077}00077\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00078}00078\ \ \ \ \ solveDist(\textcolor{keyword}{const}\ LinearSystem<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ CSRMatrix<Vec3,\ localIdx>>\&,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00079}00079\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(\textcolor{stringliteral}{"{}solveDist\ not\ implemented\ for\ this\ solver"{}});}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00081}00081\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00082}00082\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{comment}{//\ Pure\ virtual\ function\ for\ cloning}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a5afeb1be40a3978d69a62ba6d66de867}{00085}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<SolverFactory>\ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_a5afeb1be40a3978d69a62ba6d66de867}{clone}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00087}00087\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00089}\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_aea4dda19e968627d3ce9d78d0816be18}{00089}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory_aea4dda19e968627d3ce9d78d0816be18}{exec\_}};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00090}00090\ \};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00092}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{00092}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{Solver}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00093}00093\ \{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00095}00095\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a22eeb9da95ff4acfe583c774d31d7544}{00097}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a22eeb9da95ff4acfe583c774d31d7544}{Solver}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{Solver}}\&\ solver)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ :\ exec\_(solver.exec\_),\ solverInstance\_(solver.solverInstance\_-\/>clone())\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00100}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_ab933fc36828c686c03f024bd7e14024d}{00100}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_ab933fc36828c686c03f024bd7e14024d}{Solver}}(\mbox{\hyperlink{classNeoN_1_1la_1_1Solver}{Solver}}\&\&\ solver)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ :\ exec\_(solver.exec\_),\ solverInstance\_(std::move(solver.solverInstance\_))\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a290350dcd90d29ca8e76c4f3bffb9a37}{00103}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a290350dcd90d29ca8e76c4f3bffb9a37}{Solver}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ std::unique\_ptr<SolverFactory>\ solverInstance)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ :\ exec\_(exec),\ solverInstance\_(std::move(solverInstance))\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00106}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a89adc0dc1b0e9c6cfc89ba50493a0db2}{00106}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a89adc0dc1b0e9c6cfc89ba50493a0db2}{Solver}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict)}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ :\ exec\_(exec),\ solverInstance\_(\mbox{\hyperlink{classNeoN_1_1la_1_1SolverFactory}{SolverFactory}}::create(exec,\ dict))\ \{\};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_af6abf94b085b7f3ca0219efca0fc9120}{00109}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_af6abf94b085b7f3ca0219efca0fc9120}{solve}}(}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<scalar,\ localIdx>}}>\&\ ls,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ field}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00111}00111\ \ \ \ \ )\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00112}00112\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00113}00113\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ls.commPattern().sendCounts.empty())\ \textcolor{keywordflow}{return}\ solverInstance\_-\/>solveDist(ls,\ field);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00115}00115\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ solverInstance\_-\/>solve(ls,\ field);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00117}00117\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00119}00119\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00120}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_adc96eea5228242037d0c3dd87d08ca5a}{00120}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_adc96eea5228242037d0c3dd87d08ca5a}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<Vec3,\ localIdx>}}>\&\ ls,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ field)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00121}00121\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00122}00122\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ls.commPattern().sendCounts.empty())\ \textcolor{keywordflow}{return}\ solverInstance\_-\/>solveDist(ls,\ field);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00124}00124\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ solverInstance\_-\/>solve(ls,\ field);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00133}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aa1378fb05bcfb271c15064a21929974c}{00133}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aa1378fb05bcfb271c15064a21929974c}{solve}}(}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<scalar,\ localIdx>}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{COOMatrix<scalar,\ localIdx>}},\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}>\&}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ ls,}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ field}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00137}00137\ \ \ \ \ )\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00138}00138\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00139}00139\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ ls.commPattern().sendCounts.empty(),}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}solve(scalar\ matrix,\ Vec3\ rhs)\ does\ not\ support\ distributed\ systems.\ "{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Add\ a\ solveDist\ overload\ to\ SolverFactory\ to\ enable\ this."{}}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00145}00145\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ solverInstance\_-\/>solve(ls,\ field);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00147}00147\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00149}\mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aacc975aedc898e15f4c7f02e768d9868}{00149}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{SolverStats}}\ \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aacc975aedc898e15f4c7f02e768d9868}{solve}}(}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{LinearSystem}}<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}},\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{CSRMatrix<scalar,\ localIdx>}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{COOMatrix<scalar,\ localIdx>}}>\&}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ ls,}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ field}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00153}00153\ \ \ \ \ )\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00154}00154\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ solverInstance\_-\/>solve(ls,\ field);}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00156}00156\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00158}00158\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00161}00161\ \ \ \ \ std::unique\_ptr<SolverFactory>\ solverInstance\_;}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00162}00162\ \};}
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{linearAlgebra_2solver_8hpp_source_l00164}00164\ \}}
+
+\end{DoxyCode}
