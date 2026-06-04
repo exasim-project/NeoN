@@ -18,7 +18,7 @@ var searchData=
   ['_7egpuexecutor_15',['~GPUExecutor',['../classNeoN_1_1GPUExecutor.html#adebe4dfbc231a708dbd66abea6e32abf',1,'NeoN::GPUExecutor']]],
   ['_7egradoperatorfactory_16',['~GradOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory.html#a47a20b9769c3c596dc33ee0e3892750d',1,'NeoN::finiteVolume::cellCentred::GradOperatorFactory']]],
   ['_7ekokkosallocator_17',['~KokkosAllocator',['../classNeoN_1_1KokkosAllocator.html#ae40eaa8ecec1fd373202acb92fed4d7a',1,'NeoN::KokkosAllocator']]],
-  ['_7elaplacianoperatorfactory_18',['~LaplacianOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#ad19cde703ae0c82c45e3d6f4d3696395',1,'NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory']]],
+  ['_7elaplacianoperatorfactory_18',['~LaplacianOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#abff0eedb9d54be748dfcb0f20b7abb54',1,'NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory']]],
   ['_7elinearsystem_19',['~LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html#a5a09a866841cf44dfb40f5f4567a7982',1,'NeoN::la::LinearSystem']]],
   ['_7elinearsystemview_20',['~LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html#ac0f6f3ba2b57a37c85dc69f80f72ba15',1,'NeoN::la::LinearSystemView']]],
   ['_7elogger_21',['~Logger',['../classNeoN_1_1Logging_1_1Logger.html#ae2053e637c244a9a1825702e3e900c37',1,'NeoN::Logging::Logger']]],

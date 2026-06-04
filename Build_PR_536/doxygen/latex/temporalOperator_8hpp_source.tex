@@ -45,206 +45,251 @@
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00041}00041\ \ \ \ \ \}\ -\/>\ std::same\_as<void>;\ \textcolor{comment}{//\ Adjust\ return\ type\ and\ arguments\ as\ needed}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00042}00042\ \};}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00043}00043\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00044}00044\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00045}\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalOperator}{00045}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalOperator}{HasTemporalOperator}}\ =\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalExplicitOperator}{HasTemporalExplicitOperator<T>}}\ ||\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperator}{HasTemporalImplicitOperator<T>}};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00046}00046\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00047}00047\ \textcolor{comment}{/*\ @class\ TemporalOperator}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00048}00048\ \textcolor{comment}{\ *\ @brief\ A\ class\ to\ represent\ a\ TemporalOperator\ in\ NeoNs\ DSL}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00049}00049\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00050}00050\ \textcolor{comment}{\ *\ The\ design\ here\ is\ based\ on\ the\ type\ erasure\ design\ pattern}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00051}00051\ \textcolor{comment}{\ *\ see\ https://www.youtube.com/watch?v=4eeESJQk-\/mw}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00052}00052\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00053}00053\ \textcolor{comment}{\ *\ Motivation\ for\ using\ type\ erasure\ is\ that\ concrete\ implementation}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00054}00054\ \textcolor{comment}{\ *\ of\ TemporalOperator\ e.g\ ddt,\ d2dt2,\ etc\ can\ be\ stored\ in\ a\ vector\ of}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00055}00055\ \textcolor{comment}{\ *\ TemporalOperator}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00056}00056\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00057}00057\ \textcolor{comment}{\ *\ @ingroup\ dsl}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00058}00058\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00059}00059\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{00060}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00061}00061\ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00062}00062\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a170e45964a65213eed233d610e6232a9}{00064}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a170e45964a65213eed233d610e6232a9}{VectorValueType}}\ =\ ValueType;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keyword}{template}<HasTemporalOperator\ T>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00067}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_abb175059bcbc826532ec7f205def0569}{00067}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_abb175059bcbc826532ec7f205def0569}{TemporalOperator}}(T\ cls)\ :\ model\_(std::make\_unique<TemporalOperatorModel<T>>(std::move(cls)))}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00068}00068\ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00069}00069\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a123506bf619aa5d08e47c84310b788eb}{00070}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a123506bf619aa5d08e47c84310b788eb}{TemporalOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\ eqnOperator)\ :\ model\_\ \{eqnOperator.model\_-\/>clone()\}\ \{\}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00071}00071\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa8547a528d858e4e848ccd862a5af320}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa8547a528d858e4e848ccd862a5af320}{TemporalOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\&\ eqnOperator)\ :\ model\_\ \{std::move(eqnOperator.model\_)\}\ \{\}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00073}00073\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae47a9e9337c6547c7b4fd84344bfd7f2}{00074}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae47a9e9337c6547c7b4fd84344bfd7f2}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\ eqnOperator)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00075}00075\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ model\_\ =\ eqnOperator.model\_-\/>clone();}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00078}00078\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00044}00044\ \textcolor{comment}{/*\ @brief\ Concept\ satisfied\ when\ T\ can\ assemble\ its\ temporal\ contribution\ into\ a}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00045}00045\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ LinearSystem\ whose\ matrix\ coefficients\ are\ scalar\ while\ the\ RHS\ holds\ T's}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00046}00046\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ field\ value\ type\ (segregated\ vector-\/solve\ form).}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00047}00047\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00048}00048\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00049}\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtx}{00049}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtx}{HasTemporalImplicitOperatorScalarMtx}}\ =\ \textcolor{keyword}{requires}(T\ t)\ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00050}00050\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ t.implicitOperation(}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ typename\ T::VectorValueType>}}\&>(),}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<NeoN::scalar>(),}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ std::declval<NeoN::scalar>()}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00056}00056\ \ \ \ \ \}\ -\/>\ std::same\_as<void>;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00057}00057\ \};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00059}00059\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00060}\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalOperator}{00060}}\ \textcolor{keyword}{concept\ }\mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalOperator}{HasTemporalOperator}}\ =\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalExplicitOperator}{HasTemporalExplicitOperator<T>}}\ ||\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperator}{HasTemporalImplicitOperator<T>}}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ \mbox{\hyperlink{conceptNeoN_1_1dsl_1_1HasTemporalImplicitOperatorScalarMtx}{HasTemporalImplicitOperatorScalarMtx<T>}};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00063}00063\ \textcolor{comment}{/*\ @class\ TemporalOperator}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00064}00064\ \textcolor{comment}{\ *\ @brief\ A\ class\ to\ represent\ a\ TemporalOperator\ in\ NeoNs\ DSL}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00065}00065\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00066}00066\ \textcolor{comment}{\ *\ The\ design\ here\ is\ based\ on\ the\ type\ erasure\ design\ pattern}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00067}00067\ \textcolor{comment}{\ *\ see\ https://www.youtube.com/watch?v=4eeESJQk-\/mw}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00068}00068\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00069}00069\ \textcolor{comment}{\ *\ Motivation\ for\ using\ type\ erasure\ is\ that\ concrete\ implementation}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00070}00070\ \textcolor{comment}{\ *\ of\ TemporalOperator\ e.g\ ddt,\ d2dt2,\ etc\ can\ be\ stored\ in\ a\ vector\ of}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00071}00071\ \textcolor{comment}{\ *\ TemporalOperator}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00072}00072\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00073}00073\ \textcolor{comment}{\ *\ @ingroup\ dsl}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00074}00074\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00075}00075\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{00076}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00077}00077\ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00078}00078\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae58c2ca6d0833a5be40ed8bdd4b4a5d5}{00080}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae58c2ca6d0833a5be40ed8bdd4b4a5d5}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00081}00081\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ model\_-\/>explicitOperation(source,\ t,\ dt);}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00083}00083\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00085}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aab6d1003633557ebedd5643fa712d3ed}{00085}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aab6d1003633557ebedd5643fa712d3ed}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00086}00086\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ model\_-\/>implicitOperation(ls,\ t,\ dt);}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00088}00088\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a170e45964a65213eed233d610e6232a9}{00080}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a170e45964a65213eed233d610e6232a9}{VectorValueType}}\ =\ ValueType;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{keyword}{template}<HasTemporalOperator\ T>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00083}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_abb175059bcbc826532ec7f205def0569}{00083}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_abb175059bcbc826532ec7f205def0569}{TemporalOperator}}(T\ cls)\ :\ model\_(std::make\_unique<TemporalOperatorModel<T>>(std::move(cls)))}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00084}00084\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00086}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a123506bf619aa5d08e47c84310b788eb}{00086}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a123506bf619aa5d08e47c84310b788eb}{TemporalOperator}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\ eqnOperator)\ :\ model\_\ \{eqnOperator.model\_-\/>clone()\}\ \{\}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa8547a528d858e4e848ccd862a5af320}{00088}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa8547a528d858e4e848ccd862a5af320}{TemporalOperator}}(\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\&\ eqnOperator)\ :\ model\_\ \{std::move(eqnOperator.model\_)\}\ \{\}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00089}00089\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00091}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a23c757d779140b6c736cf569bd024cfa}{00091}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a23c757d779140b6c736cf569bd024cfa}{getType}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getType();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00093}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6e1c8d3fd58767be533ef6dffe4af1f6}{00093}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6e1c8d3fd58767be533ef6dffe4af1f6}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getName();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00094}00094\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{00095}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ \{\ \textcolor{keywordflow}{return}\ model\_-\/>getCoefficient();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00096}00096\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6fe16992f3ec6270570440e302a86f19}{00097}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6fe16992f3ec6270570440e302a86f19}{getCoefficient}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getCoefficient();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00098}00098\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ properties\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00100}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a97633d93c2e6d5438806991482f8d29d}{00100}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a97633d93c2e6d5438806991482f8d29d}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\ \{\ model\_-\/>read(input);\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00101}00101\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00103}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a243dfd0d6dc7e606ce01d93f19e259a8}{00103}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a243dfd0d6dc7e606ce01d93f19e259a8}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>exec();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00104}00104\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ ddtScheme\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00106}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a1a86158497b676990e249d875a80be65}{00106}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{NeoN::finiteVolume::cellCentred::DdtScheme}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a1a86158497b676990e249d875a80be65}{ddtScheme}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>ddtScheme();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00107}00107\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00108}00108\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00109}00109\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Base\ class\ defining\ the\ concept\ of\ a\ term.\ This\ effectively}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00111}00111\ \textcolor{comment}{\ \ \ \ \ *\ defines\ what\ functions\ need\ to\ be\ implemented\ by\ a\ concrete\ Operator\ implementation}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00112}00112\ \textcolor{comment}{\ \ \ \ \ *\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00113}00113\ \ \ \ \ \textcolor{keyword}{struct\ }TemporalOperatorConcept}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00114}00114\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \string~TemporalOperatorConcept()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae47a9e9337c6547c7b4fd84344bfd7f2}{00090}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae47a9e9337c6547c7b4fd84344bfd7f2}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator}}\&\ eqnOperator)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00091}00091\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ model\_\ =\ eqnOperator.model\_-\/>clone();}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00094}00094\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae58c2ca6d0833a5be40ed8bdd4b4a5d5}{00096}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_ae58c2ca6d0833a5be40ed8bdd4b4a5d5}{explicitOperation}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00097}00097\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ model\_-\/>explicitOperation(source,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00099}00099\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00101}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aab6d1003633557ebedd5643fa712d3ed}{00101}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aab6d1003633557ebedd5643fa712d3ed}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00102}00102\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ model\_-\/>implicitOperation(ls,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00104}00104\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Implicit\ temporal\ assembly\ into\ a\ scalar-\/matrix\ /\ ValueType-\/rhs\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00107}00107\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ \ \ \ \ (segregated\ vector-\/solve\ form).\ Disabled\ when\ ValueType\ ==\ scalar\ to\ avoid}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00108}00108\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ \ \ \ \ colliding\ with\ the\ same-\/type\ overload\ above.}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00109}00109\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ U\ =\ ValueType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}(!std::is\_same\_v<U,\ scalar>)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00112}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aac935ceb899182b0da4b601aa4b15c64}{00112}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aac935ceb899182b0da4b601aa4b15c64}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00113}00113\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ model\_-\/>implicitOperationScalarMtx(ls,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00115}00115\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00116}00116\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ explicitOperation(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00118}00118\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperation(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00120}00120\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ properties\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00118}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a23c757d779140b6c736cf569bd024cfa}{00118}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a23c757d779140b6c736cf569bd024cfa}{getType}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getType();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00120}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6e1c8d3fd58767be533ef6dffe4af1f6}{00120}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6e1c8d3fd58767be533ef6dffe4af1f6}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getName();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00122}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{00122}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ \{\ \textcolor{keywordflow}{return}\ model\_-\/>getCoefficient();\ \}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00123}00123\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ name\ of\ the\ operator\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ getName()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00126}00126\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit,\ temporal\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ getType()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00129}00129\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ getCoefficient()\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00132}00132\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ getCoefficient()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00135}00135\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00138}00138\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ ddtScheme\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{NeoN::finiteVolume::cellCentred::DdtScheme}}\ ddtScheme()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00141}00141\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754}{NeoN::finiteVolume::cellCentred::DdtScheme::None}};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00144}00144\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Prototype\ Design\ Pattern}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<TemporalOperatorConcept>\ clone()\ \textcolor{keyword}{const}\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00147}00147\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00148}00148\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00149}00149\ \ \ \ \ \textcolor{comment}{//\ Templated\ derived\ class\ to\ implement\ the\ type-\/specific\ behavior}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ConcreteTemporalOperatorType>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00151}00151\ \ \ \ \ \textcolor{keyword}{struct\ }TemporalOperatorModel\ :\ TemporalOperatorConcept}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00152}00152\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ build\ with\ concrete\ TemporalOperator\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ TemporalOperatorModel(ConcreteTemporalOperatorType\ concreteOp)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ :\ concreteOp\_(std::move(concreteOp))}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \{\}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00157}00157\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ name\ of\ the\ operator\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ std::string\ getName()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getName();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00160}00160\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ explicitOperation(Vector<ValueType>\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ override}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00162}00162\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasTemporalExplicitOperator<ConcreteTemporalOperatorType>)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.explicitOperation(source,\ t,\ dt);}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00168}00168\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ implicitOperation(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ override}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00171}00171\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasTemporalImplicitOperator<ConcreteTemporalOperatorType>)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.implicitOperation(ls,\ t,\ dt);}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00177}00177\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ coeffs\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00179}00179\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\textcolor{keyword}{\ override\ }\{\ concreteOp\_.read(input);\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00180}00180\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit,\ temporal\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ getType()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getType();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00124}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6fe16992f3ec6270570440e302a86f19}{00124}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a6fe16992f3ec6270570440e302a86f19}{getCoefficient}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00126}00126\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ properties\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00127}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a97633d93c2e6d5438806991482f8d29d}{00127}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a97633d93c2e6d5438806991482f8d29d}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\ \{\ model\_-\/>read(input);\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00129}00129\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00130}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a243dfd0d6dc7e606ce01d93f19e259a8}{00130}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a243dfd0d6dc7e606ce01d93f19e259a8}{exec}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>exec();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ ddtScheme\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00133}\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a1a86158497b676990e249d875a80be65}{00133}}\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{NeoN::finiteVolume::cellCentred::DdtScheme}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_a1a86158497b676990e249d875a80be65}{ddtScheme}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ model\_-\/>ddtScheme();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00134}00134\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00135}00135\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00136}00136\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00137}00137\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Base\ class\ defining\ the\ concept\ of\ a\ term.\ This\ effectively}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00138}00138\ \textcolor{comment}{\ \ \ \ \ *\ defines\ what\ functions\ need\ to\ be\ implemented\ by\ a\ concrete\ Operator\ implementation}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00139}00139\ \textcolor{comment}{\ \ \ \ \ *\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00140}00140\ \ \ \ \ \textcolor{keyword}{struct\ }TemporalOperatorConcept}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00141}00141\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \string~TemporalOperatorConcept()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ explicitOperation(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<ValueType>}}\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperation(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00147}00147\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Temporal\ assembly\ into\ LinearSystem<scalar,\ ValueType>\ for\ the}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00149}00149\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ \ \ \ \ \ \ scalar-\/matrix\ /\ ValueType-\/rhs\ (segregated\ vector-\/solve)\ form.}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00150}00150\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ \ \ \ \ \ \ Concrete\ operators\ that\ don't\ support\ this\ form\ leave\ it\ as\ a\ no-\/op.}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00151}00151\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperationScalarMtx(}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ )\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ properties\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00158}00158\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ name\ of\ the\ operator\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::string\ getName()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00161}00161\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit,\ temporal\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ getType()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ getCoefficient()\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ getCoefficient()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ ddtScheme\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{NeoN::finiteVolume::cellCentred::DdtScheme}}\ ddtScheme()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00176}00176\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754}{NeoN::finiteVolume::cellCentred::DdtScheme::None}};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00180}00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Prototype\ Design\ Pattern}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<TemporalOperatorConcept>\ clone()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00182}00182\ \ \ \ \ \};}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00183}00183\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.exec();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00186}00186\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ Coeff\&\ getCoefficient()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getCoefficient();\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00189}00189\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ Coeff\ getCoefficient()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00184}00184\ \ \ \ \ \textcolor{comment}{//\ Templated\ derived\ class\ to\ implement\ the\ type-\/specific\ behavior}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00185}00185\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ConcreteTemporalOperatorType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00186}00186\ \ \ \ \ \textcolor{keyword}{struct\ }TemporalOperatorModel\ :\ TemporalOperatorConcept}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00187}00187\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ build\ with\ concrete\ TemporalOperator\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00189}00189\ \ \ \ \ \ \ \ \ TemporalOperatorModel(ConcreteTemporalOperatorType\ concreteOp)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ :\ concreteOp\_(std::move(concreteOp))}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \{\}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00192}00192\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ return\ the\ ddtScheme\ read\ by\ the\ ddtOperator\ */}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{NeoN::finiteVolume::cellCentred::DdtScheme}}\ ddtScheme()\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00195}00195\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (\textcolor{keyword}{requires}\ \{\ concreteOp\_.scheme();\ \})}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ concreteOp\_.scheme();}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754}{NeoN::finiteVolume::cellCentred::DdtScheme::None}};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Prototype\ Design\ Pattern}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ std::unique\_ptr<TemporalOperatorConcept>\ clone()\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00207}00207\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<TemporalOperatorModel>(*\textcolor{keyword}{this});}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00210}00210\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ ConcreteTemporalOperatorType\ concreteOp\_;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00212}00212\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00213}00213\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00214}00214\ \ \ \ \ std::unique\_ptr<TemporalOperatorConcept>\ model\_;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00215}00215\ \};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00216}00216\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00217}00217\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00218}00218\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00219}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a291279f06860abfaecfdc4e837e431ad}{00219}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ scalarCoeff,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ rhs)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00220}00220\ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00221}00221\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ result\ =\ rhs;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00222}00222\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ *=\ scalarCoeff;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00223}00223\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00224}00224\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ name\ of\ the\ operator\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00194}00194\ \ \ \ \ \ \ \ \ std::string\ getName()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getName();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00195}00195\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ explicitOperation(Vector<ValueType>\&\ source,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00197}00197\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasTemporalExplicitOperator<ConcreteTemporalOperatorType>)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.explicitOperation(source,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00202}00202\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ implicitOperation(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00206}00206\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasTemporalImplicitOperator<ConcreteTemporalOperatorType>)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.implicitOperation(ls,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00212}00212\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00213}00213\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ implicitOperationScalarMtx(}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ ValueType>}}\&\ ls,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ t,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ dt}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ )\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00216}00216\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (HasTemporalImplicitOperatorScalarMtx<ConcreteTemporalOperatorType>)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concreteOp\_.implicitOperation(ls,\ t,\ dt);}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00221}00221\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00222}00222\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Given\ an\ input\ this\ function\ reads\ required\ coeffs\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00224}00224\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)\textcolor{keyword}{\ override\ }\{\ concreteOp\_.read(input);\ \}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00225}00225\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00226}00226\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00227}00227\ TemporalOperator<ValueType>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00228}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ac81d2705320737cd7cf1b3d02f26a8f5}{00228}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ coeffVector,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ rhs)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00229}00229\ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00230}00230\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ result\ =\ rhs;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00231}00231\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ *=\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \{coeffVector\};}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00232}00232\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00233}00233\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ returns\ the\ fundamental\ type\ of\ an\ operator,\ ie\ explicit,\ implicit,\ temporal\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator::Type}}\ getType()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getType();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00228}00228\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00229}00229\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ Get\ the\ executor\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00230}00230\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.exec();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00231}00231\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00232}00232\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00233}00233\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ Coeff\&\ getCoefficient()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getCoefficient();\ \}}
 \DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00234}00234\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00235}00235\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00236}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ade8c9773cf5acb55f56387c0fd32036a}{00236}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ coeff,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ rhs)}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00237}00237\ \{}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00238}00238\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ result\ =\ rhs;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00239}00239\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ *=\ coeff;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00240}00240\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00241}00241\ \}}
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00242}00242\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00243}00243\ }
-\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00244}00244\ \}\ \textcolor{comment}{//\ namespace\ NeoN::dsl}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00235}00235\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ get\ the\ associated\ coefficient\ for\ this\ term\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00236}00236\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ Coeff\ getCoefficient()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ concreteOp\_.getCoefficient();\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ @brief\ return\ the\ ddtScheme\ read\ by\ the\ ddtOperator\ */}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8}{NeoN::finiteVolume::cellCentred::DdtScheme}}\ ddtScheme()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00240}00240\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (\textcolor{keyword}{requires}\ \{\ concreteOp\_.scheme();\ \})}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ concreteOp\_.scheme();}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754}{NeoN::finiteVolume::cellCentred::DdtScheme::None}};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00249}00249\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00250}00250\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Prototype\ Design\ Pattern}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00251}00251\ \ \ \ \ \ \ \ \ std::unique\_ptr<TemporalOperatorConcept>\ clone()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00252}00252\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<TemporalOperatorModel>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00254}00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00255}00255\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00256}00256\ \ \ \ \ \ \ \ \ ConcreteTemporalOperatorType\ concreteOp\_;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00257}00257\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00258}00258\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00259}00259\ \ \ \ \ std::unique\_ptr<TemporalOperatorConcept>\ model\_;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00260}00260\ \};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00261}00261\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00262}00262\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00263}00263\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00264}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a291279f06860abfaecfdc4e837e431ad}{00264}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ scalarCoeff,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00265}00265\ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00266}00266\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ result\ =\ rhs;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00267}00267\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ *=\ scalarCoeff;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00268}00268\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00269}00269\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00270}00270\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00271}00271\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00272}00272\ TemporalOperator<ValueType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00273}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ac81d2705320737cd7cf1b3d02f26a8f5}{00273}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<scalar>}}\&\ coeffVector,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00274}00274\ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00275}00275\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ result\ =\ rhs;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00276}00276\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ *=\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\ \{coeffVector\};}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00277}00277\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00278}00278\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00279}00279\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00280}00280\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00281}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ade8c9773cf5acb55f56387c0fd32036a}{00281}}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a65e72931514ea50f7a85aa2942454cee}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}}\&\ coeff,\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ rhs)}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00282}00282\ \{}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00283}00283\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{TemporalOperator<ValueType>}}\ result\ =\ rhs;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00284}00284\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator_aa99d5db76b2cac206f5015a9c16e887a}{getCoefficient}}()\ *=\ coeff;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00285}00285\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00286}00286\ \}}
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00287}00287\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00288}00288\ }
+\DoxyCodeLine{\Hypertarget{temporalOperator_8hpp_source_l00289}00289\ \}\ \textcolor{comment}{//\ namespace\ NeoN::dsl}}
 
 \end{DoxyCode}

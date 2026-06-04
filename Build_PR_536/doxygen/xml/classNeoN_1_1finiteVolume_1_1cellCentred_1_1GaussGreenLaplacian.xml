@@ -2,17 +2,21 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" kind="class" language="C++" prot="public">
     <compoundname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</compoundname>
-    <basecompoundref prot="public" virt="non-virtual">LaplacianOperatorFactory&lt; ValueType &gt;::template Register</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">LaplacianOperatorFactory&lt; FieldValueType, FieldValueType &gt;::template Register</basecompoundref>
     <includes refid="gaussGreenLaplacian_8hpp" local="no">gaussGreenLaplacian.hpp</includes>
     <templateparamlist>
       <param>
-        <type>typename ValueType</type>
+        <type>typename FieldValueType</type>
+      </param>
+      <param>
+        <type>typename AssemblyType</type>
+        <defval>FieldValueType</defval>
       </param>
     </templateparamlist>
     <sectiondef kind="private-type">
-      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a34e6b2cef9f75e54e39f052977b2eab1" prot="private" static="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" kindref="compound">GaussGreenLaplacian</ref>&lt; ValueType &gt; &gt;</type>
-        <definition>using NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::Base =  LaplacianOperatorFactory&lt;ValueType&gt;::template Register&lt;GaussGreenLaplacian&lt;ValueType&gt; &gt;</definition>
+      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3841dc3eb3602a94211a2c1c650fd0c9" prot="private" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory</ref>&lt; FieldValueType, AssemblyType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian" kindref="compound">GaussGreenLaplacian</ref>&lt; FieldValueType, AssemblyType &gt; &gt;</type>
+        <definition>using NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::Base =  LaplacianOperatorFactory&lt;FieldValueType, AssemblyType&gt;::template Register&lt; GaussGreenLaplacian&lt;FieldValueType, AssemblyType&gt; &gt;</definition>
         <argsstring></argsstring>
         <name>Base</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::Base</qualifiedname>
@@ -22,13 +26,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="23" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="24" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="24" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="25" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-attrib">
-      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1abf8ad5053e9dd7e68aed9529f580e6df" prot="private" static="no" mutable="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; ValueType &gt;</type>
-        <definition>SurfaceInterpolation&lt;ValueType&gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::surfaceInterpolation_</definition>
+      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a5d1959a7ceed79505b26bd72cc9876c0" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation" kindref="compound">SurfaceInterpolation</ref>&lt; FieldValueType &gt;</type>
+        <definition>SurfaceInterpolation&lt;FieldValueType&gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::surfaceInterpolation_</definition>
         <argsstring></argsstring>
         <name>surfaceInterpolation_</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::surfaceInterpolation_</qualifiedname>
@@ -38,11 +42,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="70" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="70" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="73" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="73" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a0a0c1e52667ebb0cf76c4f8b820927c3" prot="private" static="no" mutable="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient</ref>&lt; ValueType &gt;</type>
-        <definition>FaceNormalGradient&lt;ValueType&gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::faceNormalGradient_</definition>
+      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ab14d746819097c2de6076d0e4c588239" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient" kindref="compound">FaceNormalGradient</ref>&lt; FieldValueType &gt;</type>
+        <definition>FaceNormalGradient&lt;FieldValueType&gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::faceNormalGradient_</definition>
         <argsstring></argsstring>
         <name>faceNormalGradient_</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::faceNormalGradient_</qualifiedname>
@@ -52,13 +56,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="72" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="72" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="75" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="75" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a04b245c69176747085b8ee3de51ef8cf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a8890376caf83779df6b3f4dc75e23472" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::name</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::name</definition>
         <argsstring>()</argsstring>
         <name>name</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::name</qualifiedname>
@@ -68,11 +72,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="28" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="28" bodyend="28"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="29" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="29" bodyend="29"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3df2fc8fe09b83caf31e194b25fd6ef5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ab1a817eb66921707f30d851958c7f31d" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::doc</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::doc</definition>
         <argsstring>()</argsstring>
         <name>doc</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::doc</qualifiedname>
@@ -82,11 +86,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="30" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="30" bodyend="30"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="31" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="31" bodyend="31"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3800d518eff874206466d12c1e5ae0de" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a9fa338bf53ca660fcf4fd6fa160a31fd" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::schema</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::schema</definition>
         <argsstring>()</argsstring>
         <name>schema</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::schema</qualifiedname>
@@ -96,13 +100,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="32" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="32" bodyend="32"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="33" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="33" bodyend="33"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a146c4e28d4b0e3db2a300caf6037f64b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1acf01310e579e62681672a9e179177efb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
-        <definition>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::GaussGreenLaplacian</definition>
+        <definition>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::GaussGreenLaplacian</definition>
         <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;mesh, const Input &amp;inputs)</argsstring>
         <name>GaussGreenLaplacian</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::GaussGreenLaplacian</qualifiedname>
@@ -124,16 +128,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="34" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="34" bodyend="36"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="35" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="35" bodyend="37"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1af55bab36bc814be1d70f7c8bd139b861" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1acd2292c7b1e6dac8eb38cba5ad6ad785" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::laplacian</definition>
-        <argsstring>(VolumeField&lt; ValueType &gt; &amp;lapPhi, const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff coeff) override</argsstring>
+        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::laplacian</definition>
+        <argsstring>(VolumeField&lt; FieldValueType &gt; &amp;lapPhi, const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; FieldValueType &gt; &amp;phi, const dsl::Coeff coeff) override</argsstring>
         <name>laplacian</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::laplacian</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
           <declname>lapPhi</declname>
         </param>
         <param>
@@ -141,7 +145,7 @@
           <declname>gamma</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -154,12 +158,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="38" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="39" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a87588df9354134f59ca08084ce9ebc3e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt;</type>
-        <definition>virtual VolumeField&lt; ValueType &gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::laplacian</definition>
-        <argsstring>(const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff coeff) const override</argsstring>
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a25400d0c2df54317bb9cc782776b6dcd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt;</type>
+        <definition>virtual VolumeField&lt; FieldValueType &gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::laplacian</definition>
+        <argsstring>(const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; FieldValueType &gt; &amp;phi, const dsl::Coeff coeff) const override</argsstring>
         <name>laplacian</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::laplacian</qualifiedname>
         <param>
@@ -167,7 +171,7 @@
           <declname>gamma</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -180,16 +184,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="45" column="25"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="46" column="25"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aa39b68dcd20b90fd455ad6ad02f1f338" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a7edcdbdaf1e78e6502504f2a460f098e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::laplacian</definition>
-        <argsstring>(Vector&lt; ValueType &gt; &amp;lapPhi, const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff coeff) override</argsstring>
+        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::laplacian</definition>
+        <argsstring>(Vector&lt; FieldValueType &gt; &amp;lapPhi, const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; FieldValueType &gt; &amp;phi, const dsl::Coeff coeff) override</argsstring>
         <name>laplacian</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::laplacian</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; FieldValueType &gt; &amp;</type>
           <declname>lapPhi</declname>
         </param>
         <param>
@@ -197,7 +201,7 @@
           <declname>gamma</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -210,16 +214,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="49" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="52" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3b0138b598c9b275088994cbf7ffc715" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aff42e1a515b5e867ba8b6517b77daaba" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::laplacian</definition>
-        <argsstring>(la::LinearSystem&lt; ValueType &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; ValueType &gt; &amp;phi, const dsl::Coeff coeff) override</argsstring>
+        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::laplacian</definition>
+        <argsstring>(la::LinearSystem&lt; AssemblyType, FieldValueType &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;gamma, const VolumeField&lt; FieldValueType &gt; &amp;phi, const dsl::Coeff coeff) override</argsstring>
         <name>laplacian</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::laplacian</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, FieldValueType &gt; &amp;</type>
           <declname>ls</declname>
         </param>
         <param>
@@ -227,7 +231,7 @@
           <declname>gamma</declname>
         </param>
         <param>
-          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; ValueType &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
           <declname>phi</declname>
         </param>
         <param>
@@ -240,11 +244,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="56" column="18"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="59" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aedfa71700b5856c9c969f7d3a6a30809" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory</ref>&lt; ValueType &gt; &gt;</type>
-        <definition>std::unique_ptr&lt; LaplacianOperatorFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;::clone</definition>
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a10fff79d3fa24556a0239cbf42f1e5ed" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory" kindref="compound">LaplacianOperatorFactory</ref>&lt; FieldValueType, AssemblyType &gt; &gt;</type>
+        <definition>std::unique_ptr&lt; LaplacianOperatorFactory&lt; FieldValueType, AssemblyType &gt; &gt; NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;::clone</definition>
         <argsstring>() const override</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian::clone</qualifiedname>
@@ -254,7 +258,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="63" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="63" bodyend="66"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="66" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="66" bodyend="69"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -263,10 +267,10 @@
     </detaileddescription>
     <inheritancegraph>
       <node id="2">
-        <label>LaplacianOperatorFactory&lt; ValueType &gt;::template Register&lt; GaussGreenLaplacian&lt; ValueType &gt; &gt;</label>
+        <label>LaplacianOperatorFactory&lt; FieldValueType, FieldValueType  &gt;::template Register&lt; GaussGreenLaplacian&lt; FieldValueType, FieldValueType  &gt; &gt;</label>
       </node>
       <node id="1">
-        <label>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;</label>
+        <label>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
@@ -274,29 +278,29 @@
     </inheritancegraph>
     <collaborationgraph>
       <node id="2">
-        <label>LaplacianOperatorFactory&lt; ValueType &gt;::template Register&lt; GaussGreenLaplacian&lt; ValueType &gt; &gt;</label>
+        <label>LaplacianOperatorFactory&lt; FieldValueType, FieldValueType  &gt;::template Register&lt; GaussGreenLaplacian&lt; FieldValueType, FieldValueType  &gt; &gt;</label>
       </node>
       <node id="1">
-        <label>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;</label>
+        <label>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="20" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="22" bodyend="73"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" line="20" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" bodystart="23" bodyend="76"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a34e6b2cef9f75e54e39f052977b2eab1" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>Base</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aedfa71700b5856c9c969f7d3a6a30809" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>clone</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3df2fc8fe09b83caf31e194b25fd6ef5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>doc</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a0a0c1e52667ebb0cf76c4f8b820927c3" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>faceNormalGradient_</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a146c4e28d4b0e3db2a300caf6037f64b" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>GaussGreenLaplacian</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1af55bab36bc814be1d70f7c8bd139b861" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a87588df9354134f59ca08084ce9ebc3e" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aa39b68dcd20b90fd455ad6ad02f1f338" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3b0138b598c9b275088994cbf7ffc715" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a04b245c69176747085b8ee3de51ef8cf" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>name</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3800d518eff874206466d12c1e5ae0de" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>schema</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1abf8ad5053e9dd7e68aed9529f580e6df" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>surfaceInterpolation_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a3841dc3eb3602a94211a2c1c650fd0c9" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a10fff79d3fa24556a0239cbf42f1e5ed" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>clone</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ab1a817eb66921707f30d851958c7f31d" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1ab14d746819097c2de6076d0e4c588239" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>faceNormalGradient_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1acf01310e579e62681672a9e179177efb" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>GaussGreenLaplacian</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1acd2292c7b1e6dac8eb38cba5ad6ad785" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a25400d0c2df54317bb9cc782776b6dcd" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a7edcdbdaf1e78e6502504f2a460f098e" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1aff42e1a515b5e867ba8b6517b77daaba" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>laplacian</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a8890376caf83779df6b3f4dc75e23472" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>name</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a9fa338bf53ca660fcf4fd6fa160a31fd" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian_1a5d1959a7ceed79505b26bd72cc9876c0" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenLaplacian</scope><name>surfaceInterpolation_</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
