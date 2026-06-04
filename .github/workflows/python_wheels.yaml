@@ -169,29 +169,6 @@ jobs:
               cmake.define.Kokkos_ENABLE_HIP=OFF
               cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON
               cmake.define.Kokkos_ARCH_AMPERE80=ON
-          - label: CUDA 13.0
-            suffix: cuda130
-            before_all: bash ci/install_cuda.sh 13.0
-            config_settings: >
-              cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
-              cmake.define.NeoN_BUILD_TESTS=OFF
-              cmake.define.NeoN_WITH_MPI=OFF
-              cmake.define.NeoN_WITH_PETSC=OFF
-              cmake.define.NeoN_WITH_ADIOS2=OFF
-              cmake.define.NeoN_WITH_SUNDIALS=OFF
-              cmake.define.NeoN_WITH_UMPIRE=OFF
-              cmake.define.NeoN_INSTALL_CMAKE_PACKAGE=OFF
-              cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
-              cmake.define.CMAKE_CUDA_HOST_COMPILER=/usr/local/bin/g++
-              cmake.define.CMAKE_CUDA_ARCHITECTURES=80
-              cmake.define.CMAKE_CUDA_STANDARD=20
-              cmake.define.CMAKE_CUDA_STANDARD_REQUIRED=ON
-              cmake.define.CMAKE_CUDA_EXTENSIONS=OFF
-              cmake.define.Kokkos_ENABLE_SERIAL=ON
-              cmake.define.Kokkos_ENABLE_CUDA=ON
-              cmake.define.Kokkos_ENABLE_HIP=OFF
-              cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON
-              cmake.define.Kokkos_ARCH_AMPERE80=ON
 
     steps:
       - name: Checkout repository
@@ -213,7 +190,7 @@ jobs:
       - name: Build GPU wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
-          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
+          CIBW_BUILD: "cp312-manylinux_x86_64"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_34
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
