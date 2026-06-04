@@ -201,7 +201,9 @@ endif()
 
 if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
-  set(IWYU_PATH_AND_OPTIONS ${iwyu_path})
+  # Mapping file teaches IWYU the public surface of Kokkos/fmt/umpire/cpptrace so it stops
+  # suggesting their internal headers. See cmake/iwyu.imp.
+  set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
 endif()
 
