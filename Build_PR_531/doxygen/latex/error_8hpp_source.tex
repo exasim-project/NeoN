@@ -27,13 +27,13 @@
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00023}00023\ \textcolor{comment}{//\ \#include\ "{}logging.hpp"{}}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{info_8hpp}{info.hpp}}"{}}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00025}00025\ }
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1Logging}{00026}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1Logging}{NeoN::Logging}}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1Logging}{00026}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail}{NeoN::Logging::detail}}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00027}00027\ \{}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00028}00028\ \textcolor{comment}{//\ Forward\ declaration:\ error.hpp\ must\ not\ include\ logging.hpp\ —\ that\ would\ form\ a}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00029}00029\ \textcolor{comment}{//\ cycle\ (logging.hpp\ -\/>\ mpi/environment.hpp\ -\/>\ error.hpp).\ logFatal\ is\ defined\ in}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00030}00030\ \textcolor{comment}{//\ core/logging.cpp;\ NF\_ERROR\_EXIT\ routes\ through\ it\ for\ rank-\/tagged\ output,\ a}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00031}00031\ \textcolor{comment}{//\ stack\ trace,\ and\ a\ clean\ MPI\_Abort.}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00032}\mbox{\hyperlink{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}{00032}}\ [[noreturn]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}{logFatal}}(\textcolor{keyword}{const}\ std::string\&\ message);}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00032}\mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{00032}}\ [[noreturn]]\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{logFatal}}(\textcolor{keyword}{const}\ std::string\&\ message);}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00033}00033\ \}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00034}00034\ }
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00035}00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
@@ -61,7 +61,7 @@
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00088}00088\ \textcolor{comment}{//\ is\ usable\ inside\ constexpr\ functions)\ and\ routes\ it\ through\ logFatal,\ which}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00089}00089\ \textcolor{comment}{//\ tags\ the\ rank,\ prints\ a\ trace,\ MPI\_Aborts,\ and\ exits.}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00090}\mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{00090}}\ \textcolor{preprocessor}{\#define\ NF\_ERROR\_EXIT(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
-\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00091}00091\ \textcolor{preprocessor}{\ \ \ \ NeoN::Logging::logFatal((std::stringstream()\ <<\ NF\_ERROR\_MESSAGE(message)).str())}}
+\DoxyCodeLine{\Hypertarget{error_8hpp_source_l00091}00091\ \textcolor{preprocessor}{\ \ \ \ NeoN::Logging::detail::logFatal((std::stringstream()\ <<\ NF\_ERROR\_MESSAGE(message)).str())}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00092}00092\ }
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00103}\mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{00103}}\ \textcolor{preprocessor}{\#define\ NF\_THROW(message)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
 \DoxyCodeLine{\Hypertarget{error_8hpp_source_l00104}00104\ \textcolor{preprocessor}{\ \ \ \ throw\ NeoN::NeoNException((std::stringstream()\ <<\ NF\_ERROR\_MESSAGE(std::string(message))).str())}}

@@ -24,7 +24,7 @@ var searchData=
   ['log_21',['log',['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a1a041df8e9d32fdec6253944cbd348a3',1,'NeoN::Logging::log()'],['../classNeoN_1_1Logging_1_1BaseLogger.html#af4802af6ad562278b6293bad7e6b64cc',1,'NeoN::Logging::BaseLogger::log()']]],
   ['logbadanycast_22',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
   ['logevent_23',['logevent',['../classNeoN_1_1Logging_1_1LogEvent.html#a8313dff6d8edc6b6c5411c5ee7d2f3e1',1,'NeoN::Logging::LogEvent::LogEvent()'],['../classNeoN_1_1Logging_1_1LogEvent.html',1,'NeoN::Logging::LogEvent']]],
-  ['logfatal_24',['logFatal',['../namespaceNeoN_1_1Logging.html#a0a5c99151e29c478463d92e44cb59998',1,'NeoN::Logging']]],
+  ['logfatal_24',['logFatal',['../namespaceNeoN_1_1Logging_1_1detail.html#ae21753e01f652e0f034771427422e817',1,'NeoN::Logging::detail']]],
   ['logger_25',['logger',['../classNeoN_1_1Logging_1_1Logger.html',1,'NeoN::Logging::Logger'],['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger::Logger()']]],
   ['logging_2ehpp_26',['logging.hpp',['../logging_8hpp.html',1,'']]],
   ['logimpl_27',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],

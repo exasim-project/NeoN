@@ -11,7 +11,7 @@ var searchData=
   ['log_8',['log',['../classNeoN_1_1Logging_1_1BaseLogger.html#af4802af6ad562278b6293bad7e6b64cc',1,'NeoN::Logging::BaseLogger::log()'],['../classNeoN_1_1Logging_1_1Logger.html#a4c6ab731c451d0e95821f956e934a1a8',1,'NeoN::Logging::Logger::log()'],['../namespaceNeoN_1_1Logging.html#a1a041df8e9d32fdec6253944cbd348a3',1,'NeoN::Logging::log()']]],
   ['logbadanycast_9',['logBadAnyCast',['../namespaceNeoN.html#af36e4b5b8ea30fdc52a7f31cff8136d1',1,'NeoN']]],
   ['logevent_10',['LogEvent',['../classNeoN_1_1Logging_1_1LogEvent.html#a8313dff6d8edc6b6c5411c5ee7d2f3e1',1,'NeoN::Logging::LogEvent']]],
-  ['logfatal_11',['logFatal',['../namespaceNeoN_1_1Logging.html#a0a5c99151e29c478463d92e44cb59998',1,'NeoN::Logging']]],
+  ['logfatal_11',['logFatal',['../namespaceNeoN_1_1Logging_1_1detail.html#ae21753e01f652e0f034771427422e817',1,'NeoN::Logging::detail']]],
   ['logger_12',['Logger',['../classNeoN_1_1Logging_1_1Logger.html#a1762b4140b7f3169e45032d910126840',1,'NeoN::Logging::Logger']]],
   ['logimpl_13',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
   ['logoutrange_14',['logoutrange',['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)'],['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)']]],

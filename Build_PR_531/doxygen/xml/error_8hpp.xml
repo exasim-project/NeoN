@@ -1088,6 +1088,7 @@
     <innerclass refid="classNeoN_1_1NeoNException" prot="public">NeoN::NeoNException</innerclass>
     <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1Logging">NeoN::Logging</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1Logging_1_1detail">NeoN::Logging::detail</innernamespace>
     <sectiondef kind="define">
       <memberdef kind="define" id="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" prot="public" static="no">
         <name>NF_ERROR_MESSAGE</name>
@@ -1115,7 +1116,7 @@
       <memberdef kind="define" id="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" prot="public" static="no">
         <name>NF_ERROR_EXIT</name>
         <param><defname>message</defname></param>
-        <initializer>    <ref refid="namespaceNeoN_1_1Logging_1a0a5c99151e29c478463d92e44cb59998" kindref="member">NeoN::Logging::logFatal</ref>((std::stringstream() &lt;&lt; <ref refid="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" kindref="member">NF_ERROR_MESSAGE</ref>(message)).str())</initializer>
+        <initializer>    <ref refid="namespaceNeoN_1_1Logging_1_1detail_1ae21753e01f652e0f034771427422e817" kindref="member">NeoN::Logging::detail::logFatal</ref>((std::stringstream() &lt;&lt; <ref refid="error_8hpp_1ab49651cd484e1f86f3b7f8b880fac692" kindref="member">NF_ERROR_MESSAGE</ref>(message)).str())</initializer>
         <briefdescription>
 <para>Macro for printing an error message and aborting the program. </para>
         </briefdescription>
@@ -1472,13 +1473,13 @@
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#include<sp/>&quot;logging.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="info_8hpp" kindref="compound">info.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="namespaceNeoN_1_1Logging" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1Logging" kindref="compound">NeoN::Logging</ref></highlight></codeline>
+<codeline lineno="26" refid="namespaceNeoN_1_1Logging" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1Logging_1_1detail" kindref="compound">NeoN::Logging::detail</ref></highlight></codeline>
 <codeline lineno="27"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Forward<sp/>declaration:<sp/>error.hpp<sp/>must<sp/>not<sp/>include<sp/>logging.hpp<sp/>—<sp/>that<sp/>would<sp/>form<sp/>a</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>cycle<sp/>(logging.hpp<sp/>-&gt;<sp/>mpi/environment.hpp<sp/>-&gt;<sp/>error.hpp).<sp/>logFatal<sp/>is<sp/>defined<sp/>in</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>core/logging.cpp;<sp/>NF_ERROR_EXIT<sp/>routes<sp/>through<sp/>it<sp/>for<sp/>rank-tagged<sp/>output,<sp/>a</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>stack<sp/>trace,<sp/>and<sp/>a<sp/>clean<sp/>MPI_Abort.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32" refid="namespaceNeoN_1_1Logging_1a0a5c99151e29c478463d92e44cb59998" refkind="member"><highlight class="normal">[[noreturn]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1Logging_1a0a5c99151e29c478463d92e44cb59998" kindref="member">logFatal</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>message);</highlight></codeline>
+<codeline lineno="32" refid="namespaceNeoN_1_1Logging_1_1detail_1ae21753e01f652e0f034771427422e817" refkind="member"><highlight class="normal">[[noreturn]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1Logging_1_1detail_1ae21753e01f652e0f034771427422e817" kindref="member">logFatal</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>message);</highlight></codeline>
 <codeline lineno="33"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN" kindref="compound">NeoN</ref></highlight></codeline>
@@ -1506,7 +1507,7 @@
 <codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment">//<sp/>is<sp/>usable<sp/>inside<sp/>constexpr<sp/>functions)<sp/>and<sp/>routes<sp/>it<sp/>through<sp/>logFatal,<sp/>which</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment">//<sp/>tags<sp/>the<sp/>rank,<sp/>prints<sp/>a<sp/>trace,<sp/>MPI_Aborts,<sp/>and<sp/>exits.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="90" refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_ERROR_EXIT(message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="91"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>NeoN::Logging::logFatal((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(message)).str())</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>NeoN::Logging::detail::logFatal((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(message)).str())</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="92"><highlight class="normal"></highlight></codeline>
 <codeline lineno="103" refid="error_8hpp_1a01fd2dadf84a907b46bb93644bde393f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>NF_THROW(message)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="104"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>throw<sp/>NeoN::NeoNException((std::stringstream()<sp/>&lt;&lt;<sp/>NF_ERROR_MESSAGE(std::string(message))).str())</highlight><highlight class="normal"></highlight></codeline>

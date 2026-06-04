@@ -103,13 +103,15 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceNeoN_1_1Logging" id="r_namespaceNeoN_1_1Logging"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging.html">NeoN::Logging</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceNeoN_1_1Logging_1_1detail" id="r_namespaceNeoN_1_1Logging_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging_1_1detail.html">NeoN::Logging::detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ab49651cd484e1f86f3b7f8b880fac692" id="r_ab49651cd484e1f86f3b7f8b880fac692"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">NF_ERROR_MESSAGE</a>(message)&#160;&#160;&#160;    &quot;Error: &quot; &lt;&lt; message &lt;&lt; &quot;\nFile: &quot; &lt;&lt; __FILE__ &lt;&lt; &quot;\nLine: &quot; &lt;&lt; __LINE__ &lt;&lt; &quot;\n&quot;</td></tr>
 <tr class="memdesc:ab49651cd484e1f86f3b7f8b880fac692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds an error message fragment with the message, file, and line. The stack trace is emitted separately by logFatal()/terminate().  <br /></td></tr>
 <tr class="separator:ab49651cd484e1f86f3b7f8b880fac692"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b8fc4329e5e6dfc3731ca28605a8a49" id="r_a8b8fc4329e5e6dfc3731ca28605a8a49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(message)&#160;&#160;&#160;    <a class="el" href="namespaceNeoN_1_1Logging.html#a0a5c99151e29c478463d92e44cb59998">NeoN::Logging::logFatal</a>((std::stringstream() &lt;&lt; <a class="el" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">NF_ERROR_MESSAGE</a>(message)).str())</td></tr>
+<tr class="memitem:a8b8fc4329e5e6dfc3731ca28605a8a49" id="r_a8b8fc4329e5e6dfc3731ca28605a8a49"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error_8hpp.html#a8b8fc4329e5e6dfc3731ca28605a8a49">NF_ERROR_EXIT</a>(message)&#160;&#160;&#160;    <a class="el" href="namespaceNeoN_1_1Logging_1_1detail.html#ae21753e01f652e0f034771427422e817">NeoN::Logging::detail::logFatal</a>((std::stringstream() &lt;&lt; <a class="el" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">NF_ERROR_MESSAGE</a>(message)).str())</td></tr>
 <tr class="memdesc:a8b8fc4329e5e6dfc3731ca28605a8a49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for printing an error message and aborting the program.  <br /></td></tr>
 <tr class="separator:a8b8fc4329e5e6dfc3731ca28605a8a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01fd2dadf84a907b46bb93644bde393f" id="r_a01fd2dadf84a907b46bb93644bde393f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="error_8hpp.html#a01fd2dadf84a907b46bb93644bde393f">NF_THROW</a>(message)&#160;&#160;&#160;    throw <a class="el" href="classNeoN_1_1NeoNException.html">NeoN::NeoNException</a>((std::stringstream() &lt;&lt; <a class="el" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">NF_ERROR_MESSAGE</a>(std::string(message))).str())</td></tr>
@@ -142,8 +144,8 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0a5c99151e29c478463d92e44cb59998" id="r_a0a5c99151e29c478463d92e44cb59998"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging.html#a0a5c99151e29c478463d92e44cb59998">NeoN::Logging::logFatal</a> (const std::string &amp;message)</td></tr>
-<tr class="separator:a0a5c99151e29c478463d92e44cb59998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae21753e01f652e0f034771427422e817" id="r_ae21753e01f652e0f034771427422e817"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1Logging_1_1detail.html#ae21753e01f652e0f034771427422e817">NeoN::Logging::detail::logFatal</a> (const std::string &amp;message)</td></tr>
+<tr class="separator:ae21753e01f652e0f034771427422e817"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="aecc669a189db22f652ffb9788f01a99b" name="aecc669a189db22f652ffb9788f01a99b"></a>
@@ -496,7 +498,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">message</td><td>)</td>
-          <td>&#160;&#160;&#160;    <a class="el" href="namespaceNeoN_1_1Logging.html#a0a5c99151e29c478463d92e44cb59998">NeoN::Logging::logFatal</a>((std::stringstream() &lt;&lt; <a class="el" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">NF_ERROR_MESSAGE</a>(message)).str())</td>
+          <td>&#160;&#160;&#160;    <a class="el" href="namespaceNeoN_1_1Logging_1_1detail.html#ae21753e01f652e0f034771427422e817">NeoN::Logging::detail::logFatal</a>((std::stringstream() &lt;&lt; <a class="el" href="error_8hpp.html#ab49651cd484e1f86f3b7f8b880fac692">NF_ERROR_MESSAGE</a>(message)).str())</td>
         </tr>
       </table>
 </div><div class="memdoc">

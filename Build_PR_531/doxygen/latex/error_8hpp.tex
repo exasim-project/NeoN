@@ -17,13 +17,15 @@ class \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+N\+::\+Neo\+NException}}
 namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \item 
 namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging}{Neo\+N\+::\+Logging}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail}{Neo\+N\+::\+Logging\+::detail}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
 \#define \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)~    "{}Error\+: "{} $<$$<$ message $<$$<$ "{}\textbackslash{}n\+File\+: "{} $<$$<$ \+\_\+\+\_\+\+FILE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n\+Line\+: "{} $<$$<$ \+\_\+\+\_\+\+LINE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n"{}
 \begin{DoxyCompactList}\small\item\em Builds an error message fragment with the message, file, and line. The stack trace is emitted separately by log\+Fatal()/terminate(). \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\+\_\+\+ERROR\+\_\+\+EXIT}}(message)~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}{Neo\+N\+::\+Logging\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())
+\#define \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\+\_\+\+ERROR\+\_\+\+EXIT}}(message)~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())
 \begin{DoxyCompactList}\small\item\em Macro for printing an error message and aborting the program. \end{DoxyCompactList}\item 
 \#define \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\+\_\+\+THROW}}(message)~    throw \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+N\+::\+Neo\+NException}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(std\+::string(message))).str())
 \begin{DoxyCompactList}\small\item\em Macro for throwing a Neo\+NException with the specified error message. \end{DoxyCompactList}\item 
@@ -46,7 +48,7 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging}{Neo\+N\+::\+Logging}}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-void \mbox{\hyperlink{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}{Neo\+N\+::\+Logging\+::log\+Fatal}} (const std\+::string \&message)
+void \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}} (const std\+::string \&message)
 \end{DoxyCompactItemize}
 
 
@@ -266,7 +268,7 @@ Definition at line \mbox{\hyperlink{error_8hpp_source_l00203}{203}} of file \mbo
 \index{error.hpp@{error.hpp}!NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}}
 \index{NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ERROR\_EXIT}{NF\_ERROR\_EXIT}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ERROR\+\_\+\+EXIT(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_a0a5c99151e29c478463d92e44cb59998}{Neo\+N\+::\+Logging\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())}
+{\footnotesize\ttfamily \#define NF\+\_\+\+ERROR\+\_\+\+EXIT(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())}
 
 
 
