@@ -13,10 +13,10 @@ namespace NeoN
 
 // Distributed proc-boundary regression test for BasicGeometryScheme (review T2 / H1).
 //
-// Before the remediation, updateDeltaCoeffs / updateNonOrthCorrectionVec3s never wrote
+// Before the remediation, updateNonOrthDeltaCoeffs / updateNonOrthCorrectionVec3s never wrote
 // processor-boundary entries, leaving them at zero on every MPI run. This test partitions
 // a 1D uniform mesh across ranks and asserts the proc-boundary values directly — it fails
-// against the pre-fix code (deltaCoeffs == 0 at proc faces).
+// against the pre-fix code (nonOrthDeltaCoeffs == 0 at proc faces).
 //
 // CPUExecutor only: this machine has a single GPU, so a multi-rank test must not place data
 // on the GPU (ranks would contend for the one device). See feedback memory.
@@ -39,11 +39,9 @@ TEST_CASE("BasicGeometryScheme processor-boundary values")
     const scalar invH = static_cast<scalar>(mpiEnviron.sizeRank() * nLocal);
 
     auto wB = scheme.weights().boundaryData().value().copyToHost();
-    auto dcB = scheme.deltaCoeffs().boundaryData().value().copyToHost();
     auto ndcB = scheme.nonOrthDeltaCoeffs().boundaryData().value().copyToHost();
     auto cvB = scheme.nonOrthCorrectionVec3s().boundaryData().value().copyToHost();
     const auto wBv = wB.view();
-    const auto dcBv = dcB.view();
     const auto ndcBv = ndcB.view();
     const auto cvBv = cvB.view();
 
@@ -51,8 +49,7 @@ TEST_CASE("BasicGeometryScheme processor-boundary values")
     {
         INFO("processor-boundary face index " << i);
         REQUIRE(wBv[i] == Catch::Approx(0.5).margin(1e-12));    // equidistant neighbour
-        REQUIRE(dcBv[i] == Catch::Approx(invH).margin(1e-10));  // 1/h  (was 0 pre-fix)
-        REQUIRE(ndcBv[i] == Catch::Approx(invH).margin(1e-10)); // 1/(n.d) == 1/h orthogonal
+        REQUIRE(ndcBv[i] == Catch::Approx(invH).margin(1e-10)); // 1/(n.d) == 1/h (was 0 pre-fix)
         REQUIRE(mag(cvBv[i]) < 1e-12);                          // orthogonal -> no correction
     }
 }

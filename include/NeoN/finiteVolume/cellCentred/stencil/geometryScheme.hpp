@@ -25,8 +25,6 @@ public:
 
     virtual void updateWeights(const Executor& exec, SurfaceField<scalar>& weights) = 0;
 
-    virtual void updateDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& deltaCoeffs) = 0;
-
     virtual void
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) = 0;
 
@@ -40,10 +38,9 @@ public:
 };
 
 /* @class GeometryScheme
- * @brief Implements access to compute deltaCoeffs, weights, and nonOrthDeltaCoeffs
+ * @brief Implements access to compute weights and nonOrthDeltaCoeffs
  *
  * Where:
- *  - deltaCoeff: inverse owner-to-neighbour cell-centre distance, 1 / |cellToCellDist|
  *  - weight: the distance of the cell centre to face normalized by the distance to the neighbour
  * cell
  *  - nonOrthDeltaCoeff: 1 / (faceNormal . cellToCellDist), the over-relaxed (non-orthogonal)
@@ -57,7 +54,6 @@ public:
         const Executor& exec,
         std::unique_ptr<GeometrySchemeFactory> kernel,
         const SurfaceField<scalar>& weights,
-        const SurfaceField<scalar>& deltaCoeffs,
         const SurfaceField<scalar>& nonOrthDeltaCoeffs,
         const SurfaceField<Vec3>& nonOrthCorrectionVec3s
     );
@@ -74,13 +70,6 @@ public:
     virtual ~GeometryScheme() = default;
 
     const SurfaceField<scalar>& weights() const;
-
-    // Orthogonal inverse cell-to-cell distance, 1/|d|. NOTE: this has no production consumer
-    // today — all snGrad schemes (uncorrected/corrected/limitedCorrected) use nonOrthDeltaCoeffs
-    // (1/(n.d)), which is the consistent normal-gradient coefficient on non-orthogonal meshes
-    // (see uncorrected.cpp). It is still computed and exposed for API completeness and potential
-    // future consumers; on orthogonal meshes it equals nonOrthDeltaCoeffs.
-    const SurfaceField<scalar>& deltaCoeffs() const;
 
     const SurfaceField<scalar>& nonOrthDeltaCoeffs() const;
 
@@ -104,7 +93,6 @@ private:
     std::unique_ptr<GeometrySchemeFactory> kernel_;
 
     SurfaceField<scalar> weights_;
-    SurfaceField<scalar> deltaCoeffs_;
     SurfaceField<scalar> nonOrthDeltaCoeffs_;
     SurfaceField<Vec3> nonOrthCorrectionVec3s_;
 };

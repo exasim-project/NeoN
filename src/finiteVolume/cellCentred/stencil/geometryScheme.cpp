@@ -29,13 +29,11 @@ GeometryScheme::GeometryScheme(
     const Executor& exec,
     std::unique_ptr<GeometrySchemeFactory> kernel,
     const SurfaceField<scalar>& weights,
-    const SurfaceField<scalar>& deltaCoeffs,
     const SurfaceField<scalar>& nonOrthDeltaCoeffs,
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s
 )
     : exec_(exec), mesh_(weights.mesh()), kernel_(std::move(kernel)), weights_(weights),
-      deltaCoeffs_(deltaCoeffs), nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs),
-      nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
+      nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs), nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
 {
     if (kernel_ == nullptr)
     {
@@ -50,9 +48,6 @@ GeometryScheme::GeometryScheme(
 )
     : exec_(exec), mesh_(mesh), kernel_(std::move(kernel)),
       weights_(mesh.exec(), "weights", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)),
-      deltaCoeffs_(
-          mesh.exec(), "deltaCoeffs", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
-      ),
       nonOrthDeltaCoeffs_(
           mesh.exec(),
           "nonOrthDeltaCoeffs",
@@ -77,9 +72,6 @@ GeometryScheme::GeometryScheme(const UnstructuredMesh& mesh)
     : exec_(mesh.exec()), mesh_(mesh),
       kernel_(std::make_unique<BasicGeometryScheme>(mesh)), // TODO add selection mechanism
       weights_(mesh.exec(), "weights", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)),
-      deltaCoeffs_(
-          mesh.exec(), "deltaCoeffs", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
-      ),
       nonOrthDeltaCoeffs_(
           mesh.exec(),
           "nonOrthDeltaCoeffs",
@@ -110,7 +102,6 @@ void GeometryScheme::update()
             [&](const auto& exec)
             {
                 kernel_->updateWeights(exec, weights_);
-                kernel_->updateDeltaCoeffs(exec, deltaCoeffs_);
                 kernel_->updateNonOrthDeltaCoeffs(exec, nonOrthDeltaCoeffs_);
                 kernel_->updateNonOrthCorrectionVec3s(
                     exec, nonOrthCorrectionVec3s_, nonOrthDeltaCoeffs_
@@ -139,8 +130,6 @@ void GeometryScheme::reset() const
 
 
 const SurfaceField<scalar>& GeometryScheme::weights() const { return weights_; }
-
-const SurfaceField<scalar>& GeometryScheme::deltaCoeffs() const { return deltaCoeffs_; }
 
 const SurfaceField<scalar>& GeometryScheme::nonOrthDeltaCoeffs() const
 {

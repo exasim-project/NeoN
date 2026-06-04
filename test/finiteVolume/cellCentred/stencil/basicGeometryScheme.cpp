@@ -18,10 +18,9 @@ namespace NeoN
 // Every direct stencil test in the suite runs on create1DUniformMesh, the unique
 // mesh on which most geometric-scheme bugs are invisible. This test pins the
 // producer values on a 3D uniform hex mesh where every quantity is analytically
-// known, so a regression in any of the producer kernels (weights, deltaCoeffs,
+// known, so a regression in any of the producer kernels (weights,
 // nonOrthDeltaCoeffs, nonOrthCorrectionVec3s) fails loudly. Covers review
-// findings H2 (doc value), H3 (no 1/0), M3/M4 (corrVec formula), N1 (deltaCoeffs
-// is produced and asserted).
+// findings H2 (doc value), H3 (no 1/0), M3/M4 (corrVec formula).
 TEST_CASE("BasicGeometryScheme analytical 3D cube")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -43,11 +42,6 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
         for (localIdx i = 0; i < w.size(); ++i)
             REQUIRE(wv[i] == Catch::Approx(0.5).margin(1e-14)); // symmetry
 
-        auto dc = scheme.deltaCoeffs().internalVector().copyToHost();
-        const auto dcv = dc.view();
-        for (localIdx i = 0; i < dc.size(); ++i)
-            REQUIRE(dcv[i] == Catch::Approx(invH).margin(1e-12)); // 1/|d|
-
         auto ndc = scheme.nonOrthDeltaCoeffs().internalVector().copyToHost();
         const auto ndcv = ndc.view();
         for (localIdx i = 0; i < ndc.size(); ++i)
@@ -68,11 +62,6 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
         for (localIdx i = 0; i < nBF; ++i)
             REQUIRE(wBv[i] == Catch::Approx(1.0).margin(1e-14));
 
-        auto dcB = scheme.deltaCoeffs().boundaryData().value().copyToHost();
-        const auto dcBv = dcB.view();
-        for (localIdx i = 0; i < nBF; ++i)
-            REQUIRE(dcBv[i] == Catch::Approx(invHalfH).margin(1e-12));
-
         auto ndcB = scheme.nonOrthDeltaCoeffs().boundaryData().value().copyToHost();
         const auto ndcBv = ndcB.view();
         for (localIdx i = 0; i < nBF; ++i)
@@ -85,12 +74,13 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
     }
 }
 
-// Non-orthogonal mesh (review T3 / N2): the orthogonal deltaCoeffs (1/|d|) and the
-// over-relaxed nonOrthDeltaCoeffs (1/(n.d)) must genuinely diverge, and the non-orth
-// correction must be non-zero. nonOrthDeltaCoeffs is what every snGrad scheme uses to
-// match OpenFOAM, so this pins that the producer actually distinguishes the two off the
-// orthogonal limit. A sheared cube introduces the non-orthogonality on x-normal faces
-// while leaving y/z faces orthogonal.
+// Non-orthogonal mesh (review T3 / N2): nonOrthDeltaCoeffs uses the face-normal
+// projection 1/(n.d), so a transverse shear (which grows |d| but leaves n.d unchanged)
+// must NOT change it — it would drop below 1/h if the kernel used the Euclidean 1/|d|.
+// The non-orthogonality must instead surface in the correction vector. nonOrthDeltaCoeffs
+// is what every snGrad scheme uses to match OpenFOAM, so this pins the projection
+// behaviour. A sheared cube introduces the non-orthogonality on x-normal faces while
+// leaving y/z faces orthogonal.
 TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -98,9 +88,11 @@ TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
 
     const localIdx n = 4;
     auto mesh = create3DUniformMesh(exec, n, n, n);
+    const scalar invH = static_cast<scalar>(n); // h = 1/n, so 1/h = n
 
     // Shear cell centres: C.y += s * C.x. The cell-to-cell vector across an x-normal
-    // face gains a transverse y-component (n.d < |d|); face geometry is untouched.
+    // face gains a transverse y-component (|d| grows) but its face-normal projection
+    // n.d is unchanged; face geometry is untouched.
     const scalar s = 0.5;
     {
         auto ccH = mesh.cellCenters().copyToHost();
@@ -115,27 +107,21 @@ TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
 
     fvcc::GeometryScheme scheme(exec, mesh, std::make_unique<fvcc::BasicGeometryScheme>(mesh));
 
-    auto dc = scheme.deltaCoeffs().internalVector().copyToHost();
     auto ndc = scheme.nonOrthDeltaCoeffs().internalVector().copyToHost();
     auto cv = scheme.nonOrthCorrectionVec3s().internalVector().copyToHost();
-    const auto dcv = dc.view();
     const auto ndcv = ndc.view();
     const auto cvv = cv.view();
 
-    scalar maxDiff = 0.0;
     scalar maxCorr = 0.0;
-    for (localIdx i = 0; i < dc.size(); ++i)
+    for (localIdx i = 0; i < ndc.size(); ++i)
     {
-        // mathematical invariant: 1/(n.d) >= 1/|d| since the projection <= magnitude
-        REQUIRE(ndcv[i] >= dcv[i] - 1e-12);
-        const scalar diff = ndcv[i] - dcv[i];
-        if (diff > maxDiff) maxDiff = diff;
+        // 1/(n.d) stays at 1/h under a transverse shear (n.d == h); it would be smaller
+        // if the kernel used the Euclidean 1/|d|.
+        REQUIRE(ndcv[i] == Catch::Approx(invH).margin(1e-12));
         const scalar c = mag(cvv[i]);
         if (c > maxCorr) maxCorr = c;
     }
-    // the sheared x-faces make the two delta fields genuinely diverge ...
-    REQUIRE(maxDiff > 1e-3);
-    // ... and produce a non-zero non-orthogonal correction vector
+    // the sheared x-faces produce a non-zero non-orthogonal correction vector
     REQUIRE(maxCorr > 1e-3);
 }
 
@@ -143,10 +129,8 @@ TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
 // nonOrthDeltaCoeffs (1/(n.d)), matching OpenFOAM's uncorrectedSnGrad which returns
 // mesh().nonOrthDeltaCoeffs(). The review's original N2 premise (that OF uses the
 // orthogonal 1/|d|) was verified false against the OF source, so this asserts the
-// opposite identity from the pre-revert version. The orthogonal deltaCoeffs is kept
-// on the GeometryScheme for API completeness but has no snGrad consumer, so it must
-// be a distinct field from what 'uncorrected' exposes. Checked by field identity, so
-// it holds on any mesh and fails loudly if anyone rewires the accessor.
+// opposite identity from the pre-revert version. Checked by field identity, so it holds
+// on any mesh and fails loudly if anyone rewires the accessor.
 TEST_CASE("uncorrected snGrad exposes nonOrthDeltaCoeffs (N1/N2)")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -157,6 +141,5 @@ TEST_CASE("uncorrected snGrad exposes nonOrthDeltaCoeffs (N1/N2)")
     fvcc::Uncorrected<scalar> uncorrected(exec, mesh);
 
     REQUIRE(&uncorrected.deltaCoeffs() == &scheme->nonOrthDeltaCoeffs());
-    REQUIRE(&uncorrected.deltaCoeffs() != &scheme->deltaCoeffs());
 }
 }

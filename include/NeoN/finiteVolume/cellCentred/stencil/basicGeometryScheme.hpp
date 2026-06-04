@@ -14,19 +14,15 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 /** @class BasicGeometryScheme
- *  @brief Default GeometryScheme kernel: computes weights, deltaCoeffs, nonOrthDeltaCoeffs and
- *  the non-orthogonal correction vectors directly from the mesh geometry.
+ *  @brief Default GeometryScheme kernel: computes weights, nonOrthDeltaCoeffs and the
+ *  non-orthogonal correction vectors directly from the mesh geometry.
  *
  *  Scheme definitions baked into this kernel:
- *   - deltaCoeffs is the orthogonal inverse cell-to-cell distance 1/|d|; nonOrthDeltaCoeffs is the
- *     over-relaxed inverse face-normal distance 1/(n.d), floored by nonOrthDeltaClamp. The snGrad
- *     schemes consume nonOrthDeltaCoeffs; deltaCoeffs has no production consumer today (see
- *     GeometryScheme::deltaCoeffs) and equals nonOrthDeltaCoeffs on orthogonal meshes.
+ *   - nonOrthDeltaCoeffs is the over-relaxed inverse face-normal distance 1/(n.d), floored by
+ *     nonOrthDeltaClamp; the snGrad schemes consume it as the consistent normal-gradient
+ *     coefficient on non-orthogonal meshes (it equals the Euclidean 1/|d| on orthogonal meshes).
  *   - boundary weights are 1 (one-sided physical patches); processor weights are dN/(dO+dN).
- *   - processor-boundary deltaCoeffs are 1/|Cnei - Cown| using the neighbour cell centre Cnei
- *     halo-exchanged across the rank boundary, so they are exact on non-orthogonal processor faces
- *     too; processor nonOrthDeltaCoeffs are 1/(dO+dN) from the exchanged owner face-normal
- *     distances.
+ *   - processor nonOrthDeltaCoeffs are 1/(dO+dN) from the exchanged owner face-normal distances.
  *   - non-orthogonal correction vectors are zero on physical (one-sided) boundary faces, but
  *     non-zero on non-orthogonal processor faces: a processor face has a real neighbour cell, so
  *     the corrected/limited snGrad applies the full correction there (it vanishes on orthogonal
@@ -42,8 +38,6 @@ public:
     BasicGeometryScheme(const UnstructuredMesh& mesh);
 
     void updateWeights(const Executor& exec, SurfaceField<scalar>& weights) final;
-
-    void updateDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& deltaCoeffs) final;
 
     void
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) final;
