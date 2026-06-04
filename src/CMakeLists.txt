@@ -19,6 +19,7 @@ set(NeoN_SRCS
     "core/database/document.cpp"
     "core/database/fieldCollection.cpp"
     "core/database/oldTimeCollection.cpp"
+    "core/backendInfo.cpp"
     "core/memory/umpire.cpp"
     "core/memory/kokkos.cpp"
     "core/dictionary.cpp"
