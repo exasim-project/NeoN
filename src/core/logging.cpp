@@ -68,11 +68,14 @@ void setNeonDefaultPattern()
     logger->set_level(MIN_LEVEL == Level::Error ? spdlog::level::err : spdlog::level::info);
     logger->info("Initializing NeoN");
 #else
-    if (shouldLog(Level::Info))
+    if (detail::shouldLog(Level::Info))
         std::cout << RANK_PREFIX << "Initializing NeoN"
                   << "\n";
 #endif
 }
+
+namespace detail
+{
 
 bool shouldLog([[maybe_unused]] Level level, [[maybe_unused]] std::string logName)
 {
@@ -82,6 +85,8 @@ bool shouldLog([[maybe_unused]] Level level, [[maybe_unused]] std::string logNam
 #else
     return level >= MIN_LEVEL;
 #endif
+}
+
 }
 
 void logImpl(std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName)
@@ -141,6 +146,9 @@ void terminate()
     std::abort();
 }
 
+namespace detail
+{
+
 void logFatal(const std::string& message)
 {
     // Fatal path: print directly (rank-tagged) without going through spdlog so it
@@ -148,6 +156,8 @@ void logFatal(const std::string& message)
     // direct std::cerr write is fine.
     std::cerr << RANK_PREFIX << message << std::endl;
     terminate();
+}
+
 }
 
 }

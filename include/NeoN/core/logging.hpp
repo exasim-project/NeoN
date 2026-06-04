@@ -79,15 +79,21 @@ public:
     }
 };
 
-// Configure the default "NeoN" logger and the rank-based mute policy. Reads the
-// MPI rank internally (when MPI support is enabled and MPI is initialized), so it
-// works with or without MPI and needs no argument. Call after the host has
-// initialized MPI so the rank is known.
+/* Configure the default "NeoN" logger and the rank-based mute policy. Reads the
+ * MPI rank internally (when MPI support is enabled and MPI is initialized), so it
+ * works with or without MPI and needs no argument. Call after the host has
+ * initialized MPI so the rank is known.
+ */
 void setNeonDefaultPattern();
 
 void logImpl(
     std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std::string logName = "NeoN"
 );
+
+[[noreturn]] void terminate();
+
+namespace detail
+{
 
 /* @brief Returns whether a message at the given level would actually be emitted
  *        by the named logger.
@@ -100,8 +106,6 @@ void logImpl(
  */
 bool shouldLog(Level level, std::string logName = "NeoN");
 
-[[noreturn]] void terminate();
-
 /* @brief Log a fatal message (rank-tagged) and terminate the program.
  *
  * In MPI runs this aborts the communicator so peers do not deadlock on a
@@ -109,11 +113,13 @@ bool shouldLog(Level level, std::string logName = "NeoN");
  */
 [[noreturn]] void logFatal(const std::string& message);
 
+}
+
 /*@brief convenience function to call spdlogs info with std::format */
 template<typename... Args>
 void info(std::string formatString, Args... args)
 {
-    if (!shouldLog(Level::Info)) return;
+    if (!detail::shouldLog(Level::Info)) return;
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Info);
 }
 
@@ -121,7 +127,7 @@ void info(std::string formatString, Args... args)
 template<typename... Args>
 void warn(std::string formatString, Args... args)
 {
-    if (!shouldLog(Level::Warning)) return;
+    if (!detail::shouldLog(Level::Warning)) return;
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Warning);
 }
 
@@ -129,7 +135,7 @@ void warn(std::string formatString, Args... args)
 template<typename... Args>
 void debug(std::string formatString, Args... args)
 {
-    if (!shouldLog(Level::Debug)) return;
+    if (!detail::shouldLog(Level::Debug)) return;
     logImpl(fmt::format(fmt::runtime(formatString), args...), Level::Debug);
 }
 
@@ -160,7 +166,7 @@ template<typename... Args>
 [[noreturn]] void error(detail::FatalFormat fmtLoc, Args... args)
 {
     auto message = fmt::format(fmt::runtime(fmtLoc.fmt), args...);
-    logFatal(fmt::format("{}:{} {}", fmtLoc.loc.file_name(), fmtLoc.loc.line(), message));
+    detail::logFatal(fmt::format("{}:{} {}", fmtLoc.loc.file_name(), fmtLoc.loc.line(), message));
 }
 
 /* @class A base class to build additional loggers

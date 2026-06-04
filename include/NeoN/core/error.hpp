@@ -23,7 +23,7 @@
 // #include "logging.hpp"
 #include "info.hpp"
 
-namespace NeoN::Logging
+namespace NeoN::Logging::detail
 {
 // Forward declaration: error.hpp must not include logging.hpp — that would form a
 // cycle (logging.hpp -> mpi/environment.hpp -> error.hpp). logFatal is defined in
@@ -88,7 +88,7 @@ private:
 // is usable inside constexpr functions) and routes it through logFatal, which
 // tags the rank, prints a trace, MPI_Aborts, and exits.
 #define NF_ERROR_EXIT(message)                                                                     \
-    NeoN::Logging::logFatal((std::stringstream() << NF_ERROR_MESSAGE(message)).str())
+    NeoN::Logging::detail::logFatal((std::stringstream() << NF_ERROR_MESSAGE(message)).str())
 
 /**
  * @def NF_THROW
