@@ -4,7 +4,7 @@
 - Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471),[#517](https://github.com/exasim-project/NeoN/pull/517)
 - Add experimental support for COO and CSR Matrices [#486](https://github.com/exasim-project/NeoN/pull/486)
 - Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
-- Add experimental MPI support [#519](https://github.com/exasim-project/NeoN/pull/519), [#520](https://github.com/exasim-project/NeoN/pull/520), [#512](https://github.com/exasim-project/NeoN/pull/512) [#525](https://github.com/exasim-project/NeoN/pull/525)
+- Add experimental MPI support [#519](https://github.com/exasim-project/NeoN/pull/519), [#520](https://github.com/exasim-project/NeoN/pull/520), [#512](https://github.com/exasim-project/NeoN/pull/512), [#525](https://github.com/exasim-project/NeoN/pull/525), [#531](https://github.com/exasim-project/NeoN/pull/531)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
 - Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
