@@ -38,7 +38,7 @@ var searchData=
   ['computelimitedcorrectedfacenormalgrad_35',['computeLimitedCorrectedFaceNormalGrad',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a3ca3f52de2754f3e590bb69cf57e76af',1,'NeoN::finiteVolume::cellCentred']]],
   ['computelimitedcorrectionterm_36',['computeLimitedCorrectionTerm',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a6c37a85194f9e07c20dfc103b5c45e29',1,'NeoN::finiteVolume::cellCentred']]],
   ['computelinearinterpolation_37',['computeLinearInterpolation',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a5ee2b2f0634716198d36459918063de3',1,'NeoN::finiteVolume::cellCentred']]],
-  ['computeresidual_38',['computeResidual',['../namespaceNeoN_1_1la.html#ad74bd26b28c6ce859605043d4c1d6812',1,'NeoN::la']]],
+  ['computeresidual_38',['computeResidual',['../namespaceNeoN_1_1la.html#ac4b8595bed4cc9b705cc4bf3766bbd69',1,'NeoN::la']]],
   ['computeupwindinterpolation_39',['computeUpwindInterpolation',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#aa9d7a25056cb046afef32003276efb73',1,'NeoN::finiteVolume::cellCentred']]],
   ['computeupwindinterpolationweights_40',['computeUpwindInterpolationWeights',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a097f320c9bd5c29ce0f05c1de7ea047f',1,'NeoN::finiteVolume::cellCentred']]],
   ['console_41',['Console',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299a2404429e5c703d05b5551ce05100cd12',1,'NeoN::Logging']]],
