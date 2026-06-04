@@ -38,14 +38,14 @@ namespace
 // plain comparison with no per-call MPI query (hot-path free, serial included).
 // NOTE: for rank-aware muting, MPI must be initialized before NeoN::initialize
 // runs (as in neoIcoFoam/neoPisoFoam, which call setRootCase.H first).
-Level minLevel = Level::Info;
-std::string rankPrefix; // empty on rank 0 / serial
+Level MIN_LEVEL = Level::Info;
+std::string RANK_PREFIX; // empty on rank 0 / serial
 
 void applyRankPolicy(std::size_t rank)
 {
     const bool nonRoot = rank != 0;
-    minLevel = nonRoot ? Level::Error : Level::Info;
-    rankPrefix = nonRoot ? fmt::format("[rank {}] ", rank) : std::string {};
+    MIN_LEVEL = nonRoot ? Level::Error : Level::Info;
+    RANK_PREFIX = nonRoot ? fmt::format("[rank {}] ", rank) : std::string {};
 }
 }
 
@@ -61,15 +61,15 @@ void setNeonDefaultPattern()
 
 #if NF_WITH_SPDLOG
     auto logger = spdlog::stdout_color_mt("NeoN");
-    // Derive pattern/level from the rank policy: rankPrefix is "[rank N] " on
-    // non-root ranks (empty otherwise); minLevel is Error there so only errors
+    // Derive pattern/level from the rank policy: RANK_PREFIX is "[rank N] " on
+    // non-root ranks (empty otherwise); MIN_LEVEL is Error there so only errors
     // are emitted and stay rank-attributable.
-    logger->set_pattern(rankPrefix + "%v");
-    logger->set_level(minLevel == Level::Error ? spdlog::level::err : spdlog::level::info);
+    logger->set_pattern(RANK_PREFIX + "%v");
+    logger->set_level(MIN_LEVEL == Level::Error ? spdlog::level::err : spdlog::level::info);
     logger->info("Initializing NeoN");
 #else
     if (shouldLog(Level::Info))
-        std::cout << rankPrefix << "Initializing NeoN"
+        std::cout << RANK_PREFIX << "Initializing NeoN"
                   << "\n";
 #endif
 }
@@ -80,7 +80,7 @@ bool shouldLog([[maybe_unused]] Level level, [[maybe_unused]] std::string logNam
     auto logger = spdlog::get(logName);
     return logger && logger->should_log(spdlog::level::level_enum(level));
 #else
-    return level >= minLevel;
+    return level >= MIN_LEVEL;
 #endif
 }
 
@@ -89,7 +89,7 @@ void logImpl(std::string sv, [[maybe_unused]] Level level, [[maybe_unused]] std:
 #if NF_WITH_SPDLOG
     spdlog::get(logName)->log(spdlog::level::level_enum(level), sv);
 #else
-    std::cout << rankPrefix << sv << "\n";
+    std::cout << RANK_PREFIX << sv << "\n";
 #endif
 }
 
@@ -146,7 +146,7 @@ void logFatal(const std::string& message)
     // Fatal path: print directly (rank-tagged) without going through spdlog so it
     // works even before the logger is set up, then abort. Errors are rare, so the
     // direct std::cerr write is fine.
-    std::cerr << rankPrefix << message << std::endl;
+    std::cerr << RANK_PREFIX << message << std::endl;
     terminate();
 }
 
