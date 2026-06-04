@@ -5,8 +5,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/variant.h>
 #include <nanobind/stl/string.h>
-#include <Kokkos_Core.hpp>
 
+#include "NeoN/core/backendInfo.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "bindings.hpp"
 
@@ -101,15 +101,7 @@ void registerExecutors(nb::module_& m)
 
     m.def(
         "gpu_available",
-        []() -> bool
-        {
-            // Check if DefaultExecutionSpace cannot access HostSpace from device
-            // This indicates the execution space runs on device (GPU)
-            constexpr bool cannot_access_host_from_device =
-                !Kokkos::SpaceAccessibility<NeoN::GPUExecutor::exec, Kokkos::HostSpace>::accessible;
-
-            return cannot_access_host_from_device;
-        },
+        []() -> bool { return NeoN::hasGpuBackend(); },
         "Check if GPU acceleration is available at runtime"
     );
 }

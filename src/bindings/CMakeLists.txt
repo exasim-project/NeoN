@@ -26,28 +26,33 @@ else()
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
 endif()
 
-nanobind_add_module(
-  _neon
-  NOMINSIZE
-  neon.cpp
-  executors.cpp
-  scalar.cpp
-  vec3.cpp
-  vectors.cpp
-  containerFreeFunctions.cpp
-  boundaryMesh.cpp
-  unstructuredMesh.cpp
-  surfaceField.cpp
-  volumeField.cpp
-  surfaceInterpolation.cpp
-  inputs.cpp
-  coNum.cpp
-  initialization.cpp
-  linearAlgebra.cpp
-  dsl.cpp
-  database/document.cpp
-  database/collection.cpp
-  database/database.cpp)
+set(NeoN_PYTHON_BINDING_SRCS
+    neon.cpp
+    executors.cpp
+    scalar.cpp
+    vec3.cpp
+    vectors.cpp
+    containerFreeFunctions.cpp
+    boundaryMesh.cpp
+    unstructuredMesh.cpp
+    surfaceField.cpp
+    volumeField.cpp
+    surfaceInterpolation.cpp
+    inputs.cpp
+    coNum.cpp
+    initialization.cpp
+    linearAlgebra.cpp
+    dsl.cpp
+    database/document.cpp
+    database/collection.cpp
+    database/database.cpp)
+
+if(NeoN_ENABLE_CUDA)
+  # CUDA-enabled Kokkos headers require translation units that include them to use CUDA mode.
+  set_source_files_properties(${NeoN_PYTHON_BINDING_SRCS} PROPERTIES LANGUAGE CUDA)
+endif()
+
+nanobind_add_module(_neon NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
