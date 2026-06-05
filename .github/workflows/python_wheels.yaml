@@ -195,7 +195,7 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
-            auditwheel -v repair --exclude libcuda.so.1 -w {dest_dir} {wheel}
+            auditwheel -v repair --plat manylinux_2_39_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
           CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_ENVIRONMENT_LINUX: >
             PATH=/usr/local/cuda/bin:$PATH
