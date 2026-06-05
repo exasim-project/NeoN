@@ -116,29 +116,56 @@ L1ResidualResult solveWithL1Stop(
 
 /** @brief Read the L1-scaled residual stopping controls from a solver configuration.
  *
- * Returns std::nullopt unless the solver dictionary opts in via "l1ScaledResidual true".
- * Tolerances and the iteration cap are read from the mapped Ginkgo "criteria" sub-dict
- * (absolute_residual_norm / initial_residual_norm / iteration).
+ * Returns std::nullopt unless the solver dictionary opts in via "l1ScaledResidual".
+ * The flag is accepted as a bool, an int, or a truthy word/string ("true"/"yes"/"on"/"1")
+ * so it works both programmatically and when read from a dictionary file (where a
+ * boolean token arrives as a word). Tolerances and the iteration cap are read from the
+ * "criteria" sub-dict (absolute_residual_norm / initial_residual_norm / iteration).
  */
 inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& cfg)
 {
-    if (!cfg.contains("l1ScaledResidual") || !cfg.get<bool>("l1ScaledResidual"))
+    const std::string flag = "l1ScaledResidual";
+    if (!cfg.contains(flag))
+    {
+        return std::nullopt;
+    }
+    // A boolean read from a dictionary file is stored as a word/string, not a bool;
+    // accept the common representations rather than assuming a single type.
+    bool enabled = false;
+    if (cfg.isType<bool>(flag))
+    {
+        enabled = cfg.get<bool>(flag);
+    }
+    else if (cfg.isType<int>(flag))
+    {
+        enabled = cfg.get<int>(flag) != 0;
+    }
+    else if (cfg.isType<std::string>(flag))
+    {
+        const std::string v = cfg.get<std::string>(flag);
+        enabled = (v == "true" || v == "yes" || v == "on" || v == "1");
+    }
+    if (!enabled)
     {
         return std::nullopt;
     }
 
     L1ResidualControl control {0.0, 0.0, 1000, 0};
 
-    // criteria entries may be stored as int or scalar/label depending on source
+    // criteria entries may be stored as int, label or scalar depending on source
     auto readScalar = [](const Dictionary& d, const std::string& key, scalar fallback)
     {
         if (!d.contains(key)) return fallback;
-        return d.isType<int>(key) ? scalar(d.get<int>(key)) : d.get<scalar>(key);
+        if (d.isType<int>(key)) return scalar(d.get<int>(key));
+        if (d.isType<label>(key)) return scalar(d.get<label>(key));
+        return d.get<scalar>(key);
     };
     auto readInt = [](const Dictionary& d, const std::string& key, localIdx fallback)
     {
         if (!d.contains(key)) return fallback;
-        return d.isType<int>(key) ? localIdx(d.get<int>(key)) : d.get<localIdx>(key);
+        if (d.isType<int>(key)) return localIdx(d.get<int>(key));
+        if (d.isType<scalar>(key)) return localIdx(d.get<scalar>(key));
+        return d.get<localIdx>(key);
     };
 
     if (cfg.contains("criteria"))
