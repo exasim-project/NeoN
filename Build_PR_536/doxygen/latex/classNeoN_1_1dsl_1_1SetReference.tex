@@ -21,14 +21,18 @@ Inheritance diagram for NeoN\+::dsl\+::Set\+Reference\texorpdfstring{$<$}{<} Val
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_a16fe3252506407a8e19ef8782062a685}{Set\+Reference}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} ref\+Cell, Value\+Type ref\+Value)
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_adf614e31467b07f814f48c54ade4ee18}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ $>$ \&ls) const override
-\end{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_ac61b265d1c0bac9f2cf032fe458deb87}{apply\+Scalar\+Matrix}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{la\+::\+COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&ls) const override
+\begin{DoxyCompactList}\small\item\em Segregated scalar-\/matrix / Value\+Type-\/rhs form. The scalar diagonal scales the Value\+Type reference value (scalar \texorpdfstring{$\ast$}{*} \doxylink{classNeoN_1_1Vec3}{Vec3} broadcasts), so the same pin applies to every component of the right-\/hand side. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Neo\+N\+::dsl\+::\+Post\+Assembly\+Base$<$ Vector\+Type, Index\+Type $>$}}}
 \begin{DoxyCompactItemize}
 \item 
 virtual \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6ee1fd861a37f190bf64b4525f1ffbaa}{\texorpdfstring{$\sim$}{\string~}\+Post\+Assembly\+Base}} ()=default
 \item 
 virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a145f21d894b17fd1287b3cde7f7f051c}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vector\+Type, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Vector\+Type, Index\+Type $>$ $>$ \&) const
-\end{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af0170570aa68740698ac111b485cc18c}{apply\+Scalar\+Matrix}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{la\+::\+COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&) const
+\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs form (a scalar coefficient matrix with a Vector\+Type right-\/hand side). Default no-\/op; functors that support the segregated form override this. \doxylink{classA}{A} distinct name (rather than an operator() overload) avoids colliding with the same-\/type signature when Vector\+Type == scalar. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -40,7 +44,7 @@ Modifies the assembled linear system in-\/place\+: \doxylink{classA}{A}\mbox{[}r
 
 For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-\/distributed systems every rank applies it independently (each holds a full copy). @\+TODO allow to set a ref\+Point instead of a ref\+Cell, make the ref\+Cell a global cell\+ID 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00056}{56}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00066}{66}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -54,11 +58,26 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00056}{56}} of file 
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
 \doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1dsl_1_1SetReference_ac61b265d1c0bac9f2cf032fe458deb87}\label{classNeoN_1_1dsl_1_1SetReference_ac61b265d1c0bac9f2cf032fe458deb87} 
+\index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!applyScalarMatrix@{applyScalarMatrix}}
+\index{applyScalarMatrix@{applyScalarMatrix}!NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{applyScalarMatrix()}{applyScalarMatrix()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+Reference}}$<$ Value\+Type, Index\+Type $>$\+::apply\+Scalar\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{la\+::\+COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Segregated scalar-\/matrix / Value\+Type-\/rhs form. The scalar diagonal scales the Value\+Type reference value (scalar \texorpdfstring{$\ast$}{*} \doxylink{classNeoN_1_1Vec3}{Vec3} broadcasts), so the same pin applies to every component of the right-\/hand side. 
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00104}{104}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
 \Hypertarget{classNeoN_1_1dsl_1_1SetReference_adf614e31467b07f814f48c54ade4ee18}\label{classNeoN_1_1dsl_1_1SetReference_adf614e31467b07f814f48c54ade4ee18} 
 \index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!operator()@{operator()}}
 \index{operator()@{operator()}!NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}}
@@ -68,7 +87,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00062}{62}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 

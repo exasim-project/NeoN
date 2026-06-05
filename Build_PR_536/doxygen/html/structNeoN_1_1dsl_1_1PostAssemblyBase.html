@@ -98,6 +98,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6ee1fd861a37f190bf64b4525f1ffbaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a145f21d894b17fd1287b3cde7f7f051c" id="r_a145f21d894b17fd1287b3cde7f7f051c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#a145f21d894b17fd1287b3cde7f7f051c">operator()</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; VectorType, VectorType, <a class="el" href="namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7">la::CSRMatrix</a>&lt; VectorType, IndexType &gt; &gt; &amp;) const</td></tr>
 <tr class="separator:a145f21d894b17fd1287b3cde7f7f051c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0170570aa68740698ac111b485cc18c" id="r_af0170570aa68740698ac111b485cc18c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#af0170570aa68740698ac111b485cc18c">applyScalarMatrix</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, VectorType, <a class="el" href="namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7">la::CSRMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt;, <a class="el" href="namespaceNeoN_1_1la.html#a90174338eaeb88d2f0d55a3dfdb95add">la::COOMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;) const</td></tr>
+<tr class="memdesc:af0170570aa68740698ac111b485cc18c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply to the segregated scalar-matrix / VectorType-rhs form (a scalar coefficient matrix with a VectorType right-hand side). Default no-op; functors that support the segregated form override this. <a class="el" href="classA.html">A</a> distinct name (rather than an operator() overload) avoids colliding with the same-type signature when VectorType == scalar.  <br /></td></tr>
+<tr class="separator:af0170570aa68740698ac111b485cc18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename VectorType, typename IndexType&gt;<br />
@@ -132,6 +135,38 @@ template&lt;typename VectorType , typename IndexType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="af0170570aa68740698ac111b485cc18c" name="af0170570aa68740698ac111b485cc18c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0170570aa68740698ac111b485cc18c">&#9670;&#160;</a></span>applyScalarMatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename VectorType , typename IndexType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html">NeoN::dsl::PostAssemblyBase</a>&lt; VectorType, IndexType &gt;::applyScalarMatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, VectorType, <a class="el" href="namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7">la::CSRMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt;, <a class="el" href="namespaceNeoN_1_1la.html#a90174338eaeb88d2f0d55a3dfdb95add">la::COOMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply to the segregated scalar-matrix / VectorType-rhs form (a scalar coefficient matrix with a VectorType right-hand side). Default no-op; functors that support the segregated form override this. <a class="el" href="classA.html">A</a> distinct name (rather than an operator() overload) avoids colliding with the same-type signature when VectorType == scalar. </p>
+
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00043">43</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a145f21d894b17fd1287b3cde7f7f051c" name="a145f21d894b17fd1287b3cde7f7f051c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a145f21d894b17fd1287b3cde7f7f051c">&#9670;&#160;</a></span>operator()()</h2>
 
