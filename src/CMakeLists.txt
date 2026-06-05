@@ -40,6 +40,7 @@ target_sources(
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
           "linearAlgebra/ginkgo/ginkgo.cpp"
+          "linearAlgebra/ginkgo/ginkgoL1StopSerial.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
           "linearAlgebra/cooSparsityPattern.cpp"
           "linearAlgebra/csrSparsityPattern.cpp"

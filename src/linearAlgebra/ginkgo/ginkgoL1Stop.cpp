@@ -431,4 +431,4 @@ bool StoppingCriterion::DistStoppingCriterion::check_impl(
 
 #endif
 
-} // namespace Foam
+} // namespace NeoN::la::ginkgo

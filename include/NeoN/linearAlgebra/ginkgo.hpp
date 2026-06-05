@@ -7,6 +7,8 @@
 #if NF_WITH_GINKGO
 
 #include <chrono>
+#include <optional>
+#include <string>
 
 #include <ginkgo/ginkgo.hpp>
 #include <ginkgo/extensions/kokkos.hpp>
@@ -76,6 +78,81 @@ scalar retrieve(const InType& in)
     return host->copy_from(in)->at(0);
 }
 
+/** @brief Control parameters for the L1-scaled residual stopping criterion.
+ *
+ * An absolute tolerance and a relative tolerance (relative to the initial residual) on
+ * the L1-scaled residual, plus iteration bounds.
+ */
+struct L1ResidualControl
+{
+    scalar tolerance; //!< absolute tolerance on the scaled L1 residual
+    scalar relTol;    //!< relative tolerance (vs. initial residual); 0 disables
+    localIdx maxIter; //!< maximum iteration count
+    localIdx minIter; //!< minimum iteration count before tolerances are tested
+};
+
+/** @brief Result of a solve governed by the L1-scaled residual stopping criterion. */
+struct L1ResidualResult
+{
+    localIdx numIter;    //!< iterations performed
+    scalar initResNorm;  //!< scaled L1 initial residual
+    scalar finalResNorm; //!< scaled L1 final residual
+};
+
+/** @brief Solve @p solver with an L1-scaled residual stopping criterion attached.
+ *
+ * Attaches a criterion that stops on the L1-scaled residual sum|b - A x| / normFactor
+ * and returns the scaled initial/final residual and iteration count. @p x is updated in
+ * place. Defined in ginkgoL1StopSerial.cpp (serial / rank-local).
+ */
+L1ResidualResult solveWithL1Stop(
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<const gko::matrix::Dense<scalar>> b,
+    std::shared_ptr<gko::matrix::Dense<scalar>> x,
+    gko::LinOp* solver,
+    const L1ResidualControl& control
+);
+
+/** @brief Read the L1-scaled residual stopping controls from a solver configuration.
+ *
+ * Returns std::nullopt unless the solver dictionary opts in via "l1ScaledResidual true".
+ * Tolerances and the iteration cap are read from the mapped Ginkgo "criteria" sub-dict
+ * (absolute_residual_norm / initial_residual_norm / iteration).
+ */
+inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& cfg)
+{
+    if (!cfg.contains("l1ScaledResidual") || !cfg.get<bool>("l1ScaledResidual"))
+    {
+        return std::nullopt;
+    }
+
+    L1ResidualControl control {0.0, 0.0, 1000, 0};
+
+    // criteria entries may be stored as int or scalar/label depending on source
+    auto readScalar = [](const Dictionary& d, const std::string& key, scalar fallback)
+    {
+        if (!d.contains(key)) return fallback;
+        return d.isType<int>(key) ? scalar(d.get<int>(key)) : d.get<scalar>(key);
+    };
+    auto readInt = [](const Dictionary& d, const std::string& key, localIdx fallback)
+    {
+        if (!d.contains(key)) return fallback;
+        return d.isType<int>(key) ? localIdx(d.get<int>(key)) : d.get<localIdx>(key);
+    };
+
+    if (cfg.contains("criteria"))
+    {
+        const Dictionary& criteria = cfg.subDict("criteria");
+        control.tolerance = readScalar(criteria, "absolute_residual_norm", control.tolerance);
+        control.relTol = readScalar(criteria, "initial_residual_norm", control.relTol);
+        control.maxIter = readInt(criteria, "iteration", control.maxIter);
+    }
+    control.minIter = readInt(cfg, "minIter", control.minIter);
+
+    return control;
+}
+
 class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 {
 
@@ -85,7 +162,7 @@ public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
-          config_(parse(solverConfig)),
+          l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
           factory_(gko::config::parse(
                        config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
           )
@@ -139,6 +216,8 @@ private:
 
     std::shared_ptr<const gko::Executor> gkoExec_;
     bool coupled_; // whether to solve LinearSystem<Vec3> as one or three systems
+    // L1-scaled residual stopping controls; set only when "l1ScaledResidual" is enabled
+    std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
 };
