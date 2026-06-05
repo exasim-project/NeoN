@@ -79,6 +79,13 @@ public:
     {
         NF_THROW("solveDist not implemented for this solver");
     }
+
+    virtual SolverStats
+    solveDist(const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&, Vector<Vec3>&)
+        const
+    {
+        NF_THROW("solveDist(scalar matrix, Vec3 rhs) not implemented for this solver");
+    }
 #endif
 
     // Pure virtual function for cloning
@@ -125,11 +132,9 @@ public:
         return solverInstance_->solve(ls, field);
     }
 
-    /// @brief Solve a system with a scalar matrix and Vec3 right-hand side.
-    /// @note This overload is **local-only**: it does not dispatch to solveDist and must not be
-    ///       called on a distributed LinearSystem (one whose commPattern has non-empty sendCounts).
-    ///       If distributed support is needed, add a solveDist virtual to SolverFactory and
-    ///       implement it in every backend.
+    /// @brief Solve a system with a scalar matrix and Vec3 right-hand side (segregated vector
+    ///        solve). Dispatches to the distributed backend when the linear system carries a
+    ///        non-empty communication pattern, otherwise solves locally.
     SolverStats solve(
         const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&
             ls,
@@ -137,11 +142,7 @@ public:
     ) const
     {
 #ifdef NF_WITH_MPI_SUPPORT
-        NF_ASSERT(
-            ls.commPattern().sendCounts.empty(),
-            "solve(scalar matrix, Vec3 rhs) does not support distributed systems. "
-            "Add a solveDist overload to SolverFactory to enable this."
-        );
+        if (!ls.commPattern().sendCounts.empty()) return solverInstance_->solveDist(ls, field);
 #endif
         return solverInstance_->solve(ls, field);
     }

@@ -120,6 +120,12 @@ public:
     virtual SolverStats solveDist(
         const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
     ) const final;
+
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&
+            sys,
+        Vector<Vec3>& x
+    ) const final;
 #endif
 
     // TODO why use a smart pointer here?

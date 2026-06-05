@@ -349,4 +349,110 @@ TEST_CASE("Distributed Operator - vec3")
 #endif
 }
 
+// Validates the distributed scalar-matrix / Vec3-rhs solve (segregated vector solve):
+// GinkgoSolver::solveDist(LinearSystem<scalar, Vec3, ...>, Vector<Vec3>). The matrix
+// coefficients are scalar and shared across the three rhs components; the distributed
+// solution and per-component convergence must match the serial solve of the same global system.
+TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto input = generateInput("upwind", "");
+    auto inputPart = generateInput("upwind", "Part");
+
+    auto nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    auto U = finiteVolume::cellCentred::VolumeField<Vec3>(
+        exec, "U", mesh, Vector<Vec3>(exec, nCells, 2.0 * one<Vec3>()), volBCs
+    );
+    srand(42);
+    randomizeVector(U);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    srand(42);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    // assemble into a scalar coefficient matrix with a Vec3 rhs (segregated vector-solve form).
+    // SetReference pins cell 0 to remove the constant null space; for scalar-matrix assembly the
+    // post-assembly functor is dispatched via PostAssemblyBase::applyScalarMatrix.
+    dsl::SetReference<Vec3, localIdx> setRef(0, zero<Vec3>());
+    auto expr = dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U);
+    expr.read(input);
+    auto ls = expr.template assemble<scalar>(mesh, 1.0, 1.0, {&setRef});
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+
+    auto uPart = detail::oneDPartitionField(U, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
+    exprDist.read(inputPart);
+    auto lsDst = exprDist.template assemble<scalar>(meshPart, 1.0, 1.0, {&setRef});
+
+    fill(ls.rhs(), 2.0 * one<Vec3>());
+    fill(lsDst.rhs(), 2.0 * one<Vec3>());
+
+    // matrix coefficients are scalar while the rhs holds Vec3 values
+    static_assert(std::is_same_v<
+                  std::decay_t<decltype(lsDst.matrix().values())>,
+                  NeoN::Vector<NeoN::scalar>>);
+    static_assert(std::is_same_v<std::decay_t<decltype(lsDst.rhs())>, NeoN::Vector<NeoN::Vec3>>);
+
+#if NF_WITH_GINKGO
+    Dictionary solverDict {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Gmres"},
+         {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-7}}}}}
+    };
+
+    auto solver = NeoN::la::Solver(exec, solverDict);
+    auto x = Vector<Vec3>(exec, 12);
+    fill(x, zero<Vec3>());
+    auto xPart = Vector<Vec3>(exec, 4);
+    fill(xPart, zero<Vec3>());
+
+    // serial scalar-matrix solve on the global system (one scalar matrix, three rhs components)
+    auto solverStats = solver.solve(ls, x);
+    // distributed scalar-matrix solve -> GinkgoSolver::solveDist(scalar mtx, Vec3 rhs)
+    auto solverStatsDist = solver.solve(lsDst, xPart);
+
+    // one solve per velocity component (Ux, Uy, Uz) sharing the scalar matrix
+    REQUIRE(solverStats.entries.size() == 3);
+    REQUIRE(solverStatsDist.entries.size() == 3);
+
+    // distributed per-component convergence matches the serial reference (same arithmetic,
+    // partitioned vs global operator)
+    for (std::size_t i = 0; i < 3; ++i)
+    {
+        REQUIRE(
+            solverStatsDist.entries[i].finalResNorm
+            == Catch::Approx(solverStats.entries[i].finalResNorm).margin(1e-6)
+        );
+    }
+
+    // the distributed solution slice matches the serial global solution on every rank
+    SECTION_IF(mpiEnviron.rank() == 0, "Correct solution on rank 0")
+    {
+        REQUIRE_THAT(xPart, Equals(take(x, {0, 4}), Approx {1e-4}));
+    }
+    SECTION_IF(mpiEnviron.rank() == 1, "Correct solution on rank 1")
+    {
+        REQUIRE_THAT(xPart, Equals(take(x, {4, 8}), Approx {1e-4}));
+    }
+    SECTION_IF(mpiEnviron.rank() == 2, "Correct solution on rank 2")
+    {
+        REQUIRE_THAT(xPart, Equals(take(x, {8, 12}), Approx {1e-4}));
+    }
+#endif
+}
+
 }
