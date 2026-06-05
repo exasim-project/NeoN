@@ -195,7 +195,7 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
-            auditwheel repair --exclude libcuda.so.1 -w {dest_dir} {wheel}
+            auditwheel -v repair --exclude libcuda.so.1 -w {dest_dir} {wheel}
           CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_ENVIRONMENT_LINUX: >
             PATH=/usr/local/cuda/bin:$PATH
@@ -216,6 +216,14 @@ jobs:
             _skbuild/**/CMake*.log
             _skbuild/**/CMakeConfigureLog.yaml
             _skbuild/**/*.log
+          if-no-files-found: ignore
+
+      - name: Upload unrepaired GPU wheel artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unrepaired-gpu-wheels-${{ matrix.suffix }}
+          path: /tmp/cibuildwheel/built_wheel/*.whl
           if-no-files-found: ignore
 
       - name: Upload GPU wheel artifacts
