@@ -311,6 +311,9 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
         offDiagRowIdxs = rowH.copyToExecutor(exec);
         offDiagColIdxs = colH.copyToExecutor(exec);
 
+        // TODO: find a better home for this computation (together with
+        // CommunicationPattern::offDiagRowSortPerm, possibly the boundary mesh) — it is
+        // sparsity/topology setup, not linear-system assembly.
         // Precompute the row-sort permutation of the off-diagonal (processor-face) entries.
         // Ginkgo's CUDA Coo::apply2 requires the non-local COO sorted by global row; computing
         // the permutation here (once, at off-diagonal creation) lets createGkoMtxDist apply it

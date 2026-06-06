@@ -57,6 +57,9 @@ struct CommunicationPattern
      *  (the non-local/halo apply) requires row-sorted entries; the Reference/CPU apply is
      *  order-robust. Empty when there are no processor faces. Kept last so existing positional
      *  aggregate initialisations of CommunicationPattern remain valid.
+     *
+     *  TODO: consider moving this into the boundary mesh — it is mesh-topology-derived
+     *  (depends only on the processor-face owners), not communication state.
      */
     std::vector<localIdx> offDiagRowSortPerm;
 };

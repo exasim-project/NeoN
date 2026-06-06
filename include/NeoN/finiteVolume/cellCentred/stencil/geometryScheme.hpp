@@ -80,6 +80,9 @@ public:
 
     // Frees the mesh's per-cell/face centre arrays after update() to save device memory;
     // they are not needed once the geometry-scheme fields are cached.
+    // TODO: check if we can remove the temporary fields from the unstructured mesh
+    // altogether: compute the geometry-scheme data explicitly first and pass it as an
+    // argument, instead of freeing mesh members after the fact.
     void reset() const;
 
     std::string name() const;

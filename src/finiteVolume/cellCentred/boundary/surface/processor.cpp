@@ -31,6 +31,9 @@ void setProcBoundaryValue(
     // number and perturbing the distributed solution. So leave value_ untouched and only
     // normalise the unused mixed-BC fields. value_ is NOT accessed (no valueNoWait/value),
     // so no pending proc-patch exchange is drained.
+    // TODO: normalising the unused mixed-BC fields on every call is unnecessary — they
+    // never change after construction. Split the BC interface into a one-time set()
+    // (initialisation) and a per-iteration update() so this kernel runs only once.
     auto [refGradient, valueFraction, refValue] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().valueFraction(),
