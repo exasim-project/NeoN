@@ -65,6 +65,7 @@ target_sources(
           "finiteVolume/cellCentred/interpolation/upwind.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/corrected.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.cpp"
+          "finiteVolume/cellCentred/faceNormalGradient/processorGradientHalo.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"
           "finiteVolume/cellCentred/auxiliary/coNum.cpp"
           "timeIntegration/timeIntegration.cpp"
