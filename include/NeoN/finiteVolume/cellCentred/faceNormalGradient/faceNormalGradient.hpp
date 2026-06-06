@@ -49,12 +49,15 @@ public:
 
     virtual ~FaceNormalGradientFactory() {} // Virtual destructor
 
-    // Processor-boundary semantics (review N3/N4, v2a/v2b): processor faces are treated like
-    // internal faces (the standard coupled-patch snGrad treatment). uncorrected uses the exact
-    // owner-to-neighbour deltaCoeffs 1/|Cnei - Cown| (v2a); corrected and limitedCorrected
-    // additionally apply the non-orthogonal correction corrVec . interpolate(grad). This needs
-    // the neighbour cell centre (producer, BasicGeometryScheme) and the neighbour cell gradient
-    // (consumer) halo-exchanged across the rank boundary. Scalar and Vec3 paths are in parity.
+    /**
+     * @brief Computes the face-normal gradient of @p volVector into @p surfaceVector.
+     *
+     * Processor-boundary contract: processor faces are treated like internal faces
+     * (the standard coupled-patch treatment), i.e. the gradient couples the owner cell
+     * with the true neighbour cell on the far side of the rank boundary. Schemes that
+     * apply a non-orthogonal correction (corrected, limitedCorrected) apply it on
+     * processor faces as well. Scalar and Vec3 fields receive identical treatment.
+     */
     virtual void faceNormalGrad(
         const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const = 0;

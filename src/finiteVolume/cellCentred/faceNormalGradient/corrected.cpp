@@ -81,7 +81,7 @@ void computeCorrectedFaceNormalGrad(
         );
 
 #ifdef NF_WITH_MPI_SUPPORT
-        // Processor faces: full non-orthogonal correction (v2b / N4):
+        // Processor faces: full non-orthogonal correction,
         //   snGrad = nonOrthDeltaCoeffs*(phiNei - phiOwn) + corrVec . interpolate(grad).
         // The interpolated cell gradient needs the neighbour cell gradient across the rank
         // boundary, which is halo-exchanged here.
@@ -171,7 +171,7 @@ void computeCorrectedFaceNormalGrad(
         );
 
 #ifdef NF_WITH_MPI_SUPPORT
-        // Processor faces: full non-orthogonal correction (v2b / N4), the component-wise
+        // Processor faces: full non-orthogonal correction, the component-wise
         // corrected snGrad. interpGrad is the interpolated cell gradient tensor;
         // the neighbour gradient is halo-exchanged. (interpGrad & corrVec) is a Vec3.
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
@@ -241,7 +241,7 @@ void computeCorrectionTerm(
         // The Laplacian RHS update consumes only internal-face correction terms
         // (corrField.boundaryData() is never read). Make that contract explicit and
         // safe rather than relying on zero-init: zero the boundary so a future RHS
-        // change that iterates boundary faces reads a defined value (review N5).
+        // change that iterates boundary faces reads a defined value.
         NeoN::fill(corrField.boundaryData().value(), zero<ValueType>());
     }
     else if constexpr (std::is_same_v<ValueType, Vec3>)
@@ -273,7 +273,7 @@ void computeCorrectionTerm(
             },
             "computeCorrectionTermInternalVec3"
         );
-        // boundary correction not consumed by the Laplacian RHS; zero it explicitly (review N5)
+        // boundary correction not consumed by the Laplacian RHS; zero it explicitly
         NeoN::fill(corrField.boundaryData().value(), zero<ValueType>());
     }
 }

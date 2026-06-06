@@ -29,7 +29,8 @@ public:
     updateNonOrthDeltaCoeffs(const Executor& exec, SurfaceField<scalar>& nonOrthDeltaCoeffs) = 0;
 
     // nonOrthDeltaCoeffs is the precomputed 1/(n.d) field (must be updated first); the
-    // correction vectors read it rather than re-deriving the formula (review M3).
+    // correction vectors read it rather than re-deriving the formula, keeping a single
+    // source of truth for the coefficient.
     virtual void updateNonOrthCorrectionVec3s(
         const Executor& exec,
         SurfaceField<Vec3>& nonOrthCorrectionVec3s,

@@ -13,8 +13,8 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-// Over-relaxed non-orthogonal correction clamp factor (review L1): bounds
-// nonOrthDeltaCoeffs away from a vanishing denominator on highly skewed faces.
+// Over-relaxed non-orthogonal correction clamp factor: bounds nonOrthDeltaCoeffs
+// away from a vanishing denominator on highly skewed faces.
 // 0.05 is the conventional over-relaxed non-orthogonal clamp value.
 constexpr scalar nonOrthDeltaClamp = 0.05;
 
@@ -44,19 +44,19 @@ std::vector<std::pair<localIdx, localIdx>> collectProcPatchRanges(const Unstruct
  *  size nProcBoundaryFaces. */
 // Tag for the geometry-scheme processor-owner-distance halo exchange. Distinct from
 // BoundaryData::communicate (tag 0) so the two cannot mismatch if they ever overlap on
-// the same rank pair (review M5).
+// the same rank pair.
 constexpr mpi_label_t procOwnerDistanceTag = 0x6764; // 'gd'
 
 Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const UnstructuredMesh& mesh)
 {
     const auto nProcFaces = mesh.nProcBoundaryFaces();
-    // L7: nothing to exchange on a serial / interior-only partition
+    // Nothing to exchange on a serial / interior-only partition.
     if (nProcFaces == 0) return Vector<scalar>(exec, 0, scalar(0));
 
     const auto& bMesh = mesh.boundaryMesh();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
-    // H4: compute the owner projected distance for each processor face on the device,
+    // Compute the owner projected distance for each processor face on the device,
     // reading only device-resident geometry. This avoids the full mesh.cellCenters() D->H
     // copy (GB-scale on an industrial mesh) plus the four boundary-array host copies — only
     // the nProcFaces scalars actually exchanged are moved to the host.
@@ -116,11 +116,11 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
     }
     mpi::waitAll(requests);
 
-    // M6: allocate the result directly on exec from the host buffer (no SerialExecutor detour)
+    // Allocate the result directly on exec from the host buffer (no SerialExecutor detour).
     return Vector<scalar>(exec, dNei);
 }
 
-// Tag for the geometry-scheme processor neighbour-cell-centre halo exchange (review v2a).
+// Tag for the geometry-scheme processor neighbour-cell-centre halo exchange.
 constexpr mpi_label_t procNeighbourCentreTag = 0x6763; // 'gc'
 
 /** @brief Exchanges owner cell centres across processor boundaries: each rank sends, for every
@@ -138,8 +138,8 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
     const auto& bMesh = mesh.boundaryMesh();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
-    // Gather the owner-cell centre of each processor face on the device (H4: only nProcFaces
-    // Vec3s reach the host).
+    // Gather the owner-cell centre of each processor face on the device, so that only
+    // the nProcFaces Vec3s actually exchanged reach the host.
     Vector<Vec3> ownCentreDev(exec, nProcFaces, zero<Vec3>());
     {
         auto ownView = ownCentreDev.view();
@@ -229,7 +229,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            // M8: both projections are intrinsically positive on a well-formed mesh (owner and
+            // Both projections are intrinsically positive on a well-formed mesh (owner and
             // neighbour centres sit on opposite sides of the face along its normal). std::abs is
             // a deliberate robustness guard against a locally flipped/strongly-twisted face
             // yielding a negative projection and hence a nonsensical weight; the alternative
@@ -311,7 +311,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             Vec3 faceUnitNormal = 1 / faceAreas[facei] * faceNormals[facei];
             scalar orthoDist = faceUnitNormal & cellToCellDist;
             // floor with ROOTVSMALL so a degenerate (coincident-centre) face cannot
-            // produce 1/0 -> inf (review H3)
+            // produce 1/0 -> inf
             nonOrthDeltaCoeff[facei] =
                 1.0
                 / std::max(
@@ -332,7 +332,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             Vec3 cellToFaceDist = bFaceCenters[bfi] - cellCenters[own];
             Vec3 faceNormal = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
             scalar orthoDist = faceNormal & cellToFaceDist;
-            // floor with ROOTVSMALL (review H3)
+            // floor with ROOTVSMALL so a degenerate face cannot produce 1/0 -> inf
             nonOrthDeltaCoeffB[bfi] =
                 1.0
                 / std::max(
@@ -381,9 +381,9 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
     const auto [corrVec, corrVecB] = views(
         nonOrthCorrectionVec3s.internalVector(), nonOrthCorrectionVec3s.boundaryData().value()
     );
-    // read the precomputed nonOrthDeltaCoeff instead of re-deriving the
-    // 1/max(n.d, 0.05|d|) formula (review M3 — single source of truth; also
-    // inherits the ROOTVSMALL floor added for H3)
+    // Read the precomputed nonOrthDeltaCoeff instead of re-deriving the
+    // 1/max(n.d, 0.05|d|) formula: single source of truth, and the clamped/floored
+    // coefficient is inherited automatically.
     const auto nonOrthDeltaCoeff = nonOrthDeltaCoeffs.internalVector().view();
 
     const auto nInternalFaces = mesh_.nInternalFaces();
@@ -402,7 +402,7 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
 
     // Non-processor patches are one-sided, so corrVec is zero there (the snGrad reduces to the
     // uncorrected form). Zero them explicitly so consumers may rely on the contract rather than on
-    // BoundaryData's zero-init (review N6).
+    // BoundaryData's zero-init.
     parallelFor(
         exec,
         {0, nBoundaryFaces},
@@ -412,7 +412,7 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
 
 #ifdef NF_WITH_MPI_SUPPORT
     // Processor faces have a real neighbour cell across the rank boundary, so on a non-orthogonal
-    // mesh the correction is non-zero there (review v2a / N4). Compute it with the same form as the
+    // mesh the correction is non-zero there. Compute it with the same form as the
     // internal loop, using the exchanged neighbour cell centre and the precomputed processor
     // nonOrthDeltaCoeff. On an orthogonal proc face this evaluates to zero, as before.
     const auto nProcBoundaryFaces = mesh_.nProcBoundaryFaces();

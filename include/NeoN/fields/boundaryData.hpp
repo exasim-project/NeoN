@@ -248,16 +248,9 @@ public:
         const auto neighborRankLabel = static_cast<mpi_label_t>(neighborRank);
 
         // Deterministic, symmetric tag for the processor patch shared by (myRank, neighborRank).
-        // Previously EVERY patch was posted with tag 0; a rank with two proc patches (e.g. the
-        // middle/scotch-shared rank) then has two distinct send/recv pairs that MPI matches only by
-        // (peer-rank, tag). The per-patch eager waitAll() (triggered when the next patch's
-        // setProcBoundaryValue reads boundaryData().value()) serialises the exchange
-        // patch-by-patch; under tag 0 the SECOND patch's irecv then completes against a
-        // stale/unexpected message and the halo silently keeps its owner seed (the deterministic
-        // "first patch OK, second patch no-op" failure observed on scotch / Y-split cuts). A unique
-        // tag per unordered rank pair, identical on both sides, makes each isend/irecv match its
-        // true partner regardless of posting order. min*P+max is symmetric so both ranks of the
-        // pair compute the same tag.
+        // A unique tag per unordered rank pair, identical on both sides, makes each isend/irecv
+        // match its true partner regardless of posting order. min*P+max is symmetric so both
+        // ranks of the pair compute the same tag.
         const auto nProcs = static_cast<mpi_label_t>(mpiEnv.sizeRank());
         const auto myRankLabel = static_cast<mpi_label_t>(mpiEnv.rank());
         const mpi_label_t pairTag = std::min(myRankLabel, neighborRankLabel) * nProcs

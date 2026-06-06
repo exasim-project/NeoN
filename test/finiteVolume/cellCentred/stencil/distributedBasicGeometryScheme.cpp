@@ -11,15 +11,16 @@ namespace fvcc = NeoN::finiteVolume::cellCentred;
 namespace NeoN
 {
 
-// Distributed proc-boundary regression test for BasicGeometryScheme (review T2 / H1).
+// Distributed processor-boundary regression test for BasicGeometryScheme.
 //
-// Before the remediation, updateNonOrthDeltaCoeffs / updateNonOrthCorrectionVec3s never wrote
-// processor-boundary entries, leaving them at zero on every MPI run. This test partitions
-// a 1D uniform mesh across ranks and asserts the proc-boundary values directly — it fails
-// against the pre-fix code (nonOrthDeltaCoeffs == 0 at proc faces).
+// The geometry-scheme producer kernels must write processor-boundary entries
+// (weights, nonOrthDeltaCoeffs, nonOrthCorrectionVec3s); left at zero, every
+// diffusive flux across a rank boundary silently vanishes. This test partitions a
+// 1D uniform mesh across ranks and asserts the processor-boundary values directly
+// against their analytical values.
 //
-// CPUExecutor only: this machine has a single GPU, so a multi-rank test must not place data
-// on the GPU (ranks would contend for the one device). See feedback memory.
+// CPUExecutor only: a multi-rank test must not place data on the GPU, since on a
+// single-GPU machine the ranks would contend for the one device.
 TEST_CASE("BasicGeometryScheme processor-boundary values")
 {
     mpi::Environment mpiEnviron;

@@ -19,8 +19,7 @@ namespace NeoN
 // mesh on which most geometric-scheme bugs are invisible. This test pins the
 // producer values on a 3D uniform hex mesh where every quantity is analytically
 // known, so a regression in any of the producer kernels (weights,
-// nonOrthDeltaCoeffs, nonOrthCorrectionVec3s) fails loudly. Covers review
-// findings H2 (doc value), H3 (no 1/0), M3/M4 (corrVec formula).
+// nonOrthDeltaCoeffs, nonOrthCorrectionVec3s) fails loudly.
 TEST_CASE("BasicGeometryScheme analytical 3D cube")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -74,7 +73,7 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
     }
 }
 
-// Non-orthogonal mesh (review T3 / N2): nonOrthDeltaCoeffs uses the face-normal
+// Non-orthogonal mesh: nonOrthDeltaCoeffs uses the face-normal
 // projection 1/(n.d), so a transverse shear (which grows |d| but leaves n.d unchanged)
 // must NOT change it — it would drop below 1/h if the kernel used the Euclidean 1/|d|.
 // The non-orthogonality must instead surface in the correction vector. nonOrthDeltaCoeffs
@@ -125,13 +124,11 @@ TEST_CASE("BasicGeometryScheme on a sheared (non-orthogonal) mesh")
     REQUIRE(maxCorr > 1e-3);
 }
 
-// Pins the N1/N2 wiring (review T5, corrected): 'uncorrected' must expose
-// nonOrthDeltaCoeffs (1/(n.d)), matching OpenFOAM's uncorrectedSnGrad which returns
-// mesh().nonOrthDeltaCoeffs(). The review's original N2 premise (that OF uses the
-// orthogonal 1/|d|) was verified false against the OF source, so this asserts the
-// opposite identity from the pre-revert version. Checked by field identity, so it holds
-// on any mesh and fails loudly if anyone rewires the accessor.
-TEST_CASE("uncorrected snGrad exposes nonOrthDeltaCoeffs (N1/N2)")
+// 'uncorrected' must expose nonOrthDeltaCoeffs (1/(n.d)), matching OpenFOAM's
+// uncorrectedSnGrad which returns mesh().nonOrthDeltaCoeffs() — NOT the Euclidean
+// 1/|d| deltaCoeffs. Checked by field identity, so it holds on any mesh and fails
+// loudly if anyone rewires the accessor.
+TEST_CASE("uncorrected snGrad exposes nonOrthDeltaCoeffs")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
     INFO("executor: " << execName);
