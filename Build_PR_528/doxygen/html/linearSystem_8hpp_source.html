@@ -395,73 +395,76 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        offDiagRowIdxs = rowH.<a class="code hl_function" href="classNeoN_1_1Vector.html#a2dc3e53a2f9cd9f1f5401bde925374fa">copyToExecutor</a>(exec);</div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        offDiagColIdxs = colH.<a class="code hl_function" href="classNeoN_1_1Vector.html#a2dc3e53a2f9cd9f1f5401bde925374fa">copyToExecutor</a>(exec);</div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="comment">// Precompute the row-sort permutation of the off-diagonal (processor-face) entries.</span></div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="comment">// Ginkgo&#39;s CUDA Coo::apply2 requires the non-local COO sorted by global row; computing</span></div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="comment">// the permutation here (once, at off-diagonal creation) lets createGkoMtxDist apply it</span></div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="comment">// instead of re-sorting on every matrix build. Stable to keep a deterministic order</span></div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="comment">// within a row. offDiagRowSortPerm[i] = proc-face index whose value belongs at sorted i.</span></div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        std::vector&lt;localIdx&gt; offDiagRowSortPerm(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nProcFaces));</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        std::iota(offDiagRowSortPerm.begin(), offDiagRowSortPerm.end(), <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> {0});</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        std::stable_sort(</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>            offDiagRowSortPerm.begin(),</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>            offDiagRowSortPerm.end(),</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>            [&amp;](<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> a, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> b) { return rowHV[a] &lt; rowHV[b]; }</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        );</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    }</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keyword">auto</span> offDiagSp = std::make_shared&lt;const typename BoundaryMatrixType::MatrixSparsityType&gt;(</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        std::move(offDiagColIdxs), std::move(offDiagRowIdxs), <a class="code hl_struct" href="structNeoN_1_1la_1_1Dimensions.html">Dimensions</a> {nCells, nCells}</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    );</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem&lt;ValueType, SystemMatrixType, BoundaryMatrixType&gt;</a> ls {</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        SystemMatrixType(<a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(sp-&gt;exec(), sp-&gt;nnz(), zero&lt;ValueType&gt;()), sp, mi),</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(sp-&gt;exec(), sp-&gt;rows(), zero&lt;ValueType&gt;()),</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        BoundaryMatrixType(<a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(exec, nProcFaces, zero&lt;ValueType&gt;()), offDiagSp),</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        BoundaryMatrixType(<a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(bSp-&gt;exec(), bSp-&gt;nnz(), zero&lt;ValueType&gt;()), bSp),</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(bSp-&gt;exec(), bSp-&gt;nnz(), zero&lt;ValueType&gt;()),</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        strategy</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    };</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span> </div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    ls.commPattern() = std::move(commPattern);</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    <span class="keywordflow">return</span> ls;</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>}</div>
-</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="comment">// TODO: find a better home for this computation (together with</span></div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="comment">// CommunicationPattern::offDiagRowSortPerm, possibly the boundary mesh) — it is</span></div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="comment">// sparsity/topology setup, not linear-system assembly.</span></div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="comment">// Precompute the row-sort permutation of the off-diagonal (processor-face) entries.</span></div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="comment">// Ginkgo&#39;s CUDA Coo::apply2 requires the non-local COO sorted by global row; computing</span></div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <span class="comment">// the permutation here (once, at off-diagonal creation) lets createGkoMtxDist apply it</span></div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        <span class="comment">// instead of re-sorting on every matrix build. Stable to keep a deterministic order</span></div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <span class="comment">// within a row. offDiagRowSortPerm[i] = proc-face index whose value belongs at sorted i.</span></div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        std::vector&lt;localIdx&gt; offDiagRowSortPerm(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(nProcFaces));</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        std::iota(offDiagRowSortPerm.begin(), offDiagRowSortPerm.end(), <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> {0});</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        std::stable_sort(</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>            offDiagRowSortPerm.begin(),</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>            offDiagRowSortPerm.end(),</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>            [&amp;](<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> a, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> b) { return rowHV[a] &lt; rowHV[b]; }</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        );</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    }</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keyword">auto</span> offDiagSp = std::make_shared&lt;const typename BoundaryMatrixType::MatrixSparsityType&gt;(</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        std::move(offDiagColIdxs), std::move(offDiagRowIdxs), <a class="code hl_struct" href="structNeoN_1_1la_1_1Dimensions.html">Dimensions</a> {nCells, nCells}</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    );</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem&lt;ValueType, SystemMatrixType, BoundaryMatrixType&gt;</a> ls {</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        SystemMatrixType(<a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(sp-&gt;exec(), sp-&gt;nnz(), zero&lt;ValueType&gt;()), sp, mi),</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(sp-&gt;exec(), sp-&gt;rows(), zero&lt;ValueType&gt;()),</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        BoundaryMatrixType(<a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(exec, nProcFaces, zero&lt;ValueType&gt;()), offDiagSp),</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        BoundaryMatrixType(<a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(bSp-&gt;exec(), bSp-&gt;nnz(), zero&lt;ValueType&gt;()), bSp),</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(bSp-&gt;exec(), bSp-&gt;nnz(), zero&lt;ValueType&gt;()),</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        strategy</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    };</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    ls.commPattern() = std::move(commPattern);</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span><span class="keyword">inline</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a></div>
-<div class="foldopen" id="foldopen00354" data-start="{" data-end="}">
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">  354</a></span><a class="code hl_function" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">removeBoundaryContributions</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>&amp; lsIn)</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>{</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keyword">auto</span> ls = <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>(lsIn);</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    <span class="keyword">auto</span> lsView = ls.view();</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keyword">auto</span>&amp; matrix = lsView.matrix;</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <span class="keyword">auto</span>&amp; rhs = lsView.rhs;</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keyword">auto</span>&amp; bMatrix = lsView.boundaryMatrix;</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keyword">auto</span>&amp; bRhs = lsView.boundaryRhs;</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <span class="keyword">const</span> <span class="keyword">auto</span> ma = ls.faceToMatrixAddress()-&gt;<a class="code hl_function" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view</a>(ls.matrix().sparsity()-&gt;rowOffs().view());</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span> </div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        ls.exec(),</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        {0, bMatrix.values.size()},</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> facei) {</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            <span class="keyword">const</span> <span class="keyword">auto</span> celli = bMatrix.sparsity.rowOffs[facei]; <span class="comment">// cell index stored in rowOffs</span></div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>            Kokkos::atomic_add(&amp;matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            Kokkos::atomic_add(&amp;rhs[celli], bRhs[facei]);</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        },</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        <span class="stringliteral">&quot;removeBoundaryContributions&quot;</span></div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    );</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keywordflow">return</span> ls;</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>}</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <span class="keywordflow">return</span> ls;</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>}</div>
 </div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span><span class="keyword">inline</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a></div>
+<div class="foldopen" id="foldopen00357" data-start="{" data-end="}">
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">  357</a></span><a class="code hl_function" href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">removeBoundaryContributions</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>&amp; lsIn)</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>{</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <span class="keyword">auto</span> ls = <a class="code hl_class" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem&lt;ValueType&gt;</a>(lsIn);</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keyword">auto</span> lsView = ls.view();</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keyword">auto</span>&amp; matrix = lsView.matrix;</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <span class="keyword">auto</span>&amp; rhs = lsView.rhs;</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <span class="keyword">auto</span>&amp; bMatrix = lsView.boundaryMatrix;</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="keyword">auto</span>&amp; bRhs = lsView.boundaryRhs;</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    <span class="keyword">const</span> <span class="keyword">auto</span> ma = ls.faceToMatrixAddress()-&gt;<a class="code hl_function" href="classNeoN_1_1Vector.html#ad537cb55485b851cbc3c1f3760b77ab9">view</a>(ls.matrix().sparsity()-&gt;rowOffs().view());</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        ls.exec(),</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        {0, bMatrix.values.size()},</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> facei) {</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            <span class="keyword">const</span> <span class="keyword">auto</span> celli = bMatrix.sparsity.rowOffs[facei]; <span class="comment">// cell index stored in rowOffs</span></div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>            Kokkos::atomic_add(&amp;matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>            Kokkos::atomic_add(&amp;rhs[celli], bRhs[facei]);</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        },</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>        <span class="stringliteral">&quot;removeBoundaryContributions&quot;</span></div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    );</div>
 <div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>} <span class="comment">// namespace NeoN::la</span></div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keywordflow">return</span> ls;</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>}</div>
+</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span> </div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>} <span class="comment">// namespace NeoN::la</span></div>
 <div class="ttc" id="aclassNeoN_1_1BoundaryMesh_html_abee97709eb5b6dc8013626b811bf62a5"><div class="ttname"><a href="classNeoN_1_1BoundaryMesh.html#abee97709eb5b6dc8013626b811bf62a5">NeoN::BoundaryMesh::faceOwners</a></div><div class="ttdeci">const labelVector &amp; faceOwners() const</div><div class="ttdoc">Get the list of labels of owner cells of boundary faces.</div></div>
 <div class="ttc" id="aclassNeoN_1_1SerialExecutor_html"><div class="ttname"><a href="classNeoN_1_1SerialExecutor.html">NeoN::SerialExecutor</a></div><div class="ttdoc">Reference executor for serial CPU execution.</div><div class="ttdef"><b>Definition</b> <a href="serialExecutor_8hpp_source.html#l00021">serialExecutor.hpp:22</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1SupportsCopyTo_html"><div class="ttname"><a href="classNeoN_1_1SupportsCopyTo.html">NeoN::SupportsCopyTo</a></div><div class="ttdoc">MixinClass signaling copyTo is supported.</div><div class="ttdef"><b>Definition</b> <a href="copyTo_8hpp_source.html#l00019">copyTo.hpp:20</a></div></div>
@@ -512,7 +515,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="amatrix_8hpp_html"><div class="ttname"><a href="matrix_8hpp.html">matrix.hpp</a></div></div>
 <div class="ttc" id="ameshIterationStrategies_8hpp_html"><div class="ttname"><a href="meshIterationStrategies_8hpp.html">meshIterationStrategies.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html"><div class="ttname"><a href="namespaceNeoN_1_1la.html">NeoN::la</a></div><div class="ttdef"><b>Definition</b> <a href="cooSparsityPattern_8hpp_source.html#l00012">cooSparsityPattern.hpp:13</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1la_html_a5a0ad3d154c390bb75b1e2581b775fd9"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">NeoN::la::removeBoundaryContributions</a></div><div class="ttdeci">la::LinearSystem&lt; ValueType &gt; removeBoundaryContributions(const la::LinearSystem&lt; ValueType &gt; &amp;lsIn)</div><div class="ttdoc">for testing purposes, this function reverses boundary contributions previously applied to the matrix ...</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00354">linearSystem.hpp:354</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1la_html_a5a0ad3d154c390bb75b1e2581b775fd9"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a5a0ad3d154c390bb75b1e2581b775fd9">NeoN::la::removeBoundaryContributions</a></div><div class="ttdeci">la::LinearSystem&lt; ValueType &gt; removeBoundaryContributions(const la::LinearSystem&lt; ValueType &gt; &amp;lsIn)</div><div class="ttdoc">for testing purposes, this function reverses boundary contributions previously applied to the matrix ...</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00357">linearSystem.hpp:357</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1la_html_a70b99b654275b82c0793671af73fe39a"><div class="ttname"><a href="namespaceNeoN_1_1la.html#a70b99b654275b82c0793671af73fe39a">NeoN::la::createEmptyLinearSystem</a></div><div class="ttdeci">LinearSystem&lt; ValueType, SystemMatrixType, BoundaryMatrixType &gt; createEmptyLinearSystem(const UnstructuredMesh &amp;mesh, std::shared_ptr&lt; MeshIterationStrategy &gt; strategy=std::make_shared&lt; FaceBasedIterator &gt;())</div><div class="ttdef"><b>Definition</b> <a href="linearSystem_8hpp_source.html#l00276">linearSystem.hpp:276</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a126d8c73d03797fa02ed0ba390452363"><div class="ttname"><a href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">NeoN::parallelFor</a></div><div class="ttdeci">void parallelFor(const ExecutorType &amp;, std::pair&lt; localIdx, localIdx &gt; range, Kernel kernel, std::string name)</div><div class="ttdef"><b>Definition</b> <a href="parallelAlgorithms_8hpp_source.html#l00062">parallelAlgorithms.hpp:62</a></div></div>
 <div class="ttc" id="anamespaceNeoN_html_a40785cd3c378b425dd30ae7f4d7dcabc"><div class="ttname"><a href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">NeoN::localIdx</a></div><div class="ttdeci">int32_t localIdx</div><div class="ttdef"><b>Definition</b> <a href="label_8hpp_source.html#l00032">label.hpp:32</a></div></div>

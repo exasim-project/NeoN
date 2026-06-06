@@ -77,6 +77,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classNeoN_1_1BoundaryData-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">NeoN::BoundaryData&lt; ValueType &gt; Class Template Reference</div></div>
 </div><!--header-->
@@ -114,9 +115,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa0ac1c738252c54d92ec822832765d3f" id="r_aa0ac1c738252c54d92ec822832765d3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">value</a> ()</td></tr>
 <tr class="memdesc:aa0ac1c738252c54d92ec822832765d3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the view storing the computed values from the boundary condition.  <br /></td></tr>
 <tr class="separator:aa0ac1c738252c54d92ec822832765d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2584e1a22b4fb981b283dbd6d7cab160" id="r_a2584e1a22b4fb981b283dbd6d7cab160"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryData.html#a2584e1a22b4fb981b283dbd6d7cab160">valueNoWait</a> ()</td></tr>
-<tr class="memdesc:a2584e1a22b4fb981b283dbd6d7cab160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-draining access to the value storage.  <br /></td></tr>
-<tr class="separator:a2584e1a22b4fb981b283dbd6d7cab160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2000c3e4c0057048852dd6e99aa60076" id="r_a2000c3e4c0057048852dd6e99aa60076"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">refValue</a> () const</td></tr>
 <tr class="memdesc:a2000c3e4c0057048852dd6e99aa60076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the view storing the Dirichlet boundary values.    <br /></td></tr>
 <tr class="separator:a2000c3e4c0057048852dd6e99aa60076"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,6 +159,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a042d7cb636be0e41666eb0b1d28c202a" id="r_a042d7cb636be0e41666eb0b1d28c202a"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a> (<a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchId) const</td></tr>
 <tr class="memdesc:a042d7cb636be0e41666eb0b1d28c202a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the range for a given patchId.  <br /></td></tr>
 <tr class="separator:a042d7cb636be0e41666eb0b1d28c202a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a6292f13eb1d2535f1e3197b25498e92b" id="r_a6292f13eb1d2535f1e3197b25498e92b"><td class="memItemLeft" align="right" valign="top">struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1BoundaryData.html#a6292f13eb1d2535f1e3197b25498e92b">NoWaitAccess</a></td></tr>
+<tr class="memdesc:a6292f13eb1d2535f1e3197b25498e92b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grants <a class="el" href="structNeoN_1_1NoWaitAccess.html" title="Passkey granting non-draining access to BoundaryData&#39;s value storage.">NoWaitAccess</a> (and only it) access to valueNoWait().  <br /></td></tr>
+<tr class="separator:a6292f13eb1d2535f1e3197b25498e92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType&gt;<br />
@@ -443,7 +447,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the boundary types. </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the boundary types. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00170">170</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00158">158</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -472,7 +476,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00199">199</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00187">187</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -504,7 +508,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the number of boundaries. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of boundaries. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00182">182</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00170">170</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -536,7 +540,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the number of boundary faces. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of boundary faces. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00188">188</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00176">176</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -569,7 +573,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the number of boundary faces for this patch. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of boundary faces for this patch. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00194">194</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00182">182</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -601,7 +605,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the offsets of each boundary. </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the offsets of each boundary. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00176">176</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00164">164</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -631,7 +635,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00218">218</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00206">206</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -661,7 +665,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00201">201</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00189">189</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -694,7 +698,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the range for a given patchId. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of boundary faces. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00369">369</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00357">357</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -726,7 +730,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the Neumann boundary values. </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the Neumann boundary values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00164">164</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00152">152</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -758,7 +762,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the Neumann boundary values.   </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the Neumann boundary values.   </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00158">158</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00146">146</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -790,7 +794,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the Dirichlet boundary values. </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the Dirichlet boundary values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00146">146</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00134">134</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -822,7 +826,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the Dirichlet boundary values.   </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the Dirichlet boundary values.   </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00140">140</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00128">128</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -920,7 +924,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the fraction of the boundary value. </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the fraction of the boundary value. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00155">155</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00143">143</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
@@ -952,38 +956,6 @@ template&lt;typename ValueType &gt; </div>
 <p>Get the view storing the fraction of the boundary value.   </p>
 <dl class="section return"><dt>Returns</dt><dd>The view storing the fraction of the boundary value.   </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00149">149</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
-
-</div>
-</div>
-<a id="a2584e1a22b4fb981b283dbd6d7cab160" name="a2584e1a22b4fb981b283dbd6d7cab160"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2584e1a22b4fb981b283dbd6d7cab160">&#9670;&#160;</a></span>valueNoWait()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ValueType &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp; <a class="el" href="classNeoN_1_1BoundaryData.html">NeoN::BoundaryData</a>&lt; ValueType &gt;::valueNoWait </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Non-draining access to the value storage. </p>
-<dl class="section warning"><dt>Warning</dt><dd>Does NOT call <a class="el" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll()</a>, so any in-flight processor-halo exchange is left pending. Used by the processor boundary condition to SEED the owner value before posting its isend/irecv: seeding must NOT drain a previous patch's exchange, because completing and clearing the comm buffers patch-by-patch (mid correctBoundaryConditions loop) serialises the halo exchange and, on a rank with two proc patches, leaves the second patch's recv unmatched — the halo then silently keeps its owner seed. All patches must post first; the single <a class="el" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll()</a> triggered by the next real <a class="el" href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f" title="Get the view storing the computed values from the boundary condition.">value()</a> read then completes them together. </dd></dl>
-
 <p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00137">137</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
@@ -1013,7 +985,36 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00326">326</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00314">314</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a6292f13eb1d2535f1e3197b25498e92b" name="a6292f13eb1d2535f1e3197b25498e92b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6292f13eb1d2535f1e3197b25498e92b">&#9670;&#160;</a></span>NoWaitAccess</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend struct <a class="el" href="structNeoN_1_1NoWaitAccess.html">NoWaitAccess</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grants <a class="el" href="structNeoN_1_1NoWaitAccess.html" title="Passkey granting non-draining access to BoundaryData&#39;s value storage.">NoWaitAccess</a> (and only it) access to valueNoWait(). </p>
+
+<p class="definition">Definition at line <a class="el" href="boundaryData_8hpp_source.html#l00365">365</a> of file <a class="el" href="boundaryData_8hpp_source.html">boundaryData.hpp</a>.</p>
 
 </div>
 </div>
