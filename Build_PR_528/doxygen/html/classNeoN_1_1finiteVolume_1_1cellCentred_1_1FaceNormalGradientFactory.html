@@ -101,6 +101,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adf47039f42dbf5f20633c46a8199e9d3" id="r_adf47039f42dbf5f20633c46a8199e9d3"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory.html#adf47039f42dbf5f20633c46a8199e9d3">~FaceNormalGradientFactory</a> ()</td></tr>
 <tr class="separator:adf47039f42dbf5f20633c46a8199e9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a260744d20e2453be7f3bf920b0edb2d2" id="r_a260744d20e2453be7f3bf920b0edb2d2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory.html#a260744d20e2453be7f3bf920b0edb2d2">faceNormalGrad</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;volVector, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;surfaceVector) const =0</td></tr>
+<tr class="memdesc:a260744d20e2453be7f3bf920b0edb2d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the face-normal gradient of <code>volVector</code> into <code>surfaceVector</code>.  <br /></td></tr>
 <tr class="separator:a260744d20e2453be7f3bf920b0edb2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4e2cde536c61a19ddab8ba3a046c3a7" id="r_ab4e2cde536c61a19ddab8ba3a046c3a7"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory.html#ab4e2cde536c61a19ddab8ba3a046c3a7">deltaCoeffs</a> () const =0</td></tr>
 <tr class="separator:ab4e2cde536c61a19ddab8ba3a046c3a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -336,6 +337,9 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Computes the face-normal gradient of <code>volVector</code> into <code>surfaceVector</code>. </p>
+<p>Processor-boundary contract: processor faces are treated like internal faces (the standard coupled-patch treatment), i.e. the gradient couples the owner cell with the true neighbour cell on the far side of the rank boundary. Schemes that apply a non-orthogonal correction (corrected, limitedCorrected) apply it on processor faces as well. Scalar and <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> fields receive identical treatment. </p>
+
 </div>
 </div>
 <a id="ab87c07e3b2d4b0d69f08ae8418b906f2" name="ab87c07e3b2d4b0d69f08ae8418b906f2"></a>
@@ -363,7 +367,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00066">66</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00069">69</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
 
 </div>
 </div>
@@ -403,7 +407,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00073">73</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00076">76</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
 
 </div>
 </div>
@@ -459,7 +463,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00083">83</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00086">86</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
 
 </div>
 </div>
@@ -485,7 +489,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00084">84</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="faceNormalGradient_8hpp_source.html#l00087">87</a> of file <a class="el" href="faceNormalGradient_8hpp_source.html">faceNormalGradient.hpp</a>.</p>
 
 </div>
 </div>

@@ -10,111 +10,24 @@
 \DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00006}00006\ }
 \DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
 \DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00008}00008\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <vector>}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00010}00010\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{environment_8hpp}{NeoN/core/mpi/environment.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{operators_8hpp}{NeoN/core/mpi/operators.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00018}00018\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail}{NeoN::finiteVolume::cellCentred::detail}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00020}00020\ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00021}00021\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00022}00022\ \textcolor{comment}{//\ Distinct\ tag\ from\ the\ geometry-\/scheme\ exchanges\ and\ BoundaryData::communicate\ (tag\ 0).}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00023}00023\ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\ procGradientHaloTag\ =\ 0x6772;\ \textcolor{comment}{//\ 'gr'}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00024}00024\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00028}00028\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ GradType>}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00029}00029\ Vector<GradType>\ exchangeProcNeighbourGradient(}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ UnstructuredMesh\&\ mesh,\ \textcolor{keyword}{const}\ Vector<GradType>\&\ gradInternal}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00031}00031\ )}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00032}00032\ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcFaces\ =\ mesh.nProcBoundaryFaces();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{keywordflow}{if}\ (nProcFaces\ ==\ 0)\ \textcolor{keywordflow}{return}\ Vector<GradType>(exec,\ 0,\ GradType\ \{\});}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00035}00035\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ bMesh\ =\ mesh.boundaryMesh();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nBoundaryFaces\ =\ mesh.nBoundaryFaces();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ nComp\ =\ \textcolor{keyword}{sizeof}(GradType)\ /\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}});}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00039}00039\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{comment}{//\ Gather\ the\ owner-\/cell\ gradient\ for\ each\ processor\ face\ on\ the\ device.}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00041}00041\ \ \ \ \ Vector<GradType>\ ownGradDev(exec,\ nProcFaces,\ GradType\ \{\});}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00042}00042\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ownView\ =\ ownGradDev.view();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ gradView\ =\ gradInternal.view();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bFaceOwners\ =\ bMesh.faceOwners().view();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ exec,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \{0,\ nProcFaces\},}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ownView[i]\ =\ gradView[bFaceOwners[nBoundaryFaces\ +\ i]];}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}exchangeProcNeighbourGradientGather"{}}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00054}00054\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ Flatten\ to\ contiguous\ scalars\ for\ the\ typed\ MPI\ exchange.}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{auto}\ ownH\ =\ ownGradDev.copyToHost();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ownHView\ =\ ownH.view();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00059}00059\ \ \ \ \ std::vector<scalar>\ sendBuf(nComp\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(nProcFaces));}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ nProcFaces;\ ++i)}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00061}00061\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}*\ d\ =\ ownHView[i].data();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (std::size\_t\ c\ =\ 0;\ c\ <\ nComp;\ ++c)}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ sendBuf[nComp\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i)\ +\ c]\ =\ d[c];}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00065}00065\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00066}00066\ \ \ \ \ std::vector<scalar>\ recvBuf(nComp\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(nProcFaces),\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0));}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{comment}{//\ Processor\ patch\ face\ ranges\ (the\ trailing\ nProcBoundaryPatches\ patches\ of\ the\ boundary\ mesh).}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ off\ =\ bMesh.offset();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nBounds\ =\ bMesh.nBoundaries();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcPatches\ =\ bMesh.nProcBoundaryPatches();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00072}00072\ \ \ \ \ std::vector<MPI\_Request>\ requests(2\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(nProcPatches),\ MPI\_REQUEST\_NULL);}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00073}00073\ \ \ \ \ mpi::Environment\ mpiEnv;}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00074}00074\ \ \ \ \ std::size\_t\ p\ =\ 0;}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ nBounds\ -\/\ nProcPatches;\ i\ <\ nBounds;\ ++i,\ ++p)}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00076}00076\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rangeStart\ =\ off[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i)];}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ rangeEnd\ =\ off[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i\ +\ 1)];}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ patchOff\ =\ nComp\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(rangeStart\ -\/\ nBoundaryFaces);}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ neighborRank\ =}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\textcolor{keyword}{>}(bMesh.neighbourRankForRange(\{rangeStart,\ rangeEnd\}));}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ count\ =}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_ada9015c3a9ac7ba20f5abde4670ca373}{mpi\_label\_t}}\textcolor{keyword}{>}(nComp\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(rangeEnd\ -\/\ rangeStart));}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ mpi::isend<scalar>(}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ sendBuf.data()\ +\ patchOff,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ count,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ neighborRank,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ procGradientHaloTag,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \&requests[2\ *\ p]}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ mpi::irecv<scalar>(}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ recvBuf.data()\ +\ patchOff,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ count,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ neighborRank,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ procGradientHaloTag,}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ mpiEnv.comm(),}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \&requests[2\ *\ p\ +\ 1]}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00100}00100\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00101}00101\ \ \ \ \ mpi::waitAll(requests);}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00102}00102\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00103}00103\ \ \ \ \ std::vector<GradType>\ neiGrad(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(nProcFaces));}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i\ =\ 0;\ i\ <\ nProcFaces;\ ++i)}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00105}00105\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ GradType\ g\ \{\};}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}*\ d\ =\ g.data();}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (std::size\_t\ c\ =\ 0;\ c\ <\ nComp;\ ++c)}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ d[c]\ =\ recvBuf[nComp\ *\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i)\ +\ c];}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ neiGrad[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i)]\ =\ g;}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00111}00111\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keywordflow}{return}\ Vector<GradType>(exec,\ neiGrad);}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00113}00113\ \}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00114}00114\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00115}00115\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::detail}}
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00116}00116\ }
-\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00117}00117\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00014}00014\ \textcolor{keyword}{class\ }UnstructuredMesh;}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00015}00015\ \}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail}{NeoN::finiteVolume::cellCentred::detail}}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00026}00026\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ GradType>}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00027}00027\ Vector<GradType>\ exchangeProcNeighbourGradient(}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ UnstructuredMesh\&\ mesh,\ \textcolor{keyword}{const}\ Vector<GradType>\&\ gradInternal}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00029}00029\ );}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00031}00031\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::detail}}
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{processorGradientHalo_8hpp_source_l00033}00033\ \textcolor{preprocessor}{\#endif}}
 
 \end{DoxyCode}
