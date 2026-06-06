@@ -124,18 +124,6 @@ public:
         return value_;
     }
 
-    /**
-     * @brief Non-draining access to the value storage.
-     * @warning Does NOT call waitAll(), so any in-flight processor-halo exchange is left pending.
-     * Used by the processor boundary condition to SEED the owner value before posting its
-     * isend/irecv: seeding must NOT drain a previous patch's exchange, because completing and
-     * clearing the comm buffers patch-by-patch (mid correctBoundaryConditions loop) serialises the
-     * halo exchange and, on a rank with two proc patches, leaves the second patch's recv
-     * unmatched — the halo then silently keeps its owner seed. All patches must post first; the
-     * single waitAll() triggered by the next real value() read then completes them together.
-     */
-    Vector<ValueType>& valueNoWait() { return value_; }
-
     /** @copydoc BoundaryData::refValue()*/
     const Vector<ValueType>& refValue() const { return refValue_; }
 
@@ -373,6 +361,24 @@ public:
 
 private:
 
+    /// Grants NoWaitAccess (and only it) access to valueNoWait().
+    friend struct NoWaitAccess;
+
+    /**
+     * @brief Non-draining access to the value storage.
+     * @warning Does NOT call waitAll(), so any in-flight processor-halo exchange is left pending.
+     * Used by the processor boundary condition to SEED the owner value before posting its
+     * isend/irecv: seeding must NOT drain a previous patch's exchange, because completing and
+     * clearing the comm buffers patch-by-patch (mid correctBoundaryConditions loop) serialises the
+     * halo exchange and, on a rank with two proc patches, leaves the second patch's recv
+     * unmatched — the halo then silently keeps its owner seed. All patches must post first; the
+     * single waitAll() triggered by the next real value() read then completes them together.
+     *
+     * Deliberately private: bypassing waitAll() is easy to misuse, so access goes through the
+     * NoWaitAccess passkey struct, keeping the set of callers auditable.
+     */
+    Vector<ValueType>& valueNoWait() { return value_; }
+
     Executor exec_;                   ///< The executor on which the field is stored
     mutable Vector<ValueType> value_; ///< The Vector storing the computed values from the
                                       ///< boundary condition.
@@ -400,6 +406,23 @@ private:
         commBuffers_; ///< Send/recv staging buffers for pending requests.
     mutable bool communicating_ = false;
 #endif
+};
+
+/**
+ * @brief Passkey granting non-draining access to BoundaryData's value storage.
+ *
+ * BoundaryData::valueNoWait() is private because skipping waitAll() leaves in-flight
+ * processor-halo exchanges pending and is easy to misuse. Callers that legitimately need it
+ * (the processor boundary condition seeding owner values before posting its exchange) go
+ * through this struct, so every bypass site is greppable via NoWaitAccess.
+ */
+struct NoWaitAccess
+{
+    template<typename ValueType>
+    static Vector<ValueType>& value(BoundaryData<ValueType>& in)
+    {
+        return in.valueNoWait();
+    }
 };
 
 }

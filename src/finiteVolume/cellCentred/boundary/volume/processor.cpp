@@ -19,13 +19,13 @@ void setProcBoundaryValue(
 {
     const auto iVector = domainVector.internalVector().view();
 
-    // valueNoWait(): seeding the owner value must NOT drain a previously-posted proc-patch
+    // NoWaitAccess: seeding the owner value must NOT drain a previously-posted proc-patch
     // exchange. Draining mid-loop (one patch at a time) breaks the second proc patch's halo on
     // ranks that own more than one (see BoundaryData::valueNoWait docs). All patches post first;
     // the exchange completes together on the next value() read.
     auto [refGradient, value, valueFraction, refValue, faceCells] = views(
         domainVector.boundaryData().refGrad(),
-        domainVector.boundaryData().valueNoWait(),
+        NoWaitAccess::value(domainVector.boundaryData()),
         domainVector.boundaryData().valueFraction(),
         domainVector.boundaryData().refValue(),
         mesh.boundaryMesh().faceOwners()
