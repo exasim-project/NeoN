@@ -36,7 +36,7 @@ virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a9284792a7d9
 class Neo\+N\+::dsl\+::\+Set\+Reference$<$ Value\+Type, Index\+Type $>$}
 Post-\/assembly functor that pins one cell\textquotesingle{}s value to a reference, removing the constant null space that arises when all boundaries have Neumann (zero-\/gradient) conditions on operators such as laplacian or div+laplacian. 
 
-Modifies the assembled linear system in-\/place\+: A\mbox{[}ref\+Cell, ref\+Cell\mbox{]} += A\mbox{[}ref\+Cell, ref\+Cell\mbox{]} (doubles the diagonal) rhs\mbox{[}ref\+Cell\mbox{]} += A\mbox{[}ref\+Cell, ref\+Cell\mbox{]} \texorpdfstring{$\ast$}{*} ref\+Value
+Modifies the assembled linear system in-\/place\+: \doxylink{classA}{A}\mbox{[}ref\+Cell, ref\+Cell\mbox{]} += \doxylink{classA}{A}\mbox{[}ref\+Cell, ref\+Cell\mbox{]} (doubles the diagonal) rhs\mbox{[}ref\+Cell\mbox{]} += \doxylink{classA}{A}\mbox{[}ref\+Cell, ref\+Cell\mbox{]} \texorpdfstring{$\ast$}{*} ref\+Value
 
 For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-\/distributed systems every rank applies it independently (each holds a full copy). @\+TODO allow to set a ref\+Point instead of a ref\+Cell, make the ref\+Cell a global cell\+ID 
 
