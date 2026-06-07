@@ -83,7 +83,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         REQUIRE(matAbsSum > 0.0);
     }
 
-    SECTION("Can assemble to Vec3 matrix with rhs<vec3>")
+    SECTION("Can assemble to Vec3 matrix with rhs<Vec3>")
     {
         auto ls = expr.template assemble<NeoN::Vec3>(mesh, t, dt);
 
@@ -104,6 +104,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         REQUIRE(matMagSum > 0.0);
     }
 
+#if NF_WITH_GINKGO
     SECTION("Can solve with multiple RHS")
     {
         auto ls = expr.template assemble<NeoN::scalar>(mesh, t, dt);
@@ -137,6 +138,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         }
         REQUIRE(xMagSum > 0.0);
     }
+#endif // NF_WITH_GINKGO
 }
 
 } // namespace NeoN
