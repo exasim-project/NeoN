@@ -11,6 +11,7 @@
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
 
 ### Misc
+- Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
 - Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
 - Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
