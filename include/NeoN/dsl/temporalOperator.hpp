@@ -7,6 +7,7 @@
 #include <memory>
 #include <concepts>
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/input.hpp"
@@ -217,6 +218,18 @@ private:
             if constexpr (HasTemporalImplicitOperatorScalarMtx<ConcreteTemporalOperatorType>)
             {
                 concreteOp_.implicitOperation(ls, t, dt);
+            }
+            else
+            {
+                // Reached only for an implicit temporal operator that lacks the scalar-matrix
+                // (segregated vector-solve) overload. Silently skipping it would drop its
+                // contribution (e.g. an implicit ddt term) and yield a wrong system, so fail
+                // fast instead.
+                NF_ERROR_EXIT(
+                    "Temporal operator '" << getName()
+                                          << "' does not support scalar-matrix (segregated) "
+                                             "assembly."
+                );
             }
         }
 

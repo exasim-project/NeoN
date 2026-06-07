@@ -62,12 +62,12 @@ struct LinearSystemView
  * well as the solution vector.
  *
  * @tparam MatrixValueType The value type of the system and boundary matrix coefficients.
+ * @tparam RHSValueType The value type of the right-hand side and boundary rhs vectors. Defaults to
+ * MatrixValueType, but may differ (e.g. scalar matrix with Vec3 rhs for segregated vector solves).
  * @tparam SystemMatrixType The sparse matrix type used for the system matrix (default:
  * CSRMatrix<MatrixValueType, localIdx>).
  * @tparam BoundaryMatrixType The sparse matrix type used for boundary and off-diagonal matrices
  * (default: COOMatrix<MatrixValueType, localIdx>).
- * @tparam RHSValueType The value type of the right-hand side and boundary rhs vectors. Defaults to
- * MatrixValueType, but may differ (e.g. scalar matrix with Vec3 rhs for segregated vector solves).
  */
 template<
     typename MatrixValueType,

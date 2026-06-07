@@ -7,6 +7,7 @@
 #include <memory>
 #include <concepts>
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
@@ -186,6 +187,16 @@ private:
             if constexpr (HasImplicitOperatorScalarMtx<ConcreteOperatorType>)
             {
                 concreteOp_.implicitOperation(ls);
+            }
+            else
+            {
+                // Reached only for an implicit operator that lacks the scalar-matrix
+                // (segregated vector-solve) overload. Silently skipping it would drop its
+                // contribution and yield a wrong system, so fail fast instead.
+                NF_ERROR_EXIT(
+                    "Operator '" << getName()
+                                 << "' does not support scalar-matrix (segregated) assembly."
+                );
             }
         }
 
