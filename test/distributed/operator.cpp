@@ -12,7 +12,7 @@ using Catch::randomizeVector;
 namespace NeoN
 {
 
-auto generateInput = [](std::string scheme, std::string post)
+auto GENERATE_INPUT = [](std::string scheme, std::string post)
 {
     auto constructDiv = [](auto post) { return "div(phi" + post + ",U" + post + ")"; };
     auto constructGamma = [](auto post) { return "laplacian(gamma" + post + ",U" + post + ")"; };
@@ -38,15 +38,15 @@ TEST_CASE("Distributed Operator - scalar")
 
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    auto input = generateInput("upwind", "");
-    auto inputPart = generateInput("upwind", "Part");
+    auto input = GENERATE_INPUT("upwind", "");
+    auto inputPart = GENERATE_INPUT("upwind", "Part");
 
     auto nCells = 12;
     auto meshGlobal = create1DUniformMesh(exec, nCells);
     auto mesh = create1DUniformMesh(exec, nCells);
 
     auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
-    auto U = finiteVolume::cellCentred::VolumeField<scalar>(
+    auto u = finiteVolume::cellCentred::VolumeField<scalar>(
         exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
     );
     auto p = finiteVolume::cellCentred::VolumeField<scalar>(
@@ -54,7 +54,7 @@ TEST_CASE("Distributed Operator - scalar")
     );
 
     srand(42);
-    randomizeVector(U);
+    randomizeVector(u);
     randomizeVector(p);
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
@@ -67,7 +67,7 @@ TEST_CASE("Distributed Operator - scalar")
     fill(gamma.internalVector(), 2.0);
 
     // assembly on global mesh
-    auto expr = dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U);
+    auto expr = dsl::imp::div(phi, u) - dsl::imp::laplacian(gamma, u);
     expr.read(input);
     dsl::SetReference<scalar, localIdx> setRef(0, 0.0);
     auto ls = expr.assemble(mesh, 1.0, 1.0, {&setRef});
@@ -75,7 +75,7 @@ TEST_CASE("Distributed Operator - scalar")
     NeoN::mpi::Environment mpiEnviron;
     auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
 
-    auto uPart = detail::oneDPartitionField(U, meshPart, mpiEnviron);
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
     auto pPart = detail::oneDPartitionField(p, meshPart, mpiEnviron);
     auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
     auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
@@ -199,20 +199,20 @@ TEST_CASE("Distributed Operator - vec3")
 
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    auto input = generateInput("upwind", "");
-    auto inputPart = generateInput("upwind", "Part");
+    auto input = GENERATE_INPUT("upwind", "");
+    auto inputPart = GENERATE_INPUT("upwind", "Part");
 
     auto nCells = 12;
     auto meshGlobal = create1DUniformMesh(exec, nCells);
     auto mesh = create1DUniformMesh(exec, nCells);
 
     auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
-    auto U = finiteVolume::cellCentred::VolumeField<Vec3>(
+    auto u = finiteVolume::cellCentred::VolumeField<Vec3>(
         exec, "U", mesh, Vector<Vec3>(exec, nCells, 2.0 * one<Vec3>()), volBCs
     );
 
     srand(42);
-    randomizeVector(U);
+    randomizeVector(u);
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
@@ -224,7 +224,7 @@ TEST_CASE("Distributed Operator - vec3")
     fill(gamma.internalVector(), 2.0);
 
     // assembly on global mesh
-    auto expr = dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U);
+    auto expr = dsl::imp::div(phi, u) - dsl::imp::laplacian(gamma, u);
     expr.read(input);
     dsl::SetReference<Vec3, localIdx> setRef(0, zero<Vec3>());
     auto ls = expr.assemble(mesh, 1.0, 1.0, {&setRef});
@@ -232,7 +232,7 @@ TEST_CASE("Distributed Operator - vec3")
     NeoN::mpi::Environment mpiEnviron;
     auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
 
-    auto uPart = detail::oneDPartitionField(U, meshPart, mpiEnviron);
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
     auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
     auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
 
@@ -357,19 +357,19 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
-    auto input = generateInput("upwind", "");
-    auto inputPart = generateInput("upwind", "Part");
+    auto input = GENERATE_INPUT("upwind", "");
+    auto inputPart = GENERATE_INPUT("upwind", "Part");
 
     auto nCells = 12;
     auto meshGlobal = create1DUniformMesh(exec, nCells);
     auto mesh = create1DUniformMesh(exec, nCells);
 
     auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
-    auto U = finiteVolume::cellCentred::VolumeField<Vec3>(
+    auto u = finiteVolume::cellCentred::VolumeField<Vec3>(
         exec, "U", mesh, Vector<Vec3>(exec, nCells, 2.0 * one<Vec3>()), volBCs
     );
     srand(42);
-    randomizeVector(U);
+    randomizeVector(u);
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
@@ -383,14 +383,14 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
     // SetReference pins cell 0 to remove the constant null space; for scalar-matrix assembly the
     // post-assembly functor is dispatched via PostAssemblyBase::applyScalarMatrix.
     dsl::SetReference<Vec3, localIdx> setRef(0, zero<Vec3>());
-    auto expr = dsl::imp::div(phi, U) - dsl::imp::laplacian(gamma, U);
+    auto expr = dsl::imp::div(phi, u) - dsl::imp::laplacian(gamma, u);
     expr.read(input);
     auto ls = expr.template assemble<scalar>(mesh, 1.0, 1.0, {&setRef});
 
     NeoN::mpi::Environment mpiEnviron;
     auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
 
-    auto uPart = detail::oneDPartitionField(U, meshPart, mpiEnviron);
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
     auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
     auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
 

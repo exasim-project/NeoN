@@ -16,7 +16,7 @@ using Operator = NeoN::dsl::Operator;
 namespace NeoN
 {
 
-auto makeFvSchemes = []()
+auto MAKE_FV_SCHEMES = []()
 {
     NeoN::Dictionary fvSchemes;
     NeoN::Dictionary divSchemes;
@@ -47,7 +47,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
     NeoN::fill(phi.boundaryData().value(), NeoN::zero<TestType>());
     phi.correctBoundaryConditions();
 
-    auto fvSchemes = makeFvSchemes();
+    auto fvSchemes = MAKE_FV_SCHEMES();
 
     fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
     NeoN::fill(faceFlux.internalVector(), 1.0);
