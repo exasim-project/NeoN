@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1dsl_1_1SetReference" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::dsl::SetReference</compoundname>
+    <basecompoundref refid="structNeoN_1_1dsl_1_1PostAssemblyBase" prot="public" virt="non-virtual">NeoN::dsl::PostAssemblyBase&lt; ValueType, localIdx &gt;</basecompoundref>
+    <includes refid="expression_8hpp" local="no">expression.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename ValueType</type>
+      </param>
+      <param>
+        <type>typename IndexType</type>
+        <defval><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1dsl_1_1SetReference_1a5e08512bc664f772e020617b4899ad11" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+        <definition>localIdx NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;::refCell_</definition>
+        <argsstring></argsstring>
+        <name>refCell_</name>
+        <qualifiedname>NeoN::dsl::SetReference::refCell_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="92" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1dsl_1_1SetReference_1a0708d831aa6d8a1a085ab9d4e55138d5" prot="private" static="no" mutable="no">
+        <type>ValueType</type>
+        <definition>ValueType NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;::refValue_</definition>
+        <argsstring></argsstring>
+        <name>refValue_</name>
+        <qualifiedname>NeoN::dsl::SetReference::refValue_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="93" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="93" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1SetReference_1a16fe3252506407a8e19ef8782062a685" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;::SetReference</definition>
+        <argsstring>(localIdx refCell, ValueType refValue)</argsstring>
+        <name>SetReference</name>
+        <qualifiedname>NeoN::dsl::SetReference::SetReference</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
+          <declname>refCell</declname>
+        </param>
+        <param>
+          <type>ValueType</type>
+          <declname>refValue</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="59" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1SetReference_1ab76f83c63e74e528246db556e9dd9799" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;::operator()</definition>
+        <argsstring>(la::LinearSystem&lt; ValueType, la::CSRMatrix&lt; ValueType, IndexType &gt; &gt; &amp;ls) const override</argsstring>
+        <name>operator()</name>
+        <qualifiedname>NeoN::dsl::SetReference::operator()</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; ValueType, <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">la::CSRMatrix</ref>&lt; ValueType, IndexType &gt; &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="61" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="61" bodyend="88"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Post-assembly functor that pins one cell&apos;s value to a reference, removing the constant null space that arises when all boundaries have Neumann (zero-gradient) conditions on operators such as laplacian or div+laplacian. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Modifies the assembled linear system in-place: <ref refid="classA" kindref="compound">A</ref>[refCell, refCell] += <ref refid="classA" kindref="compound">A</ref>[refCell, refCell] (doubles the diagonal) rhs[refCell] += <ref refid="classA" kindref="compound">A</ref>[refCell, refCell] * refValue</para>
+<para>For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-distributed systems every rank applies it independently (each holds a full copy). @TODO allow to set a refPoint instead of a refCell, make the refCell a global cellID </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;</label>
+        <link refid="structNeoN_1_1dsl_1_1PostAssemblyBase"/>
+      </node>
+      <node id="1">
+        <label>NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;</label>
+        <link refid="classNeoN_1_1dsl_1_1SetReference"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;</label>
+        <link refid="structNeoN_1_1dsl_1_1PostAssemblyBase"/>
+      </node>
+      <node id="1">
+        <label>NeoN::dsl::SetReference&lt; ValueType, IndexType &gt;</label>
+        <link refid="classNeoN_1_1dsl_1_1SetReference"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="55" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="56" bodyend="94"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1dsl_1_1SetReference_1ab76f83c63e74e528246db556e9dd9799" prot="public" virt="non-virtual"><scope>NeoN::dsl::SetReference</scope><name>operator()</name></member>
+      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a9284792a7d99d4347f8b6b1f805f66fc" prot="public" virt="virtual" ambiguityscope="NeoN::dsl::PostAssemblyBase::"><scope>NeoN::dsl::SetReference</scope><name>operator()</name></member>
+      <member refid="classNeoN_1_1dsl_1_1SetReference_1a5e08512bc664f772e020617b4899ad11" prot="private" virt="non-virtual"><scope>NeoN::dsl::SetReference</scope><name>refCell_</name></member>
+      <member refid="classNeoN_1_1dsl_1_1SetReference_1a0708d831aa6d8a1a085ab9d4e55138d5" prot="private" virt="non-virtual"><scope>NeoN::dsl::SetReference</scope><name>refValue_</name></member>
+      <member refid="classNeoN_1_1dsl_1_1SetReference_1a16fe3252506407a8e19ef8782062a685" prot="public" virt="non-virtual"><scope>NeoN::dsl::SetReference</scope><name>SetReference</name></member>
+      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6ee1fd861a37f190bf64b4525f1ffbaa" prot="public" virt="virtual"><scope>NeoN::dsl::SetReference</scope><name>~PostAssemblyBase</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

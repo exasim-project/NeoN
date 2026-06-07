@@ -1,0 +1,32 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/mesh/unstructured/uniform\+Mesh\+Data\+Generator.hpp File Reference}
+\hypertarget{uniformMeshDataGenerator_8hpp}{}\label{uniformMeshDataGenerator_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/mesh/unstructured/uniformMeshDataGenerator.hpp}}
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structNeoN_1_1detail_1_1MeshParams}{Neo\+N\+::detail\+::\+Mesh\+Params}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structNeoN_1_1Parameters}{Parameters} describing a 3D uniform Cartesian mesh. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structNeoN_1_1detail_1_1CellData}{Neo\+N\+::detail\+::\+Cell\+Data}}
+\begin{DoxyCompactList}\small\item\em Cell geometric data for a uniform mesh. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structNeoN_1_1detail_1_1FaceData}{Neo\+N\+::detail\+::\+Face\+Data}}
+\begin{DoxyCompactList}\small\item\em Face geometric and topological data for internal mesh faces. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1detail}{Neo\+N\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1detail_ae213223b956fbfb479737d08d01567d5}{Neo\+N\+::detail\+::generate\+Points}} (const \mbox{\hyperlink{structNeoN_1_1detail_1_1MeshParams}{Mesh\+Params}} \&p)
+\begin{DoxyCompactList}\small\item\em Generate mesh vertex coordinates for a uniform Cartesian grid. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1detail_1_1CellData}{Cell\+Data}} \mbox{\hyperlink{namespaceNeoN_1_1detail_a76af3b5185dcb88f59c85691a1021d33}{Neo\+N\+::detail\+::generate\+Cell\+Data}} (const \mbox{\hyperlink{structNeoN_1_1detail_1_1MeshParams}{Mesh\+Params}} \&p)
+\begin{DoxyCompactList}\small\item\em Generate cell volumes and cell-\/center coordinates. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1detail_1_1FaceData}{Face\+Data}} \mbox{\hyperlink{namespaceNeoN_1_1detail_aa0a6c3d04b795a60851efac68cd47f82}{Neo\+N\+::detail\+::generate\+Internal\+Faces}} (const \mbox{\hyperlink{structNeoN_1_1detail_1_1MeshParams}{Mesh\+Params}} \&p, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Faces)
+\begin{DoxyCompactList}\small\item\em Generate internal face data for a 3D uniform mesh. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1BoundaryMesh}{Boundary\+Mesh}} \mbox{\hyperlink{namespaceNeoN_1_1detail_a22a254751955f1a507b66fd1e7552c6a}{Neo\+N\+::detail\+::generate\+Boundary\+Data}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} exec, const int dim, const \mbox{\hyperlink{structNeoN_1_1detail_1_1MeshParams}{Mesh\+Params}} \&p, const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&centers, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Internal\+Faces, const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Boundary\+Faces, const std\+::vector$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ offset, \mbox{\hyperlink{structNeoN_1_1detail_1_1FaceData}{Face\+Data}} \&faces)
+\begin{DoxyCompactList}\small\item\em Generate boundary face data for a 3D uniform mesh. \end{DoxyCompactList}\end{DoxyCompactItemize}
