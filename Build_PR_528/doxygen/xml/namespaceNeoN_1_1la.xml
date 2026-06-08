@@ -447,6 +447,61 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="318" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="318" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a845df78831499693d219e8ee9a2780d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::logProcFaceOffDiagSymmetry</definition>
+        <argsstring>(const LinearSystem&lt; scalar &gt; &amp;ls, const UnstructuredMesh &amp;mesh, std::string_view label)</argsstring>
+        <name>logProcFaceOffDiagSymmetry</name>
+        <qualifiedname>NeoN::la::logProcFaceOffDiagSymmetry</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">LinearSystem</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>label</declname>
+        </param>
+        <briefdescription>
+<para>Diagnostic: log the processor-face off-diagonal SYMMETRY of an assembled distributed scalar linear system (e.g. the pressure equation). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For every processor face the owner rank assembles an off-diagonal coupling a(owner-&gt;halo); the neighbouring rank assembles the mirror coupling a(halo-&gt;owner). <ref refid="classA" kindref="compound">A</ref> symmetric distributed matrix - which a discrete Laplacian (pressure equation) must be - requires a_ij == a_ji. This routine MPI-exchanges the per-processor-face off-diagonal coefficients across rank boundaries and logs the global: maxDiff = max |a_ij - a_ji| (≈ 0 for a symmetric matrix) maxSum = max |a_ij + a_ji| maxMag = max |a_ij| relDiff = maxDiff / maxMag (the headline number: relative asymmetry)</para>
+<para>It does NOT modify the linear system - it is purely a diagnostic. No-op when built without MPI support, when MPI is not initialised (serial), or when there are no processor faces.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ls</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The assembled scalar linear system. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh the system was assembled on. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>label</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classA" kindref="compound">A</ref> short tag for the log line (e.g. the field name &quot;p&quot;). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" line="39" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" declline="39" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1ad6d454dd6fb2e31259a6349219c08629" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
         <definition>Vector&lt; localIdx &gt; NeoN::la::unpackColIdx</definition>
