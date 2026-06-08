@@ -189,7 +189,19 @@ public:
         }
     }
 
-    /** @brief construct a linear system and force assembly
+    /*@brief subtract explicit source terms from the linear system rhs, scaled by cell volumes */
+    void assembleExplicitSource(la::LinearSystem<ValueType>& ls, const UnstructuredMesh& mesh) const
+    {
+        auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
+        auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
+        parallelFor(
+            ls.exec(),
+            {0, static_cast<localIdx>(rhs.size())},
+            NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+        );
+    }
+
+    /** @brief construct a linear system and force assembly including explicit source terms
      *
      * @param ps post-assembly functors applied to the system after assembly
      * @return the assembled linear system
@@ -202,11 +214,27 @@ public:
     ) const
     {
         auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
-        assemble(t, dt, ls, ps);
+        assemble(t, dt, ls, mesh, ps);
         return ls;
     }
 
-    /* @brief assemble into a given linear system
+    /** @brief assemble into a given linear system including explicit source terms
+     *
+     * @param ps post-assembly functors applied to the system after assembly
+     */
+    void assemble(
+        scalar t,
+        scalar dt,
+        la::LinearSystem<ValueType>& ls,
+        const UnstructuredMesh& mesh,
+        std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
+    ) const
+    {
+        assemble(t, dt, ls, ps);
+        assembleExplicitSource(ls, mesh);
+    }
+
+    /* @brief assemble into a given linear system (implicit operators only, no explicit sources)
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
