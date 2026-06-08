@@ -29,11 +29,12 @@ var searchData=
   ['logging_2ehpp_26',['logging.hpp',['../logging_8hpp.html',1,'']]],
   ['logimpl_27',['logImpl',['../namespaceNeoN_1_1Logging.html#af557590585d10fa3012ddd3beb9078e0',1,'NeoN::Logging']]],
   ['logoutrange_28',['logoutrange',['../namespaceNeoN.html#ae6c3ff7eb69df45b568b04b852294339',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::string &amp;key, const std::unordered_map&lt; std::string, std::any &gt; &amp;data)'],['../namespaceNeoN.html#a32239764f88da7b65079e346a5f3c1f8',1,'NeoN::logOutRange(const std::out_of_range &amp;e, const std::size_t &amp;key, const std::vector&lt; std::any &gt; &amp;data)']]],
-  ['logprocfaceoffdiagsymmetry_29',['logProcFaceOffDiagSymmetry',['../namespaceNeoN_1_1la.html#a845df78831499693d219e8ee9a2780d0',1,'NeoN::la']]],
-  ['lookuptable_30',['lookuptable',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#ab138b1d1464fcf7432645c68aa2ecb3f',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::LookupTable'],['../classNeoN_1_1BaseClassDocumentation.html#ae8dbaa02f8e669f6e1afc6036a4df08a',1,'NeoN::BaseClassDocumentation::LookupTable']]],
-  ['loop_31',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]],
-  ['loweridx_32',['lowerIdx',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a22ca2d20507e6a0b2e07ca7499260bb6',1,'NeoN::la::FaceToMatrixView']]],
-  ['lx_33',['Lx',['../structNeoN_1_1detail_1_1MeshParams.html#acca6fb1b0a1ad9093ce541eb3238d5e7',1,'NeoN::detail::MeshParams']]],
-  ['ly_34',['Ly',['../structNeoN_1_1detail_1_1MeshParams.html#a3a54c2a75a2808618da9fda37a32b3fe',1,'NeoN::detail::MeshParams']]],
-  ['lz_35',['Lz',['../structNeoN_1_1detail_1_1MeshParams.html#a905d93fcf475c523e19cf645f060ac19',1,'NeoN::detail::MeshParams']]]
+  ['logprocfacefluxconsistency_29',['logProcFaceFluxConsistency',['../namespaceNeoN_1_1la.html#a500275fb53b47c8c3033605a21b9f031',1,'NeoN::la']]],
+  ['logprocfaceoffdiagsymmetry_30',['logProcFaceOffDiagSymmetry',['../namespaceNeoN_1_1la.html#a845df78831499693d219e8ee9a2780d0',1,'NeoN::la']]],
+  ['lookuptable_31',['lookuptable',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#ab138b1d1464fcf7432645c68aa2ecb3f',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;::LookupTable'],['../classNeoN_1_1BaseClassDocumentation.html#ae8dbaa02f8e669f6e1afc6036a4df08a',1,'NeoN::BaseClassDocumentation::LookupTable']]],
+  ['loop_32',['loop',['../classNeoN_1_1Time.html#a50c8d60e419bde0da395859da9e38b23',1,'NeoN::Time']]],
+  ['loweridx_33',['lowerIdx',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a22ca2d20507e6a0b2e07ca7499260bb6',1,'NeoN::la::FaceToMatrixView']]],
+  ['lx_34',['Lx',['../structNeoN_1_1detail_1_1MeshParams.html#acca6fb1b0a1ad9093ce541eb3238d5e7',1,'NeoN::detail::MeshParams']]],
+  ['ly_35',['Ly',['../structNeoN_1_1detail_1_1MeshParams.html#a3a54c2a75a2808618da9fda37a32b3fe',1,'NeoN::detail::MeshParams']]],
+  ['lz_36',['Lz',['../structNeoN_1_1detail_1_1MeshParams.html#a905d93fcf475c523e19cf645f060ac19',1,'NeoN::detail::MeshParams']]]
 ];

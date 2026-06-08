@@ -500,7 +500,62 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" line="39" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" declline="39" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" line="40" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" declline="40" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a500275fb53b47c8c3033605a21b9f031" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::logProcFaceFluxConsistency</definition>
+        <argsstring>(const finiteVolume::cellCentred::SurfaceField&lt; scalar &gt; &amp;flux, const UnstructuredMesh &amp;mesh, std::string_view label)</argsstring>
+        <name>logProcFaceFluxConsistency</name>
+        <qualifiedname>NeoN::la::logProcFaceFluxConsistency</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">finiteVolume::cellCentred::SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>flux</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>label</declname>
+        </param>
+        <briefdescription>
+<para>Diagnostic: log the processor-face CONSISTENCY of a distributed scalar SurfaceField (e.g. the face flux phi). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>At a processor face the owner rank holds a local face value phi_A and the neighbouring rank holds phi_B for the SAME physical face. <ref refid="classA" kindref="compound">A</ref> consistent flux is equal-and-opposite across the shared face (phi_A == -phi_B, since the two ranks see opposite face normals). This routine MPI-exchanges the per-processor-face values and logs the global: maxDiff = max |phi_A - phi_B| maxSum = max |phi_A + phi_B| (≈ 0 for a consistent, opposite-signed flux) maxMag = max |phi_A| relIncons = min(maxDiff, maxSum) / maxMag (the headline residual inconsistency; the smaller of diff/sum is the residual, the sign convention picks which)</para>
+<para>relIncons ≈ machine epsilon means the flux is consistent across processor faces; a sizeable, rank-count-scaling relIncons means it is not. Purely diagnostic; no-op without MPI support or in serial.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>flux</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The distributed scalar surface field (e.g. phi). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mesh</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The mesh the field lives on. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>label</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classA" kindref="compound">A</ref> short tag for the log line (e.g. &quot;phi&quot;). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" line="67" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/procFaceSymmetryProbe.hpp" declline="67" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1ad6d454dd6fb2e31259a6349219c08629" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>

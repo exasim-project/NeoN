@@ -79,6 +79,8 @@ void \mbox{\hyperlink{namespaceNeoN_1_1la_a6369807c83d198788433759422ed1fd4}{sca
 \begin{DoxyCompactList}\small\item\em computes out = -\/(L+U) x \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{namespaceNeoN_1_1la_a845df78831499693d219e8ee9a2780d0}{log\+Proc\+Face\+Off\+Diag\+Symmetry}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::string\+\_\+view \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}})
 \begin{DoxyCompactList}\small\item\em Diagnostic\+: log the processor-\/face off-\/diagonal SYMMETRY of an assembled distributed scalar linear system (e.\+g. the pressure equation). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1la_a500275fb53b47c8c3033605a21b9f031}{log\+Proc\+Face\+Flux\+Consistency}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&flux, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::string\+\_\+view \mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}})
+\begin{DoxyCompactList}\small\item\em Diagnostic\+: log the processor-\/face CONSISTENCY of a distributed scalar Surface\+Field (e.\+g. the face flux phi). \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_ad6d454dd6fb2e31259a6349219c08629}{unpack\+Col\+Idx}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&in, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&unpacked\+Row\+Offs, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&packed\+Row\+Offs)
 \item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_adfdc10cb52098688762e13b2d0af4493}{unpack\+Row\+Offs}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&in)
@@ -186,6 +188,29 @@ auto Neo\+N\+::la\+::get\+Component (\begin{DoxyParamCaption}\item[{const \mbox{
 
 Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00295}{295}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_1_1la_a500275fb53b47c8c3033605a21b9f031}\label{namespaceNeoN_1_1la_a500275fb53b47c8c3033605a21b9f031} 
+\index{NeoN::la@{NeoN::la}!logProcFaceFluxConsistency@{logProcFaceFluxConsistency}}
+\index{logProcFaceFluxConsistency@{logProcFaceFluxConsistency}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{logProcFaceFluxConsistency()}{logProcFaceFluxConsistency()}}
+{\footnotesize\ttfamily void Neo\+N\+::la\+::log\+Proc\+Face\+Flux\+Consistency (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{finite\+Volume\+::cell\+Centred\+::\+Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{flux,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::string\+\_\+view}]{label }\end{DoxyParamCaption})}
+
+
+
+Diagnostic\+: log the processor-\/face CONSISTENCY of a distributed scalar Surface\+Field (e.\+g. the face flux phi). 
+
+At a processor face the owner rank holds a local face value phi\+\_\+A and the neighbouring rank holds phi\+\_\+B for the SAME physical face. \doxylink{classA}{A} consistent flux is equal-\/and-\/opposite across the shared face (phi\+\_\+A == -\/phi\+\_\+B, since the two ranks see opposite face normals). This routine MPI-\/exchanges the per-\/processor-\/face values and logs the global\+: max\+Diff = max \texorpdfstring{$\vert$}{|}phi\+\_\+A -\/ phi\+\_\+\+B\texorpdfstring{$\vert$}{|} max\+Sum = max \texorpdfstring{$\vert$}{|}phi\+\_\+A + phi\+\_\+\+B\texorpdfstring{$\vert$}{|} (≈ 0 for a consistent, opposite-\/signed flux) max\+Mag = max \texorpdfstring{$\vert$}{|}phi\+\_\+\+A\texorpdfstring{$\vert$}{|} rel\+Incons = min(max\+Diff, max\+Sum) / max\+Mag (the headline residual inconsistency; the smaller of diff/sum is the residual, the sign convention picks which)
+
+rel\+Incons ≈ machine epsilon means the flux is consistent across processor faces; a sizeable, rank-\/count-\/scaling rel\+Incons means it is not. Purely diagnostic; no-\/op without MPI support or in serial.
+
+
+\begin{DoxyParams}{Parameters}
+{\em flux} & The distributed scalar surface field (e.\+g. phi). \\
+\hline
+{\em mesh} & The mesh the field lives on. \\
+\hline
+{\em label} & \doxylink{classA}{A} short tag for the log line (e.\+g. "{}phi"{}). \\
+\hline
+\end{DoxyParams}
 \Hypertarget{namespaceNeoN_1_1la_a845df78831499693d219e8ee9a2780d0}\label{namespaceNeoN_1_1la_a845df78831499693d219e8ee9a2780d0} 
 \index{NeoN::la@{NeoN::la}!logProcFaceOffDiagSymmetry@{logProcFaceOffDiagSymmetry}}
 \index{logProcFaceOffDiagSymmetry@{logProcFaceOffDiagSymmetry}!NeoN::la@{NeoN::la}}
