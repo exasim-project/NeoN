@@ -205,6 +205,16 @@ if(NeoN_ENABLE_IWYU)
   # suggesting their internal headers. See cmake/iwyu.imp.
   set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
+  # include-what-you-use (clang-19) segfaults while analysing the processor boundary translation
+  # units. This is an upstream IWYU crash, not a code issue: the files compile cleanly with clang++
+  # directly, and an in-file refactor (hoisting the NoWaitAccess passkey out of the views() pack)
+  # did not avoid it, so the trigger is the passkey/boundary-data template instantiation itself.
+  # Skip the linter for just these sources until the crash is fixed upstream. SKIP_LINTING needs
+  # CMake >= 3.27; TARGET_DIRECTORY applies it in the scope where the NeoN target's sources live.
+  set_source_files_properties(
+    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/volume/processor.cpp
+    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/surface/processor.cpp
+    TARGET_DIRECTORY NeoN PROPERTIES SKIP_LINTING ON)
 endif()
 
 include(cmake/banner.cmake)
