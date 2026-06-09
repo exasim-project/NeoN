@@ -65,6 +65,10 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
             std::abs(n & (bFaceCenters[bfi] - cellCenters[bFaceOwners[bfi]]));
     }
 
+    // Use a dedicated tag distinct from the tag=0 used by BoundaryData::communicate so that
+    // geometry-exchange messages are never accidentally matched by field-halo receives.
+    constexpr mpi_label_t GEOM_EXCHANGE_TAG = 2;
+
     const auto ranges = collectProcPatchRanges(mesh);
     std::vector<MPI_Request> requests(2 * ranges.size(), MPI_REQUEST_NULL);
     mpi::Environment mpiEnv;
@@ -78,7 +82,7 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
             reinterpret_cast<const char*>(dOwn.data() + patchOff),
             byteCount,
             neighborRank,
-            0,
+            GEOM_EXCHANGE_TAG,
             mpiEnv.comm(),
             &requests[2 * p]
         );
@@ -86,7 +90,7 @@ Vector<scalar> exchangeProcOwnerDistance(const Executor& exec, const Unstructure
             reinterpret_cast<char*>(dNei.data() + patchOff),
             byteCount,
             neighborRank,
-            0,
+            GEOM_EXCHANGE_TAG,
             mpiEnv.comm(),
             &requests[2 * p + 1]
         );
