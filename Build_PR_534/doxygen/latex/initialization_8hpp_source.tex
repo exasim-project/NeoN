@@ -27,22 +27,23 @@
 \DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00023}00023\ \ \ \ \ \textcolor{comment}{//\ NOTE:\ Kokkos::initialize(argc,\ argv)\ returns\ void,\ so\ the\ builder\ methods}}
 \DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{comment}{//\ (set\_print\_configuration\ /\ set\_map\_device\_id\_by)\ cannot\ be\ chained\ onto\ it.}}
 \DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{comment}{//\ Plain\ init\ also\ avoids\ Kokkos\ printing\ its\ configuration\ on\ every\ rank.}}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00026}00026\ \ \ \ \ Kokkos::initialize(argc,\ argv);}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00027}00027\ }
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00028}00028\ \ \ \ \ cpptrace::register\_terminate\_handler();}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{comment}{//\ setNeonDefaultPattern()\ reads\ the\ MPI\ rank\ internally\ (when\ MPI\ is\ up)\ to}}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ mute\ non-\/root\ ranks;\ it\ works\ with\ or\ without\ MPI\ support.\ Call\ it\ after\ the}}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ host\ has\ initialized\ MPI\ so\ the\ rank\ is\ known.}}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00032}00032\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}{Logging::setNeonDefaultPattern}}();}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00033}00033\ \}}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00034}00034\ }
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00035}\mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{00035}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{finalize}}()}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00036}00036\ \{}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00037}00037\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}{Logging::info}}(\textcolor{stringliteral}{"{}Finalizing\ NeoN"{}});}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00038}00038\ \ \ \ \ Kokkos::finalize();}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00039}00039\ \}}
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{comment}{//\ Kokkos::initialize(argc,\ argv);}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00027}00027\ \ \ \ \ Kokkos::initialize(Kokkos::InitializationSettings().set\_map\_device\_id\_by(\textcolor{stringliteral}{"{}random"{}}));}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00029}00029\ \ \ \ \ cpptrace::register\_terminate\_handler();}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{comment}{//\ setNeonDefaultPattern()\ reads\ the\ MPI\ rank\ internally\ (when\ MPI\ is\ up)\ to}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ mute\ non-\/root\ ranks;\ it\ works\ with\ or\ without\ MPI\ support.\ Call\ it\ after\ the}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ host\ has\ initialized\ MPI\ so\ the\ rank\ is\ known.}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00033}00033\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a1a0d1b85be89d1c39fe586c4000ed6b5}{Logging::setNeonDefaultPattern}}();}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00034}00034\ \}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00036}\mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{00036}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{finalize}}()}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00037}00037\ \{}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00038}00038\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a5cda3c98d8ab9c8e1c2facbc93e58f5c}{Logging::info}}(\textcolor{stringliteral}{"{}Finalizing\ NeoN"{}});}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00039}00039\ \ \ \ \ Kokkos::finalize();}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00040}00040\ \}}
 \DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00041}00041\ }
-\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00042}00042\ \}}
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{initialization_8hpp_source_l00043}00043\ \}}
 
 \end{DoxyCode}
