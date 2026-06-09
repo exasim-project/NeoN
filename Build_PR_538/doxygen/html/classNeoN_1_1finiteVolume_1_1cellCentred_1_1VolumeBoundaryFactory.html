@@ -105,6 +105,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4096139369d9bd6502e50c56422052d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affd0ad639e269e701db4a736be8d06de" id="r_affd0ad639e269e701db4a736be8d06de"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#affd0ad639e269e701db4a736be8d06de">correctBoundaryCondition</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html">BoundaryContext</a> &amp;)</td></tr>
 <tr class="separator:affd0ad639e269e701db4a736be8d06de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a159a7bfaf16963bf4acf4a73e2e42422" id="r_a159a7bfaf16963bf4acf4a73e2e42422"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a159a7bfaf16963bf4acf4a73e2e42422">set</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector)</td></tr>
+<tr class="memdesc:a159a7bfaf16963bf4acf4a73e2e42422"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-time patch initialisation, applied once per field before the first <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a7447a0202cffe2b0ec1c0fdfc5494710" title="Per-iteration boundary update, applied on every correctBoundaryConditions() call.">update()</a>.  <br /></td></tr>
+<tr class="separator:a159a7bfaf16963bf4acf4a73e2e42422"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7447a0202cffe2b0ec1c0fdfc5494710" id="r_a7447a0202cffe2b0ec1c0fdfc5494710"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a7447a0202cffe2b0ec1c0fdfc5494710">update</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector)</td></tr>
+<tr class="memdesc:a7447a0202cffe2b0ec1c0fdfc5494710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-iteration boundary update, applied on every correctBoundaryConditions() call.  <br /></td></tr>
+<tr class="separator:a7447a0202cffe2b0ec1c0fdfc5494710"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06ed95a7e62e1faa3e6869eb9fb70a32" id="r_a06ed95a7e62e1faa3e6869eb9fb70a32"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html">VolumeBoundaryFactory</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a06ed95a7e62e1faa3e6869eb9fb70a32">clone</a> () const =0</td></tr>
 <tr class="separator:a06ed95a7e62e1faa3e6869eb9fb70a32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac59aad1b4745aaa76ffdd6008015b00b" id="r_ac59aad1b4745aaa76ffdd6008015b00b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#ac59aad1b4745aaa76ffdd6008015b00b">getName</a> () const =0</td></tr>
@@ -262,7 +268,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="volumeBoundaryFactory_8hpp_source.html#l00065">65</a> of file <a class="el" href="volumeBoundaryFactory_8hpp_source.html">volumeBoundaryFactory.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="volumeBoundaryFactory_8hpp_source.html#l00083">83</a> of file <a class="el" href="volumeBoundaryFactory_8hpp_source.html">volumeBoundaryFactory.hpp</a>.</p>
 
 </div>
 </div>
@@ -417,6 +423,72 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
+<a id="a159a7bfaf16963bf4acf4a73e2e42422" name="a159a7bfaf16963bf4acf4a73e2e42422"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a159a7bfaf16963bf4acf4a73e2e42422">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html">NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory</a>&lt; ValueType &gt;::set </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>domainVector</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>One-time patch initialisation, applied once per field before the first <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a7447a0202cffe2b0ec1c0fdfc5494710" title="Per-iteration boundary update, applied on every correctBoundaryConditions() call.">update()</a>. </p>
+<p>For patch data that is fixed for the lifetime of the field (e.g. constant mixed-BC coefficients). The default is a no-op; BCs that have nothing constant to set leave it untouched and do all their work in <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a7447a0202cffe2b0ec1c0fdfc5494710" title="Per-iteration boundary update, applied on every correctBoundaryConditions() call.">update()</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="volumeBoundaryFactory_8hpp_source.html#l00068">68</a> of file <a class="el" href="volumeBoundaryFactory_8hpp_source.html">volumeBoundaryFactory.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a7447a0202cffe2b0ec1c0fdfc5494710" name="a7447a0202cffe2b0ec1c0fdfc5494710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7447a0202cffe2b0ec1c0fdfc5494710">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html">NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory</a>&lt; ValueType &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>domainVector</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Per-iteration boundary update, applied on every correctBoundaryConditions() call. </p>
+<p>The default forwards to <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a4096139369d9bd6502e50c56422052d2">correctBoundaryCondition()</a>, so a BC that does not implement the <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a159a7bfaf16963bf4acf4a73e2e42422" title="One-time patch initialisation, applied once per field before the first update().">set()</a>/update() split keeps its previous behaviour (full correction every iteration). BCs that split move only the per-iteration work here and the one-time work into <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#a159a7bfaf16963bf4acf4a73e2e42422" title="One-time patch initialisation, applied once per field before the first update().">set()</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="volumeBoundaryFactory_8hpp_source.html#l00077">77</a> of file <a class="el" href="volumeBoundaryFactory_8hpp_source.html">volumeBoundaryFactory.hpp</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="adad9d6655b500dd68e8fd74a55cbb081" name="adad9d6655b500dd68e8fd74a55cbb081"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adad9d6655b500dd68e8fd74a55cbb081">&#9670;&#160;</a></span>attributes_</h2>
@@ -442,7 +514,7 @@ template&lt;typename ValueType &gt; </div>
 
 <p>The attributes of the patch. </p>
 
-<p class="definition">Definition at line <a class="el" href="volumeBoundaryFactory_8hpp_source.html#l00069">69</a> of file <a class="el" href="volumeBoundaryFactory_8hpp_source.html">volumeBoundaryFactory.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="volumeBoundaryFactory_8hpp_source.html#l00087">87</a> of file <a class="el" href="volumeBoundaryFactory_8hpp_source.html">volumeBoundaryFactory.hpp</a>.</p>
 
 </div>
 </div>

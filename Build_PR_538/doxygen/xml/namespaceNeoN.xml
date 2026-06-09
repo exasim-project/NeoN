@@ -23,6 +23,7 @@
     <innerclass refid="classNeoN_1_1GPUExecutor" prot="public">NeoN::GPUExecutor</innerclass>
     <innerclass refid="classNeoN_1_1KokkosAllocator" prot="public">NeoN::KokkosAllocator</innerclass>
     <innerclass refid="classNeoN_1_1NeoNException" prot="public">NeoN::NeoNException</innerclass>
+    <innerclass refid="structNeoN_1_1NoWaitAccess" prot="public">NeoN::NoWaitAccess</innerclass>
     <innerclass refid="structNeoN_1_1Parameters" prot="public">NeoN::Parameters</innerclass>
     <innerclass refid="structNeoN_1_1RegisterDocumentation" prot="public">NeoN::RegisterDocumentation</innerclass>
     <innerclass refid="classNeoN_1_1RuntimeSelectionFactory" prot="public">NeoN::RuntimeSelectionFactory</innerclass>
@@ -1111,7 +1112,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" line="21" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" bodystart="21" bodyend="33"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" line="21" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" bodystart="21" bodyend="44"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1a2e4d907637bdc31918dfb7a91f9857fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -1125,7 +1126,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" line="35" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" bodystart="35" bodyend="39"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" line="46" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/initialization.hpp" bodystart="46" bodyend="50"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1ae925f6aa90689fd77bdefea5cc28a5ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2951,10 +2952,10 @@
           <defval>1.0</defval>
         </param>
         <briefdescription>
-<para><ref refid="classA" kindref="compound">A</ref> factory function for a 2D uniform mesh (OpenFOAM-style hex slab) </para>
+<para><ref refid="classA" kindref="compound">A</ref> factory function for a 2D uniform mesh (single-layer hex slab) </para>
         </briefdescription>
         <detaileddescription>
-<para>Creates an nx × ny × 1 structured hex mesh on [0,Lx] × [0,Ly] × [0,1]. One cell thick in z, like OpenFOAM 2D meshes. Four boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly) </para>
+<para>Creates an nx × ny × 1 structured hex mesh on [0,Lx] × [0,Ly] × [0,1]. One cell thick in z, the standard quasi-2D finite-volume convention. Four boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
