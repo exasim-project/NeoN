@@ -52,14 +52,10 @@ TEST_CASE("DistributedLaplacianOperator::2DX_strong", "[bench]")
     const auto totalRanks = static_cast<NeoN::localIdx>(mpiEnviron.sizeRank());
     const auto rank = static_cast<NeoN::localIdx>(mpiEnviron.rank());
 
-    NeoN::localIdx ranksXPart = 1;
-    while (ranksXPart * ranksXPart < totalRanks)
-        ++ranksXPart;
-
     for (NeoN::localIdx nGlobal = minGlobal; nGlobal <= maxGlobal; nGlobal *= 2)
     {
-        if (ranksXPart * ranksXPart != totalRanks || nGlobal % ranksXPart != 0) continue;
-        const auto nCellsPerRank = nGlobal / ranksXPart;
+        if (nGlobal % totalRanks != 0) continue;
+        const auto nCellsPerRank = nGlobal / totalRanks;
         NeoN::UnstructuredMesh mesh =
             NeoN::create2DUniformMeshPartX(exec, nCellsPerRank, totalRanks, rank);
         const std::string sectionName = std::to_string(totalRanks) + " ranks - "
