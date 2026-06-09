@@ -15,17 +15,17 @@ namespace NeoN::finiteVolume::cellCentred::surfaceBoundary
 
 namespace detail
 {
+// One-time (set): zero the unused mixed-BC coefficients (refGrad / valueFraction / refValue) on
+// the processor patch. Unlike the volume BC there is no per-iteration owner-cell -> face seed
+// (see processor.cpp), so this is all the surface proc BC does besides the halo exchange.
 template<typename ValueType>
-void setProcBoundaryValue(
-    Field<ValueType>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
+void setProcBoundaryCoefficients(
+    Field<ValueType>& domainVector, std::pair<localIdx, localIdx> range
 );
 
-extern template void setProcBoundaryValue<
-    scalar>(Field<scalar>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
 extern template void
-setProcBoundaryValue<Vec3>(Field<Vec3>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
+setProcBoundaryCoefficients<scalar>(Field<scalar>&, std::pair<localIdx, localIdx>);
+extern template void setProcBoundaryCoefficients<Vec3>(Field<Vec3>&, std::pair<localIdx, localIdx>);
 }
 
 template<typename ValueType>
@@ -39,15 +39,33 @@ public:
         : Base(mesh, dict, patchID), mesh_(mesh)
     {}
 
-    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
+    // One-time initialisation: the unused mixed-BC coefficients never change after construction.
+    virtual void set(Field<ValueType>& domainVector) final
     {
-        detail::setProcBoundaryValue(domainVector, mesh_, this->range());
+        detail::setProcBoundaryCoefficients(domainVector, this->range());
+    }
+
+    // Per iteration: post the halo exchange. The proc-tail already holds the LOCAL face value
+    // (written by the operator that produced the field — flux() / updateFaceVelocity() /
+    // interpolation — or by constructFrom() at construction), so unlike the volume BC there is no
+    // owner-cell -> face reconstruction to perform; we only ship the existing value to the
+    // neighbour rank.
+    virtual void update([[maybe_unused]] Field<ValueType>& domainVector) final
+    {
 #ifdef NF_WITH_MPI_SUPPORT
         fence(domainVector.exec());
         const int neighborRank =
             static_cast<int>(mesh_.boundaryMesh().neighbourRankForRange(this->range()));
         domainVector.boundaryData().communicate(this->range(), neighborRank);
 #endif
+    }
+
+    // Full correction = one-time set() + per-iteration update(). Kept for any direct caller; the
+    // field's correctBoundaryConditions() calls set()/update() separately.
+    virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
+    {
+        set(domainVector);
+        update(domainVector);
     }
 
 
