@@ -26,9 +26,9 @@ TEST_CASE("BasicGeometryScheme analytical 3D cube")
     INFO("executor: " << execName);
 
     const localIdx n = 4;
-    const scalar L = 1.0;
-    auto mesh = create3DUniformMesh(exec, n, n, n, L, L, L);
-    const scalar h = L / static_cast<scalar>(n);
+    const scalar l = 1.0;
+    auto mesh = create3DUniformMesh(exec, n, n, n, l, l, l);
+    const scalar h = l / static_cast<scalar>(n);
     const scalar invH = 1.0 / h;             // owner-to-neighbour: 1/h
     const scalar invHalfH = 1.0 / (0.5 * h); // cell-centre-to-boundary-face: 2/h
 

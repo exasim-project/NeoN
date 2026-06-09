@@ -17,7 +17,7 @@ namespace NeoN::finiteVolume::cellCentred
 // Over-relaxed non-orthogonal correction clamp factor: bounds nonOrthDeltaCoeffs
 // away from a vanishing denominator on highly skewed faces.
 // 0.05 is the conventional over-relaxed non-orthogonal clamp value.
-constexpr scalar nonOrthDeltaClamp = 0.05;
+constexpr scalar NON_ORTH_DELTA_CLAMP = 0.05;
 
 #ifdef NF_WITH_MPI_SUPPORT
 namespace
@@ -40,7 +40,7 @@ std::vector<std::pair<localIdx, localIdx>> collectProcPatchRanges(const Unstruct
 }
 
 // Tag for the geometry-scheme processor neighbour-cell-centre halo exchange.
-constexpr mpi_label_t procNeighbourCentreTag = 0x6763; // 'gc'
+constexpr mpi_label_t PROC_NEIGHBOUR_CENTRE_TAG = 0x6763; // 'gc'
 
 /** @brief Exchanges owner cell centres across processor boundaries: each rank sends, for every
  *  processor face, the centre of the cell owning that face, and receives the neighbouring rank's
@@ -102,7 +102,7 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
             sendBuf.data() + patchOff,
             count,
             neighborRank,
-            procNeighbourCentreTag,
+            PROC_NEIGHBOUR_CENTRE_TAG,
             mpiEnv.comm(),
             &requests[2 * p]
         );
@@ -110,7 +110,7 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
             recvBuf.data() + patchOff,
             count,
             neighborRank,
-            procNeighbourCentreTag,
+            PROC_NEIGHBOUR_CENTRE_TAG,
             mpiEnv.comm(),
             &requests[2 * p + 1]
         );
@@ -194,7 +194,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
         const auto bFaceCenters = mesh_.boundaryMesh().faceCenters().view();
         const auto bFaceNormals = mesh_.boundaryMesh().faceNormals().view();
         const auto bFaceAreas = mesh_.boundaryMesh().faceAreas().view();
-        const auto CneiView = procNeiCellCentre_->view();
+        const auto cneiView = procNeiCellCentre_->view();
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
@@ -203,7 +203,7 @@ void BasicGeometryScheme::updateWeights(const Executor& exec, SurfaceField<scala
                 const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
                 const Vec3 co = cellCenters[surfFaceCells[bfi]];
                 const scalar dOwn = std::abs(n & (bFaceCenters[bfi] - co));
-                const scalar dNeiF = std::abs(n & (bFaceCenters[bfi] - CneiView[procFacei]));
+                const scalar dNeiF = std::abs(n & (bFaceCenters[bfi] - cneiView[procFacei]));
                 const scalar sum = dOwn + dNeiF;
                 weightB[bfi] = (sum > ROOTVSMALL) ? dNeiF / sum : 0.5;
             },
@@ -241,7 +241,8 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             nonOrthDeltaCoeff[facei] =
                 1.0
                 / std::max(
-                    orthoDist, std::max(nonOrthDeltaClamp * mag(cellToCellDist), scalar(ROOTVSMALL))
+                    orthoDist,
+                    std::max(NON_ORTH_DELTA_CLAMP * mag(cellToCellDist), scalar(ROOTVSMALL))
                 );
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsInternal"
@@ -262,7 +263,8 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             nonOrthDeltaCoeffB[bfi] =
                 1.0
                 / std::max(
-                    orthoDist, std::max(nonOrthDeltaClamp * mag(cellToFaceDist), scalar(ROOTVSMALL))
+                    orthoDist,
+                    std::max(NON_ORTH_DELTA_CLAMP * mag(cellToFaceDist), scalar(ROOTVSMALL))
                 );
         },
         "basicGeometricScheme::updateNonOrthDeltaCoeffsBoundary"
@@ -280,14 +282,14 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
             "procNeiCellCentre_ not exchanged; updateWeights must run before "
             "updateNonOrthDeltaCoeffs"
         );
-        const auto CneiView = procNeiCellCentre_->view();
+        const auto cneiView = procNeiCellCentre_->view();
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
                 const localIdx bfi = nBoundaryFaces + procFacei;
                 const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
-                const Vec3 cellToCellDist = CneiView[procFacei] - cellCenters[surfFaceCells[bfi]];
+                const Vec3 cellToCellDist = cneiView[procFacei] - cellCenters[surfFaceCells[bfi]];
                 const scalar orthoDist = n & cellToCellDist;
                 // Same over-relaxed clamp as the internal/boundary faces so proc faces are not a
                 // special case: floor at 0.05|d| (and ROOTVSMALL) to bound a vanishing denominator.
@@ -295,7 +297,7 @@ void BasicGeometryScheme::updateNonOrthDeltaCoeffs(
                     1.0
                     / std::max(
                         orthoDist,
-                        std::max(nonOrthDeltaClamp * mag(cellToCellDist), scalar(ROOTVSMALL))
+                        std::max(NON_ORTH_DELTA_CLAMP * mag(cellToCellDist), scalar(ROOTVSMALL))
                     );
             },
             "basicGeometricScheme::updateNonOrthDeltaCoeffsProcBoundary"
@@ -366,14 +368,14 @@ void BasicGeometryScheme::updateNonOrthCorrectionVec3s(
         const auto surfFaceCells = mesh_.boundaryMesh().faceOwners().view();
         const auto [bFaceNormals, bFaceAreas] =
             views(mesh_.boundaryMesh().faceNormals(), mesh_.boundaryMesh().faceAreas());
-        const auto CneiView = procNeiCellCentre_->view();
+        const auto cneiView = procNeiCellCentre_->view();
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
                 const localIdx bfi = nBoundaryFaces + procFacei;
                 const Vec3 n = (1.0 / bFaceAreas[bfi]) * bFaceNormals[bfi];
-                const Vec3 delta = CneiView[procFacei] - cellCenters[surfFaceCells[bfi]];
+                const Vec3 delta = cneiView[procFacei] - cellCenters[surfFaceCells[bfi]];
                 corrVecB[bfi] = n - delta * nonOrthDeltaCoeffB[bfi];
             },
             "basicGeometricScheme::updateNonOrthCorrectionVec3sProcBoundary"
