@@ -41,7 +41,14 @@ struct CommunicationPattern
 
     /** @brief Maps received halo entries to local boundary face indices.
      *
-     *  Currently unused / reserved for future mapping optimisations.
+     *  TODO: currently dead — computeCommunicationPattern always constructs this empty and no code
+     *  reads it. Either drop it, or populate and consume it. To adopt it: fill it so that
+     *  boundaryMapVector[k] is the local processor-boundary face index of the k-th received halo
+     *  entry (in recvIdx order). That mapping is what a *value*-based halo exchange driven by this
+     *  pattern needs to scatter received neighbour data into a field's proc tail — which would let
+     *  the remaining per-field exchanges (the geometry-scheme neighbour-centre exchange and the
+     *  field-halo path BoundaryData::communicate) share this single CommunicationPattern instead of
+     *  each rolling its own MPI isend/irecv.
      */
     std::vector<localIdx> boundaryMapVector;
 
