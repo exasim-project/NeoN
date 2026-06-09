@@ -24,15 +24,9 @@ void setProcBoundaryValue(
     // exchange. Draining mid-loop (one patch at a time) breaks the second proc patch's halo on
     // ranks that own more than one (see BoundaryData::valueNoWait docs). All patches post first;
     // the exchange completes together on the next value() read.
-    //
-    // The passkey call is bound to a named reference instead of being nested inline in the
-    // views(...) pack: that nesting is the one construct here the surface processor BC lacks, and
-    // it crashes include-what-you-use (clang-19) during analysis. Hoisting it keeps the structured
-    // binding to plain boundaryData() accessors (as in the surface BC) and avoids the crash.
-    auto& valueNoWait = NoWaitAccess::value(domainVector.boundaryData());
     auto [refGradient, value, valueFraction, refValue, faceCells] = views(
         domainVector.boundaryData().refGrad(),
-        valueNoWait,
+        NoWaitAccess::value(domainVector.boundaryData()),
         domainVector.boundaryData().valueFraction(),
         domainVector.boundaryData().refValue(),
         mesh.boundaryMesh().faceOwners()
