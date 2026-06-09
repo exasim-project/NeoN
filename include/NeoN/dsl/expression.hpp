@@ -240,7 +240,10 @@ public:
     }
 
     /*@brief subtract explicit source terms from the linear system rhs, scaled by cell volumes */
-    void assembleExplicitSource(la::LinearSystem<ValueType>& ls, const UnstructuredMesh& mesh) const
+    template<typename AssemblyType = ValueType>
+    void assembleExplicitSource(
+        la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
+    ) const
     {
         auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
@@ -273,15 +276,16 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
+    template<typename AssemblyType = ValueType>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType>& ls,
         const UnstructuredMesh& mesh,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assemble(t, dt, ls, ps);
+        assemble<AssemblyType>(t, dt, ls, ps);
         assembleExplicitSource(ls, mesh);
     }
 

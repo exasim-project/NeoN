@@ -108,15 +108,16 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
     SECTION("Can solve with multiple RHS")
     {
         auto ls = expr.template assemble<NeoN::scalar>(mesh, t, dt);
+        fill(ls.rhs(), 2.0 * one<Vec3>());
 
         Dictionary solverDict {
             {{"solver", std::string {"Ginkgo"}},
-             {"type", "solver::Cg"},
-             {"criteria", Dictionary {{{"iteration", 3}, {"relative_residual_norm", 1e-7}}}}}
+             {"type", "solver::Gmres"},
+             {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-7}}}}}
         };
 
         auto solver = NeoN::la::Solver(exec, solverDict);
-        Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
+        Vector<Vec3> x(exec, mesh.nCells(), zero<Vec3>());
         auto solverStats = solver.solve(ls, x);
 
         REQUIRE(solverStats.entries.size() > 0);
