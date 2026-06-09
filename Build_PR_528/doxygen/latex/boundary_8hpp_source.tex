@@ -47,79 +47,106 @@
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00043}00043\ \};}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00044}00044\ }
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00045}00045\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ BoundaryType>}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00046}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}{00046}}\ std::vector<BoundaryType>\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}{createExtrapolatedBCs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00046}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749}{00046}}\ std::vector<BoundaryType>\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749}{createCalculatedProcBCs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00047}00047\ \{}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00048}00048\ \ \ \ \ std::vector<BoundaryType>\ bcs;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00049}00049\ \ \ \ \ bcs.reserve(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}());}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{comment}{//\ Processor\ (coupled)\ patches\ are\ the\ trailing\ patches\ of\ the\ boundary\ mesh.\ A\ coupled\ patch}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{comment}{//\ must\ always\ carry\ the\ processor\ halo-\/exchange\ BC\ so\ its\ boundary\ tail\ holds\ the\ NEIGHBOUR}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//\ cell\ value\ —\ interpolation/flux\ at\ processor\ faces\ read\ that\ tail\ as\ the\ far-\/side\ value.}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ An\ 'extrapolated'\ tail\ would\ instead\ hold\ the\ OWNER\ value,\ which\ silently\ degenerates}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ linear\ interpolation\ at\ proc\ faces\ to\ w*own+(1-\/w)*own=own\ (different\ on\ each\ rank)\ and\ so}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ makes\ the\ assembled\ pressure\ matrix\ non-\/symmetric.\ Only\ physical\ patches\ get\ 'extrapolated'.}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcPatches\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a7fe54ce18d4a48815cc277e728fbe2f1}{nProcBoundaryPatches}}();}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ firstProcPatch\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}()\ -\/\ nProcPatches;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID\ =\ 0;\ patchID\ <\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}();\ patchID++)}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00059}00059\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ type\ =}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ (patchID\ >=\ firstProcPatch)\ ?\ std::string(\textcolor{stringliteral}{"{}processor"{}})\ :\ std::string(\textcolor{stringliteral}{"{}extrapolated"{}});}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ patchDict(\{\{\textcolor{stringliteral}{"{}type"{}},\ type\}\});}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ bcs.emplace\_back(mesh,\ patchDict,\ patchID);}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00064}00064\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keywordflow}{return}\ bcs;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00066}00066\ \};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00068}00068\ \}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00069}00069\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00070}00070\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00071}00071\ \{}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00072}00072\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00073}00073\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ finiteVolume::cellCentred;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00075}00075\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<scalar>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00076}00076\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<Vec3>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00077}00077\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<Tensor>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00078}00078\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<SymmTensor>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00080}00080\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedValue<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00081}00081\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedValue<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00082}00082\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00083}00083\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedGradient<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00084}00084\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedGradient<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00085}00085\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00086}00086\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00087}00087\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00088}00088\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<Tensor>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00089}00089\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<SymmTensor>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00090}00090\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00091}00091\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Extrapolated<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00092}00092\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Extrapolated<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00093}00093\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00094}00094\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Empty<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00095}00095\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Empty<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00049}00049\ \ \ \ \ bcs.reserve(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}()));}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{comment}{//\ Distributed-\/aware\ 'calculated':\ physical\ patches\ get\ the\ calculated\ BC\ (the\ value\ is\ computed}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{comment}{//\ by\ an\ operator),\ but\ processor\ (coupled)\ patches\ must\ carry\ the\ processor\ halo-\/exchange\ BC\ so}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//\ that\ a\ single\ correctBoundaryConditions()\ fills\ their\ tail\ with\ the\ NEIGHBOUR\ cell\ value}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ across\ the\ rank\ boundary.\ createCalculatedBCs\ leaves\ processor\ patches\ 'calculated'\ (no}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ exchange),\ so\ a\ derived\ field\ that\ needs\ the\ neighbour\ value\ at\ proc\ faces\ —\ e.g.\ the\ cell}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ gradient\ consumed\ by\ the\ corrected/limitedCorrected\ face-\/normal\ gradient\ —\ must\ use\ this}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ variant\ and\ then\ correctBoundaryConditions()\ instead\ of\ a\ bespoke\ halo\ exchange.}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{comment}{//\ Processor\ (coupled)\ patches\ are\ the\ trailing\ patches\ of\ the\ boundary\ mesh;}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ nProcBoundaryPatches\ is\ 0\ on\ a\ serial\ /\ non-\/distributed\ mesh,\ so\ this\ degenerates\ to}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{comment}{//\ createCalculatedBCs\ there.}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcPatches\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a7fe54ce18d4a48815cc277e728fbe2f1}{nProcBoundaryPatches}}();}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ firstProcPatch\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}()\ -\/\ nProcPatches;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID\ =\ 0;\ patchID\ <\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}();\ patchID++)}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00063}00063\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ type\ =}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ (patchID\ >=\ firstProcPatch)\ ?\ std::string(\textcolor{stringliteral}{"{}processor"{}})\ :\ std::string(\textcolor{stringliteral}{"{}calculated"{}});}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ patchDict(\{\{\textcolor{stringliteral}{"{}type"{}},\ type\}\});}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ bcs.emplace\_back(mesh,\ patchDict,\ patchID);}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00068}00068\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keywordflow}{return}\ bcs;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00070}00070\ \};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00072}00072\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ BoundaryType>}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00073}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}{00073}}\ std::vector<BoundaryType>\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}{createExtrapolatedBCs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00074}00074\ \{}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00075}00075\ \ \ \ \ std::vector<BoundaryType>\ bcs;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00076}00076\ \ \ \ \ bcs.reserve(mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}());}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00077}00077\ \ \ \ \ \textcolor{comment}{//\ Processor\ (coupled)\ patches\ are\ the\ trailing\ patches\ of\ the\ boundary\ mesh.\ A\ coupled\ patch}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{comment}{//\ must\ always\ carry\ the\ processor\ halo-\/exchange\ BC\ so\ its\ boundary\ tail\ holds\ the\ NEIGHBOUR}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00079}00079\ \ \ \ \ \textcolor{comment}{//\ cell\ value\ —\ interpolation/flux\ at\ processor\ faces\ read\ that\ tail\ as\ the\ far-\/side\ value.}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{comment}{//\ An\ 'extrapolated'\ tail\ would\ instead\ hold\ the\ OWNER\ value,\ which\ silently\ degenerates}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{comment}{//\ linear\ interpolation\ at\ proc\ faces\ to\ w*own+(1-\/w)*own=own\ (different\ on\ each\ rank)\ and\ so}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00082}00082\ \ \ \ \ \textcolor{comment}{//\ makes\ the\ assembled\ pressure\ matrix\ non-\/symmetric.\ Only\ physical\ patches\ get\ 'extrapolated'.}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ nProcPatches\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_ae46f5b369b8f80fee5d36ef8b18fd301}{boundaryMesh}}().\mbox{\hyperlink{classNeoN_1_1BoundaryMesh_a7fe54ce18d4a48815cc277e728fbe2f1}{nProcBoundaryPatches}}();}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ firstProcPatch\ =\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}()\ -\/\ nProcPatches;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID\ =\ 0;\ patchID\ <\ mesh.\mbox{\hyperlink{classNeoN_1_1UnstructuredMesh_a401abe2bb196b51465ea476e55a5622e}{nBoundaries}}();\ patchID++)}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00086}00086\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ type\ =}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ (patchID\ >=\ firstProcPatch)\ ?\ std::string(\textcolor{stringliteral}{"{}processor"{}})\ :\ std::string(\textcolor{stringliteral}{"{}extrapolated"{}});}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ patchDict(\{\{\textcolor{stringliteral}{"{}type"{}},\ type\}\});}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ bcs.emplace\_back(mesh,\ patchDict,\ patchID);}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00091}00091\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{keywordflow}{return}\ bcs;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00093}00093\ \};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00095}00095\ \}}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00096}00096\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00097}00097\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Symmetry<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00098}00098\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Symmetry<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00097}00097\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00098}00098\ \{}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00099}00099\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00100}00100\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<scalar>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00101}00101\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<Vec3>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00102}00102\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<Tensor>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00103}00103\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<SymmTensor>}};}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00104}00104\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00105}00105\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::FixedValue<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00106}00106\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::FixedValue<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00107}00107\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00108}00108\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00109}00109\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00110}00110\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<Tensor>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00111}00111\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<SymmTensor>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00100}00100\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ finiteVolume::cellCentred;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00102}00102\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<scalar>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00103}00103\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00104}00104\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<Tensor>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00105}00105\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{fvcc::VolumeBoundaryFactory<SymmTensor>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00107}00107\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedValue<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00108}00108\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedValue<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00110}00110\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedGradient<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00111}00111\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::FixedGradient<Vec3>;}
 \DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00112}00112\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00113}00113\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Empty<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00114}00114\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Empty<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00115}00115\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00116}00116\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Symmetry<scalar>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00117}00117\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Symmetry<Vec3>;}
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00118}00118\ }
-\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00119}00119\ \}}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00113}00113\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00114}00114\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00115}00115\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<Tensor>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00116}00116\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Calculated<SymmTensor>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00118}00118\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Extrapolated<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00119}00119\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Extrapolated<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00121}00121\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Empty<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00122}00122\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Empty<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00124}00124\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Symmetry<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00125}00125\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::volumeBoundary::Symmetry<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00126}00126\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00127}00127\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<scalar>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00128}00128\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00129}00129\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<Tensor>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00130}00130\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{fvcc::SurfaceBoundaryFactory<SymmTensor>}};}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00132}00132\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::FixedValue<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00133}00133\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::FixedValue<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00134}00134\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00135}00135\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00136}00136\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00137}00137\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<Tensor>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00138}00138\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Calculated<SymmTensor>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00140}00140\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Empty<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00141}00141\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Empty<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00143}00143\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Symmetry<scalar>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00144}00144\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }fvcc::surfaceBoundary::Symmetry<Vec3>;}
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{boundary_8hpp_source_l00146}00146\ \}}
 
 \end{DoxyCode}
