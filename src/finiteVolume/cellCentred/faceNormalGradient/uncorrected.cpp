@@ -25,7 +25,7 @@ void computeFaceNormalGrad(
     // The uncorrected surface-normal gradient uses nonOrthDeltaCoeffs (1/(n.d)), the over-relaxed
     // face-normal distance, NOT the orthogonal 1/|d|. On a non-orthogonal mesh 1/(n.d) is the
     // consistent first-order normal-gradient coefficient; the two coincide on orthogonal meshes.
-    const auto [phif, phifB, phi, phiBCValue, deltaCoeffs, deltaCoeffsB] = views(
+    const auto [phif, phifB, phi, phiBCValue, nonOrthDeltaCoeffs, nonOrthDeltaCoeffsB] = views(
         surfaceVector.internalVector(),
         surfaceVector.boundaryData().value(),
         volVector.internalVector(),
@@ -41,7 +41,7 @@ void computeFaceNormalGrad(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            phif[facei] = deltaCoeffs[facei] * (phi[neighbors[facei]] - phi[owners[facei]]);
+            phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbors[facei]] - phi[owners[facei]]);
         },
         "computeFaceNormalGradInternal"
     );
@@ -51,7 +51,7 @@ void computeFaceNormalGrad(
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            phifB[bfi] = deltaCoeffsB[bfi] * (phiBCValue[bfi] - phi[own]);
+            phifB[bfi] = nonOrthDeltaCoeffsB[bfi] * (phiBCValue[bfi] - phi[own]);
         },
         "computeFaceNormalGradBoundary"
     );
@@ -65,7 +65,7 @@ void computeFaceNormalGrad(
             NEON_LAMBDA(const localIdx procFacei) {
                 auto bcfacei = nBoundaryFaces + procFacei;
                 auto own = boundaryFaceOwners[bcfacei];
-                phifB[bcfacei] = deltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+                phifB[bcfacei] = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
             },
             "computeFaceNormalGradProcBoundary"
         );
