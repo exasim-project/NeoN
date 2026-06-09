@@ -5,6 +5,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary::detail
@@ -54,6 +55,8 @@ template void setProcBoundaryValue<
     scalar>(Field<scalar>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
 template void
 setProcBoundaryValue<Vec3>(Field<Vec3>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
+template void setProcBoundaryValue<
+    Tensor>(Field<Tensor>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
 
 } // namespace NeoN::finiteVolume::cellCentred::volumeBoundary::detail
 
@@ -61,4 +64,7 @@ namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 template class Processor<scalar>;
 template class Processor<Vec3>;
+// Tensor processor BC: the gradient of a Vec3 field is a Tensor cell field, and the corrected /
+// limitedCorrected face-normal gradient halo-exchanges that gradient via correctBoundaryConditions.
+template class Processor<Tensor>;
 }

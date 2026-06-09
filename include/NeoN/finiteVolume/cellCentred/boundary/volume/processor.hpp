@@ -7,6 +7,7 @@
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
@@ -26,6 +27,8 @@ extern template void setProcBoundaryValue<
     scalar>(Field<scalar>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
 extern template void
 setProcBoundaryValue<Vec3>(Field<Vec3>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
+extern template void setProcBoundaryValue<
+    Tensor>(Field<Tensor>&, const UnstructuredMesh&, std::pair<localIdx, localIdx>);
 }
 
 template<typename ValueType>

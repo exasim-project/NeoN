@@ -7,7 +7,6 @@
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp"
-#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/processorGradientHalo.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -88,12 +87,16 @@ void computeCorrectedFaceNormalGrad(
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {
-            const auto gradNei =
-                detail::exchangeProcNeighbourGradient(exec, mesh, gradPhi.internalVector());
+            // Halo-exchange the neighbour cell gradient into gradPhi's processor tail via the
+            // standard field BC path: gradPhi carries processor BCs on coupled patches (see
+            // GaussGreenGrad::grad), so correctBoundaryConditions() seeds the owner gradient and
+            // exchanges it, leaving the neighbour cell gradient in gradPhi.boundaryData().value()
+            // (indexed by boundary-face index). Replaces the bespoke exchangeProcNeighbourGradient.
+            gradPhi.correctBoundaryConditions();
             const auto [weightsB, corrVecB, gradNeiV] = views(
                 geometryScheme->weights().boundaryData().value(),
                 geometryScheme->nonOrthCorrectionVec3s().boundaryData().value(),
-                gradNei
+                gradPhi.boundaryData().value()
             );
             NeoN::parallelFor(
                 exec,
@@ -103,7 +106,7 @@ void computeCorrectedFaceNormalGrad(
                     auto own = boundaryFaceOwners[bcfacei];
                     scalar ortho = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
                     Vec3 interpGrad = weightsB[bcfacei] * gradPhiV[own]
-                                    + (scalar(1) - weightsB[bcfacei]) * gradNeiV[procFacei];
+                                    + (scalar(1) - weightsB[bcfacei]) * gradNeiV[bcfacei];
                     phifB[bcfacei] = ortho + (interpGrad & corrVecB[bcfacei]);
                 },
                 "computeCorrectedFaceNormalGradProcBoundary"
@@ -177,12 +180,13 @@ void computeCorrectedFaceNormalGrad(
         auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
         if (nProcBoundaryFaces > 0)
         {
-            const auto gradNei =
-                detail::exchangeProcNeighbourGradient(exec, mesh, gradPhi.internalVector());
+            // See the scalar branch: gradPhi (Tensor) carries processor BCs, so
+            // correctBoundaryConditions() halo-exchanges the neighbour cell gradient into its tail.
+            gradPhi.correctBoundaryConditions();
             const auto [weightsB, corrVecB, gradNeiV] = views(
                 geometryScheme->weights().boundaryData().value(),
                 geometryScheme->nonOrthCorrectionVec3s().boundaryData().value(),
-                gradNei
+                gradPhi.boundaryData().value()
             );
             NeoN::parallelFor(
                 exec,
@@ -192,7 +196,7 @@ void computeCorrectedFaceNormalGrad(
                     auto own = boundaryFaceOwners[bcfacei];
                     Vec3 ortho = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
                     Tensor interpGrad = weightsB[bcfacei] * gradPhiV[own]
-                                      + (scalar(1) - weightsB[bcfacei]) * gradNeiV[procFacei];
+                                      + (scalar(1) - weightsB[bcfacei]) * gradNeiV[bcfacei];
                     phifB[bcfacei] = ortho + (interpGrad & corrVecB[bcfacei]);
                 },
                 "computeCorrectedFaceNormalGradProcBoundaryVec3"

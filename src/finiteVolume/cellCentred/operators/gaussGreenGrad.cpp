@@ -219,7 +219,10 @@ void GaussGreenGrad::grad(
 VolumeField<Vec3>
 GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const
 {
-    auto gradBCs = createCalculatedBCs<VolumeBoundary<Vec3>>(phi.mesh());
+    // Proc-aware calculated BCs: processor patches carry the halo-exchange BC so the corrected /
+    // limitedCorrected face-normal gradient can pull the neighbour cell gradient across the rank
+    // boundary with a single correctBoundaryConditions(). Physical patches stay 'calculated'.
+    auto gradBCs = createCalculatedProcBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
     computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
@@ -421,7 +424,9 @@ void GaussGreenGrad::gradTensor(
 VolumeField<Tensor>
 GaussGreenGrad::gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operatorScaling) const
 {
-    auto calcBC = createCalculatedBCs<VolumeBoundary<Tensor>>(u.mesh());
+    // Proc-aware calculated BCs (see grad()): processor patches carry the halo-exchange BC so the
+    // tensor gradient's neighbour value can be fetched via correctBoundaryConditions().
+    auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(u.mesh());
     VolumeField<Tensor> gradU(u.exec(), "gradU", u.mesh(), calcBC);
     fill(gradU.internalVector(), zero<Tensor>());
 

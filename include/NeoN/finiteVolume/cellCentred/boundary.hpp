@@ -43,6 +43,33 @@ std::vector<BoundaryType> createCalculatedBCs(const UnstructuredMesh& mesh)
 };
 
 template<typename BoundaryType>
+std::vector<BoundaryType> createCalculatedProcBCs(const UnstructuredMesh& mesh)
+{
+    std::vector<BoundaryType> bcs;
+    bcs.reserve(static_cast<std::size_t>(mesh.nBoundaries()));
+    // Distributed-aware 'calculated': physical patches get the calculated BC (the value is computed
+    // by an operator), but processor (coupled) patches must carry the processor halo-exchange BC so
+    // that a single correctBoundaryConditions() fills their tail with the NEIGHBOUR cell value
+    // across the rank boundary. createCalculatedBCs leaves processor patches 'calculated' (no
+    // exchange), so a derived field that needs the neighbour value at proc faces — e.g. the cell
+    // gradient consumed by the corrected/limitedCorrected face-normal gradient — must use this
+    // variant and then correctBoundaryConditions() instead of a bespoke halo exchange.
+    // Processor (coupled) patches are the trailing patches of the boundary mesh;
+    // nProcBoundaryPatches is 0 on a serial / non-distributed mesh, so this degenerates to
+    // createCalculatedBCs there.
+    const auto nProcPatches = mesh.boundaryMesh().nProcBoundaryPatches();
+    const auto firstProcPatch = mesh.nBoundaries() - nProcPatches;
+    for (localIdx patchID = 0; patchID < mesh.nBoundaries(); patchID++)
+    {
+        const std::string type =
+            (patchID >= firstProcPatch) ? std::string("processor") : std::string("calculated");
+        Dictionary patchDict({{"type", type}});
+        bcs.emplace_back(mesh, patchDict, patchID);
+    }
+    return bcs;
+};
+
+template<typename BoundaryType>
 std::vector<BoundaryType> createExtrapolatedBCs(const UnstructuredMesh& mesh)
 {
     std::vector<BoundaryType> bcs;
