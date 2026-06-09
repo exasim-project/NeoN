@@ -4,7 +4,11 @@
 
 #pragma once
 
+#include <optional>
+
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
@@ -44,14 +48,23 @@ public:
 
     void updateNonOrthCorrectionVec3s(
         const Executor& exec,
-        SurfaceField<Vec3>& nonOrthCorrectionVec3s,
-        const SurfaceField<scalar>& nonOrthDeltaCoeffs
+        const SurfaceField<scalar>& nonOrthDeltaCoeffs,
+        SurfaceField<Vec3>& nonOrthCorrectionVec3s
     ) final;
 
 
 private:
 
     const UnstructuredMesh& mesh_;
+
+#ifdef NF_WITH_MPI_SUPPORT
+    /// Neighbour-owner cell centre (global coords) per processor face, exchanged once per geometry
+    /// update and reused by all three update kernels, so a full update performs a single proc-face
+    /// halo exchange instead of one per kernel. Refreshed by updateWeights (the first kernel
+    /// GeometryScheme::update() runs); updateNonOrthDeltaCoeffs and updateNonOrthCorrectionVec3s
+    /// read it. nullopt until the first updateWeights; size 0 on serial / interior-only partitions.
+    std::optional<Vector<Vec3>> procNeiCellCentre_;
+#endif
 };
 
 } // namespace NeoN

@@ -33,8 +33,8 @@ public:
     // source of truth for the coefficient.
     virtual void updateNonOrthCorrectionVec3s(
         const Executor& exec,
-        SurfaceField<Vec3>& nonOrthCorrectionVec3s,
-        const SurfaceField<scalar>& nonOrthDeltaCoeffs
+        const SurfaceField<scalar>& nonOrthDeltaCoeffs,
+        SurfaceField<Vec3>& nonOrthCorrectionVec3s
     ) = 0;
 };
 
