@@ -27,8 +27,12 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120
 \begin{DoxyCompactList}\small\item\em compute matrix coefficients based on all spatial operators \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Assembly\+Type  = Value\+Type$>$ }\\void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a19c5b3bde0710af1ecea02547a4a265a}{assemble\+Temporal\+Operator}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Value\+Type $>$ \&ls, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt) const
 \begin{DoxyCompactList}\small\item\em compute matrix coefficients based on all temporal operators assemble directly into linear system \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a4a57a875e9f0997ac94524441a9948c4}{assemble\+Explicit\+Source}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh) const
+\item 
 {\footnotesize template$<$typename Assembly\+Type  = Value\+Type$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a0ed991acbdf2218578b600d4bf29a730}{assemble}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\}) const
-\begin{DoxyCompactList}\small\item\em construct a linear system and force assembly \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em construct a linear system and force assembly including explicit source terms \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ae7f3bba91cd212645d91e038a7fd0b40}{assemble}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\}) const
+\begin{DoxyCompactList}\small\item\em assemble into a given linear system including explicit source terms \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Assembly\+Type  = Value\+Type$>$ }\\void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_a05f4dca129ca4be2d41d590015fd461c}{assemble}} (\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Value\+Type $>$ \&ls, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\}) const
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression_ad1afa5ea6175ae657a09042c54070d15}{add\+Operator}} (const \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+Operator}}$<$ Value\+Type $>$ \&oper)
@@ -125,7 +129,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Express
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00300}{300}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00328}{328}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_ad1afa5ea6175ae657a09042c54070d15}\label{classNeoN_1_1dsl_1_1Expression_ad1afa5ea6175ae657a09042c54070d15} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!addOperator@{addOperator}}
@@ -136,7 +140,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Express
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00293}{293}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00321}{321}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a5016d348636ab0980a9f5f893039003d}\label{classNeoN_1_1dsl_1_1Expression_a5016d348636ab0980a9f5f893039003d} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!addOperator@{addOperator}}
@@ -147,19 +151,19 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Express
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00295}{295}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00323}{323}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a0ed991acbdf2218578b600d4bf29a730}\label{classNeoN_1_1dsl_1_1Expression_a0ed991acbdf2218578b600d4bf29a730} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!assemble@{assemble}}
 \index{assemble@{assemble}!NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}}
-\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
 template$<$typename Assembly\+Type  = Value\+Type$>$ \\
 \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$}]{ps = {\ttfamily \{\}} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-construct a linear system and force assembly 
+construct a linear system and force assembly including explicit source terms 
 
 
 \begin{DoxyParams}{Parameters}
@@ -171,19 +175,50 @@ the assembled linear system
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00248}{248}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00260}{260}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a05f4dca129ca4be2d41d590015fd461c}\label{classNeoN_1_1dsl_1_1Expression_a05f4dca129ca4be2d41d590015fd461c} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!assemble@{assemble}}
 \index{assemble@{assemble}!NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}}
-\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
 template$<$typename Assembly\+Type  = Value\+Type$>$ \\
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Value\+Type $>$ \&}]{ls,  }\item[{std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$}]{ps = {\ttfamily \{\}} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00265}{265}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00293}{293}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1dsl_1_1Expression_ae7f3bba91cd212645d91e038a7fd0b40}\label{classNeoN_1_1dsl_1_1Expression_ae7f3bba91cd212645d91e038a7fd0b40} 
+\index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!assemble@{assemble}}
+\index{assemble@{assemble}!NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{assemble()}{assemble()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ Value\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$}]{ps = {\ttfamily \{\}} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+assemble into a given linear system including explicit source terms 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ps} & post-\/assembly functors applied to the system after assembly \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00276}{276}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1dsl_1_1Expression_a4a57a875e9f0997ac94524441a9948c4}\label{classNeoN_1_1dsl_1_1Expression_a4a57a875e9f0997ac94524441a9948c4} 
+\index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!assembleExplicitSource@{assembleExplicitSource}}
+\index{assembleExplicitSource@{assembleExplicitSource}!NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{assembleExplicitSource()}{assembleExplicitSource()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Neo\+N\+::dsl\+::\+Expression}}$<$ Value\+Type, Index\+Type $>$\+::assemble\+Explicit\+Source (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00243}{243}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a3d3ba0bae3c8ce92571654672b8f0643}\label{classNeoN_1_1dsl_1_1Expression_a3d3ba0bae3c8ce92571654672b8f0643} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!assembleSpatialOperator@{assembleSpatialOperator}}
@@ -231,7 +266,7 @@ removes operator of given name
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00364}{364}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00392}{392}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_ad7581ac19b360ac79225710d2a38005a}\label{classNeoN_1_1dsl_1_1Expression_ad7581ac19b360ac79225710d2a38005a} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!exec@{exec}}
@@ -242,7 +277,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00404}{404}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00432}{432}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5}\label{classNeoN_1_1dsl_1_1Expression_a95d3197b578e631ec1728c44babe02e5} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!explicitOperation@{explicitOperation}}
@@ -291,7 +326,7 @@ returns operator of given type and name
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00340}{340}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00368}{368}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a92424d6e14a1aa5f25db658407a136c3}\label{classNeoN_1_1dsl_1_1Expression_a92424d6e14a1aa5f25db658407a136c3} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!hasOperator@{hasOperator}}
@@ -307,7 +342,7 @@ returns whether the expression contains an operator with a given name
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00332}{332}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00360}{360}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a270a19070e2129d7b1eb986a47c4b99c}\label{classNeoN_1_1dsl_1_1Expression_a270a19070e2129d7b1eb986a47c4b99c} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!hasOperatorOfType@{hasOperatorOfType}}
@@ -323,7 +358,7 @@ returns operator of given type and name exists
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00314}{314}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00342}{342}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120876c2e}\label{classNeoN_1_1dsl_1_1Expression_a4982b528c1bd9e0c25c189f120876c2e} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!read@{read}}
@@ -345,7 +380,7 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00168}{168}} of file
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00384}{384}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00412}{412}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a24d45a85bfdacc088988ceccca263529}\label{classNeoN_1_1dsl_1_1Expression_a24d45a85bfdacc088988ceccca263529} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!spatialOperators@{spatialOperators}}
@@ -356,7 +391,7 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spatial\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00402}{402}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00430}{430}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_ae0858624a15c595fd931a3c272ec8146}\label{classNeoN_1_1dsl_1_1Expression_ae0858624a15c595fd931a3c272ec8146} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!spatialOperators@{spatialOperators}}
@@ -367,7 +402,7 @@ const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Spa
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00395}{395}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00423}{423}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a0fcb308788446fe43bbe635d1e79c6fa}\label{classNeoN_1_1dsl_1_1Expression_a0fcb308788446fe43bbe635d1e79c6fa} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!temporalOperators@{temporalOperators}}
@@ -378,7 +413,7 @@ std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{Temporal
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00400}{400}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00428}{428}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1Expression_a2d9ffd529b27456e188643bade8ebb43}\label{classNeoN_1_1dsl_1_1Expression_a2d9ffd529b27456e188643bade8ebb43} 
 \index{NeoN::dsl::Expression$<$ ValueType, IndexType $>$@{NeoN::dsl::Expression$<$ ValueType, IndexType $>$}!temporalOperators@{temporalOperators}}
@@ -389,7 +424,7 @@ const std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1dsl_1_1TemporalOperator}{Te
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00390}{390}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00418}{418}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
