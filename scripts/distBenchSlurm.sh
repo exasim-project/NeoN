@@ -111,7 +111,7 @@ BENCH_FLAGS="--benchmark-samples 10 --benchmark-warmup-time 0"
 run_mpi() {
     local np="$1"; shift
     local binary="$1"; shift
-    if [[ -n "${SLURM_JOB_ID:-}" ]]; then
+    if [[ -n "${SLURM_JOB_ID:-}" && -z "${FORCE_MPIRUN:-}" ]]; then
         local cpu_bind=""
         [[ -n "${PERF_CORES}" ]] && cpu_bind="--cpu-bind=map_cpu:${PERF_CORES}"
         srun --ntasks="${np}" ${cpu_bind} "${binary}" ${BENCH_FLAGS} -r xml "$@"
@@ -124,6 +124,9 @@ run_mpi() {
             # macOS hwloc does not support core binding or topology enumeration reliably.
             map_by="slot"
         else
+            # Suppress the munge psec component: outside a SLURM allocation munge
+            # is not available, and PMIx will error trying to open it.
+            mca_flags="--mca psec ^munge"
             [[ -n "${PERF_CORES}" ]] && cpu_set="--bind-to core --cpu-set ${PERF_CORES}"
         fi
         local timeout_prefix=""
