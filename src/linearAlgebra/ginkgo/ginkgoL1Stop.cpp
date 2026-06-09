@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <stdexcept>
+
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 
 namespace NeoN::la::ginkgo
@@ -9,425 +11,312 @@ namespace NeoN::la::ginkgo
 
 #if NF_WITH_GINKGO
 
-class StoppingCriterion
+namespace
 {
-    using vec = gko::matrix::Dense<scalar>;
-    using mtx = gko::matrix::Csr<scalar>;
-    using val_array = gko::array<scalar>;
-    using idx_array = gko::array<localIdx>;
 
-    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+using dense = gko::matrix::Dense<scalar>;
 
-    class DistStoppingCriterion :
-        public gko::EnablePolymorphicObject<DistStoppingCriterion, gko::stop::Criterion>
-    {
-        friend class gko::EnablePolymorphicObject<DistStoppingCriterion, gko::stop::Criterion>;
-        using Criterion = gko::stop::Criterion;
+#ifdef NF_WITH_MPI_SUPPORT
+using dist = gko::experimental::distributed::Vector<scalar>;
+#endif
 
-    public:
+// Small additive guard added to the norm factor so a trivially-converged (zero)
+// system reports a finite, well-defined scaled residual instead of 0/0.
+constexpr scalar normFactorSmall = 1e-20;
 
-        GKO_CREATE_FACTORY_PARAMETERS(parameters, Factory)
-        {
-            /**
-             * Boolean set by the user to stop the iteration process
-             */
-            // TODO check why GKO_FACTORY_PARAMETER_SCALAR does not work
-            scalar GKO_FACTORY_PARAMETER(absolute_tolerance, 1.0e-6);
+/* @brief Create a vector shaped like @p like (same executor / distribution) with every
+ * entry equal to @p value. Overloaded per concrete vector type so the criterion below
+ * stays a single implementation shared by the serial (Dense) and distributed paths.
+ */
+std::unique_ptr<dense> makeConstantLike(const dense& like, scalar value)
+{
+    auto field = dense::create(like.get_executor(), like.get_size());
+    field->fill(value);
+    return field;
+}
 
-            scalar GKO_FACTORY_PARAMETER(relative_tolerance, 0.0);
+#ifdef NF_WITH_MPI_SUPPORT
+std::unique_ptr<dist> makeConstantLike(const dist& like, scalar value)
+{
+    auto field = dist::create(
+        like.get_executor(),
+        like.get_communicator(),
+        like.get_size(),
+        like.get_local_vector()->get_size()
+    );
+    field->fill(value);
+    return field;
+}
+#endif
 
-            localIdx GKO_FACTORY_PARAMETER(minIter, 0);
+/* @brief L1 normalisation factor of a linear system, evaluated at x.
+ *
+ *   normFactor = sum_i ( |(A x)_i - (A xRef)_i| + |b_i - (A xRef)_i| ) + small
+ *
+ * with xRef the constant field equal to mean(x); (A xRef) is the SpMV of A with that
+ * constant field, which equals sumA_i * mean(x). The factor measures the spread of A x
+ * and b about the reference state A xRef and scales the L1 residual so the reported
+ * value is independent of the overall magnitude of the system.
+ *
+ * Identical for serial and distributed systems: when VecType is a distributed vector,
+ * compute_mean() and compute_norm1() perform the global (cross-rank) reductions, so the
+ * factor is the global one with no extra MPI code here.
+ */
+template<typename VecType>
+scalar computeL1NormFactor(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::LinOp* mtx,
+    const VecType* b,
+    const VecType* x
+)
+{
+    const auto one = gko::initialize<dense>({1.0}, exec);
 
-            localIdx GKO_FACTORY_PARAMETER(maxIter, 0);
+    // xRef = mean(x) (global mean for a distributed vector)
+    auto meanDense = dense::create(exec, gko::dim<2> {1});
+    x->compute_mean(meanDense);
+    const scalar xRef = retrieve(meanDense.get());
 
-            localIdx GKO_FACTORY_PARAMETER(frequency, 1);
+    // A xRef, with xRef broadcast to a constant field
+    auto xRefField = makeConstantLike(*x, xRef);
+    auto Axref = makeConstantLike(*b, 0.0);
+    mtx->apply(xRefField, Axref);
 
-            std::add_pointer<localIdx>::type GKO_FACTORY_PARAMETER_SCALAR(iter, NULL);
+    // |A x - A xRef|
+    auto Apsi = makeConstantLike(*b, 0.0);
+    mtx->apply(x, Apsi);
+    Apsi->sub_scaled(one, Axref);
+    auto term = Apsi->compute_absolute();
 
-            std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(time, NULL);
+    // + |b - A xRef|
+    auto bMinusAxref = b->clone();
+    bMinusAxref->sub_scaled(one, Axref);
+    auto term2 = bMinusAxref->compute_absolute();
+    term->add_scaled(one, term2);
 
-            std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(residual_norm, NULL);
+    // sum over rows (entries already non-negative; global sum for a distributed vector)
+    auto nf = dense::create(exec, gko::dim<2> {1});
+    term->compute_norm1(nf);
+    return retrieve(nf.get()) + normFactorSmall;
+}
 
-            std::shared_ptr<vec> GKO_FACTORY_PARAMETER_SCALAR(residual_norms, {});
-
-            std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(init_residual_norm, NULL);
-
-            localIdx GKO_FACTORY_PARAMETER(verbose, 0);
-
-            bool GKO_FACTORY_PARAMETER(export_res, false);
-
-            std::shared_ptr<const gko::LinOp> GKO_FACTORY_PARAMETER(gkomatrix, {});
-
-            std::shared_ptr<dist_vec> GKO_FACTORY_PARAMETER(x, {});
-
-            std::shared_ptr<dist_vec> GKO_FACTORY_PARAMETER(b, {});
-        };
-
-        GKO_ENABLE_CRITERION_FACTORY(DistStoppingCriterion, parameters, Factory);
-
-        GKO_ENABLE_BUILD_METHOD(Factory);
-
-        /* Compute the SpMV of A with x_ref, where x_ref is a vector containing
-         * the average of x in every row. This is needed to initialise the
-         * normfactor in the first iteration.
-         *  */
-        void compute_Axref_dist(
-            size_t global_size,
-            size_t local_size,
-            std::shared_ptr<const gko::Executor> device_exec,
-            std::shared_ptr<const gko::LinOp> gkomatrix,
-            std::shared_ptr<const dist_vec> x,
-            std::shared_ptr<dist_vec> res
-        ) const;
-
-        /* Compute the normfactor ie || Ax - x* || + || b - x* ||
-         * or rewritten as || r - ( b - x* ) || + || (b - x*) ||
-         *  */
-        scalar compute_normfactor_dist(
-            std::shared_ptr<const gko::Executor> device_exec,
-            const dist_vec* r,
-            std::shared_ptr<const gko::LinOp> gkomatrix,
-            std::shared_ptr<const dist_vec> x,
-            std::shared_ptr<const dist_vec> b
-        ) const;
-
-        /* Implementation of the residual norm check
-         *  */
-        bool check_impl(
-            gko::uint8 stoppingId,
-            bool setFinalized,
-            gko::array<gko::stopping_status>* stop_status,
-            bool* one_changed,
-            const Criterion::Updater& updater
-        ) override;
-
-
-        explicit DistStoppingCriterion(std::shared_ptr<const gko::Executor> exec)
-            : EnablePolymorphicObject<DistStoppingCriterion, Criterion>(std::move(exec))
-        {}
-
-        explicit DistStoppingCriterion(const Factory* factory, const gko::stop::CriterionArgs&)
-
-            : EnablePolymorphicObject<DistStoppingCriterion, Criterion>(factory->get_executor()),
-              parameters_ {factory->get_parameters()}
-        {}
-
-        void set_eval_norm_factor(bool eval_norm_factor) { eval_norm_factor_ = eval_norm_factor; }
-
-        mutable bool first_iter_ = true;
-
-        mutable scalar norm_factor_ = 1;
-
-        mutable bool eval_norm_factor_ = true;
-
-        mutable std::vector<scalar> res_norms_ {};
-    };
-
-    mutable localIdx maxIter_;
-
-    const localIdx minIter_;
-
-    const scalar tolerance_;
-
-    const scalar relTol_;
-
-    const scalar res_norm_eval_;
-
-    const localIdx norm_eval_limit_;
-
-    const localIdx frequency_;
-
-    const scalar relaxationFactor_;
-
-    const bool adapt_minIter_;
-
-    const std::shared_ptr<vec> normalised_res_norms_;
-
-    mutable scalar init_normalised_res_norm_;
-
-    mutable scalar normalised_res_norm_;
-
-    mutable localIdx iter_;
-
-    mutable scalar time_;
+/* @brief Ginkgo stopping criterion based on the L1-scaled residual, shared by the serial
+ * (VecType = gko::matrix::Dense) and distributed (VecType = distributed::Vector) solves.
+ *
+ * The iteration stops on the scaled residual sum|b - A x| / normFactor, using an absolute
+ * tolerance, a relative tolerance (relative to the initial residual) and a maximum
+ * iteration count, while honouring a minimum iteration count. The true residual b - A x
+ * is recomputed every check so the criterion is independent of any preconditioned residual
+ * the solver may carry internally; for a distributed vector the norms are global.
+ */
+template<typename VecType>
+class L1ResidualCriterion :
+    public gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, gko::stop::Criterion>
+{
+    friend class gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, gko::stop::Criterion>;
+    using Criterion = gko::stop::Criterion;
 
 public:
 
-    StoppingCriterion(const Dictionary& controlDict)
-        : maxIter_(controlDict.get<localIdx>("maxIter", 1000)),
-          minIter_(controlDict.get<localIdx>("minIter", 0)),
-          tolerance_(controlDict.get<scalar>("tolerance", 1e-6)),
-          relTol_(controlDict.get<scalar>("relTol", 1e-6)),
-          res_norm_eval_(controlDict.get<scalar>("resNormEval", 0.1)),
-          norm_eval_limit_(controlDict.get<localIdx>("normEvalLimit", 100)),
-          frequency_(controlDict.get<localIdx>("evalFrequency", 1)),
-          relaxationFactor_(controlDict.get<scalar>("relaxationFactor", 0.6)),
-          adapt_minIter_(controlDict.get<bool>("adaptMinIter", true)),
-          normalised_res_norms_(gko::share(vec::create(
-              gko::ReferenceExecutor::create(),
-              gko::dim<2> {static_cast<gko::dim<2>::dimension_type>(maxIter_), 1}
-          ))),
-          init_normalised_res_norm_(0), normalised_res_norm_(0), iter_(0), time_(0)
+    GKO_CREATE_FACTORY_PARAMETERS(parameters, Factory)
     {
-        normalised_res_norms_->fill(0.0);
-        if (controlDict.get<std::string>("solver") == "GKOBiCGStab") maxIter_ *= 2;
-    }
+        // NOTE: GKO_FACTORY_PARAMETER_SCALAR (single-arg setter) is required here;
+        // the variadic GKO_FACTORY_PARAMETER expands its with_*() setter to
+        // GKO_NOT_IMPLEMENTED under NVCC/HIP (parameter-pack workaround).
+        scalar GKO_FACTORY_PARAMETER_SCALAR(absolute_tolerance, 1.0e-6);
 
-    std::shared_ptr<const gko::stop::CriterionFactory> build_dist_stopping_criterion(
-        std::shared_ptr<gko::Executor> device_exec,
-        std::shared_ptr<const gko::LinOp> gkomatrix,
-        std::shared_ptr<dist_vec> x,
-        std::shared_ptr<dist_vec> b,
-        label verbose,
-        bool export_res,
-        label prev_solve_iters,
-        scalar prev_rel_cost
-    ) const
+        scalar GKO_FACTORY_PARAMETER_SCALAR(relative_tolerance, 0.0);
+
+        localIdx GKO_FACTORY_PARAMETER_SCALAR(min_iter, 0);
+
+        localIdx GKO_FACTORY_PARAMETER_SCALAR(max_iter, 1000);
+
+        std::shared_ptr<const gko::LinOp> GKO_FACTORY_PARAMETER_SCALAR(matrix, nullptr);
+
+        std::shared_ptr<const VecType> GKO_FACTORY_PARAMETER_SCALAR(b, nullptr);
+
+        std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(init_residual, NULL);
+
+        std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(final_residual, NULL);
+
+        std::add_pointer<localIdx>::type GKO_FACTORY_PARAMETER_SCALAR(num_iters, NULL);
+    };
+
+    GKO_ENABLE_CRITERION_FACTORY(L1ResidualCriterion, parameters, Factory);
+
+    GKO_ENABLE_BUILD_METHOD(Factory);
+
+    explicit L1ResidualCriterion(std::shared_ptr<const gko::Executor> exec)
+        : gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, Criterion>(std::move(exec))
+    {}
+
+    explicit L1ResidualCriterion(const Factory* factory, const gko::stop::CriterionArgs&)
+        : gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, Criterion>(
+            factory->get_executor()
+        ),
+          parameters_ {factory->get_parameters()}
+    {}
+
+protected:
+
+    bool check_impl(
+        gko::uint8 stoppingId,
+        bool setFinalized,
+        gko::array<gko::stopping_status>* stop_status,
+        bool* one_changed,
+        const Criterion::Updater& updater
+    ) override
     {
-        std::string frequencyMode = "optimizer";
-        label minIter = minIter_;
-        label frequency = frequency_;
-        // in case of export_res all residuals need to be computed
-        if (!export_res)
+        const auto exec = this->get_executor();
+
+        // We need the current solution to evaluate the true residual b - A x.
+        // For the iterative solvers used here (Cg/BiCGStab/Gmres) it is always set.
+        if (updater.solution_ == nullptr)
         {
-            if (prev_solve_iters > 0 && adapt_minIter_ && prev_rel_cost > 0)
+            return false;
+        }
+        const auto* solution = gko::as<VecType>(updater.solution_);
+        const auto numIter = static_cast<localIdx>(updater.num_iterations_);
+
+        // true residual r = b - A x (recomputed independently of the solver's residual)
+        const auto one = gko::initialize<dense>({1.0}, exec);
+        const auto negOne = gko::initialize<dense>({-1.0}, exec);
+        auto r = parameters_.b->clone();
+        parameters_.matrix->apply(negOne.get(), solution, one.get(), r.get());
+
+        auto rNormDense = dense::create(exec, gko::dim<2> {1});
+        r->compute_norm1(rNormDense.get());
+        const scalar rNorm = retrieve(rNormDense.get());
+
+        if (firstIter_)
+        {
+            normFactor_ = computeL1NormFactor<VecType>(
+                exec, parameters_.matrix.get(), parameters_.b.get(), solution
+            );
+            initResidual_ = rNorm / normFactor_;
+            if (parameters_.init_residual != NULL)
             {
-                minIter = prev_solve_iters * relaxationFactor_;
-                if (frequencyMode == "optimizer")
-                {
-                    auto alpha =
-                        sqrt(1.0 / (prev_solve_iters * (1.0 - relaxationFactor_)) * prev_rel_cost);
-                    frequency = std::min(norm_eval_limit_, std::max(1, localIdx(1 / alpha)));
-                }
-                if (frequencyMode == "relative")
-                {
-                    frequency = localIdx(prev_solve_iters * 0.075) + 1;
-                }
+                *(parameters_.init_residual) = initResidual_;
+            }
+            firstIter_ = false;
+        }
+
+        const scalar scaledResidual = rNorm / normFactor_;
+        if (parameters_.final_residual != NULL)
+        {
+            *(parameters_.final_residual) = scaledResidual;
+        }
+        if (parameters_.num_iters != NULL)
+        {
+            *(parameters_.num_iters) = numIter;
+        }
+
+        bool result = false;
+        // stop if maximum number of iterations was reached
+        if (numIter >= parameters_.max_iter)
+        {
+            result = true;
+        }
+        // only test the tolerances once the minimum iteration count is reached
+        else if (numIter >= parameters_.min_iter)
+        {
+            if (scaledResidual < parameters_.absolute_tolerance)
+            {
+                result = true;
+            }
+            if (parameters_.relative_tolerance > 0.0
+                && scaledResidual < parameters_.relative_tolerance * initResidual_)
+            {
+                result = true;
             }
         }
 
-        std::string msg = "\nCreating stopping criterion\n\tminIter: " + std::to_string(minIter)
-                        + "\n\tfrequency: " + std::to_string(frequency) + "\n\tprev_solve_iters: "
-                        + std::to_string(prev_solve_iters) + "\n\tadapt_minIter:  "
-                        + std::to_string(adapt_minIter_) + "\n\tprev_rel_cost: ";
-
-        NeoN::Logging::info(msg);
-
-        return DistStoppingCriterion::build()
-            .with_absolute_tolerance(tolerance_)
-            .with_relative_tolerance(relTol_)
-            .with_minIter(minIter)
-            .with_maxIter(maxIter_)
-            .with_frequency(frequency)
-            .with_verbose(verbose)
-            .with_export_res(export_res)
-            .with_init_residual_norm(&init_normalised_res_norm_)
-            .with_residual_norm(&normalised_res_norm_)
-            .with_residual_norms(normalised_res_norms_)
-            .with_iter(&iter_)
-            .with_time(&time_)
-            .with_gkomatrix(gkomatrix)
-            .with_x(x)
-            .with_b(b)
-            .on(device_exec);
+        if (result)
+        {
+            this->set_all_statuses(stoppingId, setFinalized, stop_status);
+            *one_changed = true;
+        }
+        return result;
     }
 
-    scalar get_init_res_norm() const { return init_normalised_res_norm_; }
+private:
 
-    scalar get_res_norm() const { return normalised_res_norm_; }
+    mutable bool firstIter_ = true;
 
-    std::shared_ptr<vec> get_res_norms() const { return normalised_res_norms_; }
+    mutable scalar normFactor_ = 1.0;
 
-    label get_is_final() const { return relTol_ == 0.0; }
-
-    label get_num_iters() const { return iter_; }
-
-    scalar get_res_norm_time() const { return time_; }
+    mutable scalar initResidual_ = 0.0;
 };
 
-
-void StoppingCriterion::DistStoppingCriterion::compute_Axref_dist(
-    size_t global_size,
-    size_t local_size,
-    std::shared_ptr<const gko::Executor> device_exec,
-    std::shared_ptr<const gko::LinOp> gkomatrix,
-    std::shared_ptr<const dist_vec> x,
-    std::shared_ptr<dist_vec> res
-) const
-{
-    auto xAvg = gko::initialize<gko::matrix::Dense<scalar>>(1, {0}, device_exec);
-    x->compute_mean(xAvg.get());
-
-    auto xAvg_host = gko::initialize<gko::matrix::Dense<scalar>>(1, {0}, device_exec->get_master());
-    xAvg->move_to(xAvg_host);
-    auto xAvg_vec = gko::share(dist_vec::create(
-        device_exec,
-        x->get_communicator(),
-        gko::dim<2> {global_size, 1},
-        gko::dim<2> {local_size, 1}
-    ));
-    xAvg_vec->fill(xAvg_host->at(0));
-
-    gkomatrix->apply(xAvg_vec.get(), res.get());
-}
-
-scalar StoppingCriterion::DistStoppingCriterion::compute_normfactor_dist(
-    std::shared_ptr<const gko::Executor> device_exec,
-    const dist_vec* r,
-    std::shared_ptr<const gko::LinOp> gkomatrix,
-    std::shared_ptr<const dist_vec> x,
-    std::shared_ptr<const dist_vec> b
-) const
-{
-    // TODO store colA vector
-    auto comm = x->get_communicator();
-
-    gko::dim<2> local_size = x->get_local_vector()->get_size();
-    gko::dim<2> global_size = x->get_size();
-
-    auto Axref = gko::share(dist_vec::create(device_exec, comm, global_size, local_size));
-    Axref->fill(0.0);
-
-    auto start_axref = std::chrono::steady_clock::now();
-    compute_Axref_dist(global_size[0], local_size[0], device_exec, gkomatrix, x, Axref);
-    auto end_axref = std::chrono::steady_clock::now();
-    auto delta_t_axref =
-        std::chrono::duration_cast<std::chrono::microseconds>(end_axref - start_axref).count()
-        / 1.0;
-    // std::cout << __FILE__ << " delta_t_axref " << delta_t_axref << " [mu
-    // s]\n";
-
-    auto unity = gko::initialize<gko::matrix::Dense<scalar>>(1, {1.0}, device_exec);
-
-    auto b_sub_xstar = b->clone();
-    b_sub_xstar->sub_scaled(unity.get(), Axref.get());
-
-    auto norm_part2 = b_sub_xstar->compute_absolute();
-
-    b_sub_xstar->sub_scaled(unity.get(), r);
-
-    b_sub_xstar->compute_absolute_inplace();
-    b_sub_xstar->add_scaled(unity.get(), norm_part2.get());
-
-    auto res = vec::create(device_exec, gko::dim<2> {1});
-    b_sub_xstar->compute_norm1(res.get());
-
-    auto res_host = vec::create(device_exec->get_master(), gko::dim<2> {1});
-    res_host->copy_from(res.get());
-
-    return res_host->get_values()[0] + ROOTVSMALL;
-}
-
-bool StoppingCriterion::DistStoppingCriterion::check_impl(
-    gko::uint8 stoppingId,
-    bool setFinalized,
-    gko::array<gko::stopping_status>* stop_status,
-    bool* one_changed,
-    const Criterion::Updater& updater
+/* @brief Attach an L1ResidualCriterion to @p solver, run it, and report the scaled L1
+ * initial/final residual and iteration count. Shared by the serial and distributed entry
+ * points below. @p x is updated in place.
+ */
+template<typename VecType>
+L1ResidualResult attachL1StopAndSolve(
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<const VecType> b,
+    std::shared_ptr<VecType> x,
+    gko::LinOp* solver,
+    const L1ResidualControl& control
 )
 {
-    // Dont check residual norm before minIter is reached
-    if (*(parameters_.iter) > 0 && *(parameters_.iter) < parameters_.minIter)
+    scalar initResNorm = 0.0;
+    scalar finalResNorm = 0.0;
+    localIdx numIter = 0;
+
+    auto criterion = L1ResidualCriterion<VecType>::build()
+                         .with_absolute_tolerance(control.tolerance)
+                         .with_relative_tolerance(control.relTol)
+                         .with_min_iter(control.minIter)
+                         .with_max_iter(control.maxIter)
+                         .with_matrix(mtx)
+                         .with_b(b)
+                         .with_init_residual(&initResNorm)
+                         .with_final_residual(&finalResNorm)
+                         .with_num_iters(&numIter)
+                         .on(exec);
+
+    auto* iterative = dynamic_cast<gko::solver::IterativeBase*>(solver);
+    if (iterative == nullptr)
     {
-        *(parameters_.iter) += 1;
-        return false;
+        throw std::runtime_error("L1 scaled-residual stopping requires an iterative Ginkgo solver");
     }
+    iterative->set_stop_criterion_factory(gko::share(std::move(criterion)));
 
-    // Only check residual for every frequency iteration
-    if (*(parameters_.iter) % parameters_.frequency != 0)
-    {
-        *(parameters_.iter) += 1;
-        return false;
-    }
+    solver->apply(b, x);
 
-    auto start_eval = std::chrono::steady_clock::now();
-    const auto exec = this->get_executor();
-
-    std::shared_ptr<dist_vec> dense_r_vec;
-    // multigrid does not set residual for out iterations
-    if (updater.residual_ == nullptr)
-    {
-        dense_r_vec = parameters_.b->clone();
-
-        auto one {gko::initialize<gko::matrix::Dense<scalar>>({1}, exec)};
-        auto neg_one {gko::initialize<gko::matrix::Dense<scalar>>({-1}, exec)};
-        parameters_.gkomatrix->apply(neg_one, updater.solution_, one, dense_r_vec);
-    }
-
-    const dist_vec* dense_r =
-        (updater.residual_ == nullptr) ? dense_r_vec.get() : gko::as<dist_vec>(updater.residual_);
-
-    auto norm1 = vec::create(exec, gko::dim<2> {1});
-    dense_r->compute_norm1(norm1.get());
-    auto norm1_host = vec::create(exec->get_master(), gko::dim<2> {1});
-    norm1_host->copy_from(norm1.get());
-    scalar residual_norm = norm1_host->at(0);
-    // if (residual_norm != residual_norm) {
-    //     NF_
-    //     FatalErrorInFunction
-    //         << " Problem with residual norm detected: " << residual_norm
-    //         << exit(FatalError);
-    // }
-
-    bool result = false;
-
-    // Store initial residual
-    if (*(parameters_.iter) == 0)
-    {
-        //
-        if (eval_norm_factor_)
-        {
-            norm_factor_ = compute_normfactor_dist(
-                exec, dense_r, parameters_.gkomatrix, parameters_.x, parameters_.b
-            );
-        }
-
-        *(parameters_.init_residual_norm) = residual_norm / norm_factor_;
-    }
-
-    residual_norm /= norm_factor_;
-
-
-    if (parameters_.export_res)
-    {
-        parameters_.residual_norms->at(*(parameters_.iter)) = residual_norm;
-    }
-
-    *(parameters_.residual_norm) = residual_norm;
-
-    scalar init_residual = *(parameters_.init_residual_norm);
-
-    // stop if maximum number of iterations was reached
-    if (*(parameters_.iter) >= parameters_.maxIter)
-    {
-        result = true;
-    }
-    // check if absolute tolerance is hit
-    if (residual_norm < parameters_.absolute_tolerance)
-    {
-        result = true;
-    }
-    // check if relative tolerance is hit
-    if (parameters_.relative_tolerance > 0
-        && residual_norm < parameters_.relative_tolerance * init_residual)
-    {
-        result = true;
-    }
-
-    if (result)
-    {
-        this->set_all_statuses(stoppingId, setFinalized, stop_status);
-        *one_changed = true;
-    }
-
-    *(parameters_.iter) += 1;
-
-    auto end_eval = std::chrono::steady_clock::now();
-    *(parameters_.time) =
-        std::chrono::duration_cast<std::chrono::microseconds>(end_eval - start_eval).count() / 1.0;
-    // std::cout << __FILE__ << "time " << *(parameters_.time) << " [mu s]\n";
-    return result;
+    return {numIter, initResNorm, finalResNorm};
 }
+
+} // namespace
+
+L1ResidualResult solveWithL1Stop(
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<const gko::matrix::Dense<scalar>> b,
+    std::shared_ptr<gko::matrix::Dense<scalar>> x,
+    gko::LinOp* solver,
+    const L1ResidualControl& control
+)
+{
+    return attachL1StopAndSolve<dense>(exec, mtx, b, x, solver, control);
+}
+
+#ifdef NF_WITH_MPI_SUPPORT
+L1ResidualResult solveWithL1StopDist(
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<const gko::experimental::distributed::Vector<scalar>> b,
+    std::shared_ptr<gko::experimental::distributed::Vector<scalar>> x,
+    gko::LinOp* solver,
+    const L1ResidualControl& control
+)
+{
+    return attachL1StopAndSolve<dist>(exec, mtx, b, x, solver, control);
+}
+#endif
 
 #endif
 

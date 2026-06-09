@@ -40,7 +40,7 @@ target_sources(
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
           "linearAlgebra/ginkgo/ginkgo.cpp"
-          "linearAlgebra/ginkgo/ginkgoL1StopSerial.cpp"
+          "linearAlgebra/ginkgo/ginkgoL1Stop.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
           "linearAlgebra/cooSparsityPattern.cpp"
           "linearAlgebra/csrSparsityPattern.cpp"
@@ -77,7 +77,7 @@ if(NeoN_WITH_MPI)
     NeoN
     PRIVATE "core/mpi/halfDuplexCommBuffer.cpp" "mesh/unstructured/communicator.cpp"
             "mesh/unstructured/distributedUnstructuredMesh.cpp"
-            "linearAlgebra/ginkgo/ginkgoDistributed.cpp" "linearAlgebra/ginkgo/ginkgoL1Stop.cpp")
+            "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
 endif()
 
 if(NeoN_BUILD_PYTHON_BINDINGS)

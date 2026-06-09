@@ -114,6 +114,23 @@ L1ResidualResult solveWithL1Stop(
     const L1ResidualControl& control
 );
 
+#ifdef NF_WITH_MPI_SUPPORT
+/** @brief Distributed counterpart of solveWithL1Stop.
+ *
+ * Same L1-scaled residual stopping criterion, but over distributed vectors so the
+ * norm factor and residual norms are reduced globally across ranks. Shares the
+ * implementation with the serial overload (see ginkgoL1Stop.cpp).
+ */
+L1ResidualResult solveWithL1StopDist(
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<const gko::experimental::distributed::Vector<scalar>> b,
+    std::shared_ptr<gko::experimental::distributed::Vector<scalar>> x,
+    gko::LinOp* solver,
+    const L1ResidualControl& control
+);
+#endif
+
 /** @brief Read the L1-scaled residual stopping controls from a solver configuration.
  *
  * Returns std::nullopt unless the solver dictionary opts in via "l1ScaledResidual".
