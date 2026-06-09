@@ -211,18 +211,21 @@ TEST_CASE("Distributed")
             REQUIRE_THAT(neighOffset, Equals(I({0, 0, 0}), EqualInt()));
         }
 
+        // boundary sparsity now includes processor faces (layout [physical | processor]) so their
+        // diagonal contribution can be reversed by removeBoundaryContributions. rowIdxs lists the
+        // owner cell of each physical boundary face followed by each processor boundary face.
         auto bsp = NeoN::la::createBoundarySparsityPattern<CooSparsityType>(meshPart, *mi);
         SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 has correct boundary sparsity " + execName)
         {
-            REQUIRE_THAT(bsp->rowIdxs(), Equals(I({0}), EqualInt()));
+            REQUIRE_THAT(bsp->rowIdxs(), Equals(I({0, 3}), EqualInt()));
         }
         SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 has correct boundary sparsity " + execName)
         {
-            REQUIRE_THAT(bsp->rowIdxs(), Equals(std::vector<localIdx> {}, EqualInt()));
+            REQUIRE_THAT(bsp->rowIdxs(), Equals(I({0, 3}), EqualInt()));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 has correct boundary sparsity " + execName)
         {
-            REQUIRE_THAT(bsp->rowIdxs(), Equals(I({3}), EqualInt()));
+            REQUIRE_THAT(bsp->rowIdxs(), Equals(I({3, 0}), EqualInt()));
         }
     }
 }

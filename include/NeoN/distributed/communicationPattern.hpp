@@ -41,12 +41,34 @@ struct CommunicationPattern
 
     /** @brief Maps received halo entries to local boundary face indices.
      *
-     *  Currently unused / reserved for future mapping optimisations.
+     *  TODO: currently dead — computeCommunicationPattern always constructs this empty and no code
+     *  reads it. Either drop it, or populate and consume it. To adopt it: fill it so that
+     *  boundaryMapVector[k] is the local processor-boundary face index of the k-th received halo
+     *  entry (in recvIdx order). That mapping is what a *value*-based halo exchange driven by this
+     *  pattern needs to scatter received neighbour data into a field's proc tail — which would let
+     *  the remaining per-field exchanges (the geometry-scheme neighbour-centre exchange and the
+     *  field-halo path BoundaryData::communicate) share this single CommunicationPattern instead of
+     *  each rolling its own MPI isend/irecv.
      */
     std::vector<localIdx> boundaryMapVector;
 
     /** @brief MPI environment captured at pattern-construction time. */
     mpi::Environment env;
+
+    /** @brief Row-sort permutation for the off-diagonal (processor-face) matrix entries.
+     *
+     *  `offDiagRowSortPerm[i]` is the processor-face (assembly / proc-face order) index whose
+     *  off-diagonal value belongs at sorted position `i`. Computed once when the off-diagonal
+     *  sparsity is created (see `createEmptyLinearSystem`) so the non-local COO handed to Ginkgo
+     *  can be row-sorted without re-sorting on every matrix build. Ginkgo's CUDA `Coo::apply2`
+     *  (the non-local/halo apply) requires row-sorted entries; the Reference/CPU apply is
+     *  order-robust. Empty when there are no processor faces. Kept last so existing positional
+     *  aggregate initialisations of CommunicationPattern remain valid.
+     *
+     *  TODO: consider moving this into the boundary mesh — it is mesh-topology-derived
+     *  (depends only on the processor-face owners), not communication state.
+     */
+    std::vector<localIdx> offDiagRowSortPerm;
 };
 
 /**

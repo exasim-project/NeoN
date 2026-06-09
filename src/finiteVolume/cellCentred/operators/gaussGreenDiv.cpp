@@ -149,6 +149,9 @@ void computeDivProcBoundImpl(
     const auto bFluxV = faceFlux.boundaryData().value().view();
     const auto bWeightsV = weights.boundaryData().value().view();
     auto bValues = ls.offDiagonalMatrix().values().view();
+    // boundaryMatrix records the diagonal contribution so removeBoundaryContributions can reverse
+    // it (proc slots live at [nBoundaryFaces, nBoundaryFaces + nProcBoundaryFaces)).
+    auto bndDiagValues = ls.boundaryMatrix().values().view();
 
     auto values = ls.matrix().values().view();
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
@@ -175,6 +178,7 @@ void computeDivProcBoundImpl(
             auto fluxContrib = sign * weight * bFluxV[bcfacei] * ownCoeff * one<ValueType>();
 
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], fluxContrib);
+            bndDiagValues[bcfacei] += fluxContrib;
             auto valueOff =
                 -sign * (scalar(1) - weight) * bFluxV[bcfacei] * ownCoeff * one<ValueType>();
             bValues[procFacei] += valueOff;

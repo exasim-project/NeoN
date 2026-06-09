@@ -9,6 +9,7 @@
 - Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
+- Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 
 ### Misc
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
@@ -16,6 +17,9 @@
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
 - Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
 - Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
+
+## Fixes
+- Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)
 
 # Version 0.2.0 (2025/12/03)
 ## Features

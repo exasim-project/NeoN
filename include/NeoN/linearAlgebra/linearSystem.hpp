@@ -17,6 +17,9 @@
 #endif
 
 #include <string>
+#include <algorithm>
+#include <numeric>
+#include <vector>
 
 namespace NeoN::la
 {
@@ -307,6 +310,23 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
         }
         offDiagRowIdxs = rowH.copyToExecutor(exec);
         offDiagColIdxs = colH.copyToExecutor(exec);
+
+        // TODO: find a better home for this computation (together with
+        // CommunicationPattern::offDiagRowSortPerm, possibly the boundary mesh) — it is
+        // sparsity/topology setup, not linear-system assembly.
+        // Precompute the row-sort permutation of the off-diagonal (processor-face) entries.
+        // Ginkgo's CUDA Coo::apply2 requires the non-local COO sorted by global row; computing
+        // the permutation here (once, at off-diagonal creation) lets createGkoMtxDist apply it
+        // instead of re-sorting on every matrix build. Stable to keep a deterministic order
+        // within a row. offDiagRowSortPerm[i] = proc-face index whose value belongs at sorted i.
+        std::vector<localIdx> offDiagRowSortPerm(static_cast<std::size_t>(nProcFaces));
+        std::iota(offDiagRowSortPerm.begin(), offDiagRowSortPerm.end(), localIdx {0});
+        std::stable_sort(
+            offDiagRowSortPerm.begin(),
+            offDiagRowSortPerm.end(),
+            [&](localIdx a, localIdx b) { return rowHV[a] < rowHV[b]; }
+        );
+        commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);
     }
 #endif
 

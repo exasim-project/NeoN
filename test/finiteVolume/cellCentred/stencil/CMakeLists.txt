@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-neon_unit_test(coNum)
+neon_unit_test(basicGeometryScheme)
 
 if(NeoN_WITH_MPI)
-  neon_unit_test(distributedCoNum MPI_SIZE 3)
+  neon_unit_test(distributedBasicGeometryScheme MPI_SIZE 3)
 endif()

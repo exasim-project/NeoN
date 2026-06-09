@@ -21,6 +21,13 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     mpi::Environment mpiEnviron;
     scalar rightBoundary {static_cast<scalar>(1.0) / mpiEnviron.sizeRank()};
 
+    // Place this rank's slab at its true position in the global [0, 1] domain. A faithful
+    // decomposition shares one global coordinate system across ranks (as decomposePar produces),
+    // which is required for any cross-rank coordinate exchange — e.g. the geometry scheme's
+    // exact processor-face owner-to-neighbour distance |Cnei - Cown|. Without the offset every
+    // rank would sit at [0, rightBoundary] and neighbour cell centres would be in the wrong frame.
+    const scalar xOffset = static_cast<scalar>(mpiEnviron.rank()) * rightBoundary;
+
     const bool isFirst = mpiEnviron.rank() == 0;
     const bool isLast = mpiEnviron.rank() == mpiEnviron.sizeRank() - 1;
     const localIdx nProcBoundaryFaces = (isFirst || isLast) ? 1 : 2;
@@ -61,7 +68,7 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
     // Face geometry data for each boundary slot (2 slots regardless of rank).
     // For the last rank the boundary face ordering is [xmax, proc-left] — the
     // face data vectors are in that order too (swapped relative to rank-0/mid).
-    std::vector<Vec3> bcFaceCentersVec {{0.0, 0.0, 0.0}, {rightBoundary, 0.0, 0.0}};
+    std::vector<Vec3> bcFaceCentersVec {{xOffset, 0.0, 0.0}, {xOffset + rightBoundary, 0.0, 0.0}};
     std::vector<Vec3> bcFaceNormalsVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
     std::vector<scalar> bcFaceAreasVec {1.0, 1.0};
     std::vector<Vec3> bcFaceUnitNormalsVec {{-1.0, 0.0, 0.0}, {1.0, 0.0, 0.0}};
@@ -75,11 +82,36 @@ UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCe
 
     auto baseMesh = create1DUniformMesh(exec, nCells, rightBoundary);
 
+    // Shift the rank-local mesh geometry into its global position (see xOffset above). Only
+    // positions move; areas, normals, volumes and cell-to-cell / cell-to-face differences are
+    // unchanged, so frame-independent quantities (fluxes, Courant number, gradients, projected
+    // distances) are unaffected.
+    auto shiftXInPlace = [&](Vector<Vec3>& v)
+    {
+        auto h = v.copyToHost();
+        auto hv = h.view();
+        for (localIdx i = 0; i < h.size(); ++i)
+            hv[i][0] += xOffset;
+        v = h.copyToExecutor(exec);
+    };
+    shiftXInPlace(baseMesh.points());
+    shiftXInPlace(baseMesh.cellCenters());
+    shiftXInPlace(baseMesh.faceCenters());
+
+    // Owner-cell centres held on the boundary mesh need the same shift (const accessor → copy).
+    auto ownerCellCentersH = baseMesh.boundaryMesh().ownerCellCenters().copyToHost();
+    {
+        auto v = ownerCellCentersH.view();
+        for (localIdx i = 0; i < ownerCellCentersH.size(); ++i)
+            v[i][0] += xOffset;
+    }
+    auto ownerCellCentersGlobal = ownerCellCentersH.copyToExecutor(exec);
+
     BoundaryMesh boundaryMesh(
         exec,
         faceCells,
         {exec, bcFaceCentersVec},
-        baseMesh.boundaryMesh().ownerCellCenters(),
+        ownerCellCentersGlobal,
         {exec, bcFaceNormalsVec},
         {exec, bcFaceAreasVec},
         {exec, bcFaceUnitNormalsVec},
@@ -451,6 +483,13 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     const auto nInnerBoundaries =
         mesh.boundaryMesh().nBoundaries() - mesh.boundaryMesh().nProcBoundaryPatches();
 
+    // Per-proc-patch face count (in fvBoundaryMesh proc-patch / offset order).
+    auto patchSizes = std::vector<int>(neighbourRanks.size(), 0);
+
+    // ACCUMULATE per target rank. A single rank may own more than one proc patch to the SAME
+    // neighbour rank (typical on the middle rank of a Y-split / sheared cut); the previous code
+    // assigned sendCounts[targetRank] = patchSize, silently overwriting the first patch's count
+    // with the second. allToAllV needs the TOTAL count per peer, so accumulate with +=.
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
         const auto targetRank = static_cast<int>(neighbourRanks[static_cast<std::size_t>(i)]);
@@ -458,27 +497,45 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
             offsets[static_cast<std::size_t>(nInnerBoundaries + i + 1)]
             - offsets[static_cast<std::size_t>(nInnerBoundaries + i)]
         );
-        sendCounts[static_cast<std::size_t>(targetRank)] = patchSize;
+        patchSizes[static_cast<std::size_t>(i)] = patchSize;
+        sendCounts[static_cast<std::size_t>(targetRank)] += patchSize;
         sendCounts[static_cast<std::size_t>(mpiEnviron.sizeRank())] += patchSize;
     }
 
     const auto globalOffset = mesh.globalOffset();
     const auto faceCellsH = mesh.boundaryMesh().faceOwners().copyToHost();
 
-    auto buffer = std::vector<localIdx>();
-    buffer.reserve(static_cast<std::size_t>(mesh.boundaryMesh().nProcBoundaryFaces()));
-    const auto procStart = offsets[static_cast<std::size_t>(nInnerBoundaries)];
-    for (int i = 0; i < mesh.boundaryMesh().nProcBoundaryFaces(); i++)
+    // Send-displacement = prefix sum of per-rank send counts. This defines a contiguous block per
+    // peer in the send buffer, so a peer that receives from two non-adjacent proc patches still
+    // gets a single contiguous run (allToAllV cannot express a gapped per-peer region).
+    auto sdispl = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
+    for (int r = 1; r < mpiEnviron.sizeRank(); ++r)
     {
-        buffer.push_back(faceCellsH.view()[i + procStart] + globalOffset);
+        sdispl[static_cast<std::size_t>(r)] =
+            sdispl[static_cast<std::size_t>(r - 1)] + sendCounts[static_cast<std::size_t>(r - 1)];
     }
 
-    auto sdispl = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
+    // Pack the send buffer GROUPED BY TARGET RANK, honouring sdispl. A per-rank write cursor lets
+    // multiple proc patches to the same neighbour land contiguously (in proc-patch order) within
+    // that rank's block.
+    auto writeCursor = sdispl; // copy: running write position per rank
+    std::vector<int> sendBuffer(
+        static_cast<std::size_t>(sendCounts[static_cast<std::size_t>(mpiEnviron.sizeRank())])
+    );
+    const auto faceCellsView = faceCellsH.view();
     for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
     {
-        const auto targetRank = static_cast<int>(neighbourRanks[static_cast<std::size_t>(i)]);
-        sdispl[static_cast<std::size_t>(targetRank)] =
-            static_cast<int>(offsets[static_cast<std::size_t>(nInnerBoundaries + i)] - procStart);
+        const auto targetRank =
+            static_cast<std::size_t>(neighbourRanks[static_cast<std::size_t>(i)]);
+        const localIdx patchStart = offsets[static_cast<std::size_t>(nInnerBoundaries + i)];
+        const int patchSize = patchSizes[static_cast<std::size_t>(i)];
+        for (int k = 0; k < patchSize; ++k)
+        {
+            const auto globalCell = static_cast<int>(
+                faceCellsView[patchStart + static_cast<localIdx>(k)] + globalOffset
+            );
+            sendBuffer[static_cast<std::size_t>(writeCursor[targetRank]++)] = globalCell;
+        }
     }
 
     auto recvCounts = std::vector<int>(static_cast<std::size_t>(mpiEnviron.sizeRank()), 0);
@@ -493,10 +550,6 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     int totalRecv = rdispl.back() + recvCounts.back();
 
     auto recvIdx = std::vector<int>(static_cast<std::size_t>(totalRecv));
-
-    std::vector<int> sendBuffer(buffer.size());
-    for (std::size_t i = 0; i < buffer.size(); ++i)
-        sendBuffer[i] = static_cast<int>(buffer[i]);
 
     mpi::allToAllV<int>(
         sendBuffer.data(),

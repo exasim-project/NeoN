@@ -87,7 +87,12 @@ void setBoundarySparsityPatternImpl(
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces = static_cast<std::size_t>(mesh.nBoundaryFaces());
+    // Include processor boundary faces so each proc face's diagonal contribution can be recorded
+    // in boundaryMatrix and reversed by removeBoundaryContributions. boundaryMesh().faceOwners()
+    // is laid out [physical | processor]; in serial nProcBoundaryFaces() == 0 so the pattern is
+    // unchanged.
+    const auto nBoundaryFaces =
+        static_cast<std::size_t>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
     const auto diagOffsV = diagOffs.view();
     const auto faceCellsV = mesh.boundaryMesh().faceOwners().view();
     NF_ASSERT(nBoundaryFaces == rowIdx.size(), "Inconsistent size");
@@ -361,7 +366,8 @@ createBoundarySparsityPattern<CooSparsityPattern<localIdx>>(
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
+    const auto nBoundaryFaces =
+        static_cast<localIdx>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
     Vector<localIdx> rowIdx(exec, nBoundaryFaces, 0);
     Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
     setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);
@@ -378,7 +384,8 @@ createBoundarySparsityPattern<CsrSparsityPattern<localIdx>>(
 )
 {
     const auto exec = mesh.exec();
-    const auto nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
+    const auto nBoundaryFaces =
+        static_cast<localIdx>(mesh.nBoundaryFaces() + mesh.nProcBoundaryFaces());
     Vector<localIdx> rowIdx(exec, nBoundaryFaces, 0);
     Vector<localIdx> colIdx(exec, nBoundaryFaces, 0);
     setBoundarySparsityPatternImpl(mesh, faceToMatrixAddress.diagOffset(), rowIdx, colIdx);

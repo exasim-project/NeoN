@@ -43,8 +43,10 @@ inline void ddtFluxCorrBDF1Kernel(
     const scalar a1 = scalar(1) / dt;
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
 
-    // Internal faces
+    // Internal faces. mesh.faceNormals() is OF-full but its leading nInternalFaces
+    // entries coincide with the compressed internal-face Sf, so indexing by i is fine.
     auto [outV, flux0V, uf0V, SfV] = views(
         fluxCorr.internalVector(), flux0.internalVector(), uf0.internalVector(), mesh.faceNormals()
     );
@@ -60,14 +62,26 @@ inline void ddtFluxCorrBDF1Kernel(
         "ddtFluxCorr::BDF1::internal"
     );
 
-    // Boundary faces
+    // Boundary + processor faces.
+    // boundaryData().value() stores [physical boundary | processor] faces; the
+    // boundary-mesh Sf (mesh.boundaryMesh().faceNormals()) is the matching COMPRESSED
+    // face-area-normal field spanning the same range, so it is indexed directly by bfi.
+    // The previous code used the OF-full mesh.faceNormals()[nInternalFaces + bfi] and
+    // only looped over nBoundaryFaces: that reads the wrong face when empty/wedge
+    // patches are present, and never touched the processor tail at all -- leaving the
+    // ddt flux correction unset on processor faces and corrupting phiHbyA (hence the
+    // inflated Courant number) on distributed runs. The processor-patch BC is
+    // 'calculated' (no-op correctBoundaryCondition), so this locally computed proc-tail
+    // value survives the fluxCorr.correctBoundaryConditions() call below. See
+    // project_neon_compressed_face_indexing and the matching proc-face loop in
+    // pressureVelocityCoupling::flux.
     auto [outBV, flux0BV, uf0BV] = views(
         fluxCorr.boundaryData().value(), flux0.boundaryData().value(), uf0.boundaryData().value()
     );
     const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
-        {size_t(0), static_cast<size_t>(nBoundaryFaces)},
+        {size_t(0), static_cast<size_t>(nBoundaryFaces + nProcBoundaryFaces)},
         NEON_LAMBDA(const localIdx bfi) {
             const auto d = (bFaceNormals[bfi] & uf0BV[bfi]);
             const auto corr = flux0BV[bfi] - d;
@@ -96,6 +110,7 @@ inline void ddtFluxCorrBDF2Kernel(
     const scalar a2 = -0.5 / dt;
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
 
     // Internal faces
     {
@@ -126,7 +141,10 @@ inline void ddtFluxCorrBDF2Kernel(
         );
     }
 
-    // Boundary faces
+    // Boundary + processor faces. Compressed boundary-mesh Sf indexed by bfi over the
+    // [physical | processor] range; mirrors the BDF1 kernel (see its comment for why the
+    // OF-full mesh.faceNormals() must not be used here and why the processor tail must be
+    // included for correct distributed phiHbyA / Courant number).
     {
         auto outBV = fluxCorr.boundaryData().value().view();
         auto flux0BV = flux0.boundaryData().value().view();
@@ -136,7 +154,7 @@ inline void ddtFluxCorrBDF2Kernel(
         const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
         parallelFor(
             exec,
-            {size_t(0), static_cast<size_t>(nBoundaryFaces)},
+            {size_t(0), static_cast<size_t>(nBoundaryFaces + nProcBoundaryFaces)},
             NEON_LAMBDA(const localIdx bfi) {
                 const auto d1 = (bFaceNormals[bfi] & uf0BV[bfi]);
                 const auto corr1 = flux0BV[bfi] - d1;

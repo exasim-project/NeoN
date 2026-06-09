@@ -133,5 +133,10 @@ private:
 
     std::vector<VolumeBoundary<ValueType>> boundaryConditions_; // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
+
+    // Whether the one-time boundary set() pass has run for this field instance. Reset to false
+    // for copies (default member init below) so a copied field re-runs set() on its first
+    // correctBoundaryConditions() call.
+    bool boundaryConditionsSet_ {false};
 };
 } // namespace NeoN
