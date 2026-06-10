@@ -4,6 +4,7 @@
 
 #pragma once
 
+
 #include <Kokkos_Core.hpp>
 
 #include "NeoN/core/memory/allocator.hpp"

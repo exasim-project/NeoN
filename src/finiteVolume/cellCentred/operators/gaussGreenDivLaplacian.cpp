@@ -163,6 +163,118 @@ void computeDivLapImplCell(
     computeDivLapImplFace(ls, U, phi, gamma, divSurfInterp, faceNormalGradient, coeffA, coeffB);
 }
 
+template<typename ValueType>
+GaussGreenDivLaplacian<ValueType>::GaussGreenDivLaplacian(
+    const Executor& exec, Dictionary divConfig, Dictionary lapConfig
+)
+    : dsl::OperatorMixin<VolumeField<ValueType>>(
+        exec,
+        dsl::Coeff(1.0),
+        divConfig.get<detail::RefHolder<VolumeField<ValueType>>>("field").c,
+        dsl::Operator::Type::Implicit
+    ),
+      coeffA_(divConfig.get<detail::RefHolder<dsl::Coeff>>("coeff").c),
+      coeffB_(lapConfig.get<detail::RefHolder<dsl::Coeff>>("coeff").c),
+      gamma_(lapConfig.get<detail::RefHolder<SurfaceField<scalar>>>("gamma").c),
+      flux_(divConfig.get<detail::RefHolder<SurfaceField<scalar>>>("flux").c)
+{
+    // FIXME some sanity checks are needed
+    // are div and lap field the same
+}
+
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*source*/) const
+{}
+
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
+{
+    // FIXME I dont know how we can end up with a nullptr here double check
+    if (ls.getMeshIterator() == nullptr)
+    {
+        computeDivLapImplFace(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_.get(),
+            *faceNormalGradient_.get(),
+            coeffA_,
+            coeffB_
+        );
+        return;
+    }
+
+    if (ls.getMeshIterator()->name() == "CellBased")
+    {
+        computeDivLapImplCell(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_.get(),
+            *faceNormalGradient_.get(),
+            coeffA_,
+            coeffB_,
+            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
+        );
+        return;
+    }
+    if (ls.getMeshIterator()->name() == "FaceBased")
+    {
+        computeDivLapImplFace(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_.get(),
+            *faceNormalGradient_.get(),
+            coeffA_,
+            coeffB_
+        );
+        return;
+    }
+}
+
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
+{
+    const UnstructuredMesh& mesh = this->field_.mesh();
+    TokenList laplTokens;
+    TokenList divTokens;
+    if (std::holds_alternative<Dictionary>(input))
+    {
+        auto dict = std::get<Dictionary>(input);
+        std::string lapSchemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
+        std::string divSchemeName = "div(" + flux_.name + "," + this->getVector().name + ")";
+        laplTokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(lapSchemeName);
+        divTokens = dict.subDict("divSchemes").get<NeoN::TokenList>(divSchemeName);
+    }
+    else
+    {
+        NF_ERROR_EXIT("only dictionary input supported");
+    }
+    laplTokens.remove(0);
+    divTokens.remove(0);
+    divSurfaceInterpolation_ =
+        std::make_shared<SurfaceInterpolation<ValueType>>(this->field_.exec(), mesh, divTokens);
+    laplTokens.remove(0);
+    faceNormalGradient_ =
+        std::make_shared<FaceNormalGradient<ValueType>>(this->field_.exec(), mesh, laplTokens);
+}
+
+template<typename ValueType>
+std::string GaussGreenDivLaplacian<ValueType>::getName() const
+{
+    return "FusedDivLapOperator";
+}
+
+template<typename ValueType>
+Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
+{
+    return {};
+}
+
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivLapImplFace(                                                           \
         la::LinearSystem<TYPENAME>&,                                                               \
@@ -189,4 +301,7 @@ void computeDivLapImplCell(
 NN_DECLARE_COMPUTE_IMP_DIV(scalar);
 NN_DECLARE_COMPUTE_IMP_DIV(Vec3);
 
-};
+template class GaussGreenDivLaplacian<scalar>;
+template class GaussGreenDivLaplacian<Vec3>;
+
+} // namespace NeoN::finiteVolume::cellCentred
