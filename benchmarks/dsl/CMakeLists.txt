@@ -3,4 +3,3 @@
 # SPDX-License-Identifier: Unlicense
 
 neon_benchmark(transportOperator)
-neon_benchmark(optimizer)

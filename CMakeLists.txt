@@ -201,8 +201,13 @@ endif()
 
 if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
-  set(IWYU_PATH_AND_OPTIONS ${iwyu_path})
+  set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
+  # IWYU 8.21 segfaults on these files due to template complexity in the processor boundary
+  # hierarchy; exclude them from linting until upstream fix.
+  set_source_files_properties(
+    src/finiteVolume/cellCentred/boundary/surface/processor.cpp
+    src/finiteVolume/cellCentred/boundary/volume/processor.cpp PROPERTIES SKIP_LINTING ON)
 endif()
 
 include(cmake/banner.cmake)

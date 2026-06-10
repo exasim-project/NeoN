@@ -218,7 +218,7 @@ endif()
 
 if(${NeoN_WITH_GINKGO})
   # --- nlohmann_json ---
-  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET)
+  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET CONFIG)
   if(NOT nlohmann_json_FOUND)
     message(STATUS "System nlohmann_json not found — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(

@@ -100,23 +100,19 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     SECTION("Construct with MeshCellIterator " + execName)
     {
         auto nCells = 10;
+        auto nFaces = 9;
+        auto nnz = nCells + 2 * nFaces;
         auto mesh = create1DUniformMesh(exec, nCells);
-        auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
-            NeoN::la::CsrSparsityPattern<NeoN::localIdx>>(mesh);
+
         auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
-        cellIterator->setComputeCellBasedData(mesh, sp, mi);
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh, cellIterator);
 
-        Vector<scalar> rhs(exec, 3, 0.0);
-        Vector<scalar> bRhs(exec, 3, 0.0);
-        LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, rhs, bCooMatrix, bRhs, cellIterator
-        );
-
-        REQUIRE(linearSystem.matrix().values().size() == 9);
-        REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
-        REQUIRE(linearSystem.matrix().rowOffs().size() == 4);
-        REQUIRE(linearSystem.matrix().nRows() == 3);
-        REQUIRE(linearSystem.rhs().size() == 3);
+        REQUIRE(linearSystem.matrix().values().size() == nnz);
+        REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
+        REQUIRE(linearSystem.matrix().rowOffs().size() == nCells + 1);
+        REQUIRE(linearSystem.matrix().nRows() == nCells);
+        REQUIRE(linearSystem.rhs().size() == nCells);
+        REQUIRE(linearSystem.getMeshIterator()->name() == "CellBased");
     }
 
 

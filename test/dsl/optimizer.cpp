@@ -80,104 +80,22 @@ TEST_CASE("Optimizer")
 
         auto rhs = ls.rhs();
         auto rhsOpt = lsOpt.rhs();
-        SECTION("Has correct RHS") { compare(rhs, rhsOpt, ApproxScalar(epsilon)); }
+        SECTION("Has correct RHS") { REQUIRE_THAT(rhs, Equals(rhsOpt, Approx {epsilon})); }
 
         auto matDiag = ls.matrix().diag();
         auto matOptDiag = lsOpt.matrix().diag();
-        SECTION("Has correct diagonal") { compare(matDiag, matOptDiag, ApproxScalar(epsilon)); }
+        SECTION("Has correct diagonal")
+        {
+            REQUIRE_THAT(matDiag, Equals(matOptDiag, Approx {epsilon}));
+        }
 
         auto matUpper = upper(ls.matrix());
         auto matOptUpper = upper(lsOpt.matrix());
-        SECTION("Has correct upper") { compare(matUpper, matOptUpper, ApproxScalar(epsilon)); }
+        SECTION("Has correct upper")
+        {
+            REQUIRE_THAT(matUpper, Equals(matOptUpper, Approx {epsilon}));
+        }
     }
-
-    SECTION("Can optimize div + laplacian and assemble cell based " + execName)
-    {
-        auto input = NeoN::Dictionary {
-            {
-                "laplacianSchemes",
-                NeoN::Dictionary {
-                    {"laplacian(gamma,U)",
-                     NeoN::TokenList(
-                         {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
-                     )}
-                },
-            },
-            {"divSchemes",
-             NeoN::Dictionary {
-                 {"div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
-             }}
-        };
-
-        auto expr = NeoN::dsl::imp::laplacian(gamma, U) - NeoN::dsl::imp::div(phi, U);
-        auto exprOpt = dsl::optimize(expr);
-
-        REQUIRE(expr.size() == 2);
-        REQUIRE(exprOpt.size() == 1);
-
-        expr.read(input);
-        exprOpt.read(input);
-
-        auto ls = expr.assemble(mesh, 1.0, 1.0);
-        auto lsOpt = exprOpt.assemble(mesh, 1.0, 1.0);
-
-        auto rhs = ls.rhs();
-        auto rhsOpt = lsOpt.rhs();
-        SECTION("Has correct RHS") { compare(rhs, rhsOpt, ApproxScalar(epsilon)); }
-
-        auto matDiag = ls.matrix().diag();
-        auto matOptDiag = lsOpt.matrix().diag();
-        SECTION("Has correct diagonal") { compare(matDiag, matOptDiag, ApproxScalar(epsilon)); }
-
-        auto matUpper = upper(ls.matrix());
-        auto matOptUpper = upper(lsOpt.matrix());
-        SECTION("Has correct upper") { compare(matUpper, matOptUpper, ApproxScalar(epsilon)); }
-    }
-
-
-    // SECTION("Can optimize cellBased ddt + div + laplacian " + execName)
-    // {
-    //     auto input = NeoN::Dictionary {
-    //         {
-    //             "laplacianSchemes",
-    //             NeoN::Dictionary {
-    //                 {"laplacian(gamma,U)",
-    //                  NeoN::TokenList(
-    //                      {std::string("Gauss"), std::string("linear"),
-    //                      std::string("uncorrected")}
-    //                  )}
-    //             },
-    //         },
-    //         {"divSchemes",
-    //          NeoN::Dictionary {
-    //              {"div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
-    //          }}
-    //     };
-
-    //     auto expr = NeoN::dsl::imp::ddt(U) + NeoN::dsl::imp::laplacian(gamma, U)
-    //               - NeoN::dsl::imp::div(phi, U);
-
-    //     auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
-    //     auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
-    //     cellIterator->setComputeCellBasedData(mesh, mi);
-
-    //     auto optimizer = std::vector<
-    //         std::shared_ptr<NeoN::dsl::Optimizer<NeoN::dsl::Expression<NeoN::scalar>>>> {
-    //         std::make_shared<NeoN::dsl::DdtDivLapOptimizer<NeoN::dsl::Expression<NeoN::scalar>>>()
-    //     };
-
-    //     auto lsOpt = NeoN::la::createEmptyLinearSystem<scalar>(mesh, cellIterator);
-    //     auto exprOpt = dsl::optimize(expr, optimizer);
-
-    //     REQUIRE(expr.size() == 3);
-    //     REQUIRE(exprOpt.size() == 1);
-
-    //     //         expr.read(input);
-    //     exprOpt.read(input);
-
-    //     //        auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
-    //     exprOpt.assemble(1.0, 1.0, lsOpt);
-    // }
 }
 
 }

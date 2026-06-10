@@ -4,11 +4,11 @@
 
 #pragma once
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/dsl/expression.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
-#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.hpp"
 
 namespace NeoN::dsl
 {
@@ -129,8 +129,7 @@ ExpressionType optimize(const ExpressionType& in)
  */
 template<typename ExpressionType>
 ExpressionType optimize(
-    const ExpressionType& in,
-    const std::vector<std::shared_ptr<Optimizer<ExpressionType>>>& opts
+    const ExpressionType& in, const std::vector<std::shared_ptr<Optimizer<ExpressionType>>>& opts
 )
 {
     ExpressionType out(in);

@@ -11,13 +11,12 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
-void computeDivLapImplFace(
+void computeDivLaplacianIntImpl(
     la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& U,
+    const VolumeField<ValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    //    const SurfaceInterpolation<ValueType>& lapSurfInterp,
+    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
@@ -26,25 +25,14 @@ void computeDivLapImplFace(
     const UnstructuredMesh& mesh = phi.mesh();
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
-    //    const auto weights = divSurfInterp.weight(phi, U);
-    const auto sp = ls.faceToMatrixAddress();
-    // const auto weightsI = lapSurfInterp.weight(phi, U);
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
-    auto matrix = ls.matrix().view();
-    auto rhs = ls.rhs().view();
     const auto [gammaV, deltaV] =
         views(gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector());
-    const auto [diaOffV, ownOffV, neiOffV] =
-        views(sp->diagOffset(), sp->ownerOffset(), sp->neighbourOffset());
-    const auto [phiV, /* weightsV, */ ownV, neiV, magFaceAreaV] = views(
-        phi.internalVector(),
-        // weights.internalVector(),
-        mesh.faceOwners(),
-        mesh.faceNeighbors(),
-        mesh.faceAreas()
-    );
+    const auto [phiV, ownV, neiV, magFaceAreaV] =
+        views(phi.internalVector(), mesh.faceOwners(), mesh.faceNeighbors(), mesh.faceAreas());
 
-    auto oneV = one<ValueType>();
+    auto values = ls.matrix().values().view();
 
     parallelFor(
         exec,
@@ -57,110 +45,166 @@ void computeDivLapImplFace(
             const auto weight = (phiV[facei] >= 0) ? 1.0 : 0.0;
             auto fluxLap = deltaV[facei] * gammaV[facei] * magFaceAreaV[facei];
 
-            // add neighbour contribution upper
-            auto rowNeiStart = matrix.sparsity.rowOffs[nei];
-            auto rowOwnStart = matrix.sparsity.rowOffs[own];
-
-            // FIXME after profiling this shouldnt be hardcoded
             auto coeffNeiA = coeffA[nei];
             auto coeffOwnA = coeffA[own];
             auto coeffNeiB = coeffB[nei];
             auto coeffOwnB = coeffB[own];
 
-            auto valueDiv = -weight * coeffNeiA * fluxDiv;
-            auto valueLap = coeffNeiB * fluxLap;
+            // lower triangular (nei row, own col)
+            auto valueA = (-weight * coeffNeiA * fluxDiv + coeffNeiB * fluxLap) * one<ValueType>();
+            values[ma.lowerIdx(nei, facei)] += valueA;
+            Kokkos::atomic_sub(&values[ma.diagIdx(own)], valueA);
 
-            auto valueA = valueDiv + valueLap;
-            matrix.values[rowNeiStart + neiOffV[facei]] += valueA * oneV;
-            Kokkos::atomic_sub(&matrix.values[rowOwnStart + diaOffV[own]], valueA * oneV);
-
-            // upper triangular part
-            // add owner contribution lower
-            valueDiv = (1 - weight) * coeffOwnA * fluxDiv;
-            valueLap = coeffOwnB * fluxLap;
-            auto valueB = valueDiv + valueLap;
-
-            matrix.values[rowOwnStart + ownOffV[facei]] += valueB * oneV;
-            Kokkos::atomic_sub(&matrix.values[rowNeiStart + diaOffV[nei]], valueB * oneV);
+            // upper triangular (own row, nei col)
+            auto valueB =
+                ((1.0 - weight) * coeffOwnA * fluxDiv + coeffOwnB * fluxLap) * one<ValueType>();
+            values[ma.upperIdx(own, facei)] += valueB;
+            Kokkos::atomic_sub(&values[ma.diagIdx(nei)], valueB);
         },
-        "computeLocalGaussGreenDivCoefficients"
+        "computeLocalGaussGreenDivLaplacianCoefficients"
+    );
+}
+
+template<typename ValueType>
+void computeDivLaplacianBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const VolumeField<ValueType>& U,
+    const SurfaceField<scalar>& phi,
+    const SurfaceField<scalar>& gamma,
+    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const dsl::Coeff coeffA,
+    const dsl::Coeff coeffB
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto exec = phi.exec();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto [bPhiV, bGammaV, bDeltaV, bMagSf, surfFaceCells] = views(
+        phi.boundaryData().value(),
+        gamma.boundaryData().value(),
+        faceNormalGradient.deltaCoeffs().boundaryData().value(),
+        mesh.boundaryMesh().faceAreas(),
+        mesh.boundaryMesh().faceOwners()
     );
 
-    // FIXME
-    const auto surfFaceCells = mesh.boundaryMesh().faceOwners().view();
-    auto [/*bweights,*/ refGradient, value, valueFraction, refValue, deltaCoeffsA] = views(
-        // weights.boundaryData().value(),
+    const auto [refGradient, valueFraction, refValue, deltaCoeffsA] = views(
         U.boundaryData().refGrad(),
-        U.boundaryData().value(),
         U.boundaryData().valueFraction(),
         U.boundaryData().refValue(),
         mesh.boundaryMesh().deltaCoeffs()
     );
 
+    auto values = ls.matrix().values().view();
+    auto rhs = ls.rhs().view();
     auto bRhs = ls.boundaryRhs().view();
     auto bValues = ls.boundaryMatrix().values().view();
 
     parallelFor(
         exec,
-        {nInternalFaces, phiV.size()},
-        NEON_LAMBDA(const localIdx facei) {
-            auto oneV = one<ValueType>();
-            auto bcfacei = facei - nInternalFaces;
-
-            auto fluxDiv = phiV[facei];
-            auto fluxLap = gammaV[facei] * magFaceAreaV[facei];
-
-            auto own = surfFaceCells[bcfacei];
-            auto rowOwnStart = matrix.sparsity.rowOffs[own];
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = surfFaceCells[bfi];
             auto coeffAOwn = coeffA[own];
             auto coeffBOwn = coeffB[own];
 
-            auto valFrac1 = valueFraction[bcfacei];
+            auto fluxDiv = bPhiV[bfi];
+            auto fluxLap = bGammaV[bfi] * bMagSf[bfi];
+
+            auto valFrac1 = valueFraction[bfi];
             auto valFrac2 = 1.0 - valFrac1;
 
-            auto bweights = 1.0;
+            const auto bweights = (fluxDiv >= 0) ? scalar(1) : scalar(0);
 
-            // FIXME
-            auto valueDiv = -bweights /*[bcfacei]*/ * coeffAOwn * fluxDiv * valFrac2;
-            auto valueLap = deltaV[facei] * coeffBOwn * fluxLap * valFrac1;
+            auto valueDiv = -bweights * coeffAOwn * fluxDiv * valFrac2;
+            auto valueLap = bDeltaV[bfi] * coeffBOwn * fluxLap * valFrac1;
+            auto valueA = (valueDiv + valueLap) * one<ValueType>();
 
-            auto valueA = (valueDiv + valueLap) * oneV;
+            Kokkos::atomic_sub(&values[ma.diagIdx(own)], valueA);
+            bValues[bfi] = valueA * (-1.0);
 
-            Kokkos::atomic_sub(&matrix.values[rowOwnStart + diaOffV[own]], valueA);
-            bValues[bcfacei] = valueA * (-1.0);
-
-            // div
-            auto valueRhsA = ((fluxDiv * coeffAOwn) * (valFrac1 * refValue[bcfacei]))
-                           + valFrac2 * refGradient[bcfacei] * (1 / deltaCoeffsA[bcfacei]);
-            // lap
+            // div rhs
+            auto valueRhsA = (fluxDiv * coeffAOwn * (valFrac1 * refValue[bfi]))
+                           + valFrac2 * refGradient[bfi] * (1.0 / deltaCoeffsA[bfi]);
+            // lap rhs
             auto valueRhsB =
                 fluxLap * coeffBOwn
-                * (valFrac1 * refValue[bcfacei] * deltaV[facei] + valFrac2 * refGradient[bcfacei]);
+                * (valFrac1 * refValue[bfi] * bDeltaV[bfi] + valFrac2 * refGradient[bfi]);
 
             Kokkos::atomic_sub(&rhs[own], valueRhsA);
             Kokkos::atomic_sub(&rhs[own], valueRhsB);
-
-            bRhs[bcfacei] = (valueRhsA + valueRhsB);
+            bRhs[bfi] = valueRhsA + valueRhsB;
         },
-        "computeInterfaceGaussGreenDivCoefficients"
+        "computeInterfaceGaussGreenDivLaplacianCoefficients"
     );
-};
+}
 
 template<typename ValueType>
-void computeDivLapImplCell(
+void computeDivLaplacianProcBoundImpl(
     la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& U,
+    const VolumeField<ValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
+    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB,
-    std::shared_ptr<la::CellBasedIterator> /*iterator*/
+    const dsl::Coeff coeffB
 )
 {
-    // TODO: implement cell-based iteration; fall back to face-based for now
-    computeDivLapImplFace(ls, U, phi, gamma, divSurfInterp, faceNormalGradient, coeffA, coeffB);
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces == 0) return;
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto [bPhiV, bGammaV, bDeltaCoeffs, bMagSf, boundaryFaceOwner, isOwner] = views(
+        phi.boundaryData().value(),
+        gamma.boundaryData().value(),
+        faceNormalGradient.deltaCoeffs().boundaryData().value(),
+        mesh.boundaryMesh().faceAreas(),
+        mesh.boundaryMesh().faceOwners(),
+        mesh.boundaryMesh().weights()
+    );
+
+    auto bOffValues = ls.offDiagonalMatrix().values().view();
+    auto bndDiagValues = ls.boundaryMatrix().values().view();
+    auto values = ls.matrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        NEON_LAMBDA(const localIdx procFacei) {
+            auto bcfacei = nBoundaryFaces + procFacei;
+            auto cell = boundaryFaceOwner[bcfacei];
+            auto ownCoeffA = coeffA[cell];
+            auto ownCoeffB = coeffB[cell];
+
+            // Laplacian contribution
+            auto lapFlux = bGammaV[bcfacei] * bMagSf[bcfacei] * bDeltaCoeffs[bcfacei];
+            auto lapValue = lapFlux * ownCoeffB * one<ValueType>();
+
+            // Div upwind contribution
+            auto isOwnerFace = isOwner[bcfacei] > 0.0;
+            auto sign = isOwnerFace ? scalar(-1) : scalar(1);
+            auto bFlux = bPhiV[bcfacei];
+            auto weight = isOwnerFace ? (bFlux >= 0 ? scalar(1) : scalar(0))
+                                      : (bFlux >= 0 ? scalar(0) : scalar(1));
+            auto divDiag = sign * weight * bFlux * ownCoeffA * one<ValueType>();
+            auto divOffDiag = -sign * (scalar(1) - weight) * bFlux * ownCoeffA * one<ValueType>();
+
+            auto diagValue = divDiag + lapValue;
+            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagValue);
+            bndDiagValues[bcfacei] += diagValue;
+            bOffValues[procFacei] += divOffDiag + lapValue;
+        },
+        "computeProcInterfaceGaussGreenDivLaplacianCoefficients"
+    );
 }
 
 template<typename ValueType>
@@ -177,10 +221,7 @@ GaussGreenDivLaplacian<ValueType>::GaussGreenDivLaplacian(
       coeffB_(lapConfig.get<detail::RefHolder<dsl::Coeff>>("coeff").c),
       gamma_(lapConfig.get<detail::RefHolder<SurfaceField<scalar>>>("gamma").c),
       flux_(divConfig.get<detail::RefHolder<SurfaceField<scalar>>>("flux").c)
-{
-    // FIXME some sanity checks are needed
-    // are div and lap field the same
-}
+{}
 
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*source*/) const
@@ -189,51 +230,41 @@ void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*s
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    // FIXME I dont know how we can end up with a nullptr here double check
-    if (ls.getMeshIterator() == nullptr)
+    if (ls.getMeshIterator() != nullptr && ls.getMeshIterator()->name() == "CellBased")
     {
-        computeDivLapImplFace(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_.get(),
-            *faceNormalGradient_.get(),
-            coeffA_,
-            coeffB_
-        );
-        return;
+        NF_ERROR_EXIT("GaussGreenDivLaplacian does not support cell-based assembly.");
     }
 
-    if (ls.getMeshIterator()->name() == "CellBased")
-    {
-        computeDivLapImplCell(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_.get(),
-            *faceNormalGradient_.get(),
-            coeffA_,
-            coeffB_,
-            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
-        );
-        return;
-    }
-    if (ls.getMeshIterator()->name() == "FaceBased")
-    {
-        computeDivLapImplFace(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_.get(),
-            *faceNormalGradient_.get(),
-            coeffA_,
-            coeffB_
-        );
-        return;
-    }
+    computeDivLaplacianIntImpl(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
+    computeDivLaplacianBoundImpl(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
+    computeDivLaplacianProcBoundImpl(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
 }
 
 template<typename ValueType>
@@ -256,11 +287,24 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     }
     laplTokens.remove(0);
     divTokens.remove(0);
+
+    if (divTokens.get<std::string>(0) != "upwind")
+    {
+        NF_ERROR_EXIT(
+            "GaussGreenDivLaplacian only supports 'Gauss upwind' for divSchemes, got: Gauss "
+            << divTokens.get<std::string>(0)
+        );
+    }
     divSurfaceInterpolation_ =
         std::make_shared<SurfaceInterpolation<ValueType>>(this->field_.exec(), mesh, divTokens);
     laplTokens.remove(0);
     faceNormalGradient_ =
         std::make_shared<FaceNormalGradient<ValueType>>(this->field_.exec(), mesh, laplTokens);
+    if (faceNormalGradient_->hasImplicitCorrection())
+    {
+        NF_ERROR_EXIT("GaussGreenDivLaplacian does not support non-orthogonal correction. "
+                      "Use 'Gauss linear uncorrected' for laplacianSchemes.");
+    }
 }
 
 template<typename ValueType>
@@ -275,8 +319,8 @@ Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
     return {};
 }
 
-#define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
-    template void computeDivLapImplFace(                                                           \
+#define NN_DECLARE_DIVLAP_IMPL(TYPENAME)                                                           \
+    template void computeDivLaplacianIntImpl(                                                      \
         la::LinearSystem<TYPENAME>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
         const SurfaceField<scalar>&,                                                               \
@@ -286,7 +330,7 @@ Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
         const dsl::Coeff,                                                                          \
         const dsl::Coeff                                                                           \
     );                                                                                             \
-    template void computeDivLapImplCell(                                                           \
+    template void computeDivLaplacianBoundImpl(                                                    \
         la::LinearSystem<TYPENAME>&,                                                               \
         const VolumeField<TYPENAME>&,                                                              \
         const SurfaceField<scalar>&,                                                               \
@@ -294,12 +338,21 @@ Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
         const SurfaceInterpolation<TYPENAME>&,                                                     \
         const FaceNormalGradient<TYPENAME>&,                                                       \
         const dsl::Coeff,                                                                          \
+        const dsl::Coeff                                                                           \
+    );                                                                                             \
+    template void computeDivLaplacianProcBoundImpl(                                                \
+        la::LinearSystem<TYPENAME>&,                                                               \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const SurfaceField<scalar>&,                                                               \
+        const SurfaceInterpolation<TYPENAME>&,                                                     \
+        const FaceNormalGradient<TYPENAME>&,                                                       \
         const dsl::Coeff,                                                                          \
-        std::shared_ptr<la::CellBasedIterator> iterator                                            \
+        const dsl::Coeff                                                                           \
     )
 
-NN_DECLARE_COMPUTE_IMP_DIV(scalar);
-NN_DECLARE_COMPUTE_IMP_DIV(Vec3);
+NN_DECLARE_DIVLAP_IMPL(scalar);
+NN_DECLARE_DIVLAP_IMPL(Vec3);
 
 template class GaussGreenDivLaplacian<scalar>;
 template class GaussGreenDivLaplacian<Vec3>;

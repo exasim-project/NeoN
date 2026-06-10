@@ -40,7 +40,8 @@ SegmentedVector<localIdx, localIdx> CellToFaceStencil::computeInternalStencil() 
 
     fill(nFacesPerCell, 0); // reset nFacesPerCell
 
-    // FIXME this might lead to undefined order
+    // TODO on GPU this might lead to undefined order
+    // find an implementation that guarantees the correct order
     parallelFor(
         serialExec,
         {0, nInternalFaces},

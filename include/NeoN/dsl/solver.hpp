@@ -13,6 +13,7 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/dsl/expression.hpp"
+#include "NeoN/dsl/optimizer.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -36,14 +37,13 @@ la::SolverStats iterativeSolveImpl(
     std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
-    auto optExp = optimize(exp);
-    optExp.read(fvSchemes);
-    optExp.assemble(t, dt, ls, ps);
+    exp.read(fvSchemes);
+    exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or
     // into functor ?
     // subtract the explicit source term from the rhs
-    auto expTmp = optExp.explicitOperation(solution.mesh().nCells());
+    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
     auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
     parallelFor(
         solution.exec(),
@@ -69,8 +69,7 @@ la::SolverStats iterativeSolveImpl(
     std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
-    auto optExp = optimize(exp);
-    auto ls = optExp.assemble(solution.mesh(), t, dt, ps);
+    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());

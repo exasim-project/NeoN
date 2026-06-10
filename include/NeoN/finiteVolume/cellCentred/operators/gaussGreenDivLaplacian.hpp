@@ -15,27 +15,36 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
-void computeDivLapImplCell(
+void computeDivLaplacianIntImpl(
     la::LinearSystem<ValueType>& ls,
     const VolumeField<ValueType>& U,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<ValueType>& divSurfInterp,
-    // const SurfaceInterpolation<ValueType>& lapSurfInterp,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB,
-    std::shared_ptr<la::CellBasedIterator> iterator
+    const dsl::Coeff coeffB
 );
 
 template<typename ValueType>
-void computeDivLapImplFace(
+void computeDivLaplacianBoundImpl(
     la::LinearSystem<ValueType>& ls,
     const VolumeField<ValueType>& U,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<ValueType>& divSurfInterp,
-    // const SurfaceInterpolation<ValueType>& lapSurfInterp,
+    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const dsl::Coeff coeffA,
+    const dsl::Coeff coeffB
+);
+
+template<typename ValueType>
+void computeDivLaplacianProcBoundImpl(
+    la::LinearSystem<ValueType>& ls,
+    const VolumeField<ValueType>& U,
+    const SurfaceField<scalar>& phi,
+    const SurfaceField<scalar>& gamma,
+    const SurfaceInterpolation<ValueType>& divSurfInterp,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
