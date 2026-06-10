@@ -549,17 +549,48 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     }
     int totalRecv = rdispl.back() + recvCounts.back();
 
-    auto recvIdx = std::vector<int>(static_cast<std::size_t>(totalRecv));
+    auto recvRankGrouped = std::vector<int>(static_cast<std::size_t>(totalRecv));
 
     mpi::allToAllV<int>(
         sendBuffer.data(),
         sendCounts.data(),
         sdispl.data(),
-        recvIdx.data(),
+        recvRankGrouped.data(),
         recvCounts.data(),
         rdispl.data(),
         mpiEnviron.comm()
     );
+
+    // allToAllV delivers recvRankGrouped ordered by ASCENDING SOURCE RANK (one contiguous block
+    // per peer, at rdispl[r]). The off-diagonal sparsity, however, consumes recvIdx in LOCAL
+    // proc-FACE order: colIdx[pfacei] = recvIdx[pfacei], where pfacei runs over the local processor
+    // faces in proc-patch (offset) order. Those two orderings coincide only when the local
+    // proc-patch order equals ascending neighbour-rank order (e.g. a 1D strip, or rank 0/1 of a
+    // 2x2 grid). On a rank whose patch order differs (rank 2 of a 2x2 grid has patches to [3, 0],
+    // not [0, 3]), feeding the rank-grouped buffer directly swaps the off-diagonal columns between
+    // patches, mapping each processor face's coupling to the wrong remote cell. That corrupts the
+    // convective/diffusive proc-face off-diagonals (worst on the streamwise momentum component),
+    // which in turn corrupts hByA and inflates the pressure RHS on large multi-patch meshes.
+    //
+    // Scatter into proc-face order: walk the local proc patches in offset order and, for each,
+    // copy the next run of its neighbour's recv block (advancing a per-neighbour read cursor so
+    // multiple local patches sharing one neighbour consume that block sequentially). Within a
+    // shared patch both ranks enumerate the faces in the same physical order (the standard
+    // processor-patch ordering guarantee already relied upon elsewhere), so a contiguous run lines
+    // up face-by-face.
+    auto recvIdx = std::vector<int>(static_cast<std::size_t>(totalRecv));
+    auto readCursor = rdispl; // per-source-rank running read position into recvRankGrouped
+    int writePos = 0;
+    for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
+    {
+        const auto srcRank = static_cast<std::size_t>(neighbourRanks[static_cast<std::size_t>(i)]);
+        const int patchSize = patchSizes[static_cast<std::size_t>(i)];
+        for (int k = 0; k < patchSize; ++k)
+        {
+            recvIdx[static_cast<std::size_t>(writePos++)] =
+                recvRankGrouped[static_cast<std::size_t>(readCursor[srcRank]++)];
+        }
+    }
 
     std::vector<localIdx> boundaryMapVector;
     return CommunicationPattern {sendCounts, recvIdx, boundaryMapVector, mpiEnviron};
