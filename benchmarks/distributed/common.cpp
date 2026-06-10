@@ -217,7 +217,7 @@ void runDistributedMomentumBenchmark(
     NeoN::fill(p.internalVector(), 1.0);
     p.correctBoundaryConditions();
 
-    DYNAMIC_SECTION(sectionName + " - momentum assemble - face based")
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - face based - vec3")
     {
         auto ls = la::createEmptyLinearSystem<NeoN::Vec3>(mesh);
         auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
@@ -238,7 +238,28 @@ void runDistributedMomentumBenchmark(
         };
     }
 
-    DYNAMIC_SECTION(sectionName + " - momentum assemble - cell based")
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - face based - scalar")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
+                  + NeoN::dsl::exp::grad(p);
+        expr.read(fvSchemes());
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    expr.assemble<NeoN::scalar>(0.0, 1.0, ls);
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - cell based - Vec3")
     {
         auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
         auto ls = NeoN::la::createEmptyLinearSystem<NeoN::Vec3>(mesh, cellIterator);
@@ -259,6 +280,100 @@ void runDistributedMomentumBenchmark(
             );
         };
     }
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble + Gko no solve - scalar")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
+                  + NeoN::dsl::exp::grad(p);
+        expr.read(fvSchemes());
+
+        NeoN::Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Gmres"},
+             {"criteria", NeoN::Dictionary {{{"iteration", 0}, {"relative_residual_norm", 1.0}}}}}
+        };
+
+        auto x = NeoN::Vector<NeoN::Vec3>(exec, mesh.nCells());
+        NeoN::fill(x, NeoN::zero<NeoN::Vec3>());
+
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+
+                    auto solver = NeoN::la::Solver(exec, solverDict);
+                    expr.assemble<NeoN::scalar>(0.0, 1.0, ls);
+                    auto solverStats = solver.solve(ls, x);
+
+                    fence(exec);
+                    ls.reset();
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble + Gko no solve - Vec3")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
+                  + NeoN::dsl::exp::grad(p);
+        expr.read(fvSchemes());
+
+        NeoN::Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Gmres"},
+             {"criteria", NeoN::Dictionary {{{"iteration", 0}, {"relative_residual_norm", 1.0}}}}}
+        };
+
+        auto x = NeoN::Vector<NeoN::Vec3>(exec, mesh.nCells());
+        NeoN::fill(x, NeoN::zero<NeoN::Vec3>());
+
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+
+                    auto solver = NeoN::la::Solver(exec, solverDict);
+                    expr.assemble<NeoN::Vec3>(0.0, 1.0, ls);
+                    auto solverStats = solver.solve(ls, x);
+
+                    fence(exec);
+                    ls.reset();
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    // DYNAMIC_SECTION(sectionName + " - momentum assemble - cell based - scalar")
+    // {
+    //     auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+    //     auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh,
+    //     cellIterator); auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
+    //       + NeoN::dsl::exp::grad(p);
+    //     expr.read(fvSchemes());
+    //     BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+    //     {
+    //         MPI_Barrier(MPI_COMM_WORLD);
+    //         meter.measure(
+    //             [&]
+    //             {
+    //                 U.correctBoundaryConditions();
+    //                 expr.assemble(0.0, 1.0, ls);
+    //                 fence(exec);
+    //                 MPI_Barrier(MPI_COMM_WORLD);
+    //             }
+    //         );
+    //     };
+    // }
 }
 
 
