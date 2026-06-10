@@ -107,7 +107,7 @@ public:
  * @return                 Optimized expression.
  */
 template<typename ExpressionType>
-ExpressionType optimize(const ExpressionType in)
+ExpressionType optimize(const ExpressionType& in)
 {
     auto optimizer = std::vector<std::shared_ptr<Optimizer<ExpressionType>>> {
         std::make_shared<DivLapOptimizer<ExpressionType>>()
@@ -128,12 +128,14 @@ ExpressionType optimize(const ExpressionType in)
  * @return                 Optimized expression.
  */
 template<typename ExpressionType>
-ExpressionType
-optimize(const ExpressionType in, std::vector<std::shared_ptr<Optimizer<ExpressionType>>> opts)
+ExpressionType optimize(
+    const ExpressionType& in,
+    const std::vector<std::shared_ptr<Optimizer<ExpressionType>>>& opts
+)
 {
-    ExpressionType out = ExpressionType(in);
+    ExpressionType out(in);
 
-    for (auto opt : opts)
+    for (const auto& opt : opts)
     {
         out = opt->optimize(out);
     }
