@@ -120,7 +120,7 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
         Vector<Vec3> x(exec, mesh.nCells(), zero<Vec3>());
         auto solverStats = solver.solve(ls, x);
 
-        REQUIRE(solverStats.entries.size() > 0);
+        REQUIRE(solverStats.entries.size() == 3); // one entry per Vec3 component
         const auto& stats = solverStats.entries[0];
 
         // The solver must have iterated at least once.

@@ -27,7 +27,7 @@ public:
         NF_ERROR_EXIT("Not implemented");
     }
 
-    void implicitOperation(la::LinearSystem<scalar, localIdx>&, scalar, scalar) const
+    void implicitOperation(la::LinearSystem<scalar>&, scalar, scalar) const
     {
         NF_ERROR_EXIT("Not implemented");
     }
