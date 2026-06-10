@@ -13,10 +13,11 @@
 
 ### Misc
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
-- Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
 - Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
+- Support AssemblyType != ValueType for Vec3 fields [#536](https://github.com/exasim-project/NeoN/pull/536)
 - Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
+- Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
 
 ## Fixes
 - Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)

@@ -358,6 +358,7 @@ SolverStats GinkgoSolver::solveDist(
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
 
+    // TODO here Ginkgos multiple RHS solver could be used
     auto stats = SolverStats {};
     solveVec3RhsComponentDist<0>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
     solveVec3RhsComponentDist<1>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
