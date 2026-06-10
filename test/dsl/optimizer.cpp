@@ -10,6 +10,7 @@
 #include "common.hpp"
 
 namespace dsl = NeoN::dsl;
+using Catch::randomizeVector;
 
 
 namespace NeoN
@@ -74,8 +75,8 @@ TEST_CASE("Optimizer")
         expr.read(input);
         exprOpt.read(input);
 
-        auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
-        auto [spOpt, lsOpt] = exprOpt.assemble(mesh, 1.0, 1.0);
+        auto ls = expr.assemble(mesh, 1.0, 1.0);
+        auto lsOpt = exprOpt.assemble(mesh, 1.0, 1.0);
 
         auto rhs = ls.rhs();
         auto rhsOpt = lsOpt.rhs();
@@ -117,14 +118,8 @@ TEST_CASE("Optimizer")
         expr.read(input);
         exprOpt.read(input);
 
-        auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
-        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
-        cellIterator->setComputeCellBasedData(mesh, mi);
-
-        auto lsOpt = NeoN::la::createEmptyLinearSystem<scalar>(mesh, cellIterator);
-
-        auto [sp, ls] = expr.assemble(mesh, 1.0, 1.0);
-        exprOpt.assemble(1.0, 1.0, lsOpt);
+        auto ls = expr.assemble(mesh, 1.0, 1.0);
+        auto lsOpt = exprOpt.assemble(mesh, 1.0, 1.0);
 
         auto rhs = ls.rhs();
         auto rhsOpt = lsOpt.rhs();

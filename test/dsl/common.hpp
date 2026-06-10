@@ -43,24 +43,6 @@ void compare(const FieldType& a, const FieldType& b, Compare comp)
     REQUIRE_THAT(aHost.view(), Catch::Matchers::RangeEquals(bHost.view(), comp));
 }
 
-template<typename VectorValueType>
-void randomizeVector(fvcc::VolumeField<VectorValueType>& a)
-{
-    // std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    // std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    // std::uniform_real_distribution<> dis(1.0, 2.0);
-
-    auto b = NeoN::Vector<VectorValueType>(NeoN::SerialExecutor(), a.size());
-    auto bV = b.view();
-
-    for (int i = 0; i < b.size(); i++)
-    {
-        bV[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-    }
-    auto c = b.copyToExecutor(a.exec());
-    a.internalVector() = c;
-}
-
 
 /* helper struct to create a vector in the database
  */

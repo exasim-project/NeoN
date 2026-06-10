@@ -101,13 +101,15 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     {
         auto nCells = 10;
         auto mesh = create1DUniformMesh(exec, nCells);
-        auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+        auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
+            NeoN::la::CsrSparsityPattern<NeoN::localIdx>>(mesh);
         auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
-        cellIterator->setComputeCellBasedData(mesh, mi);
+        cellIterator->setComputeCellBasedData(mesh, sp, mi);
 
         Vector<scalar> rhs(exec, 3, 0.0);
+        Vector<scalar> bRhs(exec, 3, 0.0);
         LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, rhs, csrMatrix, rhs, mi, cellIterator
+            csrMatrix, rhs, bCooMatrix, bRhs, cellIterator
         );
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
@@ -116,7 +118,6 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(linearSystem.matrix().nRows() == 3);
         REQUIRE(linearSystem.rhs().size() == 3);
     }
-
 
 
     SECTION("view read/write " + execName)

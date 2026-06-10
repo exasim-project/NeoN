@@ -36,31 +36,32 @@ public:
         ExpressionType out(expr);
 
         // early return if not both operators are present
-        if (!(expr.hasOperator("DivOperator") && expr.hasOperator("LaplacianOperator")))
+        if (!(expr.template hasOperator<Operator::Type::Implicit>("DivOperator")
+              && expr.template hasOperator<Operator::Type::Implicit>("LaplacianOperator")))
         {
             return out;
         }
 
+        using ValueType = typename ExpressionType::ExpressionValueType;
         auto divOperator =
-            out.template getOperator<SpatialOperator<typename ExpressionType::ExpressionValueType>>(
+            out.template getOperator<SpatialOperator<ValueType>, Operator::Type::Implicit>(
                    "DivOperator"
             )
                 .getConfig();
         auto lapOperator =
-            out.template getOperator<SpatialOperator<typename ExpressionType::ExpressionValueType>>(
+            out.template getOperator<SpatialOperator<ValueType>, Operator::Type::Implicit>(
                    "LaplacianOperator"
             )
                 .getConfig();
 
-        dsl::SpatialOperator<typename ExpressionType::ExpressionValueType> divLapOperator =
-            finiteVolume::cellCentred::GaussGreenDivLaplacian<
-                typename ExpressionType::ExpressionValueType>(
+        dsl::SpatialOperator<ValueType> divLapOperator =
+            finiteVolume::cellCentred::GaussGreenDivLaplacian<ValueType>(
                 expr.exec(), divOperator, lapOperator
             );
         out.addOperator(divLapOperator);
 
-        out.dropOperator("DivOperator");
-        out.dropOperator("LaplacianOperator");
+        out.template dropOperator<Operator::Type::Implicit>("DivOperator");
+        out.template dropOperator<Operator::Type::Implicit>("LaplacianOperator");
 
         return out;
     }
