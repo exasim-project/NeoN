@@ -45,20 +45,19 @@ public:
         detail::setProcBoundaryCoefficients(domainVector, this->range());
     }
 
-    // Per iteration: post the halo exchange. The proc-tail already holds the LOCAL face value
-    // (written by the operator that produced the field — flux() / updateFaceVelocity() /
-    // interpolation — or by constructFrom() at construction), so unlike the volume BC there is no
-    // owner-cell -> face reconstruction to perform; we only ship the existing value to the
-    // neighbour rank.
-    virtual void update([[maybe_unused]] Field<ValueType>& domainVector) final
-    {
-#ifdef NF_WITH_MPI_SUPPORT
-        fence(domainVector.exec());
-        const int neighborRank =
-            static_cast<int>(mesh_.boundaryMesh().neighbourRankForRange(this->range()));
-        domainVector.boundaryData().communicate(this->range(), neighborRank);
-#endif
-    }
+    // Per iteration: NO-OP. The proc-tail already holds the LOCAL face value (written by the
+    // operator that produced the field — flux() / updateFaceVelocity() / interpolation — or by
+    // constructFrom() at construction), and that LOCAL value is exactly what every consumer needs
+    // (computeDivProcBoundImpl, surfaceIntegrate, upwind weights all use the owner-rank outward
+    // flux). Crucially, a face flux is ANTISYMMETRIC across a processor interface — the neighbour
+    // rank's value for the shared face is -F (opposite Sf orientation). A symmetric halo exchange
+    // (BoundaryData::communicate does send AND receive-overwrite, as needed for cell/volume data)
+    // would therefore OVERWRITE the correct local +F with the neighbour's -F, sign-flipping the
+    // proc-face flux. That injects a spurious local divergence at every processor-boundary cell
+    // (cancels globally so conservation holds, but inflates the per-cell divergence and the
+    // distributed momentum/pressure residual). Surface processor patches must keep their local
+    // value, so this update is intentionally empty.
+    virtual void update([[maybe_unused]] Field<ValueType>& domainVector) final {}
 
     // Full correction = one-time set() + per-iteration update(). Kept for any direct caller; the
     // field's correctBoundaryConditions() calls set()/update() separately.
