@@ -301,7 +301,7 @@ void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& sta
 }
 
 SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
     const CommunicationPattern& commPattern = sys.commPattern();
@@ -315,13 +315,54 @@ SolverStats GinkgoSolver::solveDist(
 }
 
 SolverStats GinkgoSolver::solveDist(
-    const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+    const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
     auto stats = SolverStats {};
     solveComponentDist<0>(sys, x, gkoExec_, factory_, stats);
     solveComponentDist<1>(sys, x, gkoExec_, factory_, stats);
     solveComponentDist<2>(sys, x, gkoExec_, factory_, stats);
+    return stats;
+}
+
+// Solve one Vec3 rhs component against a shared distributed scalar matrix (segregated form).
+template<unsigned int I>
+void solveVec3RhsComponentDist(
+    const Vector<Vec3>& rhs,
+    Vector<Vec3>& x,
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    std::shared_ptr<const gko::LinOpFactory> factory,
+    std::shared_ptr<const gko::LinOp> gkoMtx,
+    SolverStats& stats
+)
+{
+    auto rhsComp = getComponent<I>(rhs);
+    auto xcopy = getComponent<I>(x);
+    auto solver = factory->generate(gkoMtx);
+    stats.entries.push_back(solve_impl_dist(exec, comm, rhsComp, xcopy, gkoMtx, std::move(solver)));
+    setComponent<I>(xcopy, x);
+}
+
+SolverStats GinkgoSolver::solveDist(
+    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
+    Vector<Vec3>& x
+) const
+{
+    const CommunicationPattern& commPattern = sys.commPattern();
+    auto comm = gko::experimental::mpi::communicator(
+        commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+    );
+    // The matrix is already scalar and shared across all three components, so build the
+    // distributed operator once and reuse it for each Vec3 rhs component.
+    auto gkoMtx =
+        createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
+
+    // TODO here Ginkgos multiple RHS solver could be used
+    auto stats = SolverStats {};
+    solveVec3RhsComponentDist<0>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
+    solveVec3RhsComponentDist<1>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
+    solveVec3RhsComponentDist<2>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
     return stats;
 }
 

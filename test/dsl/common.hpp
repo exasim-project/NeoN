@@ -174,8 +174,7 @@ public:
         );
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls
-    ) const
+    void implicitOperation(la::LinearSystem<ValueType>& ls) const
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -236,11 +235,7 @@ public:
         );
     }
 
-    void implicitOperation(
-        la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls,
-        NeoN::scalar,
-        NeoN::scalar
-    )
+    void implicitOperation(la::LinearSystem<ValueType>& ls, NeoN::scalar, NeoN::scalar)
     {
         auto values = ls.matrix().values().view();
         auto rhs = ls.rhs().view();
@@ -273,14 +268,14 @@ ValueType getVector(const NeoN::Vector<ValueType>& source)
 }
 
 template<typename ValueType>
-ValueType getDiag(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
+ValueType getDiag(const la::LinearSystem<ValueType>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.matrix().values().view()[0];
 }
 
 template<typename ValueType>
-ValueType getRhs(const la::LinearSystem<ValueType, la::CSRMatrix<ValueType, localIdx>>& ls)
+ValueType getRhs(const la::LinearSystem<ValueType>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.rhs().view()[0];

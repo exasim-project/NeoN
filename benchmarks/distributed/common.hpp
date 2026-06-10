@@ -27,6 +27,7 @@ std::pair<NeoN::localIdx, NeoN::localIdx> createStrongScalingSizeFromEnv();
  * processor patches - which BoundaryMesh stores after the regular patches -
  * receive a "processor" boundary condition so that halo values are exchanged
  * with the neighbouring rank during correctBoundaryConditions.
+ * TODO remove when PR528 is merged.
  */
 template<typename BoundaryType>
 std::vector<BoundaryType> createDistributedBCs(const NeoN::UnstructuredMesh& mesh)

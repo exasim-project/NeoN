@@ -99,25 +99,32 @@ public:
     static std::string schema() { return "none"; }
 
     virtual SolverStats solve(
-        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+        const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
     ) const final;
 
-    virtual SolverStats
-    solve(const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x) const final;
+    virtual SolverStats solve(
+        const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+    ) const final;
 
     virtual SolverStats solve(
-        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>, Vec3>&
+        const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&
             sys,
         Vector<Vec3>& x
     ) const final;
 
 #ifdef NF_WITH_MPI_SUPPORT
     virtual SolverStats solveDist(
-        const LinearSystem<scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+        const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
     ) const final;
 
     virtual SolverStats solveDist(
-        const LinearSystem<Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+        const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
+    ) const final;
+
+    virtual SolverStats solveDist(
+        const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>&
+            sys,
+        Vector<Vec3>& x
     ) const final;
 #endif
 

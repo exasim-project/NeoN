@@ -290,6 +290,20 @@ void scaledInverseDiag(
     Vector<scalar>& out
 );
 
+/** @brief scalar-matrix variant of scaledInverseDiag for the segregated vector-solve form
+ * @note used when a vector field is assembled into a scalar coefficient matrix; the scalar
+ * diagonal is shared across all field components, so no per-component selection is needed
+ */
+[[nodiscard]] Vector<scalar>
+scaledInverseDiag(const CSRMatrix<scalar, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
+
+void scaledInverseDiag(
+    const CSRMatrix<scalar, localIdx>& mtx,
+    const FaceToMatrixAddress& mi,
+    const Vector<scalar>& a,
+    Vector<scalar>& out
+);
+
 /* @brief given Matrix<Vec3> this function returns a component Matrix<scalar>*/
 template<unsigned int I>
 [[nodiscard]] auto getComponent(const CSRMatrix<Vec3, localIdx>& in)
@@ -317,6 +331,23 @@ void negLUx(
  */
 void scaledInvDiagNegLUx(
     const CSRMatrix<Vec3, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<Vec3>& b,
+    const Vector<scalar>& vol,
+    Vector<scalar>& rAU,
+    Vector<Vec3>& out
+);
+
+/** @brief scalar-matrix / Vec3-rhs variant of scaledInvDiagNegLUx
+ *
+ * Mirrors the Vec3-matrix overload but for a scalar coefficient matrix assembled from a
+ * vector field (segregated vector-solve form). The scalar diagonal/off-diagonal entries
+ * scale all three rhs components equally.
+ *
+ * @notes explicitly sets out values to zero
+ */
+void scaledInvDiagNegLUx(
+    const CSRMatrix<scalar, localIdx>& mtx,
     const Vector<Vec3>& a,
     const Vector<Vec3>& b,
     const Vector<scalar>& vol,

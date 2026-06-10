@@ -33,7 +33,18 @@ struct PostAssemblyBase
 {
     virtual ~PostAssemblyBase() = default;
     virtual void
-    operator()(la::LinearSystem<VectorType, la::CSRMatrix<VectorType, IndexType>>&) const {};
+    operator()(la::LinearSystem<VectorType, VectorType, la::CSRMatrix<VectorType, IndexType>>&)
+        const {};
+
+    /** @brief Apply to the segregated scalar-matrix / VectorType-rhs form (a scalar coefficient
+     *         matrix with a VectorType right-hand side). Default no-op; functors that support the
+     *         segregated form override this. A distinct name (rather than an operator() overload)
+     *         avoids colliding with the same-type signature when VectorType == scalar. */
+    virtual void applyScalarMatrix(la::LinearSystem<
+                                   scalar,
+                                   VectorType,
+                                   la::CSRMatrix<scalar, IndexType>,
+                                   la::COOMatrix<scalar, IndexType>>&) const {};
 };
 
 /**
@@ -58,8 +69,43 @@ public:
 
     SetReference(localIdx refCell, ValueType refValue) : refCell_(refCell), refValue_(refValue) {}
 
-    void operator()(la::LinearSystem<ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
+    void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
     ) const override
+    {
+#ifdef NF_WITH_MPI_SUPPORT
+        // For distributed systems, only the rank owning refCell applies the constraint.
+        // For non-distributed systems (each rank holds a full copy), every rank applies it.
+        if (!ls.commPattern().sendCounts.empty())
+        {
+            mpi::Environment mpiEnv;
+            if (mpiEnv.isInitialized() && mpiEnv.rank() != 0) return;
+        }
+#endif
+        auto lsView = ls.view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+        auto refVal = refValue_;
+        auto refCell = refCell_;
+        parallelFor(
+            ls.exec(),
+            {refCell, refCell + 1},
+            NEON_LAMBDA(const localIdx celli) {
+                auto dIdx = ma.diagIdx(celli);
+                auto diagVal = lsView.matrix.values[dIdx];
+                lsView.rhs[celli] += diagVal * refVal;
+                lsView.matrix.values[dIdx] += diagVal;
+            },
+            "SetReference"
+        );
+    }
+
+    /** @brief Segregated scalar-matrix / ValueType-rhs form. The scalar diagonal scales the
+     *         ValueType reference value (scalar * Vec3 broadcasts), so the same pin applies to
+     *         every component of the right-hand side. */
+    void applyScalarMatrix(la::LinearSystem<
+                           scalar,
+                           ValueType,
+                           la::CSRMatrix<scalar, IndexType>,
+                           la::COOMatrix<scalar, IndexType>>& ls) const override
     {
 #ifdef NF_WITH_MPI_SUPPORT
         // For distributed systems, only the rank owning refCell applies the constraint.
@@ -163,8 +209,9 @@ public:
         return source;
     }
 
-    /*@brief compute matrix coefficients based on all spatial operators */
-    void assembleSpatialOperator(la::LinearSystem<ValueType>& ls) const
+    /** @brief compute matrix coefficients based on all spatial operators */
+    template<typename AssemblyType = ValueType>
+    void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType>& ls) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -175,10 +222,13 @@ public:
         }
     }
 
-    /*@brief compute matrix coefficients based on all temporal operators
+    /** @brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    void assembleTemporalOperator(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const
+    template<typename AssemblyType = ValueType>
+    void assembleTemporalOperator(
+        la::LinearSystem<AssemblyType, ValueType>& ls, scalar t, scalar dt
+    ) const
     {
         for (auto& op : temporalOperators_)
         {
@@ -190,7 +240,10 @@ public:
     }
 
     /*@brief subtract explicit source terms from the linear system rhs, scaled by cell volumes */
-    void assembleExplicitSource(la::LinearSystem<ValueType>& ls, const UnstructuredMesh& mesh) const
+    template<typename AssemblyType = ValueType>
+    void assembleExplicitSource(
+        la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
+    ) const
     {
         auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
@@ -206,15 +259,16 @@ public:
      * @param ps post-assembly functors applied to the system after assembly
      * @return the assembled linear system
      */
-    la::LinearSystem<ValueType> assemble(
+    template<typename AssemblyType = ValueType>
+    la::LinearSystem<AssemblyType, ValueType> assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        auto ls = la::createEmptyLinearSystem<ValueType>(mesh);
-        assemble(t, dt, ls, mesh, ps);
+        auto ls = la::createEmptyLinearSystem<AssemblyType, ValueType>(mesh);
+        assemble<AssemblyType>(t, dt, ls, mesh, ps);
         return ls;
     }
 
@@ -222,15 +276,16 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
+    template<typename AssemblyType = ValueType>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType>& ls,
         const UnstructuredMesh& mesh,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assemble(t, dt, ls, ps);
+        assemble<AssemblyType>(t, dt, ls, ps);
         assembleExplicitSource(ls, mesh);
     }
 
@@ -238,19 +293,32 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
+    template<typename AssemblyType = ValueType>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType>& ls,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 
-        for (const auto* p : ps)
+        // Post-assembly functors apply on the same-type form via operator(); the segregated
+        // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
+        if constexpr (std::is_same_v<AssemblyType, ValueType>)
         {
-            (*p)(ls);
+            for (const auto* p : ps)
+            {
+                (*p)(ls);
+            }
+        }
+        else if constexpr (std::is_same_v<AssemblyType, scalar>)
+        {
+            for (const auto* p : ps)
+            {
+                p->applyScalarMatrix(ls);
+            }
         }
     }
 

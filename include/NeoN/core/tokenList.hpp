@@ -84,6 +84,12 @@ public:
     [[nodiscard]] size_t size() const;
 
     /**
+     * @brief Rewind the read cursor used by next<>() so the list can be
+     *        iterated again from the beginning.
+     */
+    void reset() const { nextIndex_ = 0; }
+
+    /**
      * @brief Retrieves the value associated with the given index, casting it to
      * the specified type.
      * @tparam T The type to cast the value to.

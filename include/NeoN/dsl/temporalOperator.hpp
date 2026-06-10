@@ -7,6 +7,7 @@
 #include <memory>
 #include <concepts>
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/input.hpp"
@@ -41,8 +42,24 @@ concept HasTemporalImplicitOperator = requires(T t) {
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
+/* @brief Concept satisfied when T can assemble its temporal contribution into a
+ *        LinearSystem whose matrix coefficients are scalar while the RHS holds T's
+ *        field value type (segregated vector-solve form).
+ */
 template<typename T>
-concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>;
+concept HasTemporalImplicitOperatorScalarMtx = requires(T t) {
+    {
+        t.implicitOperation(
+            std::declval<la::LinearSystem<scalar, typename T::VectorValueType>&>(),
+            std::declval<NeoN::scalar>(),
+            std::declval<NeoN::scalar>()
+        )
+    } -> std::same_as<void>;
+};
+
+template<typename T>
+concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>
+                           || HasTemporalImplicitOperatorScalarMtx<T>;
 
 /* @class TemporalOperator
  * @brief A class to represent a TemporalOperator in NeoNs DSL
@@ -87,6 +104,17 @@ public:
         model_->implicitOperation(ls, t, dt);
     }
 
+    /* @brief Implicit temporal assembly into a scalar-matrix / ValueType-rhs linear system
+     *        (segregated vector-solve form). Disabled when ValueType == scalar to avoid
+     *        colliding with the same-type overload above.
+     */
+    template<typename U = ValueType>
+        requires(!std::is_same_v<U, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const
+    {
+        model_->implicitOperationScalarMtx(ls, t, dt);
+    }
+
     /* returns the fundamental type of an operator, ie explicit, implicit */
     Operator::Type getType() const { return model_->getType(); }
 
@@ -117,6 +145,14 @@ private:
         virtual void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) = 0;
 
         virtual void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) = 0;
+
+        /* @brief Temporal assembly into LinearSystem<scalar, ValueType> for the
+         *        scalar-matrix / ValueType-rhs (segregated vector-solve) form.
+         *        Concrete operators that don't support this form leave it as a no-op.
+         */
+        virtual void implicitOperationScalarMtx(
+            la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
+        ) = 0;
 
         /* @brief Given an input this function reads required properties */
         virtual void read(const Input& input) = 0;
@@ -172,6 +208,28 @@ private:
             if constexpr (HasTemporalImplicitOperator<ConcreteTemporalOperatorType>)
             {
                 concreteOp_.implicitOperation(ls, t, dt);
+            }
+        }
+
+        virtual void implicitOperationScalarMtx(
+            la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
+        ) override
+        {
+            if constexpr (HasTemporalImplicitOperatorScalarMtx<ConcreteTemporalOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls, t, dt);
+            }
+            else
+            {
+                // Reached only for an implicit temporal operator that lacks the scalar-matrix
+                // (segregated vector-solve) overload. Silently skipping it would drop its
+                // contribution (e.g. an implicit ddt term) and yield a wrong system, so fail
+                // fast instead.
+                NF_ERROR_EXIT(
+                    "Temporal operator '" << getName()
+                                          << "' does not support scalar-matrix (segregated) "
+                                             "assembly."
+                );
             }
         }
 

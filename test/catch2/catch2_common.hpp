@@ -304,7 +304,8 @@ void randomizeVector(NeoN::Vector<VectorValueType>& a)
 
     for (int i = 0; i < b.size(); i++)
     {
-        bV[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        const auto val = static_cast<NeoN::scalar>(rand()) / static_cast<NeoN::scalar>(RAND_MAX);
+        bV[i] = NeoN::one<VectorValueType>() * val;
     }
     auto c = b.copyToExecutor(a.exec());
     a = c;

@@ -62,21 +62,21 @@ struct LinearSystemView
  * well as the solution vector.
  *
  * @tparam MatrixValueType The value type of the system and boundary matrix coefficients.
+ * @tparam RHSValueType The value type of the right-hand side and boundary rhs vectors. Defaults to
+ * MatrixValueType, but may differ (e.g. scalar matrix with Vec3 rhs for segregated vector solves).
  * @tparam SystemMatrixType The sparse matrix type used for the system matrix (default:
  * CSRMatrix<MatrixValueType, localIdx>).
  * @tparam BoundaryMatrixType The sparse matrix type used for boundary and off-diagonal matrices
  * (default: COOMatrix<MatrixValueType, localIdx>).
- * @tparam RHSValueType The value type of the right-hand side and boundary rhs vectors. Defaults to
- * MatrixValueType, but may differ (e.g. scalar matrix with Vec3 rhs for segregated vector solves).
  */
 template<
     typename MatrixValueType,
+    typename RHSValueType = MatrixValueType,
     typename SystemMatrixType = CSRMatrix<MatrixValueType, localIdx>,
-    typename BoundaryMatrixType = COOMatrix<MatrixValueType, localIdx>,
-    typename RHSValueType = MatrixValueType>
+    typename BoundaryMatrixType = COOMatrix<MatrixValueType, localIdx>>
 class LinearSystem :
     public NeoN::SupportsCopyTo<
-        LinearSystem<MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType>>
+        LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>>
 {
 
     void validate()
@@ -164,10 +164,10 @@ public:
 
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
 
-    [[nodiscard]] LinearSystem<MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType>
+    [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
     {
-        LinearSystem<MatrixValueType, SystemMatrixType, BoundaryMatrixType, RHSValueType> ls {
+        LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
             matrix_.copyToExecutor(exec),
             rhs_.copyToExecutor(exec),
             offDiagonalMatrix_.copyToExecutor(exec),
@@ -271,9 +271,10 @@ private:
  */
 template<
     typename ValueType,
+    typename RHSValueType = ValueType,
     typename SystemMatrixType = CSRMatrix<ValueType, localIdx>,
     typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
-LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearSystem(
+LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearSystem(
     const UnstructuredMesh& mesh,
     std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
 )
@@ -334,12 +335,12 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
         std::move(offDiagColIdxs), std::move(offDiagRowIdxs), Dimensions {nCells, nCells}
     );
 
-    LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> ls {
+    LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
         SystemMatrixType(Vector<ValueType>(sp->exec(), sp->nnz(), zero<ValueType>()), sp, mi),
-        Vector<ValueType>(sp->exec(), sp->rows(), zero<ValueType>()),
+        Vector<RHSValueType>(sp->exec(), sp->rows(), zero<RHSValueType>()),
         BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
-        Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()),
+        Vector<RHSValueType>(bSp->exec(), bSp->nnz(), zero<RHSValueType>()),
         strategy
     };
 
@@ -351,12 +352,24 @@ LinearSystem<ValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearS
 }
 
 /** @brief for testing purposes, this function reverses boundary contributions previously applied to
- * the matrix diagonal and RHS for some operators (e.g., div). **/
-template<typename ValueType>
-inline la::LinearSystem<ValueType>
-removeBoundaryContributions(const la::LinearSystem<ValueType>& lsIn)
+ * the matrix diagonal and RHS for some operators (e.g., div).
+ *
+ * @note templated on the full LinearSystem parameter set so it also accepts the segregated
+ * vector-solve form (scalar matrix, Vec3 rhs): the scalar boundary diagonal is reversed on the
+ * scalar matrix while the rhs reversal uses the field (RHS) value type. **/
+template<
+    typename MatrixValueType,
+    typename RHSValueType,
+    typename SystemMatrixType,
+    typename BoundaryMatrixType>
+inline la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
+removeBoundaryContributions(
+    const la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>&
+        lsIn
+)
 {
-    auto ls = la::LinearSystem<ValueType>(lsIn);
+    auto ls =
+        la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>(lsIn);
     auto lsView = ls.view();
     auto& matrix = lsView.matrix;
     auto& rhs = lsView.rhs;

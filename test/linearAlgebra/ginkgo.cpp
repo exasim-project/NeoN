@@ -195,9 +195,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
         Vector<scalar> bRhs(exec, {});
 
-        auto linearSystem = LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>>(
-            csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
-        );
+        auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
 
         Vector<scalar> x(exec, {0.0, 0.0, 0.0});
 
@@ -245,9 +243,7 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         Vector<Vec3> rhs(exec, {{1.0, 1.0, 1.0}, {2.0, 2.0, 2.0}, {3.0, 3.0, 3.0}});
         Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 
-        auto linearSystem = LinearSystem<Vec3, NeoN::la::CSRMatrix<Vec3, NeoN::localIdx>>(
-            csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs
-        );
+        auto linearSystem = LinearSystem<Vec3>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
 
         SECTION("Segregated" + execName)
         {
@@ -336,9 +332,9 @@ TEST_CASE("MatrixAssembly - Ginkgo")
 
             auto linearSystem = LinearSystem<
                 scalar,
+                NeoN::Vec3,
                 NeoN::la::CSRMatrix<scalar, NeoN::localIdx>,
-                NeoN::la::COOMatrix<scalar, NeoN::localIdx>,
-                NeoN::Vec3>(csrMatrix, rhs, bCsrMatrix, bRhs);
+                NeoN::la::COOMatrix<scalar, NeoN::localIdx>>(csrMatrix, rhs, bCsrMatrix, bRhs);
 
             Vector<Vec3> x(exec, {{0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}});
 

@@ -99,9 +99,12 @@ Vector<scalar> unpackMtxValues(
  * @param[in] x, initial guess vector x
  * @param[out]
  */
-template<typename MatrixType>
+template<typename MatrixType, typename ValueType = scalar>
 void computeResidual(
-    const MatrixType& mtx, const Vector<scalar>& b, const Vector<scalar>& x, Vector<scalar>& res
+    const MatrixType& mtx,
+    const Vector<ValueType>& b,
+    const Vector<ValueType>& x,
+    Vector<ValueType>& res
 );
 
 /**@brief given a set off row idx this function converts to rowOffsets

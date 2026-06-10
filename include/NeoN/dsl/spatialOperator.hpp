@@ -7,6 +7,7 @@
 #include <memory>
 #include <concepts>
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
@@ -34,8 +35,20 @@ concept HasImplicitOperator = requires(T const t) {
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
+/* @brief Concept satisfied when T can assemble into a LinearSystem whose matrix
+ *        coefficients are scalar while the RHS holds T's field value type
+ *        (segregated vector-solve form). Only meaningful when VectorValueType != scalar.
+ */
 template<typename T>
-concept IsSpatialOperator = HasExplicitOperator<T> || HasImplicitOperator<T>;
+concept HasImplicitOperatorScalarMtx = requires(T const t) {
+    {
+        t.implicitOperation(std::declval<la::LinearSystem<scalar, typename T::VectorValueType>&>())
+    } -> std::same_as<void>;
+};
+
+template<typename T>
+concept IsSpatialOperator =
+    HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>;
 
 /* @class SpatialOperator
  * @brief A class to represent an operator in NeoNs dsl
@@ -74,6 +87,17 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const { model_->implicitOperation(ls); }
 
+    /* @brief Implicit assembly into a scalar-matrix / ValueType-rhs linear system
+     *        (segregated vector-solve form). Disabled when ValueType == scalar to
+     *        avoid colliding with the same-type overload above.
+     */
+    template<typename U = ValueType>
+        requires(!std::is_same_v<U, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls) const
+    {
+        model_->implicitOperationScalarMtx(ls);
+    }
+
     /* returns the fundamental type of an operator, ie explicit, implicit */
     Operator::Type getType() const { return model_->getType(); }
 
@@ -102,6 +126,12 @@ private:
         virtual void explicitOperation(Vector<ValueType>& source) const = 0;
 
         virtual void implicitOperation(la::LinearSystem<ValueType>& ls) const = 0;
+
+        /* @brief Implicit assembly into LinearSystem<scalar, ValueType> for the
+         *        scalar-matrix / ValueType-rhs (segregated vector-solve) form.
+         *        Concrete operators that don't support this form leave it as a no-op.
+         */
+        virtual void implicitOperationScalarMtx(la::LinearSystem<scalar, ValueType>& ls) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
         virtual void read(const Input& input) = 0;
@@ -148,6 +178,25 @@ private:
             if constexpr (HasImplicitOperator<ConcreteOperatorType>)
             {
                 concreteOp_.implicitOperation(ls);
+            }
+        }
+
+        virtual void implicitOperationScalarMtx(la::LinearSystem<scalar, ValueType>& ls
+        ) const override
+        {
+            if constexpr (HasImplicitOperatorScalarMtx<ConcreteOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls);
+            }
+            else
+            {
+                // Reached only for an implicit operator that lacks the scalar-matrix
+                // (segregated vector-solve) overload. Silently skipping it would drop its
+                // contribution and yield a wrong system, so fail fast instead.
+                NF_ERROR_EXIT(
+                    "Operator '" << getName()
+                                 << "' does not support scalar-matrix (segregated) assembly."
+                );
             }
         }
 
