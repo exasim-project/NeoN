@@ -11,7 +11,7 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
-void computeDivLapImplFaceUpwind(
+void computeDivLapImplFace(
     la::LinearSystem<ValueType>& ls,
     const VolumeField<ValueType>& U,
     const SurfaceField<scalar>& phi,
@@ -39,9 +39,9 @@ void computeDivLapImplFaceUpwind(
     const auto [phiV, /* weightsV, */ ownV, neiV, magFaceAreaV] = views(
         phi.internalVector(),
         // weights.internalVector(),
-        mesh.faceOwner(),
-        mesh.faceNeighbour(),
-        mesh.magFaceAreas()
+        mesh.faceOwners(),
+        mesh.faceNeighbors(),
+        mesh.faceAreas()
     );
 
     auto oneV = one<ValueType>();
@@ -87,7 +87,7 @@ void computeDivLapImplFaceUpwind(
     );
 
     // FIXME
-    const auto surfFaceCells = mesh.boundaryMesh().faceCells().view();
+    const auto surfFaceCells = mesh.boundaryMesh().faceOwners().view();
     auto [/*bweights,*/ refGradient, value, valueFraction, refValue, deltaCoeffsA] = views(
         // weights.boundaryData().value(),
         U.boundaryData().refGrad(),
@@ -145,6 +145,23 @@ void computeDivLapImplFaceUpwind(
         "computeInterfaceGaussGreenDivCoefficients"
     );
 };
+
+template<typename ValueType>
+void computeDivLapImplCell(
+    la::LinearSystem<ValueType>& ls,
+    const VolumeField<ValueType>& U,
+    const SurfaceField<scalar>& phi,
+    const SurfaceField<scalar>& gamma,
+    const SurfaceInterpolation<ValueType>& divSurfInterp,
+    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const dsl::Coeff coeffA,
+    const dsl::Coeff coeffB,
+    std::shared_ptr<la::CellBasedIterator> /*iterator*/
+)
+{
+    // TODO: implement cell-based iteration; fall back to face-based for now
+    computeDivLapImplFace(ls, U, phi, gamma, divSurfInterp, faceNormalGradient, coeffA, coeffB);
+}
 
 #define NN_DECLARE_COMPUTE_IMP_DIV(TYPENAME)                                                       \
     template void computeDivLapImplFace(                                                           \

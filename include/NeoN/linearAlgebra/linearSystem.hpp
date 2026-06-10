@@ -276,7 +276,6 @@ private:
 
 /*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
-<<<<<<< HEAD
 template<
     typename ValueType,
     typename RHSValueType = ValueType,
