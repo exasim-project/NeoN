@@ -160,10 +160,16 @@ public:
         spatialOperators_.push_back(oper);
     }
 
-    void operator=(const Expression& exp)
+    Expression& operator=(const Expression& exp)
     {
+        if (this == &exp)
+        {
+            return *this;
+        }
+        NF_ASSERT(exec_ == exp.exec_, "Executors are not the same");
         temporalOperators_ = exp.temporalOperators_;
         spatialOperators_ = exp.spatialOperators_;
+        return *this;
     }
 
 
