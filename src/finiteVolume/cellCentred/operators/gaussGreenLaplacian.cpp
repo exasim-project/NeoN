@@ -249,6 +249,113 @@ void computeLaplacianIntImpl(
 }
 
 template<typename ValueType>
+void computeGlobalFace(
+    la::LinearSystem<ValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<ValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<ValueType>& faceNormalGradient
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto exec = phi.exec();
+    const auto matIt = ls.faceToMatrixAddress();
+    const auto [ownV, neiV, boundaryFaceOwners] =
+        views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
+
+    const auto [gammaV, deltaCoeffs, magFaceArea] = views(
+        gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector(), mesh.faceAreas()
+    );
+
+    auto values = ls.matrix().values().view();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nTotalFaces = mesh.nTotalFaces();
+
+    const auto bGammaV = gamma.boundaryData().value().view();
+    const auto bDeltaCoeffs = faceNormalGradient.deltaCoeffs().boundaryData().value().view();
+
+
+
+    auto [refGradient, valueFraction, refValue] = views(
+        phi.boundaryData().refGrad(),
+        phi.boundaryData().valueFraction(),
+        phi.boundaryData().refValue()
+    );
+
+    auto rhs = ls.rhs().view();
+    auto bRhs = ls.boundaryRhs().view();
+    auto bValues = ls.boundaryMatrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, nTotalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            if (facei < nInternalFaces) {
+                // row and column indices
+                auto ownRow = ownV[facei];
+                auto neiRow = neiV[facei];
+
+                // operator sign coefficient  handles: = +/- laplacian
+                auto ownCoeff = coeff[ownRow];
+                auto neiCoeff = coeff[neiRow];
+
+                // Laplacian face coefficient: δ_f · γ_f · |S_f|
+                // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
+                // with opposite signs (diffusion out of one cell = diffusion into the other).
+                // S_f points from owner to neighbour by construction.
+                auto flux = deltaCoeffs[facei]  * gammaV[facei] * magFaceArea[facei] * one<ValueType>();
+
+                // triangular coefficients - neighbour -> lower, owner -> upper
+                values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
+                values[ma.upperIdx(ownRow, facei)] += flux * ownCoeff;
+
+                // diagonal contribution is negative sum of offdiagonal coefficients
+                Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], flux * ownCoeff);
+                Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], flux * neiCoeff);
+            }
+            else {
+                auto bfi = facei - nInternalFaces;
+
+                auto ownRow = boundaryFaceOwners[bfi];
+
+                auto ownRowCoeff = coeff[ownRow];
+
+                auto refValFrac = valueFraction[bfi];
+                auto refGradFrac = 1.0 - refValFrac;
+
+                // TODO Issue #515
+                auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
+                auto fluxContrib =
+                    flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<ValueType>();
+
+                // since upper triangular value is "outside" of system matrix
+                // it is stored separately in bMatrix
+                bValues[bfi] += fluxContrib;
+                // diagonal contribution
+                Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], fluxContrib);
+
+                // Explicit RHS contribution from the mixed BC:
+                //   φ_f = valFrac1 * refValue               (Dirichlet part)
+                //       + valFrac2 * (φ_C + refGradient/δ)  (Neumann part)
+                // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
+                // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
+                // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
+                auto valueRhs =
+                    flux * ownRowCoeff
+                    * (refValFrac * bDeltaCoeffs[bfi] * refValue[bfi] + refGradFrac * refGradient[bfi]);
+                Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
+                bRhs[bfi] += valueRhs;
+            }
+
+        },
+        "computeLocalLaplacianCoefficients"
+    );
+}
+
+template<typename ValueType>
 void computeLaplacianIntCellBasedImpl(
     la::LinearSystem<ValueType>& ls,
     const SurfaceField<scalar>& gamma,
@@ -357,6 +464,7 @@ void GaussGreenLaplacian<ValueType>::laplacian(
     else
     {
         computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
     computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);

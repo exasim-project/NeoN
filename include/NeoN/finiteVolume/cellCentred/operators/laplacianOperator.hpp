@@ -129,7 +129,6 @@ public:
         : dsl::OperatorMixin<VolumeField<ValueType>>(phi.exec(), dsl::Coeff(1.0), phi, termType),
           gamma_(gamma), laplacianOperatorStrategy_(nullptr)
     {
-        std::cout << "LaplacaianOperator Constructor\n";
     };
 
 
@@ -144,7 +143,6 @@ public:
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const
     {
-        std::cout << "Laplacian::implicitOperation\n";
         NF_ASSERT(laplacianOperatorStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
         laplacianOperatorStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
@@ -191,18 +189,12 @@ public:
        // juliaEvalString_ = std::format("Laplace{{Float64}}({})", operatorScaling[0]);
         juliaEvalString_ = "Laplace{Float64}("+std::to_string(operatorScaling[0])+")";//, operatorScaling[0]);
 
-	std::cout << "after reading laplace: " << juliaEvalString_ << std::endl;
     }
 
     std::string getName() const { return "LaplacianOperator"; }
 
     std::string juliaOP() const { return juliaEvalString_; }
     std::string juliaOP() { return juliaEvalString_; }
-
-    NeoN::finiteVolume::cellCentred::FaceNormalGradient<ValueType> faceNormalGradient() const
-    {
-        return laplacianOperatorStrategy_->faceNormalGradient();
-    }
 
 
 private:

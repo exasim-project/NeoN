@@ -9,7 +9,9 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/vector/vector.hpp"
-
+#ifdef NeoN_WITH_JULIA
+#include <julia.h>
+#endif
 namespace NeoN
 {
 
@@ -215,8 +217,17 @@ public:
     {
         return {values_.view(), segments_.view()};
     }
+#ifdef NeoN_WITH_JULIA
 
-
+    /**
+     * @brief get the combined value and range julia pointers of the segmented vector
+     * @return Combined value and range views of the fields
+     */
+    [[nodiscard]] std::pair<jl_value_t*, jl_value_t*> juliaPtrs() &
+    {
+        return {values_.juliaPtr(), segments_.juliaPtr()};
+    }
+#endif
     // ensures not to return a view of a temporary object --> invalid memory access
     [[nodiscard]] std::pair<View<ValueType>, View<IndexType>> views() && = delete;
 

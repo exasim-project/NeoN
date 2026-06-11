@@ -170,7 +170,6 @@ public:
     SurfaceField<scalar>
     weight(const SurfaceField<scalar>& flux, const VolumeField<ValueType>& src) const
     {
-        std::cout << "in surfaceInterpolation::weight\n";
         std::string name = "weight_" + src.name;
         SurfaceField<scalar> weightVector(
             exec_, name, mesh_, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh_)

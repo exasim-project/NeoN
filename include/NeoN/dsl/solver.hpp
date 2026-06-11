@@ -39,7 +39,6 @@ la::SolverStats iterativeSolveImpl(
 )
 {
     exp.read(fvSchemes);
-    std::cout << "here?\n";
     exp.assemble(t, dt, ls, ps);
 
     // TODO move that to expression explicit operation or

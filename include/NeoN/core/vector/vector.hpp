@@ -38,7 +38,7 @@ public:
 	jl_value_t* juliaPtr() const
     {
         if (std::holds_alternative<GPUExecutor>(exec_)) {
-        		return jl_box_voidpointer((void*)data_);
+            return jl_box_voidpointer((void*)data_);
         }
         else {
             if constexpr (std::is_same_v<VectorValueType, float>)

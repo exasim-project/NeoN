@@ -59,7 +59,6 @@ public:
     template<IsSpatialOperator T>
     SpatialOperator(T cls) : model_(std::make_unique<OperatorModel<T>>(std::move(cls)))
     {
-        std::cout << "this one?\n";
     }
 
     SpatialOperator(const SpatialOperator& eqnOperator) : model_(eqnOperator.model_->clone()) {}

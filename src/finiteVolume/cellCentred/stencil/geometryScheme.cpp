@@ -117,7 +117,7 @@ void GeometryScheme::update()
             },
             exec_
         );
-        reset();
+        // reset(); // FIXME remove in prod code
     }
 }
 

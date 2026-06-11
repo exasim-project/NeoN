@@ -122,7 +122,6 @@ public:
     {
         for (auto& op : spatialOperators_)
         {
-            std::cout << "spatOP: " << op.getName() << "\n";
             if (op.getType() == Operator::Type::Implicit)
             {
                 op.implicitOperation(ls);
@@ -172,7 +171,6 @@ public:
         std::span<const PostAssemblyBase<ValueType, IndexType>> ps = {}
     ) const
     {
-        std::cout << "in assembly\n";
         assembleSpatialOperator(ls);         // add spatial operator
         assembleTemporalOperator(ls, t, dt); // add temporal operators
 
@@ -316,9 +314,7 @@ template<typename ValueType>
 operator+(Expression<ValueType> lhs, const Expression<ValueType>& rhs)
 {
     lhs.addExpression(rhs);
-    std::cout << "before: " << lhs.juliaOP() << std::endl;
     lhs.juliaOP() += " + " + rhs.juliaOP();
-    std::cout << "after: " << lhs.juliaOP() << std::endl;
 
     return lhs;
 }
@@ -328,9 +324,7 @@ template<typename ValueType>
 operator+(Expression<ValueType> lhs, const SpatialOperator<ValueType>& rhs)
 {
     lhs.addOperator(rhs);
-    std::cout << "before: " << lhs.juliaOP() << std::endl;
     lhs.juliaOP() += " + " + rhs.juliaOP();
-    std::cout << "after: " << lhs.juliaOP() << std::endl;
     return lhs;
 }
 
@@ -342,9 +336,7 @@ operator+(leftOperator lhs, rightOperator rhs)
     Expression<ValueType> expr(lhs.exec());
     expr.addOperator(lhs);
     expr.addOperator(rhs);
-    std::cout << "before: " << lhs.juliaOP() << std::endl;
     expr.juliaOP() = lhs.juliaOP() + " + " + rhs.juliaOP();
-    std::cout << "after: " << lhs.juliaOP() << std::endl;
     return expr;
 }
 
