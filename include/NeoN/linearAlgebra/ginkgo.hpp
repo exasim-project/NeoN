@@ -85,10 +85,12 @@ scalar retrieve(const InType& in)
  */
 struct L1ResidualControl
 {
-    scalar tolerance; //!< absolute tolerance on the scaled L1 residual
-    scalar relTol;    //!< relative tolerance (vs. initial residual); 0 disables
-    localIdx maxIter; //!< maximum iteration count
-    localIdx minIter; //!< minimum iteration count before tolerances are tested
+    scalar tolerance;        //!< absolute tolerance on the scaled L1 residual
+    scalar relTol;           //!< relative tolerance (vs. initial residual); 0 disables
+    localIdx maxIter;        //!< maximum iteration count
+    localIdx minIter;        //!< minimum iteration count before tolerances are tested
+    localIdx checkFrequency; //!< evaluate the (expensive) true residual every N iterations; <=1 =
+                             //!< every iteration
 };
 
 /** @brief Result of a solve governed by the L1-scaled residual stopping criterion. */
@@ -167,7 +169,7 @@ inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& 
         return std::nullopt;
     }
 
-    L1ResidualControl control {0.0, 0.0, 1000, 0};
+    L1ResidualControl control {0.0, 0.0, 1000, 0, 1};
 
     // criteria entries may be stored as int, label or scalar depending on source
     auto readScalar = [](const Dictionary& d, const std::string& key, scalar fallback)
@@ -193,6 +195,7 @@ inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& 
         control.maxIter = readInt(criteria, "iteration", control.maxIter);
     }
     control.minIter = readInt(cfg, "minIter", control.minIter);
+    control.checkFrequency = readInt(cfg, "checkFrequency", control.checkFrequency);
 
     return control;
 }

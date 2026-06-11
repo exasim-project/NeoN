@@ -37,6 +37,24 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("l1ScaledResidual");
     }
 
+    // 'checkFrequency' controls how often the L1 criterion evaluates the true residual
+    // (handled via readL1ResidualControl); it is not a Ginkgo config key.
+    if (dict.contains("checkFrequency"))
+    {
+        dict.remove("checkFrequency");
+    }
+
+    // 'minIter' / 'minIterFactor' steer the L1 criterion's minimum iteration count
+    // (handled via readL1ResidualControl and the NeoFOAM PDESolver minIter steering);
+    // they are not Ginkgo config keys.
+    for (const auto& key : {std::string("minIter"), std::string("minIterFactor")})
+    {
+        if (dict.contains(key))
+        {
+            dict.remove(key);
+        }
+    }
+
     // check if an external file name is given
     if (dict.contains("configFile"))
     {

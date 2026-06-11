@@ -131,6 +131,8 @@ public:
 
         localIdx GKO_FACTORY_PARAMETER_SCALAR(max_iter, 1000);
 
+        localIdx GKO_FACTORY_PARAMETER_SCALAR(check_frequency, 1);
+
         std::shared_ptr<const gko::LinOp> GKO_FACTORY_PARAMETER_SCALAR(matrix, nullptr);
 
         std::shared_ptr<const VecType> GKO_FACTORY_PARAMETER_SCALAR(b, nullptr);
@@ -177,6 +179,19 @@ protected:
         }
         const auto* solution = gko::as<VecType>(updater.solution_);
         const auto numIter = static_cast<localIdx>(updater.num_iterations_);
+
+        // Skip the expensive true-residual recompute (an SpMV + a global L1 reduction) on
+        // iterations where the criterion cannot stop anyway: before min_iter the tolerances are
+        // not tested, and between check_frequency-spaced checks. The very first call (to capture
+        // the initial residual and normFactor) and the max_iter cap must always be evaluated.
+        const bool mustEvaluate = firstIter_ || numIter >= parameters_.max_iter
+                               || (numIter >= parameters_.min_iter
+                                   && (parameters_.check_frequency <= 1
+                                       || numIter % parameters_.check_frequency == 0));
+        if (!mustEvaluate)
+        {
+            return false;
+        }
 
         // true residual r = b - A x (recomputed independently of the solver's residual)
         const auto one = gko::initialize<dense>({1.0}, exec);
@@ -271,6 +286,7 @@ L1ResidualResult attachL1StopAndSolve(
                          .with_relative_tolerance(control.relTol)
                          .with_min_iter(control.minIter)
                          .with_max_iter(control.maxIter)
+                         .with_check_frequency(control.checkFrequency)
                          .with_matrix(mtx)
                          .with_b(b)
                          .with_init_residual(&initResNorm)
