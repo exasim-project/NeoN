@@ -14,7 +14,6 @@ namespace NeoN::dsl
 {
 
 
-<<<<<<< HEAD
 /**
  * @brief Abstract base for DSL expression optimizers.
  *

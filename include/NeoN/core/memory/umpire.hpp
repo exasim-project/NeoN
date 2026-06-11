@@ -15,7 +15,6 @@ namespace NeoN
 {
 
 #if NF_WITH_UMPIRE
-
 class UmpireMempoolHandler
 {
 private:
