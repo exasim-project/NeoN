@@ -203,15 +203,6 @@ if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
   set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
-  # IWYU 8.21 segfaults on these files due to template complexity in the processor boundary
-  # hierarchy; exclude them from linting until upstream fix. The NeoN target and its sources are
-  # added in the src/ subdirectory, so this source-file property must be set in that target's
-  # directory scope (TARGET_DIRECTORY) with the absolute path — set at this top-level scope with a
-  # relative path it silently fails to attach and IWYU runs on the files anyway.
-  set_source_files_properties(
-    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/surface/processor.cpp
-    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/volume/processor.cpp
-    TARGET_DIRECTORY NeoN PROPERTIES SKIP_LINTING ON)
 endif()
 
 include(cmake/banner.cmake)
