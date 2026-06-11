@@ -26,11 +26,11 @@ TEST_CASE("Optimizer")
     auto mesh = create1DUniformMesh(exec, nCells);
 
     auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
-    auto U = finiteVolume::cellCentred::VolumeField<scalar>(
+    auto u = finiteVolume::cellCentred::VolumeField<scalar>(
         exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
     );
 
-    randomizeVector(U);
+    randomizeVector(u);
 
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
     auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
@@ -41,7 +41,7 @@ TEST_CASE("Optimizer")
 
     SECTION("Can optimize div + laplacian " + execName)
     {
-        auto expr = NeoN::dsl::imp::laplacian(gamma, U) - NeoN::dsl::imp::div(phi, U);
+        auto expr = NeoN::dsl::imp::laplacian(gamma, u) - NeoN::dsl::imp::div(phi, u);
         auto exprOpt = dsl::optimize(expr);
 
         REQUIRE(expr.size() == 2);
@@ -66,7 +66,7 @@ TEST_CASE("Optimizer")
              }}
         };
 
-        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U);
+        auto expr = NeoN::dsl::imp::div(phi, u) - NeoN::dsl::imp::laplacian(gamma, u);
         auto exprOpt = dsl::optimize(expr);
 
         REQUIRE(expr.size() == 2);
