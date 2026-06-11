@@ -203,11 +203,14 @@ if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
   set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
-  # IWYU 8.21 segfaults on these files due to template complexity in the processor boundary
-  # hierarchy; exclude them from linting until upstream fix.
+  # IWYU 8.21 (clang-19) segfaults on volume/processor.cpp due to the template complexity of the
+  # processor boundary hierarchy (scalar/Vec3/Tensor instantiations); a segfault cannot be fixed by
+  # cleaning includes, so the file is excluded. surface/processor.cpp lints fine, so only the volume
+  # variant is excluded. The property must be set in the NeoN target's directory scope
+  # (TARGET_DIRECTORY) with an absolute path, or it silently fails to attach and IWYU runs anyway.
   set_source_files_properties(
-    src/finiteVolume/cellCentred/boundary/surface/processor.cpp
-    src/finiteVolume/cellCentred/boundary/volume/processor.cpp PROPERTIES SKIP_LINTING ON)
+    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/volume/processor.cpp
+    TARGET_DIRECTORY NeoN PROPERTIES SKIP_LINTING ON)
 endif()
 
 include(cmake/banner.cmake)

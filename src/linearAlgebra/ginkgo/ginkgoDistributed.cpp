@@ -10,6 +10,7 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/error.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace NeoN::la::ginkgo
@@ -230,16 +231,39 @@ SolverStatsEntry solve_impl_dist(
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver
+    std::unique_ptr<gko::LinOp> solver,
+    const L1ResidualControl* l1Control = nullptr
 )
 {
     exec->synchronize();
     auto startEval = std::chrono::steady_clock::now();
     using vec = gko::matrix::Dense<scalar>;
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
     label nrows = rhs.size();
 
     const auto b = gkoConstVecViewDist(exec, comm, rhs.data(), nrows);
     auto x = gkoVecViewDist(exec, comm, xIn.data(), nrows);
+
+    // L1-scaled residual path: stop and report on the (globally reduced) scaled residual.
+    if (l1Control != nullptr)
+    {
+        auto l1Res = solveWithL1StopDist(
+            exec,
+            mtx,
+            std::dynamic_pointer_cast<const dist_vec>(b),
+            std::dynamic_pointer_cast<dist_vec>(x),
+            solver.get(),
+            *l1Control
+        );
+        exec->synchronize();
+        auto endEval = std::chrono::steady_clock::now();
+        auto duration =
+            static_cast<scalar>(
+                std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+            )
+            / 1000.0;
+        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+    }
 
     auto rhsCopy = Vector<scalar>(rhs);
     auto res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
@@ -278,7 +302,9 @@ SolverStatsEntry solve_impl_dist(
 }
 
 template<unsigned int I>
-void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
+void solveComponentDist(
+    auto& sys, auto& x, auto& exec, auto& factory, auto& stats, const L1ResidualControl* l1Control
+)
 {
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
@@ -296,7 +322,9 @@ void solveComponentDist(auto& sys, auto& x, auto& exec, auto& factory, auto& sta
     );
     auto gkoMtx = createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern);
     auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, std::move(solver)));
+    stats.entries.push_back(
+        solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, std::move(solver), l1Control)
+    );
     setComponent<I>(xcopy, x);
 }
 
@@ -311,7 +339,8 @@ SolverStats GinkgoSolver::solveDist(
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
     auto solver = factory_->generate(gkoMtx);
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, std::move(solver))};
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -319,9 +348,10 @@ SolverStats GinkgoSolver::solveDist(
 ) const
 {
     auto stats = SolverStats {};
-    solveComponentDist<0>(sys, x, gkoExec_, factory_, stats);
-    solveComponentDist<1>(sys, x, gkoExec_, factory_, stats);
-    solveComponentDist<2>(sys, x, gkoExec_, factory_, stats);
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    solveComponentDist<0>(sys, x, gkoExec_, factory_, stats, l1Control);
+    solveComponentDist<1>(sys, x, gkoExec_, factory_, stats, l1Control);
+    solveComponentDist<2>(sys, x, gkoExec_, factory_, stats, l1Control);
     return stats;
 }
 
@@ -334,13 +364,16 @@ void solveVec3RhsComponentDist(
     const gko::experimental::mpi::communicator& comm,
     std::shared_ptr<const gko::LinOpFactory> factory,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    SolverStats& stats
+    SolverStats& stats,
+    const L1ResidualControl* l1Control
 )
 {
     auto rhsComp = getComponent<I>(rhs);
     auto xcopy = getComponent<I>(x);
     auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(solve_impl_dist(exec, comm, rhsComp, xcopy, gkoMtx, std::move(solver)));
+    stats.entries.push_back(
+        solve_impl_dist(exec, comm, rhsComp, xcopy, gkoMtx, std::move(solver), l1Control)
+    );
     setComponent<I>(xcopy, x);
 }
 
@@ -359,10 +392,11 @@ SolverStats GinkgoSolver::solveDist(
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
 
     // TODO here Ginkgos multiple RHS solver could be used
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     auto stats = SolverStats {};
-    solveVec3RhsComponentDist<0>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
-    solveVec3RhsComponentDist<1>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
-    solveVec3RhsComponentDist<2>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats);
+    solveVec3RhsComponentDist<0>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
+    solveVec3RhsComponentDist<1>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
+    solveVec3RhsComponentDist<2>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
     return stats;
 }
 

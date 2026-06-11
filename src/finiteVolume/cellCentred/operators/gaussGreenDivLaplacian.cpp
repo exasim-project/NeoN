@@ -68,7 +68,7 @@ void computeDivLaplacianIntImpl(
 template<typename ValueType>
 void computeDivLaplacianBoundImpl(
     la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& U,
+    const VolumeField<ValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
@@ -92,9 +92,9 @@ void computeDivLaplacianBoundImpl(
     );
 
     const auto [refGradient, valueFraction, refValue, deltaCoeffsA] = views(
-        U.boundaryData().refGrad(),
-        U.boundaryData().valueFraction(),
-        U.boundaryData().refValue(),
+        u.boundaryData().refGrad(),
+        u.boundaryData().valueFraction(),
+        u.boundaryData().refValue(),
         mesh.boundaryMesh().deltaCoeffs()
     );
 

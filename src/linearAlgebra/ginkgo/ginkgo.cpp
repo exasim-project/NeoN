@@ -30,6 +30,31 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("reportName");
     }
 
+    // 'l1ScaledResidual' opts into the L1-scaled residual stopping criterion
+    // (handled separately via readL1ResidualControl); it is not a Ginkgo config key.
+    if (dict.contains("l1ScaledResidual"))
+    {
+        dict.remove("l1ScaledResidual");
+    }
+
+    // 'checkFrequency' controls how often the L1 criterion evaluates the true residual
+    // (handled via readL1ResidualControl); it is not a Ginkgo config key.
+    if (dict.contains("checkFrequency"))
+    {
+        dict.remove("checkFrequency");
+    }
+
+    // 'minIter' / 'minIterFactor' steer the L1 criterion's minimum iteration count
+    // (handled via readL1ResidualControl and the NeoFOAM PDESolver minIter steering);
+    // they are not Ginkgo config keys.
+    for (const auto& key : {std::string("minIter"), std::string("minIterFactor")})
+    {
+        if (dict.contains(key))
+        {
+            dict.remove(key);
+        }
+    }
+
     // check if an external file name is given
     if (dict.contains("configFile"))
     {
@@ -273,7 +298,8 @@ SolverStatsEntry solve_impl(
     const VectorType& rhs,
     VectorType& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver
+    std::unique_ptr<gko::LinOp> solver,
+    const L1ResidualControl* l1Control = nullptr
 )
 {
     exec->synchronize();
@@ -283,6 +309,20 @@ SolverStatsEntry solve_impl(
     label nrows = rhs.size();
     const auto b = gkoVecView(exec, rhs.data(), nrows);
     auto x = gkoVecView(exec, xIn.data(), nrows);
+
+    // L1-scaled residual path: stop and report on the scaled residual.
+    if (l1Control != nullptr)
+    {
+        auto l1Res = solveWithL1Stop(exec, mtx, b, x, solver.get(), *l1Control);
+        exec->synchronize();
+        auto endEval = std::chrono::steady_clock::now();
+        auto duration =
+            static_cast<scalar>(
+                std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+            )
+            / 1000.0;
+        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+    }
 
     // copy of rhs to compute the initial residual inline
     auto rhsCopy = VectorType(rhs);
@@ -371,7 +411,8 @@ SolverStats GinkgoSolver::solve(
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
     auto solver = factory_->generate(gkoMtx);
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver))};
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -399,7 +440,9 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
 
 // wrapper to solve a single component of a <vec3> equation
 template<unsigned int I>
-void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
+void solveComponent(
+    auto& sys, auto& x, auto& exec, auto& factory, auto& stats, const L1ResidualControl* l1Control
+)
 {
     auto rhs = getComponent<I>(sys.rhs());
     auto xcopy = getComponent<I>(x);
@@ -409,7 +452,7 @@ void solveComponent(auto& sys, auto& x, auto& exec, auto& factory, auto& stats)
     auto gkoMtx = createGkoMtx(mtx);
     auto solver = factory->generate(gkoMtx);
 
-    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver)));
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver), l1Control));
     setComponent<I>(xcopy, x);
 }
 
@@ -417,6 +460,7 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     if (coupled_)
     {
         const auto gkoMtx = createGkoMtx(sys.matrix());
@@ -425,7 +469,7 @@ SolverStats GinkgoSolver::solve(
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
 
-        auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver));
+        auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver), l1Control);
 
         packVecValues(xCopy, x);
         return {stats};
@@ -433,9 +477,9 @@ SolverStats GinkgoSolver::solve(
     else
     {
         auto stats = SolverStats {};
-        solveComponent<0>(sys, x, gkoExec_, factory_, stats);
-        solveComponent<1>(sys, x, gkoExec_, factory_, stats);
-        solveComponent<2>(sys, x, gkoExec_, factory_, stats);
+        solveComponent<0>(sys, x, gkoExec_, factory_, stats, l1Control);
+        solveComponent<1>(sys, x, gkoExec_, factory_, stats, l1Control);
+        solveComponent<2>(sys, x, gkoExec_, factory_, stats, l1Control);
         return stats;
     }
 }
@@ -448,13 +492,14 @@ void solveVec3RhsComponent(
     std::shared_ptr<const gko::Executor> exec,
     std::shared_ptr<const gko::LinOpFactory> factory,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    SolverStats& stats
+    SolverStats& stats,
+    const L1ResidualControl* l1Control
 )
 {
     auto rhsComp = getComponent<I>(rhs);
     auto xcopy = getComponent<I>(x);
     auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(solve_impl(exec, rhsComp, xcopy, gkoMtx, std::move(solver)));
+    stats.entries.push_back(solve_impl(exec, rhsComp, xcopy, gkoMtx, std::move(solver), l1Control));
     setComponent<I>(xcopy, x);
 }
 
@@ -465,9 +510,10 @@ SolverStats GinkgoSolver::solve(
 {
     auto stats = SolverStats {};
     auto gkoMtx = createGkoMtx(sys.matrix());
-    solveVec3RhsComponent<0>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats);
-    solveVec3RhsComponent<1>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats);
-    solveVec3RhsComponent<2>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats);
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    solveVec3RhsComponent<0>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats, l1Control);
+    solveVec3RhsComponent<1>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats, l1Control);
+    solveVec3RhsComponent<2>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats, l1Control);
     return stats;
 }
 
