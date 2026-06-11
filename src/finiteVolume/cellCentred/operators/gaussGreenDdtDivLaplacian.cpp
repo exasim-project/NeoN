@@ -32,6 +32,11 @@ void computeDdtDivLapImplCell(
     auto matrix = ls.matrix().view();
     const auto sp = ls.faceToMatrixAddress();
     auto cellBasedData = iterator->getCellBasedData();
+    NF_ASSERT(
+        cellBasedData != nullptr,
+        "CellBasedData not initialized - call setComputeCellBasedData before invoking the "
+        "cell-based kernel"
+    );
     auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.views();
     auto faceNeighbourV = cellBasedData->faceNeighbour.view();
     auto faceSignV = cellBasedData->faceSign.view();

@@ -14,6 +14,7 @@ if(NeoN_WITH_MPI)
     add_executable(bench_distributed${BENCH} "${CMAKE_CURRENT_SOURCE_DIR}/${BENCH}.cpp"
                                              ${DIST_COMMON_SOURCES})
     target_link_libraries(bench_distributed${BENCH} PRIVATE ${DIST_LINK_LIBS})
+    target_compile_definitions(bench_distributed${BENCH} PRIVATE NF_REQUIRE_MPI_THREAD_SUPPORT=1)
     target_include_directories(
       bench_distributed${BENCH} PRIVATE "${CMAKE_SOURCE_DIR}" "${MPI_REPORTER_DIR}"
                                         "${CMAKE_CURRENT_SOURCE_DIR}")

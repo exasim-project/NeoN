@@ -332,6 +332,11 @@ void computeDivIntCellBasedImp(
     const auto [fluxV, weightsV] = views(faceFlux.internalVector(), weights.internalVector());
 
     auto cellBasedData = iterator->getCellBasedData();
+    NF_ASSERT(
+        cellBasedData != nullptr,
+        "CellBasedData not initialized - call setComputeCellBasedData before invoking the "
+        "cell-based kernel"
+    );
     auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.views();
     auto faceSignV = cellBasedData->faceSign.view();
     auto matrixColumnIdxV = cellBasedData->matrixColumnIdx.view();

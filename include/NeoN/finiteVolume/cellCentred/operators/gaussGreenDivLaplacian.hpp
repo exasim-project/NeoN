@@ -14,50 +14,50 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianIntImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& U,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 );
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianIntCellBasedImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& U,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& U,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 );
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& U,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 );
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianProcBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& U,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 );
@@ -78,6 +78,9 @@ public:
     void explicitOperation(Vector<ValueType>& source) const;
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const;
+
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls) const
+        requires(!std::is_same_v<ValueType, scalar>);
 
     void read(const Input& input);
 

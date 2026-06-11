@@ -68,7 +68,9 @@ option(NeoN_ENABLE_CPP_CHECK "Enable cpp check static analyzer" OFF)
 option(NeoN_ENABLE_CLANG_TIDY "Enable clang tidy static analyzer" OFF)
 option(NeoN_ENABLE_PCH "Enable precompiled header" OFF)
 option(NeoN_ENABLE_IWYU "Enable iwyu checks" OFF)
-option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
+# NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT is defined in cmake/DetectMpiThreadSupport.cmake (included via
+# cmake/CxxThirdParty.cmake when NeoN_WITH_MPI is ON) so that its default value reflects the runtime
+# capability of the local MPI installation.
 option(NeoN_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
 mark_as_advanced(NeoN_ENABLE_WARNINGS)
 option(NeoN_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
