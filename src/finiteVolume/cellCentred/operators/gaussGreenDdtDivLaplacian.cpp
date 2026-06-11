@@ -15,7 +15,7 @@ template<typename ValueType>
 void computeDdtDivLapImplCell(
     la::LinearSystem<ValueType>& ls,
     scalar dt,
-    const VolumeField<ValueType>& U,
+    const VolumeField<ValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<ValueType>& divSurfInterp,
@@ -44,7 +44,7 @@ void computeDdtDivLapImplCell(
 
     // const auto operatorScaling = this->getCoefficient();
     const auto diagOffs = ls.faceToMatrixAddress()->diagOffset().view();
-    const auto oldVector = oldTime(U).internalVector().view();
+    const auto oldVector = oldTime(u).internalVector().view();
     auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
     auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
 

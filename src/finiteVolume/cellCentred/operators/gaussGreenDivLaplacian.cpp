@@ -156,7 +156,7 @@ void computeDivLaplacianIntCellBasedImpl(
 template<typename FieldValueType, typename AssemblyType>
 void computeDivLaplacianBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& U,
+    const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
@@ -180,9 +180,9 @@ void computeDivLaplacianBoundImpl(
     );
 
     const auto [refGradient, valueFraction, refValue, deltaCoeffsA] = views(
-        U.boundaryData().refGrad(),
-        U.boundaryData().valueFraction(),
-        U.boundaryData().refValue(),
+        u.boundaryData().refGrad(),
+        u.boundaryData().valueFraction(),
+        u.boundaryData().refValue(),
         mesh.boundaryMesh().deltaCoeffs()
     );
 

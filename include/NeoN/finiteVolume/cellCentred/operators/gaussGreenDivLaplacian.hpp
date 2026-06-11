@@ -17,7 +17,7 @@ namespace NeoN::finiteVolume::cellCentred
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianIntImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& U,
+    const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& divSurfInterp,
@@ -29,7 +29,7 @@ void computeDivLaplacianIntImpl(
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianIntCellBasedImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& U,
+    const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& divSurfInterp,
@@ -41,7 +41,7 @@ void computeDivLaplacianIntCellBasedImpl(
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& U,
+    const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& divSurfInterp,
@@ -53,7 +53,7 @@ void computeDivLaplacianBoundImpl(
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeDivLaplacianProcBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& U,
+    const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
     const SurfaceInterpolation<FieldValueType>& divSurfInterp,
