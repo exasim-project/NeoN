@@ -53,7 +53,7 @@ void computeDdtDivLapImplCell(
     const auto [phiV, /* weightsV,*/ magFaceAreaV] = views(
         phi.internalVector(),
         // weights.internalVector(),
-        mesh.magFaceAreas()
+        mesh.faceAreas()
     );
 
     parallelFor(

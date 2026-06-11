@@ -44,13 +44,13 @@ public:
         : dsl::OperatorMixin<VolumeField<ValueType>>(
             exec,
             dsl::Coeff(1.0),
-            divConfig.get<detail::RefHolder<VolumeField<ValueType>>>("field").c,
+            divConfig.get<NeoN::detail::RefHolder<VolumeField<ValueType>>>("field").c,
             dsl::Operator::Type::Implicit
         ),
-          coeffA_(divConfig.get<detail::RefHolder<dsl::Coeff>>("coeff").c),
-          coeffB_(lapConfig.get<detail::RefHolder<dsl::Coeff>>("coeff").c),
-          gamma_(lapConfig.get<detail::RefHolder<SurfaceField<scalar>>>("gamma").c),
-          flux_(divConfig.get<detail::RefHolder<SurfaceField<scalar>>>("flux").c)
+          coeffA_(divConfig.get<NeoN::detail::RefHolder<dsl::Coeff>>("coeff").c),
+          coeffB_(lapConfig.get<NeoN::detail::RefHolder<dsl::Coeff>>("coeff").c),
+          gamma_(lapConfig.get<NeoN::detail::RefHolder<SurfaceField<scalar>>>("gamma").c),
+          flux_(divConfig.get<NeoN::detail::RefHolder<SurfaceField<scalar>>>("flux").c)
     {
         // FIXME some sanity checks are needed
         // are div and lap field the same
