@@ -136,16 +136,18 @@ void setOffDiagonalSparsityPatternImpl(
 
     auto rowIdxV = rowIdx.view();
     auto colIdxV = colIdx.view();
+    const auto rowOrderV = mesh.boundaryMesh().getRowOrderWriteIndex().view();
     parallelFor(
         exec,
         {0, nProcFaces},
         KOKKOS_LAMBDA(const localIdx pfacei) {
+            const localIdx sortedIdx = rowOrderV[pfacei];
             localIdx celli = faceCellsV[nBoundaryFaces + pfacei];
-            // Store the local row index. The global offset is intentionally not applied: the
-            // Ginkgo distributed matrix assembly expects local rows for the non-local block.
-            rowIdxV[pfacei] = celli;
+            // Store the local row index in sorted (ascending owner) order. The global offset is
+            // intentionally not applied: Ginkgo distributed matrix assembly expects local rows.
+            rowIdxV[sortedIdx] = celli;
             // The column index stays global (it identifies a remote cell).
-            colIdxV[pfacei] = recvIdxV[pfacei];
+            colIdxV[sortedIdx] = recvIdxV[pfacei];
         },
         "setOffDiagonalSparsityPatternImpl"
     );

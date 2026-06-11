@@ -263,6 +263,7 @@ static void computeDivLaplacianProcBoundImpl(
     auto bOffValues = ls.offDiagonalMatrix().values().view();
     auto bndDiagValues = ls.boundaryMatrix().values().view();
     auto values = ls.matrix().values().view();
+    const auto rowOrderV = mesh.boundaryMesh().getRowOrderWriteIndex().view();
 
     parallelFor(
         exec,
@@ -290,7 +291,7 @@ static void computeDivLaplacianProcBoundImpl(
             auto diagValue = divDiag + lapValue;
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagValue);
             bndDiagValues[bcfacei] += diagValue;
-            bOffValues[procFacei] += divOffDiag + lapValue;
+            bOffValues[rowOrderV[procFacei]] += divOffDiag + lapValue;
         },
         "computeProcInterfaceGaussGreenDivLaplacianCoefficients"
     );

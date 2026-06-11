@@ -112,6 +112,7 @@ void computeLaplacianProcBoundImpl(
     auto bndDiagValues = ls.boundaryMatrix().values().view();
 
     auto values = ls.matrix().values().view();
+    const auto rowOrderV = mesh.boundaryMesh().getRowOrderWriteIndex().view();
 
     parallelFor(
         exec,
@@ -125,7 +126,7 @@ void computeLaplacianProcBoundImpl(
             auto value = flux * ownCoeff * one<AssemblyType>();
 
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], value);
-            bValues[procFacei] += value;
+            bValues[rowOrderV[procFacei]] += value;
             bndDiagValues[bcfacei] += value;
         },
         "computeInterfaceLaplacianCoefficients"
