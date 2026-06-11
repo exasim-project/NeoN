@@ -13,6 +13,7 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/dsl/expression.hpp"
+#include "NeoN/dsl/optimizer.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -27,15 +28,13 @@ namespace detail
 template<typename VectorType, typename IndexType>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
-    la::LinearSystem<
-        typename VectorType::ElementType,
-        la::CSRMatrix<typename VectorType::ElementType, IndexType>>& ls,
+    la::LinearSystem<typename VectorType::ElementType>& ls,
     VectorType& solution,
     scalar t,
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
+    std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
     exp.read(fvSchemes);
@@ -67,21 +66,10 @@ la::SolverStats iterativeSolveImpl(
     scalar t,
     scalar dt,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> ps
+    std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
     auto ls = exp.assemble(solution.mesh(), t, dt, ps);
-
-    // TODO move that to expression explicit operation or
-    // into functor ?
-    // subtract the explicit source term from the rhs
-    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
-    auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
-    parallelFor(
-        solution.exec(), {0, rhs.size()}, NEON_LAMBDA(const localIdx i) {
-            rhs[i] -= expSource[i] * vol[i];
-        }
-    );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
@@ -107,7 +95,7 @@ la::SolverStats solve(
     scalar dt,
     const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
-    std::vector<PostAssemblyBase<typename VectorType::ElementType, IndexType>> p = {}
+    std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> p = {}
 )
 {
     if (exp.temporalOperators().size() == 0 && exp.spatialOperators().size() == 0)

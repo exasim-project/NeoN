@@ -50,6 +50,23 @@ void computeLinearInterpolation(
         NEON_LAMBDA(const localIdx bfi) { dstB[bfi] = weightB[bfi] * boundS[bfi]; },
         "computeLinearInterpolationBoundary"
     );
+
+    auto nProcBoundaryFaces = dst.mesh().nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bfOwners = dst.mesh().boundaryMesh().faceOwners().view();
+        NeoN::parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                auto own = bfOwners[bcfacei];
+                dstB[bcfacei] =
+                    weightB[bcfacei] * srcS[own] + (1 - weightB[bcfacei]) * boundS[bcfacei];
+            },
+            "computeLinearInterpolationProcBoundary"
+        );
+    }
 }
 
 #define NF_DECLARE_COMPUTE_IMP_LIN_INT(TYPENAME)                                                   \

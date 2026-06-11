@@ -101,18 +101,14 @@ jobs:
         if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
         run: |
           source venv/bin/activate
-
-          CMAKE_FLAGS_ARR=(
-            -DNeoN_BUILD_TESTS=ON
-            -DNeoN_BUILD_PYTHON_BINDINGS=ON
-            -DNeoN_DEVEL_TOOLS=OFF
-            -DNeoN_WITH_GINKGO=OFF
+          cmake --preset ${{matrix.preset}} \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_BUILD_PYTHON_BINDINGS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_WITH_GINKGO=OFF \
+            -DMPIEXEC_MAX_NUMPROCS=3 \
+            -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}} \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
-          )
-
-          CC=${{matrix.compiler.CC}}
-          CXX=${{matrix.compiler.CXX}}
-          cmake --preset ${{matrix.preset}} "${CMAKE_FLAGS_ARR[@]}"
           cmake --build  --preset ${{matrix.preset}}
 
       - name: Execute unit tests NeoN
@@ -125,4 +121,3 @@ jobs:
           sudo cmake --install build/${{matrix.preset}}
           sudo ls -la /usr/local/bin
           sudo ls -la /usr/local/lib
-          neon_test_vector

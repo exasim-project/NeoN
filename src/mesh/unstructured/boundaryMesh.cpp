@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 
 
@@ -104,6 +105,19 @@ const scalarVector& BoundaryMesh::deltaCoeffs() const { return deltaCoeffs_; }
 localIdx BoundaryMesh::neighbourRank(const localIdx i) const { return neighbourRank_[i]; }
 
 const std::vector<localIdx>& BoundaryMesh::neighbourRank() const { return neighbourRank_; }
+
+localIdx BoundaryMesh::neighbourRankForRange(std::pair<localIdx, localIdx> range) const
+{
+    const localIdx nInnerBoundaries = nBoundaries() - nProcBoundaryPatches();
+    const localIdx rangeStart = range.first;
+    for (localIdx k = 0; k < static_cast<localIdx>(neighbourRank_.size()); k++)
+    {
+        if (offset_[static_cast<std::size_t>(nInnerBoundaries + k)] == rangeStart)
+            return neighbourRank_[static_cast<std::size_t>(k)];
+    }
+    NF_ERROR_EXIT("No processor patch found for the given range.");
+    return -1;
+}
 
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {

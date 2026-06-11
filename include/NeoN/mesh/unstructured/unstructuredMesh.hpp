@@ -169,8 +169,6 @@ public:
      */
     localIdx nBoundaryFaces() const;
 
-    localIdx nProcBoundaryFaces() const;
-
     /**
      * @brief Get the total number of faces including boundary and processor faces in the mesh.
      *
@@ -184,6 +182,13 @@ public:
      * @return The number of boundaries in the mesh.
      */
     localIdx nBoundaries() const;
+
+    /**
+     * @brief Get the number of processor-boundary faces (inter-rank faces).
+     *
+     * Returns 0 for single-process runs.
+     */
+    localIdx nProcBoundaryFaces() const;
 
     /**
      * @brief the offset local cellIds for the global mesh.
@@ -313,10 +318,10 @@ UnstructuredMesh createSingleCellMesh(const Executor exec);
  */
 UnstructuredMesh create1DUniformMesh(const Executor exec, const localIdx nCells, scalar lx = 1.0);
 
-/** @brief A factory function for a 2D uniform mesh (OpenFOAM-style hex slab)
+/** @brief A factory function for a 2D uniform mesh (single-layer hex slab)
  *
  * Creates an nx × ny × 1 structured hex mesh on [0,Lx] × [0,Ly] × [0,1].
- * One cell thick in z, like OpenFOAM 2D meshes.
+ * One cell thick in z, the standard quasi-2D finite-volume convention.
  * Four boundary patches: left (x=0), right (x=Lx), bottom (y=0), top (y=Ly)
  */
 UnstructuredMesh create2DUniformMesh(
@@ -338,5 +343,49 @@ UnstructuredMesh create3DUniformMesh(
     scalar ly = 1.0,
     scalar lz = 1.0
 );
+
+
+#ifdef NF_WITH_MPI_SUPPORT
+/** @brief Factory function that builds the local 1D mesh partition for this MPI rank.
+ *
+ *  Creates a nCells-cell 1D mesh with regular boundary patches on the domain
+ *  boundary and processor-boundary patches where the partition abuts another rank.
+ *  Reads the current rank from the MPI environment.
+ */
+UnstructuredMesh create1DUniformMeshPart(const Executor exec, const localIdx nCells);
+
+/** @brief Factory function that builds the local 2D mesh partition for a given rank.
+ *
+ *  Builds the rank-local part of a 2D uniform mesh that is partitioned into a
+ *  @p ranksXPart × @p ranksYPart grid of square subdomains, where
+ *  @p totalRanks == ranksXPart * ranksXPart and ranksXPart == ranksYPart.
+ *  Each part is an nCells × nCells (one cell thick in z) hex slab.  Patches on
+ *  the global domain boundary stay regular; patches shared with a neighbouring
+ *  partition become processor-boundary patches.  Regular patches are stored
+ *  before processor patches, matching create1DUniformMeshPart.
+ *
+ *  Unlike create1DUniformMeshPart the rank is passed explicitly so that a part
+ *  can be built for any rank of the @p ranksXPart × @p ranksYPart grid.
+ */
+UnstructuredMesh create2DUniformMeshPart(
+    const Executor exec, const localIdx nCells, const localIdx totalRanks, const localIdx rank
+);
+
+/** @brief Factory function that builds the local 2D mesh partition for a given rank,
+ *  decomposing only along the x-axis.
+ *
+ *  Partitions the unit square into @p totalRanks × 1 strips along x.  Each rank
+ *  owns an @p nCells × @p nCells (one cell thick in z) hex slab of width
+ *  1/@p totalRanks.  The ymin and ymax patches are always regular; xmin is
+ *  regular only on rank 0 and xmax only on the last rank — all other x-facing
+ *  patches become processor-boundary patches.
+ *
+ *  Unlike create2DUniformMeshPart this variant accepts any @p totalRanks value,
+ *  not just perfect squares.
+ */
+UnstructuredMesh create2DUniformMeshPartX(
+    const Executor exec, const localIdx nCells, const localIdx totalRanks, const localIdx rank
+);
+#endif
 
 } // namespace NeoN

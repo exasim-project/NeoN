@@ -16,11 +16,15 @@ Coeff::Coeff(scalar coeff, const Vector<scalar>& field)
     : coeff_(coeff), view_(field.view()), hasView_(true)
 {}
 
+Coeff::Coeff(const Coeff& coeff)
+    : coeff_(coeff.coeff_), view_(coeff.view_), hasView_(coeff.hasView_)
+{}
+
 Coeff::Coeff(const Vector<scalar>& field) : coeff_(1.0), view_(field.view()), hasView_(true) {}
 
 bool Coeff::hasView() { return hasView_; }
 
-View<const scalar> Coeff::view() { return view_; }
+View<const scalar> Coeff::view() const { return view_; }
 
 Coeff& Coeff::operator*=(scalar rhs)
 {

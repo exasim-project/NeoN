@@ -23,7 +23,7 @@ TEST_CASE("FaceToMatrixAddress")
 
     // TODO use 2D/3D versions of create1DUniform mesh
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto [csrSp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
+    auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
         NeoN::la::CsrSparsityPattern<NeoN::localIdx>>(mesh);
 
     SECTION("Can construct sparsity pattern " + execName)

@@ -233,6 +233,15 @@ public:
     const std::vector<localIdx>& neighbourRank() const;
 
     /**
+     * @brief Returns the neighbour rank for the processor patch whose face range matches the
+     * given range.
+     *
+     * @param range The [start, end) face index range of the processor patch.
+     * @return The MPI rank of the neighbour for that patch.
+     */
+    localIdx neighbourRankForRange(std::pair<localIdx, localIdx> range) const;
+
+    /**
      * @brief Get the number of the boundaries.
      */
     localIdx nBoundaries() const { return offset_.size() - 1; }

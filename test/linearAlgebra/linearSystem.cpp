@@ -35,9 +35,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
     {
         Vector<scalar> rhs(exec, 3, 0.0);
         Vector<scalar> bRhs(exec, 3, 0.0);
-        LinearSystem<scalar, NeoN::la::CSRMatrix<scalar, NeoN::localIdx>> linearSystem(
-            csrMatrix, rhs, bCooMatrix, bRhs
-        );
+        LinearSystem<scalar> linearSystem(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
 
         REQUIRE(linearSystem.matrix().values().size() == 9);
         REQUIRE(linearSystem.matrix().colIdxs().size() == 9);
@@ -71,7 +69,8 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
         using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
 
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, CSRMatrix, CSRMatrix>(mesh);
+        auto linearSystem =
+            NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix, CSRMatrix>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -89,7 +88,8 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
 
         using COOMatrix = NeoN::la::COOMatrix<scalar, localIdx>;
 
-        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar, COOMatrix, COOMatrix>(mesh);
+        auto linearSystem =
+            NeoN::la::createEmptyLinearSystem<scalar, scalar, COOMatrix, COOMatrix>(mesh);
 
         REQUIRE(linearSystem.matrix().values().size() == nnz);
         REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
@@ -97,14 +97,33 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(linearSystem.rhs().size() == nCells);
     }
 
+    SECTION("Construct with MeshCellIterator " + execName)
+    {
+        auto nCells = 10;
+        auto nFaces = 9;
+        auto nnz = nCells + 2 * nFaces;
+        auto mesh = create1DUniformMesh(exec, nCells);
+
+        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh, cellIterator);
+
+        REQUIRE(linearSystem.matrix().values().size() == nnz);
+        REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
+        REQUIRE(linearSystem.matrix().rowOffs().size() == nCells + 1);
+        REQUIRE(linearSystem.matrix().nRows() == nCells);
+        REQUIRE(linearSystem.rhs().size() == nCells);
+        REQUIRE(linearSystem.getMeshIterator()->name() == "CellBased");
+    }
+
+
     SECTION("view read/write " + execName)
     {
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});
         Vector<scalar> bRhs(exec, {0.0, 0.0, 0.0});
-        LinearSystem<scalar, CSRMatrix<scalar, localIdx>> ls(csrMatrix, rhs, bCooMatrix, bRhs);
+        LinearSystem<scalar> linearSystem(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
 
-        auto lsView = ls.view();
-        auto hostLS = ls.copyToHost();
+        auto lsView = linearSystem.view();
+        auto hostLS = linearSystem.copyToHost();
         auto hostLSView = hostLS.view();
 
         // some simple sanity checks
@@ -143,7 +162,7 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         );
 
         // Check modification.
-        auto hostLS2 = ls.copyToHost();
+        auto hostLS2 = linearSystem.copyToHost();
         auto hostLS2View = hostLS2.view();
         for (NeoN::localIdx i = 0; i < hostLS2View.matrix.values.size(); ++i)
         {

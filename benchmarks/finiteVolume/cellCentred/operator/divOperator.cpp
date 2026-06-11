@@ -11,27 +11,84 @@
 
 using Operator = NeoN::dsl::Operator;
 
-TEST_CASE("DivOperator::div", "[bench]")
+/**@brief Benchmark the divergence operator for explicit and implicit evaluation.
+ *
+ * Constructs a face flux field and a volume field phi, then benchmarks explicit
+ * evaluation into a output volume field and implicit assembly into a linear system.
+ *
+ * @tparam TestType Field value type (e.g. NeoN::scalar, NeoN::Vec3)
+ * @param execName    Name of the executor, used as benchmark label
+ * @param exec        Executor on which all fields and operations run
+ * @param mesh        Unstructured mesh over which the operator is applied
+ * @param sectionName Catch2 section label, typically the mesh size string (e.g. "256x256")
+ */
+template<typename TestType>
+void runDivBenchmark(
+    const std::string& execName,
+    const NeoN::Executor& exec,
+    NeoN::UnstructuredMesh& mesh,
+    const std::string& sectionName
+)
 {
-    auto size = GENERATE(1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20);
-    auto [execName, exec] = GENERATE(allAvailableExecutor());
-
-    NeoN::UnstructuredMesh mesh = NeoN::create1DUniformMesh(exec, size);
+    // Boundary fields
     auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+
+    // FaceFlux
     fvcc::SurfaceField<NeoN::scalar> faceFlux(exec, "sf", mesh, surfaceBCs);
     NeoN::fill(faceFlux.internalVector(), 1.0);
 
-    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh);
-    fvcc::VolumeField<NeoN::scalar> phi(exec, "vf", mesh, volumeBCs);
-    fvcc::VolumeField<NeoN::scalar> divPhi(exec, "divPhi", mesh, volumeBCs);
-    NeoN::fill(phi.internalVector(), 1.0);
+    fvcc::VolumeField<TestType> phi(exec, "vf", mesh, volumeBCs);
+    NeoN::fill(phi.internalVector(), NeoN::one<TestType>());
 
-    // capture the value of size as section name
-    DYNAMIC_SECTION("" << size)
+    NeoN::Input input = NeoN::TokenList({std::string("Gauss"), std::string("linear")});
+
+    DYNAMIC_SECTION(sectionName + " - Explicit")
     {
-        NeoN::Input input = NeoN::TokenList({std::string("Gauss"), std::string("linear")});
+        // Create a scalar field to hold the div value - output field
+        fvcc::VolumeField<TestType> divPhi(exec, "vf", mesh, volumeBCs);
+        NeoN::fill(divPhi.internalVector(), NeoN::zero<TestType>());
+
         auto op = fvcc::DivOperator(Operator::Type::Explicit, faceFlux, phi, input);
 
-        BENCHMARK(std::string(execName)) { return (op.div(divPhi)); };
+        BENCHMARK(std::string(execName)) { op.explicitOperation(divPhi.internalVector()); };
     }
+
+    DYNAMIC_SECTION(sectionName + " - Implicit")
+    {
+        // Build sparsity pattern and allocate linear system once - output goes to ls
+        auto ls = la::createEmptyLinearSystem<TestType>(mesh);
+
+        auto op = fvcc::DivOperator(Operator::Type::Implicit, faceFlux, phi, input);
+
+        BENCHMARK(std::string(execName)) { op.implicitOperation(ls); };
+    }
+}
+
+TEMPLATE_TEST_CASE("DivOperator::2D", "[bench]", NeoN::scalar, NeoN::Vec3)
+{
+    auto nCellsPerDim = GENERATE(256, 512, 1024);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::UnstructuredMesh mesh = NeoN::create2DUniformMesh(exec, nCellsPerDim, nCellsPerDim);
+
+    const std::string sectionName =
+        std::to_string(nCellsPerDim) + "x" + std::to_string(nCellsPerDim);
+
+    runDivBenchmark<TestType>(std::string(execName), exec, mesh, sectionName);
+}
+
+TEMPLATE_TEST_CASE("DivOperator::3D", "[bench]", NeoN::scalar, NeoN::Vec3)
+{
+    auto nCellsPerDim = GENERATE(32, 64, 128);
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::UnstructuredMesh mesh =
+        NeoN::create3DUniformMesh(exec, nCellsPerDim, nCellsPerDim, nCellsPerDim);
+
+    const std::string sectionName = std::to_string(nCellsPerDim) + "x"
+                                  + std::to_string(nCellsPerDim) + "x"
+                                  + std::to_string(nCellsPerDim);
+
+    runDivBenchmark<TestType>(std::string(execName), exec, mesh, sectionName);
 }

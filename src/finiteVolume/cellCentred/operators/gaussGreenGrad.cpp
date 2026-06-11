@@ -33,7 +33,7 @@ void computeGrad(
 
     auto surfGradPhi = out.view();
 
-    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceAreaS, surfV] = views(
+    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceNormals, surfV] = views(
         mesh.boundaryMesh().faceOwners(),
         mesh.faceOwners(),
         mesh.faceNeighbors(),
@@ -56,7 +56,7 @@ void computeGrad(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Vec3 flux = faceAreaS[i] * surfPhif[i];
+            Vec3 flux = faceNormals[i] * surfPhif[i];
             Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);    // +S_f * φ_f
             Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux); // −S_f * φ_f
         },
@@ -64,16 +64,34 @@ void computeGrad(
     );
 
     // Boundary faces: only the owner cell is on this rank.
+    const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            Vec3 valueOwn = faceAreaS[nInternalFaces + bfi] * surfPhifB[bfi];
+            Vec3 valueOwn = bFaceNormals[bfi] * surfPhifB[bfi];
             Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
         },
         "computeGradBoundary"
     );
+
+    auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bSf = mesh.boundaryMesh().faceNormals().view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                auto own = boundaryFaceOwners[bcfacei];
+                Vec3 flux = bSf[bcfacei] * surfPhifB[bcfacei];
+                Kokkos::atomic_add(&surfGradPhi[own], flux);
+            },
+            "computeProcGradBoundary"
+        );
+    }
 
     parallelFor(
         exec,
@@ -201,7 +219,10 @@ void GaussGreenGrad::grad(
 VolumeField<Vec3>
 GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const
 {
-    auto gradBCs = createCalculatedBCs<VolumeBoundary<Vec3>>(phi.mesh());
+    // Proc-aware calculated BCs: processor patches carry the halo-exchange BC so the corrected /
+    // limitedCorrected face-normal gradient can pull the neighbour cell gradient across the rank
+    // boundary with a single correctBoundaryConditions(). Physical patches stay 'calculated'.
+    auto gradBCs = createCalculatedProcBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
     computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
@@ -273,13 +294,13 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
+    const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
         {0, nBnd},
         NEON_LAMBDA(const localIdx bi) {
             const auto o = bFaceCells[bi];
-            // TODO Issue #515
-            const Vec3 sf = SfAll[nInt + bi];
+            const Vec3 sf = bFaceNormals[bi];
             const Vec3 faceU = ufBound[bi];
             for (size_t row = 0; row < 3; ++row)
             {
@@ -291,6 +312,36 @@ void computeGradTensor(
         },
         "computeGradTensorBoundary"
     );
+
+    // Processor faces: add the proc-face flux to the owner cell's gradient, exactly as the scalar
+    // computeGradScalar does. This block was MISSING from the tensor path, so the cell gradient at
+    // every processor-adjacent cell omitted its proc-face contribution — corrupting the Vec3
+    // corrected/limited snGrad at proc-adjacent internal faces (the uncorrected scheme, which does
+    // not use the cell gradient, was unaffected). Proc faces are compressed: use the boundary
+    // mesh's own faceNormals indexed by nBoundaryFaces+procFacei, NOT the OF-full SfAll.
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bSf = mesh.boundaryMesh().faceNormals().view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bcfacei = nBnd + procFacei;
+                const auto o = bFaceCells[bcfacei];
+                const Vec3 sf = bSf[bcfacei];
+                const Vec3 faceU = ufBound[bcfacei];
+                for (size_t row = 0; row < 3; ++row)
+                {
+                    for (size_t col = 0; col < 3; ++col)
+                    {
+                        atomicAddTensor(&gT[o], row, col, sf[col] * faceU[row]);
+                    }
+                }
+            },
+            "computeGradTensorProcBoundary"
+        );
+    }
 
     parallelFor(
         exec,
@@ -373,7 +424,9 @@ void GaussGreenGrad::gradTensor(
 VolumeField<Tensor>
 GaussGreenGrad::gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operatorScaling) const
 {
-    auto calcBC = createCalculatedBCs<VolumeBoundary<Tensor>>(u.mesh());
+    // Proc-aware calculated BCs (see grad()): processor patches carry the halo-exchange BC so the
+    // tensor gradient's neighbour value can be fetched via correctBoundaryConditions().
+    auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(u.mesh());
     VolumeField<Tensor> gradU(u.exec(), "gradU", u.mesh(), calcBC);
     fill(gradU.internalVector(), zero<Tensor>());
 

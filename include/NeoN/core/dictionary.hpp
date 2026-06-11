@@ -20,6 +20,20 @@ void logOutRange(
     const std::unordered_map<std::string, std::any>& data
 );
 
+namespace detail
+{
+
+/** @brief A wrapper class to put references in dictionaries to overcome the issue that std::any
+ * cannot hold a reference use with care since if the original values does not exist anymore it will
+ * be a dangling reference */
+template<typename HoldType>
+struct RefHolder
+{
+    const HoldType& c;
+};
+
+}
+
 /**
  * @class Dictionary
  * @brief A class representing a dictionary that stores key-value pairs.

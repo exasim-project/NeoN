@@ -9,6 +9,7 @@
 #include <mpi.h>
 #endif
 #include <type_traits>
+#include <vector>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
@@ -226,6 +227,95 @@ inline bool test(MPI_Request* request)
     mpi_label_t err = MPI_Test(request, &flag, MPI_STATUS_IGNORE);
     NF_DEBUG_ASSERT(err == MPI_SUCCESS, "MPI_Test failed.");
     return static_cast<bool>(flag);
+}
+
+/**
+ * @brief Blocks until all of the given non-blocking requests have completed.
+ *
+ * @param requests Pointer to the first element of a contiguous array of requests.
+ * @param count The number of requests in the array.
+ * @note Blocking MPI operation; the request statuses are ignored.
+ */
+inline void waitAll(MPI_Request* requests, const mpi_label_t count)
+{
+    if (count == 0) return;
+    mpi_label_t err = MPI_Waitall(count, requests, MPI_STATUSES_IGNORE);
+    NF_DEBUG_ASSERT(err == MPI_SUCCESS, "MPI_Waitall failed.");
+}
+
+/**
+ * @brief Blocks until all requests in the given container have completed.
+ *
+ * @param requests A contiguous container of requests, e.g. std::vector<MPI_Request>.
+ * @note Blocking MPI operation; the request statuses are ignored.
+ */
+inline void waitAll(std::vector<MPI_Request>& requests)
+{
+    waitAll(requests.data(), static_cast<mpi_label_t>(requests.size()));
+}
+
+/**
+ * @brief Blocking all-to-all exchange of equally-sized data between all ranks.
+ *
+ * @tparam valueType The type of the data elements.
+ * @param sendBuf Pointer to the send buffer.
+ * @param sendCount Number of elements to send to each rank.
+ * @param recvBuf Pointer to the receive buffer.
+ * @param recvCount Number of elements to receive from each rank.
+ * @param comm The MPI communicator.
+ * @note Blocking MPI operation.
+ */
+template<typename valueType>
+void allToAll(
+    const valueType* sendBuf,
+    mpi_label_t sendCount,
+    valueType* recvBuf,
+    mpi_label_t recvCount,
+    MPI_Comm comm
+)
+{
+    mpi_label_t err = MPI_Alltoall(
+        sendBuf, sendCount, getType<valueType>(), recvBuf, recvCount, getType<valueType>(), comm
+    );
+    NF_DEBUG_ASSERT(err == MPI_SUCCESS, "MPI_Alltoall failed.");
+}
+
+/**
+ * @brief Blocking all-to-all exchange of variable-length data between all ranks.
+ *
+ * @tparam valueType The type of the data elements.
+ * @param sendBuf Pointer to the send buffer.
+ * @param sendCounts Number of elements to send to each rank.
+ * @param sendDispls Displacement (in elements) into sendBuf for each rank.
+ * @param recvBuf Pointer to the receive buffer.
+ * @param recvCounts Number of elements to receive from each rank.
+ * @param recvDispls Displacement (in elements) into recvBuf for each rank.
+ * @param comm The MPI communicator.
+ * @note Blocking MPI operation.
+ */
+template<typename valueType>
+void allToAllV(
+    const valueType* sendBuf,
+    const mpi_label_t* sendCounts,
+    const mpi_label_t* sendDispls,
+    valueType* recvBuf,
+    const mpi_label_t* recvCounts,
+    const mpi_label_t* recvDispls,
+    MPI_Comm comm
+)
+{
+    mpi_label_t err = MPI_Alltoallv(
+        sendBuf,
+        sendCounts,
+        sendDispls,
+        getType<valueType>(),
+        recvBuf,
+        recvCounts,
+        recvDispls,
+        getType<valueType>(),
+        comm
+    );
+    NF_DEBUG_ASSERT(err == MPI_SUCCESS, "MPI_Alltoallv failed.");
 }
 
 } // namespace mpi

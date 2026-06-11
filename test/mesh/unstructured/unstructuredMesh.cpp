@@ -55,8 +55,8 @@ TEST_CASE("Unstructured Mesh")
         };
         REQUIRE_THAT(mesh.cellCenters(), Equals(cellCentersExp, Approx {1e-12}));
 
-        // Verify face owners (x-direction)
-        auto faceOwnerExp = std::vector<NeoN::label> {0, 1, 2, 0, 3};
+        // Verify owners of interior faces (x-direction)
+        auto faceOwnerExp = std::vector<NeoN::label> {0, 1, 2};
         REQUIRE_THAT(mesh.faceOwners(), Equals(faceOwnerExp, EqualInt()));
 
         // Verify face neighbours (x-direction)

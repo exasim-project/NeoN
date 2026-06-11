@@ -15,8 +15,8 @@ PR_NUMBER=${PR_NUMBER:?Error: Must set PR number}
 RESULTS_DIR=${RESULTS_DIR:-results}
 TARGET_REPO=${TARGET_REPO:?Must set TARGET_REPO}
 REPO_NAME=$(basename "$TARGET_REPO" .git)
-TARGET_BRANCH=${TARGET_BRANCH:?Must set TARGET_BRANCH}
 RUN_IDENTIFIER=${RUN_IDENTIFIER:?Must set RUN_IDENTIFIER}
+CI_RUNNER_DESCRIPTION=${CI_RUNNER_DESCRIPTION:?Must set CI_RUNNER_DESCRIPTION}
 API_TOKEN_GITHUB=${API_TOKEN_GITHUB:?Must set API_TOKEN_GITHUB}
 
 echo "Selected GPU vendor: ${GPU_VENDOR}"
@@ -117,14 +117,14 @@ push_results() {
     git clone "https://oauth2:${API_TOKEN_GITHUB}@${TARGET_REPO}"
     cd "${REPO_NAME}"
 
-    git checkout "${TARGET_BRANCH}" || git checkout -b "${TARGET_BRANCH}"
-    mkdir -p "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
-    cp -r ../${RESULTS_DIR}/* "${RUN_IDENTIFIER}/${CI_RUNNER_DESCRIPTION}"
+    git checkout "NeoN_PR_${PR_NUMBER}" || git checkout -b "NeoN_PR_${PR_NUMBER}"
+    mkdir -p "NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
+    cp -r ../${RESULTS_DIR}/* "NeoN/${PR_NUMBER}/${CI_RUNNER_DESCRIPTION}"
 
     git add .
     git commit -m "Benchmarks from GitLab pipeline ${RUN_IDENTIFIER}" || echo "No changes to commit"
     git pull --rebase || true
-    git push origin "${TARGET_BRANCH}"
+    git push origin "NeoN_PR_${PR_NUMBER}"
 }
 
 ### Main execution ###

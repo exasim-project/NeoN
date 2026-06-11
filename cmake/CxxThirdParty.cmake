@@ -6,9 +6,9 @@
 
 include(cmake/Versions.cmake)
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   if(WIN32)
-    message(FATAL_ERROR "NeoN_ENABLE_MPI_SUPPORT not supported on Windows")
+    message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
 endif()
@@ -218,7 +218,7 @@ endif()
 
 if(${NeoN_WITH_GINKGO})
   # --- nlohmann_json ---
-  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET)
+  find_package(nlohmann_json ${NeoN_JSON_VERSION} QUIET CONFIG)
   if(NOT nlohmann_json_FOUND)
     message(STATUS "System nlohmann_json not found — fetching from GitHub via CPM.cmake...")
     cpmaddpackage(
@@ -259,7 +259,7 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_EXAMPLES OFF"
       "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
       "GINKGO_ENABLE_HALF OFF"
-      "GINKGO_BUILD_MPI OFF"
+      "GINKGO_BUILD_MPI ${NeoN_WITH_MPI}"
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")

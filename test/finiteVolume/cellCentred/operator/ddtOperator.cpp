@@ -65,6 +65,7 @@ TEMPLATE_TEST_CASE("DdtOperator", "[template]", NeoN::scalar, NeoN::Vec3)
     fvcc::VolumeField<TestType>& phi = fieldCollection.registerVector<fvcc::VolumeField<TestType>>(
         CreateVector<TestType> {.name = "phi", .mesh = mesh, .timeIndex = 1}
     );
+
     fill(phi.internalVector(), 10 * one<TestType>());
     fill(phi.boundaryData().value(), zero<TestType>());
     phi.correctBoundaryConditions();

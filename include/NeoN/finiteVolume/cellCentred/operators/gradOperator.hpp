@@ -183,7 +183,7 @@ public:
 
     std::string juliaOP() { return getName(); }
     std::string juliaOP() const { return getName(); }
-
+    Dictionary getConfig() const { return {}; }
 
 private:
 

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
@@ -55,7 +56,7 @@ public:
         : Base(exec, mesh), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
           limitCoeff_(DEFAULT_LIMIT_COEFF) {};
 
-    static std::string name() { return "limitedCorrected"; }
+    static std::string name() { return "limited"; }
 
     static std::string doc()
     {
@@ -103,8 +104,19 @@ private:
             }
             return DEFAULT_LIMIT_COEFF;
         }
-        // TokenList: coefficient follows the scheme name (already consumed by factory)
-        auto& tl = std::get<NeoN::TokenList>(inputs);
+        // TokenList: accept either OF form
+        //   terse:   "limited" <coeff>
+        //   verbose: "limited" "corrected" <coeff>
+        // The factory has already consumed "limited"; consume an optional
+        // "corrected" sub-scheme token if present, then read the coefficient.
+        const auto& tl = std::get<NeoN::TokenList>(inputs);
+        if (tl.peekIs<std::string>())
+        {
+            const std::string& sub = tl.next<std::string>();
+            NF_ASSERT(
+                sub == "corrected", "limited snGrad: only 'corrected' sub-scheme is supported"
+            );
+        }
         return tl.next<scalar>();
     }
 

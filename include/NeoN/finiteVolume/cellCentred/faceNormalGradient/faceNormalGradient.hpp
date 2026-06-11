@@ -48,6 +48,15 @@ public:
 
     virtual ~FaceNormalGradientFactory() {} // Virtual destructor
 
+    /**
+     * @brief Computes the face-normal gradient of @p volVector into @p surfaceVector.
+     *
+     * Processor-boundary contract: processor faces are treated like internal faces
+     * (the standard coupled-patch treatment), i.e. the gradient couples the owner cell
+     * with the true neighbour cell on the far side of the rank boundary. Schemes that
+     * apply a non-orthogonal correction (corrected, limitedCorrected) apply it on
+     * processor faces as well. Scalar and Vec3 fields receive identical treatment.
+     */
     virtual void faceNormalGrad(
         const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const = 0;
@@ -63,7 +72,7 @@ public:
     //   limitedCorrected → limiter[f] * corrVec[f] · interpGrad[f]
     // Default (uncorrected): fills internal vector with zeros.
     virtual void
-    implicitCorrection(const VolumeField<ValueType>& phi, SurfaceField<ValueType>& corrField) const
+    implicitCorrection(const VolumeField<ValueType>&, SurfaceField<ValueType>& corrField) const
     {
         NeoN::fill(corrField.internalVector(), zero<ValueType>());
     }

@@ -77,8 +77,7 @@ public:
     }
 
 
-    virtual SolverStats
-    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
+    virtual SolverStats solve(const LinearSystem<scalar>& sys, Vector<scalar>& x) const final
     {
 
         Mat Amat;

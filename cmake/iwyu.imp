@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2026 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
+#
+# include-what-you-use mapping file.
+#
+# Third-party libraries (Kokkos, fmt, umpire, cpptrace) and the standard
+# library deliberately spread their implementation across many *internal*
+# headers that callers must never include directly -- you include the public
+# umbrella header instead. IWYU does not know which headers are private, so by
+# default it suggests the internal ones (e.g. <View/Kokkos_BasicView.hpp>,
+# <Serial/Kokkos_Serial.hpp>, <fmt/base.h>, <umpire/Allocator.inl>,
+# <bits/chrono.h>). These entries teach IWYU each library's public surface so
+# those false positives are suppressed repo-wide, leaving only the genuine
+# add/remove suggestions.
+#
+# Wired in via CMakeLists.txt:
+#   -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp
+#
+# Format: each entry maps a private header (or symbol) to the public header
+# that should be included instead. A leading '@' marks the private side as an
+# ECMAScript regex matched against the include spelling (brackets included).
+# Docs: https://github.com/include-what-you-use/include-what-you-use/blob/master/docs/IWYUMappings.md
+
+[
+  # ---- Kokkos -------------------------------------------------------------
+  # Everything Kokkos is reachable through the single <Kokkos_Core.hpp>
+  # umbrella. Match any Kokkos_*.hpp header (top level or in a backend
+  # subdirectory such as View/, Serial/, OpenMP/, Cuda/, HIP/, ...) plus the
+  # bundled desul atomics.
+  { include: ["@<Kokkos_.*>",   "private", "<Kokkos_Core.hpp>", "public"] },
+  { include: ["@<.*/Kokkos_.*>", "private", "<Kokkos_Core.hpp>", "public"] },
+  { include: ["@<desul/.*>",    "private", "<Kokkos_Core.hpp>", "public"] },
+
+  # ---- {fmt} --------------------------------------------------------------
+  # fmt splits its API across base.h / core.h; <fmt/format.h> is the public
+  # entry point. The bare "base.h" form appears when fmt is vendored.
+  { include: ["<fmt/base.h>", "private", "<fmt/format.h>", "public"] },
+  { include: ["<fmt/core.h>", "private", "<fmt/format.h>", "public"] },
+  { include: ["\"base.h\"",   "private", "<fmt/format.h>", "public"] },
+
+  # ---- umpire -------------------------------------------------------------
+  # .inl files are implementation details of their matching .hpp.
+  { include: ["<umpire/Allocator.inl>",       "private", "<umpire/Allocator.hpp>",       "public"] },
+  { include: ["<umpire/ResourceManager.inl>", "private", "<umpire/ResourceManager.hpp>", "public"] },
+
+  # ---- cpptrace -----------------------------------------------------------
+  # The <cpptrace/cpptrace.hpp> umbrella is the supported include.
+  { include: ["@<cpptrace/.*>", "private", "<cpptrace/cpptrace.hpp>", "public"] },
+
+  # ---- libstdc++ internals ------------------------------------------------
+  # Internal <bits/...> headers that IWYU's bundled libstdc++ map misses here.
+  { include: ["<bits/chrono.h>",  "private", "<chrono>",  "public"] },
+  { include: ["<bits/std_abs.h>", "private", "<cstdlib>", "public"] },
+
+  # ---- C++ vs C standard headers ------------------------------------------
+  # Prefer the C++ <cmath> spelling over the C <math.h> for sqrt & friends.
+  { symbol: ["sqrt",      "private", "<cmath>", "public"] },
+  { symbol: ["std::sqrt", "private", "<cmath>", "public"] }
+]

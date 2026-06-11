@@ -81,6 +81,8 @@ public:
     std::string getName() const { return "SurfaceIntegrate"; }
     std::string juliaOP() const { return getName(); }
 
+    Dictionary getConfig() const { return {}; }
+
 private:
 
     std::string juliaEvalString_;

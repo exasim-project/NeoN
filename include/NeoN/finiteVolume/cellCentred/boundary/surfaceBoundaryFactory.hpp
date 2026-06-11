@@ -32,6 +32,21 @@ public:
 
     virtual void correctBoundaryCondition(Field<ValueType>& field) = 0;
 
+    /**
+     * @brief One-time patch initialisation, applied once per field before the first update().
+     *
+     * For patch data fixed for the lifetime of the field (e.g. constant mixed-BC coefficients).
+     * Default: no-op.
+     */
+    virtual void set([[maybe_unused]] Field<ValueType>& domainVector) {}
+
+    /**
+     * @brief Per-iteration boundary update, applied on every correctBoundaryConditions() call.
+     *
+     * Default forwards to correctBoundaryCondition() so non-split BCs are unchanged.
+     */
+    virtual void update(Field<ValueType>& domainVector) { correctBoundaryCondition(domainVector); }
+
     virtual std::unique_ptr<SurfaceBoundaryFactory> clone() const = 0;
 };
 
@@ -65,6 +80,16 @@ public:
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector)
     {
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
+    }
+
+    virtual void set(Field<ValueType>& domainVector)
+    {
+        boundaryCorrectionStrategy_->set(domainVector);
+    }
+
+    virtual void update(Field<ValueType>& domainVector)
+    {
+        boundaryCorrectionStrategy_->update(domainVector);
     }
 
 

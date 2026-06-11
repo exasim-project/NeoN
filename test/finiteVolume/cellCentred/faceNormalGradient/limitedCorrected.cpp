@@ -38,17 +38,24 @@ TEMPLATE_TEST_CASE("limitedCorrected", "[template]", NeoN::scalar)
     phi.boundaryData().value() =
         NeoN::Vector<TestType>(exec, {0.5 * one<TestType>(), 10.5 * one<TestType>()});
 
-    SECTION("Construct from TokenList with coefficient" + execName)
+    SECTION("Construct from TokenList — terse OF form 'limited <coeff>'" + execName)
     {
-        NeoN::Input input = NeoN::TokenList({std::string("limitedCorrected"), NeoN::scalar(0.333)});
+        NeoN::Input input = NeoN::TokenList({std::string("limited"), NeoN::scalar(0.333)});
+        fvcc::FaceNormalGradient<TestType> lc(exec, mesh, input);
+    }
+
+    SECTION("Construct from TokenList — verbose OF form 'limited corrected <coeff>'" + execName)
+    {
+        NeoN::Input input =
+            NeoN::TokenList({std::string("limited"), std::string("corrected"), NeoN::scalar(0.333)}
+            );
         fvcc::FaceNormalGradient<TestType> lc(exec, mesh, input);
     }
 
     SECTION("Construct from Dictionary with limitCoeff" + execName)
     {
         NeoN::Input input = NeoN::Dictionary(
-            {{"faceNormalGradient", std::string("limitedCorrected")},
-             {"limitCoeff", NeoN::scalar(0.333)}}
+            {{"faceNormalGradient", std::string("limited")}, {"limitCoeff", NeoN::scalar(0.333)}}
         );
         fvcc::FaceNormalGradient<TestType> lc(exec, mesh, input);
     }
@@ -56,7 +63,7 @@ TEMPLATE_TEST_CASE("limitedCorrected", "[template]", NeoN::scalar)
     SECTION("faceNormalGrad equals uncorrected on orthogonal mesh" + execName)
     {
         // On orthogonal meshes corrVec = 0, so limitedCorrected == uncorrected
-        NeoN::Input input = NeoN::TokenList({std::string("limitedCorrected"), NeoN::scalar(0.333)});
+        NeoN::Input input = NeoN::TokenList({std::string("limited"), NeoN::scalar(0.333)});
         fvcc::FaceNormalGradient<TestType> lc(exec, mesh, input);
         lc.faceNormalGrad(phi, phif);
 
@@ -81,7 +88,7 @@ TEMPLATE_TEST_CASE("limitedCorrected", "[template]", NeoN::scalar)
     SECTION("faceNormalGrad with full correction (limitCoeff=1) on orthogonal mesh" + execName)
     {
         // limitCoeff=1 behaves as full corrected — still equals uncorrected on orthogonal mesh
-        NeoN::Input input = NeoN::TokenList({std::string("limitedCorrected"), NeoN::scalar(1.0)});
+        NeoN::Input input = NeoN::TokenList({std::string("limited"), NeoN::scalar(1.0)});
         fvcc::FaceNormalGradient<TestType> lc(exec, mesh, input);
         lc.faceNormalGrad(phi, phif);
 

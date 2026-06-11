@@ -7,29 +7,30 @@
 
 #include "NeoN/core/primitives/vec3.hpp" // for Vec3
 
+#ifdef NF_WITH_MPI_SUPPORT
+#include <mpi.h>
+#include "NeoN/core/mpi/environment.hpp"
+#endif
+
 
 namespace NeoN
 {
 
 localIdx computeGlobalOffset(const BoundaryMesh& boundaryMesh, localIdx localNCells)
 {
-    // NOTE not yet implemented, will be added via separate PR
-    // if (!boundaryMesh.isDistributed())
-    // {
-    //     return 0;
-    // }
-    // mpi::Environment mpiEnviron;
-    // const auto nRanks = mpiEnviron.sizeRank();
-    // const auto myRank = mpiEnviron.rank();
-    // auto allNCells = std::vector<int>(nRanks);
-    // MPI_Allgather(&localNCells, 1, MPI_INT, allNCells.data(), 1, MPI_INT, mpiEnviron.comm());
-    // std::vector<localIdx> globalOffset(nRanks + 1, 0);
-    // for (int i = 0; i < nRanks; i++)
-    // {
-    //     globalOffset[i + 1] = globalOffset[i] + allNCells[i];
-    // }
-    // return globalOffset[myRank];
+    if (!boundaryMesh.isDistributed())
+    {
+        return 0;
+    }
+#ifdef NF_WITH_MPI_SUPPORT
+    mpi::Environment mpiEnviron;
+    int offset = 0;
+    int nCells = static_cast<int>(localNCells);
+    MPI_Scan(&nCells, &offset, 1, MPI_INT, MPI_SUM, mpiEnviron.comm());
+    return static_cast<localIdx>(offset) - localNCells;
+#else
     return 0;
+#endif
 }
 
 
@@ -260,16 +261,13 @@ UnstructuredMesh create3DUniformMesh(
         exec, dim, p, cellCenters, nInternalFaces, nBoundaryFaces, offset, faces
     );
 
-    // Note: With the localIdx type (int32_t), the limit is 2 x 10^9 cells
-    const localIdx nCells = nx * ny * nz;
-
     UnstructuredMesh mesh(
         vectorVector(exec, std::move(points)),
         scalarVector(exec, std::move(cellVolumes)),
         vectorVector(exec, std::move(cellCenters)),
-        {exec, std::move(faces.areas)},
+        {exec, std::move(faces.normals)},
         {exec, std::move(faces.centers)},
-        {exec, std::move(faces.magnitudes)},
+        {exec, std::move(faces.areas)},
         {exec, std::move(faces.owner)},
         labelVector(exec, std::move(faces.neighbour)),
         std::move(boundaryMesh)

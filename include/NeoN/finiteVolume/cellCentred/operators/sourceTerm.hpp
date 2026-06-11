@@ -43,6 +43,9 @@ public:
 
     std::string getName() const { return "sourceTerm"; }
 
+
+    Dictionary getConfig() const { return {}; }
+
 private:
 
     // Non-null for Sp mode. Null for Su mode (field_ from mixin IS the coefficient).

@@ -50,10 +50,10 @@ CellData generateCellData(const MeshParams& p)
 FaceData
 generateInternalFaces(const MeshParams& p, const localIdx nInternalFaces, const localIdx nFaces)
 {
-    std::vector<Vec3> fAreas(static_cast<size_t>(nFaces));
-    std::vector<Vec3> fCenters(static_cast<size_t>(nFaces));
-    std::vector<scalar> fMag(static_cast<size_t>(nFaces));
-    std::vector<label> fOwner(static_cast<size_t>(nFaces));
+    std::vector<Vec3> fAreas(static_cast<size_t>(nInternalFaces));
+    std::vector<Vec3> fCenters(static_cast<size_t>(nInternalFaces));
+    std::vector<scalar> fMag(static_cast<size_t>(nInternalFaces));
+    std::vector<label> fOwner(static_cast<size_t>(nInternalFaces));
     std::vector<label> fNeighbour(static_cast<size_t>(nInternalFaces));
 
     localIdx faceId = 0;
@@ -152,27 +152,22 @@ BoundaryMesh generateBoundaryData(
 
     localIdx faceId = nInternalFaces;
 
-    auto addBndFace = [&](localIdx bndId, localIdx ci, Vec3 area, Vec3 faceCentre)
+    auto addBndFace = [&](localIdx bndId, localIdx ci, Vec3 faceNormal, Vec3 faceCenter)
     {
         auto sz = static_cast<size_t>(bndId);
         auto fi = static_cast<size_t>(faceId);
         auto ciSizeT = static_cast<size_t>(ci);
         auto ciLabel = static_cast<label>(ci);
-        scalar magA = mag(area);
-        Vec3 normal = area * (1.0 / magA);
-        Vec3 delta = faceCentre - centers[ciSizeT];
-
-        faces.areas[fi] = area;
-        faces.centers[fi] = faceCentre;
-        faces.magnitudes[fi] = magA;
-        faces.owner[fi] = ciLabel;
+        scalar magA = mag(faceNormal);
+        Vec3 faceUnitNormal = faceNormal * (1.0 / magA);
+        Vec3 delta = faceCenter - centers[ciSizeT];
 
         bndFaceOwners[sz] = ciLabel;
-        bndFaceCenters[sz] = faceCentre;
+        bndFaceCenters[sz] = faceCenter;
         bndCellCenters[sz] = centers[ciSizeT];
-        bndFaceNormals[sz] = area;
+        bndFaceNormals[sz] = faceNormal;
         bndFaceAreas[sz] = magA;
-        bndFaceUnitNormals[sz] = normal;
+        bndFaceUnitNormals[sz] = faceUnitNormal;
         bndDelta[sz] = delta;
         bndDeltaCoeffs[sz] = 1.0 / mag(delta);
     };

@@ -81,6 +81,7 @@ public:
     virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const override
     {
         NF_ERROR_EXIT("Not implemented");
+        return nullptr;
     };
 
 private:

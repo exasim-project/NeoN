@@ -48,7 +48,7 @@ endif()
 
 if(fmt_ADDED)
   install(
-    TARGETS fmt-header-only
+    TARGETS fmt fmt-header-only
     EXPORT ${PROJECT_NAME}Targets
     INCLUDES
     DESTINATION include)

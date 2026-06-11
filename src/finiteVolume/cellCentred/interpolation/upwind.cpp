@@ -54,6 +54,23 @@ void computeUpwindInterpolation(
         NEON_LAMBDA(const localIdx bfi) { dstB[bfi] = weightB[bfi] * boundS[bfi]; },
         "computeUpwindInterpolationBoundary"
     );
+
+    auto nProcBoundaryFaces = dst.mesh().nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bfOwners = dst.mesh().boundaryMesh().faceOwners().view();
+        const auto bFluxV = flux.boundaryData().value().view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                auto own = bfOwners[bcfacei];
+                dstB[bcfacei] = bFluxV[bcfacei] >= 0 ? srcS[own] : boundS[bcfacei];
+            },
+            "computeUpwindInterpolationProcBoundary"
+        );
+    }
 }
 
 
@@ -83,6 +100,21 @@ void computeUpwindInterpolationWeights(
         NEON_LAMBDA(const localIdx bfi) { weightB[bfi] = 1.0; },
         "computeUpwindWeightsBoundary"
     );
+
+    auto nProcBoundaryFaces = src.mesh().nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto bFluxV = flux.boundaryData().value().view();
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                weightB[bcfacei] = bFluxV[bcfacei] >= 0 ? scalar(1) : scalar(0);
+            },
+            "computeUpwindWeightsProcBoundary"
+        );
+    }
 }
 
 #define NF_DECLARE_COMPUTE_IMP_UPW_INT(TYPENAME)                                                   \

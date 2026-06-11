@@ -25,7 +25,7 @@ void computeLaplacianExp(
     const auto [owners, neighbors, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-    const auto [result, faceArea, fnGrad, vol] =
+    const auto [result, faceAreas, fnGrad, vol] =
         views(lapPhi, mesh.faceAreas(), faceNormalGrad.internalVector(), mesh.cellVolumes());
     const auto fnGradB = faceNormalGrad.boundaryData().value().view();
 
@@ -47,7 +47,7 @@ void computeLaplacianExp(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            ValueType flux = faceArea[i] * fnGrad[i];
+            ValueType flux = faceAreas[i] * fnGrad[i];
             Kokkos::atomic_add(
                 &result[owners[i]], flux
             ); // +|S_f| * fnGrad (outward gradient from owner)
@@ -58,14 +58,17 @@ void computeLaplacianExp(
         "computeLaplacianExplicitInternal"
     );
 
-    // Boundary faces: only the owner cell is on this rank.
+    // Physical (non-proc) boundary faces: only the owner cell is on this rank.
+    // For non-proc patches the mesh's full face index and NeoN's compressed
+    // boundary index agree (empty patches contribute zero faces),
+    // so bFaceAreas[bfi] = mesh.magFaceAreas()[bfi] is correct here.
+    const auto bFaceAreas = mesh.boundaryMesh().faceAreas().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             auto own = boundaryFaceOwners[bfi];
-            // TODO Issue #515
-            ValueType valueOwn = faceArea[nInternalFaces + bfi] * fnGradB[bfi];
+            ValueType valueOwn = bFaceAreas[bfi] * fnGradB[bfi];
             Kokkos::atomic_add(&result[own], valueOwn);
         },
         "computeLaplacianExplicitBoundary"
@@ -79,13 +82,64 @@ void computeLaplacianExp(
     );
 }
 
-template<typename ValueType>
-void computeLaplacianBoundImpl(
-    la::LinearSystem<ValueType>& ls,
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeLaplacianProcBoundImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
+)
+{
+    const auto exec = phi.exec();
+    const auto& mesh = phi.mesh();
+
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces == 0) return;
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const auto [bGammaV, bDeltaCoeffs, boundaryFaceOwner] = views(
+        gamma.boundaryData().value(),
+        faceNormalGradient.deltaCoeffs().boundaryData().value(),
+        mesh.boundaryMesh().faceOwners()
+    );
+    const auto bcMagSf = mesh.boundaryMesh().faceAreas().view();
+
+    auto bValues = ls.offDiagonalMatrix().values().view();
+    // boundaryMatrix records the diagonal contribution so removeBoundaryContributions can reverse
+    // it (proc slots live at [nBoundaryFaces, nBoundaryFaces + nProcBoundaryFaces)).
+    auto bndDiagValues = ls.boundaryMatrix().values().view();
+
+    auto values = ls.matrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, nProcBoundaryFaces},
+        NEON_LAMBDA(const localIdx procFacei) {
+            auto bcfacei = nBoundaryFaces + procFacei;
+            auto cell = boundaryFaceOwner[bcfacei];
+            auto ownCoeff = coeff[cell];
+
+            auto flux = bGammaV[bcfacei] * bcMagSf[bcfacei] * bDeltaCoeffs[bcfacei];
+            auto value = flux * ownCoeff * one<AssemblyType>();
+
+            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], value);
+            bValues[procFacei] += value;
+            bndDiagValues[bcfacei] += value;
+        },
+        "computeInterfaceLaplacianCoefficients"
+    );
+}
+
+
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeLaplacianBoundImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
 )
 {
     const auto exec = phi.exec();
@@ -113,6 +167,7 @@ void computeLaplacianBoundImpl(
 
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto bFaceAreas = mesh.boundaryMesh().faceAreas().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
@@ -123,24 +178,13 @@ void computeLaplacianBoundImpl(
 
             auto refValFrac = valueFraction[bfi];
             auto refGradFrac = 1.0 - refValFrac;
-
-            // TODO Issue #515
-            auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
+            auto flux = bGammaV[bfi] * bFaceAreas[bfi];
             auto fluxContrib =
-                flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<ValueType>();
+                flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<AssemblyType>();
 
-            // since upper triangular value is "outside" of system matrix
-            // it is stored separately in bMatrix
             bValues[bfi] += fluxContrib;
-            // diagonal contribution
             Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], fluxContrib);
 
-            // Explicit RHS contribution from the mixed BC:
-            //   φ_f = valFrac1 * refValue               (Dirichlet part)
-            //       + valFrac2 * (φ_C + refGradient/δ)  (Neumann part)
-            // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
-            // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
-            // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
             auto valueRhs =
                 flux * ownRowCoeff
                 * (refValFrac * bDeltaCoeffs[bfi] * refValue[bfi] + refGradFrac * refGradient[bfi]);
@@ -151,13 +195,13 @@ void computeLaplacianBoundImpl(
     );
 }
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeLaplacianNonOrthCorrImpl(
-    la::LinearSystem<ValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
 )
 {
     if (!faceNormalGradient.hasImplicitCorrection()) return;
@@ -169,8 +213,8 @@ void computeLaplacianNonOrthCorrImpl(
     const auto [ownV, neiV] = views(mesh.faceOwners(), mesh.faceNeighbors());
     const auto [gammaV, magFaceArea] = views(gamma.internalVector(), mesh.faceAreas());
 
-    SurfaceField<ValueType> corrField(
-        exec, "snGradCorr", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+    SurfaceField<FieldValueType> corrField(
+        exec, "snGradCorr", mesh, createCalculatedBCs<SurfaceBoundary<FieldValueType>>(mesh)
     );
     faceNormalGradient.implicitCorrection(phi, corrField);
 
@@ -194,13 +238,13 @@ void computeLaplacianNonOrthCorrImpl(
     );
 }
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeLaplacianIntImpl(
-    la::LinearSystem<ValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
@@ -234,7 +278,8 @@ void computeLaplacianIntImpl(
             // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
             // with opposite signs (diffusion out of one cell = diffusion into the other).
             // S_f points from owner to neighbour by construction.
-            auto flux = deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<ValueType>();
+            auto flux =
+                deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
 
             // triangular coefficients - neighbour -> lower, owner -> upper
             values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
@@ -355,13 +400,13 @@ void computeGlobalFace(
     );
 }
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeLaplacianIntCellBasedImpl(
-    la::LinearSystem<ValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
@@ -384,7 +429,7 @@ void computeLaplacianIntCellBasedImpl(
         exec,
         {0, iterator->size()},
         NEON_LAMBDA(const localIdx celli) {
-            auto diagValue = zero<ValueType>();
+            auto diagValue = zero<AssemblyType>();
             const auto numFaces = cellFacesSegments[celli + 1] - cellFacesSegments[celli];
             const auto startIdx = cellFacesSegments[celli];
             const auto cellCoeff = coeff[celli];
@@ -394,7 +439,7 @@ void computeLaplacianIntCellBasedImpl(
                 const auto faceIdx = cellFacesValues[startIdx + i];
                 // Laplacian is symmetric: flux contribution is identical for owner and neighbor
                 const auto offDiag = deltaCoeffs[faceIdx] * gammaV[faceIdx] * magFaceArea[faceIdx]
-                                   * cellCoeff * one<ValueType>();
+                                   * cellCoeff * one<AssemblyType>();
 
                 values[matrixColumnIdxV[startIdx + i]] += offDiag;
                 diagValue -= offDiag;
@@ -406,48 +451,57 @@ void computeLaplacianIntCellBasedImpl(
     );
 }
 
-template<typename ValueType>
-void GaussGreenLaplacian<ValueType>::laplacian(
-    VolumeField<ValueType>& lapPhi,
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
+    VolumeField<FieldValueType>& lapPhi,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff
 )
 {
-    computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff);
+    computeLaplacianExp<FieldValueType>(
+        faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff
+    );
 }
 
-template<typename ValueType>
-VolumeField<ValueType> GaussGreenLaplacian<ValueType>::laplacian(
-    const SurfaceField<scalar>& gamma, const VolumeField<ValueType>& phi, const dsl::Coeff coeff
+template<typename FieldValueType, typename AssemblyType>
+VolumeField<FieldValueType> GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff
 ) const
 {
     std::string name = "laplacian(" + gamma.name + "," + phi.name + ")";
-    VolumeField<ValueType> lapPhi(
-        this->exec_, name, this->mesh_, createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
+    VolumeField<FieldValueType> lapPhi(
+        this->exec_,
+        name,
+        this->mesh_,
+        createCalculatedBCs<VolumeBoundary<FieldValueType>>(this->mesh_)
     );
-    NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
-    NeoN::fill(lapPhi.boundaryData().value(), zero<ValueType>());
-    computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff);
+    NeoN::fill(lapPhi.internalVector(), zero<FieldValueType>());
+    NeoN::fill(lapPhi.boundaryData().value(), zero<FieldValueType>());
+    computeLaplacianExp<FieldValueType>(
+        faceNormalGradient_, gamma, phi, lapPhi.internalVector(), coeff
+    );
     return lapPhi;
 }
 
-template<typename ValueType>
-void GaussGreenLaplacian<ValueType>::laplacian(
-    Vector<ValueType>& lapPhi,
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
+    Vector<FieldValueType>& lapPhi,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff
 )
 {
-    computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi, coeff);
+    computeLaplacianExp<FieldValueType>(faceNormalGradient_, gamma, phi, lapPhi, coeff);
 }
 
-template<typename ValueType>
-void GaussGreenLaplacian<ValueType>::laplacian(
-    la::LinearSystem<ValueType>& ls,
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff
 )
 {
@@ -468,9 +522,12 @@ void GaussGreenLaplacian<ValueType>::laplacian(
     }
     computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-};
+    computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+}
+
 
 template class GaussGreenLaplacian<scalar>;
 template class GaussGreenLaplacian<Vec3>;
+template class GaussGreenLaplacian<Vec3, scalar>;
 
 };

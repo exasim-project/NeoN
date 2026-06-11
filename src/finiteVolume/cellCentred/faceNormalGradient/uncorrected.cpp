@@ -22,6 +22,9 @@ void computeFaceNormalGrad(
     const auto [owners, neighbors, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
+    // The uncorrected surface-normal gradient uses nonOrthDeltaCoeffs (1/(n.d)), the over-relaxed
+    // face-normal distance, NOT the orthogonal 1/|d|. On a non-orthogonal mesh 1/(n.d) is the
+    // consistent first-order normal-gradient coefficient; the two coincide on orthogonal meshes.
     const auto [phif, phifB, phi, phiBCValue, nonOrthDeltaCoeffs, nonOrthDeltaCoeffsB] = views(
         surfaceVector.internalVector(),
         surfaceVector.boundaryData().value(),
@@ -52,6 +55,21 @@ void computeFaceNormalGrad(
         },
         "computeFaceNormalGradBoundary"
     );
+
+    auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        NeoN::parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                auto own = boundaryFaceOwners[bcfacei];
+                phifB[bcfacei] = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+            },
+            "computeFaceNormalGradProcBoundary"
+        );
+    }
 }
 
 #define NF_DECLARE_COMPUTE_IMP_FNG(TYPENAME)                                                       \

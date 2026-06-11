@@ -58,6 +58,7 @@ option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
 option(NeoN_WITH_JULIA "Use Julia for Matrix Assembly" ON)
+option(NeoN_WITH_MPI "Enable MPI" ON)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
@@ -68,7 +69,6 @@ option(NeoN_ENABLE_CPP_CHECK "Enable cpp check static analyzer" OFF)
 option(NeoN_ENABLE_CLANG_TIDY "Enable clang tidy static analyzer" OFF)
 option(NeoN_ENABLE_PCH "Enable precompiled header" OFF)
 option(NeoN_ENABLE_IWYU "Enable iwyu checks" OFF)
-option(NeoN_ENABLE_MPI "Enable MPI" ON)
 option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
 option(NeoN_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
 mark_as_advanced(NeoN_ENABLE_WARNINGS)
@@ -202,8 +202,16 @@ endif()
 
 if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
-  set(IWYU_PATH_AND_OPTIONS ${iwyu_path})
+  set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
+  # IWYU 8.21 (clang-19) segfaults on volume/processor.cpp due to the template complexity of the
+  # processor boundary hierarchy (scalar/Vec3/Tensor instantiations); a segfault cannot be fixed by
+  # cleaning includes, so the file is excluded. surface/processor.cpp lints fine, so only the volume
+  # variant is excluded. The property must be set in the NeoN target's directory scope
+  # (TARGET_DIRECTORY) with an absolute path, or it silently fails to attach and IWYU runs anyway.
+  set_source_files_properties(
+    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/volume/processor.cpp
+    TARGET_DIRECTORY NeoN PROPERTIES SKIP_LINTING ON)
 endif()
 
 include(cmake/banner.cmake)
