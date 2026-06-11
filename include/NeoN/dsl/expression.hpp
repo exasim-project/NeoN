@@ -145,6 +145,8 @@ class Expression
 {
 public:
 
+    using ExpressionValueType = ValueType;
+
     Expression(const Executor& exec) : exec_(exec), temporalOperators_(), spatialOperators_() {}
 
     Expression(const Expression& exp)
@@ -157,6 +159,19 @@ public:
     {
         spatialOperators_.push_back(oper);
     }
+
+    Expression& operator=(const Expression& exp)
+    {
+        if (this == &exp)
+        {
+            return *this;
+        }
+        NF_ASSERT(exec_ == exp.exec_, "Executors are not the same");
+        temporalOperators_ = exp.temporalOperators_;
+        spatialOperators_ = exp.spatialOperators_;
+        return *this;
+    }
+
 
     Expression(const TemporalOperator<ValueType>& oper)
         : exec_(oper.exec()), temporalOperators_(), spatialOperators_()

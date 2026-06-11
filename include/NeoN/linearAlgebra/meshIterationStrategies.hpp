@@ -102,7 +102,7 @@ public:
      */
     struct CellBasedData
     {
-        CellBasedData() = default;
+        CellBasedData() = delete;
 
         /** @brief Construct from pre-computed connectivity arrays.
          *

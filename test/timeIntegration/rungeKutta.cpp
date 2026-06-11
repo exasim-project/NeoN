@@ -49,6 +49,8 @@ public:
     }
 
     std::string getName() const { return "YSquared"; }
+
+    NeoN::Dictionary getConfig() const { return {}; }
 };
 
 TEST_CASE("TimeIntegration - Runge Kutta")

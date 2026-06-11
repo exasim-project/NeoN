@@ -193,6 +193,18 @@ public:
 
     std::string getName() const { return "DivOperator"; }
 
+    // TODO make this private and let only friends use it
+    Dictionary getConfig() const
+    {
+        const auto& ret = this->getVector();
+        const auto& coeff = this->getCoefficient();
+        return {
+            {"field", detail::RefHolder<VolumeField<FieldValueType>> {ret}},
+            {"coeff", detail::RefHolder<dsl::Coeff> {coeff}},
+            {"flux", detail::RefHolder<SurfaceField<NeoN::scalar>> {faceFlux_}}
+        };
+    }
+
 private:
 
     const SurfaceField<NeoN::scalar>& faceFlux_;

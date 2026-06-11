@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: Unlicense
 
 neon_unit_test(matrix)
+neon_unit_test(matrixIterator)
 neon_unit_test(linearSystem)
 neon_unit_test(cooSparsityPattern)
 neon_unit_test(csrSparsityPattern)
 neon_unit_test(faceToMatrixAddress)
 neon_unit_test(utilities)
-neon_unit_test(matrixIterator)
 
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)

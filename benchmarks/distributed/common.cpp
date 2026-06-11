@@ -12,6 +12,7 @@
 
 CATCH_REGISTER_REPORTER("mpi", MpiReporter);
 
+namespace dsl = NeoN::dsl;
 using Operator = NeoN::dsl::Operator;
 
 std::pair<std::string, NeoN::Executor> createExecutorFromEnv()
@@ -353,27 +354,26 @@ void runDistributedMomentumBenchmark(
         };
     }
 
-    // DYNAMIC_SECTION(sectionName + " - momentum assemble - cell based - scalar")
-    // {
-    //     auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
-    //     auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh,
-    //     cellIterator); auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
-    //       + NeoN::dsl::exp::grad(p);
-    //     expr.read(fvSchemes());
-    //     BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
-    //     {
-    //         MPI_Barrier(MPI_COMM_WORLD);
-    //         meter.measure(
-    //             [&]
-    //             {
-    //                 U.correctBoundaryConditions();
-    //                 expr.assemble(0.0, 1.0, ls);
-    //                 fence(exec);
-    //                 MPI_Barrier(MPI_COMM_WORLD);
-    //             }
-    //         );
-    //     };
-    // }
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - optimized")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U);
+        auto exprOpt = dsl::optimize(expr);
+        expr.read(fvSchemes());
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    exprOpt.assemble(0.0, 1.0, ls);
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
 }
 
 

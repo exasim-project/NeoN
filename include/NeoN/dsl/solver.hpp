@@ -13,6 +13,7 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/dsl/expression.hpp"
+#include "NeoN/dsl/optimizer.hpp"
 #include "NeoN/timeIntegration/timeIntegration.hpp"
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
@@ -37,7 +38,18 @@ la::SolverStats iterativeSolveImpl(
 )
 {
     exp.read(fvSchemes);
-    exp.assemble(t, dt, ls, solution.mesh(), ps);
+    exp.assemble(t, dt, ls, ps);
+
+    // TODO move that to expression explicit operation or
+    // into functor ?
+    // subtract the explicit source term from the rhs
+    auto expTmp = exp.explicitOperation(solution.mesh().nCells());
+    auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
+    parallelFor(
+        solution.exec(),
+        {0, rhs.size()},
+        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+    );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());

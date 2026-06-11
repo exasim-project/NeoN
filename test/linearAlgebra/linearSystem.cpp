@@ -97,6 +97,25 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(linearSystem.rhs().size() == nCells);
     }
 
+    SECTION("Construct with MeshCellIterator " + execName)
+    {
+        auto nCells = 10;
+        auto nFaces = 9;
+        auto nnz = nCells + 2 * nFaces;
+        auto mesh = create1DUniformMesh(exec, nCells);
+
+        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+        auto linearSystem = NeoN::la::createEmptyLinearSystem<scalar>(mesh, cellIterator);
+
+        REQUIRE(linearSystem.matrix().values().size() == nnz);
+        REQUIRE(linearSystem.matrix().colIdxs().size() == nnz);
+        REQUIRE(linearSystem.matrix().rowOffs().size() == nCells + 1);
+        REQUIRE(linearSystem.matrix().nRows() == nCells);
+        REQUIRE(linearSystem.rhs().size() == nCells);
+        REQUIRE(linearSystem.getMeshIterator()->name() == "CellBased");
+    }
+
+
     SECTION("view read/write " + execName)
     {
         Vector<scalar> rhs(exec, {10.0, 20.0, 30.0});

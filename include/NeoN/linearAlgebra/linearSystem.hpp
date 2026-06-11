@@ -229,7 +229,14 @@ public:
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
-    std::shared_ptr<MeshIteratorContext> getMeshIterator() { return meshIteratorContext_; }
+    std::shared_ptr<MeshIteratorContext> getMeshIterator()
+    {
+        if (meshIteratorContext_ == nullptr)
+        {
+            NF_ERROR_EXIT(" meshIteratorContext_ == nullptr");
+        }
+        return meshIteratorContext_;
+    }
 
     const Executor& exec() const { return matrix_.exec(); }
 

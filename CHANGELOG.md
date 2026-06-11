@@ -10,6 +10,7 @@
 - Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
 - Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
+- Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 
 ### Misc
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
