@@ -2,10 +2,21 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <utility>
+
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/traits.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
+#include "NeoN/core/view.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surface/processor.hpp"
+
+namespace NeoN
+{
+template<typename ValueType>
+class Field;
+}
 
 namespace NeoN::finiteVolume::cellCentred::surfaceBoundary::detail
 {
