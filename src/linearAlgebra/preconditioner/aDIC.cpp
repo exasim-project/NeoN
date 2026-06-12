@@ -10,6 +10,135 @@
 namespace NeoN::la::ginkgo
 {
 
+// The parallelFor kernels live in namespace-scope free functions rather than in the (private/
+// protected) member functions: NVCC forbids extended __host__ __device__ lambdas inside class
+// members with private or protected access. External linkage also keeps them clear of the
+// internal-linkage restrictions on lambdas passed to templates.
+
+void adicComputeReciprocalD(
+    const Executor& exec,
+    localIdx n,
+    scalar* rD,
+    scalar* work,
+    const scalar* vals,
+    const localIdx* col,
+    const localIdx* row
+)
+{
+    // rD = diag, work (= rDtmp) = diag
+    parallelFor(
+        exec,
+        {0, n},
+        NEON_LAMBDA(const localIdx i) {
+            scalar d = 0.0;
+            for (localIdx k = row[i]; k < row[i + 1]; ++k)
+            {
+                if (col[k] == i)
+                {
+                    d = vals[k];
+                    break;
+                }
+            }
+            rD[i] = d;
+            work[i] = d;
+        },
+        "aDIC::initD"
+    );
+
+    // Single Jacobi approximation sweep: rDtmp[j] -= A(i,j)^2 / diag[i] for j > i, reading the
+    // ORIGINAL diagonal rD[i] (the decoupling that makes this parallel instead of a recurrence).
+    parallelFor(
+        exec,
+        {0, n},
+        NEON_LAMBDA(const localIdx i) {
+            for (localIdx k = row[i]; k < row[i + 1]; ++k)
+            {
+                const localIdx j = col[k];
+                if (j > i)
+                {
+                    Kokkos::atomic_add(&work[j], -vals[k] * vals[k] / rD[i]);
+                }
+            }
+        },
+        "aDIC::calcD"
+    );
+
+    // reciprocal of the preconditioned diagonal
+    parallelFor(
+        exec, {0, n}, NEON_LAMBDA(const localIdx i) { rD[i] = 1.0 / work[i]; }, "aDIC::recipD"
+    );
+
+    fence(exec);
+}
+
+void adicApply(
+    const Executor& exec,
+    localIdx n,
+    const scalar* bPtr,
+    scalar* xPtr,
+    const scalar* rD,
+    scalar* work,
+    const scalar* vals,
+    const localIdx* col,
+    const localIdx* row
+)
+{
+    // x = rD * b   (diagonal scaling)
+    parallelFor(
+        exec, {0, n}, NEON_LAMBDA(const localIdx i) { xPtr[i] = rD[i] * bPtr[i]; }, "aDIC::diag"
+    );
+
+    // Forward sweep: work = x; work[j] -= rD[j]*A(i,j)*x[i] for j > i; x = work.
+    // Reads the (constant) diagonal-scaled x and scatters into work -> atomics on work[j].
+    parallelFor(
+        exec, {0, n}, NEON_LAMBDA(const localIdx i) { work[i] = xPtr[i]; }, "aDIC::fwdInit"
+    );
+    parallelFor(
+        exec,
+        {0, n},
+        NEON_LAMBDA(const localIdx i) {
+            for (localIdx k = row[i]; k < row[i + 1]; ++k)
+            {
+                const localIdx j = col[k];
+                if (j > i)
+                {
+                    Kokkos::atomic_add(&work[j], -rD[j] * vals[k] * xPtr[i]);
+                }
+            }
+        },
+        "aDIC::fwd"
+    );
+    parallelFor(
+        exec, {0, n}, NEON_LAMBDA(const localIdx i) { xPtr[i] = work[i]; }, "aDIC::fwdStore"
+    );
+
+    // Backward sweep: work[i] -= rD[i]*A(i,j)*x[j] for j > i; x = work.
+    // Each row writes only work[i] (gather), so no atomics; work already holds the forward result.
+    parallelFor(
+        exec,
+        {0, n},
+        NEON_LAMBDA(const localIdx i) {
+            scalar acc = work[i];
+            for (localIdx k = row[i]; k < row[i + 1]; ++k)
+            {
+                const localIdx j = col[k];
+                if (j > i)
+                {
+                    acc -= rD[i] * vals[k] * xPtr[j];
+                }
+            }
+            work[i] = acc;
+        },
+        "aDIC::bwd"
+    );
+    parallelFor(
+        exec, {0, n}, NEON_LAMBDA(const localIdx i) { xPtr[i] = work[i]; }, "aDIC::bwdStore"
+    );
+
+    fence(exec);
+}
+
+
 ADICPreconditioner::ADICPreconditioner(std::shared_ptr<const gko::Executor> gkoExec)
     : gko::EnableLinOp<ADICPreconditioner>(gkoExec), exec_(SerialExecutor {}), n_(0),
       values_(exec_, 0), colIdx_(exec_, 0), rowOffs_(exec_, 0), rD_(exec_, 0), work_(exec_, 0)
@@ -34,123 +163,25 @@ ADICPreconditioner::ADICPreconditioner(
 
 void ADICPreconditioner::computeReciprocalD()
 {
-    scalar* rD = rD_.data();
-    scalar* work = work_.data();
-    const scalar* vals = values_.data();
-    const localIdx* col = colIdx_.data();
-    const localIdx* row = rowOffs_.data();
-
-    // rD = diag, work (= rDtmp) = diag
-    parallelFor(
-        exec_,
-        {0, n_},
-        NEON_LAMBDA(const localIdx i) {
-            scalar d = 0.0;
-            for (localIdx k = row[i]; k < row[i + 1]; ++k)
-            {
-                if (col[k] == i)
-                {
-                    d = vals[k];
-                    break;
-                }
-            }
-            rD[i] = d;
-            work[i] = d;
-        },
-        "aDIC::initD"
+    adicComputeReciprocalD(
+        exec_, n_, rD_.data(), work_.data(), values_.data(), colIdx_.data(), rowOffs_.data()
     );
-
-    // Single Jacobi approximation sweep: rDtmp[j] -= A(i,j)^2 / diag[i] for j > i, reading the
-    // ORIGINAL diagonal rD[i] (the decoupling that makes this parallel instead of a recurrence).
-    parallelFor(
-        exec_,
-        {0, n_},
-        NEON_LAMBDA(const localIdx i) {
-            for (localIdx k = row[i]; k < row[i + 1]; ++k)
-            {
-                const localIdx j = col[k];
-                if (j > i)
-                {
-                    Kokkos::atomic_add(&work[j], -vals[k] * vals[k] / rD[i]);
-                }
-            }
-        },
-        "aDIC::calcD"
-    );
-
-    // reciprocal of the preconditioned diagonal
-    parallelFor(
-        exec_, {0, n_}, NEON_LAMBDA(const localIdx i) { rD[i] = 1.0 / work[i]; }, "aDIC::recipD"
-    );
-
-    fence(exec_);
 }
 
 void ADICPreconditioner::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
 {
     using vec = gko::matrix::Dense<scalar>;
-    const scalar* bPtr = gko::as<vec>(b)->get_const_values();
-    scalar* xPtr = gko::as<vec>(x)->get_values();
-
-    const scalar* rD = rD_.data();
-    scalar* work = work_.data();
-    const scalar* vals = values_.data();
-    const localIdx* col = colIdx_.data();
-    const localIdx* row = rowOffs_.data();
-
-    // x = rD * b   (diagonal scaling)
-    parallelFor(
-        exec_, {0, n_}, NEON_LAMBDA(const localIdx i) { xPtr[i] = rD[i] * bPtr[i]; }, "aDIC::diag"
-    );
-
-    // Forward sweep: work = x; work[j] -= rD[j]*A(i,j)*x[i] for j > i; x = work.
-    // Reads the (constant) diagonal-scaled x and scatters into work -> atomics on work[j].
-    parallelFor(
-        exec_, {0, n_}, NEON_LAMBDA(const localIdx i) { work[i] = xPtr[i]; }, "aDIC::fwdInit"
-    );
-    parallelFor(
+    adicApply(
         exec_,
-        {0, n_},
-        NEON_LAMBDA(const localIdx i) {
-            for (localIdx k = row[i]; k < row[i + 1]; ++k)
-            {
-                const localIdx j = col[k];
-                if (j > i)
-                {
-                    Kokkos::atomic_add(&work[j], -rD[j] * vals[k] * xPtr[i]);
-                }
-            }
-        },
-        "aDIC::fwd"
+        n_,
+        gko::as<vec>(b)->get_const_values(),
+        gko::as<vec>(x)->get_values(),
+        rD_.data(),
+        work_.data(),
+        values_.data(),
+        colIdx_.data(),
+        rowOffs_.data()
     );
-    parallelFor(
-        exec_, {0, n_}, NEON_LAMBDA(const localIdx i) { xPtr[i] = work[i]; }, "aDIC::fwdStore"
-    );
-
-    // Backward sweep: work[i] -= rD[i]*A(i,j)*x[j] for j > i; x = work.
-    // Each row writes only work[i] (gather), so no atomics; work already holds the forward result.
-    parallelFor(
-        exec_,
-        {0, n_},
-        NEON_LAMBDA(const localIdx i) {
-            scalar acc = work[i];
-            for (localIdx k = row[i]; k < row[i + 1]; ++k)
-            {
-                const localIdx j = col[k];
-                if (j > i)
-                {
-                    acc -= rD[i] * vals[k] * xPtr[j];
-                }
-            }
-            work[i] = acc;
-        },
-        "aDIC::bwd"
-    );
-    parallelFor(
-        exec_, {0, n_}, NEON_LAMBDA(const localIdx i) { xPtr[i] = work[i]; }, "aDIC::bwdStore"
-    );
-
-    fence(exec_);
 }
 
 void ADICPreconditioner::apply_impl(
