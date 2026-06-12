@@ -341,6 +341,32 @@ TEST_CASE("NegateSystem with Ic preconditioner - Ginkgo")
         REQUIRE(finalResNorm < 1.0e-06);
     }
 
+    // Ginkgo-native aDIC: same algorithm, but the kernels run on Ginkgo's executor (no Kokkos).
+    // Must converge to the same solution as the Kokkos aDIC.
+    SECTION("aDICGinkgo preconditioner converges on the negated system " + execName)
+    {
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"negateSystem", true},
+             {"preconditioner", Dictionary {{{"type", std::string {"aDICGinkgo"}}}}},
+             {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        auto finalResNorm = solverStats.entries[0].finalResNorm;
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-6));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-6));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-6));
+        REQUIRE(finalResNorm < 1.0e-06);
+    }
+
     // Preconditioner reuse: with preconReuse > 1 the (frozen) preconditioner is reused across
     // solves. Solving the same system twice through one solver must still converge both times.
     SECTION("aDIC with preconReuse reuses across solves " + execName)

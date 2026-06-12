@@ -10,6 +10,7 @@
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/linearAlgebra/preconditioner/aDIC.hpp"
+#include "NeoN/linearAlgebra/preconditioner/adicGinkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
@@ -403,17 +404,21 @@ GinkgoSolver::GinkgoSolver(Executor exec, const Dictionary& solverConfig) : Base
     preconReuse_ = solverConfig.get("preconReuse", 1);
     reuseKey_ = solverConfig.get("reuseKey", std::string("default"));
 
-    useADIC_ = solverConfig.isDict("preconditioner")
-            && solverConfig.subDict("preconditioner").contains("type")
-            && solverConfig.subDict("preconditioner").get<std::string>("type") == "aDIC";
-    injectPrecond_ = useADIC_ || preconReuse_ > 1;
+    const std::string precondType =
+        solverConfig.isDict("preconditioner")
+                && solverConfig.subDict("preconditioner").contains("type")
+            ? solverConfig.subDict("preconditioner").get<std::string>("type")
+            : std::string {};
+    useADIC_ = precondType == "aDIC";
+    useADICGinkgo_ = precondType == "aDICGinkgo";
+    injectPrecond_ = useADIC_ || useADICGinkgo_ || preconReuse_ > 1;
 
     // Default factory for the Vec3 / distributed / non-injected paths. The aDIC marker is stripped
     // first because Ginkgo's config parser cannot instantiate it (it is injected per solve); the
     // resulting factory is then unpreconditioned, which only ever serves Vec3 paths (aDIC is mapped
     // for the scalar pressure solve only).
     Dictionary cfgForFactory = solverConfig;
-    if (useADIC_ && cfgForFactory.contains("preconditioner"))
+    if ((useADIC_ || useADICGinkgo_) && cfgForFactory.contains("preconditioner"))
     {
         cfgForFactory.remove("preconditioner");
     }
@@ -425,9 +430,10 @@ GinkgoSolver::GinkgoSolver(Executor exec, const Dictionary& solverConfig) : Base
 
     if (injectPrecond_)
     {
-        // Non-aDIC reuse: keep the preconditioner sub-config so it can be (re)generated from the
-        // current matrix and cached.
-        if (!useADIC_ && solverConfig.isDict("preconditioner"))
+        // Config-built preconditioner reuse: keep the preconditioner sub-config so it can be
+        // (re)generated from the current matrix and cached. The aDIC markers carry no Ginkgo
+        // config.
+        if (!useADIC_ && !useADICGinkgo_ && solverConfig.isDict("preconditioner"))
         {
             precondConfig_ = parse(solverConfig.subDict("preconditioner"));
         }
@@ -462,6 +468,13 @@ std::unique_ptr<gko::LinOp> GinkgoSolver::generateInjectedSolver(
         if (useADIC_)
         {
             precond = std::make_shared<ADICPreconditioner>(gkoExec_, exec_, neonMtx);
+        }
+        else if (useADICGinkgo_)
+        {
+            // Ginkgo-native aDIC: build from the Ginkgo CSR (gkoMtx is that matrix). The
+            // preconditioner deep-copies it internally, so the cached instance stays frozen.
+            auto csr = gko::as<const gko::matrix::Csr<scalar, localIdx>>(gkoMtx);
+            precond = gko::share(ADICGinkgoPreconditioner::create(gkoExec_, csr));
         }
         else
         {

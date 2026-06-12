@@ -275,6 +275,9 @@ private:
     // Native aDIC preconditioner requested (preconditioner type "aDIC"). aDIC is a NeoN LinOp that
     // Ginkgo's config cannot instantiate by name, so it is injected as a generated preconditioner.
     bool useADIC_;
+    // Ginkgo-native aDIC requested (preconditioner type "aDICGinkgo"): same algorithm as useADIC_
+    // but the kernels run on Ginkgo's executor/stream (no per-apply Kokkos fence).
+    bool useADICGinkgo_;
     // Regenerate the preconditioner only every preconReuse_ scalar solves (1 = every solve = no
     // reuse). A reused preconditioner is built from an older matrix ("frozen"): still a valid
     // approximation, may cost a few more iterations, saves the per-solve factorization/setup.
