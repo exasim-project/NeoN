@@ -189,6 +189,19 @@ public:
         fill(offDiagonalMatrix_.values(), zero<MatrixValueType>());
     }
 
+    /** @brief zero only the right-hand side vectors, leaving the assembled matrix coefficients
+     * (system, boundary and off-diagonal matrices) untouched.
+     *
+     * Used by the matrix-reuse assembly path: when the implicit operator coefficients are known
+     * to be unchanged between solves (e.g. the pressure Poisson matrix across non-orthogonal /
+     * PISO correctors), the matrix is assembled once and only the rhs is refreshed each solve.
+     */
+    void resetRhs()
+    {
+        fill(rhs_, zero<RHSValueType>());
+        fill(boundaryRhs_, zero<RHSValueType>());
+    }
+
     [[nodiscard]] LinearSystemView<
         RHSValueType,
         MatrixView<

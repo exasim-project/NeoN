@@ -63,6 +63,16 @@ public:
         const dsl::Coeff coeff
     ) override;
 
+    /* @brief re-assemble only the field-dependent rhs contribution (boundary rhs + deferred
+     * non-orthogonal correction), leaving the matrix coefficients untouched. Mirrors the rhs
+     * writes of the full laplacian(ls, ...) so the refreshed rhs is identical. */
+    virtual void laplacianRhs(
+        la::LinearSystem<AssemblyType, FieldValueType>& ls,
+        const SurfaceField<scalar>& gamma,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff coeff
+    ) override;
+
     std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>> clone() const override
     {
         return std::make_unique<GaussGreenLaplacian<FieldValueType, AssemblyType>>(*this);

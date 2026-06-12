@@ -269,6 +269,36 @@ public:
         );
     }
 
+    /** @brief re-assemble only the right-hand side, reusing an already-assembled matrix.
+     *
+     * Refreshes the field-dependent rhs contributions without touching the matrix coefficients:
+     * each implicit spatial operator's rhs-only re-assembly (e.g. a Laplacian's boundary rhs and
+     * its deferred non-orthogonal correction) plus the explicit source terms. Reproduces exactly
+     * the rhs that a full assemble() would produce, given the same field state.
+     *
+     * Preconditions (caller's responsibility): the matrix was assembled by an earlier full
+     * assemble() and its coefficients are unchanged (steady geometry, unchanged implicit
+     * coefficients such as the diffusivity); only the rhs was zeroed (LinearSystem::resetRhs).
+     * Temporal operators are not supported on this path and trigger an error.
+     */
+    template<typename AssemblyType = ValueType>
+    void
+    assembleRhs(la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh) const
+    {
+        NF_ASSERT(
+            temporalOperators_.empty(),
+            "assembleRhs (matrix reuse) does not support temporal operators"
+        );
+        for (auto& op : spatialOperators_)
+        {
+            if (op.getType() == Operator::Type::Implicit)
+            {
+                op.implicitOperationRhs(ls);
+            }
+        }
+        assembleExplicitSource(ls, mesh);
+    }
+
     /** @brief construct a linear system and force assembly including explicit source terms
      *
      * @param ps post-assembly functors applied to the system after assembly

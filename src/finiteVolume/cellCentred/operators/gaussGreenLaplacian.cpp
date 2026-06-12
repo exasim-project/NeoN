@@ -140,7 +140,11 @@ void computeLaplacianBoundImpl(
     const SurfaceField<scalar>& gamma,
     const VolumeField<FieldValueType>& phi,
     const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<FieldValueType>& faceNormalGradient
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    // When true, only the boundary rhs contribution is written; the boundary matrix
+    // coefficients (boundary matrix + diagonal) are left untouched. Used by the matrix-reuse
+    // rhs-refresh path, where the matrix was assembled on an earlier pass and must be preserved.
+    bool rhsOnly = false
 )
 {
     const auto exec = phi.exec();
@@ -180,11 +184,14 @@ void computeLaplacianBoundImpl(
             auto refValFrac = valueFraction[bfi];
             auto refGradFrac = 1.0 - refValFrac;
             auto flux = bGammaV[bfi] * bFaceAreas[bfi];
-            auto fluxContrib =
-                flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<AssemblyType>();
 
-            bValues[bfi] += fluxContrib;
-            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], fluxContrib);
+            if (!rhsOnly)
+            {
+                auto fluxContrib =
+                    flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<AssemblyType>();
+                bValues[bfi] += fluxContrib;
+                Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], fluxContrib);
+            }
 
             auto valueRhs =
                 flux * ownRowCoeff
@@ -421,6 +428,23 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+}
+
+
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacianRhs(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff
+)
+{
+    // Only the field-dependent rhs contributions of the full laplacian(ls, ...): the boundary
+    // rhs (rhsOnly = true skips its matrix writes) and the deferred non-orthogonal correction.
+    // The interior, proc-boundary and boundary-matrix coefficients are left as assembled on the
+    // earlier full pass, so the caller must have zeroed only the rhs (LinearSystem::resetRhs).
+    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_, /*rhsOnly=*/true);
+    computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
 }
 
 
