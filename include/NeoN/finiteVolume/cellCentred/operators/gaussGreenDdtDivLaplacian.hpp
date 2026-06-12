@@ -14,21 +14,6 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
-void computeDdtDivLapImplCell(
-    la::LinearSystem<ValueType>& ls,
-    scalar dt,
-    const VolumeField<ValueType>& U,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    // const SurfaceInterpolation<ValueType>& lapSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB,
-    std::shared_ptr<la::CellBasedIterator> iterator
-);
-
 /* @brief
  *
  */
@@ -51,44 +36,12 @@ public:
           coeffB_(lapConfig.get<NeoN::detail::RefHolder<dsl::Coeff>>("coeff").c),
           gamma_(lapConfig.get<NeoN::detail::RefHolder<SurfaceField<scalar>>>("gamma").c),
           flux_(divConfig.get<NeoN::detail::RefHolder<SurfaceField<scalar>>>("flux").c)
-    {
-        // FIXME some sanity checks are needed
-        // are div and lap field the same
-    }
+    {}
 
 
     void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const {};
 
-    void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const
-    {
-        // FIXME I dont know how we can end up with a nullptr here double check
-        if (ls.getMeshIterator() == nullptr)
-        {
-            NF_ERROR_EXIT("Not implemented");
-        }
-
-        if (ls.getMeshIterator()->name() == "CellBased")
-        {
-            computeDdtDivLapImplCell(
-                ls,
-                dt,
-                this->getVector(),
-                flux_,
-                gamma_,
-                *divSurfaceInterpolation_.get(),
-                //    *lapSurfaceInterpolation_.get(),
-                *faceNormalGradient_.get(),
-                coeffA_,
-                coeffB_,
-                std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
-            );
-            return;
-        }
-        if (ls.getMeshIterator()->name() == "FaceBased")
-        {
-            NF_ERROR_EXIT("Not implemented");
-        }
-    }
+    void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
 
     void read(const Input& input)
     {

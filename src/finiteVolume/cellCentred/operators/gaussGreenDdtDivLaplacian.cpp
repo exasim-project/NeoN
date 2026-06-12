@@ -6,20 +6,18 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
-#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename ValueType>
-void computeDdtDivLapImplCell(
+static void computeDdtDivLapImplCell(
     la::LinearSystem<ValueType>& ls,
     scalar dt,
     const VolumeField<ValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
-    //    const SurfaceInterpolation<ValueType>& lapSurfInterp,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB,
@@ -89,8 +87,7 @@ void computeDdtDivLapImplCell(
                 {
                     offDiag =
                         (flux * (1.0 - w) * cellCoeffA + fluxLap * cellCoeffB) * one<ValueType>();
-                    diagContrib =
-                        (flux * w * cellCoeffA - fluxLap * cellCoeffB) * one<ValueType>();
+                    diagContrib = (flux * w * cellCoeffA - fluxLap * cellCoeffB) * one<ValueType>();
                 }
                 else // celli is neighbor: off-diagonal is lower triangular entry
                 {
@@ -105,26 +102,46 @@ void computeDdtDivLapImplCell(
 
             values[ma.diagIdx(celli)] += diagValue;
         },
-        "computeDdtDivLapImplCell::cellLoop"
+        "GaussGreenDdtDivLaplacian::cellLoop"
     );
 }
 
+template<typename ValueType>
+void GaussGreenDdtDivLaplacian<ValueType>::implicitOperation(
+    la::LinearSystem<ValueType>& ls, scalar /*t*/, scalar dt
+) const
+{
+    // FIXME I dont know how we can end up with a nullptr here double check
+    if (ls.getMeshIterator() == nullptr)
+    {
+        NF_ERROR_EXIT("Not implemented");
+    }
 
-#define NN_DECLARE_COMPUTE_IMP_DDTDIVLAP(TYPENAME)                                                 \
-    template void computeDdtDivLapImplCell(                                                        \
-        la::LinearSystem<TYPENAME>&,                                                               \
-        scalar,                                                                                    \
-        const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<TYPENAME>&,                                                     \
-        const FaceNormalGradient<TYPENAME>&,                                                       \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff,                                                                          \
-        std::shared_ptr<la::CellBasedIterator> iterator                                            \
-    )
+    if (ls.getMeshIterator()->name() == "CellBased")
+    {
+        computeDdtDivLapImplCell(
+            ls,
+            dt,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_,
+            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
+        );
+        return;
+    }
+    if (ls.getMeshIterator()->name() == "FaceBased")
+    {
+        NF_ERROR_EXIT("Not implemented");
+    }
+}
 
-NN_DECLARE_COMPUTE_IMP_DDTDIVLAP(scalar);
-NN_DECLARE_COMPUTE_IMP_DDTDIVLAP(Vec3);
+template void GaussGreenDdtDivLaplacian<scalar>::implicitOperation(
+    la::LinearSystem<scalar>&, scalar, scalar
+) const;
+template void
+GaussGreenDdtDivLaplacian<Vec3>::implicitOperation(la::LinearSystem<Vec3>&, scalar, scalar) const;
 
-};
+} // namespace NeoN::finiteVolume::cellCentred

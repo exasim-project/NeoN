@@ -12,7 +12,7 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 template<typename FieldValueType, typename AssemblyType>
-void computeDivLaplacianIntImpl(
+static void computeDivLaplacianIntImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
@@ -68,7 +68,7 @@ void computeDivLaplacianIntImpl(
 }
 
 template<typename FieldValueType, typename AssemblyType>
-void computeDivLaplacianIntCellBasedImpl(
+static void computeDivLaplacianIntCellBasedImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
@@ -154,7 +154,7 @@ void computeDivLaplacianIntCellBasedImpl(
 }
 
 template<typename FieldValueType, typename AssemblyType>
-void computeDivLaplacianBoundImpl(
+static void computeDivLaplacianBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
@@ -231,7 +231,7 @@ void computeDivLaplacianBoundImpl(
 }
 
 template<typename FieldValueType, typename AssemblyType>
-void computeDivLaplacianProcBoundImpl(
+static void computeDivLaplacianProcBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
@@ -483,52 +483,6 @@ Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
 {
     return {};
 }
-
-#define NN_DECLARE_DIVLAP_IMPL(FVT, AT)                                                            \
-    template void computeDivLaplacianIntImpl(                                                      \
-        la::LinearSystem<AT, FVT>&,                                                                \
-        const VolumeField<FVT>&,                                                                   \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<FVT>&,                                                          \
-        const FaceNormalGradient<FVT>&,                                                            \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    );                                                                                             \
-    template void computeDivLaplacianIntCellBasedImpl(                                             \
-        la::LinearSystem<AT, FVT>&,                                                                \
-        const VolumeField<FVT>&,                                                                   \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<FVT>&,                                                          \
-        const FaceNormalGradient<FVT>&,                                                            \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    );                                                                                             \
-    template void computeDivLaplacianBoundImpl(                                                    \
-        la::LinearSystem<AT, FVT>&,                                                                \
-        const VolumeField<FVT>&,                                                                   \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<FVT>&,                                                          \
-        const FaceNormalGradient<FVT>&,                                                            \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    );                                                                                             \
-    template void computeDivLaplacianProcBoundImpl(                                                \
-        la::LinearSystem<AT, FVT>&,                                                                \
-        const VolumeField<FVT>&,                                                                   \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<FVT>&,                                                          \
-        const FaceNormalGradient<FVT>&,                                                            \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    )
-
-NN_DECLARE_DIVLAP_IMPL(scalar, scalar);
-NN_DECLARE_DIVLAP_IMPL(Vec3, Vec3);
-NN_DECLARE_DIVLAP_IMPL(Vec3, scalar);
 
 template class GaussGreenDivLaplacian<scalar>;
 template class GaussGreenDivLaplacian<Vec3>;

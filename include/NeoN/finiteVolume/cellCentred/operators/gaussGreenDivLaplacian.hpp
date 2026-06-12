@@ -14,53 +14,6 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
-void computeDivLaplacianIntImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
-    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
-
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
-void computeDivLaplacianIntCellBasedImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
-    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
-
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
-void computeDivLaplacianBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
-    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
-
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
-void computeDivLaplacianProcBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& divSurfInterp,
-    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
 
 /* @brief
  *
