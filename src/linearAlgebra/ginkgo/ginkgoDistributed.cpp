@@ -141,8 +141,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const auto mapped =
         imap.map_to_local(recv_connections, gko::experimental::distributed::index_space::non_local);
 
-    // Build local-row, local-column, and value arrays on device. Row indices are converted from
-    // local owner-cell index to local row by subtracting globalOffset.
+    // Build local-row, local-column, and value arrays on device. Row indices are already
+    // local (0-based per rank) — no offset subtraction needed.
     Vector<IndexType> nlRow(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
     Vector<IndexType> nlCol(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
     Vector<scalar> nlVal(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
@@ -153,13 +153,11 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         const auto bRowV = bmtx.sparsity()->rowIdxs().view();
         const auto bValV = bmtx.values().view();
         const auto* mappedPtr = mapped.get_const_data();
-        const auto offset = globalOffset;
         parallelFor(
             bmtx.exec(),
             {0, static_cast<localIdx>(nNonLocalNnz)},
             KOKKOS_LAMBDA(const localIdx i) {
-                nlRowV[i] =
-                    static_cast<IndexType>(static_cast<global_index_type>(bRowV[i]) - offset);
+                nlRowV[i] = static_cast<IndexType>(bRowV[i]);
                 nlColV[i] = static_cast<IndexType>(mappedPtr[i]);
                 nlValV[i] = bValV[i];
             },
