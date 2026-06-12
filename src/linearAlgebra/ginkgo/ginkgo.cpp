@@ -4,6 +4,7 @@
 
 #if NF_WITH_GINKGO
 
+#include <array>
 #include <sstream>
 #include <unordered_map>
 
@@ -168,8 +169,17 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 }
 
 
-// TODO: check if this can be replaced by Ginkgos executor mapping
-std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
+namespace
+{
+
+// One memoized Ginkgo executor per NeoN executor kind (variant index: 0 Serial, 1 CPU, 2 GPU).
+std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
+{
+    static std::array<std::shared_ptr<gko::Executor>, 3> cache;
+    return cache;
+}
+
+std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
 {
     return std::visit(
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
@@ -212,6 +222,42 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
         },
         exec
     );
+}
+
+} // namespace
+
+// TODO: check if this can be replaced by Ginkgos executor mapping
+//
+// Memoized: GinkgoSolver is reconstructed on every solve, and creating a fresh Ginkgo (e.g. CUDA)
+// executor each time is both wasteful and breaks preconditioner reuse -- a cached preconditioner is
+// bound to the executor it was built on, so a per-solve executor makes Ginkgo clone (and on aDIC,
+// crash) it onto the new executor every reuse. Returning a stable executor per NeoN executor kind
+// keeps cached preconditioners valid. The cache is released in a Kokkos finalize hook so the
+// executor is destroyed while the device is still alive.
+std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
+{
+    static bool hookRegistered = false;
+    if (!hookRegistered)
+    {
+        Kokkos::push_finalize_hook(
+            []()
+            {
+                for (auto& e : gkoExecutorCache())
+                {
+                    e.reset();
+                }
+            }
+        );
+        hookRegistered = true;
+    }
+
+    auto& cache = gkoExecutorCache();
+    const std::size_t idx = exec.index();
+    if (!cache[idx])
+    {
+        cache[idx] = createGkoExecutor(exec);
+    }
+    return cache[idx];
 }
 
 

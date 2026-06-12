@@ -355,13 +355,14 @@ TEST_CASE("NegateSystem with Ic preconditioner - Ginkgo")
              {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
         };
 
-        auto solver = NeoN::la::Solver(exec, solverDict);
-
+        // A fresh Solver per solve mirrors production (PDESolver reconstructs the solver every
+        // solve), so the cached preconditioner is reused across solver instances -- which must not
+        // trigger an executor-mismatch clone.
         Vector<scalar> x1(exec, {0.0, 0.0, 0.0});
-        solver.solve(linearSystem, x1); // regenerates and caches the preconditioner
+        NeoN::la::Solver(exec, solverDict).solve(linearSystem, x1); // regenerates + caches
 
         Vector<scalar> x2(exec, {0.0, 0.0, 0.0});
-        auto solverStats = solver.solve(linearSystem, x2); // reuse path (frozen preconditioner)
+        auto solverStats = NeoN::la::Solver(exec, solverDict).solve(linearSystem, x2); // reuse path
 
         auto hostX = x2.copyToHost();
         auto hostXS = hostX.view();
@@ -390,13 +391,12 @@ TEST_CASE("NegateSystem with Ic preconditioner - Ginkgo")
              {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
         };
 
-        auto solver = NeoN::la::Solver(exec, solverDict);
-
+        // Fresh Solver per solve (see aDIC reuse section): reuse must span solver instances.
         Vector<scalar> x1(exec, {0.0, 0.0, 0.0});
-        solver.solve(linearSystem, x1);
+        NeoN::la::Solver(exec, solverDict).solve(linearSystem, x1);
 
         Vector<scalar> x2(exec, {0.0, 0.0, 0.0});
-        auto solverStats = solver.solve(linearSystem, x2);
+        auto solverStats = NeoN::la::Solver(exec, solverDict).solve(linearSystem, x2);
 
         auto hostX = x2.copyToHost();
         auto hostXS = hostX.view();
