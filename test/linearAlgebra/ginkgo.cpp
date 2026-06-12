@@ -236,6 +236,84 @@ TEST_CASE("NegateSystem with Ic preconditioner - Ginkgo")
         REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-6));
         REQUIRE(finalResNorm < 1.0e-06);
     }
+
+    // The Ic apply solver can be overridden with a GPU-friendly approximate triangular solve
+    // instead of Ginkgo's default exact LowerTrs. These exercise the exact preconditioner
+    // dictionaries that NeoFOAM's `lSolver ir;` / `lSolver isai;` mapping produces, end to end
+    // through Ginkgo's config parser and solve -- the layer the dictionary-structure tests in
+    // NeoFOAM cannot reach. The criterion for Ir must use Ginkgo's explicit factory form
+    // {type: Iteration, max_iters: N}; the bare {iteration: N} shorthand is rejected here.
+    SECTION("Ic with Ir (Jacobi-sweep) apply solver converges " + execName)
+    {
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        Dictionary irLSolver {
+            {{"type", std::string {"solver::Ir"}},
+             {"criteria", Dictionary {{{"type", std::string {"Iteration"}}, {"max_iters", 1}}}},
+             {"solver",
+              Dictionary {{{"type", std::string {"preconditioner::Jacobi"}}, {"max_block_size", 1}}}
+             }}
+        };
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"negateSystem", true},
+             {"preconditioner",
+              Dictionary {
+                  {{"type", std::string {"preconditioner::Ic"}},
+                   {"factorization",
+                    Dictionary {{{"type", std::string {"factorization::ParIc"}}, {"iterations", 3}}}
+                   },
+                   {"l_solver", irLSolver}}
+              }},
+             {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        auto finalResNorm = solverStats.entries[0].finalResNorm;
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-6));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-6));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-6));
+        REQUIRE(finalResNorm < 1.0e-06);
+    }
+
+    SECTION("Ic with Isai (approximate-inverse) apply solver converges " + execName)
+    {
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        Dictionary isaiLSolver {
+            {{"type", std::string {"preconditioner::Isai"}}, {"isai_type", std::string {"lower"}}}
+        };
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"negateSystem", true},
+             {"preconditioner",
+              Dictionary {
+                  {{"type", std::string {"preconditioner::Ic"}},
+                   {"factorization",
+                    Dictionary {{{"type", std::string {"factorization::ParIc"}}, {"iterations", 3}}}
+                   },
+                   {"l_solver", isaiLSolver}}
+              }},
+             {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        auto finalResNorm = solverStats.entries[0].finalResNorm;
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-6));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-6));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-6));
+        REQUIRE(finalResNorm < 1.0e-06);
+    }
 }
 
 TEST_CASE("MatrixConversion - Ginkgo")
