@@ -73,6 +73,10 @@ public:
 
     Dictionary getConfig() const;
 
+    std::string juliaOP() { return ""; }
+
+    std::string juliaOP() const { return ""; }
+
 private:
 
     dsl::Coeff coeffA_; // div coeff
