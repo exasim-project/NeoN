@@ -111,7 +111,6 @@ void GaussGreenDdtDivLaplacian<ValueType>::implicitOperation(
     la::LinearSystem<ValueType>& ls, scalar /*t*/, scalar dt
 ) const
 {
-    // FIXME I dont know how we can end up with a nullptr here double check
     if (ls.getMeshIterator() == nullptr)
     {
         NF_ERROR_EXIT("Not implemented");
