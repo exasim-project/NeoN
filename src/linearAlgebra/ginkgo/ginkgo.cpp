@@ -12,8 +12,15 @@
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
-    // remove 'solver Ginkgo;' entry
-    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    // Remove the top-level 'solver Ginkgo;' entry. Guard the cast on the value type:
+    // parse() recurses into nested sub-dictionaries (below), and a nested Ginkgo config
+    // can legitimately carry a 'solver' key whose value is itself a factory sub-dictionary
+    // rather than the "Ginkgo" string -- e.g. the inner relaxation solver of an Ir apply
+    // solver used as an Ic/Ilu l_solver. An unguarded any_cast<std::string> on such a node
+    // throws bad_any_cast. Only the string-valued "Ginkgo" entry should be stripped here;
+    // a dictionary-valued 'solver' is passed through to the recursive parse at the bottom.
+    if (dict.contains("solver") && dict.isType<std::string>("solver")
+        && dict.get<std::string>("solver") == "Ginkgo")
     {
         dict.remove("solver");
     }

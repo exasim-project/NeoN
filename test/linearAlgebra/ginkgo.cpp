@@ -88,6 +88,35 @@ TEST_CASE("Dictionary Parsing - Ginkgo")
 
         REQUIRE_THROWS_AS(NeoN::la::ginkgo::parse(dict), NeoN::NeoNException);
     }
+    SECTION("Nested 'solver' sub-dictionary is passed through, not any_cast")
+    {
+        // A nested Ginkgo config can carry a 'solver' key whose value is a factory
+        // sub-dictionary (e.g. the inner relaxation solver of an Ir apply solver used as an
+        // Ic/Ilu l_solver). Recursing into it must not any_cast that node to the "Ginkgo"
+        // string -- that previously threw bad_any_cast. The top-level string 'solver' entry is
+        // still stripped; the dictionary-valued nested 'solver' is preserved.
+        NeoN::Dictionary inner;
+        inner.insert("type", std::string("preconditioner::Jacobi"));
+        NeoN::Dictionary lSolver;
+        lSolver.insert("type", std::string("solver::Ir"));
+        lSolver.insert("solver", inner);
+        NeoN::Dictionary dict;
+        dict.insert("solver", std::string("Ginkgo"));
+        dict.insert("l_solver", lSolver);
+
+        gko::config::pnode node;
+        REQUIRE_NOTHROW(node = NeoN::la::ginkgo::parse(dict));
+
+        gko::config::pnode expected(
+            {{"l_solver",
+              gko::config::pnode(
+                  {{"type", gko::config::pnode {"solver::Ir"}},
+                   {"solver",
+                    gko::config::pnode({{"type", gko::config::pnode {"preconditioner::Jacobi"}}})}}
+              )}}
+        );
+        CHECK(node == expected);
+    }
 }
 
 TEST_CASE("gkoVecView - Ginkgo")
