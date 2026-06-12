@@ -301,7 +301,9 @@ TEST_CASE("Distributed Operator - vec3")
             REQUIRE_THAT(lsDst.offDiagonalMatrix().values(), Equals(expected));
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {4, 7}, EqualInt()));
+            // rowIdxs are LOCAL row indices; global offset on rank 1 is 4, so global cells
+            // 4 and 7 map to local rows 0 and 3 (already in ascending order after sorting).
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0, 3}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {3, 8}, EqualInt()));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 offDiagonalMatrix matches global off(8,7)")
@@ -311,7 +313,9 @@ TEST_CASE("Distributed Operator - vec3")
             );
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {8}, EqualInt()));
+            // rowIdxs are LOCAL row indices; global offset on rank 2 is 8, so global cell
+            // 8 maps to local row 0.
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {7}, EqualInt()));
         }
     }
