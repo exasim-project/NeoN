@@ -11,6 +11,7 @@ if(NeoN_WITH_MPI)
     message(FATAL_ERROR "NeoN_WITH_MPI not supported on Windows")
   endif()
   find_package(MPI 3.1 REQUIRED)
+  include(cmake/DetectMpiThreadSupport.cmake)
 endif()
 
 if(${NeoN_WITH_PETSC})

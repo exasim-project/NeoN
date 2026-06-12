@@ -142,4 +142,68 @@ TEMPLATE_TEST_CASE("Div + Laplacian Operator ", "[template]", NeoN::Vec3)
 #endif // NF_WITH_GINKGO
 }
 
+TEMPLATE_TEST_CASE(
+    "Face-based and cell-based GaussGreenDivLaplacian give same results", "[template]", NeoN::scalar
+)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+
+    fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    fvcc::SurfaceField<scalar> faceFlux(exec, "faceFlux", mesh, surfaceBCs);
+    NeoN::fill(faceFlux.internalVector(), 1.0);
+    NeoN::fill(faceFlux.boundaryData().value(), 1.0);
+
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    NeoN::fill(gamma.internalVector(), 2.0);
+    NeoN::fill(gamma.boundaryData().value(), 2.0);
+
+    NeoN::Dictionary fvSchemes;
+    fvSchemes.insert(
+        "divSchemes",
+        NeoN::Dictionary {
+            {"div(faceFlux,phi)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})}
+        }
+    );
+    fvSchemes.insert(
+        "laplacianSchemes",
+        NeoN::Dictionary {
+            {"laplacian(gamma,phi)",
+             NeoN::TokenList(
+                 {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
+             )}
+        }
+    );
+
+    // Build fused operator by extracting configs from the individual operators
+    dsl::SpatialOperator<TestType> divOp = dsl::imp::div(faceFlux, phi);
+    dsl::SpatialOperator<TestType> lapOp = dsl::imp::laplacian(gamma, phi);
+    divOp.read(fvSchemes);
+    lapOp.read(fvSchemes);
+
+    dsl::SpatialOperator<TestType> fusedOp =
+        fvcc::GaussGreenDivLaplacian<TestType>(exec, divOp.getConfig(), lapOp.getConfig());
+    fusedOp.read(fvSchemes);
+
+    auto lsFaceBased = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+    auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+    auto lsCellBased = NeoN::la::createEmptyLinearSystem<TestType>(mesh, cellIterator);
+
+    fusedOp.implicitOperation(lsFaceBased);
+    fusedOp.implicitOperation(lsCellBased);
+
+    REQUIRE_THAT(
+        lsFaceBased.matrix().values(), Equals(lsCellBased.matrix().values(), Approx {1e-12})
+    );
+    REQUIRE_THAT(lsFaceBased.rhs(), Equals(lsCellBased.rhs(), Approx {1e-12}));
+}
+
 } // namespace NeoN

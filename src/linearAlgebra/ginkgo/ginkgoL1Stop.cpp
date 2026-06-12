@@ -67,7 +67,8 @@ scalar computeL1NormFactor(
     std::shared_ptr<const gko::Executor> exec,
     const gko::LinOp* mtx,
     const VecType* b,
-    const VecType* x
+    const VecType* x,
+    const VecType* r
 )
 {
     const auto one = gko::initialize<dense>({1.0}, exec);
@@ -77,21 +78,20 @@ scalar computeL1NormFactor(
     x->compute_mean(meanDense);
     const scalar xRef = retrieve(meanDense.get());
 
-    // A xRef, with xRef broadcast to a constant field
+    // A xRef, with xRef broadcast to a constant field (the only SpMV needed here)
     auto xRefField = makeConstantLike(*x, xRef);
     auto Axref = makeConstantLike(*b, 0.0);
     mtx->apply(xRefField, Axref);
 
-    // |A x - A xRef|
-    auto Apsi = makeConstantLike(*b, 0.0);
-    mtx->apply(x, Apsi);
-    Apsi->sub_scaled(one, Axref);
-    auto term = Apsi->compute_absolute();
-
-    // + |b - A xRef|
+    // |b - A xRef|
     auto bMinusAxref = b->clone();
     bMinusAxref->sub_scaled(one, Axref);
     auto term2 = bMinusAxref->compute_absolute();
+
+    // |A x - A xRef|, reusing the residual r = b - A x to avoid a second SpMV:
+    //   A x - A xRef = (b - A xRef) - r
+    bMinusAxref->sub_scaled(one, r);
+    auto term = bMinusAxref->compute_absolute();
     term->add_scaled(one, term2);
 
     // sum over rows (entries already non-negative; global sum for a distributed vector)
@@ -105,9 +105,11 @@ scalar computeL1NormFactor(
  *
  * The iteration stops on the scaled residual sum|b - A x| / normFactor, using an absolute
  * tolerance, a relative tolerance (relative to the initial residual) and a maximum
- * iteration count, while honouring a minimum iteration count. The true residual b - A x
- * is recomputed every check so the criterion is independent of any preconditioned residual
- * the solver may carry internally; for a distributed vector the norms are global.
+ * iteration count, while honouring a minimum iteration count. The L1 residual norm is taken
+ * from the solver's recurrent residual b - A x (Cg/BiCGStab keep it unpreconditioned, which
+ * also matches OpenFOAM's recurrently-updated residual); it is recomputed with a single SpMV
+ * only when the solver does not expose one (e.g. multigrid). For a distributed vector the
+ * norms are global.
  */
 template<typename VecType>
 class L1ResidualCriterion :
@@ -171,8 +173,9 @@ protected:
     {
         const auto exec = this->get_executor();
 
-        // We need the current solution to evaluate the true residual b - A x.
-        // For the iterative solvers used here (Cg/BiCGStab/Gmres) it is always set.
+        // The current solution is needed for the normFactor reference state (and for the
+        // residual recompute fallback). For the iterative solvers used here (Cg/BiCGStab)
+        // it is set on every check that can stop.
         if (updater.solution_ == nullptr)
         {
             return false;
@@ -180,10 +183,10 @@ protected:
         const auto* solution = gko::as<VecType>(updater.solution_);
         const auto numIter = static_cast<localIdx>(updater.num_iterations_);
 
-        // Skip the expensive true-residual recompute (an SpMV + a global L1 reduction) on
-        // iterations where the criterion cannot stop anyway: before min_iter the tolerances are
-        // not tested, and between check_frequency-spaced checks. The very first call (to capture
-        // the initial residual and normFactor) and the max_iter cap must always be evaluated.
+        // Skip the residual-norm evaluation on iterations where the criterion cannot stop
+        // anyway: before min_iter the tolerances are not tested, and between check_frequency-
+        // spaced checks. The very first call (to capture the initial residual and normFactor)
+        // and the max_iter cap must always be evaluated.
         const bool mustEvaluate = firstIter_ || numIter >= parameters_.max_iter
                                || (numIter >= parameters_.min_iter
                                    && (parameters_.check_frequency <= 1
@@ -193,11 +196,26 @@ protected:
             return false;
         }
 
-        // true residual r = b - A x (recomputed independently of the solver's residual)
-        const auto one = gko::initialize<dense>({1.0}, exec);
-        const auto negOne = gko::initialize<dense>({-1.0}, exec);
-        auto r = parameters_.b->clone();
-        parameters_.matrix->apply(negOne.get(), solution, one.get(), r.get());
+        // Prefer the solver's recurrent residual r = b - A x. Ginkgo's Cg/BiCGStab keep it
+        // up to date and unpreconditioned (they pass .residual(r)), so it is exactly the L1
+        // numerator and matches OpenFOAM's recurrently-updated residual. Recomputing it with a
+        // full SpMV on every check roughly doubled the per-iteration cost of the cheaply-
+        // preconditioned solve. Fall back to the SpMV recompute only when the solver does not
+        // expose a residual (e.g. multigrid), which then needs the current solution.
+        std::unique_ptr<VecType> rOwned;
+        const VecType* r = nullptr;
+        if (updater.residual_ != nullptr)
+        {
+            r = gko::as<VecType>(updater.residual_);
+        }
+        else
+        {
+            const auto one = gko::initialize<dense>({1.0}, exec);
+            const auto negOne = gko::initialize<dense>({-1.0}, exec);
+            rOwned = parameters_.b->clone();
+            parameters_.matrix->apply(negOne.get(), solution, one.get(), rOwned.get());
+            r = rOwned.get();
+        }
 
         auto rNormDense = dense::create(exec, gko::dim<2> {1});
         r->compute_norm1(rNormDense.get());
@@ -206,7 +224,7 @@ protected:
         if (firstIter_)
         {
             normFactor_ = computeL1NormFactor<VecType>(
-                exec, parameters_.matrix.get(), parameters_.b.get(), solution
+                exec, parameters_.matrix.get(), parameters_.b.get(), solution, r
             );
             initResidual_ = rNorm / normFactor_;
             if (parameters_.init_residual != NULL)

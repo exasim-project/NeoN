@@ -153,4 +153,11 @@ void runDistributedMomentumBenchmark(
     const std::string& sectionName
 );
 
+void runDistributedFusedDivLapBenchmark(
+    const std::string& execName,
+    const NeoN::Executor& exec,
+    NeoN::UnstructuredMesh& mesh,
+    const std::string& sectionName
+);
+
 #endif // NF_WITH_MPI_SUPPORT
