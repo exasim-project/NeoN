@@ -207,15 +207,7 @@ class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 
 public:
 
-    GinkgoSolver(Executor exec, const Dictionary& solverConfig)
-        : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
-          negateSystem_(solverConfig.get("negateSystem", false)),
-          l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
-          factory_(gko::config::parse(
-                       config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
-          )
-                       .on(gkoExec_))
-    {}
+    GinkgoSolver(Executor exec, const Dictionary& solverConfig);
 
     static std::string name() { return "Ginkgo"; }
 
@@ -262,6 +254,15 @@ public:
 
 private:
 
+    // Build (or fetch from the reuse cache) the preconditioner LinOp for the current matrix, then
+    // generate the Krylov solver with that preconditioner injected as `generated_preconditioner`.
+    // Used for the native aDIC preconditioner (which Ginkgo's config cannot name) and for
+    // preconditioner reuse. Only the scalar, rank-local solve path is routed here; Vec3/distributed
+    // solves keep the default factory_ path.
+    std::unique_ptr<gko::LinOp> generateInjectedSolver(
+        std::shared_ptr<const gko::LinOp> gkoMtx, const CSRMatrix<scalar, localIdx>& neonMtx
+    ) const;
+
     std::shared_ptr<const gko::Executor> gkoExec_;
     bool coupled_; // whether to solve LinearSystem<Vec3> as one or three systems
     // Solve the sign-flipped system (-A) x = (-b) instead of A x = b. The solution x and the
@@ -271,8 +272,25 @@ private:
     bool negateSystem_;
     // L1-scaled residual stopping controls; set only when "l1ScaledResidual" is enabled
     std::optional<L1ResidualControl> l1Control_;
+    // Native aDIC preconditioner requested (preconditioner type "aDIC"). aDIC is a NeoN LinOp that
+    // Ginkgo's config cannot instantiate by name, so it is injected as a generated preconditioner.
+    bool useADIC_;
+    // Regenerate the preconditioner only every preconReuse_ scalar solves (1 = every solve = no
+    // reuse). A reused preconditioner is built from an older matrix ("frozen"): still a valid
+    // approximation, may cost a few more iterations, saves the per-solve factorization/setup.
+    int preconReuse_;
+    // Stable cache key (the field name, threaded from NeoFOAM) so p/pFinal/U get distinct entries.
+    std::string reuseKey_;
+    // True when the scalar solve must route through generateInjectedSolver (aDIC or reuse active).
+    bool injectPrecond_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
+    // Parsed preconditioner sub-config (non-aDIC reuse): used to (re)generate the cached
+    // preconditioner from the current matrix.
+    gko::config::pnode precondConfig_;
+    // Solver config with `preconditioner` replaced by `generated_preconditioner: neonGenPrecond`,
+    // parsed per solve against a registry holding the (cached) preconditioner.
+    gko::config::pnode injectedSolverConfig_;
 };
 
 

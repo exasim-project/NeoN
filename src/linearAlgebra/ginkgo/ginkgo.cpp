@@ -5,8 +5,10 @@
 #if NF_WITH_GINKGO
 
 #include <sstream>
+#include <unordered_map>
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
+#include "NeoN/linearAlgebra/preconditioner/aDIC.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
@@ -56,6 +58,16 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     if (dict.contains("checkFrequency"))
     {
         dict.remove("checkFrequency");
+    }
+
+    // 'preconReuse' (regeneration interval) and 'reuseKey' (cache key) steer preconditioner reuse
+    // in GinkgoSolver; they are not Ginkgo config keys.
+    for (const auto& key : {std::string("preconReuse"), std::string("reuseKey")})
+    {
+        if (dict.contains(key))
+        {
+            dict.remove(key);
+        }
     }
 
     // 'minIter' / 'minIterFactor' steer the L1 criterion's minimum iteration count
@@ -306,6 +318,134 @@ std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx)
 }
 
 
+namespace
+{
+
+// One reused preconditioner per cache key (field name). The preconditioner is regenerated only
+// every `preconReuse` solves; in between it is reused as a "frozen" (approximate) preconditioner.
+struct PrecondCacheEntry
+{
+    std::shared_ptr<gko::LinOp> precond;
+    std::uintptr_t sparsitySig; //!< rowOffs buffer address: changes when the mesh/sparsity changes
+    int counter;                //!< solves seen for this key (drives the regeneration interval)
+};
+
+std::unordered_map<std::string, PrecondCacheEntry>& precondCache()
+{
+    static std::unordered_map<std::string, PrecondCacheEntry> cache;
+    static bool hookRegistered = false;
+    if (!hookRegistered)
+    {
+        // Release cached Ginkgo LinOps before Kokkos (and the device) is torn down. A Kokkos
+        // finalize hook runs at the start of Kokkos::finalize(), avoiding the static-destruction
+        // ordering crash that a plain static map of device-backed objects would risk.
+        Kokkos::push_finalize_hook([]() { precondCache().clear(); });
+        hookRegistered = true;
+    }
+    return cache;
+}
+
+} // namespace
+
+
+GinkgoSolver::GinkgoSolver(Executor exec, const Dictionary& solverConfig) : Base(exec)
+{
+    gkoExec_ = getGkoExecutor(exec);
+    coupled_ = solverConfig.get("coupled", false);
+    negateSystem_ = solverConfig.get("negateSystem", false);
+    l1Control_ = readL1ResidualControl(solverConfig);
+    preconReuse_ = solverConfig.get("preconReuse", 1);
+    reuseKey_ = solverConfig.get("reuseKey", std::string("default"));
+
+    useADIC_ = solverConfig.isDict("preconditioner")
+            && solverConfig.subDict("preconditioner").contains("type")
+            && solverConfig.subDict("preconditioner").get<std::string>("type") == "aDIC";
+    injectPrecond_ = useADIC_ || preconReuse_ > 1;
+
+    // Default factory for the Vec3 / distributed / non-injected paths. The aDIC marker is stripped
+    // first because Ginkgo's config parser cannot instantiate it (it is injected per solve); the
+    // resulting factory is then unpreconditioned, which only ever serves Vec3 paths (aDIC is mapped
+    // for the scalar pressure solve only).
+    Dictionary cfgForFactory = solverConfig;
+    if (useADIC_ && cfgForFactory.contains("preconditioner"))
+    {
+        cfgForFactory.remove("preconditioner");
+    }
+    config_ = parse(cfgForFactory);
+    factory_ = gko::config::parse(
+                   config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
+    )
+                   .on(gkoExec_);
+
+    if (injectPrecond_)
+    {
+        // Non-aDIC reuse: keep the preconditioner sub-config so it can be (re)generated from the
+        // current matrix and cached.
+        if (!useADIC_ && solverConfig.isDict("preconditioner"))
+        {
+            precondConfig_ = parse(solverConfig.subDict("preconditioner"));
+        }
+        // Solver config that references the injected preconditioner by registry key.
+        Dictionary cfgInjected = solverConfig;
+        if (cfgInjected.contains("preconditioner"))
+        {
+            cfgInjected.remove("preconditioner");
+        }
+        cfgInjected.insert("generated_preconditioner", std::string("neonGenPrecond"));
+        injectedSolverConfig_ = parse(cfgInjected);
+    }
+}
+
+
+std::unique_ptr<gko::LinOp> GinkgoSolver::generateInjectedSolver(
+    std::shared_ptr<const gko::LinOp> gkoMtx, const CSRMatrix<scalar, localIdx>& neonMtx
+) const
+{
+    auto& cache = precondCache();
+    const auto sig = reinterpret_cast<std::uintptr_t>(neonMtx.rowOffs().data());
+
+    auto it = cache.find(reuseKey_);
+    const bool present = (it != cache.end());
+    const int counter = present ? it->second.counter : 0;
+    const bool regenerate =
+        !present || (it->second.sparsitySig != sig) || (counter % std::max(preconReuse_, 1) == 0);
+
+    std::shared_ptr<gko::LinOp> precond;
+    if (regenerate)
+    {
+        if (useADIC_)
+        {
+            precond = std::make_shared<ADICPreconditioner>(gkoExec_, exec_, neonMtx);
+        }
+        else
+        {
+            auto precondFactory = gko::config::parse(
+                                      precondConfig_,
+                                      gko::config::registry(),
+                                      gko::config::make_type_descriptor<scalar>()
+            )
+                                      .on(gkoExec_);
+            precond = std::shared_ptr<gko::LinOp>(precondFactory->generate(gkoMtx));
+        }
+        cache[reuseKey_] = {precond, sig, counter + 1};
+    }
+    else
+    {
+        precond = it->second.precond;
+        it->second.counter = counter + 1;
+    }
+
+    // Build the Krylov solver referencing the (cached) preconditioner via the registry, reusing the
+    // full solver configuration (type, criteria, ...) parsed once in the constructor.
+    gko::config::registry reg;
+    reg.emplace("neonGenPrecond", precond);
+    auto factory =
+        gko::config::parse(injectedSolverConfig_, reg, gko::config::make_type_descriptor<scalar>())
+            .on(gkoExec_);
+    return factory->generate(gkoMtx);
+}
+
+
 template<typename VectorType>
 SolverStatsEntry solve_impl(
     std::shared_ptr<const gko::Executor> exec,
@@ -430,18 +570,23 @@ SolverStats GinkgoSolver::solve(
     // equivalent SPD system (-A) x = (-b): the solution x and the residual |b - A x| (hence the
     // L1-scaled residual) are unchanged. Negation is done on a deep copy so the caller's system
     // is untouched.
+    // The native aDIC preconditioner and preconditioner reuse are routed through
+    // generateInjectedSolver (the preconditioner is built/cached and injected as a generated
+    // preconditioner); otherwise the per-solve factory_ path is unchanged.
     if (negateSystem_)
     {
         auto negSys = sys; // deep-copies values and rhs; shares the immutable sparsity pattern
         negSys.matrix().values() *= -1.0;
         negSys.rhs() *= -1.0;
         auto gkoMtx = createGkoMtx(negSys.matrix());
-        auto solver = factory_->generate(gkoMtx);
+        auto solver = injectPrecond_ ? generateInjectedSolver(gkoMtx, negSys.matrix())
+                                     : factory_->generate(gkoMtx);
         return {solve_impl(gkoExec_, negSys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
     }
 
     auto gkoMtx = createGkoMtx(sys.matrix());
-    auto solver = factory_->generate(gkoMtx);
+    auto solver =
+        injectPrecond_ ? generateInjectedSolver(gkoMtx, sys.matrix()) : factory_->generate(gkoMtx);
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
 }
 

@@ -41,6 +41,7 @@ target_sources(
           "linearAlgebra/matrix.cpp"
           "linearAlgebra/ginkgo/ginkgo.cpp"
           "linearAlgebra/ginkgo/ginkgoL1Stop.cpp"
+          "linearAlgebra/preconditioner/aDIC.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
           "linearAlgebra/cooSparsityPattern.cpp"
           "linearAlgebra/csrSparsityPattern.cpp"
