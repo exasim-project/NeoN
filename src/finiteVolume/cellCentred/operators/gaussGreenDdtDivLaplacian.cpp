@@ -18,7 +18,7 @@ void computeDdtDivLapImplCell(
     const VolumeField<ValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
+    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
     //    const SurfaceInterpolation<ValueType>& lapSurfInterp,
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
@@ -26,11 +26,11 @@ void computeDdtDivLapImplCell(
     std::shared_ptr<la::CellBasedIterator> iterator
 )
 {
-    auto exec = ls.exec();
-    const auto& mesh = phi.mesh();
-    const auto vol = mesh.cellVolumes().view();
-    auto matrix = ls.matrix().view();
-    const auto sp = ls.faceToMatrixAddress();
+    const auto exec = ls.exec();
+    const UnstructuredMesh& mesh = phi.mesh();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
     auto cellBasedData = iterator->getCellBasedData();
     NF_ASSERT(
         cellBasedData != nullptr,
@@ -38,71 +38,74 @@ void computeDdtDivLapImplCell(
         "cell-based kernel"
     );
     auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.views();
-    auto faceNeighbourV = cellBasedData->faceNeighbour.view();
     auto faceSignV = cellBasedData->faceSign.view();
     auto matrixColumnIdxV = cellBasedData->matrixColumnIdx.view();
 
-    // const auto operatorScaling = this->getCoefficient();
-    const auto diagOffs = ls.faceToMatrixAddress()->diagOffset().view();
+    const auto [phiV, gammaV, deltaV, magFaceAreaV, vol] = views(
+        phi.internalVector(),
+        gamma.internalVector(),
+        faceNormalGradient.deltaCoeffs().internalVector(),
+        mesh.faceAreas(),
+        mesh.cellVolumes()
+    );
+
     const auto oldVector = oldTime(u).internalVector().view();
     auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
 
+    // BDF1: ddt contributes V/dt to the diagonal and V/dt * u_old to the rhs
     const scalar a0a1 = 1.0 / dt;
-
-    const auto [diaOffV, ownOffV, neiOffV] =
-        views(sp->diagOffset(), sp->ownerOffset(), sp->neighbourOffset());
-    const auto [gammaV, deltaV] =
-        views(gamma.internalVector(), faceNormalGradient.deltaCoeffs().internalVector());
-
-    const auto [phiV, /* weightsV,*/ magFaceAreaV] = views(
-        phi.internalVector(),
-        // weights.internalVector(),
-        mesh.faceAreas()
-    );
 
     parallelFor(
         exec,
         {0, iterator->size()},
         NEON_LAMBDA(const localIdx celli) {
-            // DDT contribution to diagonal
-            const auto diagIdx = matrix.sparsity.rowOffs[celli] + diaOffV[celli];
-            // const auto coeff = a0 * vol[celli];
-            // auto diagValue = coeff * one<ValueType>();
-            // auto rhsValue = coeff * oldVector[celli];
+            // DDT contribution: \int_V du/dt dV ~ V/dt * (u^{n+1} - u^n)
+            const auto ddtCoeff = a0a1 * vol[celli];
+            auto diagValue = ddtCoeff * one<ValueType>();
+            rhs[celli] += ddtCoeff * oldVector[celli];
 
-            // Loop over faces of this cell
-            auto diagValue = zero<ValueType>();
+            // Div + Laplacian contributions, looping over the faces of this cell
             const auto numFaces = cellFacesSegments[celli + 1] - cellFacesSegments[celli];
             const auto startIdx = cellFacesSegments[celli];
+            const auto cellCoeffA = coeffA[celli];
+            const auto cellCoeffB = coeffB[celli];
 
             for (localIdx i = 0; i < numFaces; ++i)
             {
                 const auto faceIdx = cellFacesValues[startIdx + i];
-                const auto neiCell = faceNeighbourV[startIdx + i];
                 const auto sign = faceSignV[startIdx + i];
 
-                // Compute flux on-the-fly
-                const auto fluxDiv = phiV[faceIdx]; // faceFluxV[faceIdx];
-                // FIXME;
-                const auto weight = (phiV[faceIdx] >= 0) ? 0.0 : 1.0; // weightsV[faceIdx];
-                const auto lapFlux = deltaV[faceIdx] * gammaV[faceIdx] * magFaceAreaV[faceIdx];
-                const auto combinedFlux = (-weight * fluxDiv + lapFlux) * one<ValueType>();
+                // upwind weight: 1 if flux leaves owner (flux > 0), 0 otherwise
+                const auto flux = phiV[faceIdx];
+                const auto w = (flux >= 0) ? scalar(1) : scalar(0);
 
-                const auto offDiagValue = sign * combinedFlux;
-                matrix.values[matrixColumnIdxV[startIdx + i]] += offDiagValue;
+                // Laplacian face coefficient: δ_f · γ_f · |S_f|
+                const auto fluxLap = deltaV[faceIdx] * gammaV[faceIdx] * magFaceAreaV[faceIdx];
 
-                // Contribution to diagonal (subtract off-diagonal)
-                diagValue -= offDiagValue;
+                ValueType offDiag;
+                ValueType diagContrib;
+
+                if (sign > 0) // celli is owner: off-diagonal is upper triangular entry
+                {
+                    offDiag =
+                        (flux * (1.0 - w) * cellCoeffA + fluxLap * cellCoeffB) * one<ValueType>();
+                    diagContrib =
+                        (flux * w * cellCoeffA - fluxLap * cellCoeffB) * one<ValueType>();
+                }
+                else // celli is neighbor: off-diagonal is lower triangular entry
+                {
+                    offDiag = (-flux * w * cellCoeffA + fluxLap * cellCoeffB) * one<ValueType>();
+                    diagContrib =
+                        (-flux * (1.0 - w) * cellCoeffA - fluxLap * cellCoeffB) * one<ValueType>();
+                }
+
+                values[matrixColumnIdxV[startIdx + i]] += offDiag;
+                diagValue += diagContrib;
             }
 
-            // Write diagonal and RHS
-            matrix.values[diagIdx] += diagValue + a0a1 * one<ValueType>();
-            // FIXME
-            // const auto commonCoef = operatorScaling[celli] * vol[celli];
-            rhs[celli] += a0a1 * oldVector[celli];
+            values[ma.diagIdx(celli)] += diagValue;
         },
-        "fusedKernelCellBased::cellLoop"
+        "computeDdtDivLapImplCell::cellLoop"
     );
 }
 
