@@ -463,4 +463,60 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
 #endif
 }
 
+#if NF_WITH_GINKGO
+TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix values_")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    auto inputPart = GENERATE_INPUT("upwind", "Part");
+
+    constexpr int nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshGlobal);
+    auto u = finiteVolume::cellCentred::VolumeField<scalar>(
+        exec, "U", meshGlobal, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshGlobal);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", meshGlobal, surfaceBCs);
+    auto gamma =
+        finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", meshGlobal, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    dsl::SetReference<scalar, localIdx> setRef(0, 0.0);
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
+    exprDist.read(inputPart);
+    auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0, {&setRef});
+
+    // Build the distributed Ginkgo matrix
+    auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+    const CommunicationPattern& commPattern = lsDst.commPattern();
+    auto comm = gko::experimental::mpi::communicator(
+        commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+    );
+    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
+        gkoExec, comm, lsDst.matrix(), lsDst.offDiagonalMatrix(), commPattern
+    );
+
+    // The local CSR block must share memory with lsDst.matrix().values_
+    using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
+    const auto* distMtxPtr = gko::as<const dist_mtx>(gkoMtx.get());
+    auto localLinOp = distMtxPtr->get_local_matrix();
+    const auto* localCsr = gko::as<const gko::matrix::Csr<scalar, localIdx>>(localLinOp.get());
+
+    REQUIRE(localCsr->get_const_values() == lsDst.matrix().values().data());
+}
+#endif // NF_WITH_GINKGO
+
 }

@@ -36,6 +36,29 @@ std::shared_ptr<gko::LinOp> gkoVecViewDist(
     ));
 }
 
+std::shared_ptr<gko::LinOp> gkoVecViewDist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    Vec3* ptr,
+    localIdx s
+)
+{
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    using vec = gko::matrix::Dense<scalar>;
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(dist_vec::create(
+        exec,
+        comm,
+        vec::create(
+            exec,
+            gko::dim<2> {size, 3},
+            gko::array<scalar>::view(exec, size * 3, reinterpret_cast<scalar*>(ptr)),
+            3
+        )
+    ));
+}
+
+
 std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
@@ -54,6 +77,29 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
         )
     ));
 }
+
+std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    const Vec3* ptr,
+    localIdx s
+)
+{
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    using vec = gko::matrix::Dense<scalar>;
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(dist_vec::create_const(
+        exec,
+        comm,
+        vec::create_const(
+            exec,
+            gko::dim<2> {size, 3},
+            gko::array<scalar>::const_view(exec, size * 3, reinterpret_cast<const scalar*>(ptr)),
+            3
+        )
+    ));
+}
+
 template<typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
@@ -187,7 +233,7 @@ SolverStatsEntry solve_impl_dist(
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver,
+    std::shared_ptr<gko::LinOp> solver,
     const L1ResidualControl* l1Control = nullptr
 )
 {
@@ -221,6 +267,7 @@ SolverStatsEntry solve_impl_dist(
         return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
     }
 
+    // copy of rhs to compute the initial residual (res is modified in-place by apply)
     auto rhsCopy = Vector<scalar>(rhs);
     auto res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
 
@@ -236,8 +283,11 @@ SolverStatsEntry solve_impl_dist(
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    solver->apply(b, x);
+    // FIXME add again
+    // solver->apply(b, x);
 
+    // FIXME can this be retrieved from the logger instead of copying?
+    // copy of rhs to compute the final residual (resFinal is modified in-place by apply)
     auto rhsCopyFinal = Vector<scalar>(rhs);
     auto resFinal = gkoVecViewDist(exec, comm, rhsCopyFinal.data(), nrows);
     mtx->apply(one, x, neg_one, resFinal);
@@ -255,6 +305,90 @@ SolverStatsEntry solve_impl_dist(
         / 1000.0;
 
     return {numIter, initResNorm, finalResNorm, duration};
+}
+
+SolverStats solve_impl_dist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    const Vector<Vec3>& rhs,
+    Vector<Vec3>& xIn,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<gko::LinOp> solver,
+    const L1ResidualControl* l1Control = nullptr
+)
+{
+    exec->synchronize();
+    auto startEval = std::chrono::steady_clock::now();
+    using vec = gko::matrix::Dense<scalar>;
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    label nrows = rhs.size();
+
+    const auto b = gkoConstVecViewDist(exec, comm, rhs.data(), nrows);
+    auto x = gkoVecViewDist(exec, comm, xIn.data(), nrows);
+
+    // L1-scaled residual path: stop and report on the (globally reduced) scaled residual.
+    if (l1Control != nullptr)
+    {
+        auto l1Res = solveWithL1StopDist(
+            exec,
+            mtx,
+            std::dynamic_pointer_cast<const dist_vec>(b),
+            std::dynamic_pointer_cast<dist_vec>(x),
+            solver.get(),
+            *l1Control
+        );
+        exec->synchronize();
+        auto endEval = std::chrono::steady_clock::now();
+        auto duration =
+            static_cast<scalar>(
+                std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+            )
+            / 1000.0;
+        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+    }
+
+    auto rhsCopy = Vector<Vec3>(rhs);
+    auto res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
+
+    auto one = gko::initialize<vec>({1.0}, exec);
+    auto neg_one = gko::initialize<vec>({-1.0}, exec);
+    mtx->apply(one, x, neg_one, res);
+
+    // compute_norm2 on a [n x 3] dist_vec writes a [1 x 3] result — one L2 norm per column.
+    auto colNorms = [&](std::shared_ptr<gko::LinOp> v) -> std::array<scalar, 3>
+    {
+        auto nv = vec::create(exec, gko::dim<2> {1, 3});
+        gko::as<dist_vec>(v)->compute_norm2(nv);
+        auto nh = vec::create(exec->get_master(), gko::dim<2> {1, 3});
+        nh->copy_from(nv);
+        return {nh->at(0, 0), nh->at(0, 1), nh->at(0, 2)};
+    };
+    auto initNorms = colNorms(res);
+
+    std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+        gko::log::Convergence<scalar>::create();
+    solver->add_logger(logger);
+    solver->apply(b, x);
+
+    // restore rhsCopy to b (in-place deep copy, no reallocation) then reuse for final residual
+    rhsCopy = rhs;
+    res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
+    mtx->apply(one, x, neg_one, res);
+    auto finalNorms = colNorms(res);
+
+    auto numIter = label(logger->get_num_iterations());
+    exec->synchronize();
+    auto endEval = std::chrono::steady_clock::now();
+    auto duration =
+        static_cast<scalar>(
+            std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+        )
+        / 1000.0;
+
+    SolverStats stats;
+    for (int i = 0; i < 3; ++i)
+        stats.entries.push_back({numIter, initNorms[i], finalNorms[i], duration});
+    return stats;
 }
 
 template<unsigned int I>
@@ -277,10 +411,8 @@ void solveComponentDist(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
     auto gkoMtx = createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern);
-    auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(
-        solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, std::move(solver), l1Control)
-    );
+    auto solver = gko::share(factory->generate(gkoMtx));
+    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
 }
 
@@ -294,9 +426,9 @@ SolverStats GinkgoSolver::solveDist(
     );
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
-    auto solver = factory_->generate(gkoMtx);
+    auto solver = gko::share(factory_->generate(gkoMtx));
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
+    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -309,28 +441,6 @@ SolverStats GinkgoSolver::solveDist(
     solveComponentDist<1>(sys, x, gkoExec_, factory_, stats, l1Control);
     solveComponentDist<2>(sys, x, gkoExec_, factory_, stats, l1Control);
     return stats;
-}
-
-// Solve one Vec3 rhs component against a shared distributed scalar matrix (segregated form).
-template<unsigned int I>
-void solveVec3RhsComponentDist(
-    const Vector<Vec3>& rhs,
-    Vector<Vec3>& x,
-    std::shared_ptr<const gko::Executor> exec,
-    const gko::experimental::mpi::communicator& comm,
-    std::shared_ptr<const gko::LinOpFactory> factory,
-    std::shared_ptr<const gko::LinOp> gkoMtx,
-    SolverStats& stats,
-    const L1ResidualControl* l1Control
-)
-{
-    auto rhsComp = getComponent<I>(rhs);
-    auto xcopy = getComponent<I>(x);
-    auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(
-        solve_impl_dist(exec, comm, rhsComp, xcopy, gkoMtx, std::move(solver), l1Control)
-    );
-    setComponent<I>(xcopy, x);
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -347,14 +457,13 @@ SolverStats GinkgoSolver::solveDist(
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
 
-    // TODO here Ginkgos multiple RHS solver could be used
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    auto stats = SolverStats {};
-    solveVec3RhsComponentDist<0>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
-    solveVec3RhsComponentDist<1>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
-    solveVec3RhsComponentDist<2>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
-    return stats;
+    auto solver = gko::share(factory_->generate(gkoMtx));
+    return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
+
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist<
+    localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&);
 
 }
 

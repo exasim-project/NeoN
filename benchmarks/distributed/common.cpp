@@ -388,7 +388,7 @@ void runDistributedMomentumBenchmark(
 
         NeoN::Dictionary solverDict {
             {{"solver", std::string {"Ginkgo"}},
-             {"type", "solver::Gmres"},
+             {"type", "solver::Cg"},
              {"criteria", NeoN::Dictionary {{{"iteration", 0}, {"relative_residual_norm", 1.0}}}}}
         };
 
@@ -408,7 +408,6 @@ void runDistributedMomentumBenchmark(
                     auto solverStats = solver.solve(ls, x);
 
                     fence(exec);
-                    ls.reset();
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
             );
@@ -424,13 +423,14 @@ void runDistributedMomentumBenchmark(
 
         NeoN::Dictionary solverDict {
             {{"solver", std::string {"Ginkgo"}},
-             {"type", "solver::Gmres"},
+             {"type", "solver::Cg"},
              {"criteria", NeoN::Dictionary {{{"iteration", 0}, {"relative_residual_norm", 1.0}}}}}
         };
 
         auto x = NeoN::Vector<NeoN::Vec3>(exec, mesh.nCells());
         NeoN::fill(x, NeoN::zero<NeoN::Vec3>());
 
+        auto solver = NeoN::la::Solver(exec, solverDict);
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
             MPI_Barrier(MPI_COMM_WORLD);
@@ -439,12 +439,10 @@ void runDistributedMomentumBenchmark(
                 {
                     U.correctBoundaryConditions();
 
-                    auto solver = NeoN::la::Solver(exec, solverDict);
                     expr.assemble<NeoN::Vec3>(0.0, 1.0, ls);
                     auto solverStats = solver.solve(ls, x);
 
                     fence(exec);
-                    ls.reset();
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
             );
