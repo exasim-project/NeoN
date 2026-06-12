@@ -23,6 +23,13 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("coupled");
     }
 
+    // 'negateSystem' steers the solver to solve (-A) x = (-b) (handled in GinkgoSolver::solve);
+    // it is not a Ginkgo config key.
+    if (dict.contains("negateSystem"))
+    {
+        dict.remove("negateSystem");
+    }
+
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
     // residual reporting; it is not a Ginkgo config key.
     if (dict.contains("reportName"))
@@ -409,9 +416,25 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+
+    // Cholesky-type preconditioners (Ic/ParIc) require a positive-definite matrix, but the
+    // OpenFOAM pressure Laplacian is assembled negative-(semi)definite. Present Ginkgo the
+    // equivalent SPD system (-A) x = (-b): the solution x and the residual |b - A x| (hence the
+    // L1-scaled residual) are unchanged. Negation is done on a deep copy so the caller's system
+    // is untouched.
+    if (negateSystem_)
+    {
+        auto negSys = sys; // deep-copies values and rhs; shares the immutable sparsity pattern
+        negSys.matrix().values() *= -1.0;
+        negSys.rhs() *= -1.0;
+        auto gkoMtx = createGkoMtx(negSys.matrix());
+        auto solver = factory_->generate(gkoMtx);
+        return {solve_impl(gkoExec_, negSys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
+    }
+
     auto gkoMtx = createGkoMtx(sys.matrix());
     auto solver = factory_->generate(gkoMtx);
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
 }
 

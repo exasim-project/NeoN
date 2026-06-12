@@ -209,6 +209,7 @@ public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
+          negateSystem_(solverConfig.get("negateSystem", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
           factory_(gko::config::parse(
                        config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
@@ -263,6 +264,11 @@ private:
 
     std::shared_ptr<const gko::Executor> gkoExec_;
     bool coupled_; // whether to solve LinearSystem<Vec3> as one or three systems
+    // Solve the sign-flipped system (-A) x = (-b) instead of A x = b. The solution x and the
+    // residual |b - A x| are unchanged, but Ginkgo is handed a positive-(semi)definite matrix.
+    // Required for Cholesky-type preconditioners (Ic/ParIc) on the OpenFOAM pressure Laplacian,
+    // which is assembled negative-definite.
+    bool negateSystem_;
     // L1-scaled residual stopping controls; set only when "l1ScaledResidual" is enabled
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;

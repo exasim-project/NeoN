@@ -144,6 +144,71 @@ TEST_CASE("gkoVecView - Ginkgo")
     }
 }
 
+TEST_CASE("NegateSystem with Ic preconditioner - Ginkgo")
+{
+    // The OpenFOAM pressure Laplacian is assembled negative-(semi)definite, which makes
+    // Ginkgo's incomplete-Cholesky (Ic/ParIc) factorisation take sqrt of a negative pivot.
+    // The "negateSystem" flag solves (-A) x = (-b) instead, handing Ginkgo the equivalent
+    // positive-definite matrix while leaving the solution x unchanged. Here A is the negation
+    // of the well-conditioned SPD matrix used above, with rhs negated to match, so the
+    // expected solution is the same {1.2449.., 2.4490.., 3.2449..}.
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    Vector<localIdx> colIdx(exec, {0, 1, 0, 1, 2, 1, 2});
+    Vector<localIdx> rowOffs(exec, {0, 2, 5, 7});
+    Vector<localIdx> bColIdx(exec, {});
+    Vector<localIdx> bRowOffs(exec, {});
+
+    const auto nRows = static_cast<localIdx>(rowOffs.size()) - 1;
+    auto sparsity = std::make_shared<CsrSparsityPattern<localIdx>>(
+        std::move(colIdx), std::move(rowOffs), Dimensions {nRows, nRows}
+    );
+    auto bSparsity = std::make_shared<CooSparsityPattern<localIdx>>(
+        std::move(bColIdx), std::move(bRowOffs), Dimensions {0, 0}
+    );
+
+    // -A, the negation of {1, -0.1, ...} (negative-definite)
+    Vector<scalar> values(exec, {-1.0, 0.1, 0.1, -1.0, 0.1, 0.1, -1.0});
+    CSRMatrix<scalar, localIdx> csrMatrix(values, sparsity);
+    Vector<scalar> rhs(exec, {-1.0, -2.0, -3.0});
+
+    Vector<scalar> bValues(exec, {});
+    COOMatrix<scalar, localIdx> bCooMatrix(bValues, bSparsity);
+    Vector<scalar> bRhs(exec, {});
+
+    auto linearSystem = LinearSystem<scalar>(csrMatrix, rhs, bCooMatrix, bCooMatrix, bRhs);
+
+    SECTION("Ic preconditioner converges on the negated system " + execName)
+    {
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"negateSystem", true},
+             {"preconditioner",
+              Dictionary {
+                  {{"type", std::string {"preconditioner::Ic"}},
+                   {"factorization",
+                    Dictionary {{{"type", std::string {"factorization::ParIc"}}, {"iterations", 3}}}
+                   }}
+              }},
+             {"criteria", Dictionary {{{"iteration", 20}, {"relative_residual_norm", 1e-10}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(linearSystem, x);
+        auto [numIter, initResNorm, finalResNorm, solveTime] = solverStats.entries[0];
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-6));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-6));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-6));
+        REQUIRE(finalResNorm < 1.0e-06);
+    }
+}
+
 TEST_CASE("MatrixConversion - Ginkgo")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());

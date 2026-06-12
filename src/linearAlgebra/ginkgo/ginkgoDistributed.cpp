@@ -336,10 +336,30 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+
+    // See GinkgoSolver::solve (serial): present Ginkgo the SPD system (-A) x = (-b) when a
+    // Cholesky-type preconditioner is selected. Both the local (diagonal) block and the
+    // non-local (off-diagonal) coupling must be negated to keep the distributed operator
+    // consistent; the communication pattern (indices, sort permutation) is unaffected.
+    if (negateSystem_)
+    {
+        auto negSys = sys; // deep copy; shares the immutable sparsity and comm pattern
+        negSys.matrix().values() *= -1.0;
+        negSys.offDiagonalMatrix().values() *= -1.0;
+        negSys.rhs() *= -1.0;
+        auto gkoMtx = createGkoMtxDist(
+            gkoExec_, comm, negSys.matrix(), negSys.offDiagonalMatrix(), commPattern
+        );
+        auto solver = factory_->generate(gkoMtx);
+        return {
+            solve_impl_dist(gkoExec_, comm, negSys.rhs(), x, gkoMtx, std::move(solver), l1Control)
+        };
+    }
+
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
     auto solver = factory_->generate(gkoMtx);
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
 }
 
