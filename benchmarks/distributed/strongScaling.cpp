@@ -40,6 +40,7 @@ TEST_CASE("DistributedLaplacianOperator::2D_strong", "[bench]")
         runDistributedSingleOperatorBenchmark<NeoN::Vec3>(execName, exec, mesh, sectionName);
         runDistributedPoissonBenchmark(execName, exec, mesh, sectionName);
         runDistributedMomentumBenchmark(execName, exec, mesh, sectionName);
+        runDistributedFusedDivLapBenchmark(execName, exec, mesh, sectionName);
     }
 }
 
@@ -64,6 +65,7 @@ TEST_CASE("DistributedLaplacianOperator::2DX_strong", "[bench]")
         runDistributedSingleOperatorBenchmark<NeoN::Vec3>(execName, exec, mesh, sectionName);
         runDistributedPoissonBenchmark(execName, exec, mesh, sectionName);
         runDistributedMomentumBenchmark(execName, exec, mesh, sectionName);
+        runDistributedFusedDivLapBenchmark(execName, exec, mesh, sectionName);
     }
 }
 

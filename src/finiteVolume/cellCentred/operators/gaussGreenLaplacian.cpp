@@ -313,6 +313,11 @@ void computeLaplacianIntCellBasedImpl(
     );
 
     auto cellBasedData = iterator->getCellBasedData();
+    NF_ASSERT(
+        cellBasedData != nullptr,
+        "CellBasedData not initialized - call setComputeCellBasedData before invoking the "
+        "cell-based kernel"
+    );
     auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.views();
     auto matrixColumnIdxV = cellBasedData->matrixColumnIdx.view();
 

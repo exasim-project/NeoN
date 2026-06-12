@@ -110,6 +110,9 @@ void runDistributedPoissonBenchmark(
         NeoN::dsl::Expression<NeoN::scalar> expr =
             NeoN::dsl::imp::laplacian(gamma, p) - NeoN::dsl::exp::div(phiHbyA);
         expr.read(fvSchemes());
+        cellIterator->setComputeCellBasedData(
+            mesh, ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        );
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
             MPI_Barrier(MPI_COMM_WORLD);
@@ -267,6 +270,9 @@ void runDistributedMomentumBenchmark(
         auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
                   + NeoN::dsl::exp::grad(p);
         expr.read(fvSchemes());
+        cellIterator->setComputeCellBasedData(
+            mesh, ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        );
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
             MPI_Barrier(MPI_COMM_WORLD);
@@ -281,6 +287,97 @@ void runDistributedMomentumBenchmark(
             );
         };
     }
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - cell based - scalar")
+    {
+        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+        auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh, cellIterator);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
+                  + NeoN::dsl::exp::grad(p);
+        expr.read(fvSchemes());
+        cellIterator->setComputeCellBasedData(
+            mesh, ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        );
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    expr.assemble<NeoN::scalar>(0.0, 1.0, ls);
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    auto fvSchemesOpt = [&]()
+    {
+        NeoN::Dictionary divSchemes;
+        divSchemes.insert(
+            "div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})
+        );
+        NeoN::Dictionary lapSchemes;
+        lapSchemes.insert(
+            "laplacian(nu,U)",
+            NeoN::TokenList(
+                {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
+            )
+        );
+        NeoN::Dictionary fv;
+        fv.insert("divSchemes", divSchemes);
+        fv.insert("laplacianSchemes", lapSchemes);
+        return fv;
+    };
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - face based - optimized")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U);
+        auto exprOpt = dsl::optimize(expr);
+        exprOpt.read(fvSchemesOpt());
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    exprOpt.assemble<NeoN::scalar>(0.0, 1.0, ls);
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - cell based - optimized")
+    {
+        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh, cellIterator);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U);
+        auto exprOpt = dsl::optimize(expr);
+        exprOpt.read(fvSchemesOpt());
+        cellIterator->setComputeCellBasedData(
+            mesh, ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        );
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    exprOpt.assemble<NeoN::scalar>(0.0, 1.0, ls);
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
 
     DYNAMIC_SECTION(sectionName + " - momentum assemble + Gko no solve - scalar")
     {
@@ -353,13 +450,101 @@ void runDistributedMomentumBenchmark(
             );
         };
     }
+}
 
-    DYNAMIC_SECTION(sectionName + " - momentum assemble - optimized")
+void runDistributedFusedDivLapBenchmark(
+    const std::string& execName,
+    const NeoN::Executor& exec,
+    NeoN::UnstructuredMesh& mesh,
+    const std::string& sectionName
+)
+{
+    auto surfaceBCs = createDistributedBCs<fvcc::SurfaceBoundary<NeoN::scalar>>(mesh);
+    fvcc::SurfaceField<NeoN::scalar> phi(exec, "phi", mesh, surfaceBCs);
+    NeoN::fill(phi.internalVector(), 1.0);
+    phi.correctBoundaryConditions();
+
+    fvcc::SurfaceField<NeoN::scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    NeoN::fill(gamma.internalVector(), 1.0);
+    gamma.correctBoundaryConditions();
+
+    auto volumeBCs = createDistributedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(mesh);
+    fvcc::VolumeField<NeoN::scalar> U(exec, "U", mesh, volumeBCs);
+    NeoN::fill(U.internalVector(), 1.0);
+    U.correctBoundaryConditions();
+
+    auto fvSchemes = [&]()
     {
-        auto ls = la::createEmptyLinearSystem<NeoN::Vec3>(mesh);
-        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U);
-        auto exprOpt = dsl::optimize(expr);
+        NeoN::Dictionary divSchemes;
+        divSchemes.insert(
+            "div(phi,U)", NeoN::TokenList({std::string("Gauss"), std::string("upwind")})
+        );
+        NeoN::Dictionary lapSchemes;
+        lapSchemes.insert(
+            "laplacian(gamma,U)",
+            NeoN::TokenList(
+                {std::string("Gauss"), std::string("linear"), std::string("uncorrected")}
+            )
+        );
+        NeoN::Dictionary fv;
+        fv.insert("divSchemes", divSchemes);
+        fv.insert("laplacianSchemes", lapSchemes);
+        return fv;
+    };
+
+    DYNAMIC_SECTION(sectionName + " - DivLap assemble - non fused cell-based")
+    {
+        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar>(mesh, cellIterator);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U);
         expr.read(fvSchemes());
+        cellIterator->setComputeCellBasedData(
+            mesh, ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        );
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    expr.assemble(0.0, 1.0, ls);
+                    fence(exec);
+                    ls.reset();
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    DYNAMIC_SECTION(sectionName + " - DivLap assemble - non fused face-based")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U);
+        expr.read(fvSchemes());
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    expr.assemble(0.0, 1.0, ls);
+                    fence(exec);
+                    ls.reset();
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+
+    DYNAMIC_SECTION(sectionName + " - DivLap assemble - fused face-based")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U);
+        auto exprOpt = dsl::optimize(expr);
+        exprOpt.read(fvSchemes());
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
             MPI_Barrier(MPI_COMM_WORLD);
@@ -369,6 +554,33 @@ void runDistributedMomentumBenchmark(
                     U.correctBoundaryConditions();
                     exprOpt.assemble(0.0, 1.0, ls);
                     fence(exec);
+                    ls.reset();
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+    }
+
+    DYNAMIC_SECTION(sectionName + " - DivLap assemble - fused cell-based")
+    {
+        auto cellIterator = std::make_shared<NeoN::la::CellBasedIterator>();
+        auto ls = NeoN::la::createEmptyLinearSystem<NeoN::scalar>(mesh, cellIterator);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(gamma, U);
+        auto exprOpt = dsl::optimize(expr);
+        exprOpt.read(fvSchemes());
+        cellIterator->setComputeCellBasedData(
+            mesh, ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        );
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    U.correctBoundaryConditions();
+                    exprOpt.assemble(0.0, 1.0, ls);
+                    fence(exec);
+                    ls.reset();
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
             );

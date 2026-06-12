@@ -6,18 +6,19 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
-void computeDivLaplacianIntImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& /*U*/,
+template<typename FieldValueType, typename AssemblyType>
+static void computeDivLaplacianIntImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -51,13 +52,14 @@ void computeDivLaplacianIntImpl(
             auto coeffOwnB = coeffB[own];
 
             // lower triangular (nei row, own col)
-            auto valueA = (-weight * coeffNeiA * fluxDiv + coeffNeiB * fluxLap) * one<ValueType>();
+            auto valueA =
+                (-weight * coeffNeiA * fluxDiv + coeffNeiB * fluxLap) * one<AssemblyType>();
             values[ma.lowerIdx(nei, facei)] += valueA;
             Kokkos::atomic_sub(&values[ma.diagIdx(own)], valueA);
 
             // upper triangular (own row, nei col)
             auto valueB =
-                ((1.0 - weight) * coeffOwnA * fluxDiv + coeffOwnB * fluxLap) * one<ValueType>();
+                ((1.0 - weight) * coeffOwnA * fluxDiv + coeffOwnB * fluxLap) * one<AssemblyType>();
             values[ma.upperIdx(own, facei)] += valueB;
             Kokkos::atomic_sub(&values[ma.diagIdx(nei)], valueB);
         },
@@ -65,14 +67,100 @@ void computeDivLaplacianIntImpl(
     );
 }
 
-template<typename ValueType>
-void computeDivLaplacianBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
+template<typename FieldValueType, typename AssemblyType>
+static void computeDivLaplacianIntCellBasedImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    const dsl::Coeff coeffA,
+    const dsl::Coeff coeffB
+)
+{
+    const UnstructuredMesh& mesh = phi.mesh();
+    const auto exec = phi.exec();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    auto iterator = std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get());
+
+    const auto [phiV, gammaV, deltaV, magFaceAreaV] = views(
+        phi.internalVector(),
+        gamma.internalVector(),
+        faceNormalGradient.deltaCoeffs().internalVector(),
+        mesh.faceAreas()
+    );
+
+    auto cellBasedData = iterator->getCellBasedData();
+    NF_ASSERT(
+        cellBasedData != nullptr,
+        "CellBasedData not initialized - call setComputeCellBasedData before invoking the "
+        "cell-based kernel"
+    );
+    auto [cellFacesValues, cellFacesSegments] = cellBasedData->cellFaces.views();
+    auto faceSignV = cellBasedData->faceSign.view();
+    auto matrixColumnIdxV = cellBasedData->matrixColumnIdx.view();
+
+    auto values = ls.matrix().values().view();
+
+    parallelFor(
+        exec,
+        {0, iterator->size()},
+        NEON_LAMBDA(const localIdx celli) {
+            auto diagValue = zero<AssemblyType>();
+            const auto numFaces = cellFacesSegments[celli + 1] - cellFacesSegments[celli];
+            const auto startIdx = cellFacesSegments[celli];
+            const auto cellCoeffA = coeffA[celli];
+            const auto cellCoeffB = coeffB[celli];
+
+            for (localIdx i = 0; i < numFaces; ++i)
+            {
+                const auto faceIdx = cellFacesValues[startIdx + i];
+                const auto sign = faceSignV[startIdx + i];
+
+                // upwind weight: 1 if flux leaves owner (flux > 0), 0 otherwise
+                const auto flux = phiV[faceIdx];
+                const auto w = (flux >= 0) ? scalar(1) : scalar(0);
+
+                // Laplacian face coefficient: δ_f · γ_f · |S_f|
+                const auto fluxLap = deltaV[faceIdx] * gammaV[faceIdx] * magFaceAreaV[faceIdx];
+
+                AssemblyType offDiag;
+                AssemblyType diagContrib;
+
+                if (sign > 0) // celli is owner: off-diagonal is upper triangular entry
+                {
+                    offDiag = (flux * (1.0 - w) * cellCoeffA + fluxLap * cellCoeffB)
+                            * one<AssemblyType>();
+                    diagContrib =
+                        (flux * w * cellCoeffA - fluxLap * cellCoeffB) * one<AssemblyType>();
+                }
+                else // celli is neighbor: off-diagonal is lower triangular entry
+                {
+                    offDiag = (-flux * w * cellCoeffA + fluxLap * cellCoeffB) * one<AssemblyType>();
+                    diagContrib = (-flux * (1.0 - w) * cellCoeffA - fluxLap * cellCoeffB)
+                                * one<AssemblyType>();
+                }
+
+                values[matrixColumnIdxV[startIdx + i]] += offDiag;
+                diagValue += diagContrib;
+            }
+
+            values[ma.diagIdx(celli)] += diagValue;
+        },
+        "computeDivLaplacianIntCellBasedImpl::cellLoop"
+    );
+}
+
+template<typename FieldValueType, typename AssemblyType>
+static void computeDivLaplacianBoundImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& u,
+    const SurfaceField<scalar>& phi,
+    const SurfaceField<scalar>& gamma,
+    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -121,7 +209,7 @@ void computeDivLaplacianBoundImpl(
 
             auto valueDiv = -bweights * coeffAOwn * fluxDiv * valFrac2;
             auto valueLap = bDeltaV[bfi] * coeffBOwn * fluxLap * valFrac1;
-            auto valueA = (valueDiv + valueLap) * one<ValueType>();
+            auto valueA = (valueDiv + valueLap) * one<AssemblyType>();
 
             Kokkos::atomic_sub(&values[ma.diagIdx(own)], valueA);
             bValues[bfi] = valueA * (-1.0);
@@ -142,14 +230,14 @@ void computeDivLaplacianBoundImpl(
     );
 }
 
-template<typename ValueType>
-void computeDivLaplacianProcBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& /*U*/,
+template<typename FieldValueType, typename AssemblyType>
+static void computeDivLaplacianProcBoundImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& /*divSurfInterp*/,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
+    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -187,7 +275,7 @@ void computeDivLaplacianProcBoundImpl(
 
             // Laplacian contribution
             auto lapFlux = bGammaV[bcfacei] * bMagSf[bcfacei] * bDeltaCoeffs[bcfacei];
-            auto lapValue = lapFlux * ownCoeffB * one<ValueType>();
+            auto lapValue = lapFlux * ownCoeffB * one<AssemblyType>();
 
             // Div upwind contribution
             auto isOwnerFace = isOwner[bcfacei] > 0.0;
@@ -195,8 +283,9 @@ void computeDivLaplacianProcBoundImpl(
             auto bFlux = bPhiV[bcfacei];
             auto weight = isOwnerFace ? (bFlux >= 0 ? scalar(1) : scalar(0))
                                       : (bFlux >= 0 ? scalar(0) : scalar(1));
-            auto divDiag = sign * weight * bFlux * ownCoeffA * one<ValueType>();
-            auto divOffDiag = -sign * (scalar(1) - weight) * bFlux * ownCoeffA * one<ValueType>();
+            auto divDiag = sign * weight * bFlux * ownCoeffA * one<AssemblyType>();
+            auto divOffDiag =
+                -sign * (scalar(1) - weight) * bFlux * ownCoeffA * one<AssemblyType>();
 
             auto diagValue = divDiag + lapValue;
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagValue);
@@ -230,21 +319,38 @@ void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*s
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    if (ls.getMeshIterator() != nullptr && ls.getMeshIterator()->name() == "CellBased")
+    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
     {
-        NF_ERROR_EXIT("GaussGreenDivLaplacian does not support cell-based assembly.");
+        if (!cellIter->getCellBasedData())
+        {
+            cellIter->setComputeCellBasedData(
+                this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            );
+        }
+        computeDivLaplacianIntCellBasedImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
     }
-
-    computeDivLaplacianIntImpl(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
+    else
+    {
+        computeDivLaplacianIntImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
     computeDivLaplacianBoundImpl(
         ls,
         this->getVector(),
@@ -256,6 +362,65 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
         coeffB_
     );
     computeDivLaplacianProcBoundImpl(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
+}
+
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scalar, ValueType>& ls
+) const
+    requires(!std::is_same_v<ValueType, scalar>)
+{
+    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        if (!cellIter->getCellBasedData())
+        {
+            cellIter->setComputeCellBasedData(
+                this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            );
+        }
+        computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
+    else
+    {
+        computeDivLaplacianIntImpl<ValueType, scalar>(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
+    computeDivLaplacianBoundImpl<ValueType, scalar>(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
+    computeDivLaplacianProcBoundImpl<ValueType, scalar>(
         ls,
         this->getVector(),
         flux_,
@@ -318,41 +483,6 @@ Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
 {
     return {};
 }
-
-#define NN_DECLARE_DIVLAP_IMPL(TYPENAME)                                                           \
-    template void computeDivLaplacianIntImpl(                                                      \
-        la::LinearSystem<TYPENAME>&,                                                               \
-        const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<TYPENAME>&,                                                     \
-        const FaceNormalGradient<TYPENAME>&,                                                       \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    );                                                                                             \
-    template void computeDivLaplacianBoundImpl(                                                    \
-        la::LinearSystem<TYPENAME>&,                                                               \
-        const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<TYPENAME>&,                                                     \
-        const FaceNormalGradient<TYPENAME>&,                                                       \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    );                                                                                             \
-    template void computeDivLaplacianProcBoundImpl(                                                \
-        la::LinearSystem<TYPENAME>&,                                                               \
-        const VolumeField<TYPENAME>&,                                                              \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceField<scalar>&,                                                               \
-        const SurfaceInterpolation<TYPENAME>&,                                                     \
-        const FaceNormalGradient<TYPENAME>&,                                                       \
-        const dsl::Coeff,                                                                          \
-        const dsl::Coeff                                                                           \
-    )
-
-NN_DECLARE_DIVLAP_IMPL(scalar);
-NN_DECLARE_DIVLAP_IMPL(Vec3);
 
 template class GaussGreenDivLaplacian<scalar>;
 template class GaussGreenDivLaplacian<Vec3>;

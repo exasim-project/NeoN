@@ -61,6 +61,7 @@ target_sources(
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
           "finiteVolume/cellCentred/interpolation/linear.cpp"

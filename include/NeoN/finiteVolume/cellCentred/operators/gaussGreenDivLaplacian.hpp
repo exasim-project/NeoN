@@ -14,41 +14,6 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
-void computeDivLaplacianIntImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
-
-template<typename ValueType>
-void computeDivLaplacianBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
-
-template<typename ValueType>
-void computeDivLaplacianProcBoundImpl(
-    la::LinearSystem<ValueType>& ls,
-    const VolumeField<ValueType>& u,
-    const SurfaceField<scalar>& phi,
-    const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<ValueType>& divSurfInterp,
-    const FaceNormalGradient<ValueType>& faceNormalGradient,
-    const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
-);
 
 /* @brief
  *
@@ -66,6 +31,9 @@ public:
     void explicitOperation(Vector<ValueType>& source) const;
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const;
+
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls) const
+        requires(!std::is_same_v<ValueType, scalar>);
 
     void read(const Input& input);
 
