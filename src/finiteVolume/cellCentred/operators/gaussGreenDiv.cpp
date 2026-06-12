@@ -554,10 +554,10 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     }
     else
     {
-        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
+        // computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
     }
-    computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    // computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
 }
 

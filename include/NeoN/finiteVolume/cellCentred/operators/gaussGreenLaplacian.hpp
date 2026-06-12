@@ -67,7 +67,7 @@ public:
         return std::make_unique<GaussGreenLaplacian<FieldValueType, AssemblyType>>(*this);
     };
 
-    FaceNormalGradient<ValueType> faceNormalGradient() const { return faceNormalGradient_; };
+    FaceNormalGradient<FieldValueType> faceNormalGradient() const { return faceNormalGradient_; };
 
 private:
 
