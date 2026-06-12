@@ -153,21 +153,23 @@ void BoundaryMesh::computeRowOrderWriteIndex()
     }
     const auto ownersHostVec = faceOwners_.copyToHost();
     const auto ownersHost = ownersHostVec.view();
-    std::vector<localIdx> perm(static_cast<std::size_t>(nProcFaces));
-    std::iota(perm.begin(), perm.end(), localIdx(0));
+    rowSortPerm_.resize(static_cast<std::size_t>(nProcFaces));
+    std::iota(rowSortPerm_.begin(), rowSortPerm_.end(), localIdx(0));
     std::stable_sort(
-        perm.begin(),
-        perm.end(),
+        rowSortPerm_.begin(),
+        rowSortPerm_.end(),
         [&](localIdx a, localIdx b)
         { return ownersHost[nBndFaces + a] < ownersHost[nBndFaces + b]; }
     );
     std::vector<localIdx> invPerm(static_cast<std::size_t>(nProcFaces));
     for (localIdx i = 0; i < nProcFaces; ++i)
-        invPerm[static_cast<std::size_t>(perm[static_cast<std::size_t>(i)])] = i;
+        invPerm[static_cast<std::size_t>(rowSortPerm_[static_cast<std::size_t>(i)])] = i;
     rowOrderWriteIndex_ = Vector<localIdx>(exec_, std::move(invPerm));
 }
 
 const Vector<localIdx>& BoundaryMesh::getRowOrderWriteIndex() const { return rowOrderWriteIndex_; }
+
+const std::vector<localIdx>& BoundaryMesh::getRowSortPerm() const { return rowSortPerm_; }
 
 
 } // namespace NeoN

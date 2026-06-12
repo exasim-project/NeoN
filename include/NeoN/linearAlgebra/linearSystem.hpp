@@ -319,16 +319,9 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
             rowHV[i] = faceOwnersV[nBoundaryFaces + i];
             colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
         }
-        // Sort by ascending owner row so the off-diagonal COO sparsity matches the
-        // write order used by assembly operators (BoundaryMesh::getRowOrderWriteIndex).
         // offDiagRowSortPerm[j] = proc-face index whose row/col belongs at sorted position j.
-        std::vector<localIdx> offDiagRowSortPerm(static_cast<std::size_t>(nProcFaces));
-        std::iota(offDiagRowSortPerm.begin(), offDiagRowSortPerm.end(), localIdx {0});
-        std::stable_sort(
-            offDiagRowSortPerm.begin(),
-            offDiagRowSortPerm.end(),
-            [&](localIdx a, localIdx b) { return rowHV[a] < rowHV[b]; }
-        );
+        // Already computed (and stored) in BoundaryMesh; reuse it here to avoid re-sorting.
+        const auto& offDiagRowSortPerm = mesh.boundaryMesh().getRowSortPerm();
         {
             std::vector<IndexType> sortedRow(static_cast<std::size_t>(nProcFaces));
             std::vector<IndexType> sortedCol(static_cast<std::size_t>(nProcFaces));

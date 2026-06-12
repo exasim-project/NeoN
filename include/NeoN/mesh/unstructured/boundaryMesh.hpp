@@ -247,9 +247,9 @@ public:
     localIdx nBoundaries() const { return offset_.size() - 1; }
 
 
-    void computeRowOrderWriteIndex();
-
     const Vector<localIdx>& getRowOrderWriteIndex() const;
+
+    const std::vector<localIdx>& getRowSortPerm() const;
 
     /**
      * @brief Get the number of the boundary faces.
@@ -348,6 +348,10 @@ private:
     std::vector<localIdx> neighbourRank_;
 
     Vector<localIdx> rowOrderWriteIndex_;
+
+    std::vector<localIdx> rowSortPerm_;
+
+    void computeRowOrderWriteIndex();
 };
 
 } // namespace NeoN
