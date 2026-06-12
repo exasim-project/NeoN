@@ -91,7 +91,7 @@ private:
     std::shared_ptr<FaceNormalGradient<ValueType>> faceNormalGradient_;
 };
 
-template class GaussGreenDdtDivLaplacian<scalar>;
-template class GaussGreenDdtDivLaplacian<Vec3>;
+extern template class GaussGreenDdtDivLaplacian<scalar>;
+extern template class GaussGreenDdtDivLaplacian<Vec3>;
 
 } // namespace NeoN

@@ -138,10 +138,7 @@ void GaussGreenDdtDivLaplacian<ValueType>::implicitOperation(
     }
 }
 
-template void GaussGreenDdtDivLaplacian<scalar>::implicitOperation(
-    la::LinearSystem<scalar>&, scalar, scalar
-) const;
-template void
-GaussGreenDdtDivLaplacian<Vec3>::implicitOperation(la::LinearSystem<Vec3>&, scalar, scalar) const;
+template class GaussGreenDdtDivLaplacian<scalar>;
+template class GaussGreenDdtDivLaplacian<Vec3>;
 
 } // namespace NeoN::finiteVolume::cellCentred
