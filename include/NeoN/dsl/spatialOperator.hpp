@@ -46,6 +46,19 @@ concept HasImplicitOperatorScalarMtx = requires(T const t) {
     } -> std::same_as<void>;
 };
 
+/* @brief Concept satisfied when T can re-assemble only its field-dependent right-hand side
+ *        contribution into a same-type LinearSystem (e.g. a Laplacian's boundary rhs and deferred
+ *        non-orthogonal correction), leaving the matrix coefficients untouched. This is the opt-in
+ *        that enables the matrix-reuse assembly path (assemble the matrix once, refresh only the
+ *        rhs on subsequent solves).
+ */
+template<typename T>
+concept HasImplicitRhsRefresh = requires(T const t) {
+    {
+        t.implicitOperationRhs(std::declval<la::LinearSystem<typename T::VectorValueType>&>())
+    } -> std::same_as<void>;
+};
+
 template<typename T>
 concept IsSpatialOperator =
     HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>;
@@ -86,6 +99,15 @@ public:
     void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const { model_->implicitOperation(ls); }
+
+    /* @brief re-assemble only the operator's field-dependent rhs contribution, leaving the
+     * already-assembled matrix coefficients untouched (matrix-reuse path). Only operators that
+     * opt in (e.g. the Laplacian) implement this; others fail fast.
+     */
+    void implicitOperationRhs(la::LinearSystem<ValueType>& ls) const
+    {
+        model_->implicitOperationRhs(ls);
+    }
 
     /* @brief Implicit assembly into a scalar-matrix / ValueType-rhs linear system
      *        (segregated vector-solve form). Disabled when ValueType == scalar to
@@ -134,6 +156,9 @@ private:
          *        Concrete operators that don't support this form leave it as a no-op.
          */
         virtual void implicitOperationScalarMtx(la::LinearSystem<scalar, ValueType>& ls) const = 0;
+
+        /* @brief Re-assemble only the field-dependent rhs contribution (matrix-reuse path). */
+        virtual void implicitOperationRhs(la::LinearSystem<ValueType>& ls) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
         virtual void read(const Input& input) = 0;
@@ -201,6 +226,24 @@ private:
                 NF_ERROR_EXIT(
                     "Operator '" << getName()
                                  << "' does not support scalar-matrix (segregated) assembly."
+                );
+            }
+        }
+
+        virtual void implicitOperationRhs(la::LinearSystem<ValueType>& ls) const override
+        {
+            if constexpr (HasImplicitRhsRefresh<ConcreteOperatorType>)
+            {
+                concreteOp_.implicitOperationRhs(ls);
+            }
+            else
+            {
+                // Reached only if an operator in a matrix-reuse expression lacks the rhs-only
+                // refresh. Silently skipping it would drop its rhs contribution and yield a wrong
+                // system, so fail fast instead.
+                NF_ERROR_EXIT(
+                    "Operator '" << getName()
+                                 << "' does not support rhs-only re-assembly (matrix reuse)."
                 );
             }
         }
