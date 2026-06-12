@@ -30,10 +30,8 @@ option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support"
        ${NeoN_MPI_HAS_THREAD_MULTIPLE})
 
 if(NeoN_MPI_HAS_THREAD_MULTIPLE)
-  message(
-    STATUS
-      "NeoN: MPI_THREAD_MULTIPLE supported — NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=${NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT}"
-  )
+  message(STATUS "NeoN: MPI_THREAD_MULTIPLE supported — "
+                 "NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=${NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT}")
 else()
   message(
     WARNING "NeoN: this MPI installation does not provide MPI_THREAD_MULTIPLE.\n"
