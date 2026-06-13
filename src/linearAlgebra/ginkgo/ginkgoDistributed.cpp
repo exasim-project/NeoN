@@ -13,6 +13,9 @@
 #include <memory>
 #include <vector>
 
+#include "NeoN/core/parallelAlgorithms.hpp"
+
+
 namespace NeoN::la::ginkgo
 {
 
@@ -33,6 +36,29 @@ std::shared_ptr<gko::LinOp> gkoVecViewDist(
     ));
 }
 
+std::shared_ptr<gko::LinOp> gkoVecViewDist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    Vec3* ptr,
+    localIdx s
+)
+{
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    using vec = gko::matrix::Dense<scalar>;
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(dist_vec::create(
+        exec,
+        comm,
+        vec::create(
+            exec,
+            gko::dim<2> {size, 3},
+            gko::array<scalar>::view(exec, size * 3, reinterpret_cast<scalar*>(ptr)),
+            3
+        )
+    ));
+}
+
+
 std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
     std::shared_ptr<const gko::Executor> exec,
     const gko::experimental::mpi::communicator& comm,
@@ -52,6 +78,28 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
     ));
 }
 
+std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    const Vec3* ptr,
+    localIdx s
+)
+{
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    using vec = gko::matrix::Dense<scalar>;
+    auto size = static_cast<std::size_t>(s);
+    return gko::share(dist_vec::create_const(
+        exec,
+        comm,
+        vec::create_const(
+            exec,
+            gko::dim<2> {size, 3},
+            gko::array<scalar>::const_view(exec, size * 3, reinterpret_cast<const scalar*>(ptr)),
+            3
+        )
+    ));
+}
+
 template<typename IndexType>
 std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     std::shared_ptr<const gko::Executor> exec,
@@ -61,9 +109,16 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const CommunicationPattern& commPattern
 )
 {
+    // commPattern is currently unused here: all the connectivity information needed to build
+    // the distributed matrix is already encoded in the row/column indices of `mtx` (local block)
+    // and `bmtx` (off-diagonal/processor coupling).
+    static_cast<void>(commPattern);
+
     using global_index_type = gko::int64;
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, global_index_type>;
 
+    // Local block: zero-copy CSR views over the existing NeoN storage. The local matrix is by far
+    // the largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
     auto vals = gko::array<scalar>::const_view(
         exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
     );
@@ -78,7 +133,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         mtx.sparsity()->rowOffs().data()
     );
 
-    auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
+    const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
 
     auto partition = gko::share(
         gko::experimental::distributed::build_partition_from_local_size<label, global_index_type>(
@@ -91,134 +146,81 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
         ));
 
-    // recv_connections: global cell indices of neighbor cells (stored in bmtx colIdxs),
-    // cast to int64 as required by gko::experimental::distributed::index_map.
-    const auto& bmtxColIdxs = bmtx.sparsity()->colIdxs();
-    const auto nRecv = static_cast<gko::size_type>(bmtxColIdxs.size());
+    // First global row index owned by this rank. get_range_bounds() points into the partition's
+    // executor memory (device memory when `exec` is a GPU executor), so the single value is pulled
+    // off the device safely rather than dereferenced directly on the host.
+    const auto globalOffset = exec->copy_val_to_host(partition->get_range_bounds() + comm.rank());
 
-    gko::array<global_index_type> recv_connections {exec, nRecv};
+    // Off-diagonal block: rowIdxs()/colIdxs() are pre-sorted by ascending faceOwner (local row)
+    // from the assembly phase — no host copies or sort are needed here.
+    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
+
+    // Widen column indices from IndexType to global_index_type on device.
+    Vector<global_index_type> widenedCols(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
     {
-        auto host = exec->get_master();
-        auto srcView = gko::array<IndexType>::const_view(exec, nRecv, bmtxColIdxs.data());
-        auto srcArr = srcView.copy_to_array();
-        srcArr.set_executor(host);
-        gko::array<global_index_type> hostRecv {host, nRecv};
-        const auto* srcPtr = srcArr.get_const_data();
-        auto* dstPtr = hostRecv.get_data();
-        for (gko::size_type i = 0; i < nRecv; ++i)
-            dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
-        recv_connections = std::move(hostRecv);
-        recv_connections.set_executor(exec);
+        auto widenedColsView = widenedCols.view();
+        const auto offDiagColsView = bmtx.sparsity()->colIdxs().view();
+        parallelFor(
+            bmtx.exec(),
+            {0, static_cast<localIdx>(nNonLocalNnz)},
+            KOKKOS_LAMBDA(const localIdx i) {
+                widenedColsView[i] = static_cast<global_index_type>(offDiagColsView[i]);
+            },
+            "widenOffDiagonalColumns"
+        );
+        fence(bmtx.exec());
     }
+
+    // recv_connections: global neighbour-column indices for index_map construction. Built as a
+    // copy of the device-resident widenedCols, avoiding a separate host-side widening loop.
+    auto recv_connections =
+        gko::array<global_index_type>::const_view(exec, nNonLocalNnz, widenedCols.data())
+            .copy_to_array();
 
     auto imap = gko::experimental::distributed::index_map<label, global_index_type>(
         exec, partition, comm.rank(), recv_connections
     );
-
-    // numNonLocalElements: unique remote columns (used as the COO column dimension).
-    // nNonLocalNnz: one entry per processor face (used as the COO nnz).
-    // These differ when a local cell couples to the same remote cell via >1 face.
     const auto numNonLocalElements = imap.get_non_local_size();
-    const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
 
-    auto non_loc_vals = gko::array<scalar>::const_view(exec, nNonLocalNnz, bmtx.values().data());
-    // rowIdxs() holds global row indices; convert to local (subtract this rank's global offset).
-    // get_range_bounds() points into the partition's executor memory (device memory when `exec`
-    // is a GPU executor), so it must NOT be indexed directly on the host — doing so dereferences
-    // a device pointer and segfaults on CUDA. Pull the single value off the device safely.
-    const auto globalOffset =
-        static_cast<IndexType>(exec->copy_val_to_host(partition->get_range_bounds() + comm.rank()));
-    gko::array<IndexType> non_loc_row {exec, nNonLocalNnz};
+    // Map global column indices into the non-local index space. Every off-diagonal entry maps to
+    // a known remote column — the assembly phase guarantees this by construction.
+    const auto mapped =
+        imap.map_to_local(recv_connections, gko::experimental::distributed::index_space::non_local);
+
+    // Build local-row, local-column, and value arrays on device. Row indices are already
+    // local (0-based per rank) — no offset subtraction needed.
+    Vector<IndexType> nlRow(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
+    Vector<IndexType> nlCol(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
+    Vector<scalar> nlVal(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
     {
-        auto host = exec->get_master();
-        auto srcView = gko::array<IndexType>::const_view(
-            exec, nNonLocalNnz, bmtx.sparsity()->rowIdxs().data()
+        auto nlRowV = nlRow.view();
+        auto nlColV = nlCol.view();
+        auto nlValV = nlVal.view();
+        const auto bRowV = bmtx.sparsity()->rowIdxs().view();
+        const auto bValV = bmtx.values().view();
+        const auto* mappedPtr = mapped.get_const_data();
+        parallelFor(
+            bmtx.exec(),
+            {0, static_cast<localIdx>(nNonLocalNnz)},
+            KOKKOS_LAMBDA(const localIdx i) {
+                nlRowV[i] = static_cast<IndexType>(bRowV[i]);
+                nlColV[i] = static_cast<IndexType>(mappedPtr[i]);
+                nlValV[i] = bValV[i];
+            },
+            "buildNonLocalCOO"
         );
-        auto srcArr = srcView.copy_to_array();
-        srcArr.set_executor(host);
-        gko::array<IndexType> hostRow {host, nNonLocalNnz};
-        const auto* srcPtr = srcArr.get_const_data();
-        auto* dstPtr = hostRow.get_data();
-        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
-            dstPtr[i] = static_cast<IndexType>(srcPtr[i]) - globalOffset;
-        non_loc_row = std::move(hostRow);
-        non_loc_row.set_executor(exec);
+        fence(bmtx.exec());
     }
 
-    // Cast colIdxs (global neighbour indices, int32) to int64 for index_map::map_to_local.
-    // imap deduplicates: multiple faces to the same remote cell map to the same local column.
-    gko::array<global_index_type> non_loc_col {exec, nNonLocalNnz};
-    {
-        auto host = exec->get_master();
-        auto srcView = gko::array<IndexType>::const_view(
-            exec, nNonLocalNnz, bmtx.sparsity()->colIdxs().data()
-        );
-        auto srcArr = srcView.copy_to_array();
-        srcArr.set_executor(host);
-        gko::array<global_index_type> hostCol {host, nNonLocalNnz};
-        const auto* srcPtr = srcArr.get_const_data();
-        auto* dstPtr = hostCol.get_data();
-        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
-            dstPtr[i] = static_cast<global_index_type>(srcPtr[i]);
-        non_loc_col = std::move(hostCol);
-        non_loc_col.set_executor(exec);
-    }
-
-    auto comp_non_loc_col =
-        imap.map_to_local(non_loc_col, gko::experimental::distributed::index_space::non_local);
-
-    // The non-local (off-diagonal) COO must be sorted by row for Ginkgo's CUDA Coo::apply2: its
-    // warp segmented-scan incorrectly reduces non-contiguous same-row entries otherwise, making the
-    // GPU non-local apply non-symmetric (the distributed pressure CG then stalls/diverges, worse
-    // with more processor faces). The Reference/CPU apply2 is order-robust. NeoN builds the
-    // off-diagonal in processor-face order; the row-sort permutation is precomputed once when the
-    // off-diagonal sparsity is created (CommunicationPattern::offDiagRowSortPerm), so here we only
-    // gather (row, col, value) through it — no per-build sort. Row-sorting is a no-op for the
-    // matrix (a COO is an unordered set of entries).
-    const auto& offDiagRowSortPerm = commPattern.offDiagRowSortPerm;
-    NF_ASSERT(
-        offDiagRowSortPerm.size() == nNonLocalNnz,
-        "offDiagRowSortPerm size mismatch: expected one entry per processor face"
-    );
-    gko::array<scalar> sortedVals {exec, nNonLocalNnz};
-    gko::array<IndexType> sortedCol {exec, nNonLocalNnz};
-    gko::array<IndexType> sortedRow {exec, nNonLocalNnz};
-    {
-        auto host = exec->get_master();
-        auto rowH = non_loc_row;
-        rowH.set_executor(host);
-        auto colH = comp_non_loc_col;
-        colH.set_executor(host);
-        auto valH = non_loc_vals.copy_to_array();
-        valH.set_executor(host);
-        gko::array<scalar> vS {host, nNonLocalNnz};
-        gko::array<IndexType> cS {host, nNonLocalNnz};
-        gko::array<IndexType> rS {host, nNonLocalNnz};
-        const auto* rp = rowH.get_const_data();
-        const auto* cp = colH.get_const_data();
-        const auto* vp = valH.get_const_data();
-        for (gko::size_type i = 0; i < nNonLocalNnz; ++i)
-        {
-            const auto src = static_cast<gko::size_type>(offDiagRowSortPerm[i]);
-            rS.get_data()[i] = rp[src];
-            cS.get_data()[i] = static_cast<IndexType>(cp[src]);
-            vS.get_data()[i] = vp[src];
-        }
-        vS.set_executor(exec);
-        cS.set_executor(exec);
-        rS.set_executor(exec);
-        sortedVals = std::move(vS);
-        sortedCol = std::move(cS);
-        sortedRow = std::move(rS);
-    }
-
-    auto nonLocalMtx = gko::share(gko::matrix::Coo<scalar, IndexType>::create(
-        exec,
-        gko::dim<2> {nrows, numNonLocalElements},
-        std::move(sortedVals),
-        std::move(sortedCol),
-        std::move(sortedRow)
-    ));
+    auto nonLocalMtx =
+        gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
+                       exec,
+                       gko::dim<2> {nrows, numNonLocalElements},
+                       gko::array<scalar>::const_view(exec, nNonLocalNnz, nlVal.data()),
+                       gko::array<IndexType>::const_view(exec, nNonLocalNnz, nlCol.data()),
+                       gko::array<IndexType>::const_view(exec, nNonLocalNnz, nlRow.data())
+        )
+                       ->clone());
 
     return gko::share(dist_mtx::create(
         exec, comm, imap, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtx
@@ -231,7 +233,7 @@ SolverStatsEntry solve_impl_dist(
     const Vector<scalar>& rhs,
     Vector<scalar>& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver,
+    std::shared_ptr<gko::LinOp> solver,
     const L1ResidualControl* l1Control = nullptr
 )
 {
@@ -265,6 +267,7 @@ SolverStatsEntry solve_impl_dist(
         return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
     }
 
+    // copy of rhs to compute the initial residual (res is modified in-place by apply)
     auto rhsCopy = Vector<scalar>(rhs);
     auto res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
 
@@ -282,6 +285,7 @@ SolverStatsEntry solve_impl_dist(
     solver->add_logger(logger);
     solver->apply(b, x);
 
+    // copy of rhs to compute the final residual (resFinal is modified in-place by apply)
     auto rhsCopyFinal = Vector<scalar>(rhs);
     auto resFinal = gkoVecViewDist(exec, comm, rhsCopyFinal.data(), nrows);
     mtx->apply(one, x, neg_one, resFinal);
@@ -299,6 +303,105 @@ SolverStatsEntry solve_impl_dist(
         / 1000.0;
 
     return {numIter, initResNorm, finalResNorm, duration};
+}
+
+SolverStats solve_impl_dist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    const Vector<Vec3>& rhs,
+    Vector<Vec3>& xIn,
+    std::shared_ptr<const gko::LinOp> mtx,
+    std::shared_ptr<gko::LinOp> solver,
+    const L1ResidualControl* l1Control = nullptr
+)
+{
+    exec->synchronize();
+    auto startEval = std::chrono::steady_clock::now();
+    using vec = gko::matrix::Dense<scalar>;
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+    label nrows = rhs.size();
+
+    const auto b = gkoConstVecViewDist(exec, comm, rhs.data(), nrows);
+    auto x = gkoVecViewDist(exec, comm, xIn.data(), nrows);
+
+    // L1-scaled residual path: stop and report on the (globally reduced) scaled residual.
+    if (l1Control != nullptr)
+    {
+        auto l1Res = solveWithL1StopDist(
+            exec,
+            mtx,
+            std::dynamic_pointer_cast<const dist_vec>(b),
+            std::dynamic_pointer_cast<dist_vec>(x),
+            solver.get(),
+            *l1Control
+        );
+        exec->synchronize();
+        auto endEval = std::chrono::steady_clock::now();
+        auto duration =
+            static_cast<scalar>(
+                std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+            )
+            / 1000.0;
+        // Multi-RHS: return one SolverStatsEntry per column using the per-column L1 norms.
+        if (!l1Res.perColInitNorms.empty())
+        {
+            SolverStats stats;
+            for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
+            {
+                stats.entries.push_back(
+                    {static_cast<label>(l1Res.numIter),
+                     l1Res.perColInitNorms[i],
+                     l1Res.perColFinalNorms[i],
+                     duration}
+                );
+            }
+            return stats;
+        }
+        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+    }
+
+    auto rhsCopy = Vector<Vec3>(rhs);
+    auto res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
+
+    auto one = gko::initialize<vec>({1.0}, exec);
+    auto neg_one = gko::initialize<vec>({-1.0}, exec);
+    mtx->apply(one, x, neg_one, res);
+
+    // compute_norm2 on a [n x 3] dist_vec writes a [1 x 3] result — one L2 norm per column.
+    auto colNorms = [&](std::shared_ptr<gko::LinOp> v) -> std::array<scalar, 3>
+    {
+        auto nv = vec::create(exec, gko::dim<2> {1, 3});
+        gko::as<dist_vec>(v)->compute_norm2(nv);
+        auto nh = vec::create(exec->get_master(), gko::dim<2> {1, 3});
+        nh->copy_from(nv);
+        return {nh->at(0, 0), nh->at(0, 1), nh->at(0, 2)};
+    };
+    auto initNorms = colNorms(res);
+
+    std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+        gko::log::Convergence<scalar>::create();
+    solver->add_logger(logger);
+    solver->apply(b, x);
+
+    // restore rhsCopy to b (in-place deep copy, no reallocation) then reuse for final residual
+    rhsCopy = rhs;
+    res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
+    mtx->apply(one, x, neg_one, res);
+    auto finalNorms = colNorms(res);
+
+    auto numIter = label(logger->get_num_iterations());
+    exec->synchronize();
+    auto endEval = std::chrono::steady_clock::now();
+    auto duration =
+        static_cast<scalar>(
+            std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+        )
+        / 1000.0;
+
+    SolverStats stats;
+    for (int i = 0; i < 3; ++i)
+        stats.entries.push_back({numIter, initNorms[i], finalNorms[i], duration});
+    return stats;
 }
 
 template<unsigned int I>
@@ -321,10 +424,8 @@ void solveComponentDist(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
     auto gkoMtx = createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern);
-    auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(
-        solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, std::move(solver), l1Control)
-    );
+    auto solver = gko::share(factory->generate(gkoMtx));
+    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
 }
 
@@ -338,9 +439,9 @@ SolverStats GinkgoSolver::solveDist(
     );
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
-    auto solver = factory_->generate(gkoMtx);
+    auto solver = gko::share(factory_->generate(gkoMtx));
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
+    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -355,28 +456,6 @@ SolverStats GinkgoSolver::solveDist(
     return stats;
 }
 
-// Solve one Vec3 rhs component against a shared distributed scalar matrix (segregated form).
-template<unsigned int I>
-void solveVec3RhsComponentDist(
-    const Vector<Vec3>& rhs,
-    Vector<Vec3>& x,
-    std::shared_ptr<const gko::Executor> exec,
-    const gko::experimental::mpi::communicator& comm,
-    std::shared_ptr<const gko::LinOpFactory> factory,
-    std::shared_ptr<const gko::LinOp> gkoMtx,
-    SolverStats& stats,
-    const L1ResidualControl* l1Control
-)
-{
-    auto rhsComp = getComponent<I>(rhs);
-    auto xcopy = getComponent<I>(x);
-    auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(
-        solve_impl_dist(exec, comm, rhsComp, xcopy, gkoMtx, std::move(solver), l1Control)
-    );
-    setComponent<I>(xcopy, x);
-}
-
 SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
     Vector<Vec3>& x
@@ -386,19 +465,15 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
-    // The matrix is already scalar and shared across all three components, so build the
-    // distributed operator once and reuse it for each Vec3 rhs component.
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
-
-    // TODO here Ginkgos multiple RHS solver could be used
+    auto solver = gko::share(factory_->generate(gkoMtx));
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    auto stats = SolverStats {};
-    solveVec3RhsComponentDist<0>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
-    solveVec3RhsComponentDist<1>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
-    solveVec3RhsComponentDist<2>(sys.rhs(), x, gkoExec_, comm, factory_, gkoMtx, stats, l1Control);
-    return stats;
+    return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
+
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist<
+    localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&);
 
 }
 

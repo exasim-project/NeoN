@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <algorithm>
+#include <numeric>
+
 #include "NeoN/core/error.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
 
@@ -30,7 +33,10 @@ BoundaryMesh::BoundaryMesh(
       ownerCellCenters_(ownerCellCenters), faceNormals_(faceNormals), faceAreas_(faceAreas),
       faceUnitNormals_(faceUnitNormals), delta_(delta), weights_(weights),
       deltaCoeffs_(deltaCoeffs), offset_(offset), procBoundaryPatches_(procBoundaryPatches),
-      neighbourRank_(neighbourRank) {};
+      neighbourRank_(neighbourRank), rowOrderWriteIndex_(exec, 0)
+{
+    computeRowOrderWriteIndex();
+};
 
 // Accessor methods
 const labelVector& BoundaryMesh::faceOwners() const { return faceOwners_; }
@@ -136,6 +142,34 @@ localIdx BoundaryMesh::nProcBoundaryFaces() const
 }
 
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
+
+void BoundaryMesh::computeRowOrderWriteIndex()
+{
+    const localIdx nBndFaces = nBoundaryFaces();
+    const localIdx nProcFaces = nProcBoundaryFaces();
+    if (nProcFaces == 0)
+    {
+        return;
+    }
+    const auto ownersHostVec = faceOwners_.copyToHost();
+    const auto ownersHost = ownersHostVec.view();
+    rowSortPerm_.resize(static_cast<std::size_t>(nProcFaces));
+    std::iota(rowSortPerm_.begin(), rowSortPerm_.end(), localIdx(0));
+    std::stable_sort(
+        rowSortPerm_.begin(),
+        rowSortPerm_.end(),
+        [&](localIdx a, localIdx b)
+        { return ownersHost[nBndFaces + a] < ownersHost[nBndFaces + b]; }
+    );
+    std::vector<localIdx> invPerm(static_cast<std::size_t>(nProcFaces));
+    for (localIdx i = 0; i < nProcFaces; ++i)
+        invPerm[static_cast<std::size_t>(rowSortPerm_[static_cast<std::size_t>(i)])] = i;
+    rowOrderWriteIndex_ = Vector<localIdx>(exec_, std::move(invPerm));
+}
+
+const Vector<localIdx>& BoundaryMesh::getRowOrderWriteIndex() const { return rowOrderWriteIndex_; }
+
+const std::vector<localIdx>& BoundaryMesh::getRowSortPerm() const { return rowSortPerm_; }
 
 
 } // namespace NeoN

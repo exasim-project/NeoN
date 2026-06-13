@@ -354,7 +354,7 @@ SolverStatsEntry solve_impl(
     return {numIter, initResNorm, finalResNorm, duration};
 }
 
-SolverStatsEntry solve_impl(
+SolverStats solve_impl(
     std::shared_ptr<const gko::Executor> exec,
     const Vector<Vec3>& rhs,
     Vector<Vec3>& xIn,
@@ -367,30 +367,36 @@ SolverStatsEntry solve_impl(
 
     using vec = gko::matrix::Dense<scalar>;
     label nrows = rhs.size();
-    const auto b = gkoVecView(exec, rhs.data(), nrows);
-    auto x = gkoVecView(exec, xIn.data(), nrows);
+    const auto b = gkoVecView(exec, rhs.data(), nrows); // [nrows x 3]
+    auto x = gkoVecView(exec, xIn.data(), nrows);       // [nrows x 3]
 
-    // create a copy of rhs so that we can inline compute
-    // the residual
     auto rhsCopy = Vector<Vec3>(rhs);
     auto res = gkoVecView(exec, rhsCopy.data(), nrows);
 
-    // compute Ax-b -> res
     auto one = gko::initialize<vec>({1.0}, exec);
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
     mtx->apply(one, x, neg_one, res);
 
-    auto init = gko::initialize<vec>({0.0}, exec);
-    res->compute_norm2(init);
-    scalar initResNorm = retrieve(init);
+    // compute_norm2 on [nrows x 3] writes a [1 x 3] result — one L2 norm per column.
+    auto colNorms = [&](std::shared_ptr<gko::matrix::Dense<scalar>> v) -> std::array<scalar, 3>
+    {
+        auto nv = vec::create(exec, gko::dim<2> {1, 3});
+        v->compute_norm2(nv);
+        auto nh = vec::create(exec->get_master(), gko::dim<2> {1, 3});
+        nh->copy_from(nv);
+        return {nh->at(0, 0), nh->at(0, 1), nh->at(0, 2)};
+    };
+    auto initNorms = colNorms(res);
 
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
     solver->apply(b, x);
 
-    // since we work on a copy we need to copy back
-    scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+    auto rhsCopyFinal = Vector<Vec3>(rhs);
+    auto resFinal = gkoVecView(exec, rhsCopyFinal.data(), nrows);
+    mtx->apply(one, x, neg_one, resFinal);
+    auto finalNorms = colNorms(resFinal);
 
     auto numIter = label(logger->get_num_iterations());
     exec->synchronize();
@@ -401,7 +407,10 @@ SolverStatsEntry solve_impl(
         )
         / 1000.0;
 
-    return {numIter, initResNorm, finalResNorm, duration};
+    SolverStats stats;
+    for (int i = 0; i < 3; ++i)
+        stats.entries.push_back({numIter, initNorms[i], finalNorms[i], duration});
+    return stats;
 }
 
 
@@ -410,9 +419,8 @@ SolverStats GinkgoSolver::solve(
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
-    auto solver = factory_->generate(gkoMtx);
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -450,9 +458,9 @@ void solveComponent(
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
     auto gkoMtx = createGkoMtx(mtx);
-    auto solver = factory->generate(gkoMtx);
-
-    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver), l1Control));
+    stats.entries.push_back(
+        solve_impl(exec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
+    );
     setComponent<I>(xcopy, x);
 }
 
@@ -464,12 +472,11 @@ SolverStats GinkgoSolver::solve(
     if (coupled_)
     {
         const auto gkoMtx = createGkoMtx(sys.matrix());
-        auto solver = factory_->generate(gkoMtx);
-
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
 
-        auto stats = solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, std::move(solver), l1Control);
+        auto stats =
+            solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, factory_->generate(gkoMtx), l1Control);
 
         packVecValues(xCopy, x);
         return {stats};
@@ -485,35 +492,87 @@ SolverStats GinkgoSolver::solve(
 }
 
 
-template<unsigned int I>
-void solveVec3RhsComponent(
-    const Vector<Vec3>& rhs,
-    Vector<Vec3>& x,
-    std::shared_ptr<const gko::Executor> exec,
-    std::shared_ptr<const gko::LinOpFactory> factory,
-    std::shared_ptr<const gko::LinOp> gkoMtx,
-    SolverStats& stats,
-    const L1ResidualControl* l1Control
-)
-{
-    auto rhsComp = getComponent<I>(rhs);
-    auto xcopy = getComponent<I>(x);
-    auto solver = factory->generate(gkoMtx);
-    stats.entries.push_back(solve_impl(exec, rhsComp, xcopy, gkoMtx, std::move(solver), l1Control));
-    setComponent<I>(xcopy, x);
-}
-
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
     Vector<Vec3>& x
 ) const
 {
-    auto stats = SolverStats {};
     auto gkoMtx = createGkoMtx(sys.matrix());
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    solveVec3RhsComponent<0>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats, l1Control);
-    solveVec3RhsComponent<1>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats, l1Control);
-    solveVec3RhsComponent<2>(sys.rhs(), x, gkoExec_, factory_, gkoMtx, stats, l1Control);
+    if (l1Control)
+    {
+        gkoExec_->synchronize();
+        auto startEval = std::chrono::steady_clock::now();
+
+        label nrows = sys.rhs().size();
+        const auto b = gkoVecView(gkoExec_, sys.rhs().data(), nrows); // [nrows x 3]
+        auto xView = gkoVecView(gkoExec_, x.data(), nrows);           // [nrows x 3]
+        auto solver = factory_->generate(gkoMtx);
+        auto l1Res = solveWithL1Stop(gkoExec_, gkoMtx, b, xView, solver.get(), *l1Control);
+
+        gkoExec_->synchronize();
+        auto endEval = std::chrono::steady_clock::now();
+        auto duration =
+            static_cast<scalar>(
+                std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
+            )
+            / 1000.0;
+
+        SolverStats stats;
+        for (int i = 0; i < 3; ++i)
+            stats.entries.push_back(
+                {l1Res.numIter, l1Res.perColInitNorms[i], l1Res.perColFinalNorms[i], duration}
+            );
+        return stats;
+    }
+    using vec = gko::matrix::Dense<scalar>;
+    label nrows = sys.rhs().size();
+    // Mutable [nrows x 3] Dense view of x — write-through to x.data()
+    auto xDense = gkoVecView(gkoExec_, x.data(), nrows);
+    const scalar* rhsScalar = reinterpret_cast<const scalar*>(sys.rhs().data());
+
+    gkoExec_->synchronize();
+    SolverStats stats;
+    for (gko::size_type col = 0; col < 3; ++col)
+    {
+        auto t0 = std::chrono::steady_clock::now();
+        gko::span spanAll {gko::size_type {0}, static_cast<gko::size_type>(nrows)};
+        gko::span spanC {col, col + 1};
+
+        // [nrows x 1] const strided Dense view of rhs column col (no copy)
+        // Data at rhsScalar+col, stride 3; array size = 3*nrows-col covers all nrows elements
+        auto b_col = gko::share(vec::create_const(
+            gkoExec_,
+            gko::dim<2> {static_cast<gko::size_type>(nrows), 1},
+            gko::array<scalar>::const_view(
+                gkoExec_, static_cast<gko::size_type>(3 * nrows - col), rhsScalar + col
+            ),
+            3
+        ));
+
+        // [nrows x 1] mutable strided Dense view of x column col — write-through to x.data()
+        auto x_col = xDense->create_submatrix(spanAll, spanC);
+
+        auto initNorm_v = vec::create(gkoExec_, gko::dim<2> {1, 1});
+        b_col->compute_norm2(initNorm_v); // initResNorm = ||b_col||₂  (x starts at 0)
+        scalar initResNorm = retrieve(initNorm_v);
+
+        auto solver = factory_->generate(gkoMtx);
+        std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+            gko::log::Convergence<scalar>::create();
+        solver->add_logger(logger);
+        solver->apply(b_col, x_col);
+
+        scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+        auto numIter = label(logger->get_num_iterations());
+        gkoExec_->synchronize();
+        auto duration = static_cast<scalar>(std::chrono::duration_cast<std::chrono::microseconds>(
+                                                std::chrono::steady_clock::now() - t0
+                        )
+                                                .count())
+                      / 1000.0;
+        stats.entries.push_back({numIter, initResNorm, finalResNorm, duration});
+    }
     return stats;
 }
 

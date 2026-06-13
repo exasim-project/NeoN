@@ -155,6 +155,7 @@ void computeDivProcBoundImpl(
 
     auto values = ls.matrix().values().view();
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto rowOrderV = mesh.boundaryMesh().getRowOrderWriteIndex().view();
 
     parallelFor(
         exec,
@@ -181,7 +182,7 @@ void computeDivProcBoundImpl(
             bndDiagValues[bcfacei] += fluxContrib;
             auto valueOff =
                 -sign * (scalar(1) - weight) * bFluxV[bcfacei] * ownCoeff * one<AssemblyType>();
-            bValues[procFacei] += valueOff;
+            bValues[rowOrderV[procFacei]] += valueOff;
         },
         "computeProcInterfaceGaussGreenDivCoefficients"
     );

@@ -33,6 +33,19 @@ gko::config::pnode parse(const Dictionary& dict);
 template<typename NeoNMatrixType>
 std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
 
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/distributed/communicationPattern.hpp"
+
+template<typename IndexType>
+std::shared_ptr<const gko::LinOp> createGkoMtxDist(
+    std::shared_ptr<const gko::Executor> exec,
+    const gko::experimental::mpi::communicator& comm,
+    const CSRMatrix<scalar, IndexType>& mtx,
+    const COOMatrix<scalar, IndexType>& bmtx,
+    const CommunicationPattern& commPattern
+);
+#endif // NF_WITH_MPI_SUPPORT
+
 template<typename T>
 gko::array<T> gkoArrayView(std::shared_ptr<const gko::Executor> exec, std::span<T> values)
 {
@@ -97,8 +110,11 @@ struct L1ResidualControl
 struct L1ResidualResult
 {
     localIdx numIter;    //!< iterations performed
-    scalar initResNorm;  //!< scaled L1 initial residual
-    scalar finalResNorm; //!< scaled L1 final residual
+    scalar initResNorm;  //!< combined scaled L1 initial residual (sum of columns)
+    scalar finalResNorm; //!< combined scaled L1 final residual (sum of columns)
+    // Per-column scaled residuals; populated only for multi-RHS (Vec3) solves (size == ncols).
+    std::vector<scalar> perColInitNorms;
+    std::vector<scalar> perColFinalNorms;
 };
 
 /** @brief Solve @p solver with an L1-scaled residual stopping criterion attached.
