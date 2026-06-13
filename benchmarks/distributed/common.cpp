@@ -378,22 +378,21 @@ void runDistributedMomentumBenchmark(
         };
     }
 
-
-    DYNAMIC_SECTION(sectionName + " - momentum assemble + Gko no solve - scalar")
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - Gko no solve face based - scalar")
     {
         auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh);
         auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
                   + NeoN::dsl::exp::grad(p);
         expr.read(fvSchemes());
+        U.correctBoundaryConditions();
+        expr.assemble<NeoN::scalar>(0.0, 1.0, ls);
 
-        NeoN::Dictionary solverDict {
-            {{"solver", std::string {"Ginkgo"}},
-             {"type", "solver::Cg"},
-             {"criteria", NeoN::Dictionary {{{"iteration", 0}, {"relative_residual_norm", 1.0}}}}}
-        };
-
-        auto x = NeoN::Vector<NeoN::Vec3>(exec, mesh.nCells());
-        NeoN::fill(x, NeoN::zero<NeoN::Vec3>());
+#if NF_WITH_GINKGO
+        const auto& commPattern = ls.commPattern();
+        auto comm = gko::experimental::mpi::communicator(
+            commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+        );
+        auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -401,52 +400,123 @@ void runDistributedMomentumBenchmark(
             meter.measure(
                 [&]
                 {
-                    U.correctBoundaryConditions();
-
-                    auto solver = NeoN::la::Solver(exec, solverDict);
-                    expr.assemble<NeoN::scalar>(0.0, 1.0, ls);
-                    auto solverStats = solver.solve(ls, x);
-
+                    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
+                        gkoExec, comm, ls.matrix(), ls.offDiagonalMatrix(), commPattern
+                    );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
             );
         };
+#endif
     }
 
-    DYNAMIC_SECTION(sectionName + " - momentum assemble + Gko no solve - Vec3")
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - Gko no solve face based - Vec3")
     {
         auto ls = la::createEmptyLinearSystem<NeoN::Vec3>(mesh);
         auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
                   + NeoN::dsl::exp::grad(p);
         expr.read(fvSchemes());
+        U.correctBoundaryConditions();
+        expr.assemble<NeoN::Vec3>(0.0, 1.0, ls);
 
-        NeoN::Dictionary solverDict {
-            {{"solver", std::string {"Ginkgo"}},
-             {"type", "solver::Cg"},
-             {"criteria", NeoN::Dictionary {{{"iteration", 0}, {"relative_residual_norm", 1.0}}}}}
-        };
+#if NF_WITH_GINKGO
+        // LinearSystem<Vec3> is solved component-by-component as scalar systems;
+        // extract component 0 (representative of all 3, same sparsity pattern).
+        const auto& commPattern = ls.commPattern();
+        auto comm = gko::experimental::mpi::communicator(
+            commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+        );
+        auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+        auto mtx0 = la::getComponent<0>(ls.matrix());
+        const auto nonLocalValues0 = NeoN::getComponent<0>(ls.offDiagonalMatrix().values());
+        la::COOMatrix<NeoN::scalar, NeoN::localIdx> nonLocalMtx0(
+            nonLocalValues0, ls.offDiagonalMatrix().sparsity()
+        );
 
-        auto x = NeoN::Vector<NeoN::Vec3>(exec, mesh.nCells());
-        NeoN::fill(x, NeoN::zero<NeoN::Vec3>());
-
-        auto solver = NeoN::la::Solver(exec, solverDict);
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
             MPI_Barrier(MPI_COMM_WORLD);
             meter.measure(
                 [&]
                 {
-                    U.correctBoundaryConditions();
-
-                    expr.assemble<NeoN::Vec3>(0.0, 1.0, ls);
-                    auto solverStats = solver.solve(ls, x);
-
+                    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
+                        gkoExec, comm, mtx0, nonLocalMtx0, commPattern
+                    );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
             );
         };
+#endif
+    }
+
+    DYNAMIC_SECTION(sectionName + " - momentum assemble - Gko no solve cell based  - scalar")
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U)
+                  + NeoN::dsl::exp::grad(p);
+        expr.read(fvSchemes());
+        U.correctBoundaryConditions();
+        expr.assemble<NeoN::scalar>(0.0, 1.0, ls);
+
+#if NF_WITH_GINKGO
+        const auto& commPattern = ls.commPattern();
+        auto comm = gko::experimental::mpi::communicator(
+            commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+        );
+        auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
+                        gkoExec, comm, ls.matrix(), ls.offDiagonalMatrix(), commPattern
+                    );
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+#endif
+    }
+
+    DYNAMIC_SECTION(
+        sectionName + " - momentum assemble - Gko no solve cell based - scalar - optimized"
+    )
+    {
+        auto ls = la::createEmptyLinearSystem<NeoN::scalar, NeoN::Vec3>(mesh);
+        auto expr = NeoN::dsl::imp::div(phi, U) - NeoN::dsl::imp::laplacian(nu, U);
+        auto exprOpt = dsl::optimize(expr);
+        exprOpt.read(fvSchemesOpt());
+        U.correctBoundaryConditions();
+        exprOpt.assemble<NeoN::scalar>(0.0, 1.0, ls);
+
+#if NF_WITH_GINKGO
+        const auto& commPattern = ls.commPattern();
+        auto comm = gko::experimental::mpi::communicator(
+            commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+        );
+        auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+
+        BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            meter.measure(
+                [&]
+                {
+                    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
+                        gkoExec, comm, ls.matrix(), ls.offDiagonalMatrix(), commPattern
+                    );
+                    fence(exec);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
+            );
+        };
+#endif
     }
 }
 

@@ -24,6 +24,21 @@ using dist = gko::experimental::distributed::Vector<scalar>;
 // system reports a finite, well-defined scaled residual instead of 0/0.
 constexpr scalar normFactorSmall = 1e-20;
 
+// Copies a [1 × ncols] Dense result to host and returns the sum of all columns.
+// For scalar systems (ncols = 1) this is identical to retrieve(). For multi-column
+// systems (e.g. Vec3 mapped as [nrows × 3]) it sums the per-column contributions to
+// produce a single scalar norm/mean value for the stopping criterion.
+scalar sumRetrieve(const dense* d)
+{
+    const auto ncols = d->get_size()[1];
+    auto host = dense::create(d->get_executor()->get_master(), gko::dim<2> {1, ncols});
+    host->copy_from(d);
+    scalar total = 0;
+    for (gko::size_type c = 0; c < ncols; ++c)
+        total += host->at(0, c);
+    return total;
+}
+
 /* @brief Create a vector shaped like @p like (same executor / distribution) with every
  * entry equal to @p value. Overloaded per concrete vector type so the criterion below
  * stays a single implementation shared by the serial (Dense) and distributed paths.
@@ -72,11 +87,14 @@ scalar computeL1NormFactor(
 )
 {
     const auto one = gko::initialize<dense>({1.0}, exec);
+    const auto ncols = x->get_size()[1];
 
-    // xRef = mean(x) (global mean for a distributed vector)
-    auto meanDense = dense::create(exec, gko::dim<2> {1});
+    // xRef = mean(x) (global mean for a distributed vector).
+    // For multi-column vectors (e.g. Vec3 as [nrows×3]) compute_mean writes [1×ncols];
+    // average the per-column means to a single scalar reference state.
+    auto meanDense = dense::create(exec, gko::dim<2> {1, ncols});
     x->compute_mean(meanDense);
-    const scalar xRef = retrieve(meanDense.get());
+    const scalar xRef = sumRetrieve(meanDense.get()) / static_cast<scalar>(ncols);
 
     // A xRef, with xRef broadcast to a constant field (the only SpMV needed here)
     auto xRefField = makeConstantLike(*x, xRef);
@@ -94,10 +112,10 @@ scalar computeL1NormFactor(
     auto term = bMinusAxref->compute_absolute();
     term->add_scaled(one, term2);
 
-    // sum over rows (entries already non-negative; global sum for a distributed vector)
-    auto nf = dense::create(exec, gko::dim<2> {1});
+    // sum over rows and columns (entries already non-negative; global sum for distributed)
+    auto nf = dense::create(exec, gko::dim<2> {1, ncols});
     term->compute_norm1(nf);
-    return retrieve(nf.get()) + normFactorSmall;
+    return sumRetrieve(nf.get()) + normFactorSmall;
 }
 
 /* @brief Ginkgo stopping criterion based on the L1-scaled residual, shared by the serial
@@ -217,9 +235,10 @@ protected:
             r = rOwned.get();
         }
 
-        auto rNormDense = dense::create(exec, gko::dim<2> {1});
+        const auto ncols = r->get_size()[1];
+        auto rNormDense = dense::create(exec, gko::dim<2> {1, ncols});
         r->compute_norm1(rNormDense.get());
-        const scalar rNorm = retrieve(rNormDense.get());
+        const scalar rNorm = sumRetrieve(rNormDense.get());
 
         if (firstIter_)
         {

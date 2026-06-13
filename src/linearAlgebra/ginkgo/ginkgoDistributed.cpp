@@ -283,10 +283,8 @@ SolverStatsEntry solve_impl_dist(
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    // FIXME add again
-    // solver->apply(b, x);
+    solver->apply(b, x);
 
-    // FIXME can this be retrieved from the logger instead of copying?
     // copy of rhs to compute the final residual (resFinal is modified in-place by apply)
     auto rhsCopyFinal = Vector<scalar>(rhs);
     auto resFinal = gkoVecViewDist(exec, comm, rhsCopyFinal.data(), nrows);
