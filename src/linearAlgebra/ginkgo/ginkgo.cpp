@@ -594,14 +594,11 @@ SolverStats GinkgoSolver::solve(
         scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
         auto numIter = label(logger->get_num_iterations());
         gkoExec_->synchronize();
-        auto duration =
-            static_cast<scalar>(
-                std::chrono::duration_cast<std::chrono::microseconds>(
-                    std::chrono::steady_clock::now() - t0
-                )
-                    .count()
-            )
-            / 1000.0;
+        auto duration = static_cast<scalar>(std::chrono::duration_cast<std::chrono::microseconds>(
+                                                std::chrono::steady_clock::now() - t0
+                        )
+                                                .count())
+                      / 1000.0;
         stats.entries.push_back({numIter, initResNorm, finalResNorm, duration});
     }
     return stats;
