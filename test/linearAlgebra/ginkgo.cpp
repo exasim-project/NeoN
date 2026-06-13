@@ -367,6 +367,46 @@ TEST_CASE("NegateSystem with Ic preconditioner - Ginkgo")
         REQUIRE(finalResNorm < 1.0e-06);
     }
 
+    // aDICGinkgo's split sweeps rely on each CSR row's columns being sorted ascending; the
+    // preconditioner sorts its private copy on construction. Feed it the SAME negated SPD system
+    // but with the columns permuted within each row (col/value pairs kept together): it must still
+    // converge to the same solution, proving the internal sort_by_column_index drives diagPos.
+    SECTION("aDICGinkgo handles unsorted CSR columns " + execName)
+    {
+        Vector<localIdx> uColIdx(exec, {1, 0, 2, 0, 1, 2, 1});
+        Vector<localIdx> uRowOffs(exec, {0, 2, 5, 7});
+        const auto uNRows = static_cast<localIdx>(uRowOffs.size()) - 1;
+        auto uSparsity = std::make_shared<CsrSparsityPattern<localIdx>>(
+            std::move(uColIdx), std::move(uRowOffs), Dimensions {uNRows, uNRows}
+        );
+        // -A again, with each row's values permuted to match the reordered columns above.
+        Vector<scalar> uValues(exec, {0.1, -1.0, 0.1, 0.1, -1.0, -1.0, 0.1});
+        CSRMatrix<scalar, localIdx> uCsr(uValues, uSparsity);
+        Vector<scalar> uRhs(exec, {-1.0, -2.0, -3.0});
+        auto uLinearSystem = LinearSystem<scalar>(uCsr, uRhs, bCooMatrix, bCooMatrix, bRhs);
+
+        Vector<scalar> x(exec, {0.0, 0.0, 0.0});
+
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"negateSystem", true},
+             {"preconditioner", Dictionary {{{"type", std::string {"aDICGinkgo"}}}}},
+             {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
+        };
+
+        auto solver = NeoN::la::Solver(exec, solverDict);
+        auto solverStats = solver.solve(uLinearSystem, x);
+        auto finalResNorm = solverStats.entries[0].finalResNorm;
+
+        auto hostX = x.copyToHost();
+        auto hostXS = hostX.view();
+        REQUIRE((hostXS[0]) == Catch::Approx(1.24489796).margin(1e-6));
+        REQUIRE((hostXS[1]) == Catch::Approx(2.44897959).margin(1e-6));
+        REQUIRE((hostXS[2]) == Catch::Approx(3.24489796).margin(1e-6));
+        REQUIRE(finalResNorm < 1.0e-06);
+    }
+
     // Preconditioner reuse: with preconReuse > 1 the (frozen) preconditioner is reused across
     // solves. Solving the same system twice through one solver must still converge both times.
     SECTION("aDIC with preconReuse reuses across solves " + execName)
