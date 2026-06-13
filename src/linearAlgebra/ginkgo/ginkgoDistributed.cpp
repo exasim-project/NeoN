@@ -342,6 +342,21 @@ SolverStats solve_impl_dist(
                 std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
             )
             / 1000.0;
+        // Multi-RHS: return one SolverStatsEntry per column using the per-column L1 norms.
+        if (!l1Res.perColInitNorms.empty())
+        {
+            SolverStats stats;
+            for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
+            {
+                stats.entries.push_back(
+                    {static_cast<label>(l1Res.numIter),
+                     l1Res.perColInitNorms[i],
+                     l1Res.perColFinalNorms[i],
+                     duration}
+                );
+            }
+            return stats;
+        }
         return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
     }
 
@@ -450,13 +465,10 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
-    // The matrix is already scalar and shared across all three components, so build the
-    // distributed operator once and reuse it for each Vec3 rhs component.
     auto gkoMtx =
         createGkoMtxDist(gkoExec_, comm, sys.matrix(), sys.offDiagonalMatrix(), commPattern);
-
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     auto solver = gko::share(factory_->generate(gkoMtx));
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 

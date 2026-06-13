@@ -110,8 +110,11 @@ struct L1ResidualControl
 struct L1ResidualResult
 {
     localIdx numIter;    //!< iterations performed
-    scalar initResNorm;  //!< scaled L1 initial residual
-    scalar finalResNorm; //!< scaled L1 final residual
+    scalar initResNorm;  //!< combined scaled L1 initial residual (sum of columns)
+    scalar finalResNorm; //!< combined scaled L1 final residual (sum of columns)
+    // Per-column scaled residuals; populated only for multi-RHS (Vec3) solves (size == ncols).
+    std::vector<scalar> perColInitNorms;
+    std::vector<scalar> perColFinalNorms;
 };
 
 /** @brief Solve @p solver with an L1-scaled residual stopping criterion attached.
