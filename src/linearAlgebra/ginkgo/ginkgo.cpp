@@ -553,7 +553,58 @@ SolverStats GinkgoSolver::solve(
             );
         return stats;
     }
-    return solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx));
+    using vec = gko::matrix::Dense<scalar>;
+    label nrows = sys.rhs().size();
+    // Mutable [nrows x 3] Dense view of x — write-through to x.data()
+    auto xDense = gkoVecView(gkoExec_, x.data(), nrows);
+    const scalar* rhsScalar = reinterpret_cast<const scalar*>(sys.rhs().data());
+
+    gkoExec_->synchronize();
+    SolverStats stats;
+    for (gko::size_type col = 0; col < 3; ++col)
+    {
+        auto t0 = std::chrono::steady_clock::now();
+        gko::span spanAll {gko::size_type {0}, static_cast<gko::size_type>(nrows)};
+        gko::span spanC {col, col + 1};
+
+        // [nrows x 1] const strided Dense view of rhs column col (no copy)
+        // Data at rhsScalar+col, stride 3; array size = 3*nrows-col covers all nrows elements
+        auto b_col = gko::share(vec::create_const(
+            gkoExec_,
+            gko::dim<2> {static_cast<gko::size_type>(nrows), 1},
+            gko::array<scalar>::const_view(
+                gkoExec_, static_cast<gko::size_type>(3 * nrows - col), rhsScalar + col
+            ),
+            3
+        ));
+
+        // [nrows x 1] mutable strided Dense view of x column col — write-through to x.data()
+        auto x_col = xDense->create_submatrix(spanAll, spanC);
+
+        auto initNorm_v = vec::create(gkoExec_, gko::dim<2> {1, 1});
+        b_col->compute_norm2(initNorm_v); // initResNorm = ||b_col||₂  (x starts at 0)
+        scalar initResNorm = retrieve(initNorm_v);
+
+        auto solver = factory_->generate(gkoMtx);
+        std::shared_ptr<const gko::log::Convergence<scalar>> logger =
+            gko::log::Convergence<scalar>::create();
+        solver->add_logger(logger);
+        solver->apply(b_col, x_col);
+
+        scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
+        auto numIter = label(logger->get_num_iterations());
+        gkoExec_->synchronize();
+        auto duration =
+            static_cast<scalar>(
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                    std::chrono::steady_clock::now() - t0
+                )
+                    .count()
+            )
+            / 1000.0;
+        stats.entries.push_back({numIter, initResNorm, finalResNorm, duration});
+    }
+    return stats;
 }
 
 template std::shared_ptr<const gko::LinOp>
