@@ -105,6 +105,15 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         {
             return node;
         }
+        // bool must be probed before int: Ginkgo config keys such as Pgm's
+        // 'deterministic' or Multigrid's 'post_uses_pre' need a boolean pnode
+        // (get_value<bool> calls pnode::get_boolean(), which throws on an integer
+        // node). pnode's non-template bool constructor wins overload resolution
+        // over the integral template, so this yields tag_t::boolean as required.
+        if (auto node = parseAny(bool {}))
+        {
+            return node;
+        }
         if (auto node = parseAny(int {}))
         {
             return node;
