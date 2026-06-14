@@ -50,9 +50,6 @@ if(NOT DEFINED Kokkos_ENABLE_CUDA)
     set(Kokkos_ENABLE_CUDA
         ON
         CACHE INTERNAL "")
-    set(Kokkos_ENABLE_CUDA_CONSTEXPR
-        ON
-        CACHE INTERNAL "")
   else()
     set(NeoN_ENABLE_CUDA
         OFF
@@ -64,6 +61,19 @@ if(NOT DEFINED Kokkos_ENABLE_CUDA)
   endif()
 else()
   message(STATUS "Skip CUDA detection Kokkos_ENABLE_CUDA=${Kokkos_ENABLE_CUDA}")
+endif()
+
+# Kokkos_ENABLE_CUDA_CONSTEXPR must be ON for any CUDA build, NOT only the auto-detected one. It is
+# what makes Kokkos pass --expt-relaxed-constexpr to nvcc. Without it, NeoN device kernels that
+# index a View (a constexpr operator[] forwarding to std::span) hit nvcc warning 20013 ("constexpr
+# __host__ function called from __host__ __device__ function") and are SILENTLY miscompiled -- the
+# device-side element writes simply vanish, so GPU results are garbage while serial/host results are
+# correct. When CUDA is enabled explicitly via -DKokkos_ENABLE_CUDA=ON the detection branch above is
+# skipped, so force it here as well.
+if(Kokkos_ENABLE_CUDA)
+  set(Kokkos_ENABLE_CUDA_CONSTEXPR
+      ON
+      CACHE INTERNAL "")
 endif()
 
 if(NOT DEFINED Kokkos_ENABLE_HIP)
