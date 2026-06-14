@@ -132,6 +132,22 @@ if(NeoN_ENABLE_WARNINGS)
   neon_set_project_warnings(NeoN_warnings ${NeoN_WARNINGS_AS_ERRORS} "" "" "")
 endif()
 
+# Promote nvcc's "constexpr __host__ function called from a __host__ __device__ function"
+# diagnostics (20013 / 20015) to hard errors on CUDA builds. With Kokkos_ENABLE_CUDA_CONSTEXPR=ON
+# (forced in cmake/AutoEnableDevice.cmake) these never fire. If that flag is ever disabled, nvcc
+# would otherwise SILENTLY miscompile device-side element access through View/std::span operator[]
+# (writes vanish on the GPU, results are garbage). Failing the build is far safer than shipping
+# wrong numerics. Source files are compiled either as CXX (via nvcc_wrapper) or as CUDA, so cover
+# both languages. -Xcudafe needs each number in its own flag; SHELL: keeps the repeated tokens from
+# being de-duplicated by CMake.
+if(Kokkos_ENABLE_CUDA)
+  set(_neon_cuda_diag_errors "SHELL:-Xcudafe --diag_error=20013"
+                             "SHELL:-Xcudafe --diag_error=20015")
+  target_compile_options(
+    NeoN_warnings INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:${_neon_cuda_diag_errors}>"
+                            "$<$<COMPILE_LANGUAGE:CUDA>:${_neon_cuda_diag_errors}>")
+endif()
+
 if(NeoN_BUILD_PCH)
   target_precompile_headers(NeoN_options INTERFACE <vector> <string> <utility>)
 endif()
