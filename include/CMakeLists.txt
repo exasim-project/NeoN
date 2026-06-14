@@ -91,6 +91,11 @@ if(NeoN_DEFINE_US_IDX)
   target_compile_definitions(NeoN_public_api INTERFACE NeoN_US_IDX=1)
 endif()
 
+if(NeoN_GINKGO_PUBLIC_WORKSPACE)
+  # Guards the Ginkgo PR #2000 workspace-reuse path (see cmake/Versions.cmake).
+  target_compile_definitions(NeoN_public_api INTERFACE NEON_GINKGO_PUBLIC_WORKSPACE=1)
+endif()
+
 if(NeoN_WITH_MPI)
   target_compile_definitions(NeoN_public_api INTERFACE NF_WITH_MPI_SUPPORT=1)
   target_link_libraries(NeoN_public_api INTERFACE MPI::MPI_CXX)

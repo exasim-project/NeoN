@@ -5,8 +5,11 @@
 #if NF_WITH_GINKGO
 
 #include <array>
+#include <map>
 #include <mutex>
 #include <sstream>
+
+#include <Kokkos_Core.hpp> // Kokkos::Profiling::{push,pop}Region
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
@@ -37,6 +40,13 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     if (dict.contains("l1ScaledResidual"))
     {
         dict.remove("l1ScaledResidual");
+    }
+
+    // 'reuseKey' is the per-field solver-factory cache key (consumed by the GinkgoSolver ctor
+    // before parse); it is not a Ginkgo config key.
+    if (dict.contains("reuseKey"))
+    {
+        dict.remove("reuseKey");
     }
 
     // 'checkFrequency' controls how often the L1 criterion evaluates the true residual
@@ -214,6 +224,57 @@ std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor e
         cache[idx] = createGkoExecutor(exec);
     }
     return cache[idx];
+}
+
+namespace
+{
+
+// Process-local cache of built solver factories, keyed by "<reuseKey>@<executorIndex>". A factory
+// only encodes solver/preconditioner configuration (no matrix values), so reusing it across
+// timesteps is numerically safe: generate() still rebuilds the preconditioner from the current
+// matrix values on every solve. Released in a Kokkos finalize hook because each factory holds a
+// reference to the (device) Ginkgo executor, which must be destroyed while the device is alive.
+std::map<std::string, std::shared_ptr<const gko::LinOpFactory>>& gkoFactoryCache()
+{
+    static std::map<std::string, std::shared_ptr<const gko::LinOpFactory>> cache;
+    return cache;
+}
+
+} // namespace
+
+std::shared_ptr<const gko::LinOpFactory> NeoN::la::ginkgo::getOrBuildFactory(
+    const Executor& exec,
+    std::shared_ptr<const gko::Executor> gkoExec,
+    const gko::config::pnode& config,
+    const std::string& reuseKey
+)
+{
+    auto build = [&]
+    {
+        return gko::config::parse(
+                   config, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
+        )
+            .on(gkoExec);
+    };
+
+    // No stable key supplied (e.g. test code, or NeoFOAM did not thread a field name): preserve the
+    // previous behaviour and build a fresh factory every time.
+    if (reuseKey.empty())
+    {
+        return build();
+    }
+
+    static std::once_flag hookFlag;
+    std::call_once(hookFlag, [] { Kokkos::push_finalize_hook([] { gkoFactoryCache().clear(); }); });
+
+    static std::mutex cacheMutex;
+    const std::lock_guard<std::mutex> guard {cacheMutex};
+    auto& slot = gkoFactoryCache()[reuseKey + "@" + std::to_string(exec.index())];
+    if (!slot)
+    {
+        slot = build();
+    }
+    return slot;
 }
 
 
@@ -446,9 +507,37 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
 {
+    Kokkos::Profiling::pushRegion("ginkgo::mtxConvert");
     auto gkoMtx = createGkoMtx(sys.matrix());
+    Kokkos::Profiling::popRegion();
+
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
+
+    // "ginkgo::generate" isolates the solver+preconditioner build (the per-solve setup cost) from
+    // the apply, which solve_impl times separately and reports as "Solve time". Together with the
+    // factory reuse above, this is what lets you see whether the pressure phase is setup- or
+    // apply-bound in the kp_space_time_stack Regions view.
+    Kokkos::Profiling::pushRegion("ginkgo::generate");
+#ifdef NEON_GINKGO_PUBLIC_WORKSPACE
+    // SEAM for Ginkgo PR #2000 (public workspace, ginkgo-project/ginkgo#2000). Once the PR is
+    // merged and its API is stable, reuse a per-(field,executor) gko::solver::Workspace here so the
+    // value-independent Krylov/preconditioner scratch is allocated once instead of every solve:
+    //   auto& ws = workspaceCache()[reuseKey_ + "@" + std::to_string(exec_.index())];
+    //   if (!ws) ws = gko::solver::Workspace::create();
+    //   auto solver = factory_->generate(gkoMtx, std::move(ws));
+    //   ... apply ...
+    //   ws = gko::solver::invalidate_and_extract_workspace(solver);   // return it to the cache
+    // Correct reuse needs the solver to outlive apply() so the workspace can be extracted back,
+    // i.e. routing apply through a solve_impl variant that does not consume the solver. Deferred
+    // until the PR merges (API in flux); enabling NeoN_GINKGO_PUBLIC_WORKSPACE today only verifies
+    // that the pinned PR build compiles against NeoN. See cmake/Versions.cmake.
+    auto solver = factory_->generate(gkoMtx);
+#else
+    auto solver = factory_->generate(gkoMtx);
+#endif
+    Kokkos::Profiling::popRegion();
+
+    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -485,10 +574,15 @@ void solveComponent(
     auto values = getComponent<I>(sys.matrix().values());
     auto sparsity = sys.matrix().sparsity();
     auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
+    Kokkos::Profiling::pushRegion("ginkgo::mtxConvert");
     auto gkoMtx = createGkoMtx(mtx);
-    stats.entries.push_back(
-        solve_impl(exec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
-    );
+    Kokkos::Profiling::popRegion();
+    // One generate() per velocity component: this region accumulates all three per momentum solve,
+    // exposing the segregated-solve setup cost called out in the profiling notes.
+    Kokkos::Profiling::pushRegion("ginkgo::generate");
+    auto solver = factory->generate(gkoMtx);
+    Kokkos::Profiling::popRegion();
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver), l1Control));
     setComponent<I>(xcopy, x);
 }
 

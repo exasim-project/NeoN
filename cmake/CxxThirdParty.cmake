@@ -238,7 +238,11 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  # When pinning to PR #2000, skip the system package (it won't contain the unmerged workspace API)
+  # and force the CPM fetch of the PR head commit.
+  if(NOT NeoN_GINKGO_PUBLIC_WORKSPACE)
+    find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  endif()
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()

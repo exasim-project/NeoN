@@ -29,6 +29,23 @@ std::shared_ptr<gko::Executor> getGkoExecutor(Executor exec);
 
 gko::config::pnode parse(const Dictionary& dict);
 
+/** @brief Build the Ginkgo solver factory from a parsed config, or fetch it from a process-local
+ * cache when @p reuseKey is non-empty.
+ *
+ * Constructing the factory re-parses the config and rebuilds the Ginkgo solver/preconditioner
+ * factory descriptors; in a transient solver this happens every timestep for each field. When a
+ * stable @p reuseKey is supplied (the field name, threaded from NeoFOAM) the built factory is
+ * cached per (reuseKey, executor) and reused, which is numerically safe: the factory only encodes
+ * the configuration, while the preconditioner is still regenerated from current matrix values on
+ * every solve. An empty @p reuseKey disables caching (builds fresh, the previous behaviour).
+ */
+std::shared_ptr<const gko::LinOpFactory> getOrBuildFactory(
+    const Executor& exec,
+    std::shared_ptr<const gko::Executor> gkoExec,
+    const gko::config::pnode& config,
+    const std::string& reuseKey
+);
+
 /** @brief create a ginkgo matrix by creating views */
 template<typename NeoNMatrixType>
 std::shared_ptr<const gko::LinOp> createGkoMtx(const NeoNMatrixType& mtx);
@@ -226,10 +243,8 @@ public:
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
-          factory_(gko::config::parse(
-                       config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
-          )
-                       .on(gkoExec_))
+          reuseKey_(solverConfig.get<std::string>("reuseKey", std::string {})),
+          factory_(getOrBuildFactory(exec, gkoExec_, config_, reuseKey_))
     {}
 
     static std::string name() { return "Ginkgo"; }
@@ -282,6 +297,9 @@ private:
     // L1-scaled residual stopping controls; set only when "l1ScaledResidual" is enabled
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
+    // Stable per-field cache key for the solver factory (the field name, threaded from NeoFOAM).
+    // Empty ==> factory is built fresh on every construction (no reuse).
+    std::string reuseKey_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
 };
 
