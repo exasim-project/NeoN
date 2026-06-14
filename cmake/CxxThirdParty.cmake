@@ -243,27 +243,61 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
-    cpmaddpackage(
-      NAME
-      Ginkgo
-      VERSION
-      ${NeoN_GINKGO_VERSION}
-      GITHUB_REPOSITORY
-      ginkgo-project/ginkgo
-      GIT_TAG
-      ${NeoN_GINKGO_TAG}
-      SYSTEM
-      YES
-      OPTIONS
-      "GINKGO_BUILD_TESTS OFF"
-      "GINKGO_BUILD_BENCHMARKS OFF"
-      "GINKGO_BUILD_EXAMPLES OFF"
-      "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
-      "GINKGO_ENABLE_HALF OFF"
-      "GINKGO_BUILD_MPI ${NeoN_WITH_MPI}"
-      "GINKGO_BUILD_PAPI_SDE OFF"
-      "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
-      "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+
+    # The pinned Ginkgo (scaleCorrectionIR) ships the solver::Ir `scale_correction` smoother
+    # (OpenFOAM GAMGSolver::scale) but never wires the key into Ir::parse, so it is unreachable via
+    # Ginkgo's JSON/pnode config — the only path NeoN uses to build solver factories. This patch
+    # adds the missing parse() handling.
+    set(GINKGO_IR_PATCH git apply
+                        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_ir_scale_correction.patch)
+
+    set(GINKGO_OPTIONS
+        "GINKGO_BUILD_TESTS OFF"
+        "GINKGO_BUILD_BENCHMARKS OFF"
+        "GINKGO_BUILD_EXAMPLES OFF"
+        "GINKGO_BUILD_OMP ${NeoN_WITH_OMP}"
+        "GINKGO_ENABLE_HALF OFF"
+        "GINKGO_BUILD_MPI ${NeoN_WITH_MPI}"
+        "GINKGO_BUILD_PAPI_SDE OFF"
+        "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
+        "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+
+    # Apply the patch only on the first fetch into the CPM cache; re-running `git apply` on an
+    # already-patched tree would fail (mirrors the ADIOS2 guard).
+    if(NOT GINKGO_PATCHED)
+      set(GINKGO_PATCHED
+          TRUE
+          CACHE INTERNAL "Whether Ginkgo has been fetched and patched in CPM cache.")
+      cpmaddpackage(
+        NAME
+        Ginkgo
+        VERSION
+        ${NeoN_GINKGO_VERSION}
+        GITHUB_REPOSITORY
+        ginkgo-project/ginkgo
+        GIT_TAG
+        ${NeoN_GINKGO_TAG}
+        PATCH_COMMAND
+        ${GINKGO_IR_PATCH}
+        SYSTEM
+        YES
+        OPTIONS
+        ${GINKGO_OPTIONS})
+    else()
+      cpmaddpackage(
+        NAME
+        Ginkgo
+        VERSION
+        ${NeoN_GINKGO_VERSION}
+        GITHUB_REPOSITORY
+        ginkgo-project/ginkgo
+        GIT_TAG
+        ${NeoN_GINKGO_TAG}
+        SYSTEM
+        YES
+        OPTIONS
+        ${GINKGO_OPTIONS})
+    endif()
   endif()
 endif()
 

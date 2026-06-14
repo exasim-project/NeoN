@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Unlicense
+# SPDX-FileCopyrightText: 2026 NeoN authors
+#
+# The scaleCorrectionIR branch adds an `int scale_correction` factory parameter
+# to solver::Ir (OpenFOAM GAMGSolver::scale smoother modes 0/1/2) and uses it in
+# apply(), but never wired it into Ir::parse — so it cannot be set through
+# Ginkgo's JSON/pnode config, which is the only way NeoN builds solver factories.
+# This hunk reads the key in parse() (which also registers it as an allowed key,
+# so config_check_decorator does not reject it).
+diff --git a/core/solver/ir.cpp b/core/solver/ir.cpp
+--- a/core/solver/ir.cpp
++++ b/core/solver/ir.cpp
+@@ -54,6 +54,9 @@ typename Ir<ValueType>::parameters_type Ir<ValueType>::parse(
+     if (auto& obj = config_check.get("relaxation_factor")) {
+         params.with_relaxation_factor(config::get_value<ValueType>(obj));
+     }
++    if (auto& obj = config_check.get("scale_correction")) {
++        params.with_scale_correction(config::get_value<int>(obj));
++    }
+     if (auto& obj = config_check.get("default_initial_guess")) {
+         params.with_default_initial_guess(
+             config::get_value<solver::initial_guess_mode>(obj));

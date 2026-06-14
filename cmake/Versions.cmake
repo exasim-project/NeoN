@@ -14,7 +14,10 @@ set(NeoN_ADIOS2_VERSION "2.10.2")
 set(NeoN_SUNDIALS_VERSION "7.5.0")
 set(NeoN_JSON_VERSION "3.11.3")
 set(NeoN_GINKGO_VERSION "2.0.0")
-set(NeoN_GINKGO_TAG "6a3abf8c920228006f3b28bc3bf04fc7a5f6aee0")
+# scaleCorrectionIR branch: adds solver::Ir `scale_correction` smoother modes (OpenFOAM
+# GAMGSolver::scale). The config parser for that key is supplied by
+# cmake/patches/ginkgo_ir_scale_correction.patch (see CxxThirdParty.cmake).
+set(NeoN_GINKGO_TAG "a93d0a3de36e5af1fb9b5900617ff76ea05cfa75")
 set(NeoN_CATCH2_VERSION "3.4.0")
 set(NeoN_SPDLOG_VERSION "1.16.0")
 set(NeoN_NANOBIND_VERSION "2.9.2")
