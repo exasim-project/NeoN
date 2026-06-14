@@ -12,8 +12,14 @@
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
-    // remove 'solver Ginkgo;' entry
-    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    // Remove the 'solver Ginkgo;' marker. Guard the string cast with isType:
+    // 'solver' is not always a string — Ginkgo's solver::Ir keys its inner
+    // operator as a sub-dictionary 'solver' (see makeJacobiSmoother in the
+    // multigrid mapping), and parse() recurses into it. Casting that Dictionary
+    // to std::string would throw bad_any_cast. A non-string 'solver' is a nested
+    // factory and is parsed by the key loop below.
+    if (dict.contains("solver") && dict.isType<std::string>("solver")
+        && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
     {
         dict.remove("solver");
     }
