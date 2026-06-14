@@ -14,6 +14,13 @@
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
+#ifdef NEON_GINKGO_PUBLIC_WORKSPACE
+// Public-workspace API from Ginkgo PR #2000 (only present when pinned to that PR via
+// NeoN_GINKGO_PUBLIC_WORKSPACE; see cmake/Versions.cmake). The umbrella header should pull it in,
+// but include it explicitly so the reuse path fails loudly if the pin is wrong.
+#include <ginkgo/core/solver/workspace.hpp>
+#endif
+
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
@@ -387,7 +394,11 @@ SolverStatsEntry solve_impl(
     const VectorType& rhs,
     VectorType& xIn,
     std::shared_ptr<const gko::LinOp> mtx,
-    std::unique_ptr<gko::LinOp> solver,
+    // Non-owning: the caller keeps the solver alive so it can outlive apply() and have its
+    // scratch Workspace extracted afterwards (Ginkgo PR #2000 reuse path). A prvalue/xvalue
+    // bound here still lives for the duration of the call, so the existing call sites that pass
+    // a temporary generate() result are unaffected.
+    const std::unique_ptr<gko::LinOp>& solver,
     const L1ResidualControl* l1Control = nullptr
 )
 {
@@ -503,6 +514,80 @@ SolverStats solve_impl(
 }
 
 
+#ifdef NEON_GINKGO_PUBLIC_WORKSPACE
+namespace
+{
+
+// Process-local cache of reusable solver scratch Workspaces (Ginkgo PR #2000), keyed like the
+// factory cache. A Workspace is value-independent (sized by matrix dimension), so reusing it across
+// solves of the same field is safe; cleared in a Kokkos finalize hook because it holds an executor
+// reference that must die while the device is alive.
+std::map<std::string, std::unique_ptr<gko::solver::Workspace>>& gkoWorkspaceCache()
+{
+    static std::map<std::string, std::unique_ptr<gko::solver::Workspace>> cache;
+    return cache;
+}
+
+std::mutex& gkoWorkspaceCacheMutex()
+{
+    static std::mutex m;
+    return m;
+}
+
+// Generate a solver, reusing the cached scratch Workspace for `wsKey` when non-empty. The
+// preconditioner is still rebuilt from the current matrix values inside generate() — only the
+// scratch memory is reused, so this does not introduce the stale-preconditioner problem.
+std::unique_ptr<gko::LinOp> generateReusingWorkspace(
+    const std::shared_ptr<const gko::LinOpFactory>& factory,
+    std::shared_ptr<const gko::LinOp> mtx,
+    const std::shared_ptr<const gko::Executor>& gkoExec,
+    const std::string& wsKey
+)
+{
+    if (wsKey.empty())
+    {
+        return factory->generate(std::move(mtx));
+    }
+
+    static std::once_flag hookFlag;
+    std::call_once(
+        hookFlag, [] { Kokkos::push_finalize_hook([] { gkoWorkspaceCache().clear(); }); }
+    );
+
+    std::unique_ptr<gko::solver::Workspace> ws;
+    {
+        const std::lock_guard<std::mutex> guard {gkoWorkspaceCacheMutex()};
+        auto it = gkoWorkspaceCache().find(wsKey);
+        if (it != gkoWorkspaceCache().end())
+        {
+            ws = std::move(it->second);
+            gkoWorkspaceCache().erase(it);
+        }
+    }
+    if (!ws)
+    {
+        ws = gko::solver::Workspace::create(gkoExec);
+    }
+    return factory->generate(std::move(mtx), std::move(ws));
+}
+
+// Extract the scratch Workspace back out of `solver` (consuming it) and return it to the cache so
+// the next solve of the same field reuses the allocations. No-op (solver destroyed normally) when
+// `wsKey` is empty.
+void stashWorkspace(const std::string& wsKey, std::unique_ptr<gko::LinOp>&& solver)
+{
+    if (wsKey.empty())
+    {
+        return;
+    }
+    auto ws = gko::solver::invalidate_and_extract_workspace(std::move(solver));
+    const std::lock_guard<std::mutex> guard {gkoWorkspaceCacheMutex()};
+    gkoWorkspaceCache()[wsKey] = std::move(ws);
+}
+
+} // namespace
+#endif // NEON_GINKGO_PUBLIC_WORKSPACE
+
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -519,25 +604,24 @@ SolverStats GinkgoSolver::solve(
     // apply-bound in the kp_space_time_stack Regions view.
     Kokkos::Profiling::pushRegion("ginkgo::generate");
 #ifdef NEON_GINKGO_PUBLIC_WORKSPACE
-    // SEAM for Ginkgo PR #2000 (public workspace, ginkgo-project/ginkgo#2000). Once the PR is
-    // merged and its API is stable, reuse a per-(field,executor) gko::solver::Workspace here so the
-    // value-independent Krylov/preconditioner scratch is allocated once instead of every solve:
-    //   auto& ws = workspaceCache()[reuseKey_ + "@" + std::to_string(exec_.index())];
-    //   if (!ws) ws = gko::solver::Workspace::create();
-    //   auto solver = factory_->generate(gkoMtx, std::move(ws));
-    //   ... apply ...
-    //   ws = gko::solver::invalidate_and_extract_workspace(solver);   // return it to the cache
-    // Correct reuse needs the solver to outlive apply() so the workspace can be extracted back,
-    // i.e. routing apply through a solve_impl variant that does not consume the solver. Deferred
-    // until the PR merges (API in flux); enabling NeoN_GINKGO_PUBLIC_WORKSPACE today only verifies
-    // that the pinned PR build compiles against NeoN. See cmake/Versions.cmake.
-    auto solver = factory_->generate(gkoMtx);
+    // Ginkgo PR #2000 (public workspace): reuse a per-(field,executor) scratch Workspace across
+    // generate() calls so the value-independent Krylov/preconditioner scratch is allocated once
+    // rather than every solve. Scoped to this scalar rank-local path with a non-empty reuseKey;
+    // an empty key falls back to a plain generate. The solver is kept alive past solve_impl so the
+    // workspace can be extracted back into the cache below.
+    const std::string wsKey =
+        reuseKey_.empty() ? std::string {} : reuseKey_ + "@" + std::to_string(exec_.index());
+    auto solver = generateReusingWorkspace(factory_, gkoMtx, gkoExec_, wsKey);
 #else
     auto solver = factory_->generate(gkoMtx);
 #endif
     Kokkos::Profiling::popRegion();
 
-    return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, std::move(solver), l1Control)};
+    auto stats = solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, solver, l1Control);
+#ifdef NEON_GINKGO_PUBLIC_WORKSPACE
+    stashWorkspace(wsKey, std::move(solver));
+#endif
+    return {stats};
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -582,7 +666,7 @@ void solveComponent(
     Kokkos::Profiling::pushRegion("ginkgo::generate");
     auto solver = factory->generate(gkoMtx);
     Kokkos::Profiling::popRegion();
-    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, std::move(solver), l1Control));
+    stats.entries.push_back(solve_impl(exec, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
 }
 
