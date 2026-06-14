@@ -141,10 +141,24 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
         )
     );
 
-    std::shared_ptr<const gko::LinOp> localMtx =
+    std::string targetFormat = "Sellp";
+    auto matrixSize = gko::dim<2> {nrows, nrows};
+    std::shared_ptr<const gko::LinOp> localMtx = nullptr;
+    if (targetFormat == "Sellp")
+    {
+        auto sellp = gko::share(gko::matrix::Sellp<scalar, IndexType>::create(exec, matrixSize));
         gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-            exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+                       exec, matrixSize, std::move(vals), std::move(col), std::move(row)
+                   ))
+            ->convert_to(sellp);
+        localMtx = sellp;
+    }
+    else
+    {
+        localMtx = gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
+            exec, matrixSize, std::move(vals), std::move(col), std::move(row)
         ));
+    }
 
     // First global row index owned by this rank. get_range_bounds() points into the partition's
     // executor memory (device memory when `exec` is a GPU executor), so the single value is pulled
