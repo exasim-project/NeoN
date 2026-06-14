@@ -6,6 +6,7 @@
 
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/segmentedVector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -88,6 +89,17 @@ private:
 
     SurfaceInterpolation<scalar> surfaceInterpolation_;
     SurfaceInterpolation<Vec3> surfaceInterpolationVec_;
+
+    /* @brief returns the cell-to-internal-face stencil used for the atomic-free, cell-based
+     * gradient assembly.
+     *
+     * The stencil is pure mesh topology, so it is cached on the mesh's stencil database (keyed by
+     * @c cellToFaceStencilInternal) rather than on the operator: callers such as updateVelocity
+     * construct a throwaway GaussGreenGrad per evaluation, so an operator-local cache would be
+     * rebuilt on every call. For each cell @c c the relevant slice of internal face indices runs
+     * from @c segments[c] to @c segments[c + 1]; the owner/neighbour sign is derived in-kernel.
+     */
+    SegmentedVector<localIdx, localIdx>& cellFaceStencil() const;
 };
 
 } // namespace NeoN

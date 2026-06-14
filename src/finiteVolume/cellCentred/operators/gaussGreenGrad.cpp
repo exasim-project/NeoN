@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
@@ -21,6 +22,7 @@ void computeGrad(
     const VolumeField<scalar>& in,
     const SurfaceInterpolation<scalar>& surfInterp,
     Vector<Vec3>& out,
+    SegmentedVector<localIdx, localIdx>& cellFaces,
     const dsl::Coeff operatorScaling
 )
 {
@@ -33,17 +35,12 @@ void computeGrad(
 
     auto surfGradPhi = out.view();
 
-    const auto [boundaryFaceOwners, faceOwners, faceNeighbors, faceNormals, surfV] = views(
-        mesh.boundaryMesh().faceOwners(),
-        mesh.faceOwners(),
-        mesh.faceNeighbors(),
-        mesh.faceNormals(),
-        mesh.cellVolumes()
+    const auto [boundaryFaceOwners, faceOwners, faceNormals, surfV] = views(
+        mesh.boundaryMesh().faceOwners(), mesh.faceOwners(), mesh.faceNormals(), mesh.cellVolumes()
     );
     const auto surfPhif = phif.internalVector().view();
     const auto surfPhifB = phif.boundaryData().value().view();
 
-    auto nInternalFaces = mesh.nInternalFaces();
     auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss gradient theorem: ∇φ_C = (1/V_C) * sum_f S_f * φ_f
@@ -51,16 +48,31 @@ void computeGrad(
     // S_f points from owner to neighbour by construction (valid for all internal faces).
     //   owner cell:     S_f is the outward area vector  →  +S_f * φ_f  (add)
     //   neighbour cell: S_f points inward to neighbour  → −S_f * φ_f  (subtract)
-    // TODO use NeoN::atomic_
+    //
+    // Cell-based assembly: each cell gathers its own internal-face contributions from the
+    // cell-to-face stencil and writes the result exactly once, so no atomics are needed (each
+    // thread owns its output slot). This replaces the previous face-based scatter, whose
+    // atomic_add/atomic_sub to owner/neighbour were a GPU bottleneck. The sign is +1 when this
+    // cell owns the face and −1 otherwise. The write is an assignment (not accumulation), so it
+    // also self-initialises every cell — including cells with no internal faces — before the
+    // boundary/proc loops below add into it.
+    auto [cellFacesValues, cellFacesSegments] = cellFaces.views();
     parallelFor(
         exec,
-        {0, nInternalFaces},
-        NEON_LAMBDA(const localIdx i) {
-            Vec3 flux = faceNormals[i] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);    // +S_f * φ_f
-            Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux); // −S_f * φ_f
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            Vec3 grad = zero<Vec3>();
+            const auto start = cellFacesSegments[celli];
+            const auto numFaces = cellFacesSegments[celli + 1] - start;
+            for (localIdx k = 0; k < numFaces; ++k)
+            {
+                const auto facei = cellFacesValues[start + k];
+                const scalar sign = (faceOwners[facei] == celli) ? scalar(1) : scalar(-1);
+                grad += faceNormals[facei] * (surfPhif[facei] * sign);
+            }
+            surfGradPhi[celli] = grad;
         },
-        "computeGradInternal"
+        "computeGradInternalCellBased"
     );
 
     // Boundary faces: only the owner cell is on this rank.
@@ -198,12 +210,34 @@ GaussGreenGrad::GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mes
           exec, mesh, std::make_unique<Linear<Vec3>>(exec, mesh, Dictionary())
       ) {};
 
+SegmentedVector<localIdx, localIdx>& GaussGreenGrad::cellFaceStencil() const
+{
+    // Cache the stencil on the mesh (which persists), not on the operator: callers like
+    // updateVelocity build a fresh GaussGreenGrad per evaluation, so an operator-local cache would
+    // be rebuilt — host copies, serial fill, device round-trip — on every gradient. Mirrors
+    // GeometryScheme::readOrCreate.
+    using StencilPtr = std::shared_ptr<SegmentedVector<localIdx, localIdx>>;
+    auto& db = mesh_.stencilDB();
+    const std::string key = "cellToFaceStencilInternal";
+    if (!db.contains(key))
+    {
+        CellToFaceStencil stencilBuilder(mesh_);
+        db.insert(
+            key,
+            std::make_shared<SegmentedVector<localIdx, localIdx>>(
+                stencilBuilder.computeInternalStencil()
+            )
+        );
+    }
+    return *db.get<StencilPtr>(key);
+}
+
 
 void GaussGreenGrad::grad(
     const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
 ) const
 {
-    computeGrad(phi, surfaceInterpolation_, gradPhi, operatorScaling);
+    computeGrad(phi, surfaceInterpolation_, gradPhi, cellFaceStencil(), operatorScaling);
 };
 
 void GaussGreenGrad::grad(
@@ -212,7 +246,9 @@ void GaussGreenGrad::grad(
 {
     fill(gradPhi.internalVector(), zero<Vec3>());
 
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    computeGrad(
+        phi, surfaceInterpolation_, gradPhi.internalVector(), cellFaceStencil(), operatorScaling
+    );
     computeBoundaryGrad(phi, gradPhi, operatorScaling);
 }
 
@@ -225,7 +261,9 @@ GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorSc
     auto gradBCs = createCalculatedProcBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    computeGrad(
+        phi, surfaceInterpolation_, gradPhi.internalVector(), cellFaceStencil(), operatorScaling
+    );
     computeBoundaryGrad(phi, gradPhi, operatorScaling);
     return gradPhi;
 }
@@ -238,16 +276,11 @@ void atomicAddTensor(Tensor* target, size_t row, size_t col, scalar value)
     Kokkos::atomic_add(&(*target)(row, col), value);
 }
 
-KOKKOS_INLINE_FUNCTION
-void atomicSubTensor(Tensor* target, size_t row, size_t col, scalar value)
-{
-    Kokkos::atomic_sub(&(*target)(row, col), value);
-}
-
 void computeGradTensor(
     const VolumeField<Vec3>& u,
     const SurfaceInterpolation<Vec3>& surfInterpVec,
     Vector<Tensor>& gradU,
+    SegmentedVector<localIdx, localIdx>& cellFaces,
     const dsl::Coeff operatorScaling
 )
 {
@@ -259,39 +292,44 @@ void computeGradTensor(
 
     auto gT = gradU.view();
 
-    const auto [owner, nei, SfAll, V, bFaceCells] = views(
-        mesh.faceOwners(),
-        mesh.faceNeighbors(),
-        mesh.faceNormals(),
-        mesh.cellVolumes(),
-        mesh.boundaryMesh().faceOwners()
+    const auto [owner, SfAll, V, bFaceCells] = views(
+        mesh.faceOwners(), mesh.faceNormals(), mesh.cellVolumes(), mesh.boundaryMesh().faceOwners()
     );
     const auto ufInt = uf.internalVector().view();
     const auto ufBound = uf.boundaryData().value().view();
 
-    const localIdx nInt = mesh.nInternalFaces();
     const localIdx nBnd = mesh.nBoundaryFaces();
 
+    // Cell-based internal-face assembly (see computeGrad): each cell gathers its own internal-face
+    // contributions and writes its tensor once, avoiding the per-face atomic_add/atomic_sub (here
+    // 18 atomics per face) that bottlenecked the face-based scatter. gradU(row,col) += sign *
+    // Sf[col] * U[row]; sign is +1 for the owner and −1 for the neighbour. The assignment also
+    // self-initialises every cell before the boundary/proc loops add into it.
+    auto [cellFacesValues, cellFacesSegments] = cellFaces.views();
     parallelFor(
         exec,
-        {0, nInt},
-        NEON_LAMBDA(const localIdx f) {
-            const Vec3 sf = SfAll[f];
-            const Vec3 faceU = ufInt[f];
-            const auto o = owner[f];
-            const auto n = nei[f];
-            // gradU(row,col) += Sf[col] * U[row]  (Gauss-Green)
-            for (size_t row = 0; row < 3; ++row)
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            Tensor g = zero<Tensor>();
+            const auto start = cellFacesSegments[celli];
+            const auto numFaces = cellFacesSegments[celli + 1] - start;
+            for (localIdx k = 0; k < numFaces; ++k)
             {
-                for (size_t col = 0; col < 3; ++col)
+                const auto facei = cellFacesValues[start + k];
+                const scalar sign = (owner[facei] == celli) ? scalar(1) : scalar(-1);
+                const Vec3 sf = SfAll[facei];
+                const Vec3 faceU = ufInt[facei];
+                for (size_t row = 0; row < 3; ++row)
                 {
-                    const scalar c = sf[col] * faceU[row];
-                    atomicAddTensor(&gT[o], row, col, c);
-                    atomicSubTensor(&gT[n], row, col, c);
+                    for (size_t col = 0; col < 3; ++col)
+                    {
+                        g(row, col) += sign * sf[col] * faceU[row];
+                    }
                 }
             }
+            gT[celli] = g;
         },
-        "computeGradTensorInternal"
+        "computeGradTensorInternalCellBased"
     );
 
     const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
@@ -417,7 +455,9 @@ void GaussGreenGrad::gradTensor(
 ) const
 {
     fill(gradU.internalVector(), zero<Tensor>());
-    computeGradTensor(u, surfaceInterpolationVec_, gradU.internalVector(), operatorScaling);
+    computeGradTensor(
+        u, surfaceInterpolationVec_, gradU.internalVector(), cellFaceStencil(), operatorScaling
+    );
     computeBoundaryGradTensor(u, gradU);
 }
 
@@ -430,7 +470,9 @@ GaussGreenGrad::gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operator
     VolumeField<Tensor> gradU(u.exec(), "gradU", u.mesh(), calcBC);
     fill(gradU.internalVector(), zero<Tensor>());
 
-    computeGradTensor(u, surfaceInterpolationVec_, gradU.internalVector(), operatorScaling);
+    computeGradTensor(
+        u, surfaceInterpolationVec_, gradU.internalVector(), cellFaceStencil(), operatorScaling
+    );
     computeBoundaryGradTensor(u, gradU);
     return gradU;
 }
