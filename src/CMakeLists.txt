@@ -66,6 +66,7 @@ target_sources(
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
           "finiteVolume/cellCentred/interpolation/linear.cpp"
           "finiteVolume/cellCentred/interpolation/upwind.cpp"
+          "finiteVolume/cellCentred/interpolation/linearUpwind.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/corrected.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"
