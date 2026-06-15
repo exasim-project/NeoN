@@ -241,8 +241,14 @@ public:
         // ranks of the pair compute the same tag.
         const auto nProcs = static_cast<mpi_label_t>(mpiEnv.sizeRank());
         const auto myRankLabel = static_cast<mpi_label_t>(mpiEnv.rank());
-        const mpi_label_t pairTag = std::min(myRankLabel, neighborRankLabel) * nProcs
+        const mpi_label_t pairKey = std::min(myRankLabel, neighborRankLabel) * nProcs
                                   + std::max(myRankLabel, neighborRankLabel);
+        const mpi_label_t tagUb = static_cast<mpi_label_t>(mpiEnv.tagUpperBound());
+        const mpi_label_t pairTag = pairKey % tagUb;
+        NF_ASSERT(
+            pairTag < tagUb,
+            "pairTag " << pairTag << " >= MPI_TAG_UB " << tagUb << "; nProcs=" << nProcs
+        );
 
         const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
 
