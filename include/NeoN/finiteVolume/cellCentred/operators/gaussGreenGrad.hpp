@@ -59,6 +59,18 @@ public:
         const dsl::Coeff operatorScaling = dsl::Coeff {}
     ) const;
 
+    /* @brief cell-based variant of grad: accumulates internal-face contributions per cell
+     *        (no atomics on internal faces) then scatters boundary faces.
+     *        Produces the same result as grad() but with a different loop structure.
+     *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @param gradPhi [out] - resulting internal gradient vector
+     */
+    void gradCellBased(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+    ) const;
+
     /* @brief compute explicit gradient operator and return result
      *
      * @param phi [in]

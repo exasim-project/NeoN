@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/tensor.hpp"
@@ -100,6 +101,100 @@ void computeGrad(
             surfGradPhi[celli] *= operatorScaling[celli] / surfV[celli];
         },
         "computeGradCells"
+    );
+}
+
+/* @brief cell-based explicit gradient: for each cell accumulates face contributions
+** without atomic operations on internal faces.  Boundary faces are still added via
+** an atomic scatter (each boundary face has a unique owner, but the face-based loop
+** over nBoundary+nProcBoundary faces is the simplest approach).
+**
+** Internal face loop: no atomics → better GPU occupancy than the face-based scatter.
+*/
+void computeGradCellBased(
+    const VolumeField<scalar>& in,
+    const SurfaceInterpolation<scalar>& surfInterp,
+    Vector<Vec3>& out,
+    const dsl::Coeff operatorScaling
+)
+{
+    const UnstructuredMesh& mesh = in.mesh();
+    const auto exec = out.exec();
+    SurfaceField<scalar> phif(
+        exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
+    );
+    surfInterp.interpolate(in, phif);
+
+    // Build cell-to-internal-face stencil once per call.
+    // NOTE: in hot loops the caller should cache this in mesh.stencilDB().
+    CellToFaceStencil stencilBuilder(mesh);
+    auto cellFaces = stencilBuilder.computeInternalStencil();
+
+    auto gradPhi = out.view();
+
+    const auto [ownerV, faceNormals, surfV] =
+        views(mesh.faceOwners(), mesh.faceNormals(), mesh.cellVolumes());
+    const auto [boundaryFaceOwners, bFaceNormals] =
+        views(mesh.boundaryMesh().faceOwners(), mesh.boundaryMesh().faceNormals());
+    const auto surfPhif = phif.internalVector().view();
+    const auto surfPhifB = phif.boundaryData().value().view();
+    auto [cellFacesValues, cellFacesSegments] = cellFaces.views();
+
+    // Internal faces: cell-owns its accumulator → no atomics.
+    parallelFor(
+        exec,
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            Vec3 grad = zero<Vec3>();
+            const auto start = cellFacesSegments[celli];
+            const auto nFaces = cellFacesSegments[celli + 1] - start;
+            for (localIdx i = 0; i < nFaces; ++i)
+            {
+                const auto fi = cellFacesValues[start + i];
+                const scalar sign = (ownerV[fi] == celli) ? scalar(1) : scalar(-1);
+                grad += sign * faceNormals[fi] * surfPhif[fi];
+            }
+            gradPhi[celli] = grad; // unscaled; volume division happens in the final kernel
+        },
+        "computeGradCellBasedInternal"
+    );
+
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            Kokkos::atomic_add(
+                &gradPhi[boundaryFaceOwners[bfi]], bFaceNormals[bfi] * surfPhifB[bfi]
+            );
+        },
+        "computeGradCellBasedBoundary"
+    );
+
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bcfacei = nBoundaryFaces + procFacei;
+                Kokkos::atomic_add(
+                    &gradPhi[boundaryFaceOwners[bcfacei]],
+                    bFaceNormals[bcfacei] * surfPhifB[bcfacei]
+                );
+            },
+            "computeGradCellBasedProcBoundary"
+        );
+    }
+
+    parallelFor(
+        exec,
+        {0, mesh.nCells()},
+        NEON_LAMBDA(const localIdx celli) {
+            gradPhi[celli] *= operatorScaling[celli] / surfV[celli];
+        },
+        "computeGradCellBasedScale"
     );
 }
 
@@ -204,6 +299,13 @@ void GaussGreenGrad::grad(
 ) const
 {
     computeGrad(phi, surfaceInterpolation_, gradPhi, operatorScaling);
+};
+
+void GaussGreenGrad::gradCellBased(
+    const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+) const
+{
+    computeGradCellBased(phi, surfaceInterpolation_, gradPhi, operatorScaling);
 };
 
 void GaussGreenGrad::grad(
