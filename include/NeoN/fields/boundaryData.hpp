@@ -8,6 +8,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/vector/vector.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
 
 #include <vector>
 #include <utility>
@@ -47,8 +48,8 @@ public:
 
     ~BoundaryData()
     {
-        // commBuffers_ backs the memory of any in-flight MPI_Isend/MPI_Irecv calls.
-        // Destroying them while operations are pending is undefined behaviour, so
+        // The staging pool backs the memory of any in-flight MPI_Isend/MPI_Irecv calls.
+        // Destroying pool_ while operations are pending is undefined behaviour, so
         // drain all outstanding requests before the storage is freed.
         waitAll();
     }
@@ -188,7 +189,19 @@ public:
 
     BoundaryData<ValueType>& operator=(const BoundaryData<ValueType>& rhs)
     {
-
+#ifdef NF_WITH_MPI_SUPPORT
+        NF_ASSERT(
+            !communicating_,
+            "BoundaryData: assignment while a halo exchange is in flight is undefined. "
+            "Call waitAll() before reassigning."
+        );
+        // The staging pool is a transient cache, not field state. Reset it so the next
+        // communicate() rebuilds with correct keys and sizes (grow-only) for the assigned mesh.
+        pool_.clear();
+        activeKeys_.clear();
+        requests_.clear();
+        communicating_ = false;
+#endif
         // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
         // but use them for a sanity check
         nBoundaries_ = rhs.nBoundaries_;
@@ -205,7 +218,19 @@ public:
 
     BoundaryData<ValueType>& operator=(const BoundaryData<ValueType>&& rhs)
     {
-
+#ifdef NF_WITH_MPI_SUPPORT
+        NF_ASSERT(
+            !communicating_,
+            "BoundaryData: assignment while a halo exchange is in flight is undefined. "
+            "Call waitAll() before reassigning."
+        );
+        // The staging pool is a transient cache, not field state. Reset it so the next
+        // communicate() rebuilds with correct keys and sizes (grow-only) for the assigned mesh.
+        pool_.clear();
+        activeKeys_.clear();
+        requests_.clear();
+        communicating_ = false;
+#endif
         // TODO maybe dont overwrite nBoundaries and nBoundaryFaces
         // but use them for a sanity check
         nBoundaries_ = rhs.nBoundaries_;
@@ -227,8 +252,21 @@ public:
         const localIdx patchSize = rangeEnd - rangeStart;
 
         mpi::Environment mpiEnv;
-        CommBuffer buf;
-        buf.rangeStart = rangeStart;
+
+        // Find or insert a persistent pool entry for this patch (keyed by rangeStart).
+        // Proc-patch count is typically 1-4 per rank; a linear scan is effectively O(1).
+        auto it = std::find_if(
+            pool_.begin(),
+            pool_.end(),
+            [rangeStart](const CommBuffer& b) { return b.rangeStart == rangeStart; }
+        );
+        if (it == pool_.end())
+        {
+            pool_.push_back(CommBuffer {});
+            it = pool_.end() - 1;
+            it->rangeStart = rangeStart;
+        }
+        CommBuffer& buf = *it;
         buf.patchSize = patchSize;
 
         const auto byteCount =
@@ -255,7 +293,10 @@ public:
         MPI_Request sendReq, recvReq;
         if (useGpuPath)
         {
-            buf.deviceRecvBuf = Vector<ValueType>(exec_, patchSize, ValueType {});
+            // Grow-only: only (re)allocate when the buffer is absent or too small.
+            if (!buf.deviceRecvBuf
+                || buf.deviceRecvBuf->size() < static_cast<std::size_t>(patchSize))
+                buf.deviceRecvBuf = Vector<ValueType>(exec_, patchSize, ValueType {});
             mpi::isend<char>(
                 reinterpret_cast<const char*>(value_.data() + rangeStart),
                 byteCount,
@@ -275,11 +316,24 @@ public:
         }
         else
         {
-            auto valH = value_.copyToHost();
-            buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
-            buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
-            for (localIdx k = 0; k < patchSize; k++)
-                buf.sendBuf[static_cast<std::size_t>(k)] = valH.view()[rangeStart + k];
+            // Grow-only resize: only extend when the current capacity is insufficient.
+            if (static_cast<localIdx>(buf.sendBuf.size()) < patchSize)
+            {
+                buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
+                buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
+            }
+            NF_DEBUG_ASSERT(
+                static_cast<localIdx>(buf.sendBuf.size()) >= patchSize,
+                "sendBuf capacity " << buf.sendBuf.size() << " < patchSize " << patchSize
+            );
+            // Stage exactly patchSize elements from the patch range (device or CPU -> host).
+            std::visit(
+                detail::deepCopyVisitor<ValueType>(
+                    patchSize, value_.data() + rangeStart, buf.sendBuf.data()
+                ),
+                exec_,            // source executor (device or CPU)
+                SerialExecutor {} // dest executor (host)
+            );
             mpi::isend<char>(
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
                 byteCount,
@@ -300,7 +354,7 @@ public:
         communicating_ = true;
         requests_.push_back(sendReq);
         requests_.push_back(recvReq);
-        commBuffers_.push_back(std::move(buf));
+        activeKeys_.push_back(rangeStart);
     }
 
     // Retained as a latent diagnostic helper (not used in the drain path after
@@ -322,23 +376,23 @@ public:
     // across communicate()/waitAll() rounds. Returns nullptr / 0 when no entry exists.
     const ValueType* sendBufPtrForTest(localIdx rangeStart) const
     {
-        for (const auto& b : commBuffers_)
+        for (const auto& b : pool_)
             if (b.rangeStart == rangeStart) return b.sendBuf.data();
         return nullptr;
     }
     std::size_t sendBufCapForTest(localIdx rangeStart) const
     {
-        for (const auto& b : commBuffers_)
+        for (const auto& b : pool_)
             if (b.rangeStart == rangeStart) return b.sendBuf.capacity();
         return 0;
     }
     std::size_t sendBufSizeForTest(localIdx rangeStart) const
     {
-        for (const auto& b : commBuffers_)
+        for (const auto& b : pool_)
             if (b.rangeStart == rangeStart) return b.sendBuf.size();
         return 0;
     }
-    std::size_t poolSizeForTest() const { return commBuffers_.size(); }
+    std::size_t poolSizeForTest() const { return pool_.size(); }
 
 #endif
 
@@ -351,8 +405,14 @@ public:
         const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
         if (useGpuPath)
         {
-            for (const auto& buf : commBuffers_)
+            // Iterate only the patches posted this round (not the full pool).
+            for (const localIdx key : activeKeys_)
             {
+                CommBuffer& buf = *std::find_if(
+                    pool_.begin(),
+                    pool_.end(),
+                    [key](const CommBuffer& b) { return b.rangeStart == key; }
+                );
                 auto srcView = buf.deviceRecvBuf->view();
                 auto dstView = value_.view();
                 const localIdx start = buf.rangeStart;
@@ -362,25 +422,35 @@ public:
                     KOKKOS_LAMBDA(const localIdx k) { dstView[start + k] = srcView[k]; }
                 );
             }
-            // LOAD-BEARING FENCE (COMM-03): the parallelFor copy-back above (deviceRecvBuf ->
-            // value_) is asynchronous on the GPUExecutor. commBuffers_.clear() below destructs
-            // deviceRecvBuf; fencing here guarantees the device kernel has completed before the
-            // allocation is freed. Removing this fence is a use-after-free on device memory.
+            // LOAD-BEARING FENCE: the parallelFor copy-back above (deviceRecvBuf -> value_) is
+            // asynchronous on the GPUExecutor. deviceRecvBuf is now a persistent pool member
+            // reused across rounds; fencing here guarantees the device kernel has completed before
+            // the next communicate() posts MPI_Irecv into the same deviceRecvBuf allocation
+            // (use-before-reuse). Removing this fence is a data race on device memory.
             fence(exec_);
         }
         else
         {
-            auto valH = value_.copyToHost();
-            for (const auto& buf : commBuffers_)
+            // Iterate only the patches posted this round; copy back exactly patchSize elements.
+            for (const localIdx key : activeKeys_)
             {
-                for (localIdx k = 0; k < buf.patchSize; k++)
-                    valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<std::size_t>(k)];
+                CommBuffer& buf = *std::find_if(
+                    pool_.begin(),
+                    pool_.end(),
+                    [key](const CommBuffer& b) { return b.rangeStart == key; }
+                );
+                std::visit(
+                    detail::deepCopyVisitor<ValueType>(
+                        buf.patchSize, buf.recvBuf.data(), value_.data() + buf.rangeStart
+                    ),
+                    SerialExecutor {}, // source executor (host)
+                    exec_              // dest executor (device or CPU)
+                );
             }
-            value_ = valH.copyToExecutor(exec_);
         }
         requests_.clear();
         communicating_ = false;
-        commBuffers_.clear();
+        activeKeys_.clear(); // retains capacity; pool_ persists for reuse next round
 #endif
     }
 
@@ -428,16 +498,18 @@ private:
 #ifdef NF_WITH_MPI_SUPPORT
     struct CommBuffer
     {
-        std::vector<ValueType> sendBuf;                 // host staging, used when !gpuAwareMpi
-        std::vector<ValueType> recvBuf;                 // host staging, used when !gpuAwareMpi
-        std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer, used when gpuAwareMpi
-        localIdx rangeStart;
-        localIdx patchSize;
+        std::vector<ValueType> sendBuf;                 // host staging: lazy, grow-only
+        std::vector<ValueType> recvBuf;                 // host staging: lazy, grow-only
+        std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer: lazy, grow-only
+        localIdx rangeStart {-1};                       // pool key
+        localIdx patchSize {0};                         // current capacity watermark
     };
     mutable std::vector<MPI_Request>
-        requests_; ///< Pending MPI requests (send+recv pairs per patch).
+        requests_; ///< Per-round MPI request handles (send+recv pairs). clear() retains capacity.
     mutable std::vector<CommBuffer>
-        commBuffers_; ///< Send/recv staging buffers for pending requests.
+        pool_; ///< Persistent staging-buffer pool keyed by rangeStart. Never cleared after warm-up.
+    mutable std::vector<localIdx>
+        activeKeys_; ///< Per-round list of rangeStarts posted this round. clear() retains capacity.
     mutable bool communicating_ = false;
 #endif
 };
