@@ -4,6 +4,8 @@
 
 #if NF_WITH_GINKGO
 
+#include <array>
+#include <mutex>
 #include <sstream>
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
@@ -142,50 +144,76 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 }
 
 
-// TODO: check if this can be replaced by Ginkgos executor mapping
-std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
+namespace
 {
+
+// One memoized Ginkgo executor per NeoN executor kind (variant index: 0 Serial, 1 CPU, 2 GPU).
+std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
+{
+    static std::array<std::shared_ptr<gko::Executor>, 3> cache;
+    return cache;
+}
+
+std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
+{
+    // Defer to Ginkgo's Kokkos extension instead of a hand-rolled #ifdef mapping. Each NeoN
+    // executor exposes its backing Kokkos execution space as ExecType::exec (Kokkos::Serial,
+    // DefaultHostExecutionSpace or DefaultExecutionSpace), which is exactly what create_executor
+    // consumes. Crucially it threads the Kokkos execution-space stream, host executor and
+    // memory-space-matched device allocator through to the Ginkgo executor, so Ginkgo runs on the
+    // same stream Kokkos filled the matrix/RHS views on rather than on Ginkgo's default stream.
     return std::visit(
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
-            if constexpr (std::is_same_v<ExecType, NeoN::SerialExecutor>)
-            {
-                return gko::ReferenceExecutor::create();
-            }
-            else if constexpr (std::is_same_v<ExecType, NeoN::CPUExecutor>)
-            {
-#if defined(KOKKOS_ENABLE_OMP)
-                return gko::OmpExecutor::create();
-#elif defined(KOKKOS_ENABLE_THREADS)
-                return gko::ReferenceExecutor::create();
-#endif
-            }
-            else if constexpr (std::is_same_v<ExecType, NeoN::GPUExecutor>)
-            {
-#if defined(KOKKOS_ENABLE_CUDA)
-                return gko::CudaExecutor::create(
-                    Kokkos::device_id(), gko::ReferenceExecutor::create()
-                );
-#elif defined(KOKKOS_ENABLE_HIP)
-                return gko::HipExecutor::create(
-                    Kokkos::device_id(), gko::ReferenceExecutor::create()
-                );
-#elif defined(KOKKOS_ENABLE_SYCL)
-                return gko::DpcppExecutor::create(
-                    Kokkos::device_id(), gko::ReferenceExecutor::create()
-                );
-#endif
-                throw std::runtime_error {"No valid GPU executor mapping available"};
-            }
-            else
-            {
-                throw std::runtime_error {"Unsupported executor type"};
-            }
-            return gko::ReferenceExecutor::create();
+            return gko::ext::kokkos::create_executor(typename ExecType::exec {});
         },
         exec
     );
+}
+
+} // namespace
+
+// Memoized: GinkgoSolver is reconstructed on every solve, and creating a fresh Ginkgo executor each
+// time is wasteful -- e.g. a CUDA executor rebuilds its cuBLAS/cuSPARSE handles on construction.
+// Return a stable executor per NeoN executor kind so every solve shares it. The cache is released
+// in a Kokkos finalize hook so the executor is destroyed while the device is still alive.
+//
+// NOTE the cache is keyed by NeoN executor kind (variant index), not by device id, so a single
+// process driving more than one device of the same kind would share one executor. That matches the
+// usual one-device-per-rank HPC layout; revisit if intra-process multi-device support is added.
+std::shared_ptr<gko::Executor> NeoN::la::ginkgo::getGkoExecutor(NeoN::Executor exec)
+{
+    // Register the finalize hook exactly once, on first use, so the cached executors are released
+    // while the Kokkos device (and its CUDA context) is still alive.
+    static std::once_flag hookFlag;
+    std::call_once(
+        hookFlag,
+        []
+        {
+            Kokkos::push_finalize_hook(
+                []
+                {
+                    for (auto& e : gkoExecutorCache())
+                    {
+                        e.reset();
+                    }
+                }
+            );
+        }
+    );
+
+    // Guard the lazy fill: magic-static initialisation protects the array's construction but not
+    // these element writes, so a mutex is needed if executors are ever built from several threads.
+    static std::mutex cacheMutex;
+    const std::lock_guard<std::mutex> guard {cacheMutex};
+    auto& cache = gkoExecutorCache();
+    const std::size_t idx = exec.index();
+    if (!cache[idx])
+    {
+        cache[idx] = createGkoExecutor(exec);
+    }
+    return cache[idx];
 }
 
 
