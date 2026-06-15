@@ -73,7 +73,7 @@ endif()
 if(Kokkos_ENABLE_CUDA)
   set(Kokkos_ENABLE_CUDA_CONSTEXPR
       ON
-      CACHE INTERNAL "")
+      CACHE INTERNAL "" FORCE)
 endif()
 
 if(NOT DEFINED Kokkos_ENABLE_HIP)

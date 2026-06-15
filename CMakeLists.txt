@@ -137,15 +137,19 @@ endif()
 # (forced in cmake/AutoEnableDevice.cmake) these never fire. If that flag is ever disabled, nvcc
 # would otherwise SILENTLY miscompile device-side element access through View/std::span operator[]
 # (writes vanish on the GPU, results are garbage). Failing the build is far safer than shipping
-# wrong numerics. Source files are compiled either as CXX (via nvcc_wrapper) or as CUDA, so cover
-# both languages. -Xcudafe needs each number in its own flag; SHELL: keeps the repeated tokens from
+# wrong numerics. -Xcudafe needs each number in its own flag; SHELL: keeps the repeated tokens from
 # being de-duplicated by CMake.
 if(Kokkos_ENABLE_CUDA)
   set(_neon_cuda_diag_errors "SHELL:-Xcudafe --diag_error=20013"
                              "SHELL:-Xcudafe --diag_error=20015")
-  target_compile_options(
-    NeoN_warnings INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:${_neon_cuda_diag_errors}>"
-                            "$<$<COMPILE_LANGUAGE:CUDA>:${_neon_cuda_diag_errors}>")
+  # Always apply to CUDA-language translation units (nvcc compiles .cu files directly).
+  target_compile_options(NeoN_warnings
+                         INTERFACE "$<$<COMPILE_LANGUAGE:CUDA>:${_neon_cuda_diag_errors}>")
+  # Apply to CXX only when nvcc_wrapper is the CXX compiler; plain g++/clang++ reject -Xcudafe.
+  if(CMAKE_CXX_COMPILER MATCHES "nvcc_wrapper")
+    target_compile_options(NeoN_warnings
+                           INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:${_neon_cuda_diag_errors}>")
+  endif()
 endif()
 
 if(NeoN_BUILD_PCH)
