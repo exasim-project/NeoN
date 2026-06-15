@@ -429,6 +429,48 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     computeDivExp<FieldValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
 }
 
+/* @brief adds the deferred gradient correction of a corrected scheme (e.g. linearUpwind) to the
+** linear-system rhs, i.e. the discrete -operatorScaling * sum_f F_f corr_f per cell. This mirrors
+** OpenFOAM's `fvm += fvc::surfaceIntegrate(faceFlux*correction)`: interpolate()=weighted value +
+** correction(), the weighted part is assembled implicitly and the correction is an explicit source.
+** Boundary correction is zero (physical patches uncorrected), so only internal faces contribute.
+*/
+template<typename FieldValueType, typename AssemblyType>
+void addDivCorrectionToRhs(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const SurfaceField<FieldValueType>& correction,
+    const dsl::Coeff operatorScaling
+)
+{
+    const auto& mesh = correction.mesh();
+    const auto exec = correction.exec();
+    const auto nInternalFaces = mesh.nInternalFaces();
+
+    const auto [fluxV, corrV, ownV, neiV] = views(
+        faceFlux.internalVector(),
+        correction.internalVector(),
+        mesh.faceOwners(),
+        mesh.faceNeighbors()
+    );
+    auto rhs = ls.rhs().view();
+
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto own = ownV[facei];
+            const auto nei = neiV[facei];
+            // sum_f F_f corr_f distributes +F corr to the owner and -F corr to the neighbour
+            // (S_f points owner -> neighbour); the term is known so it moves to the rhs negated.
+            const FieldValueType contrib = fluxV[facei] * corrV[facei];
+            Kokkos::atomic_sub(&rhs[own], operatorScaling[own] * contrib);
+            Kokkos::atomic_add(&rhs[nei], operatorScaling[nei] * contrib);
+        },
+        "addDivCorrectionToRhs"
+    );
+}
+
 template<typename FieldValueType, typename AssemblyType>
 void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
@@ -455,6 +497,20 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     }
     computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+
+    // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
+    // upwind weights above, the gradient correction is added explicitly to the rhs.
+    if (surfaceInterpolation_.corrected())
+    {
+        SurfaceField<FieldValueType> correction(
+            phi.exec(),
+            "divCorrection",
+            phi.mesh(),
+            createCalculatedBCs<SurfaceBoundary<FieldValueType>>(phi.mesh())
+        );
+        surfaceInterpolation_.correction(faceFlux, phi, correction);
+        addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
+    }
 }
 
 template class GaussGreenDiv<scalar>;
