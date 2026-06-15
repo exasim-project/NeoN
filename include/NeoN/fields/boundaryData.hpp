@@ -317,6 +317,28 @@ public:
         return true;
     }
 
+    // Test-only observability of the host send-staging buffer for a given patch key.
+    // Returns the buffer data() pointer so a test can assert pointer identity (no realloc)
+    // across communicate()/waitAll() rounds. Returns nullptr / 0 when no entry exists.
+    const ValueType* sendBufPtrForTest(localIdx rangeStart) const
+    {
+        for (const auto& b : commBuffers_)
+            if (b.rangeStart == rangeStart) return b.sendBuf.data();
+        return nullptr;
+    }
+    std::size_t sendBufCapForTest(localIdx rangeStart) const
+    {
+        for (const auto& b : commBuffers_)
+            if (b.rangeStart == rangeStart) return b.sendBuf.capacity();
+        return 0;
+    }
+    std::size_t sendBufSizeForTest(localIdx rangeStart) const
+    {
+        for (const auto& b : commBuffers_)
+            if (b.rangeStart == rangeStart) return b.sendBuf.size();
+        return 0;
+    }
+    std::size_t poolSizeForTest() const { return commBuffers_.size(); }
 
 #endif
 
