@@ -297,6 +297,9 @@ public:
         commBuffers_.push_back(std::move(buf));
     }
 
+    // Retained as a latent diagnostic helper (not used in the drain path after
+    // waitAll() was updated to call mpi::waitAll). isComplete() is kept to preserve
+    // symmetry with HalfDuplexCommBuffer::isComplete() and for potential future use.
     bool isComplete() const
     {
         if (requests_.empty() || !communicating_) return true;
@@ -315,9 +318,7 @@ public:
     {
 #ifdef NF_WITH_MPI_SUPPORT
         if (requests_.empty() || !communicating_) return;
-        while (!isComplete())
-        {
-        }
+        mpi::waitAll(requests_);
         mpi::Environment mpiEnv;
         const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
         if (useGpuPath)
