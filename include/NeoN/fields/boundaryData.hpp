@@ -327,12 +327,13 @@ public:
                 "sendBuf capacity " << buf.sendBuf.size() << " < patchSize " << patchSize
             );
             // Stage exactly patchSize elements from the patch range (device or CPU -> host).
+            // Both arguments to std::visit must be Executor variants, not bare alternatives.
             std::visit(
                 detail::deepCopyVisitor<ValueType>(
                     patchSize, value_.data() + rangeStart, buf.sendBuf.data()
                 ),
-                exec_,            // source executor (device or CPU)
-                SerialExecutor {} // dest executor (host)
+                exec_,                      // source executor (device or CPU)
+                Executor(SerialExecutor {}) // dest executor (host)
             );
             mpi::isend<char>(
                 reinterpret_cast<const char*>(buf.sendBuf.data()),
@@ -432,6 +433,7 @@ public:
         else
         {
             // Iterate only the patches posted this round; copy back exactly patchSize elements.
+            // Both arguments to std::visit must be Executor variants, not bare alternatives.
             for (const localIdx key : activeKeys_)
             {
                 CommBuffer& buf = *std::find_if(
@@ -443,8 +445,8 @@ public:
                     detail::deepCopyVisitor<ValueType>(
                         buf.patchSize, buf.recvBuf.data(), value_.data() + buf.rangeStart
                     ),
-                    SerialExecutor {}, // source executor (host)
-                    exec_              // dest executor (device or CPU)
+                    Executor(SerialExecutor {}), // source executor (host)
+                    Executor(exec_)              // dest executor (device or CPU)
                 );
             }
         }
