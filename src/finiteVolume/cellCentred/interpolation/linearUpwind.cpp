@@ -11,23 +11,28 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-/* @brief applies the upwind value plus the gradient correction for every face.
+/* @brief applies the linearUpwind reconstruction for every face.
 **
 ** @tparam ValueType field value type (scalar or Vec3)
 ** @tparam GradType cell gradient type (Vec3 for scalar fields, Tensor for Vec3 fields)
+** @param withSrcValue when true dst is the full face value (upwind value + correction); when false
+**        dst holds only the gradient correction (used for the implicit deferred correction). A
+**        runtime flag is used rather than a template/`if constexpr`, since nvcc forbids
+**        first-capturing a variable inside an `if constexpr` block in an extended device lambda.
 **
-** For both types the correction is `grad & d`: with NeoN's row-major tensor convention
+** For both ranks the correction is `grad & d`: with NeoN's row-major tensor convention
 ** (gradTensor(i,j) = d U_i / d x_j) the matrix-vector product `Tensor & Vec3` reproduces
 ** OpenFOAM's `(Cf - C) & gradVf`; for scalars it degenerates to the Vec3 inner product.
 */
 template<typename ValueType, typename GradType>
-void applyLinearUpwindCorrection(
+void applyLinearUpwind(
     const VolumeField<ValueType>& src,
     const SurfaceField<scalar>& flux,
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     const VolumeField<GradType>& gradPhi,
-    SurfaceField<ValueType>& dst
+    SurfaceField<ValueType>& dst,
+    const bool withSrcValue
 )
 {
     const auto exec = dst.exec();
@@ -54,30 +59,28 @@ void applyLinearUpwindCorrection(
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
             // Upwind cell follows the flux direction; S_f points owner -> neighbour.
-            if (fluxS[facei] >= 0)
-            {
-                const auto own = ownerS[facei];
-                dstS[facei] = srcS[own] + (gradS[own] & dOwnS[facei]);
-            }
-            else
-            {
-                const auto nei = neighS[facei];
-                dstS[facei] = srcS[nei] + (gradS[nei] & dNeiS[facei]);
-            }
+            const bool ownerUpwind = fluxS[facei] >= 0;
+            const auto cell = ownerUpwind ? ownerS[facei] : neighS[facei];
+            const Vec3 d = ownerUpwind ? dOwnS[facei] : dNeiS[facei];
+            const ValueType corr = gradS[cell] & d;
+            dstS[facei] = withSrcValue ? (srcS[cell] + corr) : corr;
         },
-        "computeLinearUpwindInterpolationInternal"
+        "computeLinearUpwindInternal"
     );
 
     // Physical (non-coupled) boundary faces take the patch value with no correction, matching
-    // OpenFOAM's linearUpwind which only corrects coupled patches.
+    // OpenFOAM's linearUpwind which only corrects coupled patches; the correction-only path is
+    // zero.
     parallelFor(
         exec,
         {0, nBoundaryFaces},
-        NEON_LAMBDA(const localIdx bfi) { dstB[bfi] = boundS[bfi]; },
-        "computeLinearUpwindInterpolationBoundary"
+        NEON_LAMBDA(const localIdx bfi) {
+            dstB[bfi] = withSrcValue ? boundS[bfi] : zero<ValueType>();
+        },
+        "computeLinearUpwindBoundary"
     );
 
-    // Processor (coupled) boundary faces: fall back to upwind without the gradient correction.
+    // Processor (coupled) boundary faces fall back to upwind without the gradient correction.
     // TODO: apply the neighbour-cell gradient correction across rank boundaries (see OpenFOAM).
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
@@ -90,9 +93,44 @@ void applyLinearUpwindCorrection(
             NEON_LAMBDA(const localIdx procFacei) {
                 const auto bcfacei = nBoundaryFaces + procFacei;
                 const auto own = bfOwners[bcfacei];
-                dstB[bcfacei] = bFluxV[bcfacei] >= 0 ? srcS[own] : boundS[bcfacei];
+                const ValueType upwindValue = bFluxV[bcfacei] >= 0 ? srcS[own] : boundS[bcfacei];
+                dstB[bcfacei] = withSrcValue ? upwindValue : zero<ValueType>();
             },
-            "computeLinearUpwindInterpolationProcBoundary"
+            "computeLinearUpwindProcBoundary"
+        );
+    }
+}
+
+template<typename ValueType>
+void computeLinearUpwind(
+    const VolumeField<ValueType>& src,
+    const SurfaceField<scalar>& flux,
+    const SurfaceField<Vec3>& faceDeltaOwner,
+    const SurfaceField<Vec3>& faceDeltaNeighbour,
+    SurfaceField<ValueType>& dst,
+    const bool withSrcValue
+)
+{
+    using GradType = typename detail::LinearUpwindGradType<ValueType>::type;
+
+    const auto exec = src.exec();
+    const auto& mesh = src.mesh();
+    GaussGreenGrad gradOp(exec, mesh);
+
+    if constexpr (std::is_same_v<ValueType, scalar>)
+    {
+        // grad(scalar) -> Vec3
+        const VolumeField<GradType> gradPhi = gradOp.grad(src);
+        applyLinearUpwind<ValueType, GradType>(
+            src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+        );
+    }
+    else
+    {
+        // grad(Vec3) -> Tensor
+        const VolumeField<GradType> gradPhi = gradOp.gradTensor(src);
+        applyLinearUpwind<ValueType, GradType>(
+            src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
         );
     }
 }
@@ -106,28 +144,25 @@ void computeLinearUpwindInterpolation(
     SurfaceField<ValueType>& dst
 )
 {
-    using GradType = typename detail::LinearUpwindGradType<ValueType>::type;
-
-    const auto exec = src.exec();
-    const auto& mesh = src.mesh();
-    GaussGreenGrad gradOp(exec, mesh);
-
-    if constexpr (std::is_same_v<ValueType, scalar>)
-    {
-        // grad(scalar) -> Vec3
-        const VolumeField<GradType> gradPhi = gradOp.grad(src);
-        applyLinearUpwindCorrection(src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst);
-    }
-    else
-    {
-        // grad(Vec3) -> Tensor
-        const VolumeField<GradType> gradPhi = gradOp.gradTensor(src);
-        applyLinearUpwindCorrection(src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst);
-    }
+    computeLinearUpwind<ValueType>(src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, true);
 }
 
-#define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                \
-    template void computeLinearUpwindInterpolation<                                                \
+template<typename ValueType>
+void computeLinearUpwindCorrection(
+    const VolumeField<ValueType>& src,
+    const SurfaceField<scalar>& flux,
+    const SurfaceField<Vec3>& faceDeltaOwner,
+    const SurfaceField<Vec3>& faceDeltaNeighbour,
+    SurfaceField<ValueType>& dst
+)
+{
+    computeLinearUpwind<ValueType>(src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, false);
+}
+
+#define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                                                                          \
+    template void computeLinearUpwindInterpolation<                                                                                                          \
+        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&); \
+    template void computeLinearUpwindCorrection<                                                                                                             \
         TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&)
 
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(scalar);

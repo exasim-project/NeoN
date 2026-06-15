@@ -69,6 +69,20 @@ void computeLinearUpwindInterpolation(
     SurfaceField<ValueType>& dst
 );
 
+/* @brief computes only the gradient correction part of the linearUpwind face value,
+** `(Cf - C_U) & grad(phi)_U`, into dst (without the upwind cell value). Boundary faces are set to
+** zero, matching OpenFOAM which corrects only coupled patches. Used for the implicit deferred
+** correction (the explicit RHS source added by the divergence operator).
+*/
+template<typename ValueType>
+void computeLinearUpwindCorrection(
+    const VolumeField<ValueType>& src,
+    const SurfaceField<scalar>& flux,
+    const SurfaceField<Vec3>& faceDeltaOwner,
+    const SurfaceField<Vec3>& faceDeltaNeighbour,
+    SurfaceField<ValueType>& dst
+);
+
 template<typename ValueType>
 class LinearUpwind :
     public SurfaceInterpolationFactory<ValueType>::template Register<LinearUpwind<ValueType>>
@@ -120,6 +134,24 @@ public:
     ) const override
     {
         computeUpwindInterpolationWeights(faceFlux, src, weights);
+    }
+
+    // linearUpwind carries an explicit gradient correction beyond the upwind weights.
+    bool corrected() const override { return true; }
+
+    void correction(
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<ValueType>& src,
+        SurfaceField<ValueType>& corr
+    ) const override
+    {
+        computeLinearUpwindCorrection(
+            src,
+            faceFlux,
+            geometryScheme_->faceDeltaOwner(),
+            geometryScheme_->faceDeltaNeighbour(),
+            corr
+        );
     }
 
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
