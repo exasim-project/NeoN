@@ -70,6 +70,10 @@ public:
     {
         detail::updateProcBoundaryOwnerValue(domainVector, mesh_, this->range());
 #ifdef NF_WITH_MPI_SUPPORT
+        // LOAD-BEARING FENCE (COMM-03): updateProcBoundaryOwnerValue above launches a GPU
+        // kernel writing the owner-cell value into the proc-patch ghost (device memory at
+        // value_.data() + rangeStart). communicate() posts MPI_Isend reading that same device
+        // pointer; fencing here ensures the kernel has landed before MPI reads it.
         fence(domainVector.exec());
         const int neighborRank =
             static_cast<int>(mesh_.boundaryMesh().neighbourRankForRange(this->range()));

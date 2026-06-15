@@ -334,6 +334,11 @@ public:
                     KOKKOS_LAMBDA(const localIdx k) { dstView[start + k] = srcView[k]; }
                 );
             }
+            // LOAD-BEARING FENCE (COMM-03): the parallelFor copy-back above (deviceRecvBuf ->
+            // value_) is asynchronous on the GPUExecutor. commBuffers_.clear() below destructs
+            // deviceRecvBuf; fencing here guarantees the device kernel has completed before the
+            // allocation is freed. Removing this fence is a use-after-free on device memory.
+            fence(exec_);
         }
         else
         {
