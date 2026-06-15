@@ -80,24 +80,83 @@ void applyLinearUpwind(
         "computeLinearUpwindBoundary"
     );
 
-    // Processor (coupled) boundary faces fall back to upwind without the gradient correction.
-    // TODO: apply the neighbour-cell gradient correction across rank boundaries (see OpenFOAM).
+    // Processor (coupled) boundary faces.
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
     {
-        const auto bfOwners = mesh.boundaryMesh().faceOwners().view();
+        const auto& bMesh = mesh.boundaryMesh();
+        const auto bfOwners = bMesh.faceOwners().view();
         const auto bFluxV = flux.boundaryData().value().view();
-        parallelFor(
-            exec,
-            {0, nProcBoundaryFaces},
-            NEON_LAMBDA(const localIdx procFacei) {
-                const auto bcfacei = nBoundaryFaces + procFacei;
-                const auto own = bfOwners[bcfacei];
-                const ValueType upwindValue = bFluxV[bcfacei] >= 0 ? srcS[own] : boundS[bcfacei];
-                dstB[bcfacei] = withSrcValue ? upwindValue : zero<ValueType>();
-            },
-            "computeLinearUpwindProcBoundary"
-        );
+
+        if (withSrcValue)
+        {
+            // interpolate(): proc faces use the plain upwind value (the explicit Gauss div does
+            // not integrate proc faces, so a deferred correction here would be unused).
+            parallelFor(
+                exec,
+                {0, nProcBoundaryFaces},
+                NEON_LAMBDA(const localIdx procFacei) {
+                    const auto bcfacei = nBoundaryFaces + procFacei;
+                    const auto own = bfOwners[bcfacei];
+                    dstB[bcfacei] = bFluxV[bcfacei] >= 0 ? srcS[own] : boundS[bcfacei];
+                },
+                "computeLinearUpwindProcBoundaryUpwind"
+            );
+        }
+        else
+        {
+            // correction(): a proc face is a cut internal face. Whichever rank owns the upwind
+            // cell can compute its correction locally as grad[own] & (Cf - C[own]); the neighbour
+            // rank's owner-side correction is exactly this face's neighbour-side correction. So
+            // each rank computes its owner-side correction, exchanges it, and selects owner- vs
+            // neighbour-side by the local flux sign. delta() is Cf - C[own] for boundary faces.
+            const auto bDeltaV = bMesh.delta().view();
+            // normalSign (+1 owner-side, -1 non-owner-side): the stored proc-face flux is in the
+            // patch normal orientation, so the flux LEAVING the local owner is normalSign * F.
+            const auto bNormalSignV = bMesh.weights().view();
+            Vector<ValueType> corrOwn(exec, nProcBoundaryFaces, zero<ValueType>());
+            auto corrOwnV = corrOwn.view();
+            parallelFor(
+                exec,
+                {0, nProcBoundaryFaces},
+                NEON_LAMBDA(const localIdx procFacei) {
+                    const auto bcfacei = nBoundaryFaces + procFacei;
+                    const ValueType c = gradS[bfOwners[bcfacei]] & bDeltaV[bcfacei];
+                    corrOwnV[procFacei] = c;
+                    dstB[bcfacei] = c;
+                },
+                "computeLinearUpwindProcCorrectionOwner"
+            );
+
+#ifdef NF_WITH_MPI_SUPPORT
+            // exchange owner-side corrections: each proc slot receives the neighbour rank's value.
+            fence(exec);
+            const auto nBounds = bMesh.nBoundaries();
+            const auto nProcPatches = bMesh.nProcBoundaryPatches();
+            for (localIdx patchi = nBounds - nProcPatches; patchi < nBounds; ++patchi)
+            {
+                const auto range = dst.boundaryData().range(patchi);
+                const auto neighborRank = static_cast<int>(bMesh.neighbourRankForRange(range));
+                dst.boundaryData().communicate(range, neighborRank);
+            }
+            // communicate() is asynchronous; waitAll() completes the isend/irecv and writes the
+            // received neighbour values into the proc slots, replacing the local owner-side values.
+            dst.boundaryData().waitAll();
+#endif
+
+            parallelFor(
+                exec,
+                {0, nProcBoundaryFaces},
+                NEON_LAMBDA(const localIdx procFacei) {
+                    const auto bcfacei = nBoundaryFaces + procFacei;
+                    // owner is upwind when the flux leaves it: normalSign * F >= 0. dstB now holds
+                    // the neighbour's owner-side correction (corrNei) from the exchange.
+                    const scalar outwardFlux = bNormalSignV[bcfacei] * bFluxV[bcfacei];
+                    dstB[bcfacei] = outwardFlux >= 0 ? corrOwnV[procFacei] : dstB[bcfacei];
+                },
+                "computeLinearUpwindProcCorrectionSelect"
+            );
+        }
     }
 }
 

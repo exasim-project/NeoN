@@ -519,4 +519,67 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
 }
 #endif // NF_WITH_GINKGO
 
+// Validates the linearUpwind deferred correction across processor boundaries AND through the fused
+// div-laplacian operator. The correction is isolated as rhs(linearUpwind) - rhs(upwind) (everything
+// else in the fused operator is identical), and the partitioned correction must match the global
+// serial correction slice on every rank. The proc-face owner-side-correction exchange reproduces
+// the global internal-face correction (a randomised field gives a non-trivial gradient).
+TEST_CASE("Distributed Operator - linearUpwind deferred correction (fused)")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const auto nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    auto u = finiteVolume::cellCentred::VolumeField<scalar>(
+        exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+    u.correctBoundaryConditions();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    srand(42);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    auto assembleRhsHost =
+        [&](UnstructuredMesh& m, auto& uF, auto& phiF, auto& gammaF, const NeoN::Dictionary& inp)
+    {
+        auto e = dsl::imp::div(phiF, uF) - dsl::imp::laplacian(gammaF, uF);
+        e.read(inp);
+        return e.assemble(m, 1.0, 1.0, {}).rhs().copyToHost();
+    };
+
+    auto rhsUpw = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("upwind", ""));
+    auto rhsLin = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("linearUpwind", ""));
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto rhsUpwP =
+        assembleRhsHost(meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("upwind", "Part"));
+    auto rhsLinP = assembleRhsHost(
+        meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("linearUpwind", "Part")
+    );
+
+    const auto localCells = nCells / mpiEnviron.sizeRank();
+    const localIdx offset = static_cast<localIdx>(mpiEnviron.rank()) * localCells;
+    for (localIdx i = 0; i < localCells; ++i)
+    {
+        const scalar globalCorr = rhsLin.view()[offset + i] - rhsUpw.view()[offset + i];
+        const scalar partCorr = rhsLinP.view()[i] - rhsUpwP.view()[i];
+        INFO("rank " << mpiEnviron.rank() << " local cell " << i);
+        REQUIRE(partCorr == Catch::Approx(globalCorr).margin(1e-9));
+    }
+}
+
 }
