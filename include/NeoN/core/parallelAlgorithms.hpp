@@ -219,18 +219,67 @@ void parallelReduce(Vector<ValueType>& field, Kernel kernel, T& value)
     std::visit([&](const auto& e) { parallelReduce(e, field, kernel, value); }, field.exec());
 }
 
+// Deduce the scan accumulator type (the second, by-reference, parameter) from a
+// parallel_scan kernel of the form void(localIdx, Accumulator&, bool). Needed
+// both by the SerialExecutor branch below (which threads the accumulator itself)
+// and to spell the signature of the forwarding lambda handed to Kokkos.
+namespace detail
+{
+template<typename Kernel>
+struct ScanAccumulator
+{
+    template<typename C, typename R, typename I, typename U>
+    static U deduce(R (C::*)(I, U&, bool) const);
+
+    template<typename C, typename R, typename I, typename U>
+    static U deduce(R (C::*)(I, U&, bool));
+
+    using type = decltype(deduce(&Kernel::operator()));
+};
+}
+
+// NOTE: the kernel is taken by const-reference (not by value) all the way down
+// the dispatch chain. When `parallelScan` is reached through the Executor-variant
+// overloads below, std::visit would otherwise copy the kernel on the host once per
+// hop. For an nvcc extended lambda (NEON_LAMBDA) compiled in a translation unit
+// that contains no direct device launch of that lambda type, nvcc never emits the
+// lambda's host trampolines (fp_caller/fp_copier/fp_deleter), so such a host-side
+// copy dereferences a null fp_copier and segfaults. Passing by reference means the
+// SerialExecutor path only *calls* the kernel and never copies it.
 template<typename Executor, typename Kernel>
 void parallelScan(
-    [[maybe_unused]] const Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel
+    [[maybe_unused]] const Executor& exec, std::pair<localIdx, localIdx> range, const Kernel& kernel
 )
 {
     auto [start, end] = range;
-    using runOn = typename Executor::exec;
-    Kokkos::parallel_scan("parallelScan", Kokkos::RangePolicy<runOn>(start, end), kernel);
+    using Accumulator = typename detail::ScanAccumulator<Kernel>::type;
+    if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
+    {
+        // Do not dispatch the (nvcc extended) lambda to Kokkos on the serial
+        // backend; emulate the inclusive scan with a plain host loop instead.
+        Accumulator update {};
+        for (localIdx i = start; i < end; i++)
+        {
+            kernel(i, update, true);
+        }
+    }
+    else
+    {
+        using runOn = typename Executor::exec;
+        Kokkos::parallel_scan(
+            "parallelScan",
+            Kokkos::RangePolicy<runOn>(start, end),
+            NEON_LAMBDA(const localIdx i, Accumulator& update, const bool final) {
+                kernel(i, update, final);
+            }
+        );
+    }
 }
 
 template<typename Kernel>
-void parallelScan(const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, Kernel kernel)
+void parallelScan(
+    const NeoN::Executor& exec, std::pair<localIdx, localIdx> range, const Kernel& kernel
+)
 {
     std::visit([&](const auto& e) { parallelScan(e, range, kernel); }, exec);
 }
@@ -239,22 +288,41 @@ template<typename Executor, typename Kernel, typename ReturnType>
 void parallelScan(
     [[maybe_unused]] const Executor& exec,
     std::pair<localIdx, localIdx> range,
-    Kernel kernel,
+    const Kernel& kernel,
     ReturnType& returnValue
 )
 {
     auto [start, end] = range;
-    using runOn = typename Executor::exec;
-    Kokkos::parallel_scan(
-        "parallelScan", Kokkos::RangePolicy<runOn>(start, end), kernel, returnValue
-    );
+    if constexpr (std::is_same<std::remove_reference_t<Executor>, SerialExecutor>::value)
+    {
+        // Do not dispatch the (nvcc extended) lambda to Kokkos on the serial
+        // backend; emulate the inclusive scan with a plain host loop instead.
+        ReturnType update {};
+        for (localIdx i = start; i < end; i++)
+        {
+            kernel(i, update, true);
+        }
+        returnValue = update;
+    }
+    else
+    {
+        using runOn = typename Executor::exec;
+        Kokkos::parallel_scan(
+            "parallelScan",
+            Kokkos::RangePolicy<runOn>(start, end),
+            NEON_LAMBDA(const localIdx i, ReturnType& update, const bool final) {
+                kernel(i, update, final);
+            },
+            returnValue
+        );
+    }
 }
 
 template<typename Kernel, typename ReturnType>
 void parallelScan(
     const NeoN::Executor& exec,
     std::pair<localIdx, localIdx> range,
-    Kernel kernel,
+    const Kernel& kernel,
     ReturnType& returnValue
 )
 {
