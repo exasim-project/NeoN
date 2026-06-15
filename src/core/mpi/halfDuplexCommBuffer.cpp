@@ -62,11 +62,7 @@ void HalfDuplexCommBuffer::receive()
 void HalfDuplexCommBuffer::waitComplete()
 {
     NF_DEBUG_ASSERT(isCommInit(), "Communication buffer is not initialised.");
-    while (!isComplete())
-    {
-        // todo deadlock prevention.
-        // wait for the communication to finish.
-    }
+    mpi::waitAll(request_.data(), static_cast<mpi_label_t>(request_.size()));
 }
 
 void HalfDuplexCommBuffer::finaliseComm()
