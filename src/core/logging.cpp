@@ -72,6 +72,24 @@ void setNeonDefaultPattern()
         std::cout << RANK_PREFIX << "Initializing NeoN"
                   << "\n";
 #endif
+
+    // Report resolved GPU-aware MPI status once at startup (D-07, COMM-05).
+    // Must be inside the isInitialized() guard: reading gpuAwareMpi() before MPI is up
+    // is undefined behaviour (Environment ctor calls MPI_Comm_rank on an uninit comm).
+#ifdef NF_WITH_MPI_SUPPORT
+    if (environment.isInitialized())
+    {
+        const bool gpuAware = environment.gpuAwareMpi();
+        const char* gpuAwareMsg = gpuAware
+                                    ? "GPU-aware MPI: enabled (device pointers passed to MPI)"
+                                    : "GPU-aware MPI: disabled (host staging)";
+#if NF_WITH_SPDLOG
+        logger->info(gpuAwareMsg);
+#else
+        if (detail::shouldLog(Level::Info)) std::cout << RANK_PREFIX << gpuAwareMsg << "\n";
+#endif
+    }
+#endif
 }
 
 namespace detail
