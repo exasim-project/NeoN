@@ -433,7 +433,8 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
 ** linear-system rhs, i.e. the discrete -operatorScaling * sum_f F_f corr_f per cell. This mirrors
 ** OpenFOAM's `fvm += fvc::surfaceIntegrate(faceFlux*correction)`: interpolate()=weighted value +
 ** correction(), the weighted part is assembled implicitly and the correction is an explicit source.
-** Boundary correction is zero (physical patches uncorrected), so only internal faces contribute.
+** Physical boundary correction is zero (uncorrected patches); processor faces are cut internal
+** faces and DO contribute via the proc slots filled by correction().
 */
 template<typename FieldValueType, typename AssemblyType>
 void addDivCorrectionToRhs(
@@ -469,6 +470,36 @@ void addDivCorrectionToRhs(
         },
         "addDivCorrectionToRhs"
     );
+
+    // Processor faces: each is a cut internal face whose owner is local. correction() fills the
+    // proc slots with the shared-face correction (same value on both ranks), so the owner-only
+    // contribution -operatorScaling * F_own * corr reproduces the global internal-face rhs:
+    // the neighbour rank adds the matching +F (its F is -F_own) for the same cell on its side.
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto nBoundaryFaces = mesh.nBoundaryFaces();
+        const auto [bFluxV, bCorrV, bOwnV, bNormalSignV] = views(
+            faceFlux.boundaryData().value(),
+            correction.boundaryData().value(),
+            mesh.boundaryMesh().faceOwners(),
+            mesh.boundaryMesh().weights()
+        );
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bcfacei = nBoundaryFaces + procFacei;
+                const auto own = bOwnV[bcfacei];
+                // outward flux from the local owner is normalSign * F; the +F corr owner share of
+                // the global internal face is reproduced as -operatorScaling * (normalSign F) corr.
+                const scalar outwardFlux = bNormalSignV[bcfacei] * bFluxV[bcfacei];
+                const FieldValueType contrib = outwardFlux * bCorrV[bcfacei];
+                Kokkos::atomic_sub(&rhs[own], operatorScaling[own] * contrib);
+            },
+            "addDivCorrectionToRhsProc"
+        );
+    }
 }
 
 template<typename FieldValueType, typename AssemblyType>
@@ -516,5 +547,24 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
 template class GaussGreenDiv<scalar>;
 template class GaussGreenDiv<Vec3>;
 template class GaussGreenDiv<Vec3, scalar>;
+
+template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void addDivCorrectionToRhs(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
 
 };
