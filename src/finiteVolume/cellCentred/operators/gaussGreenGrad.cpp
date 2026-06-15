@@ -309,6 +309,27 @@ void GaussGreenGrad::gradCellBased(
 };
 
 void GaussGreenGrad::grad(
+    const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, la::LinearSystem<Vec3>& ls
+) const
+{
+    fill(ls.rhs(), zero<Vec3>());
+    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    {
+        if (!cellIter->getCellBasedData())
+        {
+            cellIter->setComputeCellBasedData(
+                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            );
+        }
+        computeGradCellBased(phi, surfaceInterpolation_, ls.rhs(), operatorScaling);
+    }
+    else
+    {
+        computeGrad(phi, surfaceInterpolation_, ls.rhs(), operatorScaling);
+    }
+}
+
+void GaussGreenGrad::grad(
     const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi, const dsl::Coeff operatorScaling
 ) const
 {

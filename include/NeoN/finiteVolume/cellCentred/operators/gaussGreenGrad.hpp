@@ -37,11 +37,9 @@ public:
      * @param operatorScaling [in] - scales operator by a coefficient
      * @param ls [in,out] - assemble gradient operator into the given linear system
      */
-    virtual void
-    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3>&) const override
-    {
-        NF_ERROR_EXIT("Not implemented");
-    };
+    virtual void grad(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, la::LinearSystem<Vec3>& ls
+    ) const override;
 
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi

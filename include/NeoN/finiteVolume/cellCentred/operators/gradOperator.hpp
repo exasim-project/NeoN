@@ -136,6 +136,20 @@ public:
         source += tmpsource;
     }
 
+    /* @brief explicit operation dispatched via the iterator type of ls.
+     *
+     * Uses ls only for iterator dispatch (face-based vs cell-based); the gradient
+     * is accumulated into ls.rhs() and then added to source.
+     */
+    void explicitOperation(Vector<Vec3>& source, la::LinearSystem<ValueType>& ls) const
+    {
+        NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
+        fill(ls.rhs(), zero<ValueType>());
+        const auto operatorScaling = this->getCoefficient();
+        gradOperatorStrategy_->grad(this->getVector(), operatorScaling, ls);
+        source += ls.rhs();
+    }
+
     /* @brief forwards to implicit gradOperatorStrategy_->grad() with arguments */
     void implicitOperation(la::LinearSystem<ValueType>& ls) const
     {
