@@ -39,16 +39,15 @@ struct CommunicationPattern
      */
     std::vector<int> recvIdx;
 
-    /** @brief Maps received halo entries to local boundary face indices.
+    /** @brief Maps the k-th rank-grouped recv entry to its local proc-boundary face index.
      *
-     *  TODO: currently dead — computeCommunicationPattern always constructs this empty and no code
-     *  reads it. Either drop it, or populate and consume it. To adopt it: fill it so that
-     *  boundaryMapVector[k] is the local processor-boundary face index of the k-th received halo
-     *  entry (in recvIdx order). That mapping is what a *value*-based halo exchange driven by this
-     *  pattern needs to scatter received neighbour data into a field's proc tail — which would let
-     *  the remaining per-field exchanges (the geometry-scheme neighbour-centre exchange and the
-     *  field-halo path BoundaryData::communicate) share this single CommunicationPattern instead of
-     *  each rolling its own MPI isend/irecv.
+     *  `boundaryMapVector[k]` is the local processor-boundary face index (0-based within the
+     *  proc-boundary block, range [0, nProcBoundaryFaces)) of the k-th entry in the rank-grouped
+     *  receive buffer (`recvRankGrouped` layout with `rdispl[r]` offsets). Populated by
+     *  `computeCommunicationPattern` alongside `recvIdx` as the inverse permutation of the
+     *  recvIdx scatter walk. Consumed by the unified halo-exchange primitive to scatter received
+     *  data into a field's proc-boundary tail: `value_[procFaceStart + boundaryMapVector[k]]`,
+     *  where `procFaceStart = nBoundaryFaces - nProcBoundaryFaces`.
      */
     std::vector<localIdx> boundaryMapVector;
 

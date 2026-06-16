@@ -592,7 +592,27 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
         }
     }
 
-    std::vector<localIdx> boundaryMapVector;
+    // boundaryMapVector[rankGroupedPos] = procFacePos (0-based within the proc-boundary block).
+    // This is the inverse permutation of the recvIdx scatter walk above. It maps the k-th entry
+    // of the rank-grouped recv buffer (recvRankGrouped layout, rdispl[r] offsets) to the local
+    // proc-boundary face index. The unified halo primitive scatters through it:
+    // value_[procFaceStart + boundaryMapVector[k]].
+    std::vector<localIdx> boundaryMapVector(static_cast<std::size_t>(totalRecv));
+    {
+        // fresh copy of displacement array — DO NOT reuse readCursor (consumed above)
+        auto rcsr = rdispl;
+        int wpos = 0;
+        for (int i = 0; i < static_cast<int>(neighbourRanks.size()); i++)
+        {
+            const auto src = static_cast<std::size_t>(neighbourRanks[static_cast<std::size_t>(i)]);
+            const int psz = patchSizes[static_cast<std::size_t>(i)];
+            for (int k = 0; k < psz; ++k)
+            {
+                boundaryMapVector[static_cast<std::size_t>(rcsr[src]++)] =
+                    static_cast<localIdx>(wpos++);
+            }
+        }
+    }
     return CommunicationPattern {sendCounts, recvIdx, boundaryMapVector, mpiEnviron};
 }
 
