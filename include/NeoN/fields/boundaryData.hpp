@@ -21,6 +21,7 @@
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
 #endif
 
 namespace NeoN
@@ -246,121 +247,84 @@ public:
     }
 
 #ifdef NF_WITH_MPI_SUPPORT
-    void communicate(std::pair<localIdx, localIdx> range, int neighborRank)
+    /**
+     * @brief Stage a proc-patch's owner values for deferred halo exchange.
+     *
+     * Records the patch range and neighbour rank for this round without posting
+     * any MPI operations. The actual isend/irecv is deferred to waitAll(), which
+     * is called from value() outside the correctBoundaryConditions loop. This
+     * "post all, drain once" discipline prevents the eager-drain bug: if each
+     * patch's recv were drained immediately, the second proc patch's in-flight
+     * recv would be cancelled before completion, leaving its ghost equal to the
+     * owner seed instead of the neighbour value.
+     *
+     * Re-keyed to per-neighbour rank (D-04): multiple proc patches to the same
+     * neighbour share one CommBuffer. The unified gather+post+scatter runs in
+     * waitAll() once all patches have been staged.
+     *
+     * @param range          [rangeStart, rangeEnd) index range in value_ for this patch.
+     * @param neighborRank   The MPI rank of the neighbour that owns the far side of this patch.
+     * @param pattern        CommunicationPattern (sendCounts, boundaryMapVector, env).
+     *                       Must remain valid until the matching waitAll() completes.
+     *                       Callers obtain this via cachedCommunicationPattern(mesh).
+     * @param procFaceStart  First proc-boundary index in value_: equals
+     *                       mesh.nBoundaryFaces() (physical-boundary count).
+     *
+     * @note Option B (extracting post-all to VolumeField::correctBoundaryConditions with a
+     *       start/finish split) is the Phase 14 OVERLAP-01 migration path — not implemented here.
+     */
+    void communicate(
+        std::pair<localIdx, localIdx> range,
+        int neighborRank,
+        const CommunicationPattern& pattern,
+        localIdx procFaceStart
+    )
     {
-        const auto [rangeStart, rangeEnd] = range;
-        const localIdx patchSize = rangeEnd - rangeStart;
-
-        mpi::Environment mpiEnv;
-
-        // Find or insert a persistent pool entry for this patch (keyed by rangeStart).
-        // Proc-patch count is typically 1-4 per rank; a linear scan is effectively O(1).
+        // Find or insert a persistent pool entry keyed by neighbourRank.
+        // Proc-neighbour count is typically 1-4 per rank; a linear scan is O(1) in practice.
         auto it = std::find_if(
             pool_.begin(),
             pool_.end(),
-            [rangeStart](const CommBuffer& b) { return b.rangeStart == rangeStart; }
+            [neighborRank](const CommBuffer& b) { return b.neighbourRank == neighborRank; }
         );
         if (it == pool_.end())
         {
             pool_.push_back(CommBuffer {});
             it = pool_.end() - 1;
-            it->rangeStart = rangeStart;
+            it->neighbourRank = neighborRank;
         }
         CommBuffer& buf = *it;
-        buf.patchSize = patchSize;
 
-        const auto byteCount =
-            static_cast<mpi_label_t>(patchSize) * static_cast<mpi_label_t>(sizeof(ValueType));
-        const auto neighborRankLabel = static_cast<mpi_label_t>(neighborRank);
-
-        // Deterministic, symmetric tag for the processor patch shared by (myRank, neighborRank).
-        // A unique tag per unordered rank pair, identical on both sides, makes each isend/irecv
-        // match its true partner regardless of posting order. min*P+max is symmetric so both
-        // ranks of the pair compute the same tag.
-        const auto nProcs = static_cast<mpi_label_t>(mpiEnv.sizeRank());
-        const auto myRankLabel = static_cast<mpi_label_t>(mpiEnv.rank());
-        const mpi_label_t pairKey = std::min(myRankLabel, neighborRankLabel) * nProcs
-                                  + std::max(myRankLabel, neighborRankLabel);
-        const mpi_label_t tagUb = static_cast<mpi_label_t>(mpiEnv.tagUpperBound());
-        const mpi_label_t pairTag = pairKey % tagUb;
-        NF_ASSERT(
-            pairTag < tagUb,
-            "pairTag " << pairTag << " >= MPI_TAG_UB " << tagUb << "; nProcs=" << nProcs
-        );
-
-        const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
-
-        MPI_Request sendReq, recvReq;
-        if (useGpuPath)
+        // Grow-only: size the per-neighbour buffers to sendCounts[neighbourRank].
+        // Multiple patches to the same neighbour reuse the same CommBuffer; the buffer is
+        // already sized on the first communicate() call for this neighbour this round.
+        const int neiCount = pattern.sendCounts[static_cast<std::size_t>(neighborRank)];
+        if (static_cast<localIdx>(buf.sendBuf.size()) < static_cast<localIdx>(neiCount))
         {
-            // Grow-only: only (re)allocate when the buffer is absent or too small.
-            if (!buf.deviceRecvBuf
-                || buf.deviceRecvBuf->size() < static_cast<std::size_t>(patchSize))
-                buf.deviceRecvBuf = Vector<ValueType>(exec_, patchSize, ValueType {});
-            mpi::isend<char>(
-                reinterpret_cast<const char*>(value_.data() + rangeStart),
-                byteCount,
-                neighborRankLabel,
-                pairTag,
-                mpiEnv.comm(),
-                &sendReq
-            );
-            mpi::irecv<char>(
-                reinterpret_cast<char*>(buf.deviceRecvBuf->data()),
-                byteCount,
-                neighborRankLabel,
-                pairTag,
-                mpiEnv.comm(),
-                &recvReq
-            );
+            buf.sendBuf.resize(static_cast<std::size_t>(neiCount));
+            buf.recvBuf.resize(static_cast<std::size_t>(neiCount));
         }
-        else
-        {
-            // Grow-only resize: only extend when the current capacity is insufficient.
-            if (static_cast<localIdx>(buf.sendBuf.size()) < patchSize)
-            {
-                buf.sendBuf.resize(static_cast<std::size_t>(patchSize));
-                buf.recvBuf.resize(static_cast<std::size_t>(patchSize));
-            }
-            NF_DEBUG_ASSERT(
-                static_cast<localIdx>(buf.sendBuf.size()) >= patchSize,
-                "sendBuf capacity " << buf.sendBuf.size() << " < patchSize " << patchSize
-            );
-            // Stage exactly patchSize elements from the patch range (device or CPU -> host).
-            // Both arguments to std::visit must be Executor variants, not bare alternatives.
-            std::visit(
-                detail::deepCopyVisitor<ValueType>(
-                    patchSize, value_.data() + rangeStart, buf.sendBuf.data()
-                ),
-                exec_,                      // source executor (device or CPU)
-                Executor(SerialExecutor {}) // dest executor (host)
-            );
-            mpi::isend<char>(
-                reinterpret_cast<const char*>(buf.sendBuf.data()),
-                byteCount,
-                neighborRankLabel,
-                pairTag,
-                mpiEnv.comm(),
-                &sendReq
-            );
-            mpi::irecv<char>(
-                reinterpret_cast<char*>(buf.recvBuf.data()),
-                byteCount,
-                neighborRankLabel,
-                pairTag,
-                mpiEnv.comm(),
-                &recvReq
-            );
-        }
+        buf.totalFaces = static_cast<localIdx>(neiCount);
+
+        // Record this neighbour as active for this round (deduplicated: only add once).
+        const bool alreadyActive =
+            std::find(activeKeys_.begin(), activeKeys_.end(), neighborRank) != activeKeys_.end();
+        if (!alreadyActive) activeKeys_.push_back(neighborRank);
+
+        // Cache the pattern pointer and procFaceStart for use in waitAll().
+        // The pattern lives in mesh.stencilDB() (cachedCommunicationPattern) and is valid
+        // for the mesh lifetime; storing a raw pointer is safe.
+        cachedPattern_ = &pattern;
+        procFaceStart_ = procFaceStart;
+
         communicating_ = true;
-        requests_.push_back(sendReq);
-        requests_.push_back(recvReq);
-        activeKeys_.push_back(rangeStart);
+        (void)range; // range is used implicitly: value_ is already seeded by
+                     // updateProcBoundaryOwnerValue
     }
 
-    // Retained as a latent diagnostic helper (not used in the drain path after
-    // waitAll() was updated to call mpi::waitAll). isComplete() is kept to preserve
-    // symmetry with HalfDuplexCommBuffer::isComplete() and for potential future use.
+    // Retained as a latent diagnostic helper (not used in the drain path).
+    // isComplete() can be used to poll whether all outstanding MPI operations have
+    // finished without blocking (useful for debugging and diagnostics).
     bool isComplete() const
     {
         if (requests_.empty() || !communicating_) return true;
@@ -372,25 +336,25 @@ public:
         return true;
     }
 
-    // Test-only observability of the host send-staging buffer for a given patch key.
+    // Test-only observability of the host send-staging buffer for a given neighbour rank.
     // Returns the buffer data() pointer so a test can assert pointer identity (no realloc)
     // across communicate()/waitAll() rounds. Returns nullptr / 0 when no entry exists.
-    const ValueType* sendBufPtrForTest(localIdx rangeStart) const
+    const ValueType* sendBufPtrForTest(int neighbourRank) const
     {
         for (const auto& b : pool_)
-            if (b.rangeStart == rangeStart) return b.sendBuf.data();
+            if (b.neighbourRank == neighbourRank) return b.sendBuf.data();
         return nullptr;
     }
-    std::size_t sendBufCapForTest(localIdx rangeStart) const
+    std::size_t sendBufCapForTest(int neighbourRank) const
     {
         for (const auto& b : pool_)
-            if (b.rangeStart == rangeStart) return b.sendBuf.capacity();
+            if (b.neighbourRank == neighbourRank) return b.sendBuf.capacity();
         return 0;
     }
-    std::size_t sendBufSizeForTest(localIdx rangeStart) const
+    std::size_t sendBufSizeForTest(int neighbourRank) const
     {
         for (const auto& b : pool_)
-            if (b.rangeStart == rangeStart) return b.sendBuf.size();
+            if (b.neighbourRank == neighbourRank) return b.sendBuf.size();
         return 0;
     }
     std::size_t poolSizeForTest() const { return pool_.size(); }
@@ -400,59 +364,163 @@ public:
     void waitAll() const
     {
 #ifdef NF_WITH_MPI_SUPPORT
-        if (requests_.empty() || !communicating_) return;
-        mpi::waitAll(requests_);
-        mpi::Environment mpiEnv;
+        if (!communicating_ || activeKeys_.empty() || cachedPattern_ == nullptr) return;
+
+        const auto& pattern = *cachedPattern_;
+        const auto& bmv = pattern.boundaryMapVector;
+        const auto& sendCounts = pattern.sendCounts;
+        const auto nRanks = static_cast<std::size_t>(pattern.env.sizeRank());
+
+        // Build per-rank send displacements (prefix sum of sendCounts).
+        // Processor-patch send/recv counts are symmetric, so sdispl[r] serves as both
+        // the send and recv displacement for rank r.
+        std::vector<int> sdispl(nRanks, 0);
+        for (std::size_t r = 1; r < nRanks; ++r)
+            sdispl[r] = sdispl[r - 1] + sendCounts[r - 1];
+
+        mpi::Environment mpiEnv = pattern.env;
         const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec_);
+        const auto nProcs = static_cast<mpi_label_t>(mpiEnv.sizeRank());
+        const auto myRankLabel = static_cast<mpi_label_t>(mpiEnv.rank());
+
+        // ---- Stage: gather proc-face values from value_ into per-neighbour send buffers ----
+        // For each active neighbour: gather the neiCount faces using boundaryMapVector.
+        // boundaryMapVector[rankGroupedPos] = procFacePos (0-based within proc-boundary block).
+        // value_[procFaceStart_ + bmv[sdispl[nei] + j]] is the proc-face to send at rank-grouped
+        // position (sdispl[nei] + j) for neighbour nei.
+        // Stage device -> host so we have a host buffer to hand to MPI.
+        const int totalSend = sendCounts[nRanks]; // last element = total proc faces
+        std::vector<ValueType> sendHostBuf(static_cast<std::size_t>(totalSend));
+        {
+            // Copy ALL proc-face values from device to host in one visit.
+            std::visit(
+                detail::deepCopyVisitor<ValueType>(
+                    static_cast<localIdx>(totalSend),
+                    value_.data() + procFaceStart_,
+                    sendHostBuf.data()
+                ),
+                exec_,                      // source: device or CPU
+                Executor(SerialExecutor {}) // dest: host
+            );
+        }
+
+        // ---- Post per-neighbour non-blocking isend/irecv ----
+        // One isend + one irecv per unique active neighbour (O(neighbours), not O(patches)).
+        for (const int neiRank : activeKeys_)
+        {
+            const auto nei = static_cast<std::size_t>(neiRank);
+            const int neiCount = sendCounts[nei];
+            if (neiCount == 0) continue;
+
+            CommBuffer& buf = *std::find_if(
+                pool_.begin(),
+                pool_.end(),
+                [neiRank](const CommBuffer& b) { return b.neighbourRank == neiRank; }
+            );
+
+            // Gather: repack rank-grouped send buffer from proc-face-ordered host values.
+            // sendHostBuf is proc-face ordered; sendBuf[sdispl[nei]+j] =
+            // sendHostBuf[bmv[sdispl[nei]+j]]
+            for (int j = 0; j < neiCount; ++j)
+            {
+                const auto rgPos = static_cast<std::size_t>(sdispl[nei] + j);
+                const auto pfPos = static_cast<std::size_t>(bmv[rgPos]);
+                NF_DEBUG_ASSERT(
+                    static_cast<localIdx>(pfPos) < static_cast<localIdx>(totalSend),
+                    "bmv[" << rgPos << "]=" << pfPos << " out of range [0," << totalSend << ")"
+                );
+                buf.sendBuf[static_cast<std::size_t>(j)] = sendHostBuf[pfPos];
+            }
+
+            const auto neiLabel = static_cast<mpi_label_t>(neiRank);
+            const mpi_label_t pairKey =
+                std::min(myRankLabel, neiLabel) * nProcs + std::max(myRankLabel, neiLabel);
+            const mpi_label_t tagUb = static_cast<mpi_label_t>(mpiEnv.tagUpperBound());
+            const mpi_label_t pairTag = pairKey % tagUb;
+            NF_ASSERT(
+                pairTag < tagUb,
+                "pairTag " << pairTag << " >= MPI_TAG_UB " << tagUb << "; nProcs=" << nProcs
+            );
+            const auto byteCount =
+                static_cast<mpi_label_t>(neiCount) * static_cast<mpi_label_t>(sizeof(ValueType));
+
+            MPI_Request sendReq, recvReq;
+            mpi::isend<char>(
+                reinterpret_cast<const char*>(buf.sendBuf.data()),
+                byteCount,
+                neiLabel,
+                pairTag,
+                mpiEnv.comm(),
+                &sendReq
+            );
+            mpi::irecv<char>(
+                reinterpret_cast<char*>(buf.recvBuf.data()),
+                byteCount,
+                neiLabel,
+                pairTag,
+                mpiEnv.comm(),
+                &recvReq
+            );
+            requests_.push_back(sendReq);
+            requests_.push_back(recvReq);
+        }
+
+        // ---- Single drain (post all, drain once) ----
+        // All neighbours are posted above; drain them together. Per-neighbour drain would
+        // reproduce the eager-drain bug (dominant historical failure).
+        mpi::waitAll(requests_);
+
+        // ---- Scatter rank-grouped recv buffer into value_'s proc-boundary tail ----
+        // value_[procFaceStart_ + boundaryMapVector[k]] = recvBuf[k]  for k in [0, totalSend)
+        // Collect the full rank-grouped recv output into a single host buffer first.
+        std::vector<ValueType> recvHostBuf(static_cast<std::size_t>(totalSend));
+        for (const int neiRank : activeKeys_)
+        {
+            const auto nei = static_cast<std::size_t>(neiRank);
+            const int neiCount = sendCounts[nei];
+            if (neiCount == 0) continue;
+            CommBuffer& buf = *std::find_if(
+                pool_.begin(),
+                pool_.end(),
+                [neiRank](const CommBuffer& b) { return b.neighbourRank == neiRank; }
+            );
+            for (int j = 0; j < neiCount; ++j)
+                recvHostBuf[static_cast<std::size_t>(sdispl[nei] + j)] =
+                    buf.recvBuf[static_cast<std::size_t>(j)];
+        }
+        // Scatter: recvHostBuf is rank-grouped; bmv maps rank-grouped pos -> proc-face pos.
+        std::vector<ValueType> scatterBuf(static_cast<std::size_t>(totalSend));
+        for (int k = 0; k < totalSend; ++k)
+        {
+            const auto pfPos = static_cast<std::size_t>(bmv[static_cast<std::size_t>(k)]);
+            NF_DEBUG_ASSERT(
+                static_cast<int>(pfPos) < totalSend,
+                "bmv[" << k << "]=" << pfPos << " out of range [0," << totalSend << ")"
+            );
+            scatterBuf[pfPos] = recvHostBuf[static_cast<std::size_t>(k)];
+        }
+        // Copy scattered result to value_[procFaceStart_..] (device or CPU).
+        std::visit(
+            detail::deepCopyVisitor<ValueType>(
+                static_cast<localIdx>(totalSend), scatterBuf.data(), value_.data() + procFaceStart_
+            ),
+            Executor(SerialExecutor {}), // source: host
+            Executor(exec_)              // dest: device or CPU
+        );
+
         if (useGpuPath)
         {
-            // Iterate only the patches posted this round (not the full pool).
-            for (const localIdx key : activeKeys_)
-            {
-                CommBuffer& buf = *std::find_if(
-                    pool_.begin(),
-                    pool_.end(),
-                    [key](const CommBuffer& b) { return b.rangeStart == key; }
-                );
-                auto srcView = buf.deviceRecvBuf->view();
-                auto dstView = value_.view();
-                const localIdx start = buf.rangeStart;
-                parallelFor(
-                    exec_,
-                    {0, buf.patchSize},
-                    KOKKOS_LAMBDA(const localIdx k) { dstView[start + k] = srcView[k]; }
-                );
-            }
-            // LOAD-BEARING FENCE: the parallelFor copy-back above (deviceRecvBuf -> value_) is
-            // asynchronous on the GPUExecutor. deviceRecvBuf is now a persistent pool member
-            // reused across rounds; fencing here guarantees the device kernel has completed before
-            // the next communicate() posts MPI_Irecv into the same deviceRecvBuf allocation
-            // (use-before-reuse). Removing this fence is a data race on device memory.
+            // LOAD-BEARING FENCE (COMM-03 recv): the deepCopyVisitor above launches an
+            // asynchronous device kernel (device copy-back). Fencing here ensures the kernel
+            // has completed before the next communicate() stages new values into value_
+            // (use-before-write on device memory). Removing this fence is a data race.
             fence(exec_);
         }
-        else
-        {
-            // Iterate only the patches posted this round; copy back exactly patchSize elements.
-            // Both arguments to std::visit must be Executor variants, not bare alternatives.
-            for (const localIdx key : activeKeys_)
-            {
-                CommBuffer& buf = *std::find_if(
-                    pool_.begin(),
-                    pool_.end(),
-                    [key](const CommBuffer& b) { return b.rangeStart == key; }
-                );
-                std::visit(
-                    detail::deepCopyVisitor<ValueType>(
-                        buf.patchSize, buf.recvBuf.data(), value_.data() + buf.rangeStart
-                    ),
-                    Executor(SerialExecutor {}), // source executor (host)
-                    Executor(exec_)              // dest executor (device or CPU)
-                );
-            }
-        }
+
         requests_.clear();
         communicating_ = false;
         activeKeys_.clear(); // retains capacity; pool_ persists for reuse next round
+        cachedPattern_ = nullptr;
 #endif
     }
 
@@ -500,19 +568,23 @@ private:
 #ifdef NF_WITH_MPI_SUPPORT
     struct CommBuffer
     {
-        std::vector<ValueType> sendBuf;                 // host staging: lazy, grow-only
-        std::vector<ValueType> recvBuf;                 // host staging: lazy, grow-only
-        std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer: lazy, grow-only
-        localIdx rangeStart {-1};                       // pool key
-        localIdx patchSize {0};                         // current capacity watermark
+        std::vector<ValueType> sendBuf; // host staging: lazy, grow-only (size = sendCounts[nei])
+        std::vector<ValueType> recvBuf; // host staging: lazy, grow-only (size = sendCounts[nei])
+        std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer: reserved for Phase 13
+        int neighbourRank {-1};  // pool key (re-keyed from rangeStart to neighbour rank)
+        localIdx totalFaces {0}; // capacity watermark = sendCounts[neighbourRank]
     };
     mutable std::vector<MPI_Request>
         requests_; ///< Per-round MPI request handles (send+recv pairs). clear() retains capacity.
-    mutable std::vector<CommBuffer>
-        pool_; ///< Persistent staging-buffer pool keyed by rangeStart. Never cleared after warm-up.
-    mutable std::vector<localIdx>
-        activeKeys_; ///< Per-round list of rangeStarts posted this round. clear() retains capacity.
+    mutable std::vector<CommBuffer> pool_; ///< Persistent staging-buffer pool keyed by
+                                           ///< neighbourRank. Never cleared after warm-up.
+    mutable std::vector<int> activeKeys_;  ///< Per-round list of neighbourRanks posted this round.
+                                           ///< clear() retains capacity.
     mutable bool communicating_ = false;
+    mutable const CommunicationPattern* cachedPattern_ =
+        nullptr; ///< Pattern from last communicate(); valid until waitAll().
+    mutable localIdx procFaceStart_ =
+        0; ///< First proc-boundary index in value_ = mesh.nBoundaryFaces().
 #endif
 };
 

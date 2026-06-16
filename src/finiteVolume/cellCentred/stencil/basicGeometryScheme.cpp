@@ -11,6 +11,7 @@
 #include "NeoN/core/mpi/operators.hpp"
 #include "NeoN/distributed/communicationPattern.hpp"
 #include "NeoN/distributed/haloExchange.hpp"
+// cachedCommunicationPattern is declared in communicationPattern.hpp (above)
 #endif
 
 namespace NeoN::finiteVolume::cellCentred
@@ -60,10 +61,10 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
     }
 
     // Exchange the per-proc-face owner centres through the unified halo primitive. The pattern is
-    // computed locally here; caching it on the mesh is deferred to a later phase. boundaryMapVector
-    // scatters the rank-grouped recv buffer back into proc-face order, so neiCentreDev[f] is the
-    // far-side owner centre (Cnei) of proc face f.
-    const auto pattern = computeCommunicationPattern(mesh);
+    // retrieved from the mesh stencilDB cache (computed once per mesh via
+    // cachedCommunicationPattern). boundaryMapVector scatters the rank-grouped recv buffer back
+    // into proc-face order, so neiCentreDev[f] is the far-side owner centre (Cnei) of proc face f.
+    const auto& pattern = cachedCommunicationPattern(mesh);
     Vector<Vec3> neiCentreDev(exec, nProcFaces, zero<Vec3>());
     haloExchange<Vec3>(exec, mesh, ownCentreDev.data(), neiCentreDev.data(), pattern);
     return neiCentreDev;

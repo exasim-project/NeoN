@@ -175,7 +175,7 @@ void haloExchange(
     // ----- Scatter rank-grouped recv buffer into proc-face ordered recvData -----
     // recvData[boundaryMapVector[k]] = recvBuf[k]  for k in [0, totalRecv)
     // (procFaceStart = 0 here since recvData is a standalone proc-face buffer;
-    //  callers targeting BoundaryData::value_ add procFaceStart = nBF - nPF).
+    //  callers targeting BoundaryData::value_ set procFaceStart = mesh.nBoundaryFaces()).
     NF_DEBUG_ASSERT(
         static_cast<int>(pattern.boundaryMapVector.size()) == totalRecv,
         "boundaryMapVector size " << pattern.boundaryMapVector.size() << " != totalRecv "

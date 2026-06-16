@@ -616,4 +616,17 @@ CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh)
     return CommunicationPattern {sendCounts, recvIdx, boundaryMapVector, mpiEnviron};
 }
 
+const CommunicationPattern& cachedCommunicationPattern(const UnstructuredMesh& mesh)
+{
+    auto& db = mesh.stencilDB();
+    if (!db.contains("communicationPattern"))
+    {
+        db.insert(
+            std::string("communicationPattern"),
+            std::make_shared<CommunicationPattern>(computeCommunicationPattern(mesh))
+        );
+    }
+    return *db.get<std::shared_ptr<CommunicationPattern>>("communicationPattern");
+}
+
 } // namespace NeoN

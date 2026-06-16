@@ -47,7 +47,8 @@ struct CommunicationPattern
      *  `computeCommunicationPattern` alongside `recvIdx` as the inverse permutation of the
      *  recvIdx scatter walk. Consumed by the unified halo-exchange primitive to scatter received
      *  data into a field's proc-boundary tail: `value_[procFaceStart + boundaryMapVector[k]]`,
-     *  where `procFaceStart = nBoundaryFaces - nProcBoundaryFaces`.
+     *  where `procFaceStart = mesh.nBoundaryFaces()` (physical-boundary count,
+     *  i.e. the first proc-face index inside BoundaryData::value_).
      */
     std::vector<localIdx> boundaryMapVector;
 
@@ -83,6 +84,22 @@ struct CommunicationPattern
  *              field synchronisation.
  */
 CommunicationPattern computeCommunicationPattern(const UnstructuredMesh& mesh);
+
+/**
+ * @brief Returns a cached CommunicationPattern for the given mesh partition.
+ *
+ * Computes the pattern via `computeCommunicationPattern` on first call and
+ * memoises the result in `mesh.stencilDB()`. Subsequent calls for the same
+ * mesh return a reference to the cached value without any MPI collectives.
+ * This amortises the `MPI_Alltoall` / `MPI_Alltoallv` cost over many halo
+ * exchanges on an immutable mesh topology.
+ *
+ * @param mesh  The local mesh partition. Must remain alive for the duration
+ *              of any exchange that holds the returned reference.
+ * @return      A const reference to the memoised CommunicationPattern stored
+ *              in mesh.stencilDB(). Valid for the mesh lifetime.
+ */
+const CommunicationPattern& cachedCommunicationPattern(const UnstructuredMesh& mesh);
 
 } // namespace NeoN
 
