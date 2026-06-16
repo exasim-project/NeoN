@@ -55,10 +55,15 @@ TEST_CASE("BoundaryData persistent staging buffer host path", "[ALLOC-01][ALLOC-
     const auto [rangeStart, rangeEnd] = uPart.boundaryData().range(procPatchId);
     const localIdx patchSize = rangeEnd - rangeStart;
 
+    // Pool is now keyed by neighbourRank (not rangeStart).
+    // Obtain the neighbour rank for the proc patch so we can query the pool.
+    const int procPatchNeighbourRank =
+        static_cast<int>(meshPart.boundaryMesh().neighbourRankForRange({rangeStart, rangeEnd}));
+
     // Record the staging buffer address and capacity after round 1.
-    const scalar* ptr1 = uPart.boundaryData().sendBufPtrForTest(rangeStart);
-    const std::size_t cap1 = uPart.boundaryData().sendBufCapForTest(rangeStart);
-    const std::size_t sz1 = uPart.boundaryData().sendBufSizeForTest(rangeStart);
+    const scalar* ptr1 = uPart.boundaryData().sendBufPtrForTest(procPatchNeighbourRank);
+    const std::size_t cap1 = uPart.boundaryData().sendBufCapForTest(procPatchNeighbourRank);
+    const std::size_t sz1 = uPart.boundaryData().sendBufSizeForTest(procPatchNeighbourRank);
 
     REQUIRE(ptr1 != nullptr); // host staging buffer must exist after round 1
 
@@ -67,9 +72,9 @@ TEST_CASE("BoundaryData persistent staging buffer host path", "[ALLOC-01][ALLOC-
     uPart.boundaryData().value(); // drain round 2
 
     // [ALLOC-01]: pointer and capacity must be unchanged after round 2
-    // (current code reallocates the staging buffer every round — this FAILS RED pre-refactor)
-    REQUIRE(uPart.boundaryData().sendBufPtrForTest(rangeStart) == ptr1);
-    REQUIRE(uPart.boundaryData().sendBufCapForTest(rangeStart) == cap1);
+    // (current code reallocated the staging buffer every round — this FAILS RED pre-refactor)
+    REQUIRE(uPart.boundaryData().sendBufPtrForTest(procPatchNeighbourRank) == ptr1);
+    REQUIRE(uPart.boundaryData().sendBufCapForTest(procPatchNeighbourRank) == cap1);
 
     // [ALLOC-02]: staging size must equal patchSize, not nBoundaryFaces
     // (current code uses resize(patchSize) but commBuffers_.clear() destroys and rebuilds)
