@@ -152,20 +152,18 @@ public:
         source += tmpsource;
     }
 
-    /* @brief explicit operation dispatched via the iterator type of ls.
+    /* @brief explicit operation dispatched via the iterator context.
      *
-     * Uses ls only for iterator dispatch (face-based vs cell-based); the gradient
-     * is computed into a scratch buffer and accumulated into source without
-     * touching ls.rhs().
+     * Uses iterCtx to choose cell-based vs face-based algorithm; the gradient
+     * is computed into a scratch buffer and accumulated into source.
      */
-    void explicitOperation(Vector<Vec3>& source, la::LinearSystem<ValueType>& ls) const
+    void
+    explicitOperation(Vector<Vec3>& source, std::shared_ptr<la::MeshIteratorContext> iterCtx) const
     {
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         auto tmpsource = Vector<ValueType>(source.exec(), source.size(), zero<ValueType>());
         const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(
-            this->getVector(), operatorScaling, tmpsource, ls.getMeshIterator()
-        );
+        gradOperatorStrategy_->grad(this->getVector(), operatorScaling, tmpsource, iterCtx);
         source += tmpsource;
     }
 

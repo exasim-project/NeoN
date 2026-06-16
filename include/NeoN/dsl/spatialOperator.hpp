@@ -29,11 +29,11 @@ concept HasExplicitOperator = requires(T const t) {
 };
 
 template<typename T>
-concept HasExplicitOperatorWithLS = requires(T const t) {
+concept HasExplicitOperatorWithIterCtx = requires(T const t) {
     {
         t.explicitOperation(
             std::declval<Vector<typename T::VectorValueType>&>(),
-            std::declval<la::LinearSystem<typename T::VectorValueType>&>()
+            std::declval<std::shared_ptr<la::MeshIteratorContext>>()
         )
     } -> std::same_as<void>;
 };
@@ -95,9 +95,11 @@ public:
 
     void explicitOperation(Vector<ValueType>& source) const { model_->explicitOperation(source); }
 
-    void explicitOperation(Vector<ValueType>& source, la::LinearSystem<ValueType>& ls) const
+    void explicitOperation(
+        Vector<ValueType>& source, std::shared_ptr<la::MeshIteratorContext> iterCtx
+    ) const
     {
-        model_->explicitOperation(source, ls);
+        model_->explicitOperation(source, iterCtx);
     }
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const { model_->implicitOperation(ls); }
@@ -142,8 +144,9 @@ private:
 
         virtual void explicitOperation(Vector<ValueType>& source) const = 0;
 
-        virtual void
-        explicitOperation(Vector<ValueType>& source, la::LinearSystem<ValueType>& ls) const = 0;
+        virtual void explicitOperation(
+            Vector<ValueType>& source, std::shared_ptr<la::MeshIteratorContext> iterCtx
+        ) const = 0;
 
         virtual void implicitOperation(la::LinearSystem<ValueType>& ls) const = 0;
 
@@ -196,12 +199,13 @@ private:
             }
         }
 
-        virtual void
-        explicitOperation(Vector<ValueType>& source, la::LinearSystem<ValueType>& ls) const override
+        virtual void explicitOperation(
+            Vector<ValueType>& source, std::shared_ptr<la::MeshIteratorContext> iterCtx
+        ) const override
         {
-            if constexpr (HasExplicitOperatorWithLS<ConcreteOperatorType>)
+            if constexpr (HasExplicitOperatorWithIterCtx<ConcreteOperatorType>)
             {
-                concreteOp_.explicitOperation(source, ls);
+                concreteOp_.explicitOperation(source, iterCtx);
             }
             else if constexpr (HasExplicitOperator<ConcreteOperatorType>)
             {

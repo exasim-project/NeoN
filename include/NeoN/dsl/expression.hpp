@@ -212,15 +212,16 @@ public:
         return source;
     }
 
-    /* @brief perform all explicit operations with ls-based iterator dispatch */
-    Vector<ValueType>
-    explicitOperation(Vector<ValueType>& source, la::LinearSystem<ValueType>& ls) const
+    /* @brief perform all explicit operations with iterator-context dispatch */
+    Vector<ValueType> explicitOperation(
+        Vector<ValueType>& source, std::shared_ptr<la::MeshIteratorContext> iterCtx
+    ) const
     {
         for (auto& op : spatialOperators_)
         {
             if (op.getType() == Operator::Type::Explicit)
             {
-                op.explicitOperation(source, ls);
+                op.explicitOperation(source, iterCtx);
             }
         }
         return source;
@@ -275,14 +276,7 @@ public:
     ) const
     {
         Vector<ValueType> expTmp(exec_, static_cast<localIdx>(mesh.nCells()), zero<ValueType>());
-        if constexpr (std::is_same_v<AssemblyType, ValueType>)
-        {
-            explicitOperation(expTmp, ls);
-        }
-        else
-        {
-            explicitOperation(expTmp);
-        }
+        explicitOperation(expTmp, ls.getMeshIterator());
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
         parallelFor(
             ls.exec(),
