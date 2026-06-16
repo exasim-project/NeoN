@@ -13,6 +13,8 @@
 #include <memory>
 #include <vector>
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // Kokkos::Profiling::ScopedRegion
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 
 
@@ -273,7 +275,13 @@ SolverStatsEntry solve_impl_dist(
 
     auto one = gko::initialize<vec>({1.0}, exec);
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
-    mtx->apply(one, x, neg_one, res);
+    {
+        // Distributed initial-residual SpMV: includes the halo exchange in createGkoMtxDist's
+        // distributed-matrix apply. Sync inside the region so the device + MPI cost lands here.
+        Kokkos::Profiling::ScopedRegion region("GinkgoDist::residualSpMV.initial");
+        mtx->apply(one, x, neg_one, res);
+        exec->synchronize();
+    }
 
     auto init = gko::initialize<vec>({0.0}, exec);
     using dist_vec = gko::experimental::distributed::Vector<scalar>;
@@ -283,12 +291,21 @@ SolverStatsEntry solve_impl_dist(
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    solver->apply(b, x);
+    {
+        // The distributed iterative solve itself, the dominant cost (SpMV + halo + precond).
+        Kokkos::Profiling::ScopedRegion region("GinkgoDist::solverApply");
+        solver->apply(b, x);
+        exec->synchronize();
+    }
 
     // copy of rhs to compute the final residual (resFinal is modified in-place by apply)
     auto rhsCopyFinal = Vector<scalar>(rhs);
     auto resFinal = gkoVecViewDist(exec, comm, rhsCopyFinal.data(), nrows);
-    mtx->apply(one, x, neg_one, resFinal);
+    {
+        Kokkos::Profiling::ScopedRegion region("GinkgoDist::residualSpMV.final");
+        mtx->apply(one, x, neg_one, resFinal);
+        exec->synchronize();
+    }
     auto finalNormVec = gko::initialize<vec>({0.0}, exec);
     gko::as<dist_vec>(resFinal)->compute_norm2(finalNormVec);
     scalar finalResNorm = retrieve(finalNormVec);
@@ -365,7 +382,11 @@ SolverStats solve_impl_dist(
 
     auto one = gko::initialize<vec>({1.0}, exec);
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
-    mtx->apply(one, x, neg_one, res);
+    {
+        Kokkos::Profiling::ScopedRegion region("GinkgoDist::residualSpMV.initial");
+        mtx->apply(one, x, neg_one, res);
+        exec->synchronize();
+    }
 
     // compute_norm2 on a [n x 3] dist_vec writes a [1 x 3] result — one L2 norm per column.
     auto colNorms = [&](std::shared_ptr<gko::LinOp> v) -> std::array<scalar, 3>
@@ -381,12 +402,20 @@ SolverStats solve_impl_dist(
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    solver->apply(b, x);
+    {
+        Kokkos::Profiling::ScopedRegion region("GinkgoDist::solverApply");
+        solver->apply(b, x);
+        exec->synchronize();
+    }
 
     // restore rhsCopy to b (in-place deep copy, no reallocation) then reuse for final residual
     rhsCopy = rhs;
     res = gkoVecViewDist(exec, comm, rhsCopy.data(), nrows);
-    mtx->apply(one, x, neg_one, res);
+    {
+        Kokkos::Profiling::ScopedRegion region("GinkgoDist::residualSpMV.final");
+        mtx->apply(one, x, neg_one, res);
+        exec->synchronize();
+    }
     auto finalNorms = colNorms(res);
 
     auto numIter = label(logger->get_num_iterations());

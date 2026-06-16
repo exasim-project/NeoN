@@ -8,6 +8,8 @@
 #include <mutex>
 #include <sstream>
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // Kokkos::Profiling::ScopedRegion
+
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 
@@ -358,7 +360,14 @@ SolverStatsEntry solve_impl(
 
     auto one = gko::initialize<vec>({1.0}, exec);
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
-    mtx->apply(one, x, neg_one, res);
+    {
+        // Initial-residual SpMV r0 = A x0 - b. Ginkgo apply launches asynchronously on GPU and
+        // is not a Kokkos kernel, so the region is a plain wall-clock scope; sync inside it so the
+        // device cost is attributed to the region instead of folded into the next sync point.
+        Kokkos::Profiling::ScopedRegion region("Ginkgo::residualSpMV.initial");
+        mtx->apply(one, x, neg_one, res);
+        exec->synchronize();
+    }
 
     auto init = gko::initialize<vec>({0.0}, exec);
     res->compute_norm2(init);
@@ -367,7 +376,12 @@ SolverStatsEntry solve_impl(
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    solver->apply(b, x);
+    {
+        // The iterative solve itself: many SpMV + preconditioner applies, the dominant cost.
+        Kokkos::Profiling::ScopedRegion region("Ginkgo::solverApply");
+        solver->apply(b, x);
+        exec->synchronize();
+    }
 
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
     auto numIter = label(logger->get_num_iterations());
@@ -403,7 +417,11 @@ SolverStats solve_impl(
 
     auto one = gko::initialize<vec>({1.0}, exec);
     auto neg_one = gko::initialize<vec>({-1.0}, exec);
-    mtx->apply(one, x, neg_one, res);
+    {
+        Kokkos::Profiling::ScopedRegion region("Ginkgo::residualSpMV.initial");
+        mtx->apply(one, x, neg_one, res);
+        exec->synchronize();
+    }
 
     // compute_norm2 on [nrows x 3] writes a [1 x 3] result — one L2 norm per column.
     auto colNorms = [&](std::shared_ptr<gko::matrix::Dense<scalar>> v) -> std::array<scalar, 3>
@@ -419,11 +437,19 @@ SolverStats solve_impl(
     std::shared_ptr<const gko::log::Convergence<scalar>> logger =
         gko::log::Convergence<scalar>::create();
     solver->add_logger(logger);
-    solver->apply(b, x);
+    {
+        Kokkos::Profiling::ScopedRegion region("Ginkgo::solverApply");
+        solver->apply(b, x);
+        exec->synchronize();
+    }
 
     auto rhsCopyFinal = Vector<Vec3>(rhs);
     auto resFinal = gkoVecView(exec, rhsCopyFinal.data(), nrows);
-    mtx->apply(one, x, neg_one, resFinal);
+    {
+        Kokkos::Profiling::ScopedRegion region("Ginkgo::residualSpMV.final");
+        mtx->apply(one, x, neg_one, resFinal);
+        exec->synchronize();
+    }
     auto finalNorms = colNorms(resFinal);
 
     auto numIter = label(logger->get_num_iterations());
@@ -589,7 +615,12 @@ SolverStats GinkgoSolver::solve(
         std::shared_ptr<const gko::log::Convergence<scalar>> logger =
             gko::log::Convergence<scalar>::create();
         solver->add_logger(logger);
-        solver->apply(b_col, x_col);
+        {
+            // One region per component; the three columns accumulate under this name.
+            Kokkos::Profiling::ScopedRegion region("Ginkgo::solverApply");
+            solver->apply(b_col, x_col);
+            gkoExec_->synchronize();
+        }
 
         scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
         auto numIter = label(logger->get_num_iterations());

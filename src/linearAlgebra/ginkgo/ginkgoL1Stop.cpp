@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 #include <stdexcept>
+#include <type_traits>
+
+#include <Kokkos_Profiling_ScopedRegion.hpp> // Kokkos::Profiling::ScopedRegion
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 
@@ -404,7 +407,20 @@ L1ResidualResult attachL1StopAndSolve(
     }
     iterative->set_stop_criterion_factory(gko::share(std::move(criterion)));
 
-    solver->apply(b, x);
+    // Shared serial/distributed L1-stop solve; name the region per backend so it lines up with
+    // the non-L1 Ginkgo::/GinkgoDist:: regions in the kp_space_time_stack summary.
+#ifdef NF_WITH_MPI_SUPPORT
+    constexpr bool isDist = std::is_same_v<VecType, dist>;
+#else
+    constexpr bool isDist = false;
+#endif
+    {
+        Kokkos::Profiling::ScopedRegion region(
+            isDist ? "GinkgoDist::solverApply.l1Stop" : "Ginkgo::solverApply.l1Stop"
+        );
+        solver->apply(b, x);
+        exec->synchronize();
+    }
 
     L1ResidualResult result {numIter, initResNorm, finalResNorm};
     if (multiRhs)
