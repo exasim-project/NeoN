@@ -72,9 +72,9 @@ public:
     // The actual MPI isend/irecv is deferred to waitAll() (triggered by the next value() call
     // outside the correctBoundaryConditions loop) to preserve "post all, drain once" discipline.
     //
-    // Phase 14 OVERLAP-01 note: Option B (extracting post-all to
-    // VolumeField::correctBoundaryConditions with start/finish split) is the migration path for
-    // explicit compute/comm overlap — not here.
+    // A future compute/comm-overlap variant (extracting post-all to
+    // VolumeField::correctBoundaryConditions with a start/finish split) would live here — not
+    // implemented yet.
     virtual void update([[maybe_unused]] Field<ValueType>& domainVector) final
     {
         detail::updateProcBoundaryOwnerValue(domainVector, mesh_, this->range());

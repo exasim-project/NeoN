@@ -6,7 +6,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_adapters.hpp>
 
-#include "NeoN/core/mpi/fullDuplexCommBuffer.hpp"
 #include "NeoN/core/mpi/environment.hpp"
 #include <cstring>
 

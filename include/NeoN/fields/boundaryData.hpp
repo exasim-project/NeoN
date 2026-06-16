@@ -258,7 +258,7 @@ public:
      * recv would be cancelled before completion, leaving its ghost equal to the
      * owner seed instead of the neighbour value.
      *
-     * Re-keyed to per-neighbour rank (D-04): multiple proc patches to the same
+     * Re-keyed to per-neighbour rank: multiple proc patches to the same
      * neighbour share one CommBuffer. The unified gather+post+scatter runs in
      * waitAll() once all patches have been staged.
      *
@@ -270,8 +270,9 @@ public:
      * @param procFaceStart  First proc-boundary index in value_: equals
      *                       mesh.nBoundaryFaces() (physical-boundary count).
      *
-     * @note Option B (extracting post-all to VolumeField::correctBoundaryConditions with a
-     *       start/finish split) is the Phase 14 OVERLAP-01 migration path — not implemented here.
+     * @note A future compute/comm-overlap variant would extract post-all to
+     *       VolumeField::correctBoundaryConditions with a start/finish split — not implemented
+     * here.
      */
     void communicate(
         std::pair<localIdx, localIdx> range,
@@ -570,7 +571,8 @@ private:
     {
         std::vector<ValueType> sendBuf; // host staging: lazy, grow-only (size = sendCounts[nei])
         std::vector<ValueType> recvBuf; // host staging: lazy, grow-only (size = sendCounts[nei])
-        std::optional<Vector<ValueType>> deviceRecvBuf; // device buffer: reserved for Phase 13
+        std::optional<Vector<ValueType>>
+            deviceRecvBuf;       // device buffer: reserved for GPU-direct path
         int neighbourRank {-1};  // pool key (re-keyed from rangeStart to neighbour rank)
         localIdx totalFaces {0}; // capacity watermark = sendCounts[neighbourRank]
     };
