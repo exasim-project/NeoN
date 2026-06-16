@@ -5,6 +5,7 @@
 #include "catch2_common.hpp"
 
 #include "NeoN/NeoN.hpp"
+#include "NeoN/distributed/haloExchange.hpp"
 
 #ifdef NF_WITH_MPI_SUPPORT
 
@@ -61,6 +62,39 @@ TEST_CASE("CommunicationPattern boundaryMapVector populated and scatter-correct"
             seen[static_cast<std::size_t>(v)]++;
         for (const auto c : seen)
             REQUIRE(c == 1); // bijection: rank-grouped position <-> proc-face index
+    }
+
+    // Value-scatter through the unified primitive. Each rank sends its own rank id on every proc
+    // face, so the neighbour receives — at each of its proc faces — the rank id of the cell on the
+    // far side, which must equal that face's neighbour rank. This proves the rank-grouped recv
+    // buffer is scattered back onto the correct proc face: a collapsed/identity scatter would leave
+    // a face holding the -1 sentinel or the wrong neighbour's id.
+    {
+        const auto myRank = static_cast<scalar>(mpiEnviron.rank());
+        Vector<scalar> sendV(exec, nPF, myRank);
+        Vector<scalar> recvV(exec, nPF, scalar {-1});
+        haloExchange<scalar>(exec, mesh, sendV.data(), recvV.data(), pattern);
+
+        // Expected neighbour rank per proc face, in proc-patch (offset) order — the same order
+        // haloExchange assigns to proc-face indices via boundaryMapVector.
+        const auto& neighbourRanks = mesh.boundaryMesh().neighbourRank();
+        const auto& offsets = mesh.boundaryMesh().offset();
+        const auto nInner =
+            mesh.boundaryMesh().nBoundaries() - mesh.boundaryMesh().nProcBoundaryPatches();
+        std::vector<scalar> expected(static_cast<std::size_t>(nPF));
+        localIdx f = 0;
+        for (std::size_t p = 0; p < neighbourRanks.size(); ++p)
+        {
+            const auto sz = offsets[static_cast<std::size_t>(nInner) + p + 1]
+                          - offsets[static_cast<std::size_t>(nInner) + p];
+            for (localIdx k = 0; k < sz; ++k)
+                expected[static_cast<std::size_t>(f++)] = static_cast<scalar>(neighbourRanks[p]);
+        }
+
+        auto recvHost = recvV.copyToHost();
+        const auto rv = recvHost.view();
+        for (localIdx i = 0; i < nPF; ++i)
+            REQUIRE(rv[i] == Catch::Approx(expected[static_cast<std::size_t>(i)]).margin(1e-12));
     }
 }
 
