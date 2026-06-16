@@ -10,6 +10,9 @@
 #include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/distributed/communicationPattern.hpp"
+#endif
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
@@ -65,19 +68,33 @@ public:
         detail::setProcBoundaryCoefficients(domainVector, this->range());
     }
 
-    // Per iteration: re-seed the owner value into the proc-patch ghost and post the halo exchange.
+    // Per iteration: re-seed the owner value into the proc-patch ghost and stage the halo exchange.
+    // The actual MPI isend/irecv is deferred to waitAll() (triggered by the next value() call
+    // outside the correctBoundaryConditions loop) to preserve "post all, drain once" discipline.
+    //
+    // Phase 14 OVERLAP-01 note: Option B (extracting post-all to
+    // VolumeField::correctBoundaryConditions with start/finish split) is the migration path for
+    // explicit compute/comm overlap — not here.
     virtual void update([[maybe_unused]] Field<ValueType>& domainVector) final
     {
         detail::updateProcBoundaryOwnerValue(domainVector, mesh_, this->range());
 #ifdef NF_WITH_MPI_SUPPORT
         // LOAD-BEARING FENCE (COMM-03): updateProcBoundaryOwnerValue above launches a GPU
         // kernel writing the owner-cell value into the proc-patch ghost (device memory at
-        // value_.data() + rangeStart). communicate() posts MPI_Isend reading that same device
-        // pointer; fencing here ensures the kernel has landed before MPI reads it.
+        // value_.data() + rangeStart). communicate() stages values that waitAll() will
+        // send via MPI_Isend reading that same device pointer; fencing here ensures the
+        // kernel has landed before MPI reads device memory in waitAll().
         fence(domainVector.exec());
         const int neighborRank =
             static_cast<int>(mesh_.boundaryMesh().neighbourRankForRange(this->range()));
-        domainVector.boundaryData().communicate(this->range(), neighborRank);
+        const auto& pattern = cachedCommunicationPattern(mesh_);
+        // mesh_.nBoundaryFaces() returns the count of PHYSICAL (non-proc) boundary faces.
+        // value_ layout: [physical_faces..., proc_faces...] so physical-face count = proc start
+        // index.
+        const localIdx procFaceStart = mesh_.nBoundaryFaces();
+        domainVector.boundaryData().communicate(
+            this->range(), neighborRank, pattern, procFaceStart
+        );
 #endif
     }
 
