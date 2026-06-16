@@ -212,6 +212,20 @@ public:
         return source;
     }
 
+    /* @brief perform all explicit operations with ls-based iterator dispatch */
+    Vector<ValueType>
+    explicitOperation(Vector<ValueType>& source, la::LinearSystem<ValueType>& ls) const
+    {
+        for (auto& op : spatialOperators_)
+        {
+            if (op.getType() == Operator::Type::Explicit)
+            {
+                op.explicitOperation(source, ls);
+            }
+        }
+        return source;
+    }
+
     Vector<ValueType> explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const
     {
         for (auto& op : temporalOperators_)
@@ -260,7 +274,15 @@ public:
         la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
     ) const
     {
-        auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
+        Vector<ValueType> expTmp(exec_, static_cast<localIdx>(mesh.nCells()), zero<ValueType>());
+        if constexpr (std::is_same_v<AssemblyType, ValueType>)
+        {
+            explicitOperation(expTmp, ls);
+        }
+        else
+        {
+            explicitOperation(expTmp);
+        }
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
         parallelFor(
             ls.exec(),

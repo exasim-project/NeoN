@@ -330,6 +330,24 @@ void GaussGreenGrad::grad(
 }
 
 void GaussGreenGrad::grad(
+    const VolumeField<scalar>& phi,
+    const dsl::Coeff operatorScaling,
+    Vector<Vec3>& out,
+    std::shared_ptr<la::MeshIteratorContext> iterCtx
+) const
+{
+    fill(out, zero<Vec3>());
+    if (dynamic_cast<la::CellBasedIterator*>(iterCtx->get().get()))
+    {
+        computeGradCellBased(phi, surfaceInterpolation_, out, operatorScaling);
+    }
+    else
+    {
+        computeGrad(phi, surfaceInterpolation_, out, operatorScaling);
+    }
+}
+
+void GaussGreenGrad::grad(
     const VolumeField<scalar>& phi, VolumeField<Vec3>& gradPhi, const dsl::Coeff operatorScaling
 ) const
 {

@@ -75,6 +75,22 @@ public:
     virtual VolumeField<ValueType>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const = 0;
 
+    /* @brief compute explicit gradient, dispatching to cell-based or face-based algorithm
+     *        based on iterCtx, without writing into any LinearSystem rhs.
+     *
+     * Default implementation ignores iterCtx and calls the face-based overload.
+     * Override to support cell-based dispatch.
+     */
+    virtual void grad(
+        const VolumeField<scalar>& phi,
+        const dsl::Coeff operatorScaling,
+        Vector<ValueType>& gradPhi,
+        std::shared_ptr<la::MeshIteratorContext> iterCtx
+    ) const
+    {
+        grad(phi, operatorScaling, gradPhi);
+    }
+
     // Pure virtual function for cloning
     virtual std::unique_ptr<GradOperatorFactory<ValueType>> clone() const = 0;
 
@@ -139,15 +155,18 @@ public:
     /* @brief explicit operation dispatched via the iterator type of ls.
      *
      * Uses ls only for iterator dispatch (face-based vs cell-based); the gradient
-     * is accumulated into ls.rhs() and then added to source.
+     * is computed into a scratch buffer and accumulated into source without
+     * touching ls.rhs().
      */
     void explicitOperation(Vector<Vec3>& source, la::LinearSystem<ValueType>& ls) const
     {
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
-        fill(ls.rhs(), zero<ValueType>());
+        auto tmpsource = Vector<ValueType>(source.exec(), source.size(), zero<ValueType>());
         const auto operatorScaling = this->getCoefficient();
-        gradOperatorStrategy_->grad(this->getVector(), operatorScaling, ls);
-        source += ls.rhs();
+        gradOperatorStrategy_->grad(
+            this->getVector(), operatorScaling, tmpsource, ls.getMeshIterator()
+        );
+        source += tmpsource;
     }
 
     /* @brief forwards to implicit gradOperatorStrategy_->grad() with arguments */

@@ -45,6 +45,13 @@ public:
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
     ) const override;
 
+    virtual void grad(
+        const VolumeField<scalar>& phi,
+        const dsl::Coeff operatorScaling,
+        Vector<Vec3>& gradPhi,
+        std::shared_ptr<la::MeshIteratorContext> iterCtx
+    ) const override;
+
     /* @brief compute grad
      *
      * @param phi [in] - field for which the gradient is computed
