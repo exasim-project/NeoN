@@ -9,6 +9,8 @@
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/core/mpi/environment.hpp"
 #include "NeoN/core/mpi/operators.hpp"
+#include "NeoN/distributed/communicationPattern.hpp"
+#include "NeoN/distributed/haloExchange.hpp"
 #endif
 
 namespace NeoN::finiteVolume::cellCentred
@@ -22,25 +24,6 @@ constexpr scalar NON_ORTH_DELTA_CLAMP = 0.05;
 #ifdef NF_WITH_MPI_SUPPORT
 namespace
 {
-
-/** @brief Returns the [start, end) face-index ranges of all processor boundary patches in
- *  the order they appear in the boundary mesh offset array. */
-std::vector<std::pair<localIdx, localIdx>> collectProcPatchRanges(const UnstructuredMesh& mesh)
-{
-    const auto& bMesh = mesh.boundaryMesh();
-    const auto& off = bMesh.offset();
-    const auto nBounds = bMesh.nBoundaries();
-    const auto nProcPatches = bMesh.nProcBoundaryPatches();
-
-    std::vector<std::pair<localIdx, localIdx>> ranges;
-    ranges.reserve(static_cast<std::size_t>(nProcPatches));
-    for (localIdx i = nBounds - nProcPatches; i < nBounds; ++i)
-        ranges.push_back({off[static_cast<std::size_t>(i)], off[static_cast<std::size_t>(i + 1)]});
-    return ranges;
-}
-
-// Tag for the geometry-scheme processor neighbour-cell-centre halo exchange.
-constexpr mpi_label_t PROC_NEIGHBOUR_CENTRE_TAG = 0x6763; // 'gc'
 
 /** @brief Exchanges owner cell centres across processor boundaries: each rank sends, for every
  *  processor face, the centre of the cell owning that face, and receives the neighbouring rank's
@@ -76,55 +59,14 @@ Vector<Vec3> exchangeProcNeighbourCellCentre(const Executor& exec, const Unstruc
         );
     }
 
-    auto ownH = ownCentreDev.copyToHost();
-    const auto ownHView = ownH.view();
-    // Flatten to contiguous [x, y, z] scalars per face for the typed MPI exchange.
-    std::vector<scalar> sendBuf(static_cast<std::size_t>(3 * nProcFaces));
-    for (localIdx i = 0; i < nProcFaces; ++i)
-    {
-        const Vec3 c = ownHView[i];
-        sendBuf[static_cast<std::size_t>(3 * i + 0)] = c[0];
-        sendBuf[static_cast<std::size_t>(3 * i + 1)] = c[1];
-        sendBuf[static_cast<std::size_t>(3 * i + 2)] = c[2];
-    }
-    std::vector<scalar> recvBuf(static_cast<std::size_t>(3 * nProcFaces), scalar(0));
-
-    const auto ranges = collectProcPatchRanges(mesh);
-    std::vector<MPI_Request> requests(2 * ranges.size(), MPI_REQUEST_NULL);
-    mpi::Environment mpiEnv;
-    for (std::size_t p = 0; p < ranges.size(); ++p)
-    {
-        const auto [rangeStart, rangeEnd] = ranges[p];
-        const localIdx patchOff = 3 * (rangeStart - nBoundaryFaces);
-        const auto neighborRank = static_cast<mpi_label_t>(bMesh.neighbourRankForRange(ranges[p]));
-        const auto count = static_cast<mpi_label_t>(3 * (rangeEnd - rangeStart));
-        mpi::isend<scalar>(
-            sendBuf.data() + patchOff,
-            count,
-            neighborRank,
-            PROC_NEIGHBOUR_CENTRE_TAG,
-            mpiEnv.comm(),
-            &requests[2 * p]
-        );
-        mpi::irecv<scalar>(
-            recvBuf.data() + patchOff,
-            count,
-            neighborRank,
-            PROC_NEIGHBOUR_CENTRE_TAG,
-            mpiEnv.comm(),
-            &requests[2 * p + 1]
-        );
-    }
-    mpi::waitAll(requests);
-
-    std::vector<Vec3> neiCentre(static_cast<std::size_t>(nProcFaces));
-    for (localIdx i = 0; i < nProcFaces; ++i)
-        neiCentre[static_cast<std::size_t>(i)] = Vec3 {
-            recvBuf[static_cast<std::size_t>(3 * i + 0)],
-            recvBuf[static_cast<std::size_t>(3 * i + 1)],
-            recvBuf[static_cast<std::size_t>(3 * i + 2)]
-        };
-    return Vector<Vec3>(exec, neiCentre);
+    // Exchange the per-proc-face owner centres through the unified halo primitive. The pattern is
+    // computed locally here; caching it on the mesh is deferred to a later phase. boundaryMapVector
+    // scatters the rank-grouped recv buffer back into proc-face order, so neiCentreDev[f] is the
+    // far-side owner centre (Cnei) of proc face f.
+    const auto pattern = computeCommunicationPattern(mesh);
+    Vector<Vec3> neiCentreDev(exec, nProcFaces, zero<Vec3>());
+    haloExchange<Vec3>(exec, mesh, ownCentreDev.data(), neiCentreDev.data(), pattern);
+    return neiCentreDev;
 }
 
 } // anonymous namespace
