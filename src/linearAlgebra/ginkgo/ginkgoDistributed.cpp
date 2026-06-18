@@ -112,15 +112,25 @@ struct GinkgoSkeletonEntry
 {
     std::shared_ptr<dist_mtx_t> distMtx;
     std::shared_ptr<local_csr_t> mutableLocalCsr;       // non-const; OWNED value buffer
-    std::shared_ptr<nonlocal_coo_t> mutableNonLocalCoo; // non-const; view over nlVal
-    Vector<scalar> nlVal;                               // persistent non-local COO value buffer
-    Vector<label> rowSortPermDev;                       // device copy of offDiagRowSortPerm
-    std::size_t buildCount {0};                         // D-06 always-on skeleton-build counter
+    std::shared_ptr<nonlocal_coo_t> mutableNonLocalCoo; // non-const; owns nlRow/nlCol/nlVal arrays
+    // Non-local COO data is owned by mutableNonLocalCoo (Ginkgo-managed, no Kokkos alloc).
+    // Static-registry safety: Ginkgo uses cudaFree/free directly, not Kokkos, so these survive
+    // Kokkos finalization without a crash during __cxa_finalize.
+    std::vector<label> rowSortPerm; // host-side row-sort permutation (for NF_ASSERT in hit path)
+    std::size_t buildCount {0};     // D-06 always-on skeleton-build counter
 };
 
 // Thread-safety: solves are sequential per rank; the registry is touched only from
 // createGkoMtxDist (via solveDist/solveComponentDist). No locking required.
 static std::unordered_map<const void*, GinkgoSkeletonEntry> gSkeletonRegistry;
+
+// Registration flag: the Kokkos finalize hook is registered the first time createGkoMtxDist
+// is called (Kokkos is guaranteed to be initialized at that point). The hook clears the
+// registry during Kokkos::finalize(), which fires before __cxa_finalize (static destructors),
+// ensuring Ginkgo CUDA objects are freed while the CUDA driver is still active.
+// Without this hook, the static destructor for gSkeletonRegistry fires after CUDA unloads,
+// causing cudaErrorCudartUnloading in gko::cuda_scoped_device_id_guard.
+static bool gKokkosHookRegistered = false;
 
 // D-06: always-on test accessor — declared in ginkgo.hpp under NF_WITH_MPI_SUPPORT.
 // Returns the per-key skeleton build count, or 0 if the key has never been seen.
@@ -139,47 +149,77 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const CommunicationPattern& commPattern
 )
 {
-    // commPattern is currently unused here: all the connectivity information needed to build
-    // the distributed matrix is already encoded in the row/column indices of `mtx` (local block)
-    // and `bmtx` (off-diagonal/processor coupling).
-    static_cast<void>(commPattern);
+    // Register the Kokkos finalize hook once (Kokkos is guaranteed initialized at this call site).
+    // The hook clears gSkeletonRegistry before CUDA shuts down, avoiding cudaErrorCudartUnloading
+    // in gko::cuda_scoped_device_id_guard during __cxa_finalize.
+    if (!gKokkosHookRegistered)
+    {
+        Kokkos::push_finalize_hook([]() { gSkeletonRegistry.clear(); });
+        gKokkosHookRegistered = true;
+    }
+
+    // D-03: key on the stable SparsityPattern identity (stable because D-04 caches it in stencilDB
+    // via cachedSparsityPattern; a new mesh yields distinct SparsityPattern objects → cache miss).
+    const void* key = static_cast<const void*>(mtx.sparsity().get());
+
+    auto it = gSkeletonRegistry.find(key);
+    if (it != gSkeletonRegistry.end())
+    {
+        // CACHE HIT — refresh matrix values only (D-05). No collectives, no dist_mtx::create.
+        auto& entry = it->second;
+
+        // Refresh local CSR values into the owned buffer. The sparsity (colIdxs/rowOffs) is
+        // structural and mesh-invariant (stable after D-04); only the numerical values change.
+        const auto nnz = static_cast<localIdx>(mtx.values().size());
+        {
+            auto srcView = mtx.values().view();
+            auto* dstPtr = entry.mutableLocalCsr->get_values();
+            parallelFor(
+                mtx.exec(),
+                {0, nnz},
+                KOKKOS_LAMBDA(const localIdx i) { dstPtr[i] = srcView[i]; },
+                "refreshLocalCsrValues"
+            );
+        }
+
+        // Refresh non-local COO values. bmtx.values() is stored in row-sorted order (operators
+        // write via BoundaryMesh::getRowOrderWriteIndex() = invPerm, i.e. sorted position).
+        // offDiagRowSortPerm[i] = assembly-order index for sorted position i; bmtx.values()[i]
+        // is already at sorted position i, so a direct copy preserves the CUDA Coo::apply2
+        // row-sort invariant (project_gpu_distributed_pcg_negdef_diverges).
+        const auto nNlNnz = static_cast<localIdx>(bmtx.values().size());
+        {
+            const auto& perm = commPattern.offDiagRowSortPerm;
+            NF_ASSERT(
+                perm.empty() || perm.size() == static_cast<std::size_t>(nNlNnz),
+                "offDiagRowSortPerm size mismatch on COO value refresh"
+            );
+            auto bmtxValView = bmtx.values().view();
+            auto* dstPtr = entry.mutableNonLocalCoo->get_values();
+            parallelFor(
+                bmtx.exec(),
+                {0, nNlNnz},
+                KOKKOS_LAMBDA(const localIdx i) { dstPtr[i] = bmtxValView[i]; },
+                "refreshNonLocalCooValues"
+            );
+        }
+        fence(bmtx.exec());
+        return entry.distMtx;
+    }
+
+    // --- CACHE MISS: build the skeleton once (NeighborhoodCommunicator runs here only) ---
 
     using global_index_type = gko::int64;
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, global_index_type>;
 
-    // Local block: zero-copy CSR views over the existing NeoN storage. The local matrix is by far
-    // the largest part and is reused as-is on every solve, so it is never copied/re-expanded here.
-    auto vals = gko::array<scalar>::const_view(
-        exec, static_cast<gko::size_type>(mtx.values().size()), mtx.values().data()
-    );
-    auto col = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
-        mtx.sparsity()->colIdxs().data()
-    );
-    auto row = gko::array<IndexType>::const_view(
-        exec,
-        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
-        mtx.sparsity()->rowOffs().data()
-    );
-
     const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
 
+    // build_partition_from_local_size fires MPI_Allgather — MISS path only (SOLVER-01).
     auto partition = gko::share(
         gko::experimental::distributed::build_partition_from_local_size<label, global_index_type>(
             exec, comm, nrows
         )
     );
-
-    std::shared_ptr<const gko::LinOp> localMtx =
-        gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-            exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
-        ));
-
-    // First global row index owned by this rank. get_range_bounds() points into the partition's
-    // executor memory (device memory when `exec` is a GPU executor), so the single value is pulled
-    // off the device safely rather than dereferenced directly on the host.
-    const auto globalOffset = exec->copy_val_to_host(partition->get_range_bounds() + comm.rank());
 
     // Off-diagonal block: rowIdxs()/colIdxs() are pre-sorted by ascending faceOwner (local row)
     // from the assembly phase — no host copies or sort are needed here.
@@ -217,15 +257,16 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const auto mapped =
         imap.map_to_local(recv_connections, gko::experimental::distributed::index_space::non_local);
 
-    // Build local-row, local-column, and value arrays on device. Row indices are already
-    // local (0-based per rank) — no offset subtraction needed.
-    Vector<IndexType> nlRow(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
-    Vector<IndexType> nlCol(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
-    Vector<scalar> nlVal(bmtx.exec(), static_cast<localIdx>(nNonLocalNnz));
+    // Build non-local COO arrays (nlRow/nlCol/nlVal) via NeoN parallelFor, then own the data in
+    // Ginkgo-managed arrays. Ginkgo arrays use Ginkgo's executor allocator (cudaFree/free directly)
+    // so they safely outlive Kokkos finalization (avoids static-destructor crash on program exit).
+    auto gkoNlVal = gko::array<scalar>(exec, nNonLocalNnz);
+    auto gkoNlRow = gko::array<label>(exec, nNonLocalNnz);
+    auto gkoNlCol = gko::array<label>(exec, nNonLocalNnz);
     {
-        auto nlRowV = nlRow.view();
-        auto nlColV = nlCol.view();
-        auto nlValV = nlVal.view();
+        auto* nlRowPtr = gkoNlRow.get_data();
+        auto* nlColPtr = gkoNlCol.get_data();
+        auto* nlValPtr = gkoNlVal.get_data();
         const auto bRowV = bmtx.sparsity()->rowIdxs().view();
         const auto bValV = bmtx.values().view();
         const auto* mappedPtr = mapped.get_const_data();
@@ -233,28 +274,84 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             bmtx.exec(),
             {0, static_cast<localIdx>(nNonLocalNnz)},
             KOKKOS_LAMBDA(const localIdx i) {
-                nlRowV[i] = static_cast<IndexType>(bRowV[i]);
-                nlColV[i] = static_cast<IndexType>(mappedPtr[i]);
-                nlValV[i] = bValV[i];
+                nlRowPtr[i] = static_cast<label>(bRowV[i]);
+                nlColPtr[i] = static_cast<label>(mappedPtr[i]);
+                nlValPtr[i] = bValV[i];
             },
             "buildNonLocalCOO"
         );
         fence(bmtx.exec());
     }
 
-    auto nonLocalMtx =
-        gko::share(gko::matrix::Coo<scalar, IndexType>::create_const(
-                       exec,
-                       gko::dim<2> {nrows, numNonLocalElements},
-                       gko::array<scalar>::const_view(exec, nNonLocalNnz, nlVal.data()),
-                       gko::array<IndexType>::const_view(exec, nNonLocalNnz, nlCol.data()),
-                       gko::array<IndexType>::const_view(exec, nNonLocalNnz, nlRow.data())
-        )
-                       ->clone());
+    // Host-side row-sort permutation — used in the cache-hit path to assert size contract.
+    const auto& hostPerm = commPattern.offDiagRowSortPerm;
+    std::vector<label> rowSortPerm(hostPerm.begin(), hostPerm.end());
 
-    return gko::share(dist_mtx::create(
-        exec, comm, imap, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtx
+    // Local CSR: OWNED value buffer (not const_view — values must be mutable for per-solve
+    // refresh). Structure arrays (colIdxs/rowOffs) use stable views from the mesh-cached
+    // SparsityPattern (D-04).
+    const auto nnzLocal = static_cast<gko::size_type>(mtx.values().size());
+    auto ownedVals = gko::array<scalar>(exec, nnzLocal);
+    {
+        auto srcView = mtx.values().view();
+        auto* dstPtr = ownedVals.get_data();
+        parallelFor(
+            mtx.exec(),
+            {0, static_cast<localIdx>(nnzLocal)},
+            KOKKOS_LAMBDA(const localIdx i) { dstPtr[i] = srcView[i]; },
+            "initLocalCsrValues"
+        );
+        fence(mtx.exec());
+    }
+    // Structure: stable pointers from mesh-cached SparsityPattern (D-04); const_cast safe because
+    // the array views are non-owning and the SparsityPattern lifetime exceeds the Csr lifetime.
+    auto colView = gko::array<IndexType>::view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->colIdxs().size()),
+        const_cast<IndexType*>(mtx.sparsity()->colIdxs().data())
+    );
+    auto rowView = gko::array<IndexType>::view(
+        exec,
+        static_cast<gko::size_type>(mtx.sparsity()->rowOffs().size()),
+        const_cast<IndexType*>(mtx.sparsity()->rowOffs().data())
+    );
+    auto mutableLocalCsr = gko::share(local_csr_t::create(
+        exec,
+        gko::dim<2> {nrows, nrows},
+        std::move(ownedVals),
+        std::move(colView),
+        std::move(rowView)
     ));
+
+    // Non-local COO: Coo takes ownership of the Ginkgo arrays (OWNING, not view).
+    // After std::move into the Coo, the entry holds the Coo via mutableNonLocalCoo;
+    // entry.nlVal/nlRow/nlCol are now EMPTY (moved-from) — but Coo owns the data.
+    // The hit path calls mutableNonLocalCoo->get_values() to refresh values in-place.
+    auto mutableNonLocalCoo = gko::share(nonlocal_coo_t::create(
+        exec,
+        gko::dim<2> {nrows, numNonLocalElements},
+        std::move(gkoNlVal),
+        std::move(gkoNlCol),
+        std::move(gkoNlRow)
+    ));
+
+    // dist_mtx::create builds the NeighborhoodCommunicator (MPI_Alltoall +
+    // MPI_Dist_graph_create_adjacent) — MISS path only (SOLVER-01).
+    auto cachedDist = gko::share(
+        dist_mtx::create(exec, comm, std::move(imap), mutableLocalCsr, mutableNonLocalCoo)
+    );
+
+    // Store entry: mutableLocalCsr/mutableNonLocalCoo retained for per-solve value refresh.
+    // nlRow/nlCol/nlVal data is owned by mutableNonLocalCoo (Ginkgo-managed, Coo::create owns
+    // them).
+    auto [insIt, ok] = gSkeletonRegistry.emplace(
+        key,
+        GinkgoSkeletonEntry {
+            cachedDist, mutableLocalCsr, mutableNonLocalCoo, std::move(rowSortPerm), 1
+        }
+    );
+    (void)ok;
+    return insIt->second.distMtx;
 }
 
 SolverStatsEntry solve_impl_dist(

@@ -464,7 +464,7 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
 }
 
 #if NF_WITH_GINKGO
-TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix values_")
+TEST_CASE("createGkoMtxDist - local CSR block holds owned value copy (not a zero-copy view)")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
     auto inputPart = GENERATE_INPUT("upwind", "Part");
@@ -509,13 +509,17 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
         gkoExec, comm, lsDst.matrix(), lsDst.offDiagonalMatrix(), commPattern
     );
 
-    // The local CSR block must share memory with lsDst.matrix().values_
+    // Plan 12-02: local CSR owns an independent value buffer (OWNED copy, not a const_view over
+    // NeoN's values_). The pointer must differ from lsDst.matrix().values().data() — this is the
+    // D-05a invariant that enables per-solve in-place refresh without re-creating the dist_mtx.
     using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
     const auto* distMtxPtr = gko::as<const dist_mtx>(gkoMtx.get());
     auto localLinOp = distMtxPtr->get_local_matrix();
-    const auto* localCsr = gko::as<const gko::matrix::Csr<scalar, localIdx>>(localLinOp.get());
+    const auto* localCsr = gko::as<const gko::matrix::Csr<scalar, label>>(localLinOp.get());
 
-    REQUIRE(localCsr->get_const_values() == lsDst.matrix().values().data());
+    // D-05a invariant: local CSR owns an independent value buffer (not a const_view over NeoN's
+    // values_). Pointers must differ — this enables per-solve in-place refresh in the hit path.
+    REQUIRE(localCsr->get_const_values() != lsDst.matrix().values().data());
 }
 #endif // NF_WITH_GINKGO
 
