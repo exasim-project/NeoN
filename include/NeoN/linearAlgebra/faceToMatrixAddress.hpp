@@ -153,6 +153,20 @@ template<typename SparsityType>
 std::pair<std::shared_ptr<const SparsityType>, std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
 
+/**
+ * @brief Returns a mesh-cached SparsityPattern + FaceToMatrixAddress for the given mesh.
+ *
+ * Calls createSparsityPatternFaceToMatrixAddress<SparsityType> on first call and memoises
+ * both objects in mesh.stencilDB() under type-derived keys. Subsequent calls for the same
+ * mesh + SparsityType return the SAME shared_ptr objects, making mtx.sparsity().get() a
+ * stable identity for the Ginkgo skeleton registry (D-03/D-04). Valid for the mesh lifetime.
+ *
+ * @tparam SparsityType - The full sparsity pattern type, e.g. CsrSparsityPattern<localIdx>
+ */
+template<typename SparsityType>
+std::pair<std::shared_ptr<const SparsityType>, std::shared_ptr<const FaceToMatrixAddress>>
+cachedSparsityPattern(const UnstructuredMesh& mesh);
+
 /* @brief Creates the boundary sparsity pattern from a mesh and an existing
  * FaceToMatrixAddress (which provides the diagonal offsets needed to compute it).
  *

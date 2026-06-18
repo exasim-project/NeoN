@@ -286,9 +286,10 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
 )
 {
-    auto [sp, mi] =
-        createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(mesh
-        );
+    // D-04: mesh-cached SparsityPattern + FaceToMatrixAddress — same shared_ptr objects returned
+    // on every assembly of the same mesh, making mtx.sparsity().get() a stable identity token
+    // for the Ginkgo skeleton registry (Plan 02). A new mesh yields distinct objects.
+    auto [sp, mi] = cachedSparsityPattern<typename SystemMatrixType::MatrixSparsityType>(mesh);
     auto bSp =
         createBoundarySparsityPattern<typename BoundaryMatrixType::MatrixSparsityType>(mesh, *mi);
     const auto exec = sp->exec();
@@ -300,7 +301,10 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     Vector<IndexType> offDiagRowIdxs(exec, nProcFaces, 0);
 
 #ifdef NF_WITH_MPI_SUPPORT
-    auto commPattern = computeCommunicationPattern(mesh);
+    // D-04: cachedCommunicationPattern() returns a const ref into stencilDB; copy here because
+    // LinearSystem owns CommunicationPattern by value (L355) and L337 moves offDiagRowSortPerm
+    // into the local copy only — the cached object stored in stencilDB is never mutated.
+    auto commPattern = cachedCommunicationPattern(mesh);
     if (nProcFaces > 0)
     {
         const localIdx nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());

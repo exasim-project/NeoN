@@ -322,6 +322,29 @@ createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh)
     return {sp, faceToMatrixAddress};
 }
 
+template<typename SparsityType>
+std::pair<std::shared_ptr<const SparsityType>, std::shared_ptr<const FaceToMatrixAddress>>
+cachedSparsityPattern(const UnstructuredMesh& mesh)
+{
+    // SparsityType has no typeName static member; use typeid(SparsityType).name() to form a
+    // type-unique key suffix that distinguishes distinct sparsity types on the same mesh.
+    const std::string spKey =
+        std::string("SparsityPattern_") + std::string(typeid(SparsityType).name());
+    const std::string miKey =
+        std::string("FaceToMatrixAddress_") + std::string(typeid(SparsityType).name());
+    auto& db = mesh.stencilDB();
+    if (!db.contains(spKey))
+    {
+        auto [sp, mi] = createSparsityPatternFaceToMatrixAddress<SparsityType>(mesh);
+        db.insert(spKey, sp); // shared_ptr<const SparsityType>
+        db.insert(miKey, mi); // shared_ptr<const FaceToMatrixAddress>
+    }
+    return {
+        db.get<std::shared_ptr<const SparsityType>>(spKey),
+        db.get<std::shared_ptr<const FaceToMatrixAddress>>(miKey)
+    };
+}
+
 // COO specialization: internal algorithm produces CSR-style rowOffs, so we must expand
 // them to flat per-NNZ row indices as required by CooSparsityPattern.
 template<>
@@ -449,5 +472,15 @@ template std::pair<
     std::shared_ptr<const CsrSparsityPattern<localIdx>>,
     std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress<CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
+
+template std::pair<
+    std::shared_ptr<const CsrSparsityPattern<localIdx>>,
+    std::shared_ptr<const FaceToMatrixAddress>>
+cachedSparsityPattern<CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
+
+template std::pair<
+    std::shared_ptr<const CooSparsityPattern<localIdx>>,
+    std::shared_ptr<const FaceToMatrixAddress>>
+cachedSparsityPattern<CooSparsityPattern<localIdx>>(const UnstructuredMesh&);
 
 }
