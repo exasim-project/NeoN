@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['matrix_0',['Matrix',['../classNeoN_1_1la_1_1Matrix.html',1,'NeoN::la']]],
-  ['matrix_3c_20matrixvaluetype_2c_20localidx_20_3e_1',['Matrix&lt; MatrixValueType, localIdx &gt;',['../classNeoN_1_1la_1_1Matrix.html',1,'NeoN::la']]],
-  ['matrixview_2',['MatrixView',['../structNeoN_1_1la_1_1MatrixView.html',1,'NeoN::la']]],
-  ['meshiterationstrategy_3',['MeshIterationStrategy',['../classNeoN_1_1la_1_1MeshIterationStrategy.html',1,'NeoN::la']]],
-  ['meshiteratorcontext_4',['MeshIteratorContext',['../classNeoN_1_1la_1_1MeshIteratorContext.html',1,'NeoN::la']]],
-  ['meshparams_5',['MeshParams',['../structNeoN_1_1detail_1_1MeshParams.html',1,'NeoN::detail']]]
+  ['laplacianoperator_0',['LaplacianOperator',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperator.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['laplacianoperatorfactory_1',['LaplacianOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['limitedcorrected_2',['LimitedCorrected',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedCorrected.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['linear_3',['Linear',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['linearsystem_4',['LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html',1,'NeoN::la']]],
+  ['linearsystemview_5',['LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html',1,'NeoN::la']]],
+  ['logevent_6',['LogEvent',['../classNeoN_1_1Logging_1_1LogEvent.html',1,'NeoN::Logging']]],
+  ['logger_7',['Logger',['../classNeoN_1_1Logging_1_1Logger.html',1,'NeoN::Logging']]]
 ];

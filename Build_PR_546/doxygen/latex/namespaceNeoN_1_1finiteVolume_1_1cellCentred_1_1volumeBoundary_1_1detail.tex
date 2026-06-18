@@ -26,6 +26,8 @@ template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentre
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}{set\+Fixed\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}}, \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} $>$ range, Value\+Type fixed\+Value)
 \item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ae0c1ed49ed36d3cf578eb4f4a4c071de}{set\+Inlet\+Outlet\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Value\+Type inlet\+Value, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar}} $>$ boundary\+Flux, bool has\+Flux)
+\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ab9447ba88a3a3f318691277b64d77c1e}{set\+Proc\+Boundary\+Coefficients}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range)
 \item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a0a401e2e06952f4f8fa8072a22833aad}{update\+Proc\+Boundary\+Owner\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range)
@@ -128,6 +130,17 @@ void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::
 
 
 Definition at line \mbox{\hyperlink{fixedGradient_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{fixedGradient_8hpp_source}{fixed\+Gradient.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ae0c1ed49ed36d3cf578eb4f4a4c071de}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ae0c1ed49ed36d3cf578eb4f4a4c071de} 
+\index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!setInletOutletValue@{setInletOutletValue}}
+\index{setInletOutletValue@{setInletOutletValue}!NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}}
+\doxysubsubsection{\texorpdfstring{setInletOutletValue()}{setInletOutletValue()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::set\+Inlet\+Outlet\+Value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector,  }\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Value\+Type}]{inlet\+Value,  }\item[{\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar}} $>$}]{boundary\+Flux,  }\item[{bool}]{has\+Flux }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{inletOutlet_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{inletOutlet_8hpp_source}{inlet\+Outlet.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ab9447ba88a3a3f318691277b64d77c1e}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ab9447ba88a3a3f318691277b64d77c1e} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!setProcBoundaryCoefficients@{setProcBoundaryCoefficients}}

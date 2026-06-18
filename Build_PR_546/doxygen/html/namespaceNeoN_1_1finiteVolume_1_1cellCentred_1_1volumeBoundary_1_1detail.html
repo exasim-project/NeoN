@@ -114,6 +114,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a2ef18c0f426de4e5522a05bf1135e770" id="r_a2ef18c0f426de4e5522a05bf1135e770"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a2ef18c0f426de4e5522a05bf1135e770"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a2ef18c0f426de4e5522a05bf1135e770">setFixedValue</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector, std::pair&lt; <a class="el" href="namespaceNeoN.html#a5ea7bf3a45fbcf9c6ee454474ab13c06">size_t</a>, <a class="el" href="namespaceNeoN.html#a5ea7bf3a45fbcf9c6ee454474ab13c06">size_t</a> &gt; range, ValueType fixedValue)</td></tr>
 <tr class="separator:a2ef18c0f426de4e5522a05bf1135e770"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0c1ed49ed36d3cf578eb4f4a4c071de" id="r_ae0c1ed49ed36d3cf578eb4f4a4c071de"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:ae0c1ed49ed36d3cf578eb4f4a4c071de"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#ae0c1ed49ed36d3cf578eb4f4a4c071de">setInletOutletValue</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector, const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range, ValueType inletValue, <a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a> &gt; boundaryFlux, bool hasFlux)</td></tr>
+<tr class="separator:ae0c1ed49ed36d3cf578eb4f4a4c071de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9447ba88a3a3f318691277b64d77c1e" id="r_ab9447ba88a3a3f318691277b64d77c1e"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:ab9447ba88a3a3f318691277b64d77c1e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#ab9447ba88a3a3f318691277b64d77c1e">setProcBoundaryCoefficients</a> (<a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;domainVector, std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; range)</td></tr>
 <tr class="separator:ab9447ba88a3a3f318691277b64d77c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -343,6 +346,62 @@ template&lt;typename ValueType &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="fixedGradient_8hpp_source.html#l00024">24</a> of file <a class="el" href="fixedGradient_8hpp_source.html">fixedGradient.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ae0c1ed49ed36d3cf578eb4f4a4c071de" name="ae0c1ed49ed36d3cf578eb4f4a4c071de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c1ed49ed36d3cf578eb4f4a4c071de">&#9670;&#160;</a></span>setInletOutletValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setInletOutletValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Field.html">Field</a>&lt; ValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>domainVector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::pair&lt; <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;&#160;</td>
+          <td class="paramname"><em>range</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ValueType&#160;</td>
+          <td class="paramname"><em>inletValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1View.html">View</a>&lt; const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">NeoN::scalar</a> &gt;&#160;</td>
+          <td class="paramname"><em>boundaryFlux</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hasFlux</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="inletOutlet_8hpp_source.html#l00033">33</a> of file <a class="el" href="inletOutlet_8hpp_source.html">inletOutlet.hpp</a>.</p>
 
 </div>
 </div>
