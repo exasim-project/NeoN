@@ -269,4 +269,78 @@ TEMPLATE_TEST_CASE(
     );
 }
 
+// Implicit slip/symmetry: the scalar-matrix Vec3 Laplacian assembly must populate the linear
+// system's per-component diagonal correction (diagCmpt) with γ|S|·coeff·Δ·|n_c|, accumulated per
+// cell, rather than touching the shared scalar diagonal. This is the assembly half of the implicit
+// transform-BC path (the solver applies it column-by-column).
+TEST_CASE("laplacianOperator implicit transform diagCmpt")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    SECTION("implicit slip diagonal correction on " + execName)
+    {
+        auto mesh = createSingleCellMesh(exec);
+
+        auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+        fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+        const scalar gammaValue = 2.0;
+        fill(gamma.internalVector(), gammaValue);
+        fill(gamma.boundaryData().value(), gammaValue);
+
+        std::vector<fvcc::VolumeBoundary<Vec3>> bcs;
+        for (NeoN::localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
+        {
+            bcs.push_back(fvcc::VolumeBoundary<Vec3>(
+                mesh, Dictionary({{"type", std::string("slip")}, {"implicit", true}}), patchID
+            ));
+        }
+        auto phi = VolumeField<Vec3>(exec, "phi", mesh, bcs);
+        fill(phi.internalVector(), Vec3(1.0, -1.0, 0.5));
+        phi.correctBoundaryConditions();
+
+        const scalar coeff = 1.0;
+        // GaussGreenLaplacian's constructor consumes interpolation/gradient tokens directly (the
+        // DSL strips the leading "Gauss" operator name first), so pass only those two here.
+        Input input = TokenList({std::string("linear"), std::string("uncorrected")});
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, Vec3>(mesh);
+        fvcc::GaussGreenLaplacian<Vec3, scalar> lapOp(exec, mesh, input);
+        lapOp.laplacian(ls, gamma, phi, dsl::Coeff(coeff));
+
+        // the implicit transform path must have lazily allocated diagCmpt, one Vec3 per cell
+        REQUIRE(ls.diagCmpt());
+        REQUIRE(ls.diagCmpt()->size() == mesh.nCells());
+
+        auto [diagCmptH, nH, magSfH, deltaH, ownerH] = copyToHosts(
+            *ls.diagCmpt(),
+            mesh.boundaryMesh().faceUnitNormals(),
+            mesh.boundaryMesh().faceAreas(),
+            mesh.boundaryMesh().deltaCoeffs(),
+            mesh.boundaryMesh().faceOwners()
+        );
+
+        // expected: per cell, sum over its boundary faces of γ|S|·coeff·Δ·|n_c|
+        std::vector<Vec3> expected(static_cast<size_t>(mesh.nCells()), Vec3(0.0, 0.0, 0.0));
+        for (NeoN::localIdx f = 0; f < mesh.nBoundaryFaces(); ++f)
+        {
+            const auto own = static_cast<size_t>(ownerH.view()[f]);
+            const auto n = nH.view()[f];
+            const scalar w = gammaValue * magSfH.view()[f] * coeff * deltaH.view()[f];
+            expected[own][0] += w * std::abs(n[0]);
+            expected[own][1] += w * std::abs(n[1]);
+            expected[own][2] += w * std::abs(n[2]);
+        }
+
+        auto diagV = diagCmptH.view();
+        for (NeoN::localIdx c = 0; c < mesh.nCells(); ++c)
+        {
+            for (auto d = 0u; d < 3; ++d)
+            {
+                REQUIRE(diagV[c][d] == Catch::Approx(expected[static_cast<size_t>(c)][d]));
+            }
+        }
+        // no face on this mesh has a z-normal, so the z-component must be exactly zero
+        REQUIRE(diagV[0][2] == Catch::Approx(0.0));
+    }
+}
+
 } // namespace NeoN

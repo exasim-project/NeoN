@@ -8,102 +8,17 @@
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 
-namespace detail
-{
-
-// Primary declaration
-template<typename ValueType>
-void setSymmetryValue(
-    Field<ValueType>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
-);
-
-// --- Scalar specialization ---
-template<>
-inline void setSymmetryValue<NeoN::scalar>(
-    Field<NeoN::scalar>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
-)
-{
-    const auto internalV = domainVector.internalVector().view();
-
-    auto [refGradV, valueV, valueFractionV, refValueV, boundaryFaceOwnersV] = views(
-        domainVector.boundaryData().refGrad(),
-        domainVector.boundaryData().value(),
-        domainVector.boundaryData().valueFraction(),
-        domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceOwners()
-    );
-
-    NeoN::parallelFor(
-        domainVector.exec(),
-        range,
-        NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = boundaryFaceOwnersV[i];
-            const auto v = internalV[owner];
-
-            // Scalar symmetry → zero-gradient
-            refValueV[i] = v;
-            valueV[i] = v;
-            valueFractionV[i] = 0.0;
-            refGradV[i] = 0.0;
-        },
-        "setSymmetryValue(scalar)"
-    );
-}
-
-// --- Vec3 specialization ---
-template<>
-inline void setSymmetryValue<NeoN::Vec3>(
-    Field<NeoN::Vec3>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
-)
-{
-    const auto internalV = domainVector.internalVector().view();
-
-    auto [refGradV, valueV, valueFractionV, refValueV, boundaryFaceOwnersV, faceUnitNormalsV] =
-        views(
-            domainVector.boundaryData().refGrad(),
-            domainVector.boundaryData().value(),
-            domainVector.boundaryData().valueFraction(),
-            domainVector.boundaryData().refValue(),
-            mesh.boundaryMesh().faceOwners(),
-            mesh.boundaryMesh().faceUnitNormals()
-        );
-
-    NeoN::parallelFor(
-        domainVector.exec(),
-        range,
-        NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = boundaryFaceOwnersV[i];
-            const auto v = internalV[owner];
-            const auto n = faceUnitNormalsV[i];
-
-            // Tangential projection (remove normal component)
-            const auto vn = v & n;
-            const auto vtan = v - n * vn;
-
-            refValueV[i] = vtan;
-            valueV[i] = vtan;
-            valueFractionV[i] = 0.0;
-            refGradV[i] = NeoN::zero<NeoN::Vec3>();
-        },
-        "setSymmetryValue(Vec3)"
-    );
-}
-
-} // namespace detail
-
-
+// Symmetry is a symmetry-plane boundary condition: scalar => zero-gradient, vector => tangential
+// projection + normal damping. It shares its implementation with Slip via
+// detail::setSlipSymmetryValue; they differ only in the registered name and in where they may be
+// applied. The optional "implicit" key selects the normal-damping treatment.
 template<typename ValueType>
 class Symmetry : public VolumeBoundaryFactory<ValueType>::template Register<Symmetry<ValueType>>
 {
@@ -116,12 +31,22 @@ public:
     using SymmetryType = Symmetry<ValueType>;
 
     Symmetry(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = false}), mesh_(mesh)
+        : Base(
+            mesh,
+            dict,
+            patchID,
+            {.assignable = false,
+             .fixesValue = false,
+             .transformImplicit = detail::readTransformImplicit(dict)}
+        ),
+          mesh_(mesh), implicit_(detail::readTransformImplicit(dict))
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setSymmetryValue(domainVector, mesh_, this->range());
+        detail::setSlipSymmetryValue(
+            domainVector, mesh_, this->range(), detail::normalDampingMode(implicit_)
+        );
     }
 
     static std::string name() { return "symmetry"; }
@@ -130,7 +55,8 @@ public:
 
     static std::string doc()
     {
-        return "Symmetry plane (scalar: zero-gradient; vector: tangential projection).";
+        return "Symmetry plane (scalar: zero-gradient; vector: tangential projection + normal "
+               "damping).";
     }
 
     static std::string schema() { return "none"; }
@@ -143,6 +69,7 @@ public:
 private:
 
     const UnstructuredMesh& mesh_;
+    bool implicit_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred::volumeBoundary

@@ -136,6 +136,7 @@ public:
           // TODO move to a different location since this seems to be unrelated to linearSystem
           faceFluxCorrection_(ls.faceFluxCorrection_),
           keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
+          diagCmpt_(ls.diagCmpt_ ? std::make_shared<Vector<RHSValueType>>(*ls.diagCmpt_) : nullptr),
           meshIteratorContext_(ls.meshIteratorContext_)
 #ifdef NF_WITH_MPI_SUPPORT
           ,
@@ -192,6 +193,27 @@ public:
 
     void keepFaceFluxCorrection(bool keep) { keepFaceFluxCorrection_ = keep; }
 
+    /// @brief Per-component diagonal correction for implicit transform BCs (slip/symmetry).
+    ///        nullptr when no implicit transform patch is present (the fast multi-RHS path).
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& diagCmpt() const
+    {
+        return diagCmpt_;
+    }
+
+    /// @brief Lazily allocate (zero-initialised, one RHSValueType per cell) and return the
+    ///        per-component diagonal-correction store, so the Laplacian assembly can accumulate
+    ///        the implicit transform-BC contribution into it.
+    [[nodiscard]] Vector<RHSValueType>& ensureDiagCmpt()
+    {
+        if (!diagCmpt_)
+        {
+            diagCmpt_ =
+                std::make_shared<Vector<RHSValueType>>(exec(), rhs_.size(), zero<RHSValueType>());
+        }
+        return *diagCmpt_;
+    }
+
+
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
     {
@@ -202,6 +224,10 @@ public:
             boundaryMatrix_.copyToExecutor(exec),
             boundaryRhs_.copyToExecutor(exec)
         };
+        if (diagCmpt_)
+        {
+            ls.diagCmpt_ = std::make_shared<Vector<RHSValueType>>(diagCmpt_->copyToExecutor(exec));
+        }
 #ifdef NF_WITH_MPI_SUPPORT
         ls.commPattern_ = commPattern_;
 #endif
@@ -215,6 +241,7 @@ public:
         fill(boundaryMatrix_.values(), zero<MatrixValueType>());
         fill(boundaryRhs_, zero<RHSValueType>());
         fill(offDiagonalMatrix_.values(), zero<MatrixValueType>());
+        if (diagCmpt_) fill(*diagCmpt_, zero<RHSValueType>());
     }
 
     [[nodiscard]] LinearSystemView<
@@ -301,6 +328,13 @@ private:
     bool keepFaceFluxCorrection_ = false;
 
     Dictionary auxiliaryCoefficients_;
+
+    // Optional per-component diagonal correction for direction-dependent (transform) boundary
+    // conditions in implicit mode (slip/symmetry). One RHSValueType (e.g. Vec3) per cell; component
+    // c holds the diagonal contribution γ|S|·Δ·|n_c| applied for solve-component c on cells
+    // adjacent to an implicit transform patch. Lazily allocated by ensureDiagCmpt(); stays nullptr
+    // (and the shared scalar matrix / multi-RHS fast path is used) whenever no such patch exists.
+    std::shared_ptr<Vector<RHSValueType>> diagCmpt_ = nullptr;
 
     std::shared_ptr<MeshIteratorContext> meshIteratorContext_ = nullptr;
 

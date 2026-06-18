@@ -76,14 +76,19 @@ TEST_CASE("symmetry_slip_volume")
 
             boundary->correctBoundaryCondition(field);
 
-            auto [refValuesH, valuesH, refGradH, nHatH, faceCellsH, internalH] = copyToHosts(
-                field.boundaryData().refValue(),
-                field.boundaryData().value(),
-                field.boundaryData().refGrad(),
-                mesh.boundaryMesh().faceUnitNormals(),
-                mesh.boundaryMesh().faceOwners(),
-                field.internalVector()
-            );
+            // default mode is deferred (multi-RHS friendly)
+            REQUIRE(boundary->attributes().transformImplicit == false);
+
+            auto [refValuesH, valuesH, refGradH, nHatH, deltaCoeffsH, faceCellsH, internalH] =
+                copyToHosts(
+                    field.boundaryData().refValue(),
+                    field.boundaryData().value(),
+                    field.boundaryData().refGrad(),
+                    mesh.boundaryMesh().faceUnitNormals(),
+                    mesh.boundaryMesh().deltaCoeffs(),
+                    mesh.boundaryMesh().faceOwners(),
+                    field.internalVector()
+                );
 
             for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
@@ -91,7 +96,6 @@ TEST_CASE("symmetry_slip_volume")
                 const auto ownerV = faceCellsH.view()[i];
                 const auto nV = nHatH.view()[i];
                 const auto intV = internalH.view()[ownerV];
-                // const auto vn = vInt & n;
                 const auto vExpected = intV - nV * (intV & nV); // half-symmetry
 
                 for (auto d = 0u; d < 3; ++d)
@@ -100,6 +104,61 @@ TEST_CASE("symmetry_slip_volume")
                 }
             }
 
+            // deferred mode: refGrad = -deltaCoeffs * (U·n) * n  (purely normal => refGrad ∥ n)
+            for (auto& gradValueV : refGradH.view(boundary->range()))
+            {
+                const auto i = static_cast<NeoN::localIdx>(&gradValueV - refGradH.data());
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[faceCellsH.view()[i]];
+                const auto gExpected = nV * (-deltaCoeffsH.view()[i] * (intV & nV));
+
+                for (auto d = 0u; d < 3; ++d)
+                {
+                    REQUIRE(gradValueV[d] == Catch::Approx(gExpected[d]));
+                }
+            }
+        }
+
+        // === vector field: implicit mode ======================================
+        {
+            auto field = NeoN::Field<NeoN::Vec3>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
+            NeoN::fill(field.internalVector(), NeoN::Vec3(1.0, -1.0, 0.5));
+            NeoN::fill(field.boundaryData().refGrad(), NeoN::Vec3(-1.0, -1.0, -1.0));
+            NeoN::fill(field.boundaryData().value(), NeoN::Vec3(-1.0, -1.0, -1.0));
+
+            NeoN::Dictionary dict;
+            dict.insert("implicit", true);
+            auto boundary =
+                NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
+                    "symmetry", mesh, dict, 0
+                );
+
+            boundary->correctBoundaryCondition(field);
+
+            REQUIRE(boundary->attributes().transformImplicit == true);
+
+            auto [valuesH, refGradH, nHatH, faceCellsH, internalH] = copyToHosts(
+                field.boundaryData().value(),
+                field.boundaryData().refGrad(),
+                mesh.boundaryMesh().faceUnitNormals(),
+                mesh.boundaryMesh().faceOwners(),
+                field.internalVector()
+            );
+
+            for (auto& boundaryValueV : valuesH.view(boundary->range()))
+            {
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[faceCellsH.view()[i]];
+                const auto vExpected = intV - nV * (intV & nV);
+
+                for (auto d = 0u; d < 3; ++d)
+                {
+                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
+                }
+            }
+
+            // implicit mode leaves refGrad zero (normal damping handled at assembly/solve)
             for (auto& gradValueV : refGradH.view(boundary->range()))
             {
                 for (auto d = 0u; d < 3; ++d)
