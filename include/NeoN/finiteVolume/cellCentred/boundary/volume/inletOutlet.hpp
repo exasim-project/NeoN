@@ -92,17 +92,18 @@ public:
 
     using InletOutletType = InletOutlet<ValueType>;
 
-    // assignable = true: the boundary value is recomputed every correctBoundaryCondition call, so
-    // any downstream overwrite is reversible. assignable = false would trip NeoFOAM's constrainHbyA
-    // into pinning HbyA's boundary to U's at every outflow patch, over-constraining SIMPLE.
-    //
-    // fixesValue = true: GaussGreenGrad reads snGrad from value() rather than refGrad.
-    // value() is already set to the correct per-face evaluated value (inletValue on inflow,
-    // internal[owner] on outflow), so the computed snGrad is correct for both cases:
-    //   inflow:  snGrad = (inletValue - internal) * deltaCoeffs  (Dirichlet gradient)
-    //   outflow: snGrad = (internal   - internal) * deltaCoeffs = 0  (zero-gradient)
+    // assignable = true because the boundary value is recomputed from
+    // internal[owner] (outflow / no-flux path) or from inletValue (inflow
+    // path) every correctBoundaryCondition call — any downstream overwrite
+    // is reversible. assignable = false would trip NeoFOAM's constrainHbyA
+    // (src/algorithms/pressureVelocityCoupling.cpp) into pinning HbyA's
+    // boundary to U's at every outflow inletOutlet patch, which over-
+    // constrains SIMPLE and diverges (saw this on motorBike, t≈230).
+    // True Dirichlet inflow handling on mixed-flow patches needs per-face
+    // attributes — not modelled today; the per-face refValue/valueFraction
+    // already drive the operators correctly via the mixed-BC kernels.
     InletOutlet(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = true}), mesh_(mesh),
+        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false}), mesh_(mesh),
           inletValue_(dict.get<ValueType>("inletValue")),
           phiName_(dict.contains("phi") ? dict.get<std::string>("phi") : std::string("phi"))
     {}
