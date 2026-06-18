@@ -16,9 +16,10 @@ namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 
 // Slip is a frictionless-wall boundary condition: scalar => zero-gradient, vector => tangential
-// projection + deferred normal damping. It shares its implementation with Symmetry via
+// projection + normal damping. It shares its implementation with Symmetry via
 // detail::setSlipSymmetryValue; the two differ only in the registered name and in where they may be
-// applied (slip on wall/patch types, symmetry on a symmetry-plane patch).
+// applied (slip on wall/patch types, symmetry on a symmetry-plane patch). The optional "implicit"
+// key selects the normal-damping treatment.
 template<typename ValueType>
 class Slip : public VolumeBoundaryFactory<ValueType>::template Register<Slip<ValueType>>
 {
@@ -31,12 +32,22 @@ public:
     using SlipType = Slip<ValueType>;
 
     Slip(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = false}), mesh_(mesh)
+        : Base(
+            mesh,
+            dict,
+            patchID,
+            {.assignable = false,
+             .fixesValue = false,
+             .transformImplicit = detail::readTransformImplicit(dict)}
+        ),
+          mesh_(mesh), implicit_(detail::readTransformImplicit(dict))
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setSlipSymmetryValue(domainVector, mesh_, this->range());
+        detail::setSlipSymmetryValue(
+            domainVector, mesh_, this->range(), detail::normalDampingMode(implicit_)
+        );
     }
 
     static std::string name() { return "slip"; }
@@ -58,6 +69,7 @@ public:
 private:
 
     const UnstructuredMesh& mesh_;
+    bool implicit_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred::volumeBoundary

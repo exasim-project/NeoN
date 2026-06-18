@@ -16,9 +16,9 @@ namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 
 // Symmetry is a symmetry-plane boundary condition: scalar => zero-gradient, vector => tangential
-// projection + deferred normal damping. It shares its implementation with Slip via
+// projection + normal damping. It shares its implementation with Slip via
 // detail::setSlipSymmetryValue; they differ only in the registered name and in where they may be
-// applied (symmetry on a symmetry-plane patch, slip on wall/patch types).
+// applied. The optional "implicit" key selects the normal-damping treatment.
 template<typename ValueType>
 class Symmetry : public VolumeBoundaryFactory<ValueType>::template Register<Symmetry<ValueType>>
 {
@@ -31,12 +31,22 @@ public:
     using SymmetryType = Symmetry<ValueType>;
 
     Symmetry(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = false}), mesh_(mesh)
+        : Base(
+            mesh,
+            dict,
+            patchID,
+            {.assignable = false,
+             .fixesValue = false,
+             .transformImplicit = detail::readTransformImplicit(dict)}
+        ),
+          mesh_(mesh), implicit_(detail::readTransformImplicit(dict))
     {}
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setSlipSymmetryValue(domainVector, mesh_, this->range());
+        detail::setSlipSymmetryValue(
+            domainVector, mesh_, this->range(), detail::normalDampingMode(implicit_)
+        );
     }
 
     static std::string name() { return "symmetry"; }
@@ -59,6 +69,7 @@ public:
 private:
 
     const UnstructuredMesh& mesh_;
+    bool implicit_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred::volumeBoundary
