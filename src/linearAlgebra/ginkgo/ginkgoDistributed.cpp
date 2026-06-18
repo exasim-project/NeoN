@@ -10,7 +10,9 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/error.hpp"
 
+#include <cstddef>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -98,6 +100,34 @@ std::shared_ptr<const gko::LinOp> gkoConstVecViewDist(
             3
         )
     ));
+}
+
+// --- Ginkgo distributed-matrix skeleton registry (D-01 / D-05 / D-06) ---
+
+using dist_mtx_t = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
+using local_csr_t = gko::matrix::Csr<scalar, label>;
+using nonlocal_coo_t = gko::matrix::Coo<scalar, label>;
+
+struct GinkgoSkeletonEntry
+{
+    std::shared_ptr<dist_mtx_t> distMtx;
+    std::shared_ptr<local_csr_t> mutableLocalCsr;       // non-const; OWNED value buffer
+    std::shared_ptr<nonlocal_coo_t> mutableNonLocalCoo; // non-const; view over nlVal
+    Vector<scalar> nlVal;                               // persistent non-local COO value buffer
+    Vector<label> rowSortPermDev;                       // device copy of offDiagRowSortPerm
+    std::size_t buildCount {0};                         // D-06 always-on skeleton-build counter
+};
+
+// Thread-safety: solves are sequential per rank; the registry is touched only from
+// createGkoMtxDist (via solveDist/solveComponentDist). No locking required.
+static std::unordered_map<const void*, GinkgoSkeletonEntry> gSkeletonRegistry;
+
+// D-06: always-on test accessor — declared in ginkgo.hpp under NF_WITH_MPI_SUPPORT.
+// Returns the per-key skeleton build count, or 0 if the key has never been seen.
+std::size_t getSkeletonBuildCount(const void* key)
+{
+    auto it = gSkeletonRegistry.find(key);
+    return (it != gSkeletonRegistry.end()) ? it->second.buildCount : 0;
 }
 
 template<typename IndexType>

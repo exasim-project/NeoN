@@ -44,6 +44,11 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern
 );
+
+/** @brief Number of times the Ginkgo distributed-matrix skeleton was built for the given
+ *  SparsityPattern key (mtx.sparsity().get()). Zero if never seen. Test-only observability
+ *  hook for the SOLVER-01 "built once per mesh" invariant (D-06). Always-on, zero overhead. */
+std::size_t getSkeletonBuildCount(const void* key);
 #endif // NF_WITH_MPI_SUPPORT
 
 template<typename T>
