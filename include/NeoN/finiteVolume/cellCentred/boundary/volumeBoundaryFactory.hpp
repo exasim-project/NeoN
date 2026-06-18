@@ -28,6 +28,11 @@ struct BoundaryAttributes
     bool fixesValue; ///< whether the bc enforces a fixed field value (Dirichlet), not a
                      ///< gradient/Neumann condition NOTE this is somewhat redundant to
                      ///< valueFraction of boundaryData
+    bool transformImplicit = false; ///< whether this is a direction-dependent (transform) BC
+                                    ///< — e.g. slip/symmetry in implicit mode — whose normal
+                                    ///< damping must be applied as a per-component diagonal
+                                    ///< correction at solve time rather than via the RHS.
+                                    ///< Defaults to false so all existing BCs are unaffected.
 };
 
 template<typename ValueType>

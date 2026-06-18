@@ -11,6 +11,7 @@
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
@@ -24,6 +25,11 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     if (dict.contains("coupled"))
     {
         dict.remove("coupled");
+    }
+
+    if (dict.contains("localMatrixFormat"))
+    {
+        dict.remove("localMatrixFormat");
     }
 
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
@@ -529,13 +535,90 @@ SolverStats GinkgoSolver::solve(
 }
 
 
+// Solve one component of a scalar-matrix / Vec3-rhs system under an implicit transform BC
+// (slip/symmetry). The component's diagonal correction is temporarily subtracted from the shared
+// scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
+// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The diag edits
+// use atomics because a corner cell may receive contributions from several boundary faces.
+template<unsigned int I>
+void solveImplicitTransformComponent(
+    const auto& sys,
+    Vector<Vec3>& x,
+    const auto& exec,
+    std::shared_ptr<const gko::Executor> gkoExec,
+    std::shared_ptr<const gko::LinOp> gkoMtx,
+    const auto& factory,
+    SolverStats& stats,
+    const L1ResidualControl* l1Control,
+    auto values,
+    const auto& ma,
+    auto diagC,
+    localIdx nrows
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) {
+            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
+        },
+        "applyImplicitTransformDiag"
+    );
+    gkoExec->synchronize();
+
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+    stats.entries.push_back(
+        solve_impl(gkoExec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
+    );
+    setComponent<I>(xcopy, x);
+
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) {
+            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
+        },
+        "restoreImplicitTransformDiag"
+    );
+    gkoExec->synchronize();
+}
+
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
     Vector<Vec3>& x
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
+
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+
+    // Implicit transform-BC path (slip/symmetry with "implicit"): the per-component diagonal
+    // correction differs per column, so solve the three components segregated, reusing solve_impl
+    // (which honours the l1ScaledResidual criterion). Each column's correction is temporarily
+    // subtracted from the shared scalar diagonal in place — no matrix copy — and restored after;
+    // createGkoMtx only views the matrix, so the edits are seen at generate()/apply() time, and the
+    // const_cast is safe because the storage is owned mutably by the caller.
+    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    {
+        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+        auto diagC = sys.diagCmpt()->view();
+        const localIdx nrows = sys.rhs().size();
+        gkoExec_->synchronize();
+
+        SolverStats stats;
+        solveImplicitTransformComponent<0>(
+            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+        );
+        solveImplicitTransformComponent<1>(
+            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+        );
+        solveImplicitTransformComponent<2>(
+            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+        );
+        return stats;
+    }
     if (l1Control)
     {
         gkoExec_->synchronize();

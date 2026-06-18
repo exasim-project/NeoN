@@ -144,10 +144,21 @@ private:
  * @class FixedValueConstraints
  * @brief Post-assembly functor that pins a set of cells to prescribed values.
  *
+ * This now performs OpenFOAM's FULL decouple (fvMatrix::setValuesFromList), not just a row wipe.
  * For every constrained cell c:
- *   A[c, j] = 0  for j != c   (zero row off-diagonals)
- *   A[j, c] = 0  for j != c   (zero column in neighbour rows, rhs[j] absorbs the dropped term)
- *   rhs[c]  = A[c,c] * value[c]
+ *   A[c, j] = 0            for all j != c    (zero the off-diagonals of ROW c)
+ *   A[j, c] = 0            for all j != c    (zero the COLUMN c in every neighbour row j)
+ *   rhs[j] -= A[j, c]*value[c]               (relocate that coupling into the neighbour SOURCE)
+ *   rhs[c]  = A[c, c] * value[c]
+ * so the row reduces to A[c,c]*x_c = A[c,c]*value[c] => x_c = value[c] (independent of the
+ * relaxed/BC-augmented diagonal), and — crucially — the SpMV / residual no longer carries the
+ * huge in-matrix A[j,c]*value_c term (value_c is the viscous-sublayer wall omega, up to 1e12).
+ * Leaving that coefficient in the matrix (the previous row-only wipe) made A*x at neighbour cells
+ * a difference of ~1e18 magnitudes, which underflowed/NaN'd the L1 residual norm under FOAM_SIGFPE
+ * — OpenFOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.
+ *
+ * Proc-boundary caveat: a pinned cell's coupling to an off-rank ghost lives in offDiagonalMatrix,
+ * not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).
  *
  * Pinning via both the row and column cut avoids large cancellation errors when
  * pinned values are orders of magnitude larger than neighbouring unknowns.
@@ -184,9 +195,10 @@ public:
         auto rhs = lsView.rhs;
         auto mask = mask_;
         auto vals = values_;
-        // Sweep every row: pinned rows drop their off-diagonals; non-pinned rows that couple into
-        // a pinned column absorb the term into their rhs and zero the coefficient. Parallelising
-        // over rows avoids atomics since each row owns its own rhs entry and off-diagonal slots.
+        // Sweep EVERY row (not only the pinned ones): a pinned row drops its off-diagonals, while
+        // a NON-pinned row that couples into a pinned column relocates that term to its own source
+        // and zeros it (OpenFOAM's column cut). Parallelising over rows means each row owns its own
+        // rhs entry and its own off-diagonal slots, so no atomics are needed.
         parallelFor(
             ls.exec(),
             {0, nCells_},
@@ -208,13 +220,15 @@ public:
                     }
                     else if (mask[col] != scalar(0))
                     {
-                        // column cut: absorb coupling into rhs, zero the coefficient
+                        // neighbour row coupling INTO a pinned cell: move the term to this row's
+                        // source as a constant, then drop the coefficient (OF setValues column cut)
                         rhs[row] -= matrixValues[o] * vals[col];
                         matrixValues[o] = zero<ValueType>();
                     }
                 }
                 if (rowPinned)
                 {
+                    // row now reads A[c,c]*x_c = A[c,c]*value[c] => x_c = value[c]
                     rhs[row] = diagVal * vals[row];
                 }
             },
