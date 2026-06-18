@@ -44,6 +44,11 @@ const VolumeField<Tensor>& BoundaryContext::tensorFieldPtr(const std::string& na
     return *tensorFields_.at(name);
 }
 
+const SurfaceField<NeoN::scalar>& BoundaryContext::surfaceScalarField(const std::string& name) const
+{
+    return *surfaceScalarFields_.at(name);
+}
+
 bool BoundaryContext::hasScalar(const std::string& name) const noexcept
 {
     return scalarFields_.count(name) > 0;
@@ -57,11 +62,6 @@ bool BoundaryContext::hasVector(const std::string& name) const noexcept
 bool BoundaryContext::hasTensor(const std::string& name) const noexcept
 {
     return tensorFields_.count(name) > 0;
-}
-
-const SurfaceField<NeoN::scalar>& BoundaryContext::surfaceScalarField(const std::string& name) const
-{
-    return *surfaceScalarFields_.at(name);
 }
 
 bool BoundaryContext::hasSurfaceScalar(const std::string& name) const noexcept
