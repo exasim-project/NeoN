@@ -469,6 +469,55 @@ void solveComponentDist(
     setComponent<I>(xcopy, x);
 }
 
+// Distributed counterpart of solveImplicitTransformComponent: solve component I of a scalar-matrix
+// / Vec3-rhs system under an implicit transform BC (slip/symmetry), temporarily applying the
+// component's diagonal correction to the shared rank-local diagonal in place and reusing
+// solve_impl_dist (which honours the l1ScaledResidual criterion). The correction is rank-local, so
+// only the local diagonal entries are touched.
+template<unsigned int I>
+void solveImplicitTransformComponentDist(
+    const auto& sys,
+    Vector<Vec3>& x,
+    const auto& exec,
+    std::shared_ptr<const gko::Executor> gkoExec,
+    const gko::experimental::mpi::communicator& comm,
+    std::shared_ptr<const gko::LinOp> gkoMtx,
+    const auto& factory,
+    SolverStats& stats,
+    const L1ResidualControl* l1Control,
+    auto values,
+    const auto& ma,
+    auto diagC,
+    localIdx nrows
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) {
+            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
+        },
+        "applyImplicitTransformDiagDist"
+    );
+    gkoExec->synchronize();
+
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+    auto solver = gko::share(factory->generate(gkoMtx));
+    stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
+    setComponent<I>(xcopy, x);
+
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) {
+            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
+        },
+        "restoreImplicitTransformDiagDist"
+    );
+    gkoExec->synchronize();
+}
+
 SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -518,6 +567,7 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
+    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     auto gkoMtx = createGkoMtxDist(
         gkoExec_,
         comm,
@@ -527,8 +577,70 @@ SolverStats GinkgoSolver::solveDist(
         cachedImap_,
         cachedNonLocalMtx_
     );
+
+    // Implicit transform-BC path: solve the three components segregated, applying each column's
+    // per-component diagonal correction to the shared rank-local diagonal in place. Mirrors the
+    // serial path; createGkoMtxDist views the local matrix, so the in-place edits are seen at solve
+    // time.
+    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    {
+        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+        auto diagC = sys.diagCmpt()->view();
+        const localIdx nrows = sys.rhs().size();
+        gkoExec_->synchronize();
+
+        SolverStats stats;
+        solveImplicitTransformComponentDist<0>(
+            sys,
+            x,
+            exec_,
+            gkoExec_,
+            comm,
+            gkoMtx,
+            factory_,
+            stats,
+            l1Control,
+            values,
+            ma,
+            diagC,
+            nrows
+        );
+        solveImplicitTransformComponentDist<1>(
+            sys,
+            x,
+            exec_,
+            gkoExec_,
+            comm,
+            gkoMtx,
+            factory_,
+            stats,
+            l1Control,
+            values,
+            ma,
+            diagC,
+            nrows
+        );
+        solveImplicitTransformComponentDist<2>(
+            sys,
+            x,
+            exec_,
+            gkoExec_,
+            comm,
+            gkoMtx,
+            factory_,
+            stats,
+            l1Control,
+            values,
+            ma,
+            diagC,
+            nrows
+        );
+        return stats;
+    }
+
+
     auto solver = gko::share(factory_->generate(gkoMtx));
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 
