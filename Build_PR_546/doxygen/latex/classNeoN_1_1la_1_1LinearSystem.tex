@@ -1,0 +1,406 @@
+\doxysection{NeoN\+::la\+::Linear\+System\texorpdfstring{$<$}{<} Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1la_1_1LinearSystem}{}\label{classNeoN_1_1la_1_1LinearSystem}\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+
+
+\doxylink{classA}{A} class representing a linear system of equations.  
+
+
+
+
+{\ttfamily \#include $<$linear\+System.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::la\+::Linear\+System\texorpdfstring{$<$}{<} Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.163032cm]{classNeoN_1_1la_1_1LinearSystem}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d}{Linear\+System\+Index\+Type}} = typename System\+Matrix\+Type\+::\+Matrix\+Sparsity\+Type\+::\+Sparsity\+Index\+Type
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a46cb0a289df0593728be5e43c0a6e2cc}{Linear\+System}} (const System\+Matrix\+Type \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e}{matrix}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19}{rhs}}, const Boundary\+Matrix\+Type \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a01710eb20e2537aeb891089f67bad3ad}{off\+Diagonal\+Matrix}}, const Boundary\+Matrix\+Type \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a38a668f648b67bb7abefec179f247779}{boundary\+Matrix}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968}{boundary\+Rhs}}, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$ strategy=std\+::make\+\_\+shared$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}} $>$())
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a0287edb92ff1bb11dfb1d6475277f7b9}{Linear\+System}} (const System\+Matrix\+Type \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e}{matrix}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19}{rhs}}, const Boundary\+Matrix\+Type \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a38a668f648b67bb7abefec179f247779}{boundary\+Matrix}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968}{boundary\+Rhs}}, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$ strategy=std\+::make\+\_\+shared$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}} $>$())
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a373a1e580c3041f22c514fd588098782}{Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}} \&ls)
+\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5a09a866841cf44dfb40f5f4567a7982}{\texorpdfstring{$\sim$}{\string~}\+Linear\+System}} ()=default
+\item 
+System\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e}{matrix}} ()
+\item 
+const System\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac184efa6edca75df5623988c734ca8b5}{matrix}} () const
+\item 
+Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a01710eb20e2537aeb891089f67bad3ad}{off\+Diagonal\+Matrix}} ()
+\item 
+const Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aa0555c492316c329f19787ed7e949b77}{off\+Diagonal\+Matrix}} () const
+\item 
+Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a38a668f648b67bb7abefec179f247779}{boundary\+Matrix}} ()
+\item 
+const Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a5bc14099bca511e2ab90a5152b4fe15e}{boundary\+Matrix}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19}{rhs}} ()
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ae846cfe347571377ce8a157a77ec133d}{rhs}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968}{boundary\+Rhs}} ()
+\item 
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_adc4b8a52b00ab52af61370ec938dbb0f}{boundary\+Rhs}} () const
+\item 
+const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ad60149f52ba110a7d12d3872a63122a5}{diag\+Cmpt}} () const
+\begin{DoxyCompactList}\small\item\em Per-\/component diagonal correction for implicit transform BCs (slip/symmetry). nullptr when no implicit transform patch is present (the fast multi-\/\+RHS path). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a6dd2794e3853a8508ab2c038bc793980}{ensure\+Diag\+Cmpt}} ()
+\begin{DoxyCompactList}\small\item\em Lazily allocate (zero-\/initialised, one RHSValue\+Type per cell) and return the per-\/component diagonal-\/correction store, so the Laplacian assembly can accumulate the implicit transform-\/\+BC contribution into it. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a089b0c9827285096b29db2fdc8aa2106}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}) const override
+\item 
+void \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a4d8399bc213eb88da8a0d3fb927b5738}{reset}} ()
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ RHSValue\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ typename System\+Matrix\+Type\+::\+Matrix\+Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ab2dac7658c5cf9c1107f62d2c6e21936}{view}} () \&\&=delete
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ RHSValue\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ typename System\+Matrix\+Type\+::\+Matrix\+Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a94a2a737094ff7c809e02786210901e1}{view}} () const \&\&=delete
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ RHSValue\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d}{Linear\+System\+Index\+Type}} $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ac8284ece46e70228942e013556ee440d}{view}} () \&
+\item 
+std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_aac856e2d50f6163ed84e1babaefc6443}{face\+To\+Matrix\+Address}} () const
+\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ const RHSValue\+Type, const \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d}{Linear\+System\+Index\+Type}} $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ad42956e038f96f28bef48f316db42133}{view}} () const \&
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext}{Mesh\+Iterator\+Context}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a02a1bd9dde40bb89fb654230821aae98}{get\+Mesh\+Iterator}} ()
+\item 
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo}{Neo\+N\+::\+Supports\+Copy\+To$<$ Host\+Type $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_a93a822c7f2d48dc0cfbbae226c8ab586}{\texorpdfstring{$\sim$}{\string~}\+Supports\+Copy\+To}} ()=default
+\item 
+Host\+Type \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_a256c1d9968812b8c9be5c00b2d9b3f4d}{copy\+To\+Host}} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Matrix\+Value\+Type, typename RHSValue\+Type = Matrix\+Value\+Type, typename System\+Matrix\+Type = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$\newline
+class Neo\+N\+::la\+::\+Linear\+System$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$}
+\doxylink{classA}{A} class representing a linear system of equations. 
+
+The \doxylink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System} class provides functionality to store and manipulate a linear system of equations. It supports the storage of the coefficient matrix and the right-\/hand side vector, as well as the solution vector.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Matrix\+Value\+Type} & The value type of the system and boundary matrix coefficients. \\
+\hline
+{\em RHSValue\+Type} & The value type of the right-\/hand side and boundary rhs vectors. Defaults to Matrix\+Value\+Type, but may differ (e.\+g. scalar matrix with \doxylink{classNeoN_1_1Vec3}{Vec3} rhs for segregated vector solves). \\
+\hline
+{\em System\+Matrix\+Type} & The sparse matrix type used for the system matrix (default\+: CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$). \\
+\hline
+{\em Boundary\+Matrix\+Type} & The sparse matrix type used for boundary and off-\/diagonal matrices (default\+: COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$). \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d}\label{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!LinearSystemIndexType@{LinearSystemIndexType}}
+\index{LinearSystemIndexType@{LinearSystemIndexType}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{LinearSystemIndexType}{LinearSystemIndexType}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::\+Linear\+System\+Index\+Type =  typename System\+Matrix\+Type\+::\+Matrix\+Sparsity\+Type\+::\+Sparsity\+Index\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a46cb0a289df0593728be5e43c0a6e2cc}\label{classNeoN_1_1la_1_1LinearSystem_a46cb0a289df0593728be5e43c0a6e2cc} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!LinearSystem@{LinearSystem}}
+\index{LinearSystem@{LinearSystem}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{LinearSystem()}{LinearSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::\+Linear\+System (\begin{DoxyParamCaption}\item[{const System\+Matrix\+Type \&}]{matrix,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&}]{rhs,  }\item[{const Boundary\+Matrix\+Type \&}]{off\+Diagonal\+Matrix,  }\item[{const Boundary\+Matrix\+Type \&}]{boundary\+Matrix,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&}]{boundary\+Rhs,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$}]{strategy = {\ttfamily std\+:\+:make\+\_\+shared$<$\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}}$>$()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00105}{105}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a0287edb92ff1bb11dfb1d6475277f7b9}\label{classNeoN_1_1la_1_1LinearSystem_a0287edb92ff1bb11dfb1d6475277f7b9} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!LinearSystem@{LinearSystem}}
+\index{LinearSystem@{LinearSystem}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{LinearSystem()}{LinearSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::\+Linear\+System (\begin{DoxyParamCaption}\item[{const System\+Matrix\+Type \&}]{matrix,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&}]{rhs,  }\item[{const Boundary\+Matrix\+Type \&}]{boundary\+Matrix,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \&}]{boundary\+Rhs,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$}]{strategy = {\ttfamily std\+:\+:make\+\_\+shared$<$\mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}}$>$()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00121}{121}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a373a1e580c3041f22c514fd588098782}\label{classNeoN_1_1la_1_1LinearSystem_a373a1e580c3041f22c514fd588098782} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!LinearSystem@{LinearSystem}}
+\index{LinearSystem@{LinearSystem}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{LinearSystem()}{LinearSystem()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::\+Linear\+System (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \&}]{ls }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00133}{133}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a5a09a866841cf44dfb40f5f4567a7982}\label{classNeoN_1_1la_1_1LinearSystem_a5a09a866841cf44dfb40f5f4567a7982} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!````~LinearSystem@{\texorpdfstring{$\sim$}{\string~}LinearSystem}}
+\index{````~LinearSystem@{\texorpdfstring{$\sim$}{\string~}LinearSystem}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}LinearSystem()}{\string~LinearSystem()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::\texorpdfstring{$\sim$}{\string~}\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a38a668f648b67bb7abefec179f247779}\label{classNeoN_1_1la_1_1LinearSystem_a38a668f648b67bb7abefec179f247779} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryMatrix@{boundaryMatrix}}
+\index{boundaryMatrix@{boundaryMatrix}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{boundaryMatrix()}{boundaryMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::boundary\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a5bc14099bca511e2ab90a5152b4fe15e}\label{classNeoN_1_1la_1_1LinearSystem_a5bc14099bca511e2ab90a5152b4fe15e} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryMatrix@{boundaryMatrix}}
+\index{boundaryMatrix@{boundaryMatrix}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{boundaryMatrix()}{boundaryMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::boundary\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00158}{158}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968}\label{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryRhs@{boundaryRhs}}
+\index{boundaryRhs@{boundaryRhs}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{boundaryRhs()}{boundaryRhs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::boundary\+Rhs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_adc4b8a52b00ab52af61370ec938dbb0f}\label{classNeoN_1_1la_1_1LinearSystem_adc4b8a52b00ab52af61370ec938dbb0f} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryRhs@{boundaryRhs}}
+\index{boundaryRhs@{boundaryRhs}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{boundaryRhs()}{boundaryRhs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::boundary\+Rhs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a089b0c9827285096b29db2fdc8aa2106}\label{classNeoN_1_1la_1_1LinearSystem_a089b0c9827285096b29db2fdc8aa2106} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!copyToExecutor@{copyToExecutor}}
+\index{copyToExecutor@{copyToExecutor}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{copyToExecutor()}{copyToExecutor()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::copy\+To\+Executor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}}]{exec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_ad54623a2d9533dc70f4d609714209967}{Neo\+N\+::\+Supports\+Copy\+To$<$ Host\+Type $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00189}{189}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ad60149f52ba110a7d12d3872a63122a5}\label{classNeoN_1_1la_1_1LinearSystem_ad60149f52ba110a7d12d3872a63122a5} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!diagCmpt@{diagCmpt}}
+\index{diagCmpt@{diagCmpt}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{diagCmpt()}{diagCmpt()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::diag\+Cmpt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Per-\/component diagonal correction for implicit transform BCs (slip/symmetry). nullptr when no implicit transform patch is present (the fast multi-\/\+RHS path). 
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00170}{170}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a6dd2794e3853a8508ab2c038bc793980}\label{classNeoN_1_1la_1_1LinearSystem_a6dd2794e3853a8508ab2c038bc793980} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!ensureDiagCmpt@{ensureDiagCmpt}}
+\index{ensureDiagCmpt@{ensureDiagCmpt}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{ensureDiagCmpt()}{ensureDiagCmpt()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::ensure\+Diag\+Cmpt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Lazily allocate (zero-\/initialised, one RHSValue\+Type per cell) and return the per-\/component diagonal-\/correction store, so the Laplacian assembly can accumulate the implicit transform-\/\+BC contribution into it. 
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00178}{178}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}\label{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!exec@{exec}}
+\index{exec@{exec}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{exec()}{exec()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::exec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00267}{267}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_aac856e2d50f6163ed84e1babaefc6443}\label{classNeoN_1_1la_1_1LinearSystem_aac856e2d50f6163ed84e1babaefc6443} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!faceToMatrixAddress@{faceToMatrixAddress}}
+\index{faceToMatrixAddress@{faceToMatrixAddress}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{faceToMatrixAddress()}{faceToMatrixAddress()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::face\+To\+Matrix\+Address (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00240}{240}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a02a1bd9dde40bb89fb654230821aae98}\label{classNeoN_1_1la_1_1LinearSystem_a02a1bd9dde40bb89fb654230821aae98} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!getMeshIterator@{getMeshIterator}}
+\index{getMeshIterator@{getMeshIterator}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{getMeshIterator()}{getMeshIterator()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContext}{Mesh\+Iterator\+Context}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::get\+Mesh\+Iterator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00258}{258}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e}\label{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!matrix@{matrix}}
+\index{matrix@{matrix}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{matrix()}{matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+System\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00148}{148}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ac184efa6edca75df5623988c734ca8b5}\label{classNeoN_1_1la_1_1LinearSystem_ac184efa6edca75df5623988c734ca8b5} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!matrix@{matrix}}
+\index{matrix@{matrix}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{matrix()}{matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const System\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a01710eb20e2537aeb891089f67bad3ad}\label{classNeoN_1_1la_1_1LinearSystem_a01710eb20e2537aeb891089f67bad3ad} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!offDiagonalMatrix@{offDiagonalMatrix}}
+\index{offDiagonalMatrix@{offDiagonalMatrix}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{offDiagonalMatrix()}{offDiagonalMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::off\+Diagonal\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00152}{152}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_aa0555c492316c329f19787ed7e949b77}\label{classNeoN_1_1la_1_1LinearSystem_aa0555c492316c329f19787ed7e949b77} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!offDiagonalMatrix@{offDiagonalMatrix}}
+\index{offDiagonalMatrix@{offDiagonalMatrix}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{offDiagonalMatrix()}{offDiagonalMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::off\+Diagonal\+Matrix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00154}{154}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a4d8399bc213eb88da8a0d3fb927b5738}\label{classNeoN_1_1la_1_1LinearSystem_a4d8399bc213eb88da8a0d3fb927b5738} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!reset@{reset}}
+\index{reset@{reset}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00208}{208}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19}\label{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!rhs@{rhs}}
+\index{rhs@{rhs}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{rhs()}{rhs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::rhs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00160}{160}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ae846cfe347571377ce8a157a77ec133d}\label{classNeoN_1_1la_1_1LinearSystem_ae846cfe347571377ce8a157a77ec133d} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!rhs@{rhs}}
+\index{rhs@{rhs}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{rhs()}{rhs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::rhs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ac8284ece46e70228942e013556ee440d}\label{classNeoN_1_1la_1_1LinearSystem_ac8284ece46e70228942e013556ee440d} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ RHSValue\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d}{Linear\+System\+Index\+Type}} $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00235}{235}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ab2dac7658c5cf9c1107f62d2c6e21936}\label{classNeoN_1_1la_1_1LinearSystem_ab2dac7658c5cf9c1107f62d2c6e21936} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ RHSValue\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ typename System\+Matrix\+Type\+::\+Matrix\+Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ad42956e038f96f28bef48f316db42133}\label{classNeoN_1_1la_1_1LinearSystem_ad42956e038f96f28bef48f316db42133} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ const RHSValue\+Type, const \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a17e7c6e365913ef2336fc070fa73025d}{Linear\+System\+Index\+Type}} $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00253}{253}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a94a2a737094ff7c809e02786210901e1}\label{classNeoN_1_1la_1_1LinearSystem_a94a2a737094ff7c809e02786210901e1} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
+\index{view@{view}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}$<$ RHSValue\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}$<$ Matrix\+Value\+Type, \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ typename System\+Matrix\+Type\+::\+Matrix\+Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ $>$ $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const \&\&\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/\mbox{\hyperlink{linearSystem_8hpp}{linear\+System.\+hpp}}\end{DoxyCompactItemize}
