@@ -194,6 +194,59 @@ void computeLaplacianBoundImpl(
         },
         "computeInterfaceLaplacianCoefficients"
     );
+
+    // Implicit transform boundary conditions (slip/symmetry with "implicit"): the normal-damping
+    // coefficient is direction-dependent (γ|S|·Δ·|n_c|) and therefore differs per momentum
+    // component, which the shared scalar diagonal cannot hold. Instead of three matrix copies we
+    // accumulate the per-component contribution into the linear system's diagCmpt store; the solver
+    // applies it column-by-column (subtracting it from the diagonal, matching the Dirichlet sign
+    // convention above). Only meaningful for a vector field — a scalar transform BC is plain
+    // zero-gradient and contributes nothing here.
+    if constexpr (std::is_same_v<FieldValueType, NeoN::Vec3>)
+    {
+        const auto bcs = phi.boundaryConditions();
+        bool anyImplicit = false;
+        for (const auto& bc : bcs)
+        {
+            if (bc.attributes().transformImplicit)
+            {
+                anyImplicit = true;
+                break;
+            }
+        }
+
+        if (anyImplicit)
+        {
+            auto diagCmptV = ls.ensureDiagCmpt().view();
+            const auto bUnitNormals = mesh.boundaryMesh().faceUnitNormals().view();
+
+            for (localIdx patchID = 0; patchID < mesh.nBoundaries(); ++patchID)
+            {
+                if (!bcs[static_cast<size_t>(patchID)].attributes().transformImplicit)
+                {
+                    continue;
+                }
+                const auto [start, end] = phi.boundaryData().range(patchID);
+                parallelFor(
+                    exec,
+                    {start, end},
+                    NEON_LAMBDA(const localIdx bfi) {
+                        const auto own = boundaryFaceOwners[bfi];
+                        const auto n = bUnitNormals[bfi];
+                        // γ|S|·coeff·Δ — the Dirichlet-strength diagonal weight for this face
+                        const scalar w = bGammaV[bfi] * bFaceAreas[bfi] * operatorScaling[own]
+                                       * bDeltaCoeffs[bfi];
+                        // per-component contribution scaled by |n_c| (a corner cell may own several
+                        // boundary faces, hence the atomics)
+                        Kokkos::atomic_add(&diagCmptV[own][0], w * Kokkos::abs(n[0]));
+                        Kokkos::atomic_add(&diagCmptV[own][1], w * Kokkos::abs(n[1]));
+                        Kokkos::atomic_add(&diagCmptV[own][2], w * Kokkos::abs(n[2]));
+                    },
+                    "computeImplicitTransformDiag"
+                );
+            }
+        }
+    }
 }
 
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
