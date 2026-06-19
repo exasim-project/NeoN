@@ -71,7 +71,9 @@ public:
     {
         MPI_Initialized(&mpiInitialized);
         updateRankData();
-        gpuAwareMpi_ = probeGpuAwareMpi();
+        // GPU-aware MPI defaults to true (see gpuAwareMpi_ member init). On a CUDA-aware MPI
+        // (e.g. CINECA) device pointers are passed to MPI directly; set NEON_FORCE_HOST_BUFFER
+        // to force host-side staging buffers on a non-GPU-aware MPI (e.g. local WSL2/TCP).
         if (std::getenv("NEON_FORCE_HOST_BUFFER") != nullptr) gpuAwareMpi_ = false;
     }
 
@@ -139,37 +141,6 @@ public:
             return 32767; // MPI-1+ guaranteed minimum (Pitfall 3: honour the found flag)
         }();
         return cachedTagUb;
-    }
-
-    /**
-     * @brief Runtime-probed GPU-aware MPI capability, cached once for the process lifetime.
-     *
-     * Probes MPIX_Query_cuda_support() under #ifdef MPIX_CUDA_AWARE_SUPPORT. When the symbol
-     * is absent, defaults to false (host staging) — never pass device pointers to an unprobed
-     * MPI. NEON_FORCE_HOST_BUFFER always overrides this (the ctor applies the override after
-     * seeding gpuAwareMpi_ from this probe).
-     *
-     * CUDA is the only backend wired now. Drop-in slots for HIP/ROCm and SYCL/Level-Zero are
-     * left as comments — each absent symbol defaults to host staging.
-     */
-    static bool probeGpuAwareMpi()
-    {
-        static const bool probed = []() -> bool
-        {
-#ifdef MPIX_CUDA_AWARE_SUPPORT
-            return MPIX_Query_cuda_support() == 1;
-            // Drop-in slots for other GPU backends (not wired in Phase 9):
-            //   HIP/ROCm:  #elif defined(MPIX_ROCM_AWARE_SUPPORT) return MPIX_Query_rocm_support()
-            //   == 1; SYCL/L0:   #elif defined(MPIX_ZE_AWARE_SUPPORT)   return
-            //   MPIX_Query_ze_support()   == 1;
-            // Each resolves the same single gpuAwareMpi() capability per the active Kokkos
-            // GPUExecutor backend; each absent symbol defaults to host staging.
-#else
-            return false; // symbol absent => default to host staging (safe; never pass device ptrs
-                          // to an unprobed MPI)
-#endif
-        }();
-        return probed;
     }
 
 private:

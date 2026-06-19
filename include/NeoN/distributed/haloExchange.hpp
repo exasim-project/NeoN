@@ -76,7 +76,7 @@ void haloExchange(
     const int totalSend = sendCountsVec[nRanks]; // last element = total
 
     // Determine whether GPU-direct path is available.
-    // On WSL2 gpuAwareMpi() is false; gate preserved for Phase 13 enablement.
+    // gpuAwareMpi() defaults to true; set NEON_FORCE_HOST_BUFFER to force host staging.
     const bool useGpuPath = mpiEnv.gpuAwareMpi() && std::holds_alternative<GPUExecutor>(exec);
 
     // ----- Stage sendData from device (or CPU) to host send buffer -----
