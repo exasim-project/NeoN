@@ -198,6 +198,11 @@ GaussGreenGrad::GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mes
           exec, mesh, std::make_unique<Linear<Vec3>>(exec, mesh, Dictionary())
       ) {};
 
+GaussGreenGrad::GaussGreenGrad(
+    const Executor& exec, const UnstructuredMesh& mesh, const Input& /* inputs */
+)
+    : GaussGreenGrad(exec, mesh) {};
+
 
 void GaussGreenGrad::grad(
     const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi

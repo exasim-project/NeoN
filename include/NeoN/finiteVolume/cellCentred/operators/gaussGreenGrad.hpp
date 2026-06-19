@@ -29,6 +29,14 @@ public:
 
     GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mesh);
 
+    /* @brief Factory-registered constructor.
+     *
+     * The factory threads the scheme Input through to every registered grad
+     * operator. Gauss-Green uses linear face interpolation unconditionally, so
+     * any trailing interpolation tokens (e.g. "linear") are accepted and ignored.
+     */
+    GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs);
+
     // fvcc::VolumeField<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
 
     /* @brief compute implicit gradient operator contribution

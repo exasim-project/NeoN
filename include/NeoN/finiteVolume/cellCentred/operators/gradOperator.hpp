@@ -22,7 +22,7 @@ template<typename ValueType>
 class GradOperatorFactory :
     public RuntimeSelectionFactory<
         GradOperatorFactory<ValueType>,
-        Parameters<const Executor&, const UnstructuredMesh&>>
+        Parameters<const Executor&, const UnstructuredMesh&, const Input&>>
 {
 
 public:
@@ -34,7 +34,7 @@ public:
                             ? std::get<Dictionary>(inputs).get<std::string>("GradOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         GradOperatorFactory<ValueType>::keyExistsOrError(key);
-        return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh);
+        return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
     }
 
     static std::string name() { return "GradOperatorFactory"; }
