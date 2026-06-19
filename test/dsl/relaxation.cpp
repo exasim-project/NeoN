@@ -431,6 +431,7 @@ TEMPLATE_TEST_CASE(
         }
     }
 
+#if NF_WITH_GINKGO
     SECTION("fixedpoint invariance on " + execName)
     {
         // Build a diagonally dominant, negative-diagonal system. Choose a known x*,
@@ -504,6 +505,7 @@ TEMPLATE_TEST_CASE(
             }
         }
     }
+#endif // NF_WITH_GINKGO
 }
 
 // ---------------------------------------------------------------------------
