@@ -4,9 +4,11 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 #include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -353,6 +355,7 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
             coeffB_
         );
     }
+    computeLaplacianNonOrthCorrImpl(ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_);
     computeDivLaplacianBoundImpl(
         ls,
         this->getVector(),
@@ -427,6 +430,9 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
             coeffB_
         );
     }
+    computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
+        ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
+    );
     computeDivLaplacianBoundImpl<ValueType, scalar>(
         ls,
         this->getVector(),
@@ -498,11 +504,6 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     laplTokens.remove(0);
     faceNormalGradient_ =
         std::make_shared<FaceNormalGradient<ValueType>>(this->field_.exec(), mesh, laplTokens);
-    if (faceNormalGradient_->hasImplicitCorrection())
-    {
-        NF_ERROR_EXIT("GaussGreenDivLaplacian does not support non-orthogonal correction. "
-                      "Use 'Gauss linear uncorrected' for laplacianSchemes.");
-    }
 }
 
 template<typename ValueType>
