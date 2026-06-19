@@ -1,0 +1,42 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/primitives/symm\+Tensor.hpp File Reference}
+\hypertarget{symmTensor_8hpp}{}\label{symmTensor_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/primitives/symmTensor.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/primitives/symmTensor.hpp}}
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/tensor.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/traits.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Neo\+N\+::\+Symm\+Tensor}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} class for the representation of a symmetric 3x3 tensor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a8eccef56c9667da6b3a753064270aef4}{Neo\+N\+::operator\texorpdfstring{$\ast$}{*}}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s, const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&st)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a7a4b14c0afc215497dabb86fb076db25}{Neo\+N\+::operator\&}} (const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&v)
+\begin{DoxyCompactList}\small\item\em Symmetric matrix-\/vector product S·v. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_abb3db8b5367dcb09075d22aca643a491}{Neo\+N\+::mag}} (const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
+\begin{DoxyCompactList}\small\item\em Frobenius norm. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ae802d24c1917f744e65365def8de9889}{Neo\+N\+::mag\+Sqr}} (const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
+\begin{DoxyCompactList}\small\item\em Frobenius norm squared. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_a952ff71e45ff1b1d35c491ef700f03cf}{Neo\+N\+::symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em Symmetric part of a full tensor\+: ½(T + T\texorpdfstring{$^\wedge$}{\string^}T) \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \mbox{\hyperlink{namespaceNeoN_a6321a4a8d56ef340c538371b4ab37604}{Neo\+N\+::two\+Symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em T + T\texorpdfstring{$^\wedge$}{\string^}T (= 2\texorpdfstring{$\ast$}{*}symm(T)) as a full tensor. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_abe63c2a7df727ae21d3a12bb24ef5d67}{Neo\+N\+::dev\+Two\+Symm}} (const \mbox{\hyperlink{classNeoN_1_1Tensor}{Tensor}} \&t)
+\begin{DoxyCompactList}\small\item\em T + T\texorpdfstring{$^\wedge$}{\string^}T -\/ (2/3)\texorpdfstring{$\ast$}{*}tr(T)\texorpdfstring{$\ast$}{*}I — used for viscous stress. \end{DoxyCompactList}\item 
+std\+::ostream \& \mbox{\hyperlink{namespaceNeoN_ad8d7c8733d83b2d0fb047069a233ca0d}{Neo\+N\+::operator$<$$<$}} (std\+::ostream \&out, const \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \&s)
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_ae1af248d731afe03b7a9ba6cd8d29314}{Neo\+N\+::zero$<$ Symm\+Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_adf7dfbd9447cdce1bdbb99736094c904}{Neo\+N\+::one$<$ Symm\+Tensor $>$}} ()
+\item 
+template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}} \mbox{\hyperlink{namespaceNeoN_af56d62c57a1bad47bc71e37683a1229e}{Neo\+N\+::inv$<$ Symm\+Tensor $>$}} (\mbox{\hyperlink{classNeoN_1_1SymmTensor}{Symm\+Tensor}})
+\end{DoxyCompactItemize}
