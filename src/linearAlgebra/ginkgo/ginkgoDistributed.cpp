@@ -11,6 +11,7 @@
 #include "NeoN/core/error.hpp"
 
 #include <cstddef>
+#include <cstdlib>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -124,6 +125,11 @@ struct GinkgoSkeletonEntry
 // createGkoMtxDist (via solveDist/solveComponentDist). No locking required.
 static std::unordered_map<const void*, GinkgoSkeletonEntry> gSkeletonRegistry;
 
+// PROFILING TOGGLE (temporary, env-gated): NEON_GKO_NOCACHE=1 bypasses the skeleton
+// cache entirely — every solve rebuilds a fresh dist_mtx (no registry lookup/store),
+// mirroring develop's per-solve build. Lets one binary A/B the cache cost.
+static const bool gNoCache = (std::getenv("NEON_GKO_NOCACHE") != nullptr);
+
 // Registration flag: the Kokkos finalize hook is registered the first time createGkoMtxDist
 // is called (Kokkos is guaranteed to be initialized at that point). The hook clears the
 // registry during Kokkos::finalize(), which fires before __cxa_finalize (static destructors),
@@ -162,7 +168,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     // via cachedSparsityPattern; a new mesh yields distinct SparsityPattern objects → cache miss).
     const void* key = static_cast<const void*>(mtx.sparsity().get());
 
-    auto it = gSkeletonRegistry.find(key);
+    auto it = gNoCache ? gSkeletonRegistry.end() : gSkeletonRegistry.find(key);
     if (it != gSkeletonRegistry.end())
     {
         // CACHE HIT — refresh matrix values only (D-05). No collectives, no dist_mtx::create.
@@ -340,6 +346,9 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     auto cachedDist = gko::share(
         dist_mtx::create(exec, comm, std::move(imap), mutableLocalCsr, mutableNonLocalCoo)
     );
+
+    // NEON_GKO_NOCACHE: skip the registry store — return the fresh matrix (rebuilt next solve).
+    if (gNoCache) return cachedDist;
 
     // Store entry: mutableLocalCsr/mutableNonLocalCoo retained for per-solve value refresh.
     // nlRow/nlCol/nlVal data is owned by mutableNonLocalCoo (Ginkgo-managed, Coo::create owns
