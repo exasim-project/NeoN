@@ -59,6 +59,7 @@ target_sources(
           "finiteVolume/cellCentred/fields/volumeField.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
+          "finiteVolume/cellCentred/operators/boundedDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.cpp"
