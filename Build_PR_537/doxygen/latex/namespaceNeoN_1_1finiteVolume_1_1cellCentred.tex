@@ -13,7 +13,7 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volum
 \begin{DoxyCompactItemize}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme}{Basic\+Geometry\+Scheme}}
-\item 
+\begin{DoxyCompactList}\small\item\em Default \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme} kernel\+: computes weights, non\+Orth\+Delta\+Coeffs and the non-\/orthogonal correction vectors directly from the mesh geometry. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes}{Boundary\+Attributes}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{Boundary\+Context}}
@@ -40,7 +40,11 @@ class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGra
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin}{Field\+Database\+Mixin}}
 \begin{DoxyCompactList}\small\item\em Mixin for database registration for fields (volume/surface). \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDdtDivLaplacian}{Gauss\+Green\+Ddt\+Div\+Laplacian}}
+\item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv}{Gauss\+Green\+Div}}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian}{Gauss\+Green\+Div\+Laplacian}}
 \item 
 class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenGrad}{Gauss\+Green\+Grad}}
 \item 
@@ -127,6 +131,8 @@ bool \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab8a6a702197d
 std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a751725b9a4effad3dcab6822807b10e1}{compute\+Co\+Num}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt)
 \item 
 {\footnotesize template$<$typename Boundary\+Type $>$ }\\std\+::vector$<$ Boundary\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab918b7425253d07393f1e18b71aa4e22}{create\+Calculated\+BCs}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+\item 
+{\footnotesize template$<$typename Boundary\+Type $>$ }\\std\+::vector$<$ Boundary\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749}{create\+Calculated\+Proc\+BCs}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
 {\footnotesize template$<$typename Boundary\+Type $>$ }\\std\+::vector$<$ Boundary\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}{create\+Extrapolated\+BCs}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
@@ -228,7 +234,7 @@ BDF2&\\
 \end{DoxyEnumFields}
 
 
-Definition at line \mbox{\hyperlink{ddtOperator_8hpp_source_l00017}{17}} of file \mbox{\hyperlink{ddtOperator_8hpp_source}{ddt\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{ddtOperator_8hpp_source_l00019}{19}} of file \mbox{\hyperlink{ddtOperator_8hpp_source}{ddt\+Operator.\+hpp}}.
 
 
 
@@ -306,6 +312,17 @@ std\+::vector$<$ Boundary\+Type $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+:
 
 Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a414c82b2d4caf60720f2acddb8cb7749} 
+\index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!createCalculatedProcBCs@{createCalculatedProcBCs}}
+\index{createCalculatedProcBCs@{createCalculatedProcBCs}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
+\doxysubsubsection{\texorpdfstring{createCalculatedProcBCs()}{createCalculatedProcBCs()}}
+{\footnotesize\ttfamily template$<$typename Boundary\+Type $>$ \\
+std\+::vector$<$ Boundary\+Type $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+::create\+Calculated\+Proc\+BCs (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&}]{mesh }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
+
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ac219f7675251df9d46327915c48c74e4} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!createExtrapolatedBCs@{createExtrapolatedBCs}}
 \index{createExtrapolatedBCs@{createExtrapolatedBCs}!NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}}
@@ -315,7 +332,7 @@ std\+::vector$<$ Boundary\+Type $>$ Neo\+N\+::finite\+Volume\+::cell\+Centred\+:
 
 
 
-Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00046}{46}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
+Definition at line \mbox{\hyperlink{boundary_8hpp_source_l00073}{73}} of file \mbox{\hyperlink{boundary_8hpp_source}{boundary.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a616a3a0d2d9285da79f5301efe88d399}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a616a3a0d2d9285da79f5301efe88d399} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!createFluxCorrBCsFromU@{createFluxCorrBCsFromU}}
@@ -349,7 +366,7 @@ Definition at line \mbox{\hyperlink{ddtFluxCorrBoundary_8hpp_source_l00023}{23}}
 
 
 
-Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00160}{160}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
+Definition at line \mbox{\hyperlink{ddtFluxCorr_8hpp_source_l00178}{178}} of file \mbox{\hyperlink{ddtFluxCorr_8hpp_source}{ddt\+Flux\+Corr.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aff55801e0df1fcf7be8f26668fa963e5}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aff55801e0df1fcf7be8f26668fa963e5} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!oldTime@{oldTime}}
@@ -432,7 +449,7 @@ Definition at line \mbox{\hyperlink{oldTimeCollection_8hpp_source_l00189}{189}} 
 
 
 
-Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00158}{158}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
+Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3deeafaf46d7d4e44bef4d6206b2604a}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3deeafaf46d7d4e44bef4d6206b2604a} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!operator+@{operator+}}
@@ -442,7 +459,7 @@ Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00158}{158}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
+Definition at line \mbox{\hyperlink{surfaceField_8hpp_source_l00186}{186}} of file \mbox{\hyperlink{surfaceField_8hpp_source}{surface\+Field.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a564c89c16f64e7d3a9de82d871ea3170} 
 \index{NeoN::finiteVolume::cellCentred@{NeoN::finiteVolume::cellCentred}!rotateOldTimes@{rotateOldTimes}}

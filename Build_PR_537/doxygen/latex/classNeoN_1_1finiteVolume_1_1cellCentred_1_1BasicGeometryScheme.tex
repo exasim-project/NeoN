@@ -2,6 +2,11 @@
 \hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme}{}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme}\index{NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}}
 
 
+Default \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme} kernel\+: computes weights, non\+Orth\+Delta\+Coeffs and the non-\/orthogonal correction vectors directly from the mesh geometry.  
+
+
+
+
 {\ttfamily \#include $<$basic\+Geometry\+Scheme.\+hpp$>$}
 
 Inheritance diagram for NeoN\+::finite\+Volume\+::cell\+Centred\+::Basic\+Geometry\+Scheme\+:\begin{figure}[H]
@@ -15,27 +20,35 @@ Inheritance diagram for NeoN\+::finite\+Volume\+::cell\+Centred\+::Basic\+Geomet
 \item 
 \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ac2abd0666f6615d92c8a5d82e0b1827c}{Basic\+Geometry\+Scheme}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
 \item 
-void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_aab2c347aa55f7c9fda89fe915e7fa518}{update\+Weights}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&weights) override
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ae46444eb51c3c48da44fa1ae8e825c2c}{update\+Weights}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&weights) final
 \item 
-void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a5e60b247d367e31cafd78363fe9fb694}{update\+Delta\+Coeffs}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&delta\+Coeffs) override
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a4ff2f71165b946bc41be364c11406568}{update\+Non\+Orth\+Delta\+Coeffs}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&non\+Orth\+Delta\+Coeffs) final
 \item 
-void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a849e379ab706c441f857507fcb8dc30d}{update\+Non\+Orth\+Delta\+Coeffs}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&non\+Orth\+Delta\+Coeffs) override
-\item 
-void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a180e4a2d08953b4f1e4c8ff0ec1e29ac}{update\+Non\+Orth\+Correction\+Vec3s}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&non\+Orth\+Correction\+Vec3s) override
+void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ad3de0794099700b4c4e9069d8fc17f34}{update\+Non\+Orth\+Correction\+Vec3s}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&non\+Orth\+Delta\+Coeffs, \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&non\+Orth\+Correction\+Vec3s) final
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Geometry\+Scheme\+Factory}}}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_a6223fac8a208ccac83cb756ad1cb3c45}{Geometry\+Scheme\+Factory}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh)
+\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_a36f89f64414c4fb1734ef1b0efd03038}{Geometry\+Scheme\+Factory}} ()
 \item 
 virtual \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_add6a20e43e79b8b09730c16cf6181774}{\texorpdfstring{$\sim$}{\string~}\+Geometry\+Scheme\+Factory}} ()=default
 \end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
+Default \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{Geometry\+Scheme} kernel\+: computes weights, non\+Orth\+Delta\+Coeffs and the non-\/orthogonal correction vectors directly from the mesh geometry. 
 
+Scheme definitions baked into this kernel\+:
+\begin{DoxyItemize}
+\item non\+Orth\+Delta\+Coeffs is the over-\/relaxed inverse face-\/normal distance 1/(n.\+d), floored by non\+Orth\+Delta\+Clamp; the sn\+Grad schemes consume it as the consistent normal-\/gradient coefficient on non-\/orthogonal meshes (it equals the Euclidean 1/\texorpdfstring{$\vert$}{|}d\texorpdfstring{$\vert$}{|} on orthogonal meshes).
+\item boundary weights are 1 (one-\/sided physical patches); processor weights are d\+N/(d\+O+dN).
+\item processor non\+Orth\+Delta\+Coeffs are 1/(d\+O+dN) from the exchanged owner face-\/normal distances.
+\item non-\/orthogonal correction vectors are zero on physical (one-\/sided) boundary faces, but non-\/zero on non-\/orthogonal processor faces\+: a processor face has a real neighbour cell, so the corrected/limited sn\+Grad applies the full correction there (it vanishes on orthogonal processor faces). See \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient}{Face\+Normal\+Gradient} docs.
+\end{DoxyItemize}
 
-Definition at line \mbox{\hyperlink{basicGeometryScheme_8hpp_source_l00016}{16}} of file \mbox{\hyperlink{basicGeometryScheme_8hpp_source}{basic\+Geometry\+Scheme.\+hpp}}.
+Marked final to enable devirtualisation of the kernel calls in \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ab67d199285124264e5183829810892a3}{Geometry\+Scheme\+::update()}. 
+
+Definition at line \mbox{\hyperlink{basicGeometryScheme_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{basicGeometryScheme_8hpp_source}{basic\+Geometry\+Scheme.\+hpp}}.
 
 
 
@@ -49,41 +62,31 @@ Definition at line \mbox{\hyperlink{basicGeometryScheme_8hpp_source_l00016}{16}}
 
 
 \doxysubsection{Member Function Documentation}
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a5e60b247d367e31cafd78363fe9fb694}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a5e60b247d367e31cafd78363fe9fb694} 
-\index{NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}!updateDeltaCoeffs@{updateDeltaCoeffs}}
-\index{updateDeltaCoeffs@{updateDeltaCoeffs}!NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}}
-\doxysubsubsection{\texorpdfstring{updateDeltaCoeffs()}{updateDeltaCoeffs()}}
-{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Delta\+Coeffs (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{delta\+Coeffs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
-
-
-
-Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_a2a6b728323bc318e66488f988197398e}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Geometry\+Scheme\+Factory}}.
-
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a180e4a2d08953b4f1e4c8ff0ec1e29ac}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a180e4a2d08953b4f1e4c8ff0ec1e29ac} 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ad3de0794099700b4c4e9069d8fc17f34}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ad3de0794099700b4c4e9069d8fc17f34} 
 \index{NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}!updateNonOrthCorrectionVec3s@{updateNonOrthCorrectionVec3s}}
 \index{updateNonOrthCorrectionVec3s@{updateNonOrthCorrectionVec3s}!NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}}
 \doxysubsubsection{\texorpdfstring{updateNonOrthCorrectionVec3s()}{updateNonOrthCorrectionVec3s()}}
-{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Non\+Orth\+Correction\+Vec3s (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{non\+Orth\+Correction\+Vec3s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Non\+Orth\+Correction\+Vec3s (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{non\+Orth\+Delta\+Coeffs,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{non\+Orth\+Correction\+Vec3s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}}
 
 
 
-Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_a5add3cc98982ff8468fc60e42e99458b}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Geometry\+Scheme\+Factory}}.
+Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_aec09ed47b167ac0fd036125a2bcd50ab}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Geometry\+Scheme\+Factory}}.
 
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a849e379ab706c441f857507fcb8dc30d}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a849e379ab706c441f857507fcb8dc30d} 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a4ff2f71165b946bc41be364c11406568}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_a4ff2f71165b946bc41be364c11406568} 
 \index{NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}!updateNonOrthDeltaCoeffs@{updateNonOrthDeltaCoeffs}}
 \index{updateNonOrthDeltaCoeffs@{updateNonOrthDeltaCoeffs}!NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}}
 \doxysubsubsection{\texorpdfstring{updateNonOrthDeltaCoeffs()}{updateNonOrthDeltaCoeffs()}}
-{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Non\+Orth\+Delta\+Coeffs (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{non\+Orth\+Delta\+Coeffs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Non\+Orth\+Delta\+Coeffs (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{non\+Orth\+Delta\+Coeffs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}}
 
 
 
 Implements \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory_ab437af515c974d4f156c31f1f3e9fd4a}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Geometry\+Scheme\+Factory}}.
 
-\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_aab2c347aa55f7c9fda89fe915e7fa518}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_aab2c347aa55f7c9fda89fe915e7fa518} 
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ae46444eb51c3c48da44fa1ae8e825c2c}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme_ae46444eb51c3c48da44fa1ae8e825c2c} 
 \index{NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}!updateWeights@{updateWeights}}
 \index{updateWeights@{updateWeights}!NeoN::finiteVolume::cellCentred::BasicGeometryScheme@{NeoN::finiteVolume::cellCentred::BasicGeometryScheme}}
 \doxysubsubsection{\texorpdfstring{updateWeights()}{updateWeights()}}
-{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Weights (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{weights }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+{\footnotesize\ttfamily void Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Basic\+Geometry\+Scheme\+::update\+Weights (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{weights }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [final]}, {\ttfamily [virtual]}}
 
 
 

@@ -30,6 +30,8 @@ bool \mbox{\hyperlink{classNeoN_1_1TokenList_a0b2e988afbe75233622a6c998c9e7ae9}{
 \begin{DoxyCompactList}\small\item\em Removes first entry of \doxylink{classNeoN_1_1TokenList}{Token\+List} and returns it. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \mbox{\hyperlink{classNeoN_1_1TokenList_a0d4febf5e08758a5bc181e66226b7e14}{size}} () const
 \begin{DoxyCompactList}\small\item\em Retrieves the size of the token list. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7}{reset}} () const
+\begin{DoxyCompactList}\small\item\em Rewind the read cursor used by \doxylink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next$<$$>$()} so the list can be iterated again from the beginning. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Return\+Type $>$ }\\Return\+Type \& \mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}} (const \mbox{\hyperlink{namespaceNeoN_a5ea7bf3a45fbcf9c6ee454474ab13c06}{size\+\_\+t}} \&idx)
 \begin{DoxyCompactList}\small\item\em Retrieves the value associated with the given index, casting it to the specified type. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Return\+Type $>$ }\\Return\+Type \& \mbox{\hyperlink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next}} ()
@@ -140,7 +142,7 @@ Retrieves the value associated with the given index, casting it to the specified
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1TokenList_a673b7e1c3b79ecd2889a69f05e32e677}\label{classNeoN_1_1TokenList_a673b7e1c3b79ecd2889a69f05e32e677} 
 \index{NeoN::TokenList@{NeoN::TokenList}!get@{get}}
@@ -168,7 +170,7 @@ Retrieves the value associated with the given index, casting it to the specified
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00137}{137}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00143}{143}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1TokenList_a7c544efc78031acfcdd8a6bec2710bb7}\label{classNeoN_1_1TokenList_a7c544efc78031acfcdd8a6bec2710bb7} 
 \index{NeoN::TokenList@{NeoN::TokenList}!insert@{insert}}
@@ -206,7 +208,7 @@ Retrieves the value associated with the next\+Index, casting it to the specified
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00121}{121}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00127}{127}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6}\label{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6} 
 \index{NeoN::TokenList@{NeoN::TokenList}!next@{next}}
@@ -229,7 +231,7 @@ Retrieves the value associated with the next\+Index, casting it to the specified
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00169}{169}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75}\label{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75} 
 \index{NeoN::TokenList@{NeoN::TokenList}!operator\mbox{[}\mbox{]}@{operator[]}}
@@ -262,7 +264,7 @@ Checks whether the next token (the one a subsequent \doxylink{classNeoN_1_1Token
 
 
 
-Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00183}{183}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1TokenList_a3a154481207aea8d59bb67f5668a7a47}\label{classNeoN_1_1TokenList_a3a154481207aea8d59bb67f5668a7a47} 
 \index{NeoN::TokenList@{NeoN::TokenList}!popFront@{popFront}}
@@ -302,6 +304,20 @@ Removes a value from the token list based on the specified index.
 {\em index} & The index of the value to remove. \\
 \hline
 \end{DoxyParams}
+\Hypertarget{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7}\label{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7} 
+\index{NeoN::TokenList@{NeoN::TokenList}!reset@{reset}}
+\index{reset@{reset}!NeoN::TokenList@{NeoN::TokenList}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily void Neo\+N\+::\+Token\+List\+::reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Rewind the read cursor used by \doxylink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next$<$$>$()} so the list can be iterated again from the beginning. 
+
+
+
+Definition at line \mbox{\hyperlink{tokenList_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{tokenList_8hpp_source}{token\+List.\+hpp}}.
+
 \Hypertarget{classNeoN_1_1TokenList_a0d4febf5e08758a5bc181e66226b7e14}\label{classNeoN_1_1TokenList_a0d4febf5e08758a5bc181e66226b7e14} 
 \index{NeoN::TokenList@{NeoN::TokenList}!size@{size}}
 \index{size@{size}!NeoN::TokenList@{NeoN::TokenList}}

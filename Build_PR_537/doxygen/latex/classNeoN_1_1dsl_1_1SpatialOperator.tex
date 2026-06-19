@@ -22,9 +22,12 @@ using \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aedfbc85da7dc707f6174
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a5e56907203e06efbb1846294fe6714fb}{explicit\+Operation}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&source) const
 \item 
-void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a2e203242308cc9feaf944c955e74a272}{explicit\+Operation\+Vol\+Integrated}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&source) const
-\item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a8e5c11fcff567b7d9d186b8e91569ee3}{implicit\+Operation}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls) const
+\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a834802d57e557c4584608127fa716475}{implicit\+Operation\+Rhs}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&ls) const
+\item 
+{\footnotesize template$<$typename U  = Value\+Type$>$ \newline
+requires (!std\+::is\+\_\+same\+\_\+v$<$U, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}$>$)}\\void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aaf2480acc71496388bdc4a06fdae0e93}{implicit\+Operation}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Value\+Type $>$ \&ls) const
 \item 
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1Operator_ad72823c9a2d04641ab7c7181902f6dd3}{Operator\+::\+Type}} \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_a7dca09b90089c20925c631b6e6493174}{get\+Type}} () const
 \item 
@@ -33,6 +36,8 @@ std\+::string \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_af61a3a1a208a
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}} \& \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}{get\+Coefficient}} ()
 \item 
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{Coeff}} \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_aec6cd2e8e754f1a10ea0a01707f51a4b}{get\+Coefficient}} () const
+\item 
+\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_ad47afade84fa8069fab821500922a660}{get\+Config}} () const
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator_abbf112a2938a5fe153d451c9b68ec19a}{read}} (const \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}} \&input)
 \item 
@@ -45,7 +50,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 class Neo\+N\+::dsl\+::\+Spatial\+Operator$<$ Value\+Type $>$}
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 
 
@@ -59,7 +64,7 @@ using \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+S
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00065}{65}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 
 
@@ -74,7 +79,7 @@ template$<$Is\+Spatial\+Operator T$>$ \\
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00068}{68}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00086}{86}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_aaedf167aa2b3590b3ff87c0493e8dbc5}\label{classNeoN_1_1dsl_1_1SpatialOperator_aaedf167aa2b3590b3ff87c0493e8dbc5} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!SpatialOperator@{SpatialOperator}}
@@ -85,7 +90,7 @@ Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00068}{68}} of 
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00089}{89}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a51ea515de3795dc003f4ec09fe6fe562}\label{classNeoN_1_1dsl_1_1SpatialOperator_a51ea515de3795dc003f4ec09fe6fe562} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!SpatialOperator@{SpatialOperator}}
@@ -96,7 +101,7 @@ Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00071}{71}} of 
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00073}{73}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00091}{91}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 
 
@@ -110,7 +115,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00138}{138}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a5e56907203e06efbb1846294fe6714fb}\label{classNeoN_1_1dsl_1_1SpatialOperator_a5e56907203e06efbb1846294fe6714fb} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!explicitOperation@{explicitOperation}}
@@ -121,18 +126,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Sp
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00081}{81}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
-
-\Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a2e203242308cc9feaf944c955e74a272}\label{classNeoN_1_1dsl_1_1SpatialOperator_a2e203242308cc9feaf944c955e74a272} 
-\index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!explicitOperationVolIntegrated@{explicitOperationVolIntegrated}}
-\index{explicitOperationVolIntegrated@{explicitOperationVolIntegrated}!NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{explicitOperationVolIntegrated()}{explicitOperationVolIntegrated()}}
-{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
-void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Spatial\+Operator}}$<$ Value\+Type $>$\+::explicit\+Operation\+Vol\+Integrated (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{source }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38}\label{classNeoN_1_1dsl_1_1SpatialOperator_aa6974df9f345d3d1e6fd66b685db9a38} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!getCoefficient@{getCoefficient}}
@@ -143,7 +137,7 @@ Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00087}{87}} of 
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00128}{128}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_aec6cd2e8e754f1a10ea0a01707f51a4b}\label{classNeoN_1_1dsl_1_1SpatialOperator_aec6cd2e8e754f1a10ea0a01707f51a4b} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!getCoefficient@{getCoefficient}}
@@ -154,7 +148,18 @@ Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00099}{99}} of 
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00130}{130}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_ad47afade84fa8069fab821500922a660}\label{classNeoN_1_1dsl_1_1SpatialOperator_ad47afade84fa8069fab821500922a660} 
+\index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!getConfig@{getConfig}}
+\index{getConfig@{getConfig}!NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{getConfig()}{getConfig()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+\mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Spatial\+Operator}}$<$ Value\+Type $>$\+::get\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_af61a3a1a208a5fa8a779e3899ed659e9}\label{classNeoN_1_1dsl_1_1SpatialOperator_af61a3a1a208a5fa8a779e3899ed659e9} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!getName@{getName}}
@@ -165,7 +170,7 @@ std\+::string \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::ds
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00097}{97}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00126}{126}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a7dca09b90089c20925c631b6e6493174}\label{classNeoN_1_1dsl_1_1SpatialOperator_a7dca09b90089c20925c631b6e6493174} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!getType@{getType}}
@@ -176,18 +181,42 @@ Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00097}{97}} of 
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00124}{124}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_aaf2480acc71496388bdc4a06fdae0e93}\label{classNeoN_1_1dsl_1_1SpatialOperator_aaf2480acc71496388bdc4a06fdae0e93} 
+\index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!implicitOperation@{implicitOperation}}
+\index{implicitOperation@{implicitOperation}!NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{implicitOperation()}{implicitOperation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+template$<$typename U  = Value\+Type$>$ \newline
+requires (!std\+::is\+\_\+same\+\_\+v$<$U, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}$>$)\\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Spatial\+Operator}}$<$ Value\+Type $>$\+::implicit\+Operation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Value\+Type $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a8e5c11fcff567b7d9d186b8e91569ee3}\label{classNeoN_1_1dsl_1_1SpatialOperator_a8e5c11fcff567b7d9d186b8e91569ee3} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!implicitOperation@{implicitOperation}}
 \index{implicitOperation@{implicitOperation}!NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}}
-\doxysubsubsection{\texorpdfstring{implicitOperation()}{implicitOperation()}}
+\doxysubsubsection{\texorpdfstring{implicitOperation()}{implicitOperation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Spatial\+Operator}}$<$ Value\+Type $>$\+::implicit\+Operation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00092}{92}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00101}{101}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a834802d57e557c4584608127fa716475}\label{classNeoN_1_1dsl_1_1SpatialOperator_a834802d57e557c4584608127fa716475} 
+\index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!implicitOperationRhs@{implicitOperationRhs}}
+\index{implicitOperationRhs@{implicitOperationRhs}!NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{implicitOperationRhs()}{implicitOperationRhs()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Spatial\+Operator}}$<$ Value\+Type $>$\+::implicit\+Operation\+Rhs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_a0205e14515f0e95115d83a58260dab03}\label{classNeoN_1_1dsl_1_1SpatialOperator_a0205e14515f0e95115d83a58260dab03} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!operator=@{operator=}}
@@ -198,7 +227,7 @@ Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00092}{92}} of 
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00093}{93}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SpatialOperator_abbf112a2938a5fe153d451c9b68ec19a}\label{classNeoN_1_1dsl_1_1SpatialOperator_abbf112a2938a5fe153d451c9b68ec19a} 
 \index{NeoN::dsl::SpatialOperator$<$ ValueType $>$@{NeoN::dsl::SpatialOperator$<$ ValueType $>$}!read@{read}}
@@ -209,7 +238,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SpatialOperator}{Neo\+N\+::dsl\+::\+Sp
 
 
 
-Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00104}{104}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
+Definition at line \mbox{\hyperlink{spatialOperator_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{spatialOperator_8hpp_source}{spatial\+Operator.\+hpp}}.
 
 
 

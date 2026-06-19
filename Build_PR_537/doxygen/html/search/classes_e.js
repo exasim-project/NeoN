@@ -16,7 +16,7 @@ var searchData=
   ['supportscopyto_3c_20coosparsitypattern_3c_20indextype_20_3e_20_3e_13',['SupportsCopyTo&lt; CooSparsityPattern&lt; IndexType &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
   ['supportscopyto_3c_20csrsparsitypattern_3c_20indextype_20_3e_20_3e_14',['SupportsCopyTo&lt; CsrSparsityPattern&lt; IndexType &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
   ['supportscopyto_3c_20facetomatrixaddress_20_3e_15',['SupportsCopyTo&lt; FaceToMatrixAddress &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
-  ['supportscopyto_3c_20linearsystem_3c_20matrixvaluetype_2c_20csrmatrix_3c_20matrixvaluetype_2c_20localidx_20_3e_2c_20coomatrix_3c_20matrixvaluetype_2c_20localidx_20_3e_2c_20matrixvaluetype_20_3e_20_3e_16',['SupportsCopyTo&lt; LinearSystem&lt; MatrixValueType, CSRMatrix&lt; MatrixValueType, localIdx &gt;, COOMatrix&lt; MatrixValueType, localIdx &gt;, MatrixValueType &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
+  ['supportscopyto_3c_20linearsystem_3c_20matrixvaluetype_2c_20matrixvaluetype_2c_20csrmatrix_3c_20matrixvaluetype_2c_20localidx_20_3e_2c_20coomatrix_3c_20matrixvaluetype_2c_20localidx_20_3e_20_3e_20_3e_16',['SupportsCopyTo&lt; LinearSystem&lt; MatrixValueType, MatrixValueType, CSRMatrix&lt; MatrixValueType, localIdx &gt;, COOMatrix&lt; MatrixValueType, localIdx &gt; &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
   ['supportscopyto_3c_20matrix_3c_20matrixvaluetype_2c_20localidx_20_3e_20_3e_17',['SupportsCopyTo&lt; Matrix&lt; MatrixValueType, localIdx &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
   ['supportscopyto_3c_20matrix_3c_20valuetype_2c_20sparsitytype_20_3e_20_3e_18',['SupportsCopyTo&lt; Matrix&lt; ValueType, SparsityType &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
   ['supportscopyto_3c_20segmentedvector_3c_20localidx_2c_20localidx_20_3e_20_3e_19',['SupportsCopyTo&lt; SegmentedVector&lt; localIdx, localIdx &gt; &gt;',['../classNeoN_1_1SupportsCopyTo.html',1,'NeoN']]],
@@ -30,9 +30,10 @@ var searchData=
   ['surfacefield_3c_20scalar_20_3e_27',['SurfaceField&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfaceintegrate_28',['SurfaceIntegrate',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceIntegrate.html',1,'NeoN::finiteVolume::cellCentred']]],
   ['surfaceinterpolation_29',['SurfaceInterpolation',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['surfaceinterpolation_3c_20neon_3a_3avec3_20_3e_30',['SurfaceInterpolation&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['surfaceinterpolation_3c_20scalar_20_3e_31',['SurfaceInterpolation&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['surfaceinterpolationfactory_32',['SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
-  ['symmetry_33',['symmetry',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Symmetry.html',1,'NeoN::finiteVolume::cellCentred::surfaceBoundary::Symmetry&lt; ValueType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Symmetry.html',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::Symmetry&lt; ValueType &gt;']]],
-  ['symmtensor_34',['SymmTensor',['../classNeoN_1_1SymmTensor.html',1,'NeoN']]]
+  ['surfaceinterpolation_3c_20fieldvaluetype_20_3e_30',['SurfaceInterpolation&lt; FieldValueType &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceinterpolation_3c_20neon_3a_3avec3_20_3e_31',['SurfaceInterpolation&lt; NeoN::Vec3 &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceinterpolation_3c_20scalar_20_3e_32',['SurfaceInterpolation&lt; scalar &gt;',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['surfaceinterpolationfactory_33',['SurfaceInterpolationFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory.html',1,'NeoN::finiteVolume::cellCentred']]],
+  ['symmetry_34',['symmetry',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary_1_1Symmetry.html',1,'NeoN::finiteVolume::cellCentred::surfaceBoundary::Symmetry&lt; ValueType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Symmetry.html',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::Symmetry&lt; ValueType &gt;']]],
+  ['symmtensor_35',['SymmTensor',['../classNeoN_1_1SymmTensor.html',1,'NeoN']]]
 ];

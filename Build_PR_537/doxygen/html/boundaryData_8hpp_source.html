@@ -95,348 +95,376 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;mpi.h&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="environment_8hpp.html">NeoN/core/mpi/environment.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="operators_8hpp.html">NeoN/core/mpi/operators.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="parallelAlgorithms_8hpp.html">NeoN/core/parallelAlgorithms.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
-<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData</a></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;mpi.h&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="environment_8hpp.html">NeoN/core/mpi/environment.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="operators_8hpp.html">NeoN/core/mpi/operators.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="parallelAlgorithms_8hpp.html">NeoN/core/parallelAlgorithms.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceNeoN.html">NeoN</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData</a></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a0bb18ef49b7930439cb321518d5eb6af">   44</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1BoundaryData.html#a0bb18ef49b7930439cb321518d5eb6af">BoundaryDataType</a> = ValueType;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a9ca3d848a022121803f317c1855b2284">   46</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a9ca3d848a022121803f317c1855b2284">~BoundaryData</a>()</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="comment">// commBuffers_ backs the memory of any in-flight MPI_Isend/MPI_Irecv calls.</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="comment">// Destroying them while operations are pending is undefined behaviour, so</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="comment">// drain all outstanding requests before the storage is freed.</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>();</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a0bb18ef49b7930439cb321518d5eb6af">   46</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1BoundaryData.html#a0bb18ef49b7930439cb321518d5eb6af">BoundaryDataType</a> = ValueType;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a9ca3d848a022121803f317c1855b2284">   48</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a9ca3d848a022121803f317c1855b2284">~BoundaryData</a>()</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="comment">// commBuffers_ backs the memory of any in-flight MPI_Isend/MPI_Irecv calls.</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="comment">// Destroying them while operations are pending is undefined behaviour, so</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="comment">// drain all outstanding requests before the storage is freed.</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
 </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#adde8c2b3da03ebb5ea51ef29ab2158a7">   58</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#adde8c2b3da03ebb5ea51ef29ab2158a7">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; rhs)</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        : exec_(rhs.exec_), value_(rhs.value_), refValue_(rhs.refValue_),</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>          valueFraction_(rhs.valueFraction_), refGrad_(rhs.refGrad_),</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>          boundaryTypes_(rhs.boundaryTypes_), offset_(rhs.offset_), nBoundaries_(rhs.nBoundaries_),</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>          nBoundaryFaces_(rhs.nBoundaryFaces_)</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    {}</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#adde8c2b3da03ebb5ea51ef29ab2158a7">   60</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#adde8c2b3da03ebb5ea51ef29ab2158a7">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; rhs)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        : exec_(rhs.exec_), value_(rhs.value_), refValue_(rhs.refValue_),</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>          valueFraction_(rhs.valueFraction_), refGrad_(rhs.refGrad_),</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          boundaryTypes_(rhs.boundaryTypes_), offset_(rhs.offset_), nBoundaries_(rhs.nBoundaries_),</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>          nBoundaryFaces_(rhs.nBoundaryFaces_)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    {}</div>
 </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a5efddb7dbbe2627fb530ffe805dfbd2f">   70</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a5efddb7dbbe2627fb530ffe805dfbd2f">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; rhs)</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        : exec_(rhs.exec_), value_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.value_), refValue_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.refValue_),</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>          valueFraction_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.valueFraction_), refGrad_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.refGrad_),</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          boundaryTypes_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.boundaryTypes_), offset_(<a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {}, rhs.offset_),</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>          nBoundaries_(rhs.nBoundaries_), nBoundaryFaces_(rhs.nBoundaryFaces_)</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    {}</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a5efddb7dbbe2627fb530ffe805dfbd2f">   72</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a5efddb7dbbe2627fb530ffe805dfbd2f">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; rhs)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        : exec_(rhs.exec_), value_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.value_), refValue_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.refValue_),</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>          valueFraction_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.valueFraction_), refGrad_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.refGrad_),</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>          boundaryTypes_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, rhs.boundaryTypes_), offset_(<a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {}, rhs.offset_),</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>          nBoundaries_(rhs.nBoundaries_), nBoundaryFaces_(rhs.nBoundaryFaces_)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    {}</div>
 </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a4c0213c2213a486118cdfd7756dab5de">   84</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a4c0213c2213a486118cdfd7756dab5de">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaryTypes)</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        : exec_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>), value_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, ValueType {}),</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          refValue_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, ValueType {}),</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>          valueFraction_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(0)),</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>          refGrad_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, ValueType {}), boundaryTypes_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, nBoundaryTypes),</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>          offset_(<a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {}, nBoundaryTypes + 1), nBoundaries_(nBoundaryTypes),</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>          nBoundaryFaces_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>)</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    {}</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a4c0213c2213a486118cdfd7756dab5de">   86</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a4c0213c2213a486118cdfd7756dab5de">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaryTypes)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        : exec_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>), value_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, ValueType {}),</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>          refValue_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, ValueType {}),</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>          valueFraction_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>(0)),</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>          refGrad_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>, ValueType {}), boundaryTypes_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, nBoundaryTypes),</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>          offset_(<a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {}, nBoundaryTypes + 1), nBoundaries_(nBoundaryTypes),</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>          nBoundaryFaces_(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>)</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    {}</div>
 </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a9866fce782a05e04afe8fbdc2aad119a">   99</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a9866fce782a05e04afe8fbdc2aad119a">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <span class="keyword">const</span> std::vector&lt;localIdx&gt;&amp; offsets)</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        : <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData</a>(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, offsets.back(), static_cast&lt;<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&gt;(offsets.size() - 1))</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        offset_ = <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector</a>(<a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {}, offsets);</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a9866fce782a05e04afe8fbdc2aad119a">  101</a></span>    <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a9866fce782a05e04afe8fbdc2aad119a">BoundaryData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, <span class="keyword">const</span> std::vector&lt;localIdx&gt;&amp; offsets)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        : <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData</a>(<a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>, offsets.back(), static_cast&lt;<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a>&gt;(offsets.size() - 1))</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        offset_ = <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector</a>(<a class="code hl_class" href="classNeoN_1_1SerialExecutor.html">SerialExecutor</a> {}, offsets);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    }</div>
 </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a222e2578d876408405e759a33715fea3">  107</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a222e2578d876408405e759a33715fea3">value</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>();</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> value_;</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a222e2578d876408405e759a33715fea3">  109</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a222e2578d876408405e759a33715fea3">value</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> value_;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
 </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">  119</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">value</a>()</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    {</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>();</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">return</span> value_;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="}">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">  121</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">value</a>()</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">return</span> value_;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
 </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">  126</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">refValue</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> refValue_; }</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a0b1544000b5ae3a3d6669dfdb15c282d">  132</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a0b1544000b5ae3a3d6669dfdb15c282d">refValue</a>() { <span class="keywordflow">return</span> refValue_; }</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a798de2cb1247efa03c0eab3dada94ef7">  135</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a798de2cb1247efa03c0eab3dada94ef7">valueFraction</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> valueFraction_; }</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a38564c0bf11a4060db39e00888ff25b9">  141</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a38564c0bf11a4060db39e00888ff25b9">valueFraction</a>() { <span class="keywordflow">return</span> valueFraction_; }</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#aab70af30068774c938cfb22cf124a325">  144</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#aab70af30068774c938cfb22cf124a325">refGrad</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> refGrad_; }</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#abc5f09a2550afdfb3c2bba319a218ccc">  150</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abc5f09a2550afdfb3c2bba319a218ccc">refGrad</a>() { <span class="keywordflow">return</span> refGrad_; }</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70">  156</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;int&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70">boundaryTypes</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundaryTypes_; }</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a633625b3452c44742f33b2db2cfd0501">  162</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a633625b3452c44742f33b2db2cfd0501">offset</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> offset_; }</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a2aed2bb967b733e34cdcd0088da0176a">  168</a></span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a2aed2bb967b733e34cdcd0088da0176a">nBoundaries</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nBoundaries_; }</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">  174</a></span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nBoundaryFaces_; }</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="foldopen" id="foldopen00180" data-start="{" data-end="}">
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a48385df0a61c953073322bee03b0f932">  180</a></span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a48385df0a61c953073322bee03b0f932">nBoundaryFaces</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchId)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">return</span> offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId + 1] - offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId];</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">  128</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">refValue</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> refValue_; }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a0b1544000b5ae3a3d6669dfdb15c282d">  134</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a0b1544000b5ae3a3d6669dfdb15c282d">refValue</a>() { <span class="keywordflow">return</span> refValue_; }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a798de2cb1247efa03c0eab3dada94ef7">  137</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a798de2cb1247efa03c0eab3dada94ef7">valueFraction</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> valueFraction_; }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a38564c0bf11a4060db39e00888ff25b9">  143</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a38564c0bf11a4060db39e00888ff25b9">valueFraction</a>() { <span class="keywordflow">return</span> valueFraction_; }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#aab70af30068774c938cfb22cf124a325">  146</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#aab70af30068774c938cfb22cf124a325">refGrad</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> refGrad_; }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#abc5f09a2550afdfb3c2bba319a218ccc">  152</a></span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abc5f09a2550afdfb3c2bba319a218ccc">refGrad</a>() { <span class="keywordflow">return</span> refGrad_; }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70">  158</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;int&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70">boundaryTypes</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundaryTypes_; }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a633625b3452c44742f33b2db2cfd0501">  164</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a633625b3452c44742f33b2db2cfd0501">offset</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> offset_; }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a2aed2bb967b733e34cdcd0088da0176a">  170</a></span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a2aed2bb967b733e34cdcd0088da0176a">nBoundaries</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nBoundaries_; }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">  176</a></span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">nBoundaryFaces</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nBoundaryFaces_; }</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="foldopen" id="foldopen00182" data-start="{" data-end="}">
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a48385df0a61c953073322bee03b0f932">  182</a></span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a48385df0a61c953073322bee03b0f932">nBoundaryFaces</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchId)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">return</span> offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId + 1] - offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId];</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
 </div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">  185</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>() { <span class="keywordflow">return</span> exec_; }</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
-<div class="foldopen" id="foldopen00187" data-start="{" data-end="}">
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#af4d009350fd83ce887232008b26434c1">  187</a></span>    <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#af4d009350fd83ce887232008b26434c1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; rhs)</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    {</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="comment">// TODO maybe dont overwrite nBoundaries and nBoundaryFaces</span></div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="comment">// but use them for a sanity check</span></div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        nBoundaries_ = rhs.nBoundaries_;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        nBoundaryFaces_ = rhs.nBoundaryFaces_;</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        value_ = rhs.value_;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        refValue_ = rhs.refValue_;</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        valueFraction_ = rhs.valueFraction_;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        refGrad_ = rhs.refGrad_;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        boundaryTypes_ = rhs.boundaryTypes_;</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        offset_ = rhs.offset_;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">  187</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">exec</a>() { <span class="keywordflow">return</span> exec_; }</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="foldopen" id="foldopen00189" data-start="{" data-end="}">
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#af4d009350fd83ce887232008b26434c1">  189</a></span>    <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#af4d009350fd83ce887232008b26434c1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; rhs)</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="comment">// TODO maybe dont overwrite nBoundaries and nBoundaryFaces</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="comment">// but use them for a sanity check</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        nBoundaries_ = rhs.nBoundaries_;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        nBoundaryFaces_ = rhs.nBoundaryFaces_;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        value_ = rhs.value_;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        refValue_ = rhs.refValue_;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        valueFraction_ = rhs.valueFraction_;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        refGrad_ = rhs.refGrad_;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        boundaryTypes_ = rhs.boundaryTypes_;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        offset_ = rhs.offset_;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    }</div>
 </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
-<div class="foldopen" id="foldopen00204" data-start="{" data-end="}">
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a4ae6634ed5622b15769269574e71edf0">  204</a></span>    <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a4ae6634ed5622b15769269574e71edf0">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp;&amp; rhs)</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    {</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="comment">// TODO maybe dont overwrite nBoundaries and nBoundaryFaces</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="comment">// but use them for a sanity check</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        nBoundaries_ = rhs.nBoundaries_;</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        nBoundaryFaces_ = rhs.nBoundaryFaces_;</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        value_ = std::move(rhs.value_);</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        refValue_ = std::move(rhs.refValue_);</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        valueFraction_ = std::move(rhs.valueFraction_);</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        refGrad_ = std::move(rhs.refGrad_);</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        boundaryTypes_ = std::move(rhs.boundaryTypes_);</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        offset_ = std::move(rhs.offset_);</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="foldopen" id="foldopen00206" data-start="{" data-end="}">
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a4ae6634ed5622b15769269574e71edf0">  206</a></span>    <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a4ae6634ed5622b15769269574e71edf0">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp;&amp; rhs)</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="comment">// TODO maybe dont overwrite nBoundaries and nBoundaryFaces</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="comment">// but use them for a sanity check</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        nBoundaries_ = rhs.nBoundaries_;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        nBoundaryFaces_ = rhs.nBoundaryFaces_;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        value_ = std::move(rhs.value_);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        refValue_ = std::move(rhs.refValue_);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        valueFraction_ = std::move(rhs.valueFraction_);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        refGrad_ = std::move(rhs.refGrad_);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        boundaryTypes_ = std::move(rhs.boundaryTypes_);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        offset_ = std::move(rhs.offset_);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    }</div>
 </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordtype">void</span> communicate(std::pair&lt;localIdx, localIdx&gt; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a>, <span class="keywordtype">int</span> neighborRank)</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    {</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keyword">const</span> <span class="keyword">auto</span> [rangeStart, rangeEnd] = <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a>;</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchSize = rangeEnd - rangeStart;</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        mpi::Environment mpiEnv;</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        CommBuffer buf;</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        buf.rangeStart = rangeStart;</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        buf.patchSize = patchSize;</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keyword">const</span> <span class="keyword">auto</span> byteCount =</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(patchSize) * <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(ValueType));</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keyword">const</span> <span class="keyword">auto</span> neighborRankLabel = <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(neighborRank);</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> useGpuPath = mpiEnv.gpuAwareMpi() &amp;&amp; std::holds_alternative&lt;GPUExecutor&gt;(exec_);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordtype">void</span> communicate(std::pair&lt;localIdx, localIdx&gt; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a>, <span class="keywordtype">int</span> neighborRank)</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">const</span> <span class="keyword">auto</span> [rangeStart, rangeEnd] = <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchSize = rangeEnd - rangeStart;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        mpi::Environment mpiEnv;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        CommBuffer buf;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        buf.rangeStart = rangeStart;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        buf.patchSize = patchSize;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keyword">const</span> <span class="keyword">auto</span> byteCount =</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(patchSize) * <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(ValueType));</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keyword">const</span> <span class="keyword">auto</span> neighborRankLabel = <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(neighborRank);</div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        MPI_Request sendReq, recvReq;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordflow">if</span> (useGpuPath)</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        {</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            buf.deviceRecvBuf = <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(exec_, patchSize, ValueType {});</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            mpi::isend&lt;char&gt;(</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(value_.data() + rangeStart),</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                byteCount,</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                neighborRankLabel,</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                0,</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                mpiEnv.comm(),</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                &amp;sendReq</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            );</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            mpi::irecv&lt;char&gt;(</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(buf.deviceRecvBuf-&gt;data()),</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                byteCount,</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                neighborRankLabel,</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                0,</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                mpiEnv.comm(),</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                &amp;recvReq</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            );</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        }</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        {</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keyword">auto</span> valH = value_.copyToHost();</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            buf.sendBuf.resize(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(patchSize));</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            buf.recvBuf.resize(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(patchSize));</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> k = 0; k &lt; patchSize; k++)</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                buf.sendBuf[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(k)] = valH.view()[rangeStart + k];</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            mpi::isend&lt;char&gt;(</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(buf.sendBuf.data()),</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                byteCount,</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                neighborRankLabel,</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                0,</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                mpiEnv.comm(),</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                &amp;sendReq</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            );</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            mpi::irecv&lt;char&gt;(</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(buf.recvBuf.data()),</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                byteCount,</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                neighborRankLabel,</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                0,</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                mpiEnv.comm(),</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                &amp;recvReq</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            );</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        }</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        communicating_ = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        requests_.push_back(sendReq);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        requests_.push_back(recvReq);</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        commBuffers_.push_back(std::move(buf));</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    }</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <span class="keywordtype">bool</span> isComplete()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <span class="keywordflow">if</span> (requests_.empty() || !communicating_) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; req : requests_)</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        {</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            <span class="keywordflow">if</span> (!mpi::test(&amp;req)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        }</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        communicating_ = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="comment">// Deterministic, symmetric tag for the processor patch shared by (myRank, neighborRank).</span></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="comment">// A unique tag per unordered rank pair, identical on both sides, makes each isend/irecv</span></div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="comment">// match its true partner regardless of posting order. min*P+max is symmetric so both</span></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="comment">// ranks of the pair compute the same tag.</span></div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        <span class="keyword">const</span> <span class="keyword">auto</span> nProcs = <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(mpiEnv.sizeRank());</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        <span class="keyword">const</span> <span class="keyword">auto</span> myRankLabel = <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a><span class="keyword">&gt;</span>(mpiEnv.rank());</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#ada9015c3a9ac7ba20f5abde4670ca373">mpi_label_t</a> pairTag = std::min(myRankLabel, neighborRankLabel) * nProcs</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                                  + std::max(myRankLabel, neighborRankLabel);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> useGpuPath = mpiEnv.gpuAwareMpi() &amp;&amp; std::holds_alternative&lt;GPUExecutor&gt;(exec_);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        MPI_Request sendReq, recvReq;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">if</span> (useGpuPath)</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        {</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            buf.deviceRecvBuf = <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>(exec_, patchSize, ValueType {});</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            mpi::isend&lt;char&gt;(</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(value_.data() + rangeStart),</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                byteCount,</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                neighborRankLabel,</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                pairTag,</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                mpiEnv.comm(),</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                &amp;sendReq</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            );</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            mpi::irecv&lt;char&gt;(</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(buf.deviceRecvBuf-&gt;data()),</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                byteCount,</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                neighborRankLabel,</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                pairTag,</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                mpiEnv.comm(),</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                &amp;recvReq</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            );</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        }</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keyword">auto</span> valH = value_.copyToHost();</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            buf.sendBuf.resize(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(patchSize));</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            buf.recvBuf.resize(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(patchSize));</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> k = 0; k &lt; patchSize; k++)</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                buf.sendBuf[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(k)] = valH.view()[rangeStart + k];</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            mpi::isend&lt;char&gt;(</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(buf.sendBuf.data()),</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                byteCount,</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                neighborRankLabel,</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                pairTag,</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                mpiEnv.comm(),</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                &amp;sendReq</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            );</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            mpi::irecv&lt;char&gt;(</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(buf.recvBuf.data()),</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                byteCount,</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                neighborRankLabel,</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                pairTag,</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                mpiEnv.comm(),</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                &amp;recvReq</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            );</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        communicating_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        requests_.push_back(sendReq);</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        requests_.push_back(recvReq);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        commBuffers_.push_back(std::move(buf));</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    }</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
-<div class="foldopen" id="foldopen00303" data-start="{" data-end="}">
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">  303</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">if</span> (requests_.empty() || !communicating_) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <span class="keywordflow">while</span> (!isComplete())</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        {</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        }</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        mpi::Environment mpiEnv;</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> useGpuPath = mpiEnv.gpuAwareMpi() &amp;&amp; std::holds_alternative&lt;GPUExecutor&gt;(exec_);</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        <span class="keywordflow">if</span> (useGpuPath)</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        {</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; buf : commBuffers_)</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            {</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>                <span class="keyword">auto</span> srcView = buf.deviceRecvBuf-&gt;view();</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>                <span class="keyword">auto</span> dstView = value_.view();</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>                <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> start = buf.rangeStart;</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>                <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>                    exec_,</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>                    {0, buf.patchSize},</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>                    KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> k) { dstView[start + k] = srcView[k]; }</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                );</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>            }</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        }</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        {</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>            <span class="keyword">auto</span> valH = value_.copyToHost();</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; buf : commBuffers_)</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            {</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>                <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> k = 0; k &lt; buf.patchSize; k++)</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>                    valH.view()[buf.rangeStart + k] = buf.recvBuf[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(k)];</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>            }</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            value_ = valH.copyToExecutor(exec_);</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        }</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        requests_.clear();</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        communicating_ = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        commBuffers_.clear();</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    }</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keywordtype">bool</span> isComplete()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        <span class="keywordflow">if</span> (requests_.empty() || !communicating_) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; req : requests_)</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        {</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            <span class="keywordflow">if</span> (!mpi::test(&amp;req)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        }</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        communicating_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    }</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="foldopen" id="foldopen00314" data-start="{" data-end="}">
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">  314</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">waitAll</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="keywordflow">if</span> (requests_.empty() || !communicating_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="keywordflow">while</span> (!isComplete())</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        {</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        }</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        mpi::Environment mpiEnv;</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> useGpuPath = mpiEnv.gpuAwareMpi() &amp;&amp; std::holds_alternative&lt;GPUExecutor&gt;(exec_);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <span class="keywordflow">if</span> (useGpuPath)</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        {</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; buf : commBuffers_)</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>            {</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>                <span class="keyword">auto</span> srcView = buf.deviceRecvBuf-&gt;view();</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>                <span class="keyword">auto</span> dstView = value_.view();</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>                <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> start = buf.rangeStart;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>                <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>                    exec_,</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>                    {0, buf.patchSize},</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>                    KOKKOS_LAMBDA(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> k) { dstView[start + k] = srcView[k]; }</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>                );</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            }</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        }</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        {</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>            <span class="keyword">auto</span> valH = value_.copyToHost();</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; buf : commBuffers_)</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>            {</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>                <span class="keywordflow">for</span> (<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> k = 0; k &lt; buf.patchSize; k++)</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>                    valH.view()[buf.rangeStart + k] = buf.recvBuf[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(k)];</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            }</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            value_ = valH.copyToExecutor(exec_);</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        }</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        requests_.clear();</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        communicating_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        commBuffers_.clear();</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    }</div>
 </div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
-<div class="foldopen" id="foldopen00346" data-start="{" data-end="}">
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">  346</a></span>    std::pair&lt;localIdx, localIdx&gt; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchId)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        <span class="keywordflow">return</span> {offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId], offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId + 1]};</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    }</div>
-</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> exec_;                   </div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    <span class="keyword">mutable</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a> value_; </div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a> refValue_;      </div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a></div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        valueFraction_; </div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a> refGrad_; </div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;int&gt;</a> boundaryTypes_; </div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a> offset_;   </div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaries_;      </div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaryFaces_;   </div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span> </div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    <span class="keyword">struct </span>CommBuffer</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    {</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        std::vector&lt;ValueType&gt; sendBuf;                 <span class="comment">// host staging, used when !gpuAwareMpi</span></div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        std::vector&lt;ValueType&gt; recvBuf;                 <span class="comment">// host staging, used when !gpuAwareMpi</span></div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        std::optional&lt;Vector&lt;ValueType&gt;&gt; deviceRecvBuf; <span class="comment">// device buffer, used when gpuAwareMpi</span></div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> rangeStart;</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchSize;</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    };</div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    <span class="keyword">mutable</span> std::vector&lt;MPI_Request&gt;</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        requests_; </div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keyword">mutable</span> std::vector&lt;CommBuffer&gt;</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        commBuffers_; </div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    <span class="keyword">mutable</span> <span class="keywordtype">bool</span> communicating_ = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>};</div>
+<div class="foldopen" id="foldopen00357" data-start="{" data-end="}">
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">  357</a></span>    std::pair&lt;localIdx, localIdx&gt; <a class="code hl_function" href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">range</a>(<a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchId)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        <span class="keywordflow">return</span> {offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId], offset_.<a class="code hl_function" href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">data</a>()[patchId + 1]};</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    }</div>
 </div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span> </div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span> </div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno"><a class="line" href="classNeoN_1_1BoundaryData.html#a6292f13eb1d2535f1e3197b25498e92b">  365</a></span>    <span class="keyword">friend</span> <span class="keyword">struct </span><a class="code hl_struct" href="structNeoN_1_1NoWaitAccess.html">NoWaitAccess</a>;</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; valueNoWait() { <span class="keywordflow">return</span> value_; }</div>
 <div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span> </div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>}</div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html">NeoN::BoundaryData</a></div><div class="ttdoc">Represents the boundary fields for a computational domain.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00039">boundaryData.hpp:40</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a042d7cb636be0e41666eb0b1d28c202a"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">NeoN::BoundaryData::range</a></div><div class="ttdeci">std::pair&lt; localIdx, localIdx &gt; range(localIdx patchId) const</div><div class="ttdoc">Get the range for a given patchId.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00346">boundaryData.hpp:346</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a0b1544000b5ae3a3d6669dfdb15c282d"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a0b1544000b5ae3a3d6669dfdb15c282d">NeoN::BoundaryData::refValue</a></div><div class="ttdeci">Vector&lt; ValueType &gt; &amp; refValue()</div><div class="ttdoc">Get the view storing the Dirichlet boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00132">boundaryData.hpp:132</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a0bb18ef49b7930439cb321518d5eb6af"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a0bb18ef49b7930439cb321518d5eb6af">NeoN::BoundaryData::BoundaryDataType</a></div><div class="ttdeci">ValueType BoundaryDataType</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00044">boundaryData.hpp:44</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a2000c3e4c0057048852dd6e99aa60076"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">NeoN::BoundaryData::refValue</a></div><div class="ttdeci">const Vector&lt; ValueType &gt; &amp; refValue() const</div><div class="ttdoc">Get the view storing the Dirichlet boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00126">boundaryData.hpp:126</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a222e2578d876408405e759a33715fea3"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a222e2578d876408405e759a33715fea3">NeoN::BoundaryData::value</a></div><div class="ttdeci">const Vector&lt; ValueType &gt; &amp; value() const</div><div class="ttdoc">Get the view storing the computed values from the boundary condition.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00107">boundaryData.hpp:107</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a246826e15ed742d091fddadac66a4c70"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70">NeoN::BoundaryData::boundaryTypes</a></div><div class="ttdeci">const Vector&lt; int &gt; &amp; boundaryTypes() const</div><div class="ttdoc">Get the view storing the boundary types.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00156">boundaryData.hpp:156</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a2aed2bb967b733e34cdcd0088da0176a"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a2aed2bb967b733e34cdcd0088da0176a">NeoN::BoundaryData::nBoundaries</a></div><div class="ttdeci">localIdx nBoundaries() const</div><div class="ttdoc">Get the number of boundaries.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00168">boundaryData.hpp:168</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a38564c0bf11a4060db39e00888ff25b9"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a38564c0bf11a4060db39e00888ff25b9">NeoN::BoundaryData::valueFraction</a></div><div class="ttdeci">Vector&lt; scalar &gt; &amp; valueFraction()</div><div class="ttdoc">Get the view storing the fraction of the boundary value.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00141">boundaryData.hpp:141</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a48385df0a61c953073322bee03b0f932"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a48385df0a61c953073322bee03b0f932">NeoN::BoundaryData::nBoundaryFaces</a></div><div class="ttdeci">localIdx nBoundaryFaces(localIdx patchId) const</div><div class="ttdoc">Get the number of boundary faces for this patch.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00180">boundaryData.hpp:180</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a4ae6634ed5622b15769269574e71edf0"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a4ae6634ed5622b15769269574e71edf0">NeoN::BoundaryData::operator=</a></div><div class="ttdeci">BoundaryData&lt; ValueType &gt; &amp; operator=(const BoundaryData&lt; ValueType &gt; &amp;&amp;rhs)</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00204">boundaryData.hpp:204</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a4c0213c2213a486118cdfd7756dab5de"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a4c0213c2213a486118cdfd7756dab5de">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const Executor &amp;exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)</div><div class="ttdoc">constructor with default initialized Vectors from sizes.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00084">boundaryData.hpp:84</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a5efddb7dbbe2627fb530ffe805dfbd2f"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a5efddb7dbbe2627fb530ffe805dfbd2f">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const Executor &amp;exec, const BoundaryData&lt; ValueType &gt; &amp;rhs)</div><div class="ttdoc">Copy constructor.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00070">boundaryData.hpp:70</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a633625b3452c44742f33b2db2cfd0501"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a633625b3452c44742f33b2db2cfd0501">NeoN::BoundaryData::offset</a></div><div class="ttdeci">const Vector&lt; localIdx &gt; &amp; offset() const</div><div class="ttdoc">Get the view storing the offsets of each boundary.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00162">boundaryData.hpp:162</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a6c352821aaa9f168f32bb3c7ffc7f75b"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">NeoN::BoundaryData::nBoundaryFaces</a></div><div class="ttdeci">localIdx nBoundaryFaces() const</div><div class="ttdoc">Get the number of boundary faces.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00174">boundaryData.hpp:174</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a6ca425f2d62d70e928e73f4812f89171"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">NeoN::BoundaryData::exec</a></div><div class="ttdeci">const Executor &amp; exec()</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00185">boundaryData.hpp:185</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a798de2cb1247efa03c0eab3dada94ef7"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a798de2cb1247efa03c0eab3dada94ef7">NeoN::BoundaryData::valueFraction</a></div><div class="ttdeci">const Vector&lt; scalar &gt; &amp; valueFraction() const</div><div class="ttdoc">Get the view storing the fraction of the boundary value.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00135">boundaryData.hpp:135</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a9866fce782a05e04afe8fbdc2aad119a"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a9866fce782a05e04afe8fbdc2aad119a">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const Executor &amp;exec, const std::vector&lt; localIdx &gt; &amp;offsets)</div><div class="ttdoc">constructor from a given offsets vector @warn all members except offsets are default constructed</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00099">boundaryData.hpp:99</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a9ca3d848a022121803f317c1855b2284"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a9ca3d848a022121803f317c1855b2284">NeoN::BoundaryData::~BoundaryData</a></div><div class="ttdeci">~BoundaryData()</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00046">boundaryData.hpp:46</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_aa0ac1c738252c54d92ec822832765d3f"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">NeoN::BoundaryData::value</a></div><div class="ttdeci">Vector&lt; ValueType &gt; &amp; value()</div><div class="ttdoc">Get the view storing the computed values from the boundary condition.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00119">boundaryData.hpp:119</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_aab70af30068774c938cfb22cf124a325"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#aab70af30068774c938cfb22cf124a325">NeoN::BoundaryData::refGrad</a></div><div class="ttdeci">const Vector&lt; ValueType &gt; &amp; refGrad() const</div><div class="ttdoc">Get the view storing the Neumann boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00144">boundaryData.hpp:144</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_abc5f09a2550afdfb3c2bba319a218ccc"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#abc5f09a2550afdfb3c2bba319a218ccc">NeoN::BoundaryData::refGrad</a></div><div class="ttdeci">Vector&lt; ValueType &gt; &amp; refGrad()</div><div class="ttdoc">Get the view storing the Neumann boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00150">boundaryData.hpp:150</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_abe68f27d45b391253709669681e40528"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">NeoN::BoundaryData::waitAll</a></div><div class="ttdeci">void waitAll() const</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00303">boundaryData.hpp:303</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_adde8c2b3da03ebb5ea51ef29ab2158a7"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#adde8c2b3da03ebb5ea51ef29ab2158a7">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const BoundaryData&lt; ValueType &gt; &amp;rhs)</div><div class="ttdoc">Copy constructor.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00058">boundaryData.hpp:58</a></div></div>
-<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_af4d009350fd83ce887232008b26434c1"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#af4d009350fd83ce887232008b26434c1">NeoN::BoundaryData::operator=</a></div><div class="ttdeci">BoundaryData&lt; ValueType &gt; &amp; operator=(const BoundaryData&lt; ValueType &gt; &amp;rhs)</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00187">boundaryData.hpp:187</a></div></div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <a class="code hl_typedef" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> exec_;                   </div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    <span class="keyword">mutable</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a> value_; </div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a> refValue_;      </div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;scalar&gt;</a></div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        valueFraction_; </div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a> refGrad_; </div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;int&gt;</a> boundaryTypes_; </div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;localIdx&gt;</a> offset_;   </div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaries_;      </div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> nBoundaryFaces_;   </div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span> </div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="preprocessor">#ifdef NF_WITH_MPI_SUPPORT</span></div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    <span class="keyword">struct </span>CommBuffer</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    {</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        std::vector&lt;ValueType&gt; sendBuf;                 <span class="comment">// host staging, used when !gpuAwareMpi</span></div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        std::vector&lt;ValueType&gt; recvBuf;                 <span class="comment">// host staging, used when !gpuAwareMpi</span></div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        std::optional&lt;Vector&lt;ValueType&gt;&gt; deviceRecvBuf; <span class="comment">// device buffer, used when gpuAwareMpi</span></div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> rangeStart;</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> patchSize;</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>    };</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>    <span class="keyword">mutable</span> std::vector&lt;MPI_Request&gt;</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>        requests_; </div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    <span class="keyword">mutable</span> std::vector&lt;CommBuffer&gt;</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>        commBuffers_; </div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    <span class="keyword">mutable</span> <span class="keywordtype">bool</span> communicating_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>};</div>
+</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span> </div>
+<div class="foldopen" id="foldopen00419" data-start="{" data-end="};">
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno"><a class="line" href="structNeoN_1_1NoWaitAccess.html">  419</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structNeoN_1_1NoWaitAccess.html">NoWaitAccess</a></div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>{</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
+<div class="foldopen" id="foldopen00422" data-start="{" data-end="}">
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno"><a class="line" href="structNeoN_1_1NoWaitAccess.html#a0514f326b93ffc870cc49dfdf6c03de5">  422</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;ValueType&gt;</a>&amp; <a class="code hl_function" href="structNeoN_1_1NoWaitAccess.html#a0514f326b93ffc870cc49dfdf6c03de5">value</a>(<a class="code hl_class" href="classNeoN_1_1BoundaryData.html">BoundaryData&lt;ValueType&gt;</a>&amp; in)</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>    {</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>        <span class="keywordflow">return</span> in.valueNoWait();</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>    }</div>
+</div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>};</div>
+</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span> </div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>}</div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html">NeoN::BoundaryData</a></div><div class="ttdoc">Represents the boundary fields for a computational domain.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00041">boundaryData.hpp:42</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a042d7cb636be0e41666eb0b1d28c202a"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a042d7cb636be0e41666eb0b1d28c202a">NeoN::BoundaryData::range</a></div><div class="ttdeci">std::pair&lt; localIdx, localIdx &gt; range(localIdx patchId) const</div><div class="ttdoc">Get the range for a given patchId.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00357">boundaryData.hpp:357</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a0b1544000b5ae3a3d6669dfdb15c282d"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a0b1544000b5ae3a3d6669dfdb15c282d">NeoN::BoundaryData::refValue</a></div><div class="ttdeci">Vector&lt; ValueType &gt; &amp; refValue()</div><div class="ttdoc">Get the view storing the Dirichlet boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00134">boundaryData.hpp:134</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a0bb18ef49b7930439cb321518d5eb6af"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a0bb18ef49b7930439cb321518d5eb6af">NeoN::BoundaryData::BoundaryDataType</a></div><div class="ttdeci">ValueType BoundaryDataType</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00046">boundaryData.hpp:46</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a2000c3e4c0057048852dd6e99aa60076"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a2000c3e4c0057048852dd6e99aa60076">NeoN::BoundaryData::refValue</a></div><div class="ttdeci">const Vector&lt; ValueType &gt; &amp; refValue() const</div><div class="ttdoc">Get the view storing the Dirichlet boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00128">boundaryData.hpp:128</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a222e2578d876408405e759a33715fea3"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a222e2578d876408405e759a33715fea3">NeoN::BoundaryData::value</a></div><div class="ttdeci">const Vector&lt; ValueType &gt; &amp; value() const</div><div class="ttdoc">Get the view storing the computed values from the boundary condition.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00109">boundaryData.hpp:109</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a246826e15ed742d091fddadac66a4c70"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a246826e15ed742d091fddadac66a4c70">NeoN::BoundaryData::boundaryTypes</a></div><div class="ttdeci">const Vector&lt; int &gt; &amp; boundaryTypes() const</div><div class="ttdoc">Get the view storing the boundary types.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00158">boundaryData.hpp:158</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a2aed2bb967b733e34cdcd0088da0176a"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a2aed2bb967b733e34cdcd0088da0176a">NeoN::BoundaryData::nBoundaries</a></div><div class="ttdeci">localIdx nBoundaries() const</div><div class="ttdoc">Get the number of boundaries.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00170">boundaryData.hpp:170</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a38564c0bf11a4060db39e00888ff25b9"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a38564c0bf11a4060db39e00888ff25b9">NeoN::BoundaryData::valueFraction</a></div><div class="ttdeci">Vector&lt; scalar &gt; &amp; valueFraction()</div><div class="ttdoc">Get the view storing the fraction of the boundary value.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00143">boundaryData.hpp:143</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a48385df0a61c953073322bee03b0f932"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a48385df0a61c953073322bee03b0f932">NeoN::BoundaryData::nBoundaryFaces</a></div><div class="ttdeci">localIdx nBoundaryFaces(localIdx patchId) const</div><div class="ttdoc">Get the number of boundary faces for this patch.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00182">boundaryData.hpp:182</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a4ae6634ed5622b15769269574e71edf0"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a4ae6634ed5622b15769269574e71edf0">NeoN::BoundaryData::operator=</a></div><div class="ttdeci">BoundaryData&lt; ValueType &gt; &amp; operator=(const BoundaryData&lt; ValueType &gt; &amp;&amp;rhs)</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00206">boundaryData.hpp:206</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a4c0213c2213a486118cdfd7756dab5de"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a4c0213c2213a486118cdfd7756dab5de">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const Executor &amp;exec, localIdx nBoundaryFaces, localIdx nBoundaryTypes)</div><div class="ttdoc">constructor with default initialized Vectors from sizes.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00086">boundaryData.hpp:86</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a5efddb7dbbe2627fb530ffe805dfbd2f"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a5efddb7dbbe2627fb530ffe805dfbd2f">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const Executor &amp;exec, const BoundaryData&lt; ValueType &gt; &amp;rhs)</div><div class="ttdoc">Copy constructor.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00072">boundaryData.hpp:72</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a633625b3452c44742f33b2db2cfd0501"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a633625b3452c44742f33b2db2cfd0501">NeoN::BoundaryData::offset</a></div><div class="ttdeci">const Vector&lt; localIdx &gt; &amp; offset() const</div><div class="ttdoc">Get the view storing the offsets of each boundary.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00164">boundaryData.hpp:164</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a6c352821aaa9f168f32bb3c7ffc7f75b"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a6c352821aaa9f168f32bb3c7ffc7f75b">NeoN::BoundaryData::nBoundaryFaces</a></div><div class="ttdeci">localIdx nBoundaryFaces() const</div><div class="ttdoc">Get the number of boundary faces.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00176">boundaryData.hpp:176</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a6ca425f2d62d70e928e73f4812f89171"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a6ca425f2d62d70e928e73f4812f89171">NeoN::BoundaryData::exec</a></div><div class="ttdeci">const Executor &amp; exec()</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00187">boundaryData.hpp:187</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a798de2cb1247efa03c0eab3dada94ef7"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a798de2cb1247efa03c0eab3dada94ef7">NeoN::BoundaryData::valueFraction</a></div><div class="ttdeci">const Vector&lt; scalar &gt; &amp; valueFraction() const</div><div class="ttdoc">Get the view storing the fraction of the boundary value.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00137">boundaryData.hpp:137</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a9866fce782a05e04afe8fbdc2aad119a"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a9866fce782a05e04afe8fbdc2aad119a">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const Executor &amp;exec, const std::vector&lt; localIdx &gt; &amp;offsets)</div><div class="ttdoc">constructor from a given offsets vector @warn all members except offsets are default constructed</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00101">boundaryData.hpp:101</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_a9ca3d848a022121803f317c1855b2284"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#a9ca3d848a022121803f317c1855b2284">NeoN::BoundaryData::~BoundaryData</a></div><div class="ttdeci">~BoundaryData()</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00048">boundaryData.hpp:48</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_aa0ac1c738252c54d92ec822832765d3f"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#aa0ac1c738252c54d92ec822832765d3f">NeoN::BoundaryData::value</a></div><div class="ttdeci">Vector&lt; ValueType &gt; &amp; value()</div><div class="ttdoc">Get the view storing the computed values from the boundary condition.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00121">boundaryData.hpp:121</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_aab70af30068774c938cfb22cf124a325"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#aab70af30068774c938cfb22cf124a325">NeoN::BoundaryData::refGrad</a></div><div class="ttdeci">const Vector&lt; ValueType &gt; &amp; refGrad() const</div><div class="ttdoc">Get the view storing the Neumann boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00146">boundaryData.hpp:146</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_abc5f09a2550afdfb3c2bba319a218ccc"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#abc5f09a2550afdfb3c2bba319a218ccc">NeoN::BoundaryData::refGrad</a></div><div class="ttdeci">Vector&lt; ValueType &gt; &amp; refGrad()</div><div class="ttdoc">Get the view storing the Neumann boundary values.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00152">boundaryData.hpp:152</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_abe68f27d45b391253709669681e40528"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#abe68f27d45b391253709669681e40528">NeoN::BoundaryData::waitAll</a></div><div class="ttdeci">void waitAll() const</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00314">boundaryData.hpp:314</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_adde8c2b3da03ebb5ea51ef29ab2158a7"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#adde8c2b3da03ebb5ea51ef29ab2158a7">NeoN::BoundaryData::BoundaryData</a></div><div class="ttdeci">BoundaryData(const BoundaryData&lt; ValueType &gt; &amp;rhs)</div><div class="ttdoc">Copy constructor.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00060">boundaryData.hpp:60</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1BoundaryData_html_af4d009350fd83ce887232008b26434c1"><div class="ttname"><a href="classNeoN_1_1BoundaryData.html#af4d009350fd83ce887232008b26434c1">NeoN::BoundaryData::operator=</a></div><div class="ttdeci">BoundaryData&lt; ValueType &gt; &amp; operator=(const BoundaryData&lt; ValueType &gt; &amp;rhs)</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00189">boundaryData.hpp:189</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1SerialExecutor_html"><div class="ttname"><a href="classNeoN_1_1SerialExecutor.html">NeoN::SerialExecutor</a></div><div class="ttdoc">Reference executor for serial CPU execution.</div><div class="ttdef"><b>Definition</b> <a href="serialExecutor_8hpp_source.html#l00021">serialExecutor.hpp:22</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00026">vector.hpp:27</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Vector_html_a43e0722e173db5b15126abbc163b5eb1"><div class="ttname"><a href="classNeoN_1_1Vector.html#a43e0722e173db5b15126abbc163b5eb1">NeoN::Vector::data</a></div><div class="ttdeci">ValueType * data()</div><div class="ttdoc">Direct access to the underlying field data.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00214">vector.hpp:214</a></div></div>
@@ -452,6 +480,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aoperators_8hpp_html"><div class="ttname"><a href="operators_8hpp.html">operators.hpp</a></div></div>
 <div class="ttc" id="aparallelAlgorithms_8hpp_html"><div class="ttname"><a href="parallelAlgorithms_8hpp.html">parallelAlgorithms.hpp</a></div></div>
 <div class="ttc" id="ascalar_8hpp_html"><div class="ttname"><a href="scalar_8hpp.html">scalar.hpp</a></div></div>
+<div class="ttc" id="astructNeoN_1_1NoWaitAccess_html"><div class="ttname"><a href="structNeoN_1_1NoWaitAccess.html">NeoN::NoWaitAccess</a></div><div class="ttdoc">Passkey granting non-draining access to BoundaryData's value storage.</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00419">boundaryData.hpp:420</a></div></div>
+<div class="ttc" id="astructNeoN_1_1NoWaitAccess_html_a0514f326b93ffc870cc49dfdf6c03de5"><div class="ttname"><a href="structNeoN_1_1NoWaitAccess.html#a0514f326b93ffc870cc49dfdf6c03de5">NeoN::NoWaitAccess::value</a></div><div class="ttdeci">static Vector&lt; ValueType &gt; &amp; value(BoundaryData&lt; ValueType &gt; &amp;in)</div><div class="ttdef"><b>Definition</b> <a href="boundaryData_8hpp_source.html#l00422">boundaryData.hpp:422</a></div></div>
 <div class="ttc" id="avector_8hpp_html"><div class="ttname"><a href="vector_8hpp.html">vector.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
