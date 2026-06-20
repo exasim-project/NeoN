@@ -133,7 +133,7 @@ public:
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
           offDiagonalMatrix_(ls.offDiagonalMatrix_), boundaryRhs_(ls.boundaryRhs_),
-          meshIteratorContext_(ls.meshIteratorContext_)
+          faceFluxCorrection_(ls.faceFluxCorrection_), meshIteratorContext_(ls.meshIteratorContext_)
 #ifdef NF_WITH_MPI_SUPPORT
           ,
           commPattern_(ls.commPattern_)
@@ -163,6 +163,23 @@ public:
     [[nodiscard]] Vector<RHSValueType>& boundaryRhs() { return boundaryRhs_; }
 
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
+
+    // Optional per-internal-face deferred flux correction — the OpenFOAM
+    // fvMatrix::faceFluxCorrectionPtr_ analogue. Populated by a corrected/limitedCorrected
+    // Laplacian assembly with the SAME per-face correction it deferred to the RHS, so the flux
+    // reconstruction phi = phiHbyA - pEqn.flux() (NeoFOAM updateFaceVelocity) can add it back and
+    // close div(phi) on non-orthogonal meshes. Null when no corrected Laplacian contributed
+    // (orthogonal / uncorrected schemes); never cleared by reset() since each corrected assembly
+    // overwrites every internal-face entry.
+    [[nodiscard]] std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection()
+    {
+        return faceFluxCorrection_;
+    }
+
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection() const
+    {
+        return faceFluxCorrection_;
+    }
 
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
@@ -264,6 +281,10 @@ private:
     BoundaryMatrixType offDiagonalMatrix_;
 
     Vector<RHSValueType> boundaryRhs_;
+
+    // OpenFOAM faceFluxCorrectionPtr_ analogue; see faceFluxCorrection(). shared_ptr so the
+    // (existing) member-wise copy ctor and the default-constructed empty state stay cheap.
+    std::shared_ptr<Vector<RHSValueType>> faceFluxCorrection_ = nullptr;
 
     Dictionary auxiliaryCoefficients_;
 

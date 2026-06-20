@@ -222,9 +222,30 @@ void computeLaplacianNonOrthCorrImpl(
     const auto corrV = corrField.internalVector().view();
     auto rhs = ls.rhs().view();
 
-    // Non-orthogonal correction (deferred correction) for corrected / limitedCorrected snGrad:
-    //   rhs[own] += corr[f] * γ_f * |S_f| * coeff[own]
-    //   rhs[nei] -= corr[f] * γ_f * |S_f| * coeff[nei]
+    // Persist the per-internal-face correction flux (OpenFOAM faceFluxCorrectionPtr_ analogue)
+    // so the flux reconstruction can add back the SAME deferred correction this assembly used,
+    // rather than recomputing it from the post-solve field (which would leave a residual
+    // div(phi) = corrDiv(p_before) - corrDiv(p_after) on non-orthogonal meshes). Stored value is
+    // the signed face flux out of the owner, corrFlux * coeff[own], matching the matrix-based
+    // orthogonal reconstruction's operator scaling.
+    auto& ffcPtr = ls.faceFluxCorrection();
+    if (!ffcPtr || ffcPtr->size() != nInternalFaces)
+    {
+        ffcPtr =
+            std::make_shared<Vector<FieldValueType>>(exec, nInternalFaces, zero<FieldValueType>());
+    }
+    auto ffc = ffcPtr->view();
+
+    // Non-orthogonal correction (deferred correction) for corrected / limitedCorrected snGrad.
+    // Sign convention: NeoN's Laplacian matrix is the *negative-definite* form (diag<0,
+    // off-diag>0; see the atomic_sub on the diagonal in computeLaplacianIntImpl). The deferred
+    // correction must enter the RHS with the matching (negative-of-OpenFOAM) sign so the whole
+    // assembly stays internally consistent; otherwise the correction is applied with reversed
+    // sign relative to the rest of the system, which on snappy/non-orthogonal meshes (motorBike,
+    // tiltedCube) corrupts the solved pressure — continuity error climbs each step and the run
+    // diverges. With the consistent sign below NeoFOAM converges on par with OpenFOAM.
+    //   rhs[own] -= corr[f] * γ_f * |S_f| * coeff[own]
+    //   rhs[nei] += corr[f] * γ_f * |S_f| * coeff[nei]
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -232,8 +253,9 @@ void computeLaplacianNonOrthCorrImpl(
             auto corrFlux = corrV[facei] * gammaV[facei] * magFaceArea[facei];
             auto own = ownV[facei];
             auto nei = neiV[facei];
-            Kokkos::atomic_add(&rhs[own], corrFlux * coeff[own]);
-            Kokkos::atomic_sub(&rhs[nei], corrFlux * coeff[nei]);
+            Kokkos::atomic_sub(&rhs[own], corrFlux * coeff[own]);
+            Kokkos::atomic_add(&rhs[nei], corrFlux * coeff[nei]);
+            ffc[facei] = corrFlux * coeff[own];
         },
         "computeLaplacianImplicitCorrection"
     );
