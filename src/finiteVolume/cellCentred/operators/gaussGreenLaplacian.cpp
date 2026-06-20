@@ -228,11 +228,17 @@ void computeLaplacianNonOrthCorrImpl(
     // div(phi) = corrDiv(p_before) - corrDiv(p_after) on non-orthogonal meshes). Stored value is
     // the signed face flux out of the owner, corrFlux * coeff[own], matching the matrix-based
     // orthogonal reconstruction's operator scaling.
+    //
+    // Stored only when the consumer opted in (ls.keepFaceFluxCorrection(), set by the scalar
+    // pressure equation that reconstructs the flux) AND the system is scalar. Momentum and
+    // turbulence systems never reconstruct flux, so they keep a 0-size placeholder and allocate
+    // nothing for the correction.
+    const bool storeFfc = ls.keepFaceFluxCorrection() && std::is_same_v<FieldValueType, scalar>;
     auto& ffcPtr = ls.faceFluxCorrection();
-    if (!ffcPtr || ffcPtr->size() != nInternalFaces)
+    const auto ffcSize = storeFfc ? nInternalFaces : localIdx {0};
+    if (!ffcPtr || ffcPtr->size() != ffcSize)
     {
-        ffcPtr =
-            std::make_shared<Vector<FieldValueType>>(exec, nInternalFaces, zero<FieldValueType>());
+        ffcPtr = std::make_shared<Vector<FieldValueType>>(exec, ffcSize, zero<FieldValueType>());
     }
     auto ffc = ffcPtr->view();
 
@@ -255,7 +261,13 @@ void computeLaplacianNonOrthCorrImpl(
             auto nei = neiV[facei];
             Kokkos::atomic_sub(&rhs[own], corrFlux * coeff[own]);
             Kokkos::atomic_add(&rhs[nei], corrFlux * coeff[nei]);
-            ffc[facei] = corrFlux * coeff[own];
+            if constexpr (std::is_same_v<FieldValueType, scalar>)
+            {
+                if (storeFfc)
+                {
+                    ffc[facei] = corrFlux * coeff[own];
+                }
+            }
         },
         "computeLaplacianImplicitCorrection"
     );
