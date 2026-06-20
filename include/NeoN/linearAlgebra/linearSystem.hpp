@@ -133,7 +133,9 @@ public:
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
           offDiagonalMatrix_(ls.offDiagonalMatrix_), boundaryRhs_(ls.boundaryRhs_),
-          faceFluxCorrection_(ls.faceFluxCorrection_), meshIteratorContext_(ls.meshIteratorContext_)
+          faceFluxCorrection_(ls.faceFluxCorrection_),
+          keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
+          meshIteratorContext_(ls.meshIteratorContext_)
 #ifdef NF_WITH_MPI_SUPPORT
           ,
           commPattern_(ls.commPattern_)
@@ -180,6 +182,14 @@ public:
     {
         return faceFluxCorrection_;
     }
+
+    // Whether Laplacian assembly should populate faceFluxCorrection() for this system. Off by
+    // default; only the consumer that reconstructs the flux (the scalar pressure equation, via
+    // NeoFOAM updateFaceVelocity) opts in, so momentum / turbulence systems — which never
+    // reconstruct flux — allocate nothing for the correction.
+    [[nodiscard]] bool keepFaceFluxCorrection() const { return keepFaceFluxCorrection_; }
+
+    void keepFaceFluxCorrection(bool keep) { keepFaceFluxCorrection_ = keep; }
 
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
@@ -285,6 +295,9 @@ private:
     // OpenFOAM faceFluxCorrectionPtr_ analogue; see faceFluxCorrection(). shared_ptr so the
     // (existing) member-wise copy ctor and the default-constructed empty state stay cheap.
     std::shared_ptr<Vector<RHSValueType>> faceFluxCorrection_ = nullptr;
+
+    // Opt-in toggle for faceFluxCorrection_ storage; see keepFaceFluxCorrection().
+    bool keepFaceFluxCorrection_ = false;
 
     Dictionary auxiliaryCoefficients_;
 
