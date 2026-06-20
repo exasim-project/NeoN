@@ -176,6 +176,20 @@ KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
     );
 }
 
+//! @brief Componentwise (Hadamard) multiply (scalar overload).
+KOKKOS_INLINE_FUNCTION scalar componentMultiply(const scalar lhs, const scalar rhs)
+{
+    return lhs * rhs;
+}
+
+//! @brief Componentwise (Hadamard) multiply (Vec3 overload — per component, NOT the dot
+//!        product). Used to form the per-component diagCmpt source correction
+//!        diagCmpt[c] * psi_prev[c] in the matrix under-relaxation kernel.
+KOKKOS_INLINE_FUNCTION Vec3 componentMultiply(const Vec3& lhs, const Vec3& rhs)
+{
+    return Vec3(lhs[0] * rhs[0], lhs[1] * rhs[1], lhs[2] * rhs[2]);
+}
+
 /* @brief Apply equation (matrix) under-relaxation to an assembled LinearSystem.
  *
  * OpenFOAM-parity path: NeoN bakes boundary contributions permanently into
@@ -310,6 +324,40 @@ void applyMatrixRelaxation(
         },
         "applyMatrixRelaxation"
     );
+
+    // Implicit transform-BC per-component diagonal correction (slip/symmetry `diagCmpt_`).
+    // The ginkgo backend subtracts diagCmpt[cell][c] from the SHARED scalar diagonal for
+    // solve-component c (solveImplicitTransformComponent), so the effective per-component
+    // diagonal is `dAug - diagCmpt[c]`. OpenFOAM's fvMatrix::relax divides the WHOLE augmented
+    // diagonal — INCLUDING the boundary internalCoeffs this term represents — by alpha. The
+    // shared scalar diagonal was just boosted by 1/alpha above; diagCmpt must be boosted by the
+    // SAME 1/alpha, otherwise the slip/symmetry normal damping is applied at full strength
+    // against a 1/alpha-larger diagonal and the constraint is effectively weakened by a factor
+    // alpha at every transform-patch-adjacent cell whenever the equation is under-relaxed
+    // (neoPimpleFoam; for PISO alpha==1 this whole function early-returns). The matching
+    // per-component source correction rhs[c] += (1 - 1/alpha) * diagCmpt_old[c] * psi_prev[c]
+    // preserves the fixed point (it cancels at convergence), exactly mirroring the
+    // (dRelaxed - dAug)*psi_prev shared-diagonal correction above. diagCmpt is NOT folded into
+    // the scalar dominance clamp (the shared dAug clamp already guarantees dominance and the
+    // positive diagCmpt term only strengthens it; a per-component clamp is impossible against a
+    // shared scalar diagonal). Runs for BOTH the segregated (scalar matrix / Vec3 rhs ->
+    // diagCmpt is Vec3) and coupled multi-RHS (Vec3 matrix) instantiations; the guard skips it
+    // (nullptr / scalar pressure solve) when no implicit transform patch exists, so the
+    // neoIcoFoam/neoPisoFoam/pressure hot paths are untouched.
+    if (ls.diagCmpt() && ls.diagCmpt()->size() > 0)
+    {
+        auto diagCmptV = ls.diagCmpt()->view();
+        parallelFor(
+            ls.exec(),
+            {0, nCells},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto dcOld = diagCmptV[celli];
+                rhs[celli] = rhs[celli] + componentMultiply(dcOld, field[celli]) * (1.0 - invAlpha);
+                diagCmptV[celli] = dcOld * invAlpha;
+            },
+            "applyMatrixRelaxationDiagCmpt"
+        );
+    }
 }
 
 // ---------------------------------------------------------------------------
