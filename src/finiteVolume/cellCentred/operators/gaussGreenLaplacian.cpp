@@ -261,12 +261,13 @@ void computeLaplacianNonOrthCorrImpl(
             auto nei = neiV[facei];
             Kokkos::atomic_sub(&rhs[own], corrFlux * coeff[own]);
             Kokkos::atomic_add(&rhs[nei], corrFlux * coeff[nei]);
-            if constexpr (std::is_same_v<FieldValueType, scalar>)
+            // Plain runtime branch (not if-constexpr): nvcc forbids an extended device lambda
+            // from first-capturing a variable inside an if-constexpr context. storeFfc already
+            // folds in (FieldValueType == scalar), so it is compile-time false for Vec3 systems
+            // and this write is dead-code-eliminated there.
+            if (storeFfc)
             {
-                if (storeFfc)
-                {
-                    ffc[facei] = corrFlux * coeff[own];
-                }
+                ffc[facei] = corrFlux * coeff[own];
             }
         },
         "computeLaplacianImplicitCorrection"
