@@ -365,4 +365,86 @@ TEST_CASE("MatrixAssembly - Ginkgo")
         }
     }
 }
+
+// Exercises the implicit transform-BC solver path: a scalar matrix with a Vec3 RHS plus a
+// per-component diagonal correction (diagCmpt). The three components are solved segregated, with
+// each column's correction temporarily subtracted from the shared diagonal and then restored.
+// Using a purely diagonal matrix gives an analytic answer x_c = b_c / (D - diagCmpt_c).
+TEST_CASE("Implicit transform diagonal correction solve - Ginkgo")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 4;
+    auto mesh = NeoN::create1DUniformMesh(exec, nCells);
+    auto ls = NeoN::la::createEmptyLinearSystem<scalar, Vec3>(mesh);
+
+    // diagonal D·I (off-diagonals left at zero)
+    const scalar D = 10.0;
+    {
+        auto values = ls.matrix().values().view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().rowOffs().view());
+        NeoN::parallelFor(
+            exec,
+            {0, nCells},
+            NEON_LAMBDA(const localIdx c) { values[ma.diagIdx(c)] = D; },
+            "setDiag"
+        );
+    }
+
+    // per-component diagonal correction (subtracted by the solver) and a uniform RHS
+    const Vec3 dc(1.0, 2.0, 3.0);
+    NeoN::fill(ls.ensureDiagCmpt(), dc);
+    const scalar bVal = 6.0;
+    NeoN::fill(ls.rhs(), Vec3(bVal, bVal, bVal));
+
+    // analytic per-component solution: x_c = b_c / (D - diagCmpt_c)
+    auto requireAnalytic = [&](const Vector<Vec3>& sol)
+    {
+        auto host = sol.copyToHost();
+        auto v = host.view();
+        for (localIdx i = 0; i < nCells; ++i)
+        {
+            REQUIRE(v[i][0] == Catch::Approx(bVal / (D - dc[0])).margin(1e-8));
+            REQUIRE(v[i][1] == Catch::Approx(bVal / (D - dc[1])).margin(1e-8));
+            REQUIRE(v[i][2] == Catch::Approx(bVal / (D - dc[2])).margin(1e-8));
+        }
+    };
+
+    SECTION("standard stopping criterion " + execName)
+    {
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"criteria", Dictionary {{{"iteration", 20}, {"relative_residual_norm", 1e-10}}}}}
+        };
+        auto solver = NeoN::la::Solver(exec, solverDict);
+
+        Vector<Vec3> x(exec, nCells, Vec3(0.0, 0.0, 0.0));
+        auto stats = solver.solve(ls, x);
+        REQUIRE(stats.entries.size() == 3); // three segregated component solves
+        requireAnalytic(x);
+
+        // Re-solving must give the same answer: only holds if the shared diagonal was restored
+        // after each column (otherwise it would be doubly corrected, D - 2·dc).
+        Vector<Vec3> x2(exec, nCells, Vec3(0.0, 0.0, 0.0));
+        solver.solve(ls, x2);
+        requireAnalytic(x2);
+    }
+
+    SECTION("l1ScaledResidual stopping criterion " + execName)
+    {
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"l1ScaledResidual", true},
+             {"criteria", Dictionary {{{"iteration", 20}, {"absolute_residual_norm", 1e-10}}}}}
+        };
+        auto solver = NeoN::la::Solver(exec, solverDict);
+
+        Vector<Vec3> x(exec, nCells, Vec3(0.0, 0.0, 0.0));
+        auto stats = solver.solve(ls, x);
+        REQUIRE(stats.entries.size() == 3);
+        requireAnalytic(x);
+    }
+}
 #endif

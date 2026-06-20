@@ -517,6 +517,80 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
 
     REQUIRE(localCsr->get_const_values() == lsDst.matrix().values().data());
 }
+
+// Distributed counterpart of the serial implicit transform-BC solver test: a scalar matrix with a
+// Vec3 RHS and a per-component diagonal correction, solved across ranks via solveDist. The
+// off-diagonals (including the halo/offDiagonalMatrix) are left zero so each rank's diagonal block
+// is decoupled and the per-rank answer is analytic: x_c = b_c / (D - diagCmpt_c). Covers both the
+// standard and the l1ScaledResidual stopping criteria.
+TEST_CASE("Distributed implicit transform diagonal solve")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    NeoN::mpi::Environment mpiEnviron;
+
+    const localIdx nCellsLocal = 4;
+    auto meshPart = create1DUniformMeshPart(exec, nCellsLocal);
+    auto ls = la::createEmptyLinearSystem<scalar, Vec3>(meshPart);
+    const localIdx n = ls.rhs().size();
+
+    // a populated communication pattern is what routes Solver::solve to solveDist
+    REQUIRE_FALSE(ls.commPattern().sendCounts.empty());
+
+    // diagonal D·I (off-diagonals and halo left zero → decoupled per rank)
+    const scalar D = 10.0;
+    {
+        auto values = ls.matrix().values().view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().rowOffs().view());
+        parallelFor(
+            exec, {0, n}, NEON_LAMBDA(const localIdx c) { values[ma.diagIdx(c)] = D; }, "setDiag"
+        );
+    }
+    const Vec3 dc(1.0, 2.0, 3.0);
+    fill(ls.ensureDiagCmpt(), dc);
+    const scalar bVal = 6.0;
+    fill(ls.rhs(), Vec3(bVal, bVal, bVal));
+
+    auto requireAnalytic = [&](const Vector<Vec3>& sol)
+    {
+        auto host = sol.copyToHost();
+        auto v = host.view();
+        for (localIdx i = 0; i < n; ++i)
+        {
+            REQUIRE(v[i][0] == Catch::Approx(bVal / (D - dc[0])).margin(1e-8));
+            REQUIRE(v[i][1] == Catch::Approx(bVal / (D - dc[1])).margin(1e-8));
+            REQUIRE(v[i][2] == Catch::Approx(bVal / (D - dc[2])).margin(1e-8));
+        }
+    };
+
+    SECTION("standard stopping criterion")
+    {
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"criteria", Dictionary {{{"iteration", 50}, {"relative_residual_norm", 1e-10}}}}}
+        };
+        auto solver = la::Solver(exec, solverDict);
+        Vector<Vec3> x(exec, n, Vec3(0.0, 0.0, 0.0));
+        auto stats = solver.solve(ls, x);
+        REQUIRE(stats.entries.size() == 3); // three segregated component solves
+        requireAnalytic(x);
+    }
+
+    SECTION("l1ScaledResidual stopping criterion")
+    {
+        Dictionary solverDict {
+            {{"solver", std::string {"Ginkgo"}},
+             {"type", "solver::Cg"},
+             {"l1ScaledResidual", true},
+             {"criteria", Dictionary {{{"iteration", 50}, {"absolute_residual_norm", 1e-10}}}}}
+        };
+        auto solver = la::Solver(exec, solverDict);
+        Vector<Vec3> x(exec, n, Vec3(0.0, 0.0, 0.0));
+        auto stats = solver.solve(ls, x);
+        REQUIRE(stats.entries.size() == 3);
+        requireAnalytic(x);
+    }
+}
 #endif // NF_WITH_GINKGO
 
 }

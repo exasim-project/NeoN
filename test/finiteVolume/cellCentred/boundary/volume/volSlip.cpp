@@ -7,7 +7,7 @@
 
 #include "NeoN/NeoN.hpp"
 
-TEST_CASE("symmetry_volume")
+TEST_CASE("slip_volume")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
@@ -15,7 +15,7 @@ TEST_CASE("symmetry_volume")
     {
         auto mesh = NeoN::createSingleCellMesh(exec);
 
-        // === scalar field =====================================================
+        // === scalar field: zero-gradient =======================================
         {
             auto field =
                 NeoN::Field<NeoN::scalar>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
@@ -28,7 +28,7 @@ TEST_CASE("symmetry_volume")
             NeoN::Dictionary dict;
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
-                    "symmetry", mesh, dict, 0
+                    "slip", mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
@@ -41,25 +41,23 @@ TEST_CASE("symmetry_volume")
                 field.internalVector()
             );
 
-            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
+            for (auto& v : refValuesH.view(boundary->range()))
             {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Catch::Approx(internalH.view()[ownerV]));
+                const auto i = static_cast<NeoN::localIdx>(&v - refValuesH.data());
+                REQUIRE(v == Catch::Approx(internalH.view()[faceCellsH.view()[i]]));
             }
 
-            for (auto& boundaryValueV : valuesH.view(boundary->range()))
+            for (auto& v : valuesH.view(boundary->range()))
             {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Catch::Approx(internalH.view()[ownerV]));
+                const auto i = static_cast<NeoN::localIdx>(&v - valuesH.data());
+                REQUIRE(v == Catch::Approx(internalH.view()[faceCellsH.view()[i]]));
             }
 
-            for (auto& gradValueV : refGradH.view(boundary->range()))
-                REQUIRE(gradValueV == Catch::Approx(0.0));
+            for (auto& g : refGradH.view(boundary->range()))
+                REQUIRE(g == Catch::Approx(0.0));
         }
 
-        // === vector field =====================================================
+        // === vector field: tangential projection ================================
         {
             auto field = NeoN::Field<NeoN::Vec3>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
             NeoN::fill(field.internalVector(), NeoN::Vec3(1.0, -1.0, 0.5));
@@ -70,7 +68,7 @@ TEST_CASE("symmetry_volume")
             NeoN::Dictionary dict;
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
-                    "symmetry", mesh, dict, 0
+                    "slip", mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
@@ -89,36 +87,31 @@ TEST_CASE("symmetry_volume")
                     field.internalVector()
                 );
 
-            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
+            for (auto& v : refValuesH.view(boundary->range()))
             {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                const auto nV = nHatH.view()[i];
-                const auto intV = internalH.view()[ownerV];
-                const auto vExpected = intV - nV * (intV & nV); // half-symmetry
+                const auto i = static_cast<NeoN::localIdx>(&v - refValuesH.data());
+                const auto intV = internalH.view()[faceCellsH.view()[i]];
+                const auto n = nHatH.view()[i];
+                const auto vExpected = intV - n * (intV & n);
 
                 for (auto d = 0u; d < 3; ++d)
-                {
-                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
-                }
+                    REQUIRE(v[d] == Catch::Approx(vExpected[d]));
             }
 
             // deferred mode: refGrad = -deltaCoeffs * (U·n) * n  (purely normal => refGrad ∥ n)
-            for (auto& gradValueV : refGradH.view(boundary->range()))
+            for (auto& g : refGradH.view(boundary->range()))
             {
-                const auto i = static_cast<NeoN::localIdx>(&gradValueV - refGradH.data());
-                const auto nV = nHatH.view()[i];
+                const auto i = static_cast<NeoN::localIdx>(&g - refGradH.data());
+                const auto n = nHatH.view()[i];
                 const auto intV = internalH.view()[faceCellsH.view()[i]];
-                const auto gExpected = nV * (-deltaCoeffsH.view()[i] * (intV & nV));
+                const auto gExpected = n * (-deltaCoeffsH.view()[i] * (intV & n));
 
                 for (auto d = 0u; d < 3; ++d)
-                {
-                    REQUIRE(gradValueV[d] == Catch::Approx(gExpected[d]));
-                }
+                    REQUIRE(g[d] == Catch::Approx(gExpected[d]));
             }
         }
 
-        // === vector field: implicit mode ======================================
+        // === vector field: implicit mode =======================================
         {
             auto field = NeoN::Field<NeoN::Vec3>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
             NeoN::fill(field.internalVector(), NeoN::Vec3(1.0, -1.0, 0.5));
@@ -129,11 +122,13 @@ TEST_CASE("symmetry_volume")
             dict.insert("implicit", true);
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
-                    "symmetry", mesh, dict, 0
+                    "slip", mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
 
+            // implicit mode is flagged for the assembly/solver and leaves refGrad zero (the
+            // normal damping is realised as a per-component diagonal correction instead).
             REQUIRE(boundary->attributes().transformImplicit == true);
 
             auto [valuesH, refGradH, nHatH, faceCellsH, internalH] = copyToHosts(
@@ -144,26 +139,21 @@ TEST_CASE("symmetry_volume")
                 field.internalVector()
             );
 
-            for (auto& boundaryValueV : valuesH.view(boundary->range()))
+            for (auto& v : valuesH.view(boundary->range()))
             {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
-                const auto nV = nHatH.view()[i];
+                const auto i = static_cast<NeoN::localIdx>(&v - valuesH.data());
                 const auto intV = internalH.view()[faceCellsH.view()[i]];
-                const auto vExpected = intV - nV * (intV & nV);
+                const auto n = nHatH.view()[i];
+                const auto vExpected = intV - n * (intV & n);
 
                 for (auto d = 0u; d < 3; ++d)
-                {
-                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
-                }
+                    REQUIRE(v[d] == Catch::Approx(vExpected[d]));
             }
 
-            // implicit mode leaves refGrad zero (normal damping handled at assembly/solve)
-            for (auto& gradValueV : refGradH.view(boundary->range()))
+            for (auto& g : refGradH.view(boundary->range()))
             {
                 for (auto d = 0u; d < 3; ++d)
-                {
-                    REQUIRE(gradValueV[d] == Catch::Approx(0.0));
-                }
+                    REQUIRE(g[d] == Catch::Approx(0.0));
             }
         }
     }

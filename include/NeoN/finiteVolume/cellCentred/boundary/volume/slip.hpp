@@ -15,22 +15,23 @@
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 
-// Symmetry is a symmetry-plane boundary condition: scalar => zero-gradient, vector => tangential
-// projection + normal damping. It shares its implementation with Slip via
-// detail::setSlipSymmetryValue; they differ only in the registered name and in where they may be
-// applied. The optional "implicit" key selects the normal-damping treatment.
+// Slip is a frictionless-wall boundary condition: scalar => zero-gradient, vector => tangential
+// projection + normal damping. It shares its implementation with Symmetry via
+// detail::setSlipSymmetryValue; the two differ only in the registered name and in where they may be
+// applied (slip on wall/patch types, symmetry on a symmetry-plane patch). The optional "implicit"
+// key selects the normal-damping treatment.
 template<typename ValueType>
-class Symmetry : public VolumeBoundaryFactory<ValueType>::template Register<Symmetry<ValueType>>
+class Slip : public VolumeBoundaryFactory<ValueType>::template Register<Slip<ValueType>>
 {
-    using Base = typename VolumeBoundaryFactory<ValueType>::template Register<Symmetry<ValueType>>;
+    using Base = typename VolumeBoundaryFactory<ValueType>::template Register<Slip<ValueType>>;
 
 public:
 
     using Base::correctBoundaryCondition;
 
-    using SymmetryType = Symmetry<ValueType>;
+    using SlipType = Slip<ValueType>;
 
-    Symmetry(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
+    Slip(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(
             mesh,
             dict,
@@ -49,21 +50,20 @@ public:
         );
     }
 
-    static std::string name() { return "symmetry"; }
+    static std::string name() { return "slip"; }
 
     std::string getName() const override { return name(); }
 
     static std::string doc()
     {
-        return "Symmetry plane (scalar: zero-gradient; vector: tangential projection + normal "
-               "damping).";
+        return "Slip wall (scalar: zero-gradient; vector: tangential projection + normal damping).";
     }
 
     static std::string schema() { return "none"; }
 
     virtual std::unique_ptr<VolumeBoundaryFactory<ValueType>> clone() const final
     {
-        return std::make_unique<Symmetry>(*this);
+        return std::make_unique<Slip>(*this);
     }
 
 private:
