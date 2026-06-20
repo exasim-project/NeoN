@@ -526,19 +526,31 @@ SolverStats GinkgoSolver::solve(
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
 // l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The diag edits
 // use atomics because a corner cell may receive contributions from several boundary faces.
-template<unsigned int I>
+// NOTE: explicit template parameters (NOT C++20 `auto`/abbreviated-template parameters).
+// NVCC (CUDA 12.4) rejects an extended __device__ lambda (the NEON_LAMBDA in the parallelFor
+// below) when its enclosing function uses `auto` parameters — "'auto' parameter not permitted
+// in this context". Naming the deduced types sidesteps that restriction; call sites still only
+// pass the explicit component index <I> and let the rest deduce.
+template<
+    unsigned int I,
+    typename Sys,
+    typename Exec,
+    typename Factory,
+    typename Values,
+    typename Ma,
+    typename DiagC>
 void solveImplicitTransformComponent(
-    const auto& sys,
+    const Sys& sys,
     Vector<Vec3>& x,
-    const auto& exec,
+    const Exec& exec,
     std::shared_ptr<const gko::Executor> gkoExec,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const auto& factory,
+    const Factory& factory,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
-    auto values,
-    const auto& ma,
-    auto diagC,
+    Values values,
+    const Ma& ma,
+    DiagC diagC,
     localIdx nrows
 )
 {
