@@ -133,6 +133,9 @@ public:
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
           offDiagonalMatrix_(ls.offDiagonalMatrix_), boundaryRhs_(ls.boundaryRhs_),
+          // TODO move to a different location since this seems to be unrelated to linearSystem
+          faceFluxCorrection_(ls.faceFluxCorrection_),
+          keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
           meshIteratorContext_(ls.meshIteratorContext_)
 #ifdef NF_WITH_MPI_SUPPORT
           ,
@@ -163,6 +166,31 @@ public:
     [[nodiscard]] Vector<RHSValueType>& boundaryRhs() { return boundaryRhs_; }
 
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
+
+    // Optional per-internal-face deferred flux correction — the OpenFOAM
+    // fvMatrix::faceFluxCorrectionPtr_ analogue. Populated by a corrected/limitedCorrected
+    // Laplacian assembly with the SAME per-face correction it deferred to the RHS, so the flux
+    // reconstruction phi = phiHbyA - pEqn.flux() (NeoFOAM updateFaceVelocity) can add it back and
+    // close div(phi) on non-orthogonal meshes. Null when no corrected Laplacian contributed
+    // (orthogonal / uncorrected schemes); never cleared by reset() since each corrected assembly
+    // overwrites every internal-face entry.
+    [[nodiscard]] std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection()
+    {
+        return faceFluxCorrection_;
+    }
+
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection() const
+    {
+        return faceFluxCorrection_;
+    }
+
+    // Whether Laplacian assembly should populate faceFluxCorrection() for this system. Off by
+    // default; only the consumer that reconstructs the flux (the scalar pressure equation, via
+    // NeoFOAM updateFaceVelocity) opts in, so momentum / turbulence systems — which never
+    // reconstruct flux — allocate nothing for the correction.
+    [[nodiscard]] bool keepFaceFluxCorrection() const { return keepFaceFluxCorrection_; }
+
+    void keepFaceFluxCorrection(bool keep) { keepFaceFluxCorrection_ = keep; }
 
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
@@ -264,6 +292,13 @@ private:
     BoundaryMatrixType offDiagonalMatrix_;
 
     Vector<RHSValueType> boundaryRhs_;
+
+    // see faceFluxCorrection(). shared_ptr so the
+    // (existing) member-wise copy ctor and the default-constructed empty state stay cheap.
+    std::shared_ptr<Vector<RHSValueType>> faceFluxCorrection_ = nullptr;
+
+    // Opt-in toggle for faceFluxCorrection_ storage; see keepFaceFluxCorrection().
+    bool keepFaceFluxCorrection_ = false;
 
     Dictionary auxiliaryCoefficients_;
 

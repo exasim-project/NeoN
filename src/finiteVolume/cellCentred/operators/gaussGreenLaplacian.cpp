@@ -222,9 +222,36 @@ void computeLaplacianNonOrthCorrImpl(
     const auto corrV = corrField.internalVector().view();
     auto rhs = ls.rhs().view();
 
-    // Non-orthogonal correction (deferred correction) for corrected / limitedCorrected snGrad:
-    //   rhs[own] += corr[f] * γ_f * |S_f| * coeff[own]
-    //   rhs[nei] -= corr[f] * γ_f * |S_f| * coeff[nei]
+    // Persist the per-internal-face correction flux (OpenFOAM faceFluxCorrectionPtr_ analogue)
+    // so the flux reconstruction can add back the SAME deferred correction this assembly used,
+    // rather than recomputing it from the post-solve field (which would leave a residual
+    // div(phi) = corrDiv(p_before) - corrDiv(p_after) on non-orthogonal meshes). Stored value is
+    // the signed face flux out of the owner, corrFlux * coeff[own], matching the matrix-based
+    // orthogonal reconstruction's operator scaling.
+    //
+    // Stored only when the consumer opted in (ls.keepFaceFluxCorrection(), set by the scalar
+    // pressure equation that reconstructs the flux) AND the system is scalar. Momentum and
+    // turbulence systems never reconstruct flux, so they keep a 0-size placeholder and allocate
+    // nothing for the correction.
+    const bool storeFfc = ls.keepFaceFluxCorrection() && std::is_same_v<FieldValueType, scalar>;
+    auto& ffcPtr = ls.faceFluxCorrection();
+    const auto ffcSize = storeFfc ? nInternalFaces : localIdx {0};
+    if (!ffcPtr || ffcPtr->size() != ffcSize)
+    {
+        ffcPtr = std::make_shared<Vector<FieldValueType>>(exec, ffcSize, zero<FieldValueType>());
+    }
+    auto ffc = ffcPtr->view();
+
+    // Non-orthogonal correction (deferred correction) for corrected / limitedCorrected snGrad.
+    // Sign convention: NeoN's Laplacian matrix is the *negative-definite* form (diag<0,
+    // off-diag>0; see the atomic_sub on the diagonal in computeLaplacianIntImpl). The deferred
+    // correction must enter the RHS with the matching (negative-of-OpenFOAM) sign so the whole
+    // assembly stays internally consistent; otherwise the correction is applied with reversed
+    // sign relative to the rest of the system, which on snappy/non-orthogonal meshes (motorBike,
+    // tiltedCube) corrupts the solved pressure — continuity error climbs each step and the run
+    // diverges. With the consistent sign below NeoFOAM converges on par with OpenFOAM.
+    //   rhs[own] -= corr[f] * γ_f * |S_f| * coeff[own]
+    //   rhs[nei] += corr[f] * γ_f * |S_f| * coeff[nei]
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -232,8 +259,16 @@ void computeLaplacianNonOrthCorrImpl(
             auto corrFlux = corrV[facei] * gammaV[facei] * magFaceArea[facei];
             auto own = ownV[facei];
             auto nei = neiV[facei];
-            Kokkos::atomic_add(&rhs[own], corrFlux * coeff[own]);
-            Kokkos::atomic_sub(&rhs[nei], corrFlux * coeff[nei]);
+            Kokkos::atomic_sub(&rhs[own], corrFlux * coeff[own]);
+            Kokkos::atomic_add(&rhs[nei], corrFlux * coeff[nei]);
+            // Plain runtime branch (not if-constexpr): nvcc forbids an extended device lambda
+            // from first-capturing a variable inside an if-constexpr context. storeFfc already
+            // folds in (FieldValueType == scalar), so it is compile-time false for Vec3 systems
+            // and this write is dead-code-eliminated there.
+            if (storeFfc)
+            {
+                ffc[facei] = corrFlux * coeff[own];
+            }
         },
         "computeLaplacianImplicitCorrection"
     );
