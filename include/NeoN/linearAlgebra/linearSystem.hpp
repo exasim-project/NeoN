@@ -133,6 +133,7 @@ public:
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
           offDiagonalMatrix_(ls.offDiagonalMatrix_), boundaryRhs_(ls.boundaryRhs_),
+          // TODO move to a different location since this seems to be unrelated to linearSystem
           faceFluxCorrection_(ls.faceFluxCorrection_),
           keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
           meshIteratorContext_(ls.meshIteratorContext_)
@@ -292,7 +293,7 @@ private:
 
     Vector<RHSValueType> boundaryRhs_;
 
-    // OpenFOAM faceFluxCorrectionPtr_ analogue; see faceFluxCorrection(). shared_ptr so the
+    // see faceFluxCorrection(). shared_ptr so the
     // (existing) member-wise copy ctor and the default-constructed empty state stay cheap.
     std::shared_ptr<Vector<RHSValueType>> faceFluxCorrection_ = nullptr;
 
