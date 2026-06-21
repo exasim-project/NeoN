@@ -76,4 +76,35 @@ extern template class GaussGreenDiv<scalar>;
 extern template class GaussGreenDiv<Vec3>;
 extern template class GaussGreenDiv<Vec3, scalar>;
 
+/* @brief Adds the explicit (deferred) divergence correction of a corrected interpolation scheme
+ * to the linear-system rhs. Shared with the fused div-laplacian operator so both implicit div
+ * paths apply linearUpwind identically. Defined and instantiated in gaussGreenDiv.cpp.
+ */
+template<typename FieldValueType, typename AssemblyType>
+void addDivCorrectionToRhs(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const SurfaceField<FieldValueType>& correction,
+    const dsl::Coeff operatorScaling
+);
+
+extern template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+extern template void addDivCorrectionToRhs(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+extern template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+
 } // namespace NeoN

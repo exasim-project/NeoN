@@ -429,6 +429,79 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     computeDivExp<FieldValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
 }
 
+/* @brief adds the deferred gradient correction of a corrected scheme (e.g. linearUpwind) to the
+** linear-system rhs, i.e. the discrete -operatorScaling * sum_f F_f corr_f per cell. This mirrors
+** OpenFOAM's `fvm += fvc::surfaceIntegrate(faceFlux*correction)`: interpolate()=weighted value +
+** correction(), the weighted part is assembled implicitly and the correction is an explicit source.
+** Physical boundary correction is zero (uncorrected patches); processor faces are cut internal
+** faces and DO contribute via the proc slots filled by correction().
+*/
+template<typename FieldValueType, typename AssemblyType>
+void addDivCorrectionToRhs(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const SurfaceField<FieldValueType>& correction,
+    const dsl::Coeff operatorScaling
+)
+{
+    const auto& mesh = correction.mesh();
+    const auto exec = correction.exec();
+    const auto nInternalFaces = mesh.nInternalFaces();
+
+    const auto [fluxV, corrV, ownV, neiV] = views(
+        faceFlux.internalVector(),
+        correction.internalVector(),
+        mesh.faceOwners(),
+        mesh.faceNeighbors()
+    );
+    auto rhs = ls.rhs().view();
+
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto own = ownV[facei];
+            const auto nei = neiV[facei];
+            // sum_f F_f corr_f distributes +F corr to the owner and -F corr to the neighbour
+            // (S_f points owner -> neighbour); the term is known so it moves to the rhs negated.
+            const FieldValueType contrib = fluxV[facei] * corrV[facei];
+            Kokkos::atomic_sub(&rhs[own], operatorScaling[own] * contrib);
+            Kokkos::atomic_add(&rhs[nei], operatorScaling[nei] * contrib);
+        },
+        "addDivCorrectionToRhs"
+    );
+
+    // Processor faces: each is a cut internal face whose owner is local. correction() fills the
+    // proc slots with the shared-face correction (same value on both ranks), so the owner-only
+    // contribution -operatorScaling * F_own * corr reproduces the global internal-face rhs:
+    // the neighbour rank adds the matching +F (its F is -F_own) for the same cell on its side.
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        const auto nBoundaryFaces = mesh.nBoundaryFaces();
+        const auto [bFluxV, bCorrV, bOwnV, bNormalSignV] = views(
+            faceFlux.boundaryData().value(),
+            correction.boundaryData().value(),
+            mesh.boundaryMesh().faceOwners(),
+            mesh.boundaryMesh().weights()
+        );
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bcfacei = nBoundaryFaces + procFacei;
+                const auto own = bOwnV[bcfacei];
+                // outward flux from the local owner is normalSign * F; the +F corr owner share of
+                // the global internal face is reproduced as -operatorScaling * (normalSign F) corr.
+                const scalar outwardFlux = bNormalSignV[bcfacei] * bFluxV[bcfacei];
+                const FieldValueType contrib = outwardFlux * bCorrV[bcfacei];
+                Kokkos::atomic_sub(&rhs[own], operatorScaling[own] * contrib);
+            },
+            "addDivCorrectionToRhsProc"
+        );
+    }
+}
+
 template<typename FieldValueType, typename AssemblyType>
 void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
@@ -455,10 +528,43 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     }
     computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+
+    // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
+    // upwind weights above, the gradient correction is added explicitly to the rhs.
+    if (surfaceInterpolation_.corrected())
+    {
+        SurfaceField<FieldValueType> correction(
+            phi.exec(),
+            "divCorrection",
+            phi.mesh(),
+            createCalculatedBCs<SurfaceBoundary<FieldValueType>>(phi.mesh())
+        );
+        surfaceInterpolation_.correction(faceFlux, phi, correction);
+        addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
+    }
 }
 
 template class GaussGreenDiv<scalar>;
 template class GaussGreenDiv<Vec3>;
 template class GaussGreenDiv<Vec3, scalar>;
+
+template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void addDivCorrectionToRhs(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
 
 };

@@ -5,6 +5,7 @@
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 #include <memory>
 
@@ -12,6 +13,37 @@ namespace NeoN::finiteVolume::cellCentred
 {
 
 GeometrySchemeFactory::GeometrySchemeFactory() {}
+
+// Cache the per-internal-face vector from each adjacent cell centre to the face centre
+// (Cf - C_own and Cf - C_nei). These are derived from the mesh cell/face centres, which
+// reset() frees right after the geometry scheme is built, so they must be computed here.
+namespace
+{
+void computeFaceDeltaVectors(
+    const Executor& exec,
+    const UnstructuredMesh& mesh,
+    SurfaceField<Vec3>& faceDeltaOwner,
+    SurfaceField<Vec3>& faceDeltaNeighbour
+)
+{
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto dOwn = faceDeltaOwner.internalVector().view();
+    auto dNei = faceDeltaNeighbour.internalVector().view();
+    const auto [faceCenters, cellCenters, owners, neighbors] =
+        views(mesh.faceCenters(), mesh.cellCenters(), mesh.faceOwners(), mesh.faceNeighbors());
+
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const Vec3 cf = faceCenters[facei];
+            dOwn[facei] = cf - cellCenters[owners[facei]];
+            dNei[facei] = cf - cellCenters[neighbors[facei]];
+        },
+        "computeFaceDeltaVectors"
+    );
+}
+}
 
 
 const std::shared_ptr<GeometryScheme> GeometryScheme::readOrCreate(const UnstructuredMesh& mesh)
@@ -33,7 +65,19 @@ GeometryScheme::GeometryScheme(
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s
 )
     : exec_(exec), mesh_(weights.mesh()), kernel_(std::move(kernel)), weights_(weights),
-      nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs), nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
+      nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs), nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s),
+      faceDeltaOwner_(
+          weights.exec(),
+          "faceDeltaOwner",
+          weights.mesh(),
+          createCalculatedBCs<SurfaceBoundary<Vec3>>(weights.mesh())
+      ),
+      faceDeltaNeighbour_(
+          weights.exec(),
+          "faceDeltaNeighbour",
+          weights.mesh(),
+          createCalculatedBCs<SurfaceBoundary<Vec3>>(weights.mesh())
+      )
 {
     if (kernel_ == nullptr)
     {
@@ -59,6 +103,12 @@ GeometryScheme::GeometryScheme(
           "nonOrthCorrectionVec3s",
           mesh,
           createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
+      ),
+      faceDeltaOwner_(
+          mesh.exec(), "faceDeltaOwner", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
+      ),
+      faceDeltaNeighbour_(
+          mesh.exec(), "faceDeltaNeighbour", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
       )
 {
     if (kernel_ == nullptr)
@@ -83,6 +133,12 @@ GeometryScheme::GeometryScheme(const UnstructuredMesh& mesh)
           "nonOrthCorrectionVec3s",
           mesh,
           createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
+      ),
+      faceDeltaOwner_(
+          mesh.exec(), "faceDeltaOwner", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
+      ),
+      faceDeltaNeighbour_(
+          mesh.exec(), "faceDeltaNeighbour", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
       )
 {
     if (kernel_ == nullptr)
@@ -109,6 +165,7 @@ void GeometryScheme::update()
             },
             exec_
         );
+        computeFaceDeltaVectors(exec_, mesh_, faceDeltaOwner_, faceDeltaNeighbour_);
         reset();
     }
 }
@@ -139,5 +196,9 @@ const SurfaceField<Vec3>& GeometryScheme::nonOrthCorrectionVec3s() const
 {
     return nonOrthCorrectionVec3s_;
 }
+
+const SurfaceField<Vec3>& GeometryScheme::faceDeltaOwner() const { return faceDeltaOwner_; }
+
+const SurfaceField<Vec3>& GeometryScheme::faceDeltaNeighbour() const { return faceDeltaNeighbour_; }
 
 } // namespace NeoN
