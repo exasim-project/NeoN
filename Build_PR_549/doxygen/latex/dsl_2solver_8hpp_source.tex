@@ -270,69 +270,65 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00274}00274\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00275}00275\ \textcolor{comment}{/*\ @brief\ Apply\ explicit\ field\ under-\/relaxation\ to\ a\ solution\ field's\ internal\ vector.}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00276}00276\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00277}00277\ \textcolor{comment}{\ *\ Computes\ the\ OpenFOAM\ \`{}relax()`\ blend\ on\ the\ internal\ field\ only:}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00277}00277\ \textcolor{comment}{\ *\ Blends\ the\ internal\ field\ toward\ the\ previous\ outer-\/iteration\ value:}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00278}00278\ \textcolor{comment}{\ *}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00279}00279\ \textcolor{comment}{\ *\ \ \ psi[c]\ =\ prev[c]\ +\ alpha\ *\ (psi[c]\ -\/\ prev[c])}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00280}00280\ \textcolor{comment}{\ *}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00281}00281\ \textcolor{comment}{\ *\ \`{}prev`\ is\ the\ caller-\/owned\ previous-\/iteration\ snapshot\ (e.g.\ from}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00282}00282\ \textcolor{comment}{\ *\ \`{}fieldRelaxationSnapshot`,\ taken\ at\ the\ top\ of\ the\ outer\ corrector).\ This\ is\ a}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00283}00283\ \textcolor{comment}{\ *\ stateless\ free\ function\ mirroring\ \`{}applyMatrixRelaxation`;\ NeoN\ stays}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00284}00284\ \textcolor{comment}{\ *\ OpenFOAM-\/agnostic\ and\ sees\ only\ the\ scalar\ \`{}alpha`.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00285}00285\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00286}00286\ \textcolor{comment}{\ *\ Boundary\ scope:\ only\ the\ internal\ vector\ is\ blended.\ The\ caller\ is}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00287}00287\ \textcolor{comment}{\ *\ responsible\ for\ calling\ \`{}solution.correctBoundaryConditions()`\ afterwards\ so\ the}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00288}00288\ \textcolor{comment}{\ *\ boundary\ values\ are\ re-\/derived\ from\ the\ boundary\ conditions.\ (OpenFOAM's\ \`{}relax()`}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00289}00289\ \textcolor{comment}{\ *\ blends\ boundary\ values\ directly;\ both\ paths\ agree\ at\ the\ fixed\ point\ and\ for}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00290}00290\ \textcolor{comment}{\ *\ \`{}fixedValue`\ patches.)}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00291}00291\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00292}00292\ \textcolor{comment}{\ *\ \`{}alpha\ <=\ 0`\ or\ \`{}alpha\ ==\ 1`\ is\ a\ bitwise\ no-\/op\ (the\ early\ return\ touches\ nothing).}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00293}00293\ \textcolor{comment}{\ *\ This\ is\ REQUIRED\ so\ the\ final\ outer\ iteration\ (`alpha\ ==\ 1`)\ and\ an\ unset}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00294}00294\ \textcolor{comment}{\ *\ factor\ leave\ the\ field\ byte-\/for-\/byte\ unchanged,\ side-\/stepping\ the\ \`{}alpha\ ==\ 1`\ ULP}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00295}00295\ \textcolor{comment}{\ *\ round-\/trip\ trap\ of\ \`{}prev\ +\ 1*(cur\ -\/\ prev)`.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00296}00296\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00297}00297\ \textcolor{comment}{\ *\ @param\ solution\ The\ solution\ VolumeField\ —\ its\ internal\ vector\ is\ blended\ in\ place.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00298}00298\ \textcolor{comment}{\ *\ @param\ previous\ The\ previous-\/iteration\ snapshot\ of\ the\ internal\ vector\ (deep\ copy).}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00299}00299\ \textcolor{comment}{\ *\ @param\ alpha\ \ \ \ The\ under-\/relaxation\ factor.\ alpha\ <=\ 0\ or\ alpha\ ==\ 1\ is\ a\ bitwise\ no-\/op.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00300}00300\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00301}00301\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00302}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a15bc014f2770ea7255fa1e0c2870f020}{00302}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a15bc014f2770ea7255fa1e0c2870f020}{applyFieldRelaxation}}(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00303}00303\ \ \ \ \ VectorType\&\ solution,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<typename\ VectorType::ElementType>}}\&\ previous,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ alpha}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00304}00304\ )}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00305}00305\ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00306}00306\ \ \ \ \ \textcolor{comment}{//\ Bitwise\ no-\/op\ guard:\ MUST\ be\ first\ so\ the\ internal\ vector\ is\ not\ touched\ when\ no}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00307}00307\ \ \ \ \ \textcolor{comment}{//\ relaxation\ is\ requested\ (final\ iteration\ /\ unset\ factor,\ alpha==1\ ULP\ trap).}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00308}00308\ \ \ \ \ \textcolor{keywordflow}{if}\ (alpha\ <=\ 0.0\ ||\ alpha\ ==\ 1.0)}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00309}00309\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00310}00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00311}00311\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00312}00312\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00313}00313\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(solution.size()\ ==\ previous.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}(),\ \textcolor{stringliteral}{"{}applyFieldRelaxation:\ field/prev\ size\ mismatch"{}});}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00314}00314\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00315}00315\ \ \ \ \ \textcolor{keyword}{auto}\ [current,\ prev]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.internalVector(),\ previous);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00316}00316\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00317}00317\ \ \ \ \ \ \ \ \ solution.exec(),}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00318}00318\ \ \ \ \ \ \ \ \ \{0,\ solution.size()\},}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00319}00319\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli)\ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ current[celli]\ =\ prev[celli]\ +\ alpha\ *\ (current[celli]\ -\/\ prev[celli]);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00321}00321\ \ \ \ \ \ \ \ \ \},}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00322}00322\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}applyFieldRelaxation"{}}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00323}00323\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00324}00324\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00325}00325\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00326}00326\ \textcolor{comment}{/*\ @brief\ Snapshot\ a\ field's\ internal\ vector\ for\ use\ as\ the\ \`{}previous`\ arg\ to}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00327}00327\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \`{}applyFieldRelaxation`\ (caller-\/owned\ prevIter\ primitive).}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00328}00328\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00329}00329\ \textcolor{comment}{\ *\ Returns\ an\ independent\ on-\/executor\ deep\ copy\ of\ \`{}field.internalVector()`\ via\ the}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00330}00330\ \textcolor{comment}{\ *\ \`{}Vector`\ copy\ constructor\ —\ subsequent\ mutation\ of\ \`{}field`\ does\ not\ affect\ the}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00331}00331\ \textcolor{comment}{\ *\ returned\ snapshot.\ Do\ NOT\ hand-\/roll\ a\ \`{}parallelFor`\ copy;\ the\ copy\ ctor\ already}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00332}00332\ \textcolor{comment}{\ *\ performs\ an\ executor-\/correct\ deep\ copy.}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00333}00333\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00334}00334\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00335}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ab83523772e0d4f96349392ea3d980c7c}{00335}}\ [[nodiscard]]\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ab83523772e0d4f96349392ea3d980c7c}{fieldRelaxationSnapshot}}(\textcolor{keyword}{const}\ VectorType\&\ field)}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00336}00336\ \{}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00337}00337\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<typename\ VectorType::ElementType>}}(field.internalVector());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00338}00338\ \}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00339}00339\ }
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00340}00340\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00282}00282\ \textcolor{comment}{\ *\ \`{}fieldRelaxationSnapshot`,\ taken\ at\ the\ top\ of\ the\ outer\ corrector).}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00283}00283\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00284}00284\ \textcolor{comment}{\ *\ Only\ the\ internal\ vector\ is\ blended;\ the\ caller\ is\ responsible\ for\ calling}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00285}00285\ \textcolor{comment}{\ *\ \`{}solution.correctBoundaryConditions()`\ afterwards\ so\ boundary\ values\ are}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00286}00286\ \textcolor{comment}{\ *\ re-\/derived\ from\ the\ boundary\ conditions.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00287}00287\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00288}00288\ \textcolor{comment}{\ *\ \`{}alpha\ <=\ 0`\ or\ \`{}alpha\ ==\ 1`\ is\ a\ bitwise\ no-\/op\ (the\ early\ return\ touches\ nothing).}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00289}00289\ \textcolor{comment}{\ *\ This\ is\ REQUIRED\ so\ the\ final\ outer\ iteration\ (`alpha\ ==\ 1`)\ and\ an\ unset}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00290}00290\ \textcolor{comment}{\ *\ factor\ leave\ the\ field\ byte-\/for-\/byte\ unchanged,\ side-\/stepping\ the\ \`{}alpha\ ==\ 1`\ ULP}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00291}00291\ \textcolor{comment}{\ *\ round-\/trip\ trap\ of\ \`{}prev\ +\ 1*(cur\ -\/\ prev)`.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00292}00292\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00293}00293\ \textcolor{comment}{\ *\ @param\ solution\ The\ solution\ VolumeField\ —\ its\ internal\ vector\ is\ blended\ in\ place.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00294}00294\ \textcolor{comment}{\ *\ @param\ previous\ The\ previous-\/iteration\ snapshot\ of\ the\ internal\ vector\ (deep\ copy).}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00295}00295\ \textcolor{comment}{\ *\ @param\ alpha\ \ \ \ The\ under-\/relaxation\ factor.\ alpha\ <=\ 0\ or\ alpha\ ==\ 1\ is\ a\ bitwise\ no-\/op.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00296}00296\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00297}00297\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00298}\mbox{\hyperlink{namespaceNeoN_1_1dsl_a15bc014f2770ea7255fa1e0c2870f020}{00298}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_a15bc014f2770ea7255fa1e0c2870f020}{applyFieldRelaxation}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00299}00299\ \ \ \ \ VectorType\&\ solution,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<typename\ VectorType::ElementType>}}\&\ previous,\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ alpha}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00300}00300\ )}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00301}00301\ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00302}00302\ \ \ \ \ \textcolor{comment}{//\ Bitwise\ no-\/op\ guard:\ MUST\ be\ first\ so\ the\ internal\ vector\ is\ not\ touched\ when\ no}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00303}00303\ \ \ \ \ \textcolor{comment}{//\ relaxation\ is\ requested\ (final\ iteration\ /\ unset\ factor,\ alpha==1\ ULP\ trap).}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00304}00304\ \ \ \ \ \textcolor{keywordflow}{if}\ (alpha\ <=\ 0.0\ ||\ alpha\ ==\ 1.0)}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00305}00305\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00306}00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00307}00307\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00308}00308\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00309}00309\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(solution.size()\ ==\ previous.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}(),\ \textcolor{stringliteral}{"{}applyFieldRelaxation:\ field/prev\ size\ mismatch"{}});}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00310}00310\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00311}00311\ \ \ \ \ \textcolor{keyword}{auto}\ [current,\ prev]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.internalVector(),\ previous);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00312}00312\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00313}00313\ \ \ \ \ \ \ \ \ solution.exec(),}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00314}00314\ \ \ \ \ \ \ \ \ \{0,\ solution.size()\},}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00315}00315\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli)\ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ current[celli]\ =\ prev[celli]\ +\ alpha\ *\ (current[celli]\ -\/\ prev[celli]);}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00317}00317\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00318}00318\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}applyFieldRelaxation"{}}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00319}00319\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00320}00320\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00321}00321\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00322}00322\ \textcolor{comment}{/*\ @brief\ Snapshot\ a\ field's\ internal\ vector\ for\ use\ as\ the\ \`{}previous`\ arg\ to}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00323}00323\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \`{}applyFieldRelaxation`\ (caller-\/owned\ prevIter\ primitive).}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00324}00324\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00325}00325\ \textcolor{comment}{\ *\ Returns\ an\ independent\ on-\/executor\ deep\ copy\ of\ \`{}field.internalVector()`\ via\ the}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00326}00326\ \textcolor{comment}{\ *\ \`{}Vector`\ copy\ constructor\ —\ subsequent\ mutation\ of\ \`{}field`\ does\ not\ affect\ the}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00327}00327\ \textcolor{comment}{\ *\ returned\ snapshot.\ Do\ NOT\ hand-\/roll\ a\ \`{}parallelFor`\ copy;\ the\ copy\ ctor\ already}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00328}00328\ \textcolor{comment}{\ *\ performs\ an\ executor-\/correct\ deep\ copy.}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00329}00329\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00330}00330\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ VectorType>}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00331}\mbox{\hyperlink{namespaceNeoN_1_1dsl_ab83523772e0d4f96349392ea3d980c7c}{00331}}\ [[nodiscard]]\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ab83523772e0d4f96349392ea3d980c7c}{fieldRelaxationSnapshot}}(\textcolor{keyword}{const}\ VectorType\&\ field)}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00332}00332\ \{}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00333}00333\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<typename\ VectorType::ElementType>}}(field.internalVector());}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00334}00334\ \}}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00335}00335\ }
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00336}00336\ \}\ \textcolor{comment}{//\ namespace\ dsl}}
 
 \end{DoxyCode}

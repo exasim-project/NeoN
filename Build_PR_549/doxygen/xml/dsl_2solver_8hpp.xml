@@ -1498,70 +1498,66 @@
 <codeline lineno="274"><highlight class="normal"></highlight></codeline>
 <codeline lineno="275"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Apply<sp/>explicit<sp/>field<sp/>under-relaxation<sp/>to<sp/>a<sp/>solution<sp/>field&apos;s<sp/>internal<sp/>vector.</highlight></codeline>
 <codeline lineno="276"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="277"><highlight class="comment"><sp/>*<sp/>Computes<sp/>the<sp/>OpenFOAM<sp/>`relax()`<sp/>blend<sp/>on<sp/>the<sp/>internal<sp/>field<sp/>only:</highlight></codeline>
+<codeline lineno="277"><highlight class="comment"><sp/>*<sp/>Blends<sp/>the<sp/>internal<sp/>field<sp/>toward<sp/>the<sp/>previous<sp/>outer-iteration<sp/>value:</highlight></codeline>
 <codeline lineno="278"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="279"><highlight class="comment"><sp/>*<sp/><sp/><sp/>psi[c]<sp/>=<sp/>prev[c]<sp/>+<sp/>alpha<sp/>*<sp/>(psi[c]<sp/>-<sp/>prev[c])</highlight></codeline>
 <codeline lineno="280"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="281"><highlight class="comment"><sp/>*<sp/>`prev`<sp/>is<sp/>the<sp/>caller-owned<sp/>previous-iteration<sp/>snapshot<sp/>(e.g.<sp/>from</highlight></codeline>
-<codeline lineno="282"><highlight class="comment"><sp/>*<sp/>`fieldRelaxationSnapshot`,<sp/>taken<sp/>at<sp/>the<sp/>top<sp/>of<sp/>the<sp/>outer<sp/>corrector).<sp/>This<sp/>is<sp/>a</highlight></codeline>
-<codeline lineno="283"><highlight class="comment"><sp/>*<sp/>stateless<sp/>free<sp/>function<sp/>mirroring<sp/>`applyMatrixRelaxation`;<sp/>NeoN<sp/>stays</highlight></codeline>
-<codeline lineno="284"><highlight class="comment"><sp/>*<sp/>OpenFOAM-agnostic<sp/>and<sp/>sees<sp/>only<sp/>the<sp/>scalar<sp/>`alpha`.</highlight></codeline>
-<codeline lineno="285"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="286"><highlight class="comment"><sp/>*<sp/>Boundary<sp/>scope:<sp/>only<sp/>the<sp/>internal<sp/>vector<sp/>is<sp/>blended.<sp/>The<sp/>caller<sp/>is</highlight></codeline>
-<codeline lineno="287"><highlight class="comment"><sp/>*<sp/>responsible<sp/>for<sp/>calling<sp/>`solution.correctBoundaryConditions()`<sp/>afterwards<sp/>so<sp/>the</highlight></codeline>
-<codeline lineno="288"><highlight class="comment"><sp/>*<sp/>boundary<sp/>values<sp/>are<sp/>re-derived<sp/>from<sp/>the<sp/>boundary<sp/>conditions.<sp/>(OpenFOAM&apos;s<sp/>`relax()`</highlight></codeline>
-<codeline lineno="289"><highlight class="comment"><sp/>*<sp/>blends<sp/>boundary<sp/>values<sp/>directly;<sp/>both<sp/>paths<sp/>agree<sp/>at<sp/>the<sp/>fixed<sp/>point<sp/>and<sp/>for</highlight></codeline>
-<codeline lineno="290"><highlight class="comment"><sp/>*<sp/>`fixedValue`<sp/>patches.)</highlight></codeline>
-<codeline lineno="291"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="292"><highlight class="comment"><sp/>*<sp/>`alpha<sp/>&lt;=<sp/>0`<sp/>or<sp/>`alpha<sp/>==<sp/>1`<sp/>is<sp/>a<sp/>bitwise<sp/>no-op<sp/>(the<sp/>early<sp/>return<sp/>touches<sp/>nothing).</highlight></codeline>
-<codeline lineno="293"><highlight class="comment"><sp/>*<sp/>This<sp/>is<sp/>REQUIRED<sp/>so<sp/>the<sp/>final<sp/>outer<sp/>iteration<sp/>(`alpha<sp/>==<sp/>1`)<sp/>and<sp/>an<sp/>unset</highlight></codeline>
-<codeline lineno="294"><highlight class="comment"><sp/>*<sp/>factor<sp/>leave<sp/>the<sp/>field<sp/>byte-for-byte<sp/>unchanged,<sp/>side-stepping<sp/>the<sp/>`alpha<sp/>==<sp/>1`<sp/>ULP</highlight></codeline>
-<codeline lineno="295"><highlight class="comment"><sp/>*<sp/>round-trip<sp/>trap<sp/>of<sp/>`prev<sp/>+<sp/>1*(cur<sp/>-<sp/>prev)`.</highlight></codeline>
-<codeline lineno="296"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="297"><highlight class="comment"><sp/>*<sp/>@param<sp/>solution<sp/>The<sp/>solution<sp/>VolumeField<sp/>—<sp/>its<sp/>internal<sp/>vector<sp/>is<sp/>blended<sp/>in<sp/>place.</highlight></codeline>
-<codeline lineno="298"><highlight class="comment"><sp/>*<sp/>@param<sp/>previous<sp/>The<sp/>previous-iteration<sp/>snapshot<sp/>of<sp/>the<sp/>internal<sp/>vector<sp/>(deep<sp/>copy).</highlight></codeline>
-<codeline lineno="299"><highlight class="comment"><sp/>*<sp/>@param<sp/>alpha<sp/><sp/><sp/><sp/>The<sp/>under-relaxation<sp/>factor.<sp/>alpha<sp/>&lt;=<sp/>0<sp/>or<sp/>alpha<sp/>==<sp/>1<sp/>is<sp/>a<sp/>bitwise<sp/>no-op.</highlight></codeline>
-<codeline lineno="300"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="301"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
-<codeline lineno="302" refid="namespaceNeoN_1_1dsl_1a15bc014f2770ea7255fa1e0c2870f020" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1a15bc014f2770ea7255fa1e0c2870f020" kindref="member">applyFieldRelaxation</ref>(</highlight></codeline>
-<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>solution,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>previous,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>alpha</highlight></codeline>
-<codeline lineno="304"><highlight class="normal">)</highlight></codeline>
-<codeline lineno="305"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Bitwise<sp/>no-op<sp/>guard:<sp/>MUST<sp/>be<sp/>first<sp/>so<sp/>the<sp/>internal<sp/>vector<sp/>is<sp/>not<sp/>touched<sp/>when<sp/>no</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>relaxation<sp/>is<sp/>requested<sp/>(final<sp/>iteration<sp/>/<sp/>unset<sp/>factor,<sp/>alpha==1<sp/>ULP<sp/>trap).</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(alpha<sp/>&lt;=<sp/>0.0<sp/>||<sp/>alpha<sp/>==<sp/>1.0)</highlight></codeline>
-<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"></highlight></codeline>
-<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(solution.size()<sp/>==<sp/>previous.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;applyFieldRelaxation:<sp/>field/prev<sp/>size<sp/>mismatch&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="314"><highlight class="normal"></highlight></codeline>
-<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[current,<sp/>prev]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.internalVector(),<sp/>previous);</highlight></codeline>
-<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">parallelFor</ref>(</highlight></codeline>
-<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
-<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>solution.size()},</highlight></codeline>
-<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli)<sp/>{</highlight></codeline>
-<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>current[celli]<sp/>=<sp/>prev[celli]<sp/>+<sp/>alpha<sp/>*<sp/>(current[celli]<sp/>-<sp/>prev[celli]);</highlight></codeline>
-<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
-<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;applyFieldRelaxation&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="324"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="325"><highlight class="normal"></highlight></codeline>
-<codeline lineno="326"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Snapshot<sp/>a<sp/>field&apos;s<sp/>internal<sp/>vector<sp/>for<sp/>use<sp/>as<sp/>the<sp/>`previous`<sp/>arg<sp/>to</highlight></codeline>
-<codeline lineno="327"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>`applyFieldRelaxation`<sp/>(caller-owned<sp/>prevIter<sp/>primitive).</highlight></codeline>
-<codeline lineno="328"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="329"><highlight class="comment"><sp/>*<sp/>Returns<sp/>an<sp/>independent<sp/>on-executor<sp/>deep<sp/>copy<sp/>of<sp/>`field.internalVector()`<sp/>via<sp/>the</highlight></codeline>
-<codeline lineno="330"><highlight class="comment"><sp/>*<sp/>`Vector`<sp/>copy<sp/>constructor<sp/>—<sp/>subsequent<sp/>mutation<sp/>of<sp/>`field`<sp/>does<sp/>not<sp/>affect<sp/>the</highlight></codeline>
-<codeline lineno="331"><highlight class="comment"><sp/>*<sp/>returned<sp/>snapshot.<sp/>Do<sp/>NOT<sp/>hand-roll<sp/>a<sp/>`parallelFor`<sp/>copy;<sp/>the<sp/>copy<sp/>ctor<sp/>already</highlight></codeline>
-<codeline lineno="332"><highlight class="comment"><sp/>*<sp/>performs<sp/>an<sp/>executor-correct<sp/>deep<sp/>copy.</highlight></codeline>
-<codeline lineno="333"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="334"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
-<codeline lineno="335" refid="namespaceNeoN_1_1dsl_1ab83523772e0d4f96349392ea3d980c7c" refkind="member"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1ab83523772e0d4f96349392ea3d980c7c" kindref="member">fieldRelaxationSnapshot</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>VectorType&amp;<sp/>field)</highlight></codeline>
-<codeline lineno="336"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename VectorType::ElementType&gt;</ref>(field.internalVector());</highlight></codeline>
-<codeline lineno="338"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="339"><highlight class="normal"></highlight></codeline>
-<codeline lineno="340"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="282"><highlight class="comment"><sp/>*<sp/>`fieldRelaxationSnapshot`,<sp/>taken<sp/>at<sp/>the<sp/>top<sp/>of<sp/>the<sp/>outer<sp/>corrector).</highlight></codeline>
+<codeline lineno="283"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="284"><highlight class="comment"><sp/>*<sp/>Only<sp/>the<sp/>internal<sp/>vector<sp/>is<sp/>blended;<sp/>the<sp/>caller<sp/>is<sp/>responsible<sp/>for<sp/>calling</highlight></codeline>
+<codeline lineno="285"><highlight class="comment"><sp/>*<sp/>`solution.correctBoundaryConditions()`<sp/>afterwards<sp/>so<sp/>boundary<sp/>values<sp/>are</highlight></codeline>
+<codeline lineno="286"><highlight class="comment"><sp/>*<sp/>re-derived<sp/>from<sp/>the<sp/>boundary<sp/>conditions.</highlight></codeline>
+<codeline lineno="287"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="288"><highlight class="comment"><sp/>*<sp/>`alpha<sp/>&lt;=<sp/>0`<sp/>or<sp/>`alpha<sp/>==<sp/>1`<sp/>is<sp/>a<sp/>bitwise<sp/>no-op<sp/>(the<sp/>early<sp/>return<sp/>touches<sp/>nothing).</highlight></codeline>
+<codeline lineno="289"><highlight class="comment"><sp/>*<sp/>This<sp/>is<sp/>REQUIRED<sp/>so<sp/>the<sp/>final<sp/>outer<sp/>iteration<sp/>(`alpha<sp/>==<sp/>1`)<sp/>and<sp/>an<sp/>unset</highlight></codeline>
+<codeline lineno="290"><highlight class="comment"><sp/>*<sp/>factor<sp/>leave<sp/>the<sp/>field<sp/>byte-for-byte<sp/>unchanged,<sp/>side-stepping<sp/>the<sp/>`alpha<sp/>==<sp/>1`<sp/>ULP</highlight></codeline>
+<codeline lineno="291"><highlight class="comment"><sp/>*<sp/>round-trip<sp/>trap<sp/>of<sp/>`prev<sp/>+<sp/>1*(cur<sp/>-<sp/>prev)`.</highlight></codeline>
+<codeline lineno="292"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="293"><highlight class="comment"><sp/>*<sp/>@param<sp/>solution<sp/>The<sp/>solution<sp/>VolumeField<sp/>—<sp/>its<sp/>internal<sp/>vector<sp/>is<sp/>blended<sp/>in<sp/>place.</highlight></codeline>
+<codeline lineno="294"><highlight class="comment"><sp/>*<sp/>@param<sp/>previous<sp/>The<sp/>previous-iteration<sp/>snapshot<sp/>of<sp/>the<sp/>internal<sp/>vector<sp/>(deep<sp/>copy).</highlight></codeline>
+<codeline lineno="295"><highlight class="comment"><sp/>*<sp/>@param<sp/>alpha<sp/><sp/><sp/><sp/>The<sp/>under-relaxation<sp/>factor.<sp/>alpha<sp/>&lt;=<sp/>0<sp/>or<sp/>alpha<sp/>==<sp/>1<sp/>is<sp/>a<sp/>bitwise<sp/>no-op.</highlight></codeline>
+<codeline lineno="296"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
+<codeline lineno="298" refid="namespaceNeoN_1_1dsl_1a15bc014f2770ea7255fa1e0c2870f020" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1a15bc014f2770ea7255fa1e0c2870f020" kindref="member">applyFieldRelaxation</ref>(</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>solution,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename VectorType::ElementType&gt;</ref>&amp;<sp/>previous,<sp/><ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref><sp/>alpha</highlight></codeline>
+<codeline lineno="300"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="301"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Bitwise<sp/>no-op<sp/>guard:<sp/>MUST<sp/>be<sp/>first<sp/>so<sp/>the<sp/>internal<sp/>vector<sp/>is<sp/>not<sp/>touched<sp/>when<sp/>no</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>relaxation<sp/>is<sp/>requested<sp/>(final<sp/>iteration<sp/>/<sp/>unset<sp/>factor,<sp/>alpha==1<sp/>ULP<sp/>trap).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(alpha<sp/>&lt;=<sp/>0.0<sp/>||<sp/>alpha<sp/>==<sp/>1.0)</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(solution.size()<sp/>==<sp/>previous.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;applyFieldRelaxation:<sp/>field/prev<sp/>size<sp/>mismatch&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[current,<sp/>prev]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.internalVector(),<sp/>previous);</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>solution.size()},</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli)<sp/>{</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>current[celli]<sp/>=<sp/>prev[celli]<sp/>+<sp/>alpha<sp/>*<sp/>(current[celli]<sp/>-<sp/>prev[celli]);</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;applyFieldRelaxation&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="320"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Snapshot<sp/>a<sp/>field&apos;s<sp/>internal<sp/>vector<sp/>for<sp/>use<sp/>as<sp/>the<sp/>`previous`<sp/>arg<sp/>to</highlight></codeline>
+<codeline lineno="323"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>`applyFieldRelaxation`<sp/>(caller-owned<sp/>prevIter<sp/>primitive).</highlight></codeline>
+<codeline lineno="324"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="325"><highlight class="comment"><sp/>*<sp/>Returns<sp/>an<sp/>independent<sp/>on-executor<sp/>deep<sp/>copy<sp/>of<sp/>`field.internalVector()`<sp/>via<sp/>the</highlight></codeline>
+<codeline lineno="326"><highlight class="comment"><sp/>*<sp/>`Vector`<sp/>copy<sp/>constructor<sp/>—<sp/>subsequent<sp/>mutation<sp/>of<sp/>`field`<sp/>does<sp/>not<sp/>affect<sp/>the</highlight></codeline>
+<codeline lineno="327"><highlight class="comment"><sp/>*<sp/>returned<sp/>snapshot.<sp/>Do<sp/>NOT<sp/>hand-roll<sp/>a<sp/>`parallelFor`<sp/>copy;<sp/>the<sp/>copy<sp/>ctor<sp/>already</highlight></codeline>
+<codeline lineno="328"><highlight class="comment"><sp/>*<sp/>performs<sp/>an<sp/>executor-correct<sp/>deep<sp/>copy.</highlight></codeline>
+<codeline lineno="329"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>VectorType&gt;</highlight></codeline>
+<codeline lineno="331" refid="namespaceNeoN_1_1dsl_1ab83523772e0d4f96349392ea3d980c7c" refkind="member"><highlight class="normal">[[nodiscard]]<sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1dsl_1ab83523772e0d4f96349392ea3d980c7c" kindref="member">fieldRelaxationSnapshot</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>VectorType&amp;<sp/>field)</highlight></codeline>
+<codeline lineno="332"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Vector" kindref="compound">Vector&lt;typename VectorType::ElementType&gt;</ref>(field.internalVector());</highlight></codeline>
+<codeline lineno="334"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"></highlight></codeline>
+<codeline lineno="336"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>dsl</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp"/>
   </compounddef>

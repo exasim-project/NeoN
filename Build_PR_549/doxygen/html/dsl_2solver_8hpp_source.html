@@ -370,74 +370,70 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="comment">/* @brief Apply explicit field under-relaxation to a solution field&#39;s internal vector.</span></div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="comment"> * Computes the OpenFOAM `relax()` blend on the internal field only:</span></div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="comment"> * Blends the internal field toward the previous outer-iteration value:</span></div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><span class="comment"> *   psi[c] = prev[c] + alpha * (psi[c] - prev[c])</span></div>
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="comment"> * `prev` is the caller-owned previous-iteration snapshot (e.g. from</span></div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="comment"> * `fieldRelaxationSnapshot`, taken at the top of the outer corrector). This is a</span></div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="comment"> * stateless free function mirroring `applyMatrixRelaxation`; NeoN stays</span></div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="comment"> * OpenFOAM-agnostic and sees only the scalar `alpha`.</span></div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span><span class="comment"> * Boundary scope: only the internal vector is blended. The caller is</span></div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="comment"> * responsible for calling `solution.correctBoundaryConditions()` afterwards so the</span></div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="comment"> * boundary values are re-derived from the boundary conditions. (OpenFOAM&#39;s `relax()`</span></div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="comment"> * blends boundary values directly; both paths agree at the fixed point and for</span></div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="comment"> * `fixedValue` patches.)</span></div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span><span class="comment"> * `alpha &lt;= 0` or `alpha == 1` is a bitwise no-op (the early return touches nothing).</span></div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span><span class="comment"> * This is REQUIRED so the final outer iteration (`alpha == 1`) and an unset</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span><span class="comment"> * factor leave the field byte-for-byte unchanged, side-stepping the `alpha == 1` ULP</span></div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span><span class="comment"> * round-trip trap of `prev + 1*(cur - prev)`.</span></div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span><span class="comment"> * @param solution The solution VolumeField — its internal vector is blended in place.</span></div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span><span class="comment"> * @param previous The previous-iteration snapshot of the internal vector (deep copy).</span></div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span><span class="comment"> * @param alpha    The under-relaxation factor. alpha &lt;= 0 or alpha == 1 is a bitwise no-op.</span></div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VectorType&gt;</div>
-<div class="foldopen" id="foldopen00302" data-start="{" data-end="}">
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#a15bc014f2770ea7255fa1e0c2870f020">  302</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a15bc014f2770ea7255fa1e0c2870f020">applyFieldRelaxation</a>(</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    VectorType&amp; solution, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;typename VectorType::ElementType&gt;</a>&amp; previous, <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> alpha</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>)</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>{</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="comment">// Bitwise no-op guard: MUST be first so the internal vector is not touched when no</span></div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="comment">// relaxation is requested (final iteration / unset factor, alpha==1 ULP trap).</span></div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keywordflow">if</span> (alpha &lt;= 0.0 || alpha == 1.0)</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    {</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    }</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <a class="code hl_define" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">NF_ASSERT</a>(solution.size() == previous.<a class="code hl_function" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>(), <span class="stringliteral">&quot;applyFieldRelaxation: field/prev size mismatch&quot;</span>);</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keyword">auto</span> [current, prev] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(solution.internalVector(), previous);</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        solution.exec(),</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        {0, solution.size()},</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> celli) {</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>            current[celli] = prev[celli] + alpha * (current[celli] - prev[celli]);</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        },</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <span class="stringliteral">&quot;applyFieldRelaxation&quot;</span></div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    );</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>}</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="comment"> * `fieldRelaxationSnapshot`, taken at the top of the outer corrector).</span></div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="comment"> * Only the internal vector is blended; the caller is responsible for calling</span></div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="comment"> * `solution.correctBoundaryConditions()` afterwards so boundary values are</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span><span class="comment"> * re-derived from the boundary conditions.</span></div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="comment"> * `alpha &lt;= 0` or `alpha == 1` is a bitwise no-op (the early return touches nothing).</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="comment"> * This is REQUIRED so the final outer iteration (`alpha == 1`) and an unset</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="comment"> * factor leave the field byte-for-byte unchanged, side-stepping the `alpha == 1` ULP</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="comment"> * round-trip trap of `prev + 1*(cur - prev)`.</span></div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span><span class="comment"> * @param solution The solution VolumeField — its internal vector is blended in place.</span></div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span><span class="comment"> * @param previous The previous-iteration snapshot of the internal vector (deep copy).</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span><span class="comment"> * @param alpha    The under-relaxation factor. alpha &lt;= 0 or alpha == 1 is a bitwise no-op.</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VectorType&gt;</div>
+<div class="foldopen" id="foldopen00298" data-start="{" data-end="}">
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#a15bc014f2770ea7255fa1e0c2870f020">  298</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#a15bc014f2770ea7255fa1e0c2870f020">applyFieldRelaxation</a>(</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    VectorType&amp; solution, <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;typename VectorType::ElementType&gt;</a>&amp; previous, <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> alpha</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>)</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>{</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="comment">// Bitwise no-op guard: MUST be first so the internal vector is not touched when no</span></div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="comment">// relaxation is requested (final iteration / unset factor, alpha==1 ULP trap).</span></div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <span class="keywordflow">if</span> (alpha &lt;= 0.0 || alpha == 1.0)</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    {</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    }</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    <a class="code hl_define" href="error_8hpp.html#aecc669a189db22f652ffb9788f01a99b">NF_ASSERT</a>(solution.size() == previous.<a class="code hl_function" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438">size</a>(), <span class="stringliteral">&quot;applyFieldRelaxation: field/prev size mismatch&quot;</span>);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keyword">auto</span> [current, prev] = <a class="code hl_function" href="namespaceNeoN.html#af9198d29681d27f9a478aa99c01c00b9">views</a>(solution.internalVector(), previous);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <a class="code hl_function" href="namespaceNeoN.html#a126d8c73d03797fa02ed0ba390452363">parallelFor</a>(</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        solution.exec(),</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        {0, solution.size()},</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <a class="code hl_define" href="parallelAlgorithms_8hpp.html#a9498b53fd8bbd2ab12440cef550e6533">NEON_LAMBDA</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> celli) {</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            current[celli] = prev[celli] + alpha * (current[celli] - prev[celli]);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        },</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="stringliteral">&quot;applyFieldRelaxation&quot;</span></div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    );</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>}</div>
 </div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span><span class="comment">/* @brief Snapshot a field&#39;s internal vector for use as the `previous` arg to</span></div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span><span class="comment"> *        `applyFieldRelaxation` (caller-owned prevIter primitive).</span></div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span><span class="comment"> * Returns an independent on-executor deep copy of `field.internalVector()` via the</span></div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="comment"> * `Vector` copy constructor — subsequent mutation of `field` does not affect the</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span><span class="comment"> * returned snapshot. Do NOT hand-roll a `parallelFor` copy; the copy ctor already</span></div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span><span class="comment"> * performs an executor-correct deep copy.</span></div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VectorType&gt;</div>
-<div class="foldopen" id="foldopen00335" data-start="{" data-end="}">
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#ab83523772e0d4f96349392ea3d980c7c">  335</a></span>[[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#ab83523772e0d4f96349392ea3d980c7c">fieldRelaxationSnapshot</a>(<span class="keyword">const</span> VectorType&amp; field)</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>{</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;typename VectorType::ElementType&gt;</a>(field.internalVector());</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>}</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span><span class="comment">/* @brief Snapshot a field&#39;s internal vector for use as the `previous` arg to</span></div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span><span class="comment"> *        `applyFieldRelaxation` (caller-owned prevIter primitive).</span></div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span><span class="comment"> * Returns an independent on-executor deep copy of `field.internalVector()` via the</span></div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span><span class="comment"> * `Vector` copy constructor — subsequent mutation of `field` does not affect the</span></div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span><span class="comment"> * returned snapshot. Do NOT hand-roll a `parallelFor` copy; the copy ctor already</span></div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="comment"> * performs an executor-correct deep copy.</span></div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> VectorType&gt;</div>
+<div class="foldopen" id="foldopen00331" data-start="{" data-end="}">
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1dsl.html#ab83523772e0d4f96349392ea3d980c7c">  331</a></span>[[nodiscard]] <span class="keyword">auto</span> <a class="code hl_function" href="namespaceNeoN_1_1dsl.html#ab83523772e0d4f96349392ea3d980c7c">fieldRelaxationSnapshot</a>(<span class="keyword">const</span> VectorType&amp; field)</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>{</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classNeoN_1_1Vector.html">Vector&lt;typename VectorType::ElementType&gt;</a>(field.internalVector());</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>}</div>
 </div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span> </div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>} <span class="comment">// namespace dsl</span></div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>} <span class="comment">// namespace dsl</span></div>
 <div class="ttc" id="aclassNeoN_1_1Dictionary_html"><div class="ttname"><a href="classNeoN_1_1Dictionary.html">NeoN::Dictionary</a></div><div class="ttdoc">A class representing a dictionary that stores key-value pairs.</div><div class="ttdef"><b>Definition</b> <a href="dictionary_8hpp_source.html#l00048">dictionary.hpp:49</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Dictionary_html_a5fba75245132842e0ad343b4fceaca39"><div class="ttname"><a href="classNeoN_1_1Dictionary.html#a5fba75245132842e0ad343b4fceaca39">NeoN::Dictionary::subDict</a></div><div class="ttdeci">Dictionary &amp; subDict(const std::string &amp;key)</div><div class="ttdoc">Retrieves a sub-dictionary associated with the given key.</div></div>
 <div class="ttc" id="aclassNeoN_1_1Vec3_html"><div class="ttname"><a href="classNeoN_1_1Vec3.html">NeoN::Vec3</a></div><div class="ttdoc">A class for the representation of a 3D Vec3.</div><div class="ttdef"><b>Definition</b> <a href="vec3_8hpp_source.html#l00023">vec3.hpp:24</a></div></div>
@@ -466,11 +462,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="alogging_8hpp_html"><div class="ttname"><a href="logging_8hpp.html">logging.hpp</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_1_1detail_html_ae90a6e47f89931541f21ef22ce8c86b5"><div class="ttname"><a href="namespaceNeoN_1_1dsl_1_1detail.html#ae90a6e47f89931541f21ef22ce8c86b5">NeoN::dsl::detail::iterativeSolveImpl</a></div><div class="ttdeci">la::SolverStats iterativeSolveImpl(Expression&lt; typename VectorType::ElementType &gt; &amp;exp, la::LinearSystem&lt; typename VectorType::ElementType &gt; &amp;ls, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; const PostAssemblyBase&lt; typename VectorType::ElementType, IndexType &gt; * &gt; ps={})</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00031">solver.hpp:31</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html">NeoN::dsl</a></div><div class="ttdef"><b>Definition</b> <a href="coeff_8hpp_source.html#l00010">coeff.hpp:11</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1dsl_html_a15bc014f2770ea7255fa1e0c2870f020"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a15bc014f2770ea7255fa1e0c2870f020">NeoN::dsl::applyFieldRelaxation</a></div><div class="ttdeci">void applyFieldRelaxation(VectorType &amp;solution, const Vector&lt; typename VectorType::ElementType &gt; &amp;previous, scalar alpha)</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00302">solver.hpp:302</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1dsl_html_a15bc014f2770ea7255fa1e0c2870f020"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a15bc014f2770ea7255fa1e0c2870f020">NeoN::dsl::applyFieldRelaxation</a></div><div class="ttdeci">void applyFieldRelaxation(VectorType &amp;solution, const Vector&lt; typename VectorType::ElementType &gt; &amp;previous, scalar alpha)</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00298">solver.hpp:298</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_a7716d28ec754e7ddc3fb47373f600ea5"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a7716d28ec754e7ddc3fb47373f600ea5">NeoN::dsl::componentMag</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION scalar componentMag(const scalar value)</div><div class="ttdoc">Componentwise magnitude (scalar overload).</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00148">solver.hpp:148</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_a9c676ccb03ef3bdb99e5e966e02682ab"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#a9c676ccb03ef3bdb99e5e966e02682ab">NeoN::dsl::componentMax</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION scalar componentMax(const scalar lhs, const scalar rhs)</div><div class="ttdoc">Componentwise max (scalar overload).</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00158">solver.hpp:158</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_aa8c4bbbd2314b97f5b320603d3944bd5"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#aa8c4bbbd2314b97f5b320603d3944bd5">NeoN::dsl::copySign</a></div><div class="ttdeci">KOKKOS_INLINE_FUNCTION scalar copySign(const scalar mag, const scalar s)</div><div class="ttdoc">Returns |mag| carrying the sign of s (scalar overload).</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00130">solver.hpp:130</a></div></div>
-<div class="ttc" id="anamespaceNeoN_1_1dsl_html_ab83523772e0d4f96349392ea3d980c7c"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#ab83523772e0d4f96349392ea3d980c7c">NeoN::dsl::fieldRelaxationSnapshot</a></div><div class="ttdeci">auto fieldRelaxationSnapshot(const VectorType &amp;field)</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00335">solver.hpp:335</a></div></div>
+<div class="ttc" id="anamespaceNeoN_1_1dsl_html_ab83523772e0d4f96349392ea3d980c7c"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#ab83523772e0d4f96349392ea3d980c7c">NeoN::dsl::fieldRelaxationSnapshot</a></div><div class="ttdeci">auto fieldRelaxationSnapshot(const VectorType &amp;field)</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00331">solver.hpp:331</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_abab926565f9bac963ac87c73de1805e3"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#abab926565f9bac963ac87c73de1805e3">NeoN::dsl::solve</a></div><div class="ttdeci">la::SolverStats solve(Expression&lt; typename VectorType::ElementType, IndexType &gt; &amp;exp, VectorType &amp;solution, scalar t, scalar dt, const Dictionary &amp;fvSchemes, const Dictionary &amp;fvSolution, std::vector&lt; const PostAssemblyBase&lt; typename VectorType::ElementType, IndexType &gt; * &gt; p={})</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00094">solver.hpp:94</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_acb4a1670448315e4420fc6bca058fdc5"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#acb4a1670448315e4420fc6bca058fdc5">NeoN::dsl::applyMatrixRelaxation</a></div><div class="ttdeci">void applyMatrixRelaxation(la::LinearSystem&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt; &amp;ls, const VectorType &amp;solution, scalar alpha)</div><div class="ttdef"><b>Definition</b> <a href="dsl_2solver_8hpp_source.html#l00209">solver.hpp:209</a></div></div>
 <div class="ttc" id="anamespaceNeoN_1_1dsl_html_adb5a54395037066d03de9d1f34471450"><div class="ttname"><a href="namespaceNeoN_1_1dsl.html#adb5a54395037066d03de9d1f34471450">NeoN::dsl::optimize</a></div><div class="ttdeci">ExpressionType optimize(const ExpressionType &amp;in)</div><div class="ttdoc">Apply the default optimizer pipeline to an expression.</div><div class="ttdef"><b>Definition</b> <a href="optimizer_8hpp_source.html#l00110">optimizer.hpp:110</a></div></div>
