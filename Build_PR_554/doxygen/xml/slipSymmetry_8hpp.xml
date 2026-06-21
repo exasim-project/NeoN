@@ -1,0 +1,803 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="slipSymmetry_8hpp" kind="file" language="C++">
+    <compoundname>slipSymmetry.hpp</compoundname>
+    <includes local="no">Kokkos_Core.hpp</includes>
+    <includes refid="field_8hpp" local="yes">NeoN/fields/field.hpp</includes>
+    <includes refid="volumeBoundaryFactory_8hpp" local="yes">NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</includes>
+    <includes refid="unstructuredMesh_8hpp" local="yes">NeoN/mesh/unstructured/unstructuredMesh.hpp</includes>
+    <includes refid="dictionary_8hpp" local="yes">NeoN/core/dictionary.hpp</includes>
+    <includes refid="parallelAlgorithms_8hpp" local="yes">NeoN/core/parallelAlgorithms.hpp</includes>
+    <includedby refid="slip_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/slip.hpp</includedby>
+    <includedby refid="volume_2symmetry_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/symmetry.hpp</includedby>
+    <incdepgraph>
+      <node id="44">
+        <label>NeoN/core/demangle.hpp</label>
+        <link refid="demangle_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>NeoN/core/dictionary.hpp</label>
+        <link refid="dictionary_8hpp"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>NeoN/core/executor/CPUExecutor.hpp</label>
+        <link refid="CPUExecutor_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>NeoN/core/executor/GPUExecutor.hpp</label>
+        <link refid="GPUExecutor_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>NeoN/core/executor/executor.hpp</label>
+        <link refid="executor_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>NeoN/core/executor/serialExecutor.hpp</label>
+        <link refid="serialExecutor_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
+      </node>
+      <node id="9">
+        <label>NeoN/core/logging.hpp</label>
+        <link refid="logging_8hpp"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>NeoN/core/memory/allocator.hpp</label>
+        <link refid="allocator_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>NeoN/core/memory/kokkos.hpp</label>
+        <link refid="kokkos_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>NeoN/core/mpi/environment.hpp</label>
+        <link refid="environment_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>NeoN/core/parallelAlgorithms.hpp</label>
+        <link refid="parallelAlgorithms_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>NeoN/core/primitives/label.hpp</label>
+        <link refid="label_8hpp"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>NeoN/core/primitives/scalar.hpp</label>
+        <link refid="scalar_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>NeoN/core/primitives/traits.hpp</label>
+        <link refid="traits_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="53">
+        <label>NeoN/core/primitives/vec3.hpp</label>
+        <link refid="vec3_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>NeoN/core/runtimeSelectionFactory.hpp</label>
+        <link refid="runtimeSelectionFactory_8hpp"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>NeoN/core/vector/vector.hpp</label>
+        <link refid="vector_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>NeoN/core/vector/vectorTypeDefs.hpp</label>
+        <link refid="vectorTypeDefs_8hpp"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>NeoN/core/view.hpp</label>
+        <link refid="view_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>NeoN/fields/boundaryData.hpp</label>
+        <link refid="boundaryData_8hpp"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>NeoN/fields/field.hpp</label>
+        <link refid="field_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>NeoN/finiteVolume/cellCentred/boundary/boundaryPatchMixin.hpp</label>
+        <link refid="boundaryPatchMixin_8hpp"/>
+        <childnode refid="49" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp</label>
+        <link refid="slipSymmetry_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</label>
+        <link refid="volumeBoundaryFactory_8hpp"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>NeoN/mesh/unstructured/boundaryMesh.hpp</label>
+        <link refid="boundaryMesh_8hpp"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>NeoN/mesh/unstructured/unstructuredMesh.hpp</label>
+        <link refid="unstructuredMesh_8hpp"/>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Kokkos_Core.hpp</label>
+      </node>
+      <node id="50">
+        <label>Kokkos_Sort.hpp</label>
+      </node>
+      <node id="39">
+        <label>algorithm</label>
+      </node>
+      <node id="43">
+        <label>any</label>
+      </node>
+      <node id="10">
+        <label>chrono</label>
+      </node>
+      <node id="27">
+        <label>cstdint</label>
+      </node>
+      <node id="38">
+        <label>cstdio</label>
+      </node>
+      <node id="17">
+        <label>cstdlib</label>
+      </node>
+      <node id="19">
+        <label>exception</label>
+      </node>
+      <node id="15">
+        <label>fmt/chrono.h</label>
+      </node>
+      <node id="14">
+        <label>fmt/core.h</label>
+      </node>
+      <node id="46">
+        <label>functional</label>
+      </node>
+      <node id="4">
+        <label>iostream</label>
+      </node>
+      <node id="32">
+        <label>limits</label>
+      </node>
+      <node id="12">
+        <label>memory</label>
+      </node>
+      <node id="47">
+        <label>ranges</label>
+      </node>
+      <node id="11">
+        <label>source_location</label>
+      </node>
+      <node id="33">
+        <label>span</label>
+      </node>
+      <node id="20">
+        <label>sstream</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>string_view</label>
+      </node>
+      <node id="34">
+        <label>type_traits</label>
+      </node>
+      <node id="42">
+        <label>unordered_map</label>
+      </node>
+      <node id="37">
+        <label>utility</label>
+      </node>
+      <node id="7">
+        <label>variant</label>
+      </node>
+      <node id="35">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="21">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/explicit.hpp</label>
+        <link refid="explicit_8hpp"/>
+      </node>
+      <node id="22">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/implicit.hpp</label>
+        <link refid="implicit_8hpp"/>
+      </node>
+      <node id="12">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/optimizer.hpp</label>
+        <link refid="optimizer_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp</label>
+        <link refid="dsl_2solver_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary.hpp</label>
+        <link refid="boundary_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/surface/ddtFluxCorrBoundary.hpp</label>
+        <link refid="ddtFluxCorrBoundary_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp</label>
+        <link refid="slipSymmetry_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/slip.hpp</label>
+        <link refid="slip_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/symmetry.hpp</label>
+        <link refid="volume_2symmetry_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp</label>
+        <link refid="corrected_8hpp"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</label>
+        <link refid="faceNormalGradient_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp</label>
+        <link refid="limitedCorrected_8hpp"/>
+      </node>
+      <node id="9">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp</label>
+        <link refid="uncorrected_8hpp"/>
+      </node>
+      <node id="17">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linear.hpp</label>
+        <link refid="linear_8hpp"/>
+      </node>
+      <node id="18">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp</label>
+        <link refid="linearUpwind_8hpp"/>
+      </node>
+      <node id="16">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</label>
+        <link refid="surfaceInterpolation_8hpp"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp</label>
+        <link refid="upwind_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp</label>
+        <link refid="boundedDiv_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp</label>
+        <link refid="ddtFluxCorr_8hpp"/>
+      </node>
+      <node id="20">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/divOperator.hpp</label>
+        <link refid="divOperator_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.hpp</label>
+        <link refid="gaussGreenDdtDivLaplacian_8hpp"/>
+      </node>
+      <node id="24">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp</label>
+        <link refid="gaussGreenDiv_8hpp"/>
+      </node>
+      <node id="11">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp</label>
+        <link refid="gaussGreenDivLaplacian_8hpp"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp</label>
+        <link refid="gaussGreenGrad_8hpp"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
+        <link refid="gaussGreenLaplacian_8hpp"/>
+      </node>
+      <node id="26">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</label>
+        <link refid="gradOperator_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</label>
+        <link refid="backwardEuler_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred">NeoN::finiteVolume::cellCentred</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary">NeoN::finiteVolume::cellCentred::volumeBoundary</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail">NeoN::finiteVolume::cellCentred::volumeBoundary::detail</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2023<sp/>-<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Kokkos_Core.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="field_8hpp" kindref="compound">NeoN/fields/field.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="volumeBoundaryFactory_8hpp" kindref="compound">NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="unstructuredMesh_8hpp" kindref="compound">NeoN/mesh/unstructured/unstructuredMesh.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="dictionary_8hpp" kindref="compound">NeoN/core/dictionary.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="parallelAlgorithms_8hpp" kindref="compound">NeoN/core/parallelAlgorithms.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Shared<sp/>implementation<sp/>behind<sp/>the<sp/>`slip`<sp/>and<sp/>`symmetry`<sp/>boundary<sp/>conditions:<sp/>they<sp/>apply<sp/>the<sp/>same</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>operator<sp/>and<sp/>differ<sp/>only<sp/>in<sp/>their<sp/>registered<sp/>name<sp/>and<sp/>in<sp/>where<sp/>they<sp/>may<sp/>be<sp/>applied<sp/>(slip<sp/>on<sp/>a</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>wall/regular<sp/>patch,<sp/>symmetry<sp/>on<sp/>a<sp/>symmetry-plane<sp/>patch).<sp/>The<sp/>operator<sp/>is,<sp/>per<sp/>face:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>scalar<sp/>=&gt;<sp/>zero-gradient</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>vector<sp/>=&gt;<sp/>tangential<sp/>projection<sp/>of<sp/>the<sp/>boundary<sp/>value<sp/>(the<sp/>normal<sp/>component<sp/>is<sp/>removed),<sp/>plus<sp/>a</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>normal-damping<sp/>surface-normal<sp/>gradient<sp/>that<sp/>drives<sp/>the<sp/>normal<sp/>component<sp/>of<sp/>the<sp/>cell</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value<sp/>towards<sp/>zero.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>normal<sp/>damping<sp/>can<sp/>be<sp/>realised<sp/>two<sp/>ways,<sp/>selected<sp/>by<sp/>NormalDamping:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>-<sp/>Deferred:<sp/>written<sp/>into<sp/>refGrad<sp/>as<sp/>-deltaCoeffs*(v·n)*n,<sp/>so<sp/>it<sp/>enters<sp/>the<sp/>per-component<sp/>RHS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>through<sp/>the<sp/>existing<sp/>fixed-gradient<sp/>assembly.<sp/>Keeps<sp/>the<sp/>shared<sp/>scalar<sp/>matrix<sp/>+<sp/>multi-RHS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>solve,<sp/>at<sp/>the<sp/>cost<sp/>of<sp/>lagging<sp/>the<sp/>normal<sp/>coupling<sp/>by<sp/>one<sp/>outer<sp/>iteration.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>-<sp/>Implicit:<sp/>refGrad<sp/>is<sp/>left<sp/>zero<sp/>here;<sp/>the<sp/>BoundaryAttributes::transformImplicit<sp/>flag<sp/>signals</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>the<sp/>Laplacian<sp/>assembly<sp/>to<sp/>add<sp/>a<sp/>per-component<sp/>diagonal<sp/>correction<sp/>(γ|S|·deltaCoeffs·|n_c|)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>instead,<sp/>which<sp/>the<sp/>solver<sp/>applies<sp/>column-by-column.<sp/>Fully<sp/>implicit,<sp/>single<sp/>matrix,<sp/>but<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>solve<sp/>runs<sp/>segregated<sp/>rather<sp/>than<sp/>multi-RHS.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>NOTE:<sp/>a<sp/>future<sp/>Tensor<sp/>specialization<sp/>(e.g.<sp/>for<sp/>a<sp/>transported<sp/>Reynolds-stress<sp/>field)<sp/>must<sp/>use<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/>full<sp/>reflective<sp/>transform<sp/>(T<sp/>+<sp/>H·T·H)/2<sp/>with<sp/>H<sp/>=<sp/>I<sp/>-<sp/>2<sp/>n⊗n,<sp/>NOT<sp/>a<sp/>per-component<sp/>projection.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail" kindref="compound">NeoN::finiteVolume::cellCentred::volumeBoundary::detail</ref></highlight></codeline>
+<codeline lineno="35"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a4ed71db54748b36eeb398876b0c747ac" kindref="member">Deferred</ref>,<sp/></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">Implicit</ref><sp/><sp/></highlight></codeline>
+<codeline lineno="41"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aa1b62e12928cc3869c00b94b0359a31d" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aa1b62e12928cc3869c00b94b0359a31d" kindref="member">readTransformImplicit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;implicit&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!dict.<ref refid="classNeoN_1_1Dictionary_1af2254231b138f52a7aa1f20571184c71" kindref="member">contains</ref>(key))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(dict.<ref refid="classNeoN_1_1Dictionary_1a696e04f0272041b1089ec496c37c8561" kindref="member">isType</ref>&lt;</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal">&gt;(key))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1a2d6fe1f82f4da120f3cd76261873baed" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal">&gt;(key);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(dict.<ref refid="classNeoN_1_1Dictionary_1a696e04f0272041b1089ec496c37c8561" kindref="member">isType</ref>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&gt;(key))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dict.<ref refid="classNeoN_1_1Dictionary_1a2d6fe1f82f4da120f3cd76261873baed" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&gt;(key)<sp/>!=<sp/>0;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(dict.<ref refid="classNeoN_1_1Dictionary_1a696e04f0272041b1089ec496c37c8561" kindref="member">isType</ref>&lt;std::string&gt;(key))</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>v<sp/>=<sp/>dict.<ref refid="classNeoN_1_1Dictionary_1a2d6fe1f82f4da120f3cd76261873baed" kindref="member">get</ref>&lt;std::string&gt;(key);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(v<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;true&quot;</highlight><highlight class="normal"><sp/>||<sp/>v<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;yes&quot;</highlight><highlight class="normal"><sp/>||<sp/>v<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;on&quot;</highlight><highlight class="normal"><sp/>||<sp/>v<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4857f8d14e6706a3bdf5dfc5205bf685" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4857f8d14e6706a3bdf5dfc5205bf685" kindref="member">normalDampingMode</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>implicit)</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>implicit<sp/>?<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a07e01d7a96d9fd76cf08aa5916f7c788" kindref="member">NormalDamping::Implicit</ref><sp/>:<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a4ed71db54748b36eeb398876b0c747ac" kindref="member">NormalDamping::Deferred</ref>;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Primary<sp/>declaration</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>ValueType&gt;</highlight></codeline>
+<codeline lineno="71" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4d8ed8bc4e9f796c4d3068c5a88f3abe" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4d8ed8bc4e9f796c4d3068c5a88f3abe" kindref="member">setSlipSymmetryValue</ref>(</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;localIdx,<sp/>localIdx&gt;<sp/>range,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref><sp/>mode</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---<sp/>Scalar<sp/>specialization:<sp/>zero-gradient<sp/>(mode<sp/>is<sp/>irrelevant;<sp/>no<sp/>normal<sp/>component)<sp/>---</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
+<codeline lineno="80" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a64b67045dc60ae731f132eb803366ae4" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a64b67045dc60ae731f132eb803366ae4" kindref="member">setSlipSymmetryValue&lt;NeoN::scalar&gt;</ref>(</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;NeoN::scalar&gt;</ref>&amp;<sp/>domainVector,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;localIdx,<sp/>localIdx&gt;<sp/>range,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref><sp/>mode</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>internalV<sp/>=<sp/>domainVector.<ref refid="classNeoN_1_1Field_1ae32413ec190aa482b0cc96fb4a391b5e" kindref="member">internalVector</ref>().view();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[refGradV,<sp/>valueV,<sp/>valueFractionV,<sp/>refValueV,<sp/>boundaryFaceOwnersV]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refGrad(),</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().value(),</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().valueFraction(),</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refValue(),</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" kindref="member">boundaryMesh</ref>().<ref refid="classNeoN_1_1BoundaryMesh_1abee97709eb5b6dc8013626b811bf62a5" kindref="member">faceOwners</ref>()</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>owner<sp/>=<sp/>boundaryFaceOwnersV[i];</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>v<sp/>=<sp/>internalV[owner];</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValueV[i]<sp/>=<sp/>v;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueV[i]<sp/>=<sp/>v;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFractionV[i]<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradV[i]<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setSlipSymmetryValue(scalar)&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---<sp/>Vec3<sp/>specialization:<sp/>tangential<sp/>projection<sp/>+<sp/>normal<sp/>damping<sp/>---</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
+<codeline lineno="115" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a808902e55e1427e037c57626ea91ebcf" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a808902e55e1427e037c57626ea91ebcf" kindref="member">setSlipSymmetryValue&lt;NeoN::Vec3&gt;</ref>(</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;NeoN::Vec3&gt;</ref>&amp;<sp/>domainVector,</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;localIdx,<sp/>localIdx&gt;<sp/>range,</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref><sp/>mode</highlight></codeline>
+<codeline lineno="120"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>internalV<sp/>=<sp/>domainVector.<ref refid="classNeoN_1_1Field_1ae32413ec190aa482b0cc96fb4a391b5e" kindref="member">internalVector</ref>().view();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>deferred<sp/>=<sp/>(mode<sp/>==<sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a4ed71db54748b36eeb398876b0c747ac" kindref="member">NormalDamping::Deferred</ref>);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[refGradV,</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueV,</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFractionV,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValueV,</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boundaryFaceOwnersV,</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faceUnitNormalsV,</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>deltaCoeffsV]<sp/>=</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refGrad(),</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().value(),</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().valueFraction(),</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1a8c00a2ea0c20ced11a5c88d803fbe01c" kindref="member">boundaryData</ref>().refValue(),</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" kindref="member">boundaryMesh</ref>().<ref refid="classNeoN_1_1BoundaryMesh_1abee97709eb5b6dc8013626b811bf62a5" kindref="member">faceOwners</ref>(),</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" kindref="member">boundaryMesh</ref>().<ref refid="classNeoN_1_1BoundaryMesh_1a4c7289614259c1196f6a553490967b66" kindref="member">faceUnitNormals</ref>(),</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" kindref="member">boundaryMesh</ref>().<ref refid="classNeoN_1_1BoundaryMesh_1a4d68eaf96298d79527149e34e1193d7b" kindref="member">deltaCoeffs</ref>()</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>owner<sp/>=<sp/>boundaryFaceOwnersV[i];</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>v<sp/>=<sp/>internalV[owner];</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>n<sp/>=<sp/>faceUnitNormalsV[i];</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>un<sp/>=<sp/>(v<sp/>&amp;<sp/>n);<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>normal<sp/>component<sp/>(scalar)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>vtan<sp/>=<sp/>v<sp/>-<sp/>n<sp/>*<sp/>un;<sp/></highlight><highlight class="comment">//<sp/>tangential<sp/>projection<sp/>(remove<sp/>normal<sp/>component)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Explicit<sp/>boundary<sp/>value:<sp/>used<sp/>by<sp/>convection<sp/>/<sp/>face<sp/>interpolation<sp/>(no<sp/>penetration).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refValueV[i]<sp/>=<sp/>vtan;</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueV[i]<sp/>=<sp/>vtan;</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Keep<sp/>the<sp/>diagonal<sp/>contribution<sp/>component-isotropic<sp/>(zero<sp/>here)<sp/>so<sp/>the<sp/>shared<sp/>scalar</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>matrix<sp/>and<sp/>its<sp/>multi-RHS<sp/>solve<sp/>are<sp/>preserved.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>valueFractionV[i]<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Deferred<sp/>mode:<sp/>normal<sp/>damping<sp/>as<sp/>the<sp/>surface-normal<sp/>gradient<sp/>-deltaCoeffs*(v·n)*n</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(purely<sp/>normal,<sp/>so<sp/>the<sp/>tangential<sp/>components<sp/>stay<sp/>zero-gradient).<sp/>Implicit<sp/>mode:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>leave<sp/>refGrad<sp/>zero<sp/>—<sp/>the<sp/>damping<sp/>is<sp/>applied<sp/>as<sp/>a<sp/>per-component<sp/>diagonal<sp/>correction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>during<sp/>assembly/solve.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>refGradV[i]<sp/>=<sp/>deferred<sp/>?<sp/>n<sp/>*<sp/>(-deltaCoeffsV[i]<sp/>*<sp/>un)<sp/>:<sp/>NeoN::zero&lt;NeoN::Vec3&gt;();</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;setSlipSymmetryValue(Vec3)&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::finiteVolume::cellCentred::volumeBoundary::detail</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,41 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/finite\+Volume/cell\+Centred/boundary/volume/detail/slip\+Symmetry.hpp File Reference}
+\hypertarget{slipSymmetry_8hpp}{}\label{slipSymmetry_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp}}
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include "{}Neo\+N/fields/field.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/boundary/volume\+Boundary\+Factory.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/dictionary.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/parallel\+Algorithms.\+hpp"{}}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume}{Neo\+N\+::finite\+Volume}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{Neo\+N\+::finite\+Volume\+::cell\+Centred}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::\+Normal\+Damping}} \{ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6a4ed71db54748b36eeb398876b0c747ac}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::\+Deferred}}
+, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6a07e01d7a96d9fd76cf08aa5916f7c788}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::\+Implicit}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa1b62e12928cc3869c00b94b0359a31d}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::read\+Transform\+Implicit}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&dict)
+\begin{DoxyCompactList}\small\item\em Read the opt-\/in "{}implicit"{} flag from a slip/symmetry patch dictionary. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Normal\+Damping}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4857f8d14e6706a3bdf5dfc5205bf685}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::normal\+Damping\+Mode}} (bool implicit)
+\begin{DoxyCompactList}\small\item\em Map the implicit flag onto the Normal\+Damping mode. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4d8ed8bc4e9f796c4d3068c5a88f3abe}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::set\+Slip\+Symmetry\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Normal\+Damping}} mode)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a64b67045dc60ae731f132eb803366ae4}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::set\+Slip\+Symmetry\+Value$<$ Neo\+N\+::scalar $>$}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar}} $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Normal\+Damping}} mode)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a808902e55e1427e037c57626ea91ebcf}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::volume\+Boundary\+::detail\+::set\+Slip\+Symmetry\+Value$<$ Neo\+N\+::\+Vec3 $>$}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Neo\+N\+::\+Vec3}} $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Normal\+Damping}} mode)
+\end{DoxyCompactItemize}
