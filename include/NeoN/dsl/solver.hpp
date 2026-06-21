@@ -245,7 +245,6 @@ void applyMatrixRelaxation(
         return;
     }
 
-    NeoN::Logging::info("URF applied");
 
     const scalar invAlpha = 1.0 / alpha;
 
