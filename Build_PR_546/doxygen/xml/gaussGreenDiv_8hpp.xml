@@ -508,6 +508,8 @@
         </childnode>
         <childnode refid="98" relation="include">
         </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
         <childnode refid="100" relation="include">
         </childnode>
         <childnode refid="101" relation="include">
@@ -515,10 +517,6 @@
         <childnode refid="102" relation="include">
         </childnode>
         <childnode refid="103" relation="include">
-        </childnode>
-        <childnode refid="104" relation="include">
-        </childnode>
-        <childnode refid="105" relation="include">
         </childnode>
       </node>
       <node id="89">
@@ -543,7 +541,7 @@
         <childnode refid="40" relation="include">
         </childnode>
       </node>
-      <node id="103">
+      <node id="101">
         <label>boundary/surface/calculated.hpp</label>
         <link refid="surface_2calculated_8hpp"/>
         <childnode refid="22" relation="include">
@@ -553,7 +551,7 @@
         <childnode refid="40" relation="include">
         </childnode>
       </node>
-      <node id="102">
+      <node id="100">
         <label>boundary/surface/empty.hpp</label>
         <link refid="surface_2empty_8hpp"/>
         <childnode refid="22" relation="include">
@@ -563,7 +561,7 @@
         <childnode refid="40" relation="include">
         </childnode>
       </node>
-      <node id="104">
+      <node id="102">
         <label>boundary/surface/fixedValue.hpp</label>
         <link refid="surface_2fixedValue_8hpp"/>
         <childnode refid="22" relation="include">
@@ -577,7 +575,7 @@
         <childnode refid="46" relation="include">
         </childnode>
       </node>
-      <node id="105">
+      <node id="103">
         <label>boundary/surface/symmetry.hpp</label>
         <link refid="surface_2symmetry_8hpp"/>
         <childnode refid="22" relation="include">
@@ -615,22 +613,6 @@
         <childnode refid="88" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
-        </childnode>
-      </node>
-      <node id="99">
-        <label>NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp</label>
-        <link refid="slipSymmetry_8hpp"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="88" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-        <childnode refid="46" relation="include">
         </childnode>
       </node>
       <node id="93">
@@ -683,27 +665,7 @@
         <childnode refid="46" relation="include">
         </childnode>
       </node>
-      <node id="101">
-        <label>boundary/volume/inletOutlet.hpp</label>
-        <link refid="inletOutlet_8hpp"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="88" relation="include">
-        </childnode>
-        <childnode refid="89" relation="include">
-        </childnode>
-        <childnode refid="76" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="46" relation="include">
-        </childnode>
-      </node>
-      <node id="100">
+      <node id="99">
         <label>boundary/volume/slip.hpp</label>
         <link refid="slip_8hpp"/>
         <childnode refid="22" relation="include">
@@ -711,8 +673,6 @@
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="88" relation="include">
-        </childnode>
-        <childnode refid="99" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -727,8 +687,6 @@
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="88" relation="include">
-        </childnode>
-        <childnode refid="99" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -807,6 +765,8 @@
         <childnode refid="66" relation="include">
         </childnode>
         <childnode refid="74" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -1176,7 +1136,38 @@
 <codeline lineno="76"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;Vec3&gt;;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GaussGreenDiv&lt;Vec3,<sp/>scalar&gt;;</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Adds<sp/>the<sp/>explicit<sp/>(deferred)<sp/>divergence<sp/>correction<sp/>of<sp/>a<sp/>corrected<sp/>interpolation<sp/>scheme</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/>*<sp/>to<sp/>the<sp/>linear-system<sp/>rhs.<sp/>Shared<sp/>with<sp/>the<sp/>fused<sp/>div-laplacian<sp/>operator<sp/>so<sp/>both<sp/>implicit<sp/>div</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>paths<sp/>apply<sp/>linearUpwind<sp/>identically.<sp/>Defined<sp/>and<sp/>instantiated<sp/>in<sp/>gaussGreenDiv.cpp.</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>FieldValueType,<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>AssemblyType&gt;</highlight></codeline>
+<codeline lineno="84" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a655723b74791ab94830593ccae60bb9e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a655723b74791ab94830593ccae60bb9e" kindref="member">addDivCorrectionToRhs</ref>(</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;AssemblyType, FieldValueType&gt;</ref>&amp;<sp/>ls,</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;<sp/>faceFlux,</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;FieldValueType&gt;</ref>&amp;<sp/>correction,</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref><sp/>operatorScaling</highlight></codeline>
+<codeline lineno="89"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1acc9cb8ccd4becd6fca6b27878029e1af" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a655723b74791ab94830593ccae60bb9e" kindref="member">addDivCorrectionToRhs</ref>(</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;scalar, scalar&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></highlight></codeline>
+<codeline lineno="96"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="97" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a3bd96e0c8137cbaf0a4e24d4c4f48f76" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a655723b74791ab94830593ccae60bb9e" kindref="member">addDivCorrectionToRhs</ref>(</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;Vec3, Vec3&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></highlight></codeline>
+<codeline lineno="102"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="103" refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ae5461c8baf9da045ef94157a975a19fb" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a655723b74791ab94830593ccae60bb9e" kindref="member">addDivCorrectionToRhs</ref>(</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem&lt;scalar, Vec3&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref>&amp;,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"/>
   </compounddef>

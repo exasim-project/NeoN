@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['normaldamping_0',['NormalDamping',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#ad3b44c9bd9296aadc06f4af287fe2ad6',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]]
+  ['target_0',['Target',['../namespaceNeoN_1_1Logging.html#a985a1d2ccfde4912ab06beb25ee7d299',1,'NeoN::Logging']]],
+  ['type_1',['Type',['../classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3',1,'NeoN::dsl::Operator']]]
 ];

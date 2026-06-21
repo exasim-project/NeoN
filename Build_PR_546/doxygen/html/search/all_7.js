@@ -7,8 +7,7 @@ var searchData=
   ['hasoperator_4',['hasOperator',['../classNeoN_1_1dsl_1_1Expression.html#a92424d6e14a1aa5f25db658407a136c3',1,'NeoN::dsl::Expression']]],
   ['hasoperatoroftype_5',['hasOperatorOfType',['../classNeoN_1_1dsl_1_1Expression.html#a270a19070e2129d7b1eb986a47c4b99c',1,'NeoN::dsl::Expression']]],
   ['hasscalar_6',['hasScalar',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#ad0ac5f05bb32ed8842541fa7314bd85d',1,'NeoN::finiteVolume::cellCentred::BoundaryContext']]],
-  ['hassurfacescalar_7',['hasSurfaceScalar',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#ad0d952bf6b13a5fa64b00169013d8e2d',1,'NeoN::finiteVolume::cellCentred::BoundaryContext']]],
-  ['hastensor_8',['hasTensor',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#a19e3e828bd6e8cef43ac924813317833',1,'NeoN::finiteVolume::cellCentred::BoundaryContext']]],
-  ['hasvector_9',['hasVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#a2a2d43faccc08fea3ceae00160ab436c',1,'NeoN::finiteVolume::cellCentred::BoundaryContext']]],
-  ['hasview_10',['hasView',['../classNeoN_1_1dsl_1_1Coeff.html#ac081d961b60c3771efca69156b140d3f',1,'NeoN::dsl::Coeff']]]
+  ['hastensor_7',['hasTensor',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#a19e3e828bd6e8cef43ac924813317833',1,'NeoN::finiteVolume::cellCentred::BoundaryContext']]],
+  ['hasvector_8',['hasVector',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext.html#a2a2d43faccc08fea3ceae00160ab436c',1,'NeoN::finiteVolume::cellCentred::BoundaryContext']]],
+  ['hasview_9',['hasView',['../classNeoN_1_1dsl_1_1Coeff.html#ac081d961b60c3771efca69156b140d3f',1,'NeoN::dsl::Coeff']]]
 ];

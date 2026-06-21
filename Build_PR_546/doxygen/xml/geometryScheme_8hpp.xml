@@ -11,6 +11,7 @@
     <includedby refid="limitedCorrected_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp</includedby>
     <includedby refid="uncorrected_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp</includedby>
     <includedby refid="linear_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linear.hpp</includedby>
+    <includedby refid="linearUpwind_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp</includedby>
     <includedby refid="upwind_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp</includedby>
     <includedby refid="basicGeometryScheme_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp</includedby>
     <incdepgraph>
@@ -542,10 +543,16 @@
         <link refid="linear_8hpp"/>
       </node>
       <node id="6">
-        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp</label>
-        <link refid="upwind_8hpp"/>
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp</label>
+        <link refid="linearUpwind_8hpp"/>
       </node>
       <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp</label>
+        <link refid="upwind_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp</label>
         <link refid="basicGeometryScheme_8hpp"/>
       </node>
@@ -563,6 +570,8 @@
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -654,32 +663,42 @@
 <codeline lineno="76"><highlight class="normal"></highlight></codeline>
 <codeline lineno="77" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a1656f25cf00be0ff496ca4a771b38796" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a1656f25cf00be0ff496ca4a771b38796" kindref="member">nonOrthCorrectionVec3s</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ab67d199285124264e5183829810892a3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ab67d199285124264e5183829810892a3" kindref="member">update</ref>();</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Frees<sp/>the<sp/>mesh&apos;s<sp/>per-cell/face<sp/>centre<sp/>arrays<sp/>after<sp/>update()<sp/>to<sp/>save<sp/>device<sp/>memory;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>they<sp/>are<sp/>not<sp/>needed<sp/>once<sp/>the<sp/>geometry-scheme<sp/>fields<sp/>are<sp/>cached.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:<sp/>check<sp/>if<sp/>we<sp/>can<sp/>remove<sp/>the<sp/>temporary<sp/>fields<sp/>from<sp/>the<sp/>unstructured<sp/>mesh</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>altogether:<sp/>compute<sp/>the<sp/>geometry-scheme<sp/>data<sp/>explicitly<sp/>first<sp/>and<sp/>pass<sp/>it<sp/>as<sp/>an</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>argument,<sp/>instead<sp/>of<sp/>freeing<sp/>mesh<sp/>members<sp/>after<sp/>the<sp/>fact.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="86" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ae82feba1c88e28550aa6afcfc7df00ab" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ae82feba1c88e28550aa6afcfc7df00ab" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"></highlight></codeline>
-<codeline lineno="88" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a9eac922e0d9a4f6fa3a2dd5370fbb314" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a9eac922e0d9a4f6fa3a2dd5370fbb314" kindref="member">name</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>add<sp/>selection<sp/>mechanism<sp/>via<sp/>dictionary<sp/>later</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="91" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1aa392cd10062a4118571aa71a5c7ce61b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;GeometryScheme&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1aa392cd10062a4118571aa71a5c7ce61b" kindref="member">readOrCreate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"></highlight></codeline>
-<codeline lineno="93"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"></highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh_;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;GeometrySchemeFactory&gt;<sp/>kernel_;</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"></highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref><sp/>weights_;</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref><sp/>nonOrthDeltaCoeffs_;</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref><sp/>nonOrthCorrectionVec3s_;</highlight></codeline>
-<codeline lineno="102"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight></codeline>
-<codeline lineno="104"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Vector<sp/>from<sp/>the<sp/>owner<sp/>cell<sp/>centre<sp/>to<sp/>the<sp/>face<sp/>centre<sp/>(Cf<sp/>-<sp/>C_own),<sp/>one<sp/>per<sp/>internal<sp/>face.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Cached<sp/>here<sp/>because<sp/>the<sp/>underlying<sp/>cell/face<sp/>centres<sp/>are<sp/>freed<sp/>by<sp/>reset();<sp/>schemes<sp/>that<sp/>need</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>a<sp/>cell-to-face<sp/>offset<sp/>(e.g.<sp/>linearUpwind&apos;s<sp/>gradient<sp/>correction)<sp/>read<sp/>it<sp/>from<sp/>this<sp/>object.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a63e3096f24bd492964e5636c4043eb2e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a63e3096f24bd492964e5636c4043eb2e" kindref="member">faceDeltaOwner</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Vector<sp/>from<sp/>the<sp/>neighbour<sp/>cell<sp/>centre<sp/>to<sp/>the<sp/>face<sp/>centre<sp/>(Cf<sp/>-<sp/>C_nei),<sp/>one<sp/>per<sp/>internal<sp/>face.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1af447dfa1709f7f53d9b66411b6de94a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref>&amp;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1af447dfa1709f7f53d9b66411b6de94a1" kindref="member">faceDeltaNeighbour</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ab67d199285124264e5183829810892a3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ab67d199285124264e5183829810892a3" kindref="member">update</ref>();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Frees<sp/>the<sp/>mesh&apos;s<sp/>per-cell/face<sp/>centre<sp/>arrays<sp/>after<sp/>update()<sp/>to<sp/>save<sp/>device<sp/>memory;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>they<sp/>are<sp/>not<sp/>needed<sp/>once<sp/>the<sp/>geometry-scheme<sp/>fields<sp/>are<sp/>cached.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:<sp/>check<sp/>if<sp/>we<sp/>can<sp/>remove<sp/>the<sp/>temporary<sp/>fields<sp/>from<sp/>the<sp/>unstructured<sp/>mesh</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>altogether:<sp/>compute<sp/>the<sp/>geometry-scheme<sp/>data<sp/>explicitly<sp/>first<sp/>and<sp/>pass<sp/>it<sp/>as<sp/>an</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>argument,<sp/>instead<sp/>of<sp/>freeing<sp/>mesh<sp/>members<sp/>after<sp/>the<sp/>fact.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ae82feba1c88e28550aa6afcfc7df00ab" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1ae82feba1c88e28550aa6afcfc7df00ab" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a9eac922e0d9a4f6fa3a2dd5370fbb314" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1a9eac922e0d9a4f6fa3a2dd5370fbb314" kindref="member">name</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>add<sp/>selection<sp/>mechanism<sp/>via<sp/>dictionary<sp/>later</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1aa392cd10062a4118571aa71a5c7ce61b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;GeometryScheme&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_1aa392cd10062a4118571aa71a5c7ce61b" kindref="member">readOrCreate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref><sp/>exec_;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh_;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unique_ptr&lt;GeometrySchemeFactory&gt;<sp/>kernel_;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref><sp/>weights_;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;scalar&gt;</ref><sp/>nonOrthDeltaCoeffs_;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref><sp/>nonOrthCorrectionVec3s_;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref><sp/>faceDeltaOwner_;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField&lt;Vec3&gt;</ref><sp/>faceDeltaNeighbour_;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"/>
   </compounddef>
