@@ -58,7 +58,7 @@ localIdx hostDiagIdx(const HostMatrixView& m, localIdx c)
 }
 
 // A non-trivial constant value with all three Vec3 components distinct, so the
-// Vec3 path is exercised per-component (Landmine 8: rAU reads only [0]).
+// Vec3 path is exercised per-component.
 template<typename T>
 T sampleValue(scalar base);
 template<>
@@ -271,22 +271,16 @@ TEMPLATE_TEST_CASE(
 
     SECTION("nonzero boundaryDiag does not perturb the augmented-diag scaling on " + execName)
     {
-        // Regression guard for the boundary-diagonal handling (relaxation fix, 2026-06-16).
-        //
         // The other sections build on createEmptyLinearSystem whose boundaryMatrix is
         // zero-initialised (boundaryDiag == 0), so the boundary path is untested there. Here we
-        // populate the boundaryMatrix COO with NONZERO values through the view, so each owner cell
+        // populate the boundaryMatrix COO with NONZERO values through the view so each owner cell
         // has boundaryDiag != 0.
         //
-        // The OF-parity kernel relaxes the WHOLE augmented diagonal (boundary already baked into
-        // D_aug at assembly) by 1/alpha and does NOT reconstruct/re-add the boundary diagonal, so
-        // the relaxed augmented diagonal must satisfy
+        // The kernel relaxes the WHOLE augmented diagonal (boundary already baked into D_aug at
+        // assembly) by 1/alpha and does NOT reconstruct/re-add the boundary diagonal, so the
+        // relaxed augmented diagonal must satisfy
         //   matrix.diag(cell) == copySign(max(|D_aug|, sumOff)/alpha, D_aug)
-        // INDEPENDENT of boundaryDiag. The earlier kernel reconstructed the internal-only diagonal
-        // (D_int = D_aug + boundaryDiag), divided only that by alpha, and re-added the boundary
-        // UN-divided -- leaving boundary cells too large by boundaryDiag*(1-alpha)/alpha. That was
-        // the rAU/HbyA corruption that diverged the PIMPLE loop; this section now trips if it
-        // returns, at the unit level rather than only in NeoFOAM integration.
+        // INDEPENDENT of boundaryDiag.
         const scalar alpha = 0.7;
         const scalar invAlpha = 1.0 / alpha;
 
@@ -335,16 +329,10 @@ TEMPLATE_TEST_CASE(
 
         dsl::applyMatrixRelaxation(ls, solution, alpha);
 
-        // OF-parity (relaxation fix, 2026-06-16): the kernel scales the WHOLE augmented
-        // diagonal (boundary contributions already baked into D_aug at assembly) by 1/alpha under
-        // the dominance clamp -- matching OpenFOAM fvMatrix::relax, which adds the boundary
-        // internalCoeffs to D, clamps, then divides the sum by alpha. It does NOT reconstruct or
-        // re-add the boundary diagonal, so the relaxed AUGMENTED diagonal equals
+        // The kernel scales the augmented diagonal (boundary contributions baked into D_aug at
+        // assembly) by 1/alpha under the dominance clamp. The relaxed augmented diagonal equals
         //   copySign(max(|D_aug|, sumOff)/alpha, D_aug)
-        // INDEPENDENT of the nonzero boundaryMatrix populated above (this section now guards that
-        // a nonzero boundaryDiag does NOT perturb the augmented-diagonal scaling). The earlier
-        // kernel reconstructed the internal-only diagonal and re-added the boundary UN-divided,
-        // leaving boundary cells too large by boundaryDiag*(1-alpha)/alpha -- the divergence bug.
+        // independent of the nonzero boundaryMatrix populated above.
         auto relaxedH = ls.copyToHost();
         auto relaxedView = relaxedH.view();
         for (localIdx c = 0; c < nCells; ++c)
@@ -541,7 +529,7 @@ TEMPLATE_TEST_CASE(
     }
 
     // Build a VolumeField whose internal vector holds a known, asymmetric pattern so the
-    // blend is observable per cell (and, for Vec3, per component — Landmine 8 blind spot).
+    // blend is observable per cell and per Vec3 component.
     auto makeField = [&](std::vector<scalar> base)
     {
         Vector<ValueType> psi(exec, nCells);

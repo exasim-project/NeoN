@@ -125,14 +125,6 @@ la::SolverStats solve(
 // ---------------------------------------------------------------------------
 // Matrix under-relaxation (post-assembly fused kernel)
 // ---------------------------------------------------------------------------
-//
-// Componentwise helpers. NeoN's working tree does NOT provide the cmpt* /
-// componentMultiply family from the feat/underRelax reference, so the few
-// componentwise ops the kernel needs are defined inline here over Vec3[i]
-// using Kokkos::abs / Kokkos::max. zero<T>()/one<T>() already exist and are
-// reused as-is. copySign/componentCopySign are ported VERBATIM from the
-// reference (their definitions are sound; only their kernel call site was
-// dropped, which is the sign-drop regression this kernel must NOT reproduce).
 
 //! @brief Returns |mag| carrying the sign of s (scalar overload).
 KOKKOS_INLINE_FUNCTION scalar copySign(const scalar mag, const scalar s)
@@ -178,15 +170,9 @@ KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
 
 /* @brief Apply equation (matrix) under-relaxation to an assembled LinearSystem.
  *
- * OpenFOAM-parity path: NeoN bakes boundary contributions permanently into
- * the CSR diagonal at assembly time, so the augmented diagonal
- * `D_aug = matrix.values[diagIdx(cell)]` already contains the boundary diagonal.
- * OpenFOAM `fvMatrix::relax(alpha)` divides the ENTIRE augmented diagonal (internal +
- * boundary) by alpha: it adds the boundary internalCoeffs to the diagonal, clamps for
- * dominance, then `D /= alpha` (the boundary is removed from the stored diag afterwards
- * but re-added un-divided at solve, netting the same augmented value). This kernel
- * therefore relaxes the augmented diagonal DIRECTLY — no internal-only reconstruction.
- * Per cell:
+ * NeoN bakes boundary contributions permanently into the CSR diagonal at assembly time,
+ * so the augmented diagonal `D_aug = matrix.values[diagIdx(cell)]` already contains the
+ * boundary diagonal. This kernel relaxes the augmented diagonal DIRECTLY. Per cell:
  *
  *   D_aug     : matrix.values[diagIdx(cell)]            (augmented, boundary-baked)
  *   D_dom     : max(mag(D_aug), sumMagOffDiag[cell])    (dominance clamp on the augmented diag)
@@ -194,26 +180,14 @@ KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
  *   write     : matrix.values[diagIdx(cell)] = D_relaxed
  *   source    : rhs[cell] += (D_relaxed - D_aug) * psi_prev[cell]
  *
- * History (boundary-diagonal relaxation fix, 2026-06-16): an earlier path reconstructed the
- * internal-only diagonal (D_internal = D_aug + boundaryDiag), divided ONLY the internal part by
- * alpha, and re-added the boundary UN-divided (D_relaxed = D_internal/alpha - boundaryDiag). That
- * left the relaxed augmented diagonal too large by boundaryDiag*(1-alpha)/alpha at every
- * boundary-adjacent cell, corrupting rAU = V/diag and HbyA and diverging the PIMPLE outer loop.
- * The synthetic unit tests masked it (boundaryDiag identically zero) and the rAU oracle encoded
- * the same wrong formula; it surfaced only as the full neoPimpleFoam-vs-pimpleFoam parity
- * divergence.
- *
  * The source correction makes the relaxed system share the fixed point of the
  * unrelaxed system (the correction cancels at the converged solution). `psi_prev`
- * is the field value at solve entry (`solution.internalVector()` — no
- * separate snapshot). The negative-diagonal sign convention (operators atomic_sub
- * positive flux into the diagonal; `scaledInvDiagNegLUx` reads `V/diag[0]` raw,
- * no mag()) is preserved componentwise via `componentCopySign` so `rAU`/`HbyA`
- * stay correct for alpha < 1.
+ * is the field value at solve entry (`solution.internalVector()` — no separate snapshot).
+ * The negative-diagonal sign convention is preserved componentwise via `componentCopySign`
+ * so `rAU`/`HbyA` stay correct for alpha < 1.
  *
  * @param ls       The assembled LinearSystem (mutated in place on the augmented diagonal).
- * @param solution The solution VolumeField — supplies psi_prev (internalVector) and the
- *                 mesh (boundaryMesh().faceOwners() for the boundary-diagonal owner).
+ * @param solution The solution VolumeField — supplies psi_prev (internalVector).
  * @param alpha    The under-relaxation factor. alpha <= 0 or alpha == 1 is a bitwise no-op.
  */
 // Overload set is templated on the FULL LinearSystem parameter pack (mirroring
@@ -245,11 +219,8 @@ void applyMatrixRelaxation(
         return;
     }
 
-
     const scalar invAlpha = 1.0 / alpha;
 
-    // View mechanics copied from removeBoundaryContributions (linearSystem.hpp) — the
-    // in-tree, sign-correct precedent for view + diagonal addressing.
     auto lsView = ls.view();
     auto& matrix = lsView.matrix;
     auto& rhs = lsView.rhs;
@@ -259,33 +230,19 @@ void applyMatrixRelaxation(
 
     const localIdx nCells = field.size();
 
-    // FUSED single-pass relaxation (PERF): compute the off-diagonal magnitude sum inline and apply
+    // FUSED single-pass relaxation: compute the off-diagonal magnitude sum inline and apply
     // the dominance clamp + diagonal boost + source correction in ONE kernel, eliminating the
-    // per-call O(nCells) `sumOff` scratch allocation (and its zero-fill) and the second kernel
-    // launch. Each cell needs only its OWN row's off-diagonal sum — no cross-cell dependency — and
-    // relaxation only ever writes a cell's own diagonal (matrix.values[diagIdx]) and rhs[celli].
-    // The row walk skips the diagonal (colIdxs[idx] != celli), and a cell's diagonal write never
-    // aliases another cell's off-diagonal storage, so fusing is bitwise-identical to the prior two
-    // passes.
+    // per-call O(nCells) `sumOff` scratch allocation. Each cell needs only its OWN row's
+    // off-diagonal sum — no cross-cell dependency — and relaxation only ever writes a cell's own
+    // diagonal (matrix.values[diagIdx]) and rhs[celli]. The row walk skips the diagonal
+    // (colIdxs[idx] != celli), and a cell's diagonal write never aliases another cell's
+    // off-diagonal storage.
     //
-    // Matches OpenFOAM fvMatrix::relax(alpha): OF adds the boundary internalCoeffs to the diagonal,
-    // clamps for dominance, then `D /= alpha` with the boundary contribution INCLUDED in the
-    // division (removed from the stored diag afterwards but re-added un-divided at solve via
-    // addBoundaryDiag) — netting a relaxed AUGMENTED diagonal of D_aug / alpha. NeoN bakes the
-    // boundary permanently into matrix.values[diagIdx], so the augmented diagonal is already in
-    // hand: we relax dAug DIRECTLY, with NO internal-only reconstruction. (The earlier
-    // reconstruct-internal / re-add-un-divided-boundary path left the relaxed diagonal too large by
-    // boundaryDiag*(1-alpha)/alpha at every boundary-adjacent cell, corrupting rAU/HbyA and
-    // diverging the PIMPLE outer loop — the boundary-diagonal relaxation bug.)
-    //
-    // The dominance clamp runs on the augmented diagonal vs the off-diagonal magnitude
-    // sum; componentCopySign preserves dAug's sign so scaledInvDiagNegLUx (rAU = V/diag,
-    // no mag()) stays correct for alpha < 1. The source correction rhs += (dRelaxed -
-    // dAug)*psi_prev makes the relaxed system share the unrelaxed fixed point and
-    // exactly preserves the residual at psi_prev. Off-diagonal sum + diagonal algebra are in
-    // MatrixValueType; the source-correction cross term (dRelaxed - dAug)*field is MatrixValueType
-    // * RHSValueType (scalar
-    // * Vec3 in the segregated momentum form).
+    // componentCopySign preserves dAug's sign so rAU = V/diag stays correct for alpha < 1.
+    // The source correction rhs += (dRelaxed - dAug)*psi_prev makes the relaxed system share
+    // the unrelaxed fixed point. Off-diagonal sum + diagonal algebra are in MatrixValueType;
+    // the source-correction cross term (dRelaxed - dAug)*field is MatrixValueType * RHSValueType
+    // (scalar * Vec3 in the segregated momentum form).
     parallelFor(
         ls.exec(),
         {0, nCells},
@@ -317,20 +274,16 @@ void applyMatrixRelaxation(
 
 /* @brief Apply explicit field under-relaxation to a solution field's internal vector.
  *
- * Computes the OpenFOAM `relax()` blend on the internal field only:
+ * Blends the internal field toward the previous outer-iteration value:
  *
  *   psi[c] = prev[c] + alpha * (psi[c] - prev[c])
  *
  * `prev` is the caller-owned previous-iteration snapshot (e.g. from
- * `fieldRelaxationSnapshot`, taken at the top of the outer corrector). This is a
- * stateless free function mirroring `applyMatrixRelaxation`; NeoN stays
- * OpenFOAM-agnostic and sees only the scalar `alpha`.
+ * `fieldRelaxationSnapshot`, taken at the top of the outer corrector).
  *
- * Boundary scope: only the internal vector is blended. The caller is
- * responsible for calling `solution.correctBoundaryConditions()` afterwards so the
- * boundary values are re-derived from the boundary conditions. (OpenFOAM's `relax()`
- * blends boundary values directly; both paths agree at the fixed point and for
- * `fixedValue` patches.)
+ * Only the internal vector is blended; the caller is responsible for calling
+ * `solution.correctBoundaryConditions()` afterwards so boundary values are
+ * re-derived from the boundary conditions.
  *
  * `alpha <= 0` or `alpha == 1` is a bitwise no-op (the early return touches nothing).
  * This is REQUIRED so the final outer iteration (`alpha == 1`) and an unset
