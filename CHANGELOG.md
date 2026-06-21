@@ -14,6 +14,7 @@
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 
 ### Misc
+- Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)
 - Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
 - Build the distributed off-diagonal matrix with local row indices and widen non-local columns on the executor, removing host round-trips in the Ginkgo distributed matrix assembly
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
