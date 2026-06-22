@@ -10,6 +10,8 @@
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
+#include "NeoN/core/segmentedVector.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
@@ -34,10 +36,17 @@ namespace NeoN::finiteVolume::cellCentred
  * the unlimited base gradient), k = 1 is the strongest, most stable limiting,
  * and intermediate values widen the admissible bounds accordingly.
  *
+ * Both the scalar gradient (grad of a scalar field -> Vec3) and the tensor
+ * gradient (grad of a vector field -> Tensor, e.g. grad(U)) are limited. For the
+ * tensor case the limiter is per-component (three independent minmod limiters,
+ * one per field component), matching the standard cell-limited vector gradient.
+ *
+ * GPU-first: the tensor limiter uses a cell-based gather over each cell's
+ * internal-face stencil (atomic-free, coalesced writes) for the bulk of the work;
+ * only the small physical/processor boundary-face set uses an atomic scatter.
+ *
  * v1 assembles the explicit gradient on cell-centred fields; the implicit
- * (LinearSystem) path is not provided. The kernels use face-scatter atomics so
- * the design extends to device and distributed (processor-boundary) execution;
- * only CPU-serial is validated in v1.
+ * (LinearSystem) path is not provided. CPU-serial is validated in v1.
  */
 class CellLimitedGrad : public GradOperatorFactory<Vec3>::template Register<CellLimitedGrad>
 {
@@ -73,6 +82,11 @@ public:
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}
     ) const override;
 
+    /* @brief slope-limited tensor gradient of a vector field (e.g. grad(U)) */
+    void gradTensor(
+        const VolumeField<Vec3>& u, VolumeField<Tensor>& gradU, const dsl::Coeff operatorScaling
+    ) const override;
+
     virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const override
     {
         NF_ERROR_EXIT("Not implemented");
@@ -91,6 +105,8 @@ private:
     // Supplies the cached internal-face cell-to-face displacement vectors; the raw
     // mesh centres are freed once the geometry scheme is built.
     std::shared_ptr<GeometryScheme> geometryScheme_;
+    // Per-cell internal-face stencil for the atomic-free cell-based tensor gather.
+    SegmentedVector<localIdx, localIdx> cellInternalFaces_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred

@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/stencil/cellToFaceStencil.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/view.hpp"
@@ -228,7 +229,8 @@ CellLimitedGrad::CellLimitedGrad(
     const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs
 )
     : Base(exec, mesh), baseGradScheme_(GradOperatorFactory<Vec3>::create(exec, mesh, inputs)),
-      coeff_(readCoeff(inputs)), geometryScheme_(GeometryScheme::readOrCreate(mesh))
+      coeff_(readCoeff(inputs)), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
+      cellInternalFaces_(CellToFaceStencil(mesh).computeInternalStencil())
 {
     if (!(coeff_ >= scalar(0) && coeff_ <= scalar(1)))
     {
@@ -294,6 +296,246 @@ CellLimitedGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorS
     );
     gradPhi.correctBoundaryConditions();
     return gradPhi;
+}
+
+/* @brief GPU-first cell-limited tensor gradient of a vector field.
+ *
+ * Limits grad(U) per component: three independent minmod limiters (one per U
+ * component), clipping the gradient so the value extrapolated from the cell centre
+ * to each surrounding face stays within the neighbour cell-value range. Row i of
+ * gradU (= grad of U_i) is scaled by limiter component i.
+ *
+ * Iteration is cell-based: each cell gathers its own internal-face stencil in
+ * registers (no atomics, coalesced writes); only the comparatively small set of
+ * physical/processor boundary faces uses an atomic scatter into the owner cell.
+ */
+void computeCellLimitedGradTensor(
+    const VolumeField<Vec3>& u,
+    const GradOperatorFactory<Vec3>& baseScheme,
+    const GeometryScheme& geometryScheme,
+    const SegmentedVector<localIdx, localIdx>& cellInternalFaces,
+    const scalar coeff,
+    const dsl::Coeff operatorScaling,
+    VolumeField<Tensor>& gradU
+)
+{
+    const UnstructuredMesh& mesh = u.mesh();
+    const auto exec = gradU.exec();
+    const auto nCells = mesh.nCells();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+
+    // 1. Unlimited base tensor gradient (internal + boundary), without operator scaling.
+    baseScheme.gradTensor(u, gradU, dsl::Coeff(scalar(1)));
+
+    auto g = gradU.internalVector().view();
+    const auto uV = u.internalVector().view();
+
+    // coeff == 0: limiting disabled — apply operator scaling and return.
+    if (coeff < ROOTVSMALL)
+    {
+        parallelFor(
+            exec,
+            {0, nCells},
+            NEON_LAMBDA(const localIdx celli) { g[celli] *= operatorScaling[celli]; },
+            "cellLimitedGradTensorNoLimit"
+        );
+        return;
+    }
+
+    // Per cell, per component (Vec3 = one scalar per U component).
+    Vector<Vec3> maxDelta(exec, nCells, zero<Vec3>());
+    Vector<Vec3> minDelta(exec, nCells, zero<Vec3>());
+    Vector<Vec3> limiter(exec, nCells, one<Vec3>());
+    auto maxD = maxDelta.view();
+    auto minD = minDelta.view();
+    auto lim = limiter.view();
+
+    const auto [owner, neighbour, bOwner] =
+        views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
+    const auto cellFaces = cellInternalFaces.values().view();
+    const auto cellFaceOffs = cellInternalFaces.segments().view();
+
+    // 2a. Cell-based gather (atomic-free): component-wise neighbour deltas over internal faces.
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            const Vec3 uOwn = uV[celli];
+            Vec3 mx = zero<Vec3>();
+            Vec3 mn = zero<Vec3>();
+            for (auto sIdx = cellFaceOffs[celli]; sIdx < cellFaceOffs[celli + 1]; ++sIdx)
+            {
+                const auto facei = cellFaces[sIdx];
+                const auto other = (owner[facei] == celli) ? neighbour[facei] : owner[facei];
+                const Vec3 dU = uV[other] - uOwn;
+                for (size_t c = 0; c < 3; ++c)
+                {
+                    mx[c] = Kokkos::max(mx[c], dU[c]);
+                    mn[c] = Kokkos::min(mn[c], dU[c]);
+                }
+            }
+            maxD[celli] = mx;
+            minD[celli] = mn;
+        },
+        "cellLimitedTensorRangeInternal"
+    );
+
+    // 2b. Boundary scatter (atomics, small): fold boundary-face values into the owner range.
+    const auto uBoundary = u.boundaryData().value().view();
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            const auto own = bOwner[bfi];
+            const Vec3 dU = uBoundary[bfi] - uV[own];
+            for (size_t c = 0; c < 3; ++c)
+            {
+                Kokkos::atomic_max(&maxD[own][c], dU[c]);
+                Kokkos::atomic_min(&minD[own][c], dU[c]);
+            }
+        },
+        "cellLimitedTensorRangeBoundary"
+    );
+
+    if (nProcBoundaryFaces > 0)
+    {
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bfi = nBoundaryFaces + procFacei;
+                const auto own = bOwner[bfi];
+                const Vec3 dU = uBoundary[bfi] - uV[own];
+                for (size_t c = 0; c < 3; ++c)
+                {
+                    Kokkos::atomic_max(&maxD[own][c], dU[c]);
+                    Kokkos::atomic_min(&minD[own][c], dU[c]);
+                }
+            },
+            "cellLimitedTensorRangeProcBoundary"
+        );
+    }
+
+    // 3. Widen the per-component bounds by the coefficient (k < 1 relaxes the limiter).
+    const scalar k = coeff;
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            Vec3 mx = maxD[celli];
+            Vec3 mn = minD[celli];
+            if (k < scalar(1))
+            {
+                for (size_t c = 0; c < 3; ++c)
+                {
+                    const scalar d = (scalar(1) / k - scalar(1)) * (mx[c] - mn[c]);
+                    mx[c] += d;
+                    mn[c] -= d;
+                }
+            }
+            maxD[celli] = mx;
+            minD[celli] = mn;
+        },
+        "cellLimitedTensorDeltas"
+    );
+
+    // 4a. Cell-based gather (atomic-free): per-component limiter over internal faces. The
+    //     base (unlimited) gradient extrapolated to each face must stay within the deltas.
+    const auto ownerToFace = geometryScheme.faceDeltaOwner().internalVector().view();
+    const auto neighbourToFace = geometryScheme.faceDeltaNeighbour().internalVector().view();
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            const Tensor gc = g[celli];
+            const Vec3 mx = maxD[celli];
+            const Vec3 mn = minD[celli];
+            Vec3 l = one<Vec3>();
+            for (auto sIdx = cellFaceOffs[celli]; sIdx < cellFaceOffs[celli + 1]; ++sIdx)
+            {
+                const auto facei = cellFaces[sIdx];
+                const Vec3 d =
+                    (owner[facei] == celli) ? ownerToFace[facei] : neighbourToFace[facei];
+                const Vec3 extrap = gc & d; // predicted delta of each U component at the face
+                for (size_t c = 0; c < 3; ++c)
+                {
+                    l[c] = Kokkos::min(l[c], cellLimiterRatio(extrap[c], mx[c], mn[c]));
+                }
+            }
+            lim[celli] = l;
+        },
+        "cellLimitedTensorLimiterInternal"
+    );
+
+    // 4b. Boundary scatter (atomics, small): per-component limiter over boundary faces.
+    const auto [bFaceC, bOwnerC] =
+        views(mesh.boundaryMesh().faceCenters(), mesh.boundaryMesh().ownerCellCenters());
+    parallelFor(
+        exec,
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            const auto own = bOwner[bfi];
+            const Vec3 extrap = g[own] & (bFaceC[bfi] - bOwnerC[bfi]);
+            for (size_t c = 0; c < 3; ++c)
+            {
+                Kokkos::atomic_min(
+                    &lim[own][c], cellLimiterRatio(extrap[c], maxD[own][c], minD[own][c])
+                );
+            }
+        },
+        "cellLimitedTensorLimiterBoundary"
+    );
+
+    if (nProcBoundaryFaces > 0)
+    {
+        parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                const auto bfi = nBoundaryFaces + procFacei;
+                const auto own = bOwner[bfi];
+                const Vec3 extrap = g[own] & (bFaceC[bfi] - bOwnerC[bfi]);
+                for (size_t c = 0; c < 3; ++c)
+                {
+                    Kokkos::atomic_min(
+                        &lim[own][c], cellLimiterRatio(extrap[c], maxD[own][c], minD[own][c])
+                    );
+                }
+            },
+            "cellLimitedTensorLimiterProcBoundary"
+        );
+    }
+
+    // 5. Apply: scale row i of gradU (grad of U_i) by limiter[i], then the operator scaling.
+    parallelFor(
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const localIdx celli) {
+            const Vec3 l = lim[celli];
+            const scalar s = operatorScaling[celli];
+            Tensor gc = g[celli];
+            for (size_t i = 0; i < 3; ++i)
+            {
+                const scalar si = l[i] * s;
+                for (size_t j = 0; j < 3; ++j)
+                {
+                    gc(i, j) *= si;
+                }
+            }
+            g[celli] = gc;
+        },
+        "cellLimitedTensorApply"
+    );
+}
+
+void CellLimitedGrad::gradTensor(
+    const VolumeField<Vec3>& u, VolumeField<Tensor>& gradU, const dsl::Coeff operatorScaling
+) const
+{
+    computeCellLimitedGradTensor(
+        u, *baseGradScheme_, *geometryScheme_, cellInternalFaces_, coeff_, operatorScaling, gradU
+    );
 }
 
 } // namespace NeoN::finiteVolume::cellCentred
