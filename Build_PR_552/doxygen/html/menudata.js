@@ -155,6 +155,7 @@ var menudata={children:[
 {text:"m",url:"functions_type.html#index_m"},
 {text:"p",url:"functions_type.html#index_p"},
 {text:"s",url:"functions_type.html#index_s"},
+{text:"t",url:"functions_type.html#index_t"},
 {text:"v",url:"functions_type.html#index_v"}]},
 {text:"Enumerations",url:"functions_enum.html"},
 {text:"Related Symbols",url:"functions_rela.html"}]}]},
