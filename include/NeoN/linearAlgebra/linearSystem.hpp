@@ -321,16 +321,22 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
 )
 {
-    auto [sp, mi] =
-        createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(mesh
-        );
-    auto bSp =
-        createBoundarySparsityPattern<typename BoundaryMatrixType::MatrixSparsityType>(mesh, *mi);
+    // Consume the per-mesh cached, immutable topology bundle (CSR system sparsity +
+    // FaceToMatrixAddress + boundary sparsity). These arrays depend only on mesh topology, so they
+    // are shared by every LinearSystem built on this mesh; only the per-system value/RHS vectors
+    // below are allocated fresh.
+    auto bundle = readOrCreateSparsityBundle<
+        typename SystemMatrixType::MatrixSparsityType,
+        typename BoundaryMatrixType::MatrixSparsityType>(mesh);
+    const auto& sp = bundle.systemSparsity;
+    const auto& mi = bundle.faceToMatrixAddress;
+    const auto& bSp = bundle.boundarySparsity;
     const auto exec = sp->exec();
     const auto nCells = static_cast<localIdx>(mesh.nCells());
     const auto nProcFaces = static_cast<localIdx>(mesh.nProcBoundaryFaces());
     using IndexType = typename BoundaryMatrixType::MatrixSparsityType::SparsityIndexType;
 
+    // Off-diagonal / proc-face sparsity stays per-system (comm-pattern-derived); not shared in v1.
     Vector<IndexType> offDiagColIdxs(exec, nProcFaces, 0);
     Vector<IndexType> offDiagRowIdxs(exec, nProcFaces, 0);
 
