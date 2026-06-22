@@ -80,6 +80,37 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00076}00076\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }GaussGreenDiv<Vec3>;}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00077}00077\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }GaussGreenDiv<Vec3,\ scalar>;}
 \DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00078}00078\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00079}00079\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00079}00079\ \textcolor{comment}{/*\ @brief\ Adds\ the\ explicit\ (deferred)\ divergence\ correction\ of\ a\ corrected\ interpolation\ scheme}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00080}00080\ \textcolor{comment}{\ *\ to\ the\ linear-\/system\ rhs.\ Shared\ with\ the\ fused\ div-\/laplacian\ operator\ so\ both\ implicit\ div}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00081}00081\ \textcolor{comment}{\ *\ paths\ apply\ linearUpwind\ identically.\ Defined\ and\ instantiated\ in\ gaussGreenDiv.cpp.}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00082}00082\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00083}00083\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ FieldValueType,\ \textcolor{keyword}{typename}\ AssemblyType>}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00084}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a655723b74791ab94830593ccae60bb9e}{00084}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a655723b74791ab94830593ccae60bb9e}{addDivCorrectionToRhs}}(}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00085}00085\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<AssemblyType,\ FieldValueType>}}\&\ ls,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<FieldValueType>}}\&\ correction,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00089}00089\ );}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00091}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_acc9cb8ccd4becd6fca6b27878029e1af}{00091}}\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a655723b74791ab94830593ccae60bb9e}{addDivCorrectionToRhs}}(}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00092}00092\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ scalar>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00096}00096\ );}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00097}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3bd96e0c8137cbaf0a4e24d4c4f48f76}{00097}}\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a655723b74791ab94830593ccae60bb9e}{addDivCorrectionToRhs}}(}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00098}00098\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<Vec3,\ Vec3>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00102}00102\ );}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00103}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae5461c8baf9da045ef94157a975a19fb}{00103}}\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a655723b74791ab94830593ccae60bb9e}{addDivCorrectionToRhs}}(}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00104}00104\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ Vec3>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\&,}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00108}00108\ );}
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDiv_8hpp_source_l00110}00110\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
