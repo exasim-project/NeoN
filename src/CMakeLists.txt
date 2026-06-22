@@ -67,6 +67,7 @@ target_sources(
           "finiteVolume/cellCentred/interpolation/linear.cpp"
           "finiteVolume/cellCentred/interpolation/upwind.cpp"
           "finiteVolume/cellCentred/interpolation/linearUpwind.cpp"
+          "finiteVolume/cellCentred/interpolation/DEShybrid.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/corrected.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"
