@@ -196,7 +196,7 @@ void computeLaplacianBoundImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType>
 void computeLaplacianNonOrthCorrImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
@@ -462,5 +462,15 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
 template class GaussGreenLaplacian<scalar>;
 template class GaussGreenLaplacian<Vec3>;
 template class GaussGreenLaplacian<Vec3, scalar>;
+
+template void computeLaplacianNonOrthCorrImpl<
+    scalar,
+    scalar>(la::LinearSystem<scalar, scalar>&, const SurfaceField<scalar>&, const VolumeField<scalar>&, dsl::Coeff, const FaceNormalGradient<scalar>&);
+template void computeLaplacianNonOrthCorrImpl<
+    Vec3,
+    Vec3>(la::LinearSystem<Vec3, Vec3>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+template void computeLaplacianNonOrthCorrImpl<
+    Vec3,
+    scalar>(la::LinearSystem<scalar, Vec3>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
 
 };

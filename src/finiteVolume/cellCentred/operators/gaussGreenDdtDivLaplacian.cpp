@@ -7,6 +7,7 @@
 #include "NeoN/core/database/oldTimeCollection.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -128,6 +129,9 @@ void GaussGreenDdtDivLaplacian<ValueType>::implicitOperation(
             coeffA_,
             coeffB_,
             std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
+        );
+        computeLaplacianNonOrthCorrImpl(
+            ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
         );
         return;
     }

@@ -15,6 +15,17 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+// Deferred non-orthogonal correction kernel for the Laplacian (defined in gaussGreenLaplacian.cpp).
+// Declared here so other operators (e.g. GaussGreenDivLaplacian) can reuse it. Adds the explicit
+// snGrad correction to the linear system's rhs; a no-op unless the snGrad scheme is corrected.
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeLaplacianNonOrthCorrImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
+);
 
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class GaussGreenLaplacian :
