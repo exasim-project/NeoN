@@ -166,4 +166,137 @@ TEST_CASE("cellLimited gradient")
     }
 }
 
+// Tensor path: grad(U) where U is a vector field. On the 1D mesh the only non-zero
+// spatial derivative is d/dx, so component (i,0) of the tensor = dU_i/dx; the limiter
+// is per U-component (three independent minmod limiters). Interior cells only.
+TEST_CASE("cellLimited tensor gradient")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+    auto bcs = fvcc::createCalculatedProcBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+
+    auto makeLimitedTensor = [&](const fvcc::VolumeField<Vec3>& u, std::any coeff)
+    {
+        Input input = TokenList(
+            {std::string("cellLimited"), std::string("Gauss"), std::string("linear"), coeff}
+        );
+        auto op = fvcc::GradOperatorFactory<Vec3>::create(exec, mesh, input);
+        auto gradU = fvcc::VolumeField<Tensor>(
+            exec, "gradU", mesh, fvcc::createCalculatedProcBCs<fvcc::VolumeBoundary<Tensor>>(mesh)
+        );
+        fill(gradU.internalVector(), zero<Tensor>());
+        op->gradTensor(u, gradU, dsl::Coeff {});
+        return gradU;
+    };
+
+    // U with each component a distinct linear ramp: U = (2 i, -3 i, i).
+    auto linearU = [&]()
+    {
+        fvcc::VolumeField<Vec3> u(exec, "U", mesh, bcs);
+        parallelFor(
+            u.internalVector(),
+            NEON_LAMBDA(const localIdx i) {
+                return Vec3(scalar(2) * scalar(i), scalar(-3) * scalar(i), scalar(i));
+            }
+        );
+        fill(u.boundaryData().value(), zero<Vec3>());
+        u.correctBoundaryConditions();
+        return u;
+    };
+
+    // U with a per-component step at the mid-plane.
+    auto stepU = [&]()
+    {
+        fvcc::VolumeField<Vec3> u(exec, "U", mesh, bcs);
+        const localIdx half = nCells / 2;
+        parallelFor(
+            u.internalVector(),
+            NEON_LAMBDA(const localIdx i) {
+                return i < half ? zero<Vec3>() : Vec3(scalar(1), scalar(1), scalar(1));
+            }
+        );
+        fill(u.boundaryData().value(), zero<Vec3>());
+        u.correctBoundaryConditions();
+        return u;
+    };
+
+    SECTION("linear U is not clipped — equals base Gauss tensor gradient on " + execName)
+    {
+        auto u = linearU();
+
+        fvcc::GaussGreenGrad gauss(exec, mesh);
+        auto gBase = gauss.gradTensor(u);
+        auto gLim = makeLimitedTensor(u, scalar(1.0));
+
+        auto hBase = gBase.internalVector().copyToHost();
+        auto hLim = gLim.internalVector().copyToHost();
+        auto hBaseV = hBase.view();
+        auto hLimV = hLim.view();
+
+        for (localIdx i = 1; i < nCells - 1; ++i)
+        {
+            for (size_t cmpt = 0; cmpt < 3; ++cmpt)
+            {
+                // gradient of U_cmpt in x is genuinely non-trivial and unclipped
+                REQUIRE(std::abs(hBaseV[i](cmpt, 0)) > 1e-6);
+                REQUIRE(hLimV[i](cmpt, 0) == Catch::Approx(hBaseV[i](cmpt, 0)).margin(1e-12));
+            }
+        }
+    }
+
+    SECTION("step U is clipped per component — limited magnitude below base on " + execName)
+    {
+        auto u = stepU();
+
+        fvcc::GaussGreenGrad gauss(exec, mesh);
+        auto gBase = gauss.gradTensor(u);
+        auto gLim = makeLimitedTensor(u, scalar(1.0));
+
+        auto hBase = gBase.internalVector().copyToHost();
+        auto hLim = gLim.internalVector().copyToHost();
+        auto hBaseV = hBase.view();
+        auto hLimV = hLim.view();
+
+        bool anyClipped = false;
+        for (localIdx i = 1; i < nCells - 1; ++i)
+        {
+            for (size_t cmpt = 0; cmpt < 3; ++cmpt)
+            {
+                const scalar magBase = std::abs(hBaseV[i](cmpt, 0));
+                const scalar magLim = std::abs(hLimV[i](cmpt, 0));
+                REQUIRE(magLim <= magBase + 1e-12);
+                if (magLim < magBase - 1e-9)
+                {
+                    anyClipped = true;
+                }
+            }
+        }
+        REQUIRE(anyClipped);
+    }
+
+    SECTION("k=0 disables tensor limiting — equals base gradient at a jump on " + execName)
+    {
+        auto u = stepU();
+
+        fvcc::GaussGreenGrad gauss(exec, mesh);
+        auto gBase = gauss.gradTensor(u);
+        auto gLim = makeLimitedTensor(u, scalar(0.0));
+
+        auto hBase = gBase.internalVector().copyToHost();
+        auto hLim = gLim.internalVector().copyToHost();
+        auto hBaseV = hBase.view();
+        auto hLimV = hLim.view();
+
+        for (localIdx i = 1; i < nCells - 1; ++i)
+        {
+            for (size_t cmpt = 0; cmpt < 3; ++cmpt)
+            {
+                REQUIRE(hLimV[i](cmpt, 0) == Catch::Approx(hBaseV[i](cmpt, 0)).margin(1e-12));
+            }
+        }
+    }
+}
+
 } // namespace NeoN

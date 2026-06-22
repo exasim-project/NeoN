@@ -81,7 +81,7 @@ public:
         const VolumeField<Vec3>& u,
         VolumeField<Tensor>& gradU,
         const dsl::Coeff operatorScaling = dsl::Coeff {}
-    ) const;
+    ) const override;
 
     VolumeField<Tensor>
     gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
