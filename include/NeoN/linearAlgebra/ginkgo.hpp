@@ -42,7 +42,9 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const gko::experimental::mpi::communicator& comm,
     const CSRMatrix<scalar, IndexType>& mtx,
     const COOMatrix<scalar, IndexType>& bmtx,
-    const CommunicationPattern& commPattern
+    const CommunicationPattern& commPattern,
+    std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
 );
 #endif // NF_WITH_MPI_SUPPORT
 
@@ -283,6 +285,12 @@ private:
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
+#ifdef NF_WITH_MPI_SUPPORT
+    // Both caches are null until the first solve; after that topology is fixed.
+    mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
+        cachedImap_;
+    mutable std::shared_ptr<gko::matrix::Coo<scalar, localIdx>> cachedNonLocalMtx_;
+#endif
 };
 
 
