@@ -87,27 +87,30 @@ public:
     // Vector from the neighbour cell centre to the face centre (Cf - C_nei), one per internal face.
     const SurfaceField<Vec3>& faceDeltaNeighbour() const;
 
-    // Opt-in trigger for the faceDelta* fields. Computes them from the mesh centres, which the
-    // geometry scheme keeps resident. Consumers that need faceDelta* (linearUpwind) call this in
-    // their constructor; because the centres are no longer freed as a side effect of reading a
-    // cached field, the call is valid at any point in the scheme's lifetime, independent of
-    // construction order relative to other schemes. Idempotent; const so it is reachable through
-    // the shared (read-only) GeometryScheme handle. No-op cost after the first call is a single
-    // bool check.
+    // Opt-in trigger for the faceDelta* fields. Computes them from the mesh centres (which the
+    // scheme keeps resident until this runs), then releases those centres via
+    // releaseSourceGeometry(). Consumers that need faceDelta* (linearUpwind) call this in their
+    // constructor; because the centres are not freed as a side effect of reading a cached field,
+    // the call is valid at any point in the scheme's lifetime, independent of construction order
+    // relative to other schemes. Idempotent; const so it is reachable through the shared
+    // (read-only) GeometryScheme handle. No-op cost after the first call is a single bool check.
     void ensureFaceDeltas() const;
 
     void update();
 
-    // Frees the mesh's per-cell/face centre arrays to save device memory. EXPLICIT and NOT
-    // auto-invoked: callers run it only once they are certain no further faceDelta* opt-in will
-    // occur. It is deliberately not triggered by the field accessors or ensureFaceDeltas() — doing
-    // so used to free the centres before a late linearUpwind opt-in (constructed after another
-    // scheme on the same cached GeometryScheme had read a field) could compute the faceDelta*.
-    // Idempotent via sourceGeometryReleased_.
+    // Frees the mesh's per-point/cell/face centre arrays to save device memory (~3 GB at 18M
+    // cells). Auto-invoked exactly once at the tail of ensureFaceDeltas() — right after the
+    // faceDelta* opt-in has consumed the centres, the single point where freeing is provably safe.
+    // It is deliberately NOT triggered by the field accessors: doing so used to free the centres
+    // before a late linearUpwind opt-in (constructed after another scheme on the same cached
+    // GeometryScheme had read a field) could compute the faceDelta*. Runs that never opt in (no
+    // linearUpwind) never call ensureFaceDeltas(), so they keep the centres resident. May also be
+    // called explicitly by a caller certain no further opt-in will occur. Idempotent via
+    // sourceGeometryReleased_.
     // TODO: check if we can remove the temporary fields from the unstructured mesh
     // altogether: compute the geometry-scheme data explicitly first and pass it as an
     // argument, instead of freeing mesh members after the fact.
-    void reset() const;
+    void releaseSourceGeometry() const;
 
     std::string name() const;
 
@@ -131,7 +134,7 @@ private:
     mutable std::optional<SurfaceField<Vec3>> faceDeltaOwner_;
     mutable std::optional<SurfaceField<Vec3>> faceDeltaNeighbour_;
     mutable bool faceDeltasComputed_ = false;
-    // Guards the one-shot, deferred release of the mesh centre arrays (see reset()).
+    // Guards the one-shot release of the mesh centre arrays (see releaseSourceGeometry()).
     mutable bool sourceGeometryReleased_ = false;
 };
 
