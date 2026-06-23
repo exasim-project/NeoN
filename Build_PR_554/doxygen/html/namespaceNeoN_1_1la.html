@@ -123,6 +123,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html">MeshIteratorContext</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds and exposes the active <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html" title="Abstract base class defining the interface for mesh iteration strategies.">MeshIterationStrategy</a>.  <a href="classNeoN_1_1la_1_1MeshIteratorContext.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SharedSparsityBundle.html">SharedSparsityBundle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Solver.html">Solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1SolverFactory.html">SolverFactory</a></td></tr>
@@ -155,6 +157,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa9fd5d1e4b81ca099097468430a2d32c" id="r_aa9fd5d1e4b81ca099097468430a2d32c"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
 <tr class="memitem:aa9fd5d1e4b81ca099097468430a2d32c"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa9fd5d1e4b81ca099097468430a2d32c">createOffDiagonalSparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;faceToMatrixAddress)</td></tr>
 <tr class="separator:aa9fd5d1e4b81ca099097468430a2d32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0bfae85278da29d56cdb8e32ed1a54" id="r_add0bfae85278da29d56cdb8e32ed1a54"><td class="memTemplParams" colspan="2">template&lt;typename SystemSparsityType , typename BoundarySparsityType &gt; </td></tr>
+<tr class="memitem:add0bfae85278da29d56cdb8e32ed1a54"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1SharedSparsityBundle.html">SharedSparsityBundle</a>&lt; SystemSparsityType, BoundarySparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#add0bfae85278da29d56cdb8e32ed1a54">readOrCreateSparsityBundle</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:add0bfae85278da29d56cdb8e32ed1a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaae043565c645c4e3a2736f57d50edd5" id="r_aaae043565c645c4e3a2736f57d50edd5"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename RHSValueType  = ValueType, typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:aaae043565c645c4e3a2736f57d50edd5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aaae043565c645c4e3a2736f57d50edd5">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; strategy=std::make_shared&lt; <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">FaceBasedIterator</a> &gt;())</td></tr>
 <tr class="separator:aaae043565c645c4e3a2736f57d50edd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -520,6 +525,26 @@ template&lt;unsigned int I&gt; </div>
 
 </div>
 </div>
+<a id="add0bfae85278da29d56cdb8e32ed1a54" name="add0bfae85278da29d56cdb8e32ed1a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0bfae85278da29d56cdb8e32ed1a54">&#9670;&#160;</a></span>readOrCreateSparsityBundle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SystemSparsityType , typename BoundarySparsityType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1SharedSparsityBundle.html">SharedSparsityBundle</a>&lt; SystemSparsityType, BoundarySparsityType &gt; NeoN::la::readOrCreateSparsityBundle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aa6dd3553a28cafb95c58985e40e6cb7c" name="aa6dd3553a28cafb95c58985e40e6cb7c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa6dd3553a28cafb95c58985e40e6cb7c">&#9670;&#160;</a></span>removeBoundaryContributions()</h2>
 
@@ -549,7 +574,7 @@ template&lt;typename MatrixValueType , typename RHSValueType , typename SystemMa
 <p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
 <dl class="section note"><dt>Note</dt><dd>templated on the full <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html" title="A class representing a linear system of equations.">LinearSystem</a> parameter set so it also accepts the segregated vector-solve form (scalar matrix, <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> rhs): the scalar boundary diagonal is reversed on the scalar matrix while the rhs reversal uses the field (RHS) value type. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00442">442</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00448">448</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
