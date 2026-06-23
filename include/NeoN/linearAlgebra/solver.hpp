@@ -43,7 +43,13 @@ public:
 
     static std::unique_ptr<SolverFactory> create(const Executor& exec, const Dictionary& dict)
     {
-        auto key = dict.get<std::string>("solver");
+        // The backend is named by a string "solver" entry (e.g. "Ginkgo", "Petsc"). A
+        // dictionary-valued "solver" entry is instead an inline Ginkgo (inner-)solver spec --
+        // e.g. the inner solver of solver::Ir emitted by NeoFOAM's smoothSolver mapping -- which
+        // cannot also carry the backend name, so select the Ginkgo backend in that case.
+        std::string key = (dict.contains("solver") && !dict.isType<std::string>("solver"))
+                            ? std::string("Ginkgo")
+                            : dict.get<std::string>("solver");
         SolverFactory::keyExistsOrError(key);
         return SolverFactory::table().at(key)(exec, dict);
     }

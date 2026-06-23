@@ -14,8 +14,12 @@
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
-    // remove 'solver Ginkgo;' entry
-    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    // Strip the 'solver "Ginkgo"' backend-selection marker -- it is consumed by SolverFactory and
+    // is not a Ginkgo config key. Guard on the string type: a *dictionary*-valued "solver" entry is
+    // a real Ginkgo inner-solver spec (e.g. solver::Ir's inner smoother produced by the
+    // smoothSolver/twoStageGaussSeidel mapping) and must be passed through to Ginkgo rather than
+    // any_cast as a string (which would throw).
+    if (dict.isType<std::string>("solver") && dict.get<std::string>("solver") == "Ginkgo")
     {
         dict.remove("solver");
     }
