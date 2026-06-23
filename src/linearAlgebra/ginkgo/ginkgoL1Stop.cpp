@@ -24,6 +24,21 @@ using dist = gko::experimental::distributed::Vector<scalar>;
 // system reports a finite, well-defined scaled residual instead of 0/0.
 constexpr scalar normFactorSmall = 1e-20;
 
+// Copies a [1 × ncols] Dense result to host and returns the sum of all columns.
+// For scalar systems (ncols = 1) this is identical to retrieve(). For multi-column
+// systems (e.g. Vec3 mapped as [nrows × 3]) it sums the per-column contributions to
+// produce a single scalar norm/mean value for the stopping criterion.
+scalar sumRetrieve(const dense* d)
+{
+    const auto ncols = d->get_size()[1];
+    auto host = dense::create(d->get_executor()->get_master(), gko::dim<2> {1, ncols});
+    host->copy_from(d);
+    scalar total = 0;
+    for (gko::size_type c = 0; c < ncols; ++c)
+        total += host->at(0, c);
+    return total;
+}
+
 /* @brief Create a vector shaped like @p like (same executor / distribution) with every
  * entry equal to @p value. Overloaded per concrete vector type so the criterion below
  * stays a single implementation shared by the serial (Dense) and distributed paths.
@@ -51,19 +66,23 @@ std::unique_ptr<dist> makeConstantLike(const dist& like, scalar value)
 
 /* @brief L1 normalisation factor of a linear system, evaluated at x.
  *
- *   normFactor = sum_i ( |(A x)_i - (A xRef)_i| + |b_i - (A xRef)_i| ) + small
+ *   normFactor_i = sum_rows( |(A x)_{row,i} - (A xRef)_{row,i}| + |b_{row,i} - (A xRef)_{row,i}| )
+ *                 + small
  *
- * with xRef the constant field equal to mean(x); (A xRef) is the SpMV of A with that
- * constant field, which equals sumA_i * mean(x). The factor measures the spread of A x
- * and b about the reference state A xRef and scales the L1 residual so the reported
- * value is independent of the overall magnitude of the system.
+ * with xRef the constant field equal to mean(x) across all columns.  (A xRef) is the SpMV of A
+ * with that constant field.  The factor measures the spread of A x and b about the reference state
+ * A xRef and scales the L1 residual independently of the overall magnitude of the system.
+ *
+ * Returns:
+ *   .first  — combined normFactor: sum of per-column factors (used as the single stopping scalar)
+ *   .second — per-column normFactors (one entry per RHS column; size == ncols)
  *
  * Identical for serial and distributed systems: when VecType is a distributed vector,
  * compute_mean() and compute_norm1() perform the global (cross-rank) reductions, so the
  * factor is the global one with no extra MPI code here.
  */
 template<typename VecType>
-scalar computeL1NormFactor(
+std::pair<scalar, std::vector<scalar>> computeL1NormFactor(
     std::shared_ptr<const gko::Executor> exec,
     const gko::LinOp* mtx,
     const VecType* b,
@@ -72,14 +91,18 @@ scalar computeL1NormFactor(
 )
 {
     const auto one = gko::initialize<dense>({1.0}, exec);
+    const auto ncols = x->get_size()[1];
 
-    // xRef = mean(x) (global mean for a distributed vector)
-    auto meanDense = dense::create(exec, gko::dim<2> {1});
+    // xRef per column: for multi-RHS (e.g. Vec3 as [nrows×3]) each column gets its own
+    // reference state equal to that column's mean. This matches OpenFOAM's per-component
+    // L1 norm factor and ensures per-column residuals are computed correctly.
+    // For single-column solves (ncols=1) this is identical to the scalar mean.
+    auto meanDense = dense::create(exec, gko::dim<2> {1, ncols});
     x->compute_mean(meanDense);
-    const scalar xRef = retrieve(meanDense.get());
 
-    // A xRef, with xRef broadcast to a constant field (the only SpMV needed here)
-    auto xRefField = makeConstantLike(*x, xRef);
+    // xRefField[i][c] = mean(x[:,c]) for all rows i  (per-column constant field)
+    auto xRefField = makeConstantLike(*x, 1.0);
+    xRefField->scale(meanDense);
     auto Axref = makeConstantLike(*b, 0.0);
     mtx->apply(xRefField, Axref);
 
@@ -94,10 +117,22 @@ scalar computeL1NormFactor(
     auto term = bMinusAxref->compute_absolute();
     term->add_scaled(one, term2);
 
-    // sum over rows (entries already non-negative; global sum for a distributed vector)
-    auto nf = dense::create(exec, gko::dim<2> {1});
+    // Per-column norm1 (rows summed, one value per column; global sum for distributed)
+    auto nf = dense::create(exec, gko::dim<2> {1, ncols});
     term->compute_norm1(nf);
-    return retrieve(nf.get()) + normFactorSmall;
+
+    // Copy to host to extract per-column values
+    auto nh = dense::create(exec->get_master(), gko::dim<2> {1, ncols});
+    nh->copy_from(nf);
+
+    std::vector<scalar> perCol(ncols);
+    scalar combined = 0;
+    for (gko::size_type c = 0; c < ncols; ++c)
+    {
+        perCol[c] = nh->at(0, c) + normFactorSmall;
+        combined += perCol[c];
+    }
+    return {combined, perCol};
 }
 
 /* @brief Ginkgo stopping criterion based on the L1-scaled residual, shared by the serial
@@ -144,6 +179,16 @@ public:
         std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(final_residual, NULL);
 
         std::add_pointer<localIdx>::type GKO_FACTORY_PARAMETER_SCALAR(num_iters, NULL);
+
+        // Per-column scaled residual output for multi-RHS (Vec3) solves.
+        // When non-null, filled with one entry per column (size == ncols).
+        std::add_pointer<std::vector<scalar>>::type GKO_FACTORY_PARAMETER_SCALAR(
+            per_col_init_residuals, NULL
+        );
+
+        std::add_pointer<std::vector<scalar>>::type GKO_FACTORY_PARAMETER_SCALAR(
+            per_col_final_residuals, NULL
+        );
     };
 
     GKO_ENABLE_CRITERION_FACTORY(L1ResidualCriterion, parameters, Factory);
@@ -217,15 +262,19 @@ protected:
             r = rOwned.get();
         }
 
-        auto rNormDense = dense::create(exec, gko::dim<2> {1});
+        const auto ncols = r->get_size()[1];
+        auto rNormDense = dense::create(exec, gko::dim<2> {1, ncols});
         r->compute_norm1(rNormDense.get());
-        const scalar rNorm = retrieve(rNormDense.get());
+        const scalar rNorm = sumRetrieve(rNormDense.get());
 
+        const bool isFirstIter = firstIter_;
         if (firstIter_)
         {
-            normFactor_ = computeL1NormFactor<VecType>(
+            auto [combined, perCol] = computeL1NormFactor<VecType>(
                 exec, parameters_.matrix.get(), parameters_.b.get(), solution, r
             );
+            normFactor_ = combined;
+            perColNormFactor_ = std::move(perCol);
             initResidual_ = rNorm / normFactor_;
             if (parameters_.init_residual != NULL)
             {
@@ -242,6 +291,31 @@ protected:
         if (parameters_.num_iters != NULL)
         {
             *(parameters_.num_iters) = numIter;
+        }
+
+        // Per-column residuals for multi-RHS (Vec3) solves: copy rNormDense to host once and
+        // divide each column by its own normFactor for accurate per-component reporting.
+        const bool hasPerColOut = ncols > 1 && !perColNormFactor_.empty()
+                               && (parameters_.per_col_init_residuals != NULL
+                                   || parameters_.per_col_final_residuals != NULL);
+        if (hasPerColOut)
+        {
+            auto nh = dense::create(exec->get_master(), gko::dim<2> {1, ncols});
+            nh->copy_from(rNormDense);
+            if (isFirstIter && parameters_.per_col_init_residuals != NULL)
+            {
+                auto& out = *parameters_.per_col_init_residuals;
+                out.resize(ncols);
+                for (gko::size_type c = 0; c < ncols; ++c)
+                    out[c] = nh->at(0, c) / perColNormFactor_[c];
+            }
+            if (parameters_.per_col_final_residuals != NULL)
+            {
+                auto& out = *parameters_.per_col_final_residuals;
+                out.resize(ncols);
+                for (gko::size_type c = 0; c < ncols; ++c)
+                    out[c] = nh->at(0, c) / perColNormFactor_[c];
+            }
         }
 
         bool result = false;
@@ -279,6 +353,8 @@ private:
     mutable scalar normFactor_ = 1.0;
 
     mutable scalar initResidual_ = 0.0;
+
+    mutable std::vector<scalar> perColNormFactor_;
 };
 
 /* @brief Attach an L1ResidualCriterion to @p solver, run it, and report the scaled L1
@@ -298,19 +374,28 @@ L1ResidualResult attachL1StopAndSolve(
     scalar initResNorm = 0.0;
     scalar finalResNorm = 0.0;
     localIdx numIter = 0;
+    std::vector<scalar> perColInit, perColFinal;
 
-    auto criterion = L1ResidualCriterion<VecType>::build()
-                         .with_absolute_tolerance(control.tolerance)
-                         .with_relative_tolerance(control.relTol)
-                         .with_min_iter(control.minIter)
-                         .with_max_iter(control.maxIter)
-                         .with_check_frequency(control.checkFrequency)
-                         .with_matrix(mtx)
-                         .with_b(b)
-                         .with_init_residual(&initResNorm)
-                         .with_final_residual(&finalResNorm)
-                         .with_num_iters(&numIter)
-                         .on(exec);
+    const bool multiRhs = b->get_size()[1] > 1;
+
+    auto params = L1ResidualCriterion<VecType>::build()
+                      .with_absolute_tolerance(control.tolerance)
+                      .with_relative_tolerance(control.relTol)
+                      .with_min_iter(control.minIter)
+                      .with_max_iter(control.maxIter)
+                      .with_check_frequency(control.checkFrequency)
+                      .with_matrix(mtx)
+                      .with_b(b)
+                      .with_init_residual(&initResNorm)
+                      .with_final_residual(&finalResNorm)
+                      .with_num_iters(&numIter);
+
+    if (multiRhs)
+    {
+        params.with_per_col_init_residuals(&perColInit).with_per_col_final_residuals(&perColFinal);
+    }
+
+    auto criterion = params.on(exec);
 
     auto* iterative = dynamic_cast<gko::solver::IterativeBase*>(solver);
     if (iterative == nullptr)
@@ -321,7 +406,13 @@ L1ResidualResult attachL1StopAndSolve(
 
     solver->apply(b, x);
 
-    return {numIter, initResNorm, finalResNorm};
+    L1ResidualResult result {numIter, initResNorm, finalResNorm};
+    if (multiRhs)
+    {
+        result.perColInitNorms = std::move(perColInit);
+        result.perColFinalNorms = std::move(perColFinal);
+    }
+    return result;
 }
 
 } // namespace

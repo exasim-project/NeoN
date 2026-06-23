@@ -48,6 +48,13 @@ public:
     KOKKOS_INLINE_FUNCTION
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
+    // KOKKOS_INLINE_FUNCTION (i.e. __host__ __device__) so element access is valid inside device
+    // kernels, consistent with the other accessors below. NOTE: this forwards to
+    // std::span::operator[], itself a bare constexpr __host__ function, so on CUDA correctness
+    // still relies on --expt-relaxed-constexpr (enabled via Kokkos_ENABLE_CUDA_CONSTEXPR=ON in
+    // cmake/AutoEnableDevice.cmake). Without that flag nvcc miscompiles the device write silently
+    // (warning 20013); the build promotes that warning to an error to prevent shipping it.
+    KOKKOS_INLINE_FUNCTION
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG

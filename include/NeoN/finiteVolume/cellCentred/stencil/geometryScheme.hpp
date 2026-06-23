@@ -76,6 +76,14 @@ public:
 
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s() const;
 
+    // Vector from the owner cell centre to the face centre (Cf - C_own), one per internal face.
+    // Cached here because the underlying cell/face centres are freed by reset(); schemes that need
+    // a cell-to-face offset (e.g. linearUpwind's gradient correction) read it from this object.
+    const SurfaceField<Vec3>& faceDeltaOwner() const;
+
+    // Vector from the neighbour cell centre to the face centre (Cf - C_nei), one per internal face.
+    const SurfaceField<Vec3>& faceDeltaNeighbour() const;
+
     void update();
 
     // Frees the mesh's per-cell/face centre arrays after update() to save device memory;
@@ -99,6 +107,8 @@ private:
     SurfaceField<scalar> weights_;
     SurfaceField<scalar> nonOrthDeltaCoeffs_;
     SurfaceField<Vec3> nonOrthCorrectionVec3s_;
+    SurfaceField<Vec3> faceDeltaOwner_;
+    SurfaceField<Vec3> faceDeltaNeighbour_;
 };
 
 } // namespace NeoN

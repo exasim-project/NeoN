@@ -18,6 +18,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" // these are required for registration
 
 namespace nb = nanobind;
 using namespace nb::literals;

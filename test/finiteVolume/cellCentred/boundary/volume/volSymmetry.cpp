@@ -7,11 +7,12 @@
 
 #include "NeoN/NeoN.hpp"
 
-TEST_CASE("symmetry_volume")
+TEST_CASE("symmetry_slip_volume")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
+    auto bcName = GENERATE(std::string("symmetry"), std::string("slip"));
 
-    SECTION("TestDerivedClass" + execName)
+    SECTION("TestDerivedClass" + execName + "_" + bcName)
     {
         auto mesh = NeoN::createSingleCellMesh(exec);
 
@@ -28,7 +29,7 @@ TEST_CASE("symmetry_volume")
             NeoN::Dictionary dict;
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
-                    "symmetry", mesh, dict, 0
+                    bcName, mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
@@ -70,7 +71,7 @@ TEST_CASE("symmetry_volume")
             NeoN::Dictionary dict;
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
-                    "symmetry", mesh, dict, 0
+                    bcName, mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);

@@ -246,6 +246,11 @@ public:
      */
     localIdx nBoundaries() const { return offset_.size() - 1; }
 
+
+    const Vector<localIdx>& getRowOrderWriteIndex() const;
+
+    const std::vector<localIdx>& getRowSortPerm() const;
+
     /**
      * @brief Get the number of the boundary faces.
      */
@@ -341,6 +346,12 @@ private:
      * @brief The mpi rank of the corresponding neighbour patch
      */
     std::vector<localIdx> neighbourRank_;
+
+    Vector<localIdx> rowOrderWriteIndex_;
+
+    std::vector<localIdx> rowSortPerm_;
+
+    void computeRowOrderWriteIndex();
 };
 
 } // namespace NeoN

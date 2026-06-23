@@ -15,6 +15,7 @@
 #include "boundary/volume/fixedValue.hpp"
 #include "boundary/volume/fixedGradient.hpp"
 #include "boundary/volume/symmetry.hpp"
+#include "boundary/volume/slip.hpp"
 
 #include "boundary/surface/empty.hpp"
 #include "boundary/surface/calculated.hpp"
@@ -123,6 +124,9 @@ template class fvcc::volumeBoundary::Empty<Vec3>;
 
 template class fvcc::volumeBoundary::Symmetry<scalar>;
 template class fvcc::volumeBoundary::Symmetry<Vec3>;
+
+template class fvcc::volumeBoundary::Slip<scalar>;
+template class fvcc::volumeBoundary::Slip<Vec3>;
 
 template class fvcc::SurfaceBoundaryFactory<scalar>;
 template class fvcc::SurfaceBoundaryFactory<Vec3>;

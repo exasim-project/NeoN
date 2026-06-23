@@ -136,6 +136,9 @@ public:
     LinearSystem(const LinearSystem& ls)
         : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
           offDiagonalMatrix_(ls.offDiagonalMatrix_), boundaryRhs_(ls.boundaryRhs_),
+          // TODO move to a different location since this seems to be unrelated to linearSystem
+          faceFluxCorrection_(ls.faceFluxCorrection_),
+          keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
           meshIteratorContext_(ls.meshIteratorContext_)
 #ifdef NF_WITH_MPI_SUPPORT
           ,
@@ -207,6 +210,31 @@ public:
 
         return matrixValuesEqual(matrix_.values(), other.matrix().values(), tolerance);
     }
+
+    // Optional per-internal-face deferred flux correction — the OpenFOAM
+    // fvMatrix::faceFluxCorrectionPtr_ analogue. Populated by a corrected/limitedCorrected
+    // Laplacian assembly with the SAME per-face correction it deferred to the RHS, so the flux
+    // reconstruction phi = phiHbyA - pEqn.flux() (NeoFOAM updateFaceVelocity) can add it back and
+    // close div(phi) on non-orthogonal meshes. Null when no corrected Laplacian contributed
+    // (orthogonal / uncorrected schemes); never cleared by reset() since each corrected assembly
+    // overwrites every internal-face entry.
+    [[nodiscard]] std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection()
+    {
+        return faceFluxCorrection_;
+    }
+
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection() const
+    {
+        return faceFluxCorrection_;
+    }
+
+    // Whether Laplacian assembly should populate faceFluxCorrection() for this system. Off by
+    // default; only the consumer that reconstructs the flux (the scalar pressure equation, via
+    // NeoFOAM updateFaceVelocity) opts in, so momentum / turbulence systems — which never
+    // reconstruct flux — allocate nothing for the correction.
+    [[nodiscard]] bool keepFaceFluxCorrection() const { return keepFaceFluxCorrection_; }
+
+    void keepFaceFluxCorrection(bool keep) { keepFaceFluxCorrection_ = keep; }
 
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
@@ -363,6 +391,13 @@ private:
 
     Vector<RHSValueType> boundaryRhs_;
 
+    // see faceFluxCorrection(). shared_ptr so the
+    // (existing) member-wise copy ctor and the default-constructed empty state stay cheap.
+    std::shared_ptr<Vector<RHSValueType>> faceFluxCorrection_ = nullptr;
+
+    // Opt-in toggle for faceFluxCorrection_ storage; see keepFaceFluxCorrection().
+    bool keepFaceFluxCorrection_ = false;
+
     Dictionary auxiliaryCoefficients_;
 
     std::shared_ptr<MeshIteratorContext> meshIteratorContext_ = nullptr;
@@ -408,30 +443,30 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
         Vector<IndexType> colH(SerialExecutor {}, nProcFaces, 0);
         auto rowHV = rowH.view();
         auto colHV = colH.view();
-        const auto globalOffset = static_cast<IndexType>(mesh.globalOffset());
         for (localIdx i = 0; i < nProcFaces; ++i)
         {
-            rowHV[i] = faceOwnersV[nBoundaryFaces + i] + globalOffset;
+            // Store the local row index directly. The global offset used to be added here and
+            // subtracted again on the Ginkgo side; keeping the rows local avoids that round-trip.
+            // The column index stays global (it identifies a remote cell) and is consumed by
+            // Ginkgo's distributed index_map.
+            rowHV[i] = faceOwnersV[nBoundaryFaces + i];
             colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
         }
-        offDiagRowIdxs = rowH.copyToExecutor(exec);
-        offDiagColIdxs = colH.copyToExecutor(exec);
-
-        // TODO: find a better home for this computation (together with
-        // CommunicationPattern::offDiagRowSortPerm, possibly the boundary mesh) — it is
-        // sparsity/topology setup, not linear-system assembly.
-        // Precompute the row-sort permutation of the off-diagonal (processor-face) entries.
-        // Ginkgo's CUDA Coo::apply2 requires the non-local COO sorted by global row; computing
-        // the permutation here (once, at off-diagonal creation) lets createGkoMtxDist apply it
-        // instead of re-sorting on every matrix build. Stable to keep a deterministic order
-        // within a row. offDiagRowSortPerm[i] = proc-face index whose value belongs at sorted i.
-        std::vector<localIdx> offDiagRowSortPerm(static_cast<std::size_t>(nProcFaces));
-        std::iota(offDiagRowSortPerm.begin(), offDiagRowSortPerm.end(), localIdx {0});
-        std::stable_sort(
-            offDiagRowSortPerm.begin(),
-            offDiagRowSortPerm.end(),
-            [&](localIdx a, localIdx b) { return rowHV[a] < rowHV[b]; }
-        );
+        // offDiagRowSortPerm[j] = proc-face index whose row/col belongs at sorted position j.
+        // Already computed (and stored) in BoundaryMesh; reuse it here to avoid re-sorting.
+        const auto& offDiagRowSortPerm = mesh.boundaryMesh().getRowSortPerm();
+        {
+            std::vector<IndexType> sortedRow(static_cast<std::size_t>(nProcFaces));
+            std::vector<IndexType> sortedCol(static_cast<std::size_t>(nProcFaces));
+            for (localIdx j = 0; j < nProcFaces; ++j)
+            {
+                auto src = offDiagRowSortPerm[static_cast<std::size_t>(j)];
+                sortedRow[static_cast<std::size_t>(j)] = rowHV[src];
+                sortedCol[static_cast<std::size_t>(j)] = colHV[src];
+            }
+            offDiagRowIdxs = Vector<IndexType>(exec, std::move(sortedRow));
+            offDiagColIdxs = Vector<IndexType>(exec, std::move(sortedCol));
+        }
         commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);
     }
 #endif

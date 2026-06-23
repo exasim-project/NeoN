@@ -11,6 +11,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -68,6 +69,27 @@ public:
         const VolumeField<ValueType>& src,
         SurfaceField<scalar>& weight
     ) const = 0;
+
+    /* @brief Whether this scheme adds an explicit (deferred) correction on top of its implicit
+     * weights, e.g. linearUpwind. For corrected schemes interpolate() returns the weighted value
+     * plus correction(); implicit assemblers add surfaceIntegrate(faceFlux*correction()) to the
+     * rhs.
+     */
+    virtual bool corrected() const { return false; }
+
+    /* @brief The explicit correction part of interpolate(), i.e. interpolate() minus the value
+     * reconstructed from weight(). Defaults to zero for uncorrected schemes; assemblers only call
+     * it when corrected() returns true.
+     */
+    virtual void correction(
+        [[maybe_unused]] const SurfaceField<scalar>& flux,
+        [[maybe_unused]] const VolumeField<ValueType>& src,
+        SurfaceField<ValueType>& corr
+    ) const
+    {
+        fill(corr.internalVector(), zero<ValueType>());
+        fill(corr.boundaryData().value(), zero<ValueType>());
+    }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const = 0;
@@ -133,6 +155,17 @@ public:
     ) const
     {
         interpolationKernel_->weight(flux, src, weight);
+    }
+
+    bool corrected() const { return interpolationKernel_->corrected(); }
+
+    void correction(
+        const SurfaceField<scalar>& flux,
+        const VolumeField<ValueType>& src,
+        SurfaceField<ValueType>& corr
+    ) const
+    {
+        interpolationKernel_->correction(flux, src, corr);
     }
 
 

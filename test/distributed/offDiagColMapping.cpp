@@ -44,6 +44,11 @@ TEST_CASE("OffDiagonal column mapping (2x2 multi-patch)")
     auto colIdxH = offDiag->colIdxs().copyToHost();
     const auto colIdx = colIdxH.view();
 
+    // colIdxs are stored in row-sorted order (ascending faceOwner). Use rowOrderWriteIndex
+    // to translate from original proc-face index to its sorted position.
+    auto rowOrderVec = meshPart.boundaryMesh().getRowOrderWriteIndex().copyToHost();
+    const auto rowOrder = rowOrderVec.view();
+
     const auto nProcFaces = meshPart.nProcBoundaryFaces();
     const auto nBoundaryFaces = meshPart.nBoundaryFaces();
     const auto& offsets = meshPart.boundaryMesh().offset();
@@ -56,6 +61,8 @@ TEST_CASE("OffDiagonal column mapping (2x2 multi-patch)")
         // For each local processor face, determine the neighbour rank from its patch
         // (proc-patch / offset order), then assert colIdx falls in that rank's global
         // cell range [neigh*nCellsPerRank, (neigh+1)*nCellsPerRank).
+        // colIdxs are stored in row-sorted order, so use rowOrder[pfacei] to look up
+        // the column index for original proc face pfacei.
         for (localIdx p = 0; p < nProcPatches; ++p)
         {
             const auto patchStart = offsets[static_cast<std::size_t>(nInnerBoundaries + p)];
@@ -69,7 +76,7 @@ TEST_CASE("OffDiagonal column mapping (2x2 multi-patch)")
             for (localIdx bf = patchStart; bf < patchEnd; ++bf)
             {
                 const localIdx pfacei = bf - nBoundaryFaces;
-                const auto col = colIdx[pfacei];
+                const auto col = colIdx[rowOrder[pfacei]];
                 INFO(
                     "rank " << rank << " patch " << p << " neigh " << neigh << " pfacei " << pfacei
                             << " colIdx " << col << " expected in [" << lo << "," << hi << ")"

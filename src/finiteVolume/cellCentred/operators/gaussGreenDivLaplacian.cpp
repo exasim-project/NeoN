@@ -4,8 +4,11 @@
 
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 #include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -263,6 +266,7 @@ static void computeDivLaplacianProcBoundImpl(
     auto bOffValues = ls.offDiagonalMatrix().values().view();
     auto bndDiagValues = ls.boundaryMatrix().values().view();
     auto values = ls.matrix().values().view();
+    const auto rowOrderV = mesh.boundaryMesh().getRowOrderWriteIndex().view();
 
     parallelFor(
         exec,
@@ -290,7 +294,7 @@ static void computeDivLaplacianProcBoundImpl(
             auto diagValue = divDiag + lapValue;
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagValue);
             bndDiagValues[bcfacei] += diagValue;
-            bOffValues[procFacei] += divOffDiag + lapValue;
+            bOffValues[rowOrderV[procFacei]] += divOffDiag + lapValue;
         },
         "computeProcInterfaceGaussGreenDivLaplacianCoefficients"
     );
@@ -351,6 +355,7 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
             coeffB_
         );
     }
+    computeLaplacianNonOrthCorrImpl(ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_);
     computeDivLaplacianBoundImpl(
         ls,
         this->getVector(),
@@ -371,6 +376,21 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
         coeffA_,
         coeffB_
     );
+
+    // Deferred correction for a corrected div scheme (e.g. linearUpwind): the fused matrix uses
+    // upwind div weights, the gradient correction is added explicitly to the rhs (internal + proc).
+    if (divSurfaceInterpolation_->corrected())
+    {
+        const auto& mesh = this->getVector().mesh();
+        SurfaceField<ValueType> correction(
+            this->getVector().exec(),
+            "divCorrection",
+            mesh,
+            createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+        );
+        divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
+        addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
+    }
 }
 
 template<typename ValueType>
@@ -410,6 +430,9 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
             coeffB_
         );
     }
+    computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
+        ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
+    );
     computeDivLaplacianBoundImpl<ValueType, scalar>(
         ls,
         this->getVector(),
@@ -430,6 +453,20 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
         coeffA_,
         coeffB_
     );
+
+    // Deferred correction for a corrected div scheme (e.g. linearUpwind), scalar-matrix / Vec3-rhs.
+    if (divSurfaceInterpolation_->corrected())
+    {
+        const auto& mesh = this->getVector().mesh();
+        SurfaceField<ValueType> correction(
+            this->getVector().exec(),
+            "divCorrection",
+            mesh,
+            createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+        );
+        divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
+        addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
+    }
 }
 
 template<typename ValueType>
@@ -453,11 +490,13 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     laplTokens.remove(0);
     divTokens.remove(0);
 
-    if (divTokens.get<std::string>(0) != "upwind")
+    const auto divScheme = divTokens.get<std::string>(0);
+    if (divScheme != "upwind" && divScheme != "linearUpwind")
     {
         NF_ERROR_EXIT(
-            "GaussGreenDivLaplacian only supports 'Gauss upwind' for divSchemes, got: Gauss "
-            << divTokens.get<std::string>(0)
+            "GaussGreenDivLaplacian only supports 'Gauss upwind' or 'Gauss linearUpwind' for "
+            "divSchemes, got: Gauss "
+            << divScheme
         );
     }
     divSurfaceInterpolation_ =
@@ -465,11 +504,6 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     laplTokens.remove(0);
     faceNormalGradient_ =
         std::make_shared<FaceNormalGradient<ValueType>>(this->field_.exec(), mesh, laplTokens);
-    if (faceNormalGradient_->hasImplicitCorrection())
-    {
-        NF_ERROR_EXIT("GaussGreenDivLaplacian does not support non-orthogonal correction. "
-                      "Use 'Gauss linear uncorrected' for laplacianSchemes.");
-    }
 }
 
 template<typename ValueType>

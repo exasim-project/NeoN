@@ -119,21 +119,23 @@ TEST_CASE("Distributed Operator - scalar")
     // row 11: 2 entries). Proc-boundary off-diagonal entries sit at:
     //   off(3,4)=global[10], off(4,3)=global[11], off(7,8)=global[22], off(8,7)=global[23].
     // These are excluded from each rank's main matrix and stored in offDiagonalMatrix instead.
+    //
+    // rowIdxs are stored as LOCAL row indices (no global offset applied), colIdxs stay global as
+    // they identify the remote neighbour cell.
     SECTION("Correct offDiagonalMatrix on partitioned mesh")
     {
-        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 offDiagonalMatrix matches global off(3,4)")
+        SECTION_IF(mpiEnviron.rank() == 0, "Rank 0 offDiagonalMatrix matches off(3,4)")
         {
             REQUIRE_THAT(
                 lsDst.offDiagonalMatrix().values(), Equals(take(ls.matrix().values(), {10, 11}))
             );
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
+            // global offset on rank 0 is 0, so local row index equals global cell 3
             REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {3}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {4}, EqualInt()));
         }
-        SECTION_IF(
-            mpiEnviron.rank() == 1, "Rank 1 offDiagonalMatrix matches global off(4,3) and off(7,8)"
-        )
+        SECTION_IF(mpiEnviron.rank() == 1, "Rank 1 offDiagonalMatrix matches off(4,3) and off(7,8)")
         {
             auto globalHost = ls.matrix().values().copyToHost();
             auto globalView = globalHost.view();
@@ -141,17 +143,19 @@ TEST_CASE("Distributed Operator - scalar")
             REQUIRE_THAT(lsDst.offDiagonalMatrix().values(), Equals(expected));
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {4, 7}, EqualInt()));
+            // global offset on rank 1 is 4, so global cells 4 and 7 map to local rows 0 and 3
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0, 3}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {3, 8}, EqualInt()));
         }
-        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 offDiagonalMatrix matches global off(8,7)")
+        SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 offDiagonalMatrix matches off(8,7)")
         {
             REQUIRE_THAT(
                 lsDst.offDiagonalMatrix().values(), Equals(take(ls.matrix().values(), {23, 24}))
             );
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {8}, EqualInt()));
+            // global offset on rank 2 is 8, so global cell 8 maps to local row 0
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {7}, EqualInt()));
         }
     }
@@ -297,7 +301,9 @@ TEST_CASE("Distributed Operator - vec3")
             REQUIRE_THAT(lsDst.offDiagonalMatrix().values(), Equals(expected));
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {4, 7}, EqualInt()));
+            // rowIdxs are LOCAL row indices; global offset on rank 1 is 4, so global cells
+            // 4 and 7 map to local rows 0 and 3 (already in ascending order after sorting).
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0, 3}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {3, 8}, EqualInt()));
         }
         SECTION_IF(mpiEnviron.rank() == 2, "Rank 2 offDiagonalMatrix matches global off(8,7)")
@@ -307,7 +313,9 @@ TEST_CASE("Distributed Operator - vec3")
             );
             std::shared_ptr<const NeoN::la::CooSparsityPattern<localIdx>> cooSparsity =
                 lsDst.offDiagonalMatrix().sparsity();
-            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {8}, EqualInt()));
+            // rowIdxs are LOCAL row indices; global offset on rank 2 is 8, so global cell
+            // 8 maps to local row 0.
+            REQUIRE_THAT(cooSparsity->rowIdxs(), Equals(I {0}, EqualInt()));
             REQUIRE_THAT(cooSparsity->colIdxs(), Equals(I {7}, EqualInt()));
         }
     }
@@ -453,6 +461,125 @@ TEST_CASE("Distributed Operator - scalar matrix, Vec3 rhs")
         REQUIRE_THAT(xPart, Equals(take(x, {8, 12}), Approx {1e-4}));
     }
 #endif
+}
+
+#if NF_WITH_GINKGO
+TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix values_")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    auto inputPart = GENERATE_INPUT("upwind", "Part");
+
+    constexpr int nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(meshGlobal);
+    auto u = finiteVolume::cellCentred::VolumeField<scalar>(
+        exec, "U", meshGlobal, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(meshGlobal);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", meshGlobal, surfaceBCs);
+    auto gamma =
+        finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", meshGlobal, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    dsl::SetReference<scalar, localIdx> setRef(0, 0.0);
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto exprDist = dsl::imp::div(phiPart, uPart) - dsl::imp::laplacian(gammaPart, uPart);
+    exprDist.read(inputPart);
+    auto lsDst = exprDist.assemble(meshPart, 1.0, 1.0, {&setRef});
+
+    // Build the distributed Ginkgo matrix
+    auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+    const CommunicationPattern& commPattern = lsDst.commPattern();
+    auto comm = gko::experimental::mpi::communicator(
+        commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
+    );
+    auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
+        gkoExec, comm, lsDst.matrix(), lsDst.offDiagonalMatrix(), commPattern
+    );
+
+    // The local CSR block must share memory with lsDst.matrix().values_
+    using dist_mtx = gko::experimental::distributed::Matrix<scalar, label, gko::int64>;
+    const auto* distMtxPtr = gko::as<const dist_mtx>(gkoMtx.get());
+    auto localLinOp = distMtxPtr->get_local_matrix();
+    const auto* localCsr = gko::as<const gko::matrix::Csr<scalar, localIdx>>(localLinOp.get());
+
+    REQUIRE(localCsr->get_const_values() == lsDst.matrix().values().data());
+}
+#endif // NF_WITH_GINKGO
+
+// Validates the linearUpwind deferred correction across processor boundaries AND through the fused
+// div-laplacian operator. The correction is isolated as rhs(linearUpwind) - rhs(upwind) (everything
+// else in the fused operator is identical), and the partitioned correction must match the global
+// serial correction slice on every rank. The proc-face owner-side-correction exchange reproduces
+// the global internal-face correction (a randomised field gives a non-trivial gradient).
+TEST_CASE("Distributed Operator - linearUpwind deferred correction (fused)")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const auto nCells = 12;
+    auto meshGlobal = create1DUniformMesh(exec, nCells);
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto volBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    auto u = finiteVolume::cellCentred::VolumeField<scalar>(
+        exec, "U", mesh, Vector<scalar>(exec, nCells, 2.0 * one<scalar>()), volBCs
+    );
+    srand(42);
+    randomizeVector(u);
+    u.correctBoundaryConditions();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    auto phi = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "phi", mesh, surfaceBCs);
+    auto gamma = finiteVolume::cellCentred::SurfaceField<scalar>(exec, "gamma", mesh, surfaceBCs);
+    fill(phi.internalVector(), 1.0);
+    srand(42);
+    randomizeVector(phi.internalVector());
+    fill(gamma.internalVector(), 2.0);
+
+    auto assembleRhsHost =
+        [&](UnstructuredMesh& m, auto& uF, auto& phiF, auto& gammaF, const NeoN::Dictionary& inp)
+    {
+        auto e = dsl::imp::div(phiF, uF) - dsl::imp::laplacian(gammaF, uF);
+        e.read(inp);
+        return e.assemble(m, 1.0, 1.0, {}).rhs().copyToHost();
+    };
+
+    auto rhsUpw = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("upwind", ""));
+    auto rhsLin = assembleRhsHost(mesh, u, phi, gamma, GENERATE_INPUT("linearUpwind", ""));
+
+    NeoN::mpi::Environment mpiEnviron;
+    auto meshPart = create1DUniformMeshPart(exec, meshGlobal.nCells() / mpiEnviron.sizeRank());
+    auto uPart = detail::oneDPartitionField(u, meshPart, mpiEnviron);
+    auto phiPart = detail::oneDPartitionField(phi, meshPart, mpiEnviron);
+    auto gammaPart = detail::oneDPartitionField(gamma, meshPart, mpiEnviron);
+
+    auto rhsUpwP =
+        assembleRhsHost(meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("upwind", "Part"));
+    auto rhsLinP = assembleRhsHost(
+        meshPart, uPart, phiPart, gammaPart, GENERATE_INPUT("linearUpwind", "Part")
+    );
+
+    const auto localCells = nCells / mpiEnviron.sizeRank();
+    const localIdx offset = static_cast<localIdx>(mpiEnviron.rank()) * localCells;
+    for (localIdx i = 0; i < localCells; ++i)
+    {
+        const scalar globalCorr = rhsLin.view()[offset + i] - rhsUpw.view()[offset + i];
+        const scalar partCorr = rhsLinP.view()[i] - rhsUpwP.view()[i];
+        INFO("rank " << mpiEnviron.rank() << " local cell " << i);
+        REQUIRE(partCorr == Catch::Approx(globalCorr).margin(1e-9));
+    }
 }
 
 }
