@@ -91,51 +91,57 @@
 \DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{comment}{//\ Vector\ from\ the\ neighbour\ cell\ centre\ to\ the\ face\ centre\ (Cf\ -\/\ C\_nei),\ one\ per\ internal\ face.}}
 \DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00088}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_af447dfa1709f7f53d9b66411b6de94a1}{00088}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_af447dfa1709f7f53d9b66411b6de94a1}{faceDeltaNeighbour}}()\ \textcolor{keyword}{const};}
 \DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00089}00089\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{comment}{//\ Opt-\/in\ trigger\ for\ the\ faceDelta*\ fields.\ Computes\ them\ (from\ the\ still-\/live\ mesh\ centres)}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{comment}{//\ and\ then\ releases\ the\ source\ geometry.\ Consumers\ that\ need\ faceDelta*\ (linearUpwind)\ call}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{comment}{//\ this\ in\ their\ constructor\ —\ while\ the\ mesh\ centres\ are\ guaranteed\ alive\ —\ because\ reset()}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{comment}{//\ frees\ those\ centres\ on\ the\ first\ read\ of\ any\ cached\ geometry\ field.\ Idempotent;\ const\ so\ it}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{comment}{//\ is\ reachable\ through\ the\ shared\ (read-\/only)\ GeometryScheme\ handle.\ No-\/op\ cost\ after\ the\ first}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{comment}{//\ call\ is\ a\ single\ bool\ check.}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a64e903b8f042e916ae456ac413c2d9b4}{00096}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a64e903b8f042e916ae456ac413c2d9b4}{ensureFaceDeltas}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00097}00097\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00098}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ab67d199285124264e5183829810892a3}{00098}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ab67d199285124264e5183829810892a3}{update}}();}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00099}00099\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ Frees\ the\ mesh's\ per-\/cell/face\ centre\ arrays\ once\ the\ geometry-\/scheme\ fields\ are\ cached,\ to}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{//\ save\ device\ memory.\ Deferred\ (lazy\ +\ idempotent):\ triggered\ on\ the\ first\ read\ of\ any\ cached}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ geometry\ field,\ or\ by\ ensureFaceDeltas()\ right\ after\ the\ faceDelta*\ fields\ are\ built\ —\ not\ in}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ update(),\ so\ that\ a\ late\ faceDelta*\ opt-\/in\ can\ still\ read\ the\ centres.}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{//\ TODO:\ check\ if\ we\ can\ remove\ the\ temporary\ fields\ from\ the\ unstructured\ mesh}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ altogether:\ compute\ the\ geometry-\/scheme\ data\ explicitly\ first\ and\ pass\ it\ as\ an}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{comment}{//\ argument,\ instead\ of\ freeing\ mesh\ members\ after\ the\ fact.}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00107}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ae82feba1c88e28550aa6afcfc7df00ab}{00107}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ae82feba1c88e28550aa6afcfc7df00ab}{reset}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00108}00108\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00109}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a9eac922e0d9a4f6fa3a2dd5370fbb314}{00109}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a9eac922e0d9a4f6fa3a2dd5370fbb314}{name}}()\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00110}00110\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{comment}{//\ add\ selection\ mechanism\ via\ dictionary\ later}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00112}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_aa392cd10062a4118571aa71a5c7ce61b}{00112}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_aa392cd10062a4118571aa71a5c7ce61b}{readOrCreate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00113}00113\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00114}00114\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00115}00115\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00116}00116\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00118}00118\ \ \ \ \ std::unique\_ptr<GeometrySchemeFactory>\ kernel\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{comment}{//\ Opt-\/in\ trigger\ for\ the\ faceDelta*\ fields.\ Computes\ them\ from\ the\ mesh\ centres\ (which\ the}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{comment}{//\ scheme\ keeps\ resident\ until\ this\ runs),\ then\ releases\ those\ centres\ via}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00092}00092\ \ \ \ \ \textcolor{comment}{//\ releaseSourceGeometry().\ Consumers\ that\ need\ faceDelta*\ (linearUpwind)\ call\ this\ in\ their}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00093}00093\ \ \ \ \ \textcolor{comment}{//\ constructor;\ because\ the\ centres\ are\ not\ freed\ as\ a\ side\ effect\ of\ reading\ a\ cached\ field,}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{comment}{//\ the\ call\ is\ valid\ at\ any\ point\ in\ the\ scheme's\ lifetime,\ independent\ of\ construction\ order}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{comment}{//\ relative\ to\ other\ schemes.\ Idempotent;\ const\ so\ it\ is\ reachable\ through\ the\ shared}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{comment}{//\ (read-\/only)\ GeometryScheme\ handle.\ No-\/op\ cost\ after\ the\ first\ call\ is\ a\ single\ bool\ check.}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00097}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a64e903b8f042e916ae456ac413c2d9b4}{00097}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a64e903b8f042e916ae456ac413c2d9b4}{ensureFaceDeltas}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00099}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ab67d199285124264e5183829810892a3}{00099}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_ab67d199285124264e5183829810892a3}{update}}();}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{//\ Frees\ the\ mesh's\ per-\/point/cell/face\ centre\ arrays\ to\ save\ device\ memory\ (\string~3\ GB\ at\ 18M}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ cells).\ Auto-\/invoked\ exactly\ once\ at\ the\ tail\ of\ ensureFaceDeltas()\ —\ right\ after\ the}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ faceDelta*\ opt-\/in\ has\ consumed\ the\ centres,\ the\ single\ point\ where\ freeing\ is\ provably\ safe.}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{//\ It\ is\ deliberately\ NOT\ triggered\ by\ the\ field\ accessors:\ doing\ so\ used\ to\ free\ the\ centres}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ before\ a\ late\ linearUpwind\ opt-\/in\ (constructed\ after\ another\ scheme\ on\ the\ same\ cached}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{comment}{//\ GeometryScheme\ had\ read\ a\ field)\ could\ compute\ the\ faceDelta*.\ Runs\ that\ never\ opt\ in\ (no}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{comment}{//\ linearUpwind)\ never\ call\ ensureFaceDeltas(),\ so\ they\ keep\ the\ centres\ resident.\ May\ also\ be}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{comment}{//\ called\ explicitly\ by\ a\ caller\ certain\ no\ further\ opt-\/in\ will\ occur.\ Idempotent\ via}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{comment}{//\ sourceGeometryReleased\_.}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{comment}{//\ TODO:\ check\ if\ we\ can\ remove\ the\ temporary\ fields\ from\ the\ unstructured\ mesh}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{comment}{//\ altogether:\ compute\ the\ geometry-\/scheme\ data\ explicitly\ first\ and\ pass\ it\ as\ an}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{comment}{//\ argument,\ instead\ of\ freeing\ mesh\ members\ after\ the\ fact.}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00113}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a8002653596aa053c660f66daa71adce5}{00113}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a8002653596aa053c660f66daa71adce5}{releaseSourceGeometry}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00115}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a9eac922e0d9a4f6fa3a2dd5370fbb314}{00115}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_a9eac922e0d9a4f6fa3a2dd5370fbb314}{name}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{comment}{//\ add\ selection\ mechanism\ via\ dictionary\ later}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00118}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_aa392cd10062a4118571aa71a5c7ce61b}{00118}}\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme_aa392cd10062a4118571aa71a5c7ce61b}{readOrCreate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
 \DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00119}00119\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00120}00120\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ weights\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00121}00121\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ nonOrthDeltaCoeffs\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00122}00122\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\ nonOrthCorrectionVec3s\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00123}00123\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00124}00124\ \ \ \ \ \textcolor{comment}{//\ Lazily\ allocated\ and\ filled:\ empty\ until\ a\ consumer\ opts\ in\ via\ ensureFaceDeltas()\ (or\ first}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00125}00125\ \ \ \ \ \textcolor{comment}{//\ reads\ them).\ A\ run\ that\ never\ selects\ linearUpwind\ leaves\ these\ nullopt,\ saving}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00126}00126\ \ \ \ \ \textcolor{comment}{//\ 2\ *\ nInternalFaces\ *\ sizeof(Vec3)\ of\ device\ memory\ (\string~2.6\ GB\ on\ an\ 18M-\/cell\ mesh).\ mutable\ so}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{comment}{//\ the\ const\ accessors\ /\ ensureFaceDeltas()\ can\ populate\ them\ through\ the\ shared\ handle.}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00128}00128\ \ \ \ \ \textcolor{keyword}{mutable}\ std::optional<SurfaceField<Vec3>>\ faceDeltaOwner\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00129}00129\ \ \ \ \ \textcolor{keyword}{mutable}\ std::optional<SurfaceField<Vec3>>\ faceDeltaNeighbour\_;}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00130}00130\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{bool}\ faceDeltasComputed\_\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00131}00131\ \ \ \ \ \textcolor{comment}{//\ Guards\ the\ one-\/shot,\ deferred\ release\ of\ the\ mesh\ centre\ arrays\ (see\ reset()).}}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{bool}\ sourceGeometryReleased\_\ =\ \textcolor{keyword}{false};}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00133}00133\ \};}
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00134}00134\ }
-\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00135}00135\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00120}00120\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00124}00124\ \ \ \ \ std::unique\_ptr<GeometrySchemeFactory>\ kernel\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00126}00126\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ weights\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00127}00127\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ nonOrthDeltaCoeffs\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00128}00128\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\ nonOrthCorrectionVec3s\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00130}00130\ \ \ \ \ \textcolor{comment}{//\ Lazily\ allocated\ and\ filled:\ empty\ until\ a\ consumer\ opts\ in\ via\ ensureFaceDeltas()\ (or\ first}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00131}00131\ \ \ \ \ \textcolor{comment}{//\ reads\ them).\ A\ run\ that\ never\ selects\ linearUpwind\ leaves\ these\ nullopt,\ saving}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{comment}{//\ 2\ *\ nInternalFaces\ *\ sizeof(Vec3)\ of\ device\ memory\ (\string~2.6\ GB\ on\ an\ 18M-\/cell\ mesh).\ mutable\ so}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00133}00133\ \ \ \ \ \textcolor{comment}{//\ the\ const\ accessors\ /\ ensureFaceDeltas()\ can\ populate\ them\ through\ the\ shared\ handle.}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00134}00134\ \ \ \ \ \textcolor{keyword}{mutable}\ std::optional<SurfaceField<Vec3>>\ faceDeltaOwner\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00135}00135\ \ \ \ \ \textcolor{keyword}{mutable}\ std::optional<SurfaceField<Vec3>>\ faceDeltaNeighbour\_;}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00136}00136\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{bool}\ faceDeltasComputed\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00137}00137\ \ \ \ \ \textcolor{comment}{//\ Guards\ the\ one-\/shot\ release\ of\ the\ mesh\ centre\ arrays\ (see\ releaseSourceGeometry()).}}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00138}00138\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{bool}\ sourceGeometryReleased\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00139}00139\ \};}
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{geometryScheme_8hpp_source_l00141}00141\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
