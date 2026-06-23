@@ -294,6 +294,9 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<Vec3
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+    // Ensure all Kokkos unpack kernels have completed before Ginkgo reads
+    // the data via gkoCopyArray, which may use a different SYCL queue.
+    Kokkos::fence();
 
     auto nrows = static_cast<gko::size_type>(3 * mtx.nRows());
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
@@ -463,6 +466,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+    Kokkos::fence();
 
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
@@ -502,6 +506,9 @@ SolverStats GinkgoSolver::solve(
         const auto gkoMtx = createGkoMtx(sys.matrix());
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
+        // Ensure all Kokkos unpack kernels have completed before Ginkgo reads
+        // rhsCopy/xCopy, which may use a different SYCL queue on Intel GPU.
+        Kokkos::fence();
 
         auto stats =
             solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, factory_->generate(gkoMtx), l1Control);
