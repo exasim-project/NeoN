@@ -16,6 +16,7 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/interpolation/inlineInterpolationKernels.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -91,6 +92,11 @@ public:
         fill(corr.boundaryData().value(), zero<ValueType>());
     }
 
+    /* @brief Returns a device-callable weight kernel for use inside Kokkos kernels.
+     * The kernel computes the face interpolation weight inline per face without virtual dispatch.
+     */
+    virtual InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& flux) const = 0;
+
     // Pure virtual function for cloning
     virtual std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const = 0;
 
@@ -158,6 +164,11 @@ public:
     }
 
     bool corrected() const { return interpolationKernel_->corrected(); }
+
+    InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& flux) const
+    {
+        return interpolationKernel_->inlineWeightKernel(flux);
+    }
 
     void correction(
         const SurfaceField<scalar>& flux,
