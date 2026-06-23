@@ -93,7 +93,14 @@ public:
 
     LinearUpwind(const Executor& exec, const UnstructuredMesh& mesh, Input input)
         : Base(exec, mesh), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
-          gradSchemeName_(readGradSchemeName(input)) {};
+          gradSchemeName_(readGradSchemeName(input))
+    {
+        // Opt in to the geometry scheme's per-internal-face cell-to-face offset vectors. These are
+        // computed lazily and only for schemes that need them, so non-linearUpwind runs never
+        // allocate them. Done in the constructor — while the mesh centres are still alive — because
+        // the geometry scheme frees those centres on the first read of any cached geometry field.
+        geometryScheme_->ensureFaceDeltas();
+    };
 
     static std::string name() { return "linearUpwind"; }
 
