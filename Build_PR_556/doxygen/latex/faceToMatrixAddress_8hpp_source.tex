@@ -168,6 +168,54 @@
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00169}00169\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{FaceToMatrixAddress}}\&\ faceToMatrixAddress}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00170}00170\ );}
 \DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00171}00171\ }
-\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00172}00172\ \}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00172}00172\ \textcolor{comment}{/*\ @brief\ Immutable,\ topology-\/only\ bundle\ shared\ across\ every\ LinearSystem\ built\ on\ a\ mesh.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00173}00173\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00174}00174\ \textcolor{comment}{\ *\ The\ CSR\ system\ sparsity\ (colIdxs/rowOffs),\ its\ FaceToMatrixAddress\ (diag/owner/neighbour}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00175}00175\ \textcolor{comment}{\ *\ offsets),\ and\ the\ boundary\ COO\ sparsity\ depend\ ONLY\ on\ mesh\ topology\ —\ they\ are\ byte-\/identical}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00176}00176\ \textcolor{comment}{\ *\ for\ every\ equation\ (U,\ p,\ nuTilda,\ ...)\ on\ the\ same\ mesh.\ Only\ the\ per-\/system\ value/RHS\ vectors}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00177}00177\ \textcolor{comment}{\ *\ legitimately\ differ.\ Caching\ this\ bundle\ once\ per\ mesh\ removes\ the\ per-\/equation\ duplication\ of}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00178}00178\ \textcolor{comment}{\ *\ these\ identical\ arrays.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00179}00179\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00180}00180\ \textcolor{comment}{\ *\ All\ three\ members\ are\ stored\ as\ shared\_ptr<const\ ...>\ so\ the\ cached\ objects\ stay\ immutable\ and}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00181}00181\ \textcolor{comment}{\ *\ are\ safe\ to\ share\ between\ systems;\ consumers\ write\ only\ their\ own\ per-\/system\ value/RHS\ vectors.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00182}00182\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00183}00183\ \textcolor{comment}{\ *\ @tparam\ SystemSparsityType\ \ \ -\/\ the\ system\ sparsity\ type,\ e.g.\ CsrSparsityPattern<localIdx>}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00184}00184\ \textcolor{comment}{\ *\ @tparam\ BoundarySparsityType\ -\/\ the\ boundary\ sparsity\ type,\ e.g.\ CooSparsityPattern<localIdx>}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00185}00185\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00186}00186\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SystemSparsityType,\ \textcolor{keyword}{typename}\ BoundarySparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00187}\mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle}{00187}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle}{SharedSparsityBundle}}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00188}00188\ \{}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00189}\mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a309672927da07858d77dc6804eb01794}{00189}}\ \ \ \ \ std::shared\_ptr<const\ SystemSparsityType>\ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a309672927da07858d77dc6804eb01794}{systemSparsity}};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00190}\mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a20e392ef686100f43fafca47414ca824}{00190}}\ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress>\ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a20e392ef686100f43fafca47414ca824}{faceToMatrixAddress}};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00191}\mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a71f4a7fd41e4aed9a297024732a4fc72}{00191}}\ \ \ \ \ std::shared\_ptr<const\ BoundarySparsityType>\ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a71f4a7fd41e4aed9a297024732a4fc72}{boundarySparsity}};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{comment}{//\ Explicit\ constructor:\ CUDA-\/12.4\ nvcc\ rejects\ parenthesized\ aggregate\ init,\ so\ give\ the}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{comment}{//\ bundle\ a\ real\ constructor\ for\ portability\ (brace-\/init\ would\ otherwise\ suffice).}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00195}\mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a9e020ce2f805c70d24de621840246c48}{00195}}\ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a9e020ce2f805c70d24de621840246c48}{SharedSparsityBundle}}(}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00196}00196\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ SystemSparsityType>\ systemSparsity\_,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00197}00197\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ FaceToMatrixAddress>\ faceToMatrixAddress\_,}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00198}00198\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ BoundarySparsityType>\ boundarySparsity\_}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00199}00199\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a309672927da07858d77dc6804eb01794}{systemSparsity}}(std::move(systemSparsity\_)),}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a20e392ef686100f43fafca47414ca824}{faceToMatrixAddress}}(std::move(faceToMatrixAddress\_)),}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structNeoN_1_1la_1_1SharedSparsityBundle_a71f4a7fd41e4aed9a297024732a4fc72}{boundarySparsity}}(std::move(boundarySparsity\_))}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00203}00203\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00204}00204\ \};}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00205}00205\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00206}00206\ \textcolor{comment}{/*\ @brief\ Returns\ the\ SHARED,\ immutable\ topology\ bundle\ for\ a\ mesh,\ caching\ it\ in}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00207}00207\ \textcolor{comment}{\ *\ mesh.stencilDB().\ Mirrors\ the\ GeometryScheme::readOrCreate\ precedent\ exactly}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00208}00208\ \textcolor{comment}{\ *\ (contains/insert/get\ of\ a\ std::shared\_ptr\ keyed\ by\ a\ type-\/specific\ string).}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00209}00209\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00210}00210\ \textcolor{comment}{\ *\ The\ cache\ key\ encodes\ both\ sparsity\ types\ so\ the\ CSR\ system\ pattern\ and\ the\ COO\ boundary\ pattern}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00211}00211\ \textcolor{comment}{\ *\ (and\ the\ index\ type)\ never\ collide.\ Returns\ a\ cheap\ copy\ of\ the\ bundle\ (three\ shared\_ptrs).}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00212}00212\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00213}00213\ \textcolor{comment}{\ *\ @note\ mesh.stencilDB()\ is\ mutable\ and\ not\ thread-\/safe;\ this\ matches\ the\ GeometryScheme\ cache\ and}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00214}00214\ \textcolor{comment}{\ *\ \ \ \ \ \ \ is\ acceptable\ for\ CPU-\/serial\ v1.\ No\ locking\ is\ added\ here.}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00215}00215\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00216}00216\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SystemSparsityType,\ \textcolor{keyword}{typename}\ BoundarySparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00217}00217\ [[nodiscard]]\ SharedSparsityBundle<SystemSparsityType,\ BoundarySparsityType>}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00218}\mbox{\hyperlink{namespaceNeoN_1_1la_add0bfae85278da29d56cdb8e32ed1a54}{00218}}\ \mbox{\hyperlink{namespaceNeoN_1_1la_add0bfae85278da29d56cdb8e32ed1a54}{readOrCreateSparsityBundle}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh);}
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00219}00219\ }
+\DoxyCodeLine{\Hypertarget{faceToMatrixAddress_8hpp_source_l00220}00220\ \}}
 
 \end{DoxyCode}
