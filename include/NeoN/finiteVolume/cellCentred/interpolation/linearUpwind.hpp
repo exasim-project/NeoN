@@ -166,6 +166,11 @@ public:
         );
     }
 
+    InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& /*flux*/) const override
+    {
+        return UpwindInlineKernel {};
+    }
+
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
     {
         return std::make_unique<LinearUpwind>(*this);
