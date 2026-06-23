@@ -15,9 +15,8 @@ namespace NeoN::finiteVolume::cellCentred
 GeometrySchemeFactory::GeometrySchemeFactory() {}
 
 // Cache the per-internal-face vector from each adjacent cell centre to the face centre
-// (Cf - C_own and Cf - C_nei). These are derived from the mesh cell/face centres;
-// ensureFaceDeltas() calls this while those centres are still alive, then releases them via
-// reset().
+// (Cf - C_own and Cf - C_nei). These are derived from the mesh cell/face centres, which the
+// geometry scheme keeps resident; ensureFaceDeltas() calls this on the first opt-in.
 namespace
 {
 void computeFaceDeltaVectors(
@@ -144,8 +143,8 @@ void GeometryScheme::update()
         );
         // faceDeltaOwner_/faceDeltaNeighbour_ are NOT computed here: they are only needed by
         // schemes that opt in (linearUpwind), so they are built lazily in ensureFaceDeltas(). The
-        // mesh centres are likewise NOT freed here (reset() is deferred) so a later opt-in can
-        // still read them.
+        // mesh centres are likewise NOT freed here (reset() is explicit and not auto-invoked) so a
+        // later opt-in can still read them.
     }
 }
 
@@ -170,22 +169,24 @@ void GeometryScheme::ensureFaceDeltas() const
         computeFaceDeltaVectors(exec_, mesh_, *faceDeltaOwner_, *faceDeltaNeighbour_);
         faceDeltasComputed_ = true;
     }
-    // The faceDelta* fields now hold everything derived from the mesh centres, so release them.
-    reset();
 }
 
 void GeometryScheme::reset() const
 {
-    // Free the per-point/cell/face geometry on the device once the geometry scheme has consumed
-    // it. weights / nonOrthDeltaCoeffs / corrVec (and, if opted in, faceDelta*) are now cached in
-    // this object, so the points/cellCentres/faceCentres arrays are no longer needed for
-    // subsequent computations and freeing them saves device memory on large meshes (revisit for
-    // moving/rotating meshes, which would repopulate all three). Deferred and one-shot: it runs on
-    // the first read of any cached geometry field (the accessors below) or from ensureFaceDeltas(),
-    // whichever comes first, so a late faceDelta* opt-in can still read the centres. points() is
-    // read only during construction/partitioning, never after this point. The const_cast is safe
-    // while the underlying mesh object is non-const, which holds for all current construction
-    // paths.
+    // Free the per-point/cell/face geometry on the device once the caller knows it is no longer
+    // needed. weights / nonOrthDeltaCoeffs / corrVec (and, if opted in, faceDelta*) are cached in
+    // this object, so the points/cellCentres/faceCentres arrays are not needed for subsequent
+    // computations and freeing them saves device memory on large meshes (revisit for
+    // moving/rotating meshes, which would repopulate all three). One-shot (idempotent via
+    // sourceGeometryReleased_) and EXPLICIT: it is NOT auto-invoked by the field accessors or by
+    // ensureFaceDeltas(). It used to fire on the first read of any cached geometry field, but that
+    // freed the centres before a later, separately-constructed scheme (e.g. an upwind div built
+    // before a linearUpwind div on the same cached GeometryScheme) could opt into the lazy
+    // faceDelta* — which need the centres — leaving ensureFaceDeltas() to abort. A caller that is
+    // certain no further faceDelta* opt-in will occur may invoke this to reclaim the centres.
+    // points() is read only during construction/partitioning, never after this point. The
+    // const_cast is safe while the underlying mesh object is non-const, which holds for all current
+    // construction paths.
     if (sourceGeometryReleased_)
     {
         return;
@@ -197,21 +198,15 @@ void GeometryScheme::reset() const
 }
 
 
-const SurfaceField<scalar>& GeometryScheme::weights() const
-{
-    reset();
-    return weights_;
-}
+const SurfaceField<scalar>& GeometryScheme::weights() const { return weights_; }
 
 const SurfaceField<scalar>& GeometryScheme::nonOrthDeltaCoeffs() const
 {
-    reset();
     return nonOrthDeltaCoeffs_;
 }
 
 const SurfaceField<Vec3>& GeometryScheme::nonOrthCorrectionVec3s() const
 {
-    reset();
     return nonOrthCorrectionVec3s_;
 }
 

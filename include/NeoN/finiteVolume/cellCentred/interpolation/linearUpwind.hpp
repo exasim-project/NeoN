@@ -97,8 +97,9 @@ public:
     {
         // Opt in to the geometry scheme's per-internal-face cell-to-face offset vectors. These are
         // computed lazily and only for schemes that need them, so non-linearUpwind runs never
-        // allocate them. Done in the constructor — while the mesh centres are still alive — because
-        // the geometry scheme frees those centres on the first read of any cached geometry field.
+        // allocate them. The geometry scheme keeps the mesh centres resident (it no longer frees
+        // them as a side effect of reading a cached field), so this opt-in is valid regardless of
+        // construction order relative to other schemes on the same cached GeometryScheme.
         geometryScheme_->ensureFaceDeltas();
     };
 

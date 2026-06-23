@@ -87,20 +87,23 @@ public:
     // Vector from the neighbour cell centre to the face centre (Cf - C_nei), one per internal face.
     const SurfaceField<Vec3>& faceDeltaNeighbour() const;
 
-    // Opt-in trigger for the faceDelta* fields. Computes them (from the still-live mesh centres)
-    // and then releases the source geometry. Consumers that need faceDelta* (linearUpwind) call
-    // this in their constructor — while the mesh centres are guaranteed alive — because reset()
-    // frees those centres on the first read of any cached geometry field. Idempotent; const so it
-    // is reachable through the shared (read-only) GeometryScheme handle. No-op cost after the first
-    // call is a single bool check.
+    // Opt-in trigger for the faceDelta* fields. Computes them from the mesh centres, which the
+    // geometry scheme keeps resident. Consumers that need faceDelta* (linearUpwind) call this in
+    // their constructor; because the centres are no longer freed as a side effect of reading a
+    // cached field, the call is valid at any point in the scheme's lifetime, independent of
+    // construction order relative to other schemes. Idempotent; const so it is reachable through
+    // the shared (read-only) GeometryScheme handle. No-op cost after the first call is a single
+    // bool check.
     void ensureFaceDeltas() const;
 
     void update();
 
-    // Frees the mesh's per-cell/face centre arrays once the geometry-scheme fields are cached, to
-    // save device memory. Deferred (lazy + idempotent): triggered on the first read of any cached
-    // geometry field, or by ensureFaceDeltas() right after the faceDelta* fields are built — not in
-    // update(), so that a late faceDelta* opt-in can still read the centres.
+    // Frees the mesh's per-cell/face centre arrays to save device memory. EXPLICIT and NOT
+    // auto-invoked: callers run it only once they are certain no further faceDelta* opt-in will
+    // occur. It is deliberately not triggered by the field accessors or ensureFaceDeltas() — doing
+    // so used to free the centres before a late linearUpwind opt-in (constructed after another
+    // scheme on the same cached GeometryScheme had read a field) could compute the faceDelta*.
+    // Idempotent via sourceGeometryReleased_.
     // TODO: check if we can remove the temporary fields from the unstructured mesh
     // altogether: compute the geometry-scheme data explicitly first and pass it as an
     // argument, instead of freeing mesh members after the fact.
