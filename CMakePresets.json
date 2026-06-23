@@ -34,6 +34,30 @@
       }
     },
     {
+      "name": "julia",
+      "inherits": [
+        "base"
+      ],
+      "displayName": "Julia",
+      "description": "Thesis benchmarking setup",
+      "cacheVariables": {
+        "NeoN_WITH_JULIA": "ON",
+        "CMAKE_BUILD_TYPE": "Release",
+        "NeoN_DEVEL_TOOLS": "OFF",
+        "NeoN_BUILD_TESTS": "ON",
+        "NeoN_BUILD_BENCHMARKS": "OFF",
+        "NeoN_ENABLE_WARNINGS": "OFF",
+        "Kokkos_ENABLE_DEBUG": "OFF",
+        "Kokkos_ENABLE_DEBUG_BOUNDS_CHECK": "OFF",
+        "Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE": "OFF"
+      },
+      "warnings": {
+        "dev": false,
+        "deprecated": false,
+        "uninitialized": false
+      }
+    },
+    {
       "name": "develop",
       "inherits": [
         "base"
@@ -94,6 +118,13 @@
       "configuration": "Debug"
     },
     {
+      "name": "julia",
+      "displayName": "Julia",
+      "description": "Build for Julia Eval",
+      "configurePreset": "julia",
+      "configuration": "Release"
+    },
+    {
       "name": "profiling",
       "displayName": "Profiling",
       "description": "Build for profiling use",
@@ -115,6 +146,13 @@
       "description": "Run tests with development configuration",
       "configurePreset": "develop",
       "configuration": "Debug"
+    },
+    {
+      "name": "julia",
+      "displayName": "Julia",
+      "description": "Build for Julia Eval",
+      "configurePreset": "julia",
+      "configuration": "Release"
     },
     {
       "name": "profiling",

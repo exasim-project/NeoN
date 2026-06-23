@@ -293,13 +293,13 @@ void computeLaplacianIntImpl(
     );
 }
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeGlobalFace(
-    la::LinearSystem<ValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
@@ -351,7 +351,7 @@ void computeGlobalFace(
                 // The Laplacian is symmetric — the same flux value enters both owner and neighbour rows
                 // with opposite signs (diffusion out of one cell = diffusion into the other).
                 // S_f points from owner to neighbour by construction.
-                auto flux = deltaCoeffs[facei]  * gammaV[facei] * magFaceArea[facei] * one<ValueType>();
+                auto flux = deltaCoeffs[facei]  * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
 
                 // triangular coefficients - neighbour -> lower, owner -> upper
                 values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
@@ -374,7 +374,7 @@ void computeGlobalFace(
                 // TODO Issue #515
                 auto flux = bGammaV[bfi] * magFaceArea[nInternalFaces + bfi];
                 auto fluxContrib =
-                    flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<ValueType>();
+                    flux * ownRowCoeff * refValFrac * bDeltaCoeffs[bfi] * one<AssemblyType>();
 
                 // since upper triangular value is "outside" of system matrix
                 // it is stored separately in bMatrix
@@ -522,10 +522,10 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     }
     else
     {
-        // computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-        computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
-    // computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
 }

@@ -172,6 +172,42 @@ public:
 
     [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
 
+    /**
+     * @brief Compare the system matrix against another linear system's matrix.
+     *
+     * Matrix dimensions and sparsity indices must match exactly. Stored matrix values are compared
+     * with an absolute tolerance.
+     */
+    template<typename OtherRHSValueType, typename OtherBoundaryMatrixType>
+    [[nodiscard]] bool matrixEquals(
+        const LinearSystem<
+            MatrixValueType,
+            OtherRHSValueType,
+            SystemMatrixType,
+            OtherBoundaryMatrixType>& other,
+        scalar tolerance = static_cast<scalar>(1e-12)
+    ) const
+    {
+        const auto lhsDim = matrix_.sparsity()->dimension();
+        const auto rhsDim = other.matrix().sparsity()->dimension();
+        if (lhsDim.rows != rhsDim.rows || lhsDim.cols != rhsDim.cols)
+        {
+            return false;
+        }
+
+        if (!vectorsEqual(matrix_.colIdxs(), other.matrix().colIdxs()))
+        {
+            return false;
+        }
+
+        if (!vectorsEqual(matrix_.rowOffs(), other.matrix().rowOffs()))
+        {
+            return false;
+        }
+
+        return matrixValuesEqual(matrix_.values(), other.matrix().values(), tolerance);
+    }
+
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
     {
@@ -249,6 +285,60 @@ public:
     const Executor& exec() const { return matrix_.exec(); }
 
 private:
+
+    template<typename ValueType>
+    static bool vectorsEqual(const Vector<ValueType>& lhs, const Vector<ValueType>& rhs)
+    {
+        if (lhs.size() != rhs.size())
+        {
+            return false;
+        }
+
+        auto lhsHost = lhs.copyToHost();
+        auto rhsHost = rhs.copyToHost();
+        const auto lhsView = lhsHost.view();
+        const auto rhsView = rhsHost.view();
+        for (localIdx i = 0; i < lhsView.size(); ++i)
+        {
+            if (lhsView[i] != rhsView[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static bool matrixValuesEqual(
+        const Vector<MatrixValueType>& lhs,
+        const Vector<MatrixValueType>& rhs,
+        scalar tolerance
+    )
+    {
+        if (lhs.size() != rhs.size())
+        {
+            return false;
+        }
+
+        auto lhsHost = lhs.copyToHost();
+        auto rhsHost = rhs.copyToHost();
+        const auto lhsView = lhsHost.view();
+        const auto rhsView = rhsHost.view();
+        auto ret = true;
+        auto err = 0.0;
+        for (localIdx i = 0; i < lhsView.size(); ++i)
+        {
+            err += abs(lhsView[i][0] - rhsView[i][0]);
+            if (abs(lhsView[i][0] - rhsView[i][0]) > tolerance)
+            {
+                // std::cout << "wrong: " <<i<< ": " << lhsView[i] << " ------  " << rhsView[i] << std::endl;
+                ret = false;
+                // return false;
+            }
+        }
+        std::cout << "total error: " << err << std::endl;
+        std::cout << "total error per nnz: " << err / lhsView.size() << std::endl;
+        return ret;
+    }
 
     static BoundaryMatrixType emptyMatrix(const Executor& exec)
     {

@@ -167,13 +167,7 @@ public:
         scalarMtxStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
-    [[deprecated("Experimental Julia Interface")]] void divJulia(auto&&... args) const
-    {
-        const auto operatorScaling = this->getCoefficient();
-        divOperatorStrategy_->div(
-            std::forward<decltype(args)>(args)..., faceFlux_, this->getVector(), operatorScaling
-        );
-    }
+
 
     void read(const Input& input)
     {

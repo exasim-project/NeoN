@@ -430,11 +430,11 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     computeDivExp<FieldValueType>(faceFlux, phi, surfaceInterpolation_, divPhi, operatorScaling);
 }
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void computeGlobalFace(
-    la::LinearSystem<ValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
-    const VolumeField<ValueType>& phi,
+    const VolumeField<FieldValueType>& phi,
     const SurfaceField<scalar>& weights,
     const dsl::Coeff coeff
 )
@@ -483,6 +483,7 @@ void computeGlobalFace(
                 // operator sign coefficient  handles: = +/- div
                 auto ownCoeff = coeff[ownRow];
                 auto neiCoeff = coeff[neiRow];
+
                 // Conservative Gauss-Green divergence assembly.
                 // S_f points from owner to neighbor by construction, so F_f < 0 means
                 // flux leaves the owner cell and enters the neighbor cell.
@@ -490,8 +491,8 @@ void computeGlobalFace(
                 // Decompose face flux via linear interpolation:
                 //   ownFluxContrib = w * F_f     — part attributed to the owner cell value
                 //   neiFluxContrib = (1-w) * F_f — part attributed to the neighbor cell value
-                auto ownFluxContrib = -fluxV[facei] * weightsV[facei] * one<ValueType>();
-                auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<ValueType>();
+                auto ownFluxContrib = -fluxV[facei] * weightsV[facei] * one<AssemblyType>();
+                auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<AssemblyType>();
 
                 // triangular coefficients - neighbor -> lower, owner -> upper
                 values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
@@ -511,7 +512,7 @@ void computeGlobalFace(
                 auto refGradFrac = 1.0 - refValFrac;
 
                 auto flux =
-                    bFaceFluxV[bfi] * -bweights[bfi] * ownCoeff * refGradFrac * one<ValueType>();
+                    bFaceFluxV[bfi] * -bweights[bfi] * ownCoeff * refGradFrac * one<AssemblyType>();
 
                 // since upper triangular value is "outside" of system matrix
                 // it is stored separately in bMatrix
@@ -559,10 +560,10 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     }
     else
     {
-        // computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
     }
-    // computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
 }
 
