@@ -35,6 +35,7 @@ void computeLinearInterpolation(
     SurfaceField<ValueType>& dst
 );
 
+
 template<typename ValueType>
 class Linear : public SurfaceInterpolationFactory<ValueType>::template Register<Linear<ValueType>>
 {
@@ -83,6 +84,12 @@ public:
         weight.boundaryData() = linearWeight.boundaryData();
     }
 
+
+    InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& /*flux*/) const override
+    {
+        const SurfaceField<scalar>& w = geometryScheme_->weights();
+        return LinearInlineKernel {w.internalVector().view(), w.boundaryData().value().view()};
+    }
 
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
     {
