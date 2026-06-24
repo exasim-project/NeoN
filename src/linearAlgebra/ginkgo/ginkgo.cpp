@@ -21,6 +21,19 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("solver");
     }
 
+    // For solver::Ir the smoother/preconditioner is carried under the "preconditioner" key by the
+    // NeoFOAM fvSolution compatibility layer (to avoid colliding with the now-removed top-level
+    // "solver: Ginkgo" backend-dispatch key). Ginkgo's Ir names its inner factory "solver" and
+    // rejects "preconditioner" as an unknown key, so rename it here, after the backend key is gone.
+    // Only Ir needs this: Cg/Bicgstab/Multigrid accept a genuine "preconditioner" key.
+    if (dict.contains("type") && std::any_cast<std::string>(dict["type"]) == "solver::Ir"
+        && dict.contains("preconditioner") && !dict.contains("solver"))
+    {
+        Dictionary inner = dict.subDict("preconditioner");
+        dict.remove("preconditioner");
+        dict.insert("solver", inner);
+    }
+
     if (dict.contains("coupled"))
     {
         dict.remove("coupled");
@@ -533,19 +546,30 @@ SolverStats GinkgoSolver::solve(
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
 // l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The diag edits
 // use atomics because a corner cell may receive contributions from several boundary faces.
-template<unsigned int I>
+// NOTE: explicit template parameters (not abbreviated `auto` params). nvcc
+// rejects extended __device__ lambdas (the NEON_LAMBDA parallelFor bodies
+// below) when they live inside an abbreviated function template — unlike
+// solveComponent above, which has no device lambda and can keep `auto` params.
+template<
+    unsigned int I,
+    typename SystemType,
+    typename ExecType,
+    typename FactoryType,
+    typename ValuesType,
+    typename MatrixAddressingType,
+    typename DiagCType>
 void solveImplicitTransformComponent(
-    const auto& sys,
+    const SystemType& sys,
     Vector<Vec3>& x,
-    const auto& exec,
+    const ExecType& exec,
     std::shared_ptr<const gko::Executor> gkoExec,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const auto& factory,
+    const FactoryType& factory,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
-    auto values,
-    const auto& ma,
-    auto diagC,
+    ValuesType values,
+    const MatrixAddressingType& ma,
+    DiagCType diagC,
     localIdx nrows
 )
 {
