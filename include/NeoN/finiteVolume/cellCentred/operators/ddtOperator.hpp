@@ -19,6 +19,7 @@ namespace NeoN::finiteVolume::cellCentred
 enum class DdtScheme
 {
     None,
+    SteadyState,
     BDF1,
     BDF2
 };
