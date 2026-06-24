@@ -6,6 +6,9 @@
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -167,7 +170,8 @@ void computeLinearUpwind(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     SurfaceField<ValueType>& dst,
-    const bool withSrcValue
+    const bool withSrcValue,
+    const bool cellLimitedGradient
 )
 {
     using GradType = typename detail::LinearUpwindGradType<ValueType>::type;
@@ -175,11 +179,11 @@ void computeLinearUpwind(
     const auto exec = src.exec();
     const auto& mesh = src.mesh();
 
-    GaussGreenGrad gradOp(exec, mesh);
-
     if constexpr (std::is_same_v<ValueType, scalar>)
     {
-        // grad(scalar) -> Vec3
+        // grad(scalar) -> Vec3. Cell limiting is a vector-field concept (linearUpwindV); the scalar
+        // path always uses the unlimited Gauss-Green gradient.
+        GaussGreenGrad gradOp(exec, mesh);
         const VolumeField<GradType> gradPhi = gradOp.grad(src);
         applyLinearUpwind<ValueType, GradType>(
             src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
@@ -187,11 +191,35 @@ void computeLinearUpwind(
     }
     else
     {
-        // grad(Vec3) -> Tensor
-        const VolumeField<GradType> gradPhi = gradOp.gradTensor(src);
-        applyLinearUpwind<ValueType, GradType>(
-            src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
-        );
+        // grad(Vec3) -> Tensor. linearUpwindV reconstructs from the cell-limited gradient (minmod,
+        // k=1) so the extrapolated face value cannot exceed the neighbour cell-value range — this
+        // is what bounds the convection on skewed/refined meshes. Plain linearUpwind uses the
+        // unlimited Gauss-Green gradient.
+        if (cellLimitedGradient)
+        {
+            auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(mesh);
+            VolumeField<GradType> gradPhi(exec, "gradULimited", mesh, calcBC);
+            fill(gradPhi.internalVector(), zero<GradType>());
+            CellLimitedGrad limitedGrad(
+                exec,
+                mesh,
+                NeoN::TokenList(
+                    {std::string("Gauss"), std::string("linear"), static_cast<scalar>(1)}
+                )
+            );
+            limitedGrad.gradTensor(src, gradPhi, dsl::Coeff {});
+            applyLinearUpwind<ValueType, GradType>(
+                src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+            );
+        }
+        else
+        {
+            GaussGreenGrad gradOp(exec, mesh);
+            const VolumeField<GradType> gradPhi = gradOp.gradTensor(src);
+            applyLinearUpwind<ValueType, GradType>(
+                src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+            );
+        }
     }
 }
 
@@ -201,10 +229,13 @@ void computeLinearUpwindInterpolation(
     const SurfaceField<scalar>& flux,
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
-    SurfaceField<ValueType>& dst
+    SurfaceField<ValueType>& dst,
+    const bool cellLimitedGradient
 )
 {
-    computeLinearUpwind<ValueType>(src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, true);
+    computeLinearUpwind<ValueType>(
+        src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, true, cellLimitedGradient
+    );
 }
 
 template<typename ValueType>
@@ -213,17 +244,20 @@ void computeLinearUpwindCorrection(
     const SurfaceField<scalar>& flux,
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
-    SurfaceField<ValueType>& dst
+    SurfaceField<ValueType>& dst,
+    const bool cellLimitedGradient
 )
 {
-    computeLinearUpwind<ValueType>(src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, false);
+    computeLinearUpwind<ValueType>(
+        src, flux, faceDeltaOwner, faceDeltaNeighbour, dst, false, cellLimitedGradient
+    );
 }
 
-#define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                                                                          \
-    template void computeLinearUpwindInterpolation<                                                                                                          \
-        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&); \
-    template void computeLinearUpwindCorrection<                                                                                                             \
-        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&)
+#define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                                                                                              \
+    template void computeLinearUpwindInterpolation<                                                                                                                              \
+        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&, const bool); \
+    template void computeLinearUpwindCorrection<                                                                                                                                 \
+        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&, const bool)
 
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(Vec3);
