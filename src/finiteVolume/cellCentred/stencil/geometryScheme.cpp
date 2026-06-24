@@ -142,10 +142,20 @@ void GeometryScheme::update()
             },
             exec_
         );
-        // faceDeltaOwner_/faceDeltaNeighbour_ are NOT computed here: they are only needed by
-        // schemes that opt in (linearUpwind), so they are built lazily in ensureFaceDeltas(). The
-        // mesh centres are likewise NOT freed here (reset() is deferred) so a later opt-in can
-        // still read them.
+        // Eagerly compute and cache the face-to-cell delta vectors (Cf - C_own, Cf - C_nei) while
+        // the mesh centres are guaranteed alive. The lazy ensureFaceDeltas() path used to defer
+        // this, but it failed when a consumer (linearUpwind, cellLimited) was constructed after the
+        // first read of another cached geometry field — that read triggers reset(), which frees the
+        // centres. Computing them here removes that construction-order dependency; the centres are
+        // still NOT freed here (reset() stays deferred) so the eager build below can read them.
+        faceDeltaOwner_.emplace(
+            exec_, "faceDeltaOwner", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        faceDeltaNeighbour_.emplace(
+            exec_, "faceDeltaNeighbour", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        computeFaceDeltaVectors(exec_, mesh_, *faceDeltaOwner_, *faceDeltaNeighbour_);
+        faceDeltasComputed_ = true;
     }
 }
 
