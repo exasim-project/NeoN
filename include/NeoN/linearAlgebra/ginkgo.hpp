@@ -231,7 +231,8 @@ public:
           factory_(gko::config::parse(
                        config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
           )
-                       .on(gkoExec_))
+                       .on(gkoExec_)),
+          localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr")))
     {}
 
     static std::string name() { return "Ginkgo"; }
@@ -280,11 +281,11 @@ public:
 private:
 
     std::shared_ptr<const gko::Executor> gkoExec_;
-    bool coupled_; // whether to solve LinearSystem<Vec3> as one or three systems
-    // L1-scaled residual stopping controls; set only when "l1ScaledResidual" is enabled
+    bool coupled_;
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
+    std::string localMatrixFormat_;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
