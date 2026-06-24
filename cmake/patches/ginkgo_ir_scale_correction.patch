@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: Unlicense
+# SPDX-FileCopyrightText: 2026 NeoN authors
+#
+# Two fixes to solver::Ir's config parser (core/solver/ir.cpp, Ir<>::parse):
+#
+# 1. criteria: use parse_or_get_criteria instead of parse_or_get_factory_vector,
+#    matching solver::Cg (which parses criteria via common_solver_parse ->
+#    parse_or_get_criteria). parse_or_get_criteria additionally accepts the
+#    "minimal" stopping-criterion form ({iteration N, initial_residual_norm X,
+#    absolute_residual_norm Y}) via parse_minimal_criteria, whereas
+#    parse_or_get_factory_vector only accepts the explicit factory form
+#    ({type Iteration, max_iters N}). NeoFOAM's fvSolution -> NeoN Dictionary
+#    bridge cannot emit JSON arrays, so multi-criterion stopping can only be
+#    expressed as the minimal single-map form -- which is what mapFvSolution
+#    produces for the smoothSolver -> solver::Ir mapping.
+#
+# 2. scale_correction: read the key into the (already existing) parameter. The
+#    parameter and its apply-time logic ship in NeoN_GINKGO_TAG, but parse() does
+#    not consume the key, so a JSON config that sets it (the scale-corrected
+#    multigrid smoothers) would otherwise abort: Ginkgo's config_check_decorator
+#    throws on any config key it did not consume.
+diff --git a/core/solver/ir.cpp b/core/solver/ir.cpp
+--- a/core/solver/ir.cpp
++++ b/core/solver/ir.cpp
+@@ -41,8 +41,7 @@ typename Ir<ValueType>::parameters_type Ir<ValueType>::parse(
+     config::config_check_decorator config_check(config);
+     if (auto& obj = config_check.get("criteria")) {
+         params.with_criteria(
+-            config::parse_or_get_factory_vector<const stop::CriterionFactory>(
+-                obj, context, td_for_child));
++            config::parse_or_get_criteria(obj, context, td_for_child));
+     }
+     if (auto& obj = config_check.get("solver")) {
+         params.with_solver(config::parse_or_get_factory<const LinOpFactory>(
+@@ -59,6 +58,9 @@ typename Ir<ValueType>::parameters_type Ir<ValueType>::parse(
+         params.with_default_initial_guess(
+             config::get_value<solver::initial_guess_mode>(obj));
+     }
++    if (auto& obj = config_check.get("scale_correction")) {
++        params.with_scale_correction(config::get_value<int>(obj));
++    }
+
+     return params;
+ }
