@@ -140,6 +140,68 @@ private:
 };
 
 
+/**
+ * @class FixedValueConstraints
+ * @brief Post-assembly functor that HARD-pins a set of cells to prescribed values — the
+ *        equivalent of OpenFOAM's fvMatrix::setValues, which omega/epsilon wall functions
+ *        apply through manipulateMatrix(). Unlike SetReference (which only removes a constant
+ *        null space by doubling a single diagonal), this forces each constrained cell's
+ *        solution exactly to its target.
+ *
+ * For every constrained cell the assembled row is rewritten in place:
+ *   A[c, j] = 0  for all j != c   (zero the off-diagonals of row c)
+ *   rhs[c]  = A[c, c] * value[c]
+ * so the row reduces to  A[c,c] * x_c = A[c,c] * value[c]  =>  x_c = value[c], regardless of
+ * the (relaxed, BC-augmented) diagonal magnitude. The column entries A[j, c] in other rows are
+ * left intact, so neighbour equations correctly see the pinned value (more conservative than
+ * upstream's full decouple, and valid because omega is solved with an asymmetric solver).
+ *
+ * The functor sweeps all nCells; a cell is constrained iff mask[cell] != 0, with value[cell]
+ * holding its target. Both views are sized nCells and owned by the caller (must outlive use).
+ */
+template<typename ValueType, typename IndexType = localIdx>
+class FixedValueConstraints : public PostAssemblyBase<ValueType, IndexType>
+{
+public:
+
+    FixedValueConstraints(View<const scalar> mask, View<const ValueType> values, localIdx nCells)
+        : mask_(mask), values_(values), nCells_(nCells)
+    {}
+
+    void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
+    ) const override
+    {
+        auto lsView = ls.view();
+        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+        auto mask = mask_;
+        auto vals = values_;
+        parallelFor(
+            ls.exec(),
+            {0, nCells_},
+            NEON_LAMBDA(const localIdx celli) {
+                if (mask[celli] == scalar(0)) return;
+                const auto dIdx = ma.diagIdx(celli);
+                const ValueType diagVal = lsView.matrix.values[dIdx];
+                const auto rowStart = ma.rowOffs[celli];
+                const auto rowEnd = ma.rowOffs[celli + 1];
+                for (auto o = rowStart; o < rowEnd; ++o)
+                {
+                    if (o != dIdx) lsView.matrix.values[o] = zero<ValueType>();
+                }
+                lsView.rhs[celli] = diagVal * vals[celli];
+            },
+            "FixedValueConstraints"
+        );
+    }
+
+private:
+
+    View<const scalar> mask_;
+    View<const ValueType> values_;
+    localIdx nCells_;
+};
+
+
 template<typename ValueType, typename IndexType = localIdx>
 class Expression
 {
