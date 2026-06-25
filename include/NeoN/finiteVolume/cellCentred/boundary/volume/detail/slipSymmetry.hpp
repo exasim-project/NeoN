@@ -40,16 +40,23 @@ enum class NormalDamping
     Implicit  ///< normal damping via per-component diagonal correction (segregated solve)
 };
 
-/** @brief Read the opt-in "implicit" flag from a slip/symmetry patch dictionary.
+/** @brief Read the "implicit" flag from a slip/symmetry patch dictionary.
  *
- * Defaults to false (Deferred). A boolean read from a dictionary file arrives as a word/string
- * rather than a bool, so accept bool, int, and the common truthy spellings — mirroring the
- * tolerant parsing used for the solver's l1ScaledResidual flag.
+ * Defaults to TRUE (Implicit). The velocity is solved as a shared scalar matrix with a Vec3
+ * (multi-RHS) Ginkgo solve, so the direction-dependent slip/symmetry normal damping
+ * (gamma|S|*Delta*|n_c|, different per component) cannot be carried by the shared scalar diagonal.
+ * Implicit mode routes it through the per-component diagCmpt store, which the solver applies
+ * column-by-column, constraining the wall-normal velocity in the solve. The Deferred alternative
+ * only writes the damping into refGrad (RHS) and lags it one outer iteration, which is too weak to
+ * hold the normal component on a developed field and lets it diverge in the momentum solve
+ * (observed on occDrivAer: U_normal runs away at the ground/freestream slip-symmetry boundaries).
+ * Set "implicit no" on a patch to opt back into the Deferred treatment. A boolean read from a
+ * dictionary arrives as a word/string, so accept bool, int, and the common truthy spellings.
  */
 inline bool readTransformImplicit(const Dictionary& dict)
 {
     const std::string key = "implicit";
-    if (!dict.contains(key)) return false;
+    if (!dict.contains(key)) return true;
     if (dict.isType<bool>(key)) return dict.get<bool>(key);
     if (dict.isType<int>(key)) return dict.get<int>(key) != 0;
     if (dict.isType<std::string>(key))

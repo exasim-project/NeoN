@@ -68,7 +68,20 @@ TEST_CASE("symmetry_slip_volume")
             NeoN::fill(field.boundaryData().refValue(), NeoN::Vec3(-1.0, -1.0, -1.0));
             NeoN::fill(field.boundaryData().value(), NeoN::Vec3(-1.0, -1.0, -1.0));
 
+            // The default (no "implicit" key) selects the implicit normal-damping treatment.
+            {
+                NeoN::Dictionary defaultDict;
+                auto defaultBoundary =
+                    NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
+                        bcName, mesh, defaultDict, 0
+                    );
+                REQUIRE(defaultBoundary->attributes().transformImplicit == true);
+            }
+
+            // Opt into the deferred treatment: the normal damping is written into refGrad (RHS),
+            // which is multi-RHS friendly.
             NeoN::Dictionary dict;
+            dict.insert("implicit", false);
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
                     bcName, mesh, dict, 0
@@ -76,7 +89,6 @@ TEST_CASE("symmetry_slip_volume")
 
             boundary->correctBoundaryCondition(field);
 
-            // default mode is deferred (multi-RHS friendly)
             REQUIRE(boundary->attributes().transformImplicit == false);
 
             auto [refValuesH, valuesH, refGradH, nHatH, deltaCoeffsH, faceCellsH, internalH] =
