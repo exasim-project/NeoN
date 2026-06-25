@@ -462,7 +462,11 @@ SolverStats GinkgoSolver::solve(
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
 }
 
@@ -511,7 +515,11 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     if (coupled_)
     {
         const auto gkoMtx = createGkoMtx(sys.matrix());
@@ -591,7 +599,11 @@ SolverStats GinkgoSolver::solve(
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
 
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
 
     // Implicit transform-BC path (slip/symmetry with "implicit"): the per-component diagonal
     // correction differs per column, so solve the three components segregated, reusing solve_impl
