@@ -49,7 +49,7 @@ enum class NormalDamping
 inline bool readTransformImplicit(const Dictionary& dict)
 {
     const std::string key = "implicit";
-    if (!dict.contains(key)) return false;
+    if (!dict.contains(key)) return true; // [TEST] default slip/symmetry to implicit normal damping
     if (dict.isType<bool>(key)) return dict.get<bool>(key);
     if (dict.isType<int>(key)) return dict.get<int>(key) != 0;
     if (dict.isType<std::string>(key))
