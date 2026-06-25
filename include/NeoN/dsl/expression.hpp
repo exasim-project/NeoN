@@ -142,26 +142,32 @@ private:
 
 /**
  * @class FixedValueConstraints
- * @brief Post-assembly functor that HARD-pins a set of cells to prescribed values — the
- *        equivalent of OpenFOAM's fvMatrix::setValues, which omega/epsilon wall functions
- *        apply through manipulateMatrix(). Unlike SetReference (which only removes a constant
- *        null space by doubling a single diagonal), this forces each constrained cell's
- *        solution exactly to its target.
+ * @brief Post-assembly functor that pins a set of cells to prescribed values.
  *
- * For every constrained cell the assembled row is rewritten in place:
- *   A[c, j] = 0  for all j != c   (zero the off-diagonals of row c)
- *   rhs[c]  = A[c, c] * value[c]
- * so the row reduces to  A[c,c] * x_c = A[c,c] * value[c]  =>  x_c = value[c], regardless of
- * the (relaxed, BC-augmented) diagonal magnitude. The column entries A[j, c] in other rows are
- * left intact, so neighbour equations correctly see the pinned value (more conservative than
- * upstream's full decouple, and valid because omega is solved with an asymmetric solver).
+ * For every constrained cell c:
+ *   A[c, j] = 0  for j != c   (zero row off-diagonals)
+ *   A[j, c] = 0  for j != c   (zero column in neighbour rows, rhs[j] absorbs the dropped term)
+ *   rhs[c]  = A[c,c] * value[c]
  *
- * The functor sweeps all nCells; a cell is constrained iff mask[cell] != 0, with value[cell]
- * holding its target. Both views are sized nCells and owned by the caller (must outlive use).
+ * Pinning via both the row and column cut avoids large cancellation errors when
+ * pinned values are orders of magnitude larger than neighbouring unknowns.
+ * Off-rank coupling in offDiagonalMatrix is also zeroed for pinned rows.
+ *
+ * Restricted to scalar ValueType: the segregated vector-solve path dispatches
+ * through applyScalarMatrix(), which this class does not implement.
+ *
+ * mask[cell] != 0 marks a constrained cell; value[cell] holds its target.
+ * Both views are sized nCells and must outlive the functor.
  */
 template<typename ValueType, typename IndexType = localIdx>
 class FixedValueConstraints : public PostAssemblyBase<ValueType, IndexType>
 {
+    static_assert(
+        std::is_same_v<ValueType, scalar>,
+        "FixedValueConstraints only supports scalar fields. "
+        "For non-scalar fields implement applyScalarMatrix()."
+    );
+
 public:
 
     FixedValueConstraints(View<const scalar> mask, View<const ValueType> values, localIdx nCells)
@@ -172,26 +178,65 @@ public:
     ) const override
     {
         auto lsView = ls.view();
-        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+        const auto rowOffs = ls.matrix().sparsity()->rowOffs().view();
+        const auto colIdxs = ls.matrix().sparsity()->colIdxs().view();
+        auto matrixValues = lsView.matrix.values;
+        auto rhs = lsView.rhs;
         auto mask = mask_;
         auto vals = values_;
+        // Sweep every row: pinned rows drop their off-diagonals; non-pinned rows that couple into
+        // a pinned column absorb the term into their rhs and zero the coefficient. Parallelising
+        // over rows avoids atomics since each row owns its own rhs entry and off-diagonal slots.
         parallelFor(
             ls.exec(),
             {0, nCells_},
-            NEON_LAMBDA(const localIdx celli) {
-                if (mask[celli] == scalar(0)) return;
-                const auto dIdx = ma.diagIdx(celli);
-                const ValueType diagVal = lsView.matrix.values[dIdx];
-                const auto rowStart = ma.rowOffs[celli];
-                const auto rowEnd = ma.rowOffs[celli + 1];
-                for (auto o = rowStart; o < rowEnd; ++o)
+            NEON_LAMBDA(const localIdx row) {
+                const bool rowPinned = mask[row] != scalar(0);
+                ValueType diagVal = zero<ValueType>();
+                for (auto o = rowOffs[row]; o < rowOffs[row + 1]; ++o)
                 {
-                    if (o != dIdx) lsView.matrix.values[o] = zero<ValueType>();
+                    const auto col = colIdxs[o];
+                    if (col == row)
+                    {
+                        diagVal = matrixValues[o];
+                        continue;
+                    }
+                    if (rowPinned)
+                    {
+                        // pinned cell's own row: decouple it entirely
+                        matrixValues[o] = zero<ValueType>();
+                    }
+                    else if (mask[col] != scalar(0))
+                    {
+                        // column cut: absorb coupling into rhs, zero the coefficient
+                        rhs[row] -= matrixValues[o] * vals[col];
+                        matrixValues[o] = zero<ValueType>();
+                    }
                 }
-                lsView.rhs[celli] = diagVal * vals[celli];
+                if (rowPinned)
+                {
+                    rhs[row] = diagVal * vals[row];
+                }
             },
             "FixedValueConstraints"
         );
+        // Zero offDiagonalMatrix entries for pinned rows so that proc-boundary
+        // couplings do not contribute to the residual of constrained cells.
+        auto& offDiag = ls.offDiagonalMatrix();
+        const localIdx nnz = offDiag.nNonZeros();
+        if (nnz > 0)
+        {
+            const auto offRowIdxs = offDiag.sparsity()->rowIdxs().view();
+            auto offValues = offDiag.values().view();
+            parallelFor(
+                ls.exec(),
+                {0, nnz},
+                NEON_LAMBDA(const localIdx i) {
+                    if (mask[offRowIdxs[i]] != scalar(0)) offValues[i] = zero<ValueType>();
+                },
+                "FixedValueConstraints::offDiag"
+            );
+        }
     }
 
 private:
