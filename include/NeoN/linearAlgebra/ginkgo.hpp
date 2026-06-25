@@ -108,16 +108,42 @@ struct L1ResidualControl
                              //!< every iteration
 };
 
-/** @brief Result of a solve governed by the L1-scaled residual stopping criterion. */
+/** @brief Result of a solve governed by the L1-scaled residual stopping criterion.
+ *
+ * Doubles as the report sink for the config-registered criterion (see
+ * makeL1CriterionFactory): @c fired tells the solve path whether the criterion actually ran
+ * (and therefore whether initResNorm/finalResNorm/numIter hold scaled L1 values).
+ */
 struct L1ResidualResult
 {
-    localIdx numIter;    //!< iterations performed
-    scalar initResNorm;  //!< combined scaled L1 initial residual (sum of columns)
-    scalar finalResNorm; //!< combined scaled L1 final residual (sum of columns)
+    localIdx numIter = 0;      //!< iterations performed
+    scalar initResNorm = 0.0;  //!< combined scaled L1 initial residual (sum of columns)
+    scalar finalResNorm = 0.0; //!< combined scaled L1 final residual (sum of columns)
+    bool fired = false;        //!< set by the criterion on its first check (config path)
     // Per-column scaled residuals; populated only for multi-RHS (Vec3) solves (size == ncols).
     std::vector<scalar> perColInitNorms;
     std::vector<scalar> perColFinalNorms;
 };
+
+/** @brief Registry key under which the L1-scaled residual criterion is stored so a Ginkgo
+ * configFile can reference it by name in its "criteria" array, e.g.
+ *   "criteria": [ {"type": "Iteration", "max_iters": 150}, "neon::l1ScaledResidual" ]
+ * The "neon::" prefix avoids clashing with Ginkgo's own config type names.
+ */
+inline constexpr const char* l1CriterionKey = "neon::l1ScaledResidual";
+
+/** @brief Build the L1-scaled residual criterion as a Ginkgo CriterionFactory for storage in
+ * a gko::config::registry, so it can be named from a configFile (@see l1CriterionKey).
+ *
+ * The matrix / RHS are taken from the CriterionArgs at solve time, so they need not be known
+ * here. When @p report is non-null the criterion writes the scaled initial/final residual and
+ * iteration count there. Defined in ginkgoL1Stop.cpp.
+ */
+std::shared_ptr<gko::stop::CriterionFactory> makeL1CriterionFactory(
+    std::shared_ptr<const gko::Executor> exec,
+    const L1ResidualControl& control,
+    L1ResidualResult* report
+);
 
 /** @brief Solve @p solver with an L1-scaled residual stopping criterion attached.
  *
@@ -205,6 +231,14 @@ inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& 
         return d.get<localIdx>(key);
     };
 
+    // OpenFOAM-style top-level keys (the configFile solver path keeps them: there is no
+    // mapped "criteria" subdict there). Read first so they seed the control...
+    control.tolerance = readScalar(cfg, "tolerance", control.tolerance);
+    control.relTol = readScalar(cfg, "relTol", control.relTol);
+    control.maxIter = readInt(cfg, "maxIter", control.maxIter);
+
+    // ...then let a mapped "criteria" subdict (Ginkgo-style keys) override when present,
+    // preserving the existing behaviour for fvSolution-mapped solvers.
     if (cfg.contains("criteria"))
     {
         const Dictionary& criteria = cfg.subDict("criteria");
@@ -218,6 +252,30 @@ inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& 
     return control;
 }
 
+/** @brief Recursively test whether a Ginkgo config tree references @p name as a (criterion)
+ * string anywhere — used to detect a configFile that names the L1 criterion so the solver
+ * can rely on the in-config criterion instead of attaching one post-hoc.
+ */
+inline bool pnodeReferencesString(const gko::config::pnode& node, const std::string& name)
+{
+    using tag = gko::config::pnode::tag_t;
+    switch (node.get_tag())
+    {
+    case tag::string:
+        return node.get_string() == name;
+    case tag::array:
+        for (const auto& e : node.get_array())
+            if (pnodeReferencesString(e, name)) return true;
+        return false;
+    case tag::map:
+        for (const auto& kv : node.get_map())
+            if (pnodeReferencesString(kv.second, name)) return true;
+        return false;
+    default:
+        return false;
+    }
+}
+
 class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 {
 
@@ -228,12 +286,24 @@ public:
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
-          factory_(gko::config::parse(
-                       config_, gko::config::registry(), gko::config::make_type_descriptor<scalar>()
-          )
-                       .on(gkoExec_)),
           localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr")))
-    {}
+    {
+        // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
+        // configFile can name it (l1CriterionKey) in its "criteria" array. Only needed when
+        // the L1 stop is requested (l1ScaledResidual); the factory carries the tolerances and
+        // a report sink. If the parsed config actually references it, the criterion lives
+        // INSIDE the built solver (l1InConfig_) and reports via l1Report_; otherwise the
+        // existing post-hoc attach in solve() handles the flag-only case unchanged.
+        gko::config::registry reg;
+        if (l1Control_)
+        {
+            l1CritFactory_ = makeL1CriterionFactory(gkoExec_, *l1Control_, &l1Report_);
+            reg.emplace(std::string(l1CriterionKey), l1CritFactory_);
+            l1InConfig_ = pnodeReferencesString(config_, l1CriterionKey);
+        }
+        factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
+                       .on(gkoExec_);
+    }
 
     static std::string name() { return "Ginkgo"; }
 
@@ -286,6 +356,13 @@ private:
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
     std::string localMatrixFormat_;
+    // L1-scaled residual criterion registered into the config registry (l1Control_ set).
+    std::shared_ptr<gko::stop::CriterionFactory> l1CritFactory_;
+    // True when config_ names the L1 criterion, so it is built into factory_'s solver and
+    // reports through l1Report_ (the in-config path); false keeps the post-hoc attach.
+    bool l1InConfig_ = false;
+    // Report sink the in-config criterion writes its scaled L1 residual / iters into.
+    mutable L1ResidualResult l1Report_;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
