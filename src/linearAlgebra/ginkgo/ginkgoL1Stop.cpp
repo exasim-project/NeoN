@@ -135,8 +135,7 @@ std::pair<scalar, std::vector<scalar>> computeL1NormFactor(
     return {combined, perCol};
 }
 
-/* @brief Ginkgo stopping criterion based on the L1-scaled residual, shared by the serial
- * (VecType = gko::matrix::Dense) and distributed (VecType = distributed::Vector) solves.
+/* @brief Ginkgo stopping criterion based on the L1-scaled residual.
  *
  * The iteration stops on the scaled residual sum|b - A x| / normFactor, using an absolute
  * tolerance, a relative tolerance (relative to the initial residual) and a maximum
@@ -145,12 +144,23 @@ std::pair<scalar, std::vector<scalar>> computeL1NormFactor(
  * also matches OpenFOAM's recurrently-updated residual); it is recomputed with a single SpMV
  * only when the solver does not expose one (e.g. multigrid). For a distributed vector the
  * norms are global.
+ *
+ * The criterion is NOT templated on the vector type: a single factory serves the serial
+ * (gko::matrix::Dense), multi-RHS (Vec3 as a [nrows x 3] Dense) and distributed
+ * (distributed::Vector) solves. check_impl() dispatches on the runtime type of the solver's
+ * solution/residual, and a templated checkTyped() carries the per-type implementation. This
+ * lets a SINGLE factory instance be registered once in the Ginkgo config registry and named
+ * from a configFile (see makeL1CriterionFactory), instead of one factory per vector type.
+ *
+ * The system matrix and right-hand side are taken from the CriterionArgs the solver passes
+ * at generate() time when the `matrix`/`b` factory parameters are left null. The config path
+ * relies on this (JSON cannot carry the live operands); the programmatic path
+ * (attachL1StopAndSolve) sets them explicitly and they take precedence.
  */
-template<typename VecType>
 class L1ResidualCriterion :
-    public gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, gko::stop::Criterion>
+    public gko::EnablePolymorphicObject<L1ResidualCriterion, gko::stop::Criterion>
 {
-    friend class gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, gko::stop::Criterion>;
+    friend class gko::EnablePolymorphicObject<L1ResidualCriterion, gko::stop::Criterion>;
     using Criterion = gko::stop::Criterion;
 
 public:
@@ -170,15 +180,21 @@ public:
 
         localIdx GKO_FACTORY_PARAMETER_SCALAR(check_frequency, 1);
 
+        // Optional: live operands for the programmatic path. Left null on the config path,
+        // where they are sourced from the CriterionArgs in the constructor instead.
         std::shared_ptr<const gko::LinOp> GKO_FACTORY_PARAMETER_SCALAR(matrix, nullptr);
 
-        std::shared_ptr<const VecType> GKO_FACTORY_PARAMETER_SCALAR(b, nullptr);
+        std::shared_ptr<const gko::LinOp> GKO_FACTORY_PARAMETER_SCALAR(b, nullptr);
 
         std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(init_residual, NULL);
 
         std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(final_residual, NULL);
 
         std::add_pointer<gko::size_type>::type GKO_FACTORY_PARAMETER_SCALAR(num_iters, NULL);
+
+        // Set to true by the criterion on its first check; lets the caller tell whether the
+        // (config-registered) criterion actually ran and populated the residual reports.
+        std::add_pointer<bool>::type GKO_FACTORY_PARAMETER_SCALAR(fired, NULL);
 
         // Per-column scaled residual output for multi-RHS (Vec3) solves.
         // When non-null, filled with one entry per column (size == ncols).
@@ -196,15 +212,18 @@ public:
     GKO_ENABLE_BUILD_METHOD(Factory);
 
     explicit L1ResidualCriterion(std::shared_ptr<const gko::Executor> exec)
-        : gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, Criterion>(std::move(exec))
+        : gko::EnablePolymorphicObject<L1ResidualCriterion, Criterion>(std::move(exec))
     {}
 
-    explicit L1ResidualCriterion(const Factory* factory, const gko::stop::CriterionArgs&)
-        : gko::EnablePolymorphicObject<L1ResidualCriterion<VecType>, Criterion>(
-            factory->get_executor()
-        ),
+    explicit L1ResidualCriterion(const Factory* factory, const gko::stop::CriterionArgs& args)
+        : gko::EnablePolymorphicObject<L1ResidualCriterion, Criterion>(factory->get_executor()),
           parameters_ {factory->get_parameters()}
-    {}
+    {
+        // Prefer the explicitly-set factory operands (programmatic path); otherwise take the
+        // system matrix and RHS the solver supplies through the CriterionArgs (config path).
+        matrix_ = parameters_.matrix ? parameters_.matrix : args.system_matrix;
+        b_ = parameters_.b ? parameters_.b : args.b;
+    }
 
 protected:
 
@@ -216,8 +235,6 @@ protected:
         const Criterion::Updater& updater
     ) override
     {
-        const auto exec = this->get_executor();
-
         // The current solution is needed for the normFactor reference state (and for the
         // residual recompute fallback). For the iterative solvers used here (Cg/BiCGStab)
         // it is set on every check that can stop.
@@ -225,7 +242,36 @@ protected:
         {
             return false;
         }
+
+        // Dispatch on the concrete runtime vector type so one criterion/factory serves the
+        // serial (Dense) and distributed paths.
+        if (dynamic_cast<const dense*>(updater.solution_) != nullptr)
+        {
+            return checkTyped<dense>(stoppingId, setFinalized, stop_status, one_changed, updater);
+        }
+#ifdef NF_WITH_MPI_SUPPORT
+        if (dynamic_cast<const dist*>(updater.solution_) != nullptr)
+        {
+            return checkTyped<dist>(stoppingId, setFinalized, stop_status, one_changed, updater);
+        }
+#endif
+        return false;
+    }
+
+private:
+
+    template<typename VecType>
+    bool checkTyped(
+        gko::uint8 stoppingId,
+        bool setFinalized,
+        gko::array<gko::stopping_status>* stop_status,
+        bool* one_changed,
+        const Criterion::Updater& updater
+    )
+    {
+        const auto exec = this->get_executor();
         const auto* solution = gko::as<VecType>(updater.solution_);
+        const auto* bVec = gko::as<VecType>(b_.get());
         const auto numIter = updater.num_iterations_;
 
         // Skip the residual-norm evaluation on iterations where the criterion cannot stop
@@ -257,8 +303,8 @@ protected:
         {
             const auto one = gko::initialize<dense>({1.0}, exec);
             const auto negOne = gko::initialize<dense>({-1.0}, exec);
-            rOwned = parameters_.b->clone();
-            parameters_.matrix->apply(negOne.get(), solution, one.get(), rOwned.get());
+            rOwned = bVec->clone();
+            matrix_->apply(negOne.get(), solution, one.get(), rOwned.get());
             r = rOwned.get();
         }
 
@@ -270,15 +316,18 @@ protected:
         const bool isFirstIter = firstIter_;
         if (firstIter_)
         {
-            auto [combined, perCol] = computeL1NormFactor<VecType>(
-                exec, parameters_.matrix.get(), parameters_.b.get(), solution, r
-            );
+            auto [combined, perCol] =
+                computeL1NormFactor<VecType>(exec, matrix_.get(), bVec, solution, r);
             normFactor_ = combined;
             perColNormFactor_ = std::move(perCol);
             initResidual_ = rNorm / normFactor_;
             if (parameters_.init_residual != NULL)
             {
                 *(parameters_.init_residual) = initResidual_;
+            }
+            if (parameters_.fired != NULL)
+            {
+                *(parameters_.fired) = true;
             }
             firstIter_ = false;
         }
@@ -346,7 +395,9 @@ protected:
         return result;
     }
 
-private:
+    std::shared_ptr<const gko::LinOp> matrix_;
+
+    std::shared_ptr<const gko::LinOp> b_;
 
     mutable bool firstIter_ = true;
 
@@ -378,7 +429,7 @@ L1ResidualResult attachL1StopAndSolve(
 
     const bool multiRhs = b->get_size()[1] > 1;
 
-    auto params = L1ResidualCriterion<VecType>::build()
+    auto params = L1ResidualCriterion::build()
                       .with_absolute_tolerance(control.tolerance)
                       .with_relative_tolerance(control.relTol)
                       .with_min_iter(control.minIter)
@@ -442,6 +493,35 @@ L1ResidualResult solveWithL1StopDist(
     return attachL1StopAndSolve<dist>(exec, mtx, b, x, solver, control);
 }
 #endif
+
+std::shared_ptr<gko::stop::CriterionFactory> makeL1CriterionFactory(
+    std::shared_ptr<const gko::Executor> exec,
+    const L1ResidualControl& control,
+    L1ResidualResult* report
+)
+{
+    // matrix / b are deliberately left unset: the criterion sources them from the
+    // CriterionArgs the solver supplies at generate() time (the config path cannot pass
+    // the live operands through JSON). The reporting pointers, when a report sink is given,
+    // let the solve path recover the scaled L1 residual and iteration count even though the
+    // criterion now lives inside the Ginkgo-built solver rather than being attached post-hoc.
+    auto params = L1ResidualCriterion::build()
+                      .with_absolute_tolerance(control.tolerance)
+                      .with_relative_tolerance(control.relTol)
+                      .with_min_iter(control.minIter)
+                      .with_max_iter(control.maxIter)
+                      .with_check_frequency(control.checkFrequency);
+    if (report != nullptr)
+    {
+        params.with_init_residual(&report->initResNorm)
+            .with_final_residual(&report->finalResNorm)
+            .with_num_iters(&report->numIter)
+            .with_fired(&report->fired)
+            .with_per_col_init_residuals(&report->perColInitNorms)
+            .with_per_col_final_residuals(&report->perColFinalNorms);
+    }
+    return gko::share(params.on(exec));
+}
 
 #endif
 
