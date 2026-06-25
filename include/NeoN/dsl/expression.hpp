@@ -148,13 +148,21 @@ private:
  *        null space by doubling a single diagonal), this forces each constrained cell's
  *        solution exactly to its target.
  *
- * For every constrained cell the assembled row is rewritten in place:
- *   A[c, j] = 0  for all j != c   (zero the off-diagonals of row c)
+ * This now performs OpenFOAM's FULL decouple (fvMatrix::setValuesFromList), not just a row wipe.
+ * For every constrained cell c:
+ *   A[c, j] = 0            for all j != c    (zero the off-diagonals of ROW c)
+ *   A[j, c] = 0            for all j != c    (zero the COLUMN c in every neighbour row j)
+ *   rhs[j] -= A[j, c]*value[c]               (relocate that coupling into the neighbour SOURCE)
  *   rhs[c]  = A[c, c] * value[c]
- * so the row reduces to  A[c,c] * x_c = A[c,c] * value[c]  =>  x_c = value[c], regardless of
- * the (relaxed, BC-augmented) diagonal magnitude. The column entries A[j, c] in other rows are
- * left intact, so neighbour equations correctly see the pinned value (more conservative than
- * upstream's full decouple, and valid because omega is solved with an asymmetric solver).
+ * so the row reduces to A[c,c]*x_c = A[c,c]*value[c] => x_c = value[c] (independent of the
+ * relaxed/BC-augmented diagonal), and — crucially — the SpMV / residual no longer carries the
+ * huge in-matrix A[j,c]*value_c term (value_c is the viscous-sublayer wall omega, up to 1e12).
+ * Leaving that coefficient in the matrix (the previous row-only wipe) made A*x at neighbour cells
+ * a difference of ~1e18 magnitudes, which underflowed/NaN'd the L1 residual norm under FOAM_SIGFPE
+ * — OpenFOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.
+ *
+ * Proc-boundary caveat: a pinned cell's coupling to an off-rank ghost lives in offDiagonalMatrix,
+ * not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).
  *
  * The functor sweeps all nCells; a cell is constrained iff mask[cell] != 0, with value[cell]
  * holding its target. Both views are sized nCells and owned by the caller (must outlive use).
@@ -172,23 +180,48 @@ public:
     ) const override
     {
         auto lsView = ls.view();
-        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+        const auto rowOffs = ls.matrix().sparsity()->rowOffs().view();
+        const auto colIdxs = ls.matrix().sparsity()->colIdxs().view();
+        auto matrixValues = lsView.matrix.values;
+        auto rhs = lsView.rhs;
         auto mask = mask_;
         auto vals = values_;
+        // Sweep EVERY row (not only the pinned ones): a pinned row drops its off-diagonals, while
+        // a NON-pinned row that couples into a pinned column relocates that term to its own source
+        // and zeros it (OpenFOAM's column cut). Parallelising over rows means each row owns its own
+        // rhs entry and its own off-diagonal slots, so no atomics are needed.
         parallelFor(
             ls.exec(),
             {0, nCells_},
-            NEON_LAMBDA(const localIdx celli) {
-                if (mask[celli] == scalar(0)) return;
-                const auto dIdx = ma.diagIdx(celli);
-                const ValueType diagVal = lsView.matrix.values[dIdx];
-                const auto rowStart = ma.rowOffs[celli];
-                const auto rowEnd = ma.rowOffs[celli + 1];
-                for (auto o = rowStart; o < rowEnd; ++o)
+            NEON_LAMBDA(const localIdx row) {
+                const bool rowPinned = mask[row] != scalar(0);
+                ValueType diagVal = zero<ValueType>();
+                for (auto o = rowOffs[row]; o < rowOffs[row + 1]; ++o)
                 {
-                    if (o != dIdx) lsView.matrix.values[o] = zero<ValueType>();
+                    const auto col = colIdxs[o];
+                    if (col == row)
+                    {
+                        diagVal = matrixValues[o];
+                        continue;
+                    }
+                    if (rowPinned)
+                    {
+                        // pinned cell's own row: decouple it entirely
+                        matrixValues[o] = zero<ValueType>();
+                    }
+                    else if (mask[col] != scalar(0))
+                    {
+                        // neighbour row coupling INTO a pinned cell: move the term to this row's
+                        // source as a constant, then drop the coefficient (OF setValues column cut)
+                        rhs[row] -= matrixValues[o] * vals[col];
+                        matrixValues[o] = zero<ValueType>();
+                    }
                 }
-                lsView.rhs[celli] = diagVal * vals[celli];
+                if (rowPinned)
+                {
+                    // row now reads A[c,c]*x_c = A[c,c]*value[c] => x_c = value[c]
+                    rhs[row] = diagVal * vals[row];
+                }
             },
             "FixedValueConstraints"
         );
