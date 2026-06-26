@@ -6,6 +6,7 @@
 
 #if NF_WITH_GINKGO
 
+#include <array>
 #include <chrono>
 #include <optional>
 #include <string>
@@ -286,7 +287,11 @@ public:
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
-          localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr")))
+          localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr"))),
+          cacheSolver_(solverConfig.get("cacheSolver", false)),
+          preconditionerRebuildInterval_(
+              static_cast<localIdx>(solverConfig.get("preconditionerRebuildInterval", 0))
+          )
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
         // configFile can name it (l1CriterionKey) in its "criteria" array. Only needed when
@@ -363,6 +368,27 @@ private:
     bool l1InConfig_ = false;
     // Report sink the in-config criterion writes its scaled L1 residual / iters into.
     mutable L1ResidualResult l1Report_;
+    // Solver reuse across timesteps (Strategy 1b, see
+    // docs/plans/ginkgo-solver-reuse-and-shared-allocator.md in NeoFOAM). When enabled the
+    // generated solver is cached and, on later solves with unchanged matrix structure, refreshed in
+    // place via gko::UpdateMatrixValue (the multigrid Pgm aggregation + smoother setup are reused)
+    // instead of regenerating the whole hierarchy. Indexed by cache slot: [0] for scalar /
+    // coupled-Vec3-rhs systems. Structure key = {nRows, localNnz, nonLocalNnz}; a mismatch drops
+    // the cache and regenerates. Wired for the scalar distributed (pressure) solveDist only; the
+    // segregated / implicit-transform Vec3 paths regenerate (cudafe++ gko::LinOp signature
+    // limitation). mutable because solve() is const.
+    //
+    // cacheSolver_: opt-in via the "cacheSolver" dict entry (default off -> regenerate every solve,
+    // i.e. the original behaviour). preconditionerRebuildInterval_: "preconditionerRebuildInterval"
+    // dict entry; when > 0 the cached solver is fully regenerated (preconditioner rebuilt from
+    // scratch) every Nth solve instead of updated in place, so Pgm aggregation drift is bounded;
+    // 0 updates in place indefinitely. cachedSolveCount_: solves served by the current cached
+    // solver per slot, reset on each (re)generate.
+    bool cacheSolver_;
+    localIdx preconditionerRebuildInterval_;
+    mutable std::array<std::shared_ptr<gko::LinOp>, 3> cachedSolver_;
+    mutable std::array<std::array<gko::size_type, 3>, 3> cachedSolverStructure_ {};
+    mutable std::array<localIdx, 3> cachedSolveCount_ {};
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
