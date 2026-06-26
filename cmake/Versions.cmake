@@ -14,12 +14,7 @@ set(NeoN_ADIOS2_VERSION "2.10.2")
 set(NeoN_SUNDIALS_VERSION "7.5.0")
 set(NeoN_JSON_VERSION "3.11.3")
 set(NeoN_GINKGO_VERSION "2.0.0")
-# Scale-corrected Ginkgo (branch reuse_pgm_update_rebase) required by the occDrivAer
-# p-multigrid.json solver (solver::Ir scale_correction). The stock tag
-# 6a3abf8c920228006f3b28bc3bf04fc7a5f6aee0 lacks scale_correction and pulled the already-patched
-# ginkgo-src off this branch, causing a FetchContent stash/unstash conflict in
-# core/solver/multigrid.cpp.
-set(NeoN_GINKGO_TAG "bbc6ae554b37dab548501fe1771a14ff4878ca45")
+set(NeoN_GINKGO_TAG "0183dfb4b0e143c17769fa7d134a8cc5dc1eeb2c")
 set(NeoN_CATCH2_VERSION "3.4.0")
 set(NeoN_SPDLOG_VERSION "1.16.0")
 set(NeoN_NANOBIND_VERSION "2.9.2")
