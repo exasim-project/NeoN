@@ -150,6 +150,27 @@ if(DEFINED SKBUILD)
 endif()
 
 include(cmake/CxxThirdParty.cmake)
+
+# Umpire (and its bundled camp) are built and installed by their own BLT-based
+# CMake, which sets each target's INSTALL_RPATH to ${CMAKE_INSTALL_PREFIX}/lib.
+# Under scikit-build that prefix is the wheel-staging temp directory, which no
+# longer exists after install, so at import time libumpire.so cannot find its
+# direct dependency libcamp.so ("libcamp.so: cannot open shared object file").
+# A per-target override is the only thing that beats BLT's own RPATH — the global
+# CMAKE_INSTALL_RPATH set above does not reach these CPM targets (it does reach
+# NeoN's own libraries). $ORIGIN-relative entries keep the install relocatable and
+# reach camp whether it sits beside umpire ($ORIGIN) or is installed to the
+# package-root lib/ ($ORIGIN/../../lib).
+if(DEFINED SKBUILD)
+  foreach(_neon_cpm_dep umpire camp)
+    if(TARGET ${_neon_cpm_dep})
+      set_target_properties(
+        ${_neon_cpm_dep} PROPERTIES INSTALL_RPATH
+        "$ORIGIN;$ORIGIN/../lib;$ORIGIN/../../lib" INSTALL_RPATH_USE_LINK_PATH FALSE)
+    endif()
+  endforeach()
+endif()
+
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/CompilerWarnings.cmake)
