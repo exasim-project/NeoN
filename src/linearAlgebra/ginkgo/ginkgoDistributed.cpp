@@ -10,6 +10,7 @@
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/error.hpp"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -450,6 +451,91 @@ SolverStats solve_impl_dist(
     return stats;
 }
 
+namespace
+{
+
+// Cache-or-update a generated Ginkgo solver across solves (Strategy 1b, see
+// docs/plans/ginkgo-solver-reuse-and-shared-allocator.md). On the first solve -- or whenever the
+// matrix STRUCTURE changes -- the solver is generated from the factory and cached. On later
+// solves the cached solver is reused and only its matrix VALUES are refreshed in place via
+// gko::UpdateMatrixValue::update_matrix_value, reusing the (expensive) multigrid Pgm aggregation
+// + smoother setup instead of rebuilding the whole hierarchy. The update target is the solver
+// itself when it is updatable (Multigrid as the top-level solver) or, for a Krylov solver
+// wrapping a Multigrid preconditioner (Cg/Fcg/Ir + MG), the bound preconditioner. The Krylov
+// shell's own system matrix needs no explicit refresh: createGkoMtxDist views the local CSR
+// zero-copy and refreshes the shared non-local Coo in place, so the cached solver's system matrix
+// already tracks the re-assembled values; only the preconditioner's derived Galerkin operators do
+// not -- which is exactly what update_matrix_value recomputes. Falls back to a full regenerate
+// when no updatable target is found (e.g. a non-multigrid preconditioner).
+//
+// Caching is opt-in via `cacheEnabled` (the "cacheSolver" dict entry). When disabled, the solver is
+// regenerated every solve and the cache state is left untouched. `rebuildInterval` (> 0) forces a
+// full regenerate every Nth solve so the preconditioner (Pgm aggregation reused by
+// update_matrix_value) is periodically rebuilt from scratch as the matrix values drift across the
+// steady iteration; 0 disables the periodic rebuild (update in place forever). `solveCount` tracks
+// the number of solves served by the current cached solver and is reset on every (re)generate.
+std::shared_ptr<gko::LinOp> cacheOrUpdateSolver(
+    std::shared_ptr<gko::LinOp>& cachedSolver,
+    std::array<gko::size_type, 3>& cachedStructure,
+    localIdx& solveCount,
+    bool cacheEnabled,
+    localIdx rebuildInterval,
+    const std::shared_ptr<const gko::LinOpFactory>& factory,
+    const std::shared_ptr<const gko::LinOp>& gkoMtx,
+    const std::array<gko::size_type, 3>& structure
+)
+{
+    if (!cacheEnabled)
+    {
+        return gko::share(factory->generate(gkoMtx));
+    }
+
+    auto updateInPlace = [&gkoMtx](const std::shared_ptr<gko::LinOp>& solver) -> bool
+    {
+        if (auto upd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(solver))
+        {
+            upd->update_matrix_value(gkoMtx);
+            return true;
+        }
+        if (auto prec = std::dynamic_pointer_cast<gko::Preconditionable>(solver))
+        {
+            auto inner = std::const_pointer_cast<gko::LinOp>(prec->get_preconditioner());
+            if (auto innerUpd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(inner))
+            {
+                innerUpd->update_matrix_value(gkoMtx);
+                return true;
+            }
+        }
+        return false;
+    };
+
+    const bool periodicRebuild = rebuildInterval > 0 && solveCount >= rebuildInterval;
+    if (cachedSolver && cachedStructure == structure && !periodicRebuild
+        && updateInPlace(cachedSolver))
+    {
+        ++solveCount;
+        return cachedSolver;
+    }
+    cachedSolver = gko::share(factory->generate(gkoMtx));
+    cachedStructure = structure;
+    solveCount = 1;
+    return cachedSolver;
+}
+
+// Structural key for the solver cache: re-assembling values keeps these fixed (steady SIMPLE), a
+// remesh/topology change does not -- on a mismatch the cached solver is dropped and regenerated.
+template<typename SystemType>
+std::array<gko::size_type, 3> solverStructureKey(const SystemType& sys)
+{
+    return {
+        static_cast<gko::size_type>(sys.matrix().sparsity()->rows()),
+        static_cast<gko::size_type>(sys.matrix().values().size()),
+        static_cast<gko::size_type>(sys.offDiagonalMatrix().values().size())
+    };
+}
+
+} // namespace
+
 template<unsigned int I>
 void solveComponentDist(
     auto& sys,
@@ -480,6 +566,10 @@ void solveComponentDist(
     auto gkoMtx = createGkoMtxDist(
         exec, comm, mtx, nonLocalMtx, commPattern, imapCache, nonLocalMtxCache, localMatrixFormat
     );
+    // NOTE: the segregated Vec3 path cannot reuse the solver cache here: threading a
+    // std::shared_ptr<gko::LinOp>& through this device-kernel-launching template (getComponent /
+    // setComponent) trips a cudafe++ "__remove_cv(gko::LinOp)" stub bug. Regenerate per solve;
+    // caching for this path needs a host-only restructure (see plan TODO).
     auto solver = gko::share(factory->generate(gkoMtx));
     stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
@@ -562,7 +652,16 @@ SolverStats GinkgoSolver::solveDist(
         cachedNonLocalMtx_,
         localMatrixFormat_
     );
-    auto solver = gko::share(factory_->generate(gkoMtx));
+    auto solver = cacheOrUpdateSolver(
+        cachedSolver_[0],
+        cachedSolverStructure_[0],
+        cachedSolveCount_[0],
+        cacheSolver_,
+        preconditionerRebuildInterval_,
+        factory_,
+        gkoMtx,
+        solverStructureKey(sys)
+    );
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
 }
@@ -692,7 +791,19 @@ SolverStats GinkgoSolver::solveDist(
     }
 
 
-    auto solver = gko::share(factory_->generate(gkoMtx));
+    // Coupled fallback (no implicit transform BC): one block solve over the Vec3 rhs / scalar
+    // matrix. Cache on slot [0] -- the segregated path is not taken for this system, so slots
+    // [1..2] stay free.
+    auto solver = cacheOrUpdateSolver(
+        cachedSolver_[0],
+        cachedSolverStructure_[0],
+        cachedSolveCount_[0],
+        cacheSolver_,
+        preconditionerRebuildInterval_,
+        factory_,
+        gkoMtx,
+        solverStructureKey(sys)
+    );
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 
