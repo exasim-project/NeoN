@@ -14,16 +14,13 @@ namespace NeoN
 
 template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, localIdx size)
-    : size_(size), data_(nullptr), exec_(exec)
-{
-    void* ptr = nullptr;
-    std::visit(
-        [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
-        exec_
-    );
-    data_ = static_cast<ValueType*>(ptr);
-}
+    // Delegate to the value ctor so a freshly allocated Vector is zero-initialized rather than
+    // holding uninitialized pool memory. The pool's alloc<>() does not clear memory, so without
+    // this a field read before its first write returns garbage (huge/NaN), which silently poisons
+    // any consumer (e.g. surface interpolation reading a not-yet-written boundary). Same zero
+    // (ValueType {}) that BoundaryData uses for its members.
+    : Vector(exec, size, ValueType {})
+{}
 
 template<typename ValueType>
 Vector<ValueType>::Vector(
