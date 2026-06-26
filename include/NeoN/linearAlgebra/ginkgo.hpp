@@ -306,8 +306,52 @@ public:
             reg.emplace(std::string(l1CriterionKey), l1CritFactory_);
             l1InConfig_ = pnodeReferencesString(config_, l1CriterionKey);
         }
-        factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
-                       .on(gkoExec_);
+
+        // Mixed-precision: parse the user's solver config in lower precision and wrap it in an
+        // outer fp64 Ir (Iterative Refinement) solver. The outer IR maintains the solution and
+        // residual in fp64; the inner correction solve runs in the reduced precision, which is
+        // faster on GPU. irIterations controls how many outer refinement steps are taken (1 is
+        // sufficient for most CFD use cases where per-step accuracy requirements are modest).
+        // Incompatible with l1ScaledResidual-in-config because l1 criterion is fp64-typed and
+        // cannot be embedded in the lower-precision inner factory.
+        const auto innerPrecision = solverConfig.get("innerPrecision", std::string(""));
+        if (!innerPrecision.empty())
+        {
+            if (l1InConfig_)
+                NF_ERROR_EXIT("innerPrecision cannot be combined with l1ScaledResidual in config");
+            const auto irIterations =
+                static_cast<gko::size_type>(solverConfig.get("irIterations", 1));
+            auto buildIR = [&](gko::config::type_descriptor innerTypeDesc)
+            {
+                auto innerFactory = gko::config::parse(config_, reg, innerTypeDesc).on(gkoExec_);
+                factory_ =
+                    gko::solver::Ir<scalar>::build()
+                        .with_solver(std::move(innerFactory))
+                        .with_criteria(gko::stop::Iteration::build().with_max_iters(irIterations))
+                        .on(gkoExec_);
+            };
+            if (innerPrecision == "float") buildIR(gko::config::make_type_descriptor<float>());
+#if GINKGO_ENABLE_BFLOAT16
+            else if (innerPrecision == "bfloat16")
+                buildIR(gko::config::make_type_descriptor<gko::bfloat16>());
+#endif
+            else
+            {
+                const char* validOptions = "\"float\""
+#if GINKGO_ENABLE_BFLOAT16
+                                           " or \"bfloat16\""
+#endif
+                    ;
+                NF_ERROR_EXIT(
+                    "Unknown innerPrecision '" << innerPrecision << "': use " << validOptions
+                );
+            }
+        }
+        else
+        {
+            factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
+                           .on(gkoExec_);
+        }
     }
 
     static std::string name() { return "Ginkgo"; }
