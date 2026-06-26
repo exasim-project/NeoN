@@ -11,6 +11,7 @@
 #include "NeoN/core/error.hpp"
 
 #include <array>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -656,6 +657,16 @@ SolverStats GinkgoSolver::solveDist(
         gkoMtx,
         solverStructureKey(sys)
     );
+    // When solver caching is on, report whether this solve rebuilt the preconditioner from scratch
+    // (cachedSolveCount_ reset to 1) or reused the cached one via update_matrix_value (count > 1),
+    // so a run log proves the reuse path is actually exercised. Rank 0 only; opt-in feature.
+    if (cacheSolver_ && comm.rank() == 0)
+    {
+        std::cout << "[GinkgoSolver] p-cache: "
+                  << (cachedSolveCount_[0] == 1 ? "rebuild(generate)" : "reuse(update_matrix_value)")
+                  << " solve=" << cachedSolveCount_[0]
+                  << " rebuildInterval=" << preconditionerRebuildInterval_ << std::endl;
+    }
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
 }

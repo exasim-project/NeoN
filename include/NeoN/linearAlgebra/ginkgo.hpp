@@ -277,6 +277,43 @@ inline bool pnodeReferencesString(const gko::config::pnode& node, const std::str
     }
 }
 
+/** @brief Read the optional "cacheSolver" flag from a solver configuration.
+ *
+ * Enables Strategy-1b solver reuse (cache the generated solver, refresh values in place via
+ * gko::UpdateMatrixValue). Defaults to false (regenerate every solve). A boolean read from a
+ * dictionary file is stored as a word/string, so the common representations are accepted, mirroring
+ * readL1ResidualControl.
+ */
+inline bool readCacheSolver(const Dictionary& cfg)
+{
+    const std::string flag = "cacheSolver";
+    if (!cfg.contains(flag)) return false;
+    if (cfg.isType<bool>(flag)) return cfg.get<bool>(flag);
+    if (cfg.isType<int>(flag)) return cfg.get<int>(flag) != 0;
+    if (cfg.isType<label>(flag)) return cfg.get<label>(flag) != 0;
+    if (cfg.isType<std::string>(flag))
+    {
+        const std::string v = cfg.get<std::string>(flag);
+        return (v == "true" || v == "yes" || v == "on" || v == "1");
+    }
+    return false;
+}
+
+/** @brief Read the optional "preconditionerRebuildInterval" from a solver configuration.
+ *
+ * When > 0 the cached solver is fully regenerated (preconditioner rebuilt from scratch) every Nth
+ * solve instead of updated in place; 0 (default) updates in place indefinitely. Accepts int / label
+ * / scalar, since the stored type depends on the dictionary source.
+ */
+inline localIdx readPreconditionerRebuildInterval(const Dictionary& cfg)
+{
+    const std::string key = "preconditionerRebuildInterval";
+    if (!cfg.contains(key)) return 0;
+    if (cfg.isType<int>(key)) return static_cast<localIdx>(cfg.get<int>(key));
+    if (cfg.isType<scalar>(key)) return static_cast<localIdx>(cfg.get<scalar>(key));
+    return cfg.get<localIdx>(key);
+}
+
 class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 {
 
@@ -288,10 +325,8 @@ public:
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
           localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr"))),
-          cacheSolver_(solverConfig.get("cacheSolver", false)),
-          preconditionerRebuildInterval_(
-              static_cast<localIdx>(solverConfig.get("preconditionerRebuildInterval", 0))
-          )
+          cacheSolver_(readCacheSolver(solverConfig)),
+          preconditionerRebuildInterval_(readPreconditionerRebuildInterval(solverConfig))
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
         // configFile can name it (l1CriterionKey) in its "criteria" array. Only needed when
