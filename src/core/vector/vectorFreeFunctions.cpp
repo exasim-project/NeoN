@@ -140,6 +140,30 @@ template Vector<scalar> getComponent<1>(const Vector<Vec3>&);
 template Vector<scalar> getComponent<2>(const Vector<Vec3>&);
 
 template<unsigned int I>
+void getComponent(const Vector<Vec3>& in, Vector<scalar>& out)
+{
+    // Reuse out's storage: resize only when the size actually changes (resize() always reallocs,
+    // so guarding on size is what avoids the per-solve churn in the steady-state case).
+    if (out.size() != in.size())
+    {
+        out.resize(in.size());
+    }
+    const auto exec = in.exec();
+    const auto inV = in.view();
+    auto outV = out.view();
+    NeoN::parallelFor(
+        exec,
+        {0, in.size()},
+        NEON_LAMBDA(const localIdx i) { outV[i] = inV[i][I]; },
+        "getVecValuesInto"
+    );
+};
+
+template void getComponent<0>(const Vector<Vec3>&, Vector<scalar>&);
+template void getComponent<1>(const Vector<Vec3>&, Vector<scalar>&);
+template void getComponent<2>(const Vector<Vec3>&, Vector<scalar>&);
+
+template<unsigned int I>
 void setComponent(const Vector<scalar>& in, Vector<Vec3>& out)
 {
     const auto exec = in.exec();

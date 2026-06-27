@@ -671,35 +671,56 @@ void solveComponentDist(
     auto& factory,
     auto& stats,
     const L1ResidualControl* l1Control,
+    auto& scratch, // GinkgoSolver::ComponentScratch& -- persistent per-component buffers (#2a)
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
     std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>& nonLocalMtxCache,
     const std::string& localMatrixFormat
 )
 {
-    auto rhs = getComponent<I>(sys.rhs());
-    auto xcopy = getComponent<I>(x);
-    auto values = getComponent<I>(sys.matrix().values());
     auto sparsity = sys.matrix().sparsity();
-    auto mtx = CSRMatrix<scalar, localIdx> {values, sparsity};
-
-    auto nonLocalValues = getComponent<I>(sys.offDiagonalMatrix().values());
     auto nonLocalSparsity = sys.offDiagonalMatrix().sparsity();
-    auto nonLocalMtx = COOMatrix<scalar, localIdx> {nonLocalValues, nonLocalSparsity};
+    const auto srcExec = sys.matrix().values().exec();
+
+    // #2a: refresh the persistent per-component scalar matrices / vectors IN PLACE instead of
+    // allocating fresh ones every solve. The scalar CSR/COO matrices are constructed ONCE (lazily,
+    // with the fixed sparsity); thereafter only their component values are overwritten via the
+    // in-place getComponent (size-guarded -> no realloc in steady state). createGkoMtxDist then
+    // VIEWS scratch.csr's values zero-copy, so there is no per-solve big allocation for the momentum
+    // predictor (previously the dominant momentumPredictor host-allocation churn).
+    if (!scratch.csr)
+    {
+        scratch.csr.emplace(Vector<scalar>(srcExec, sys.matrix().values().size()), sparsity);
+    }
+    getComponent<I>(sys.matrix().values(), scratch.csr->values());
+
+    if (!scratch.coo)
+    {
+        scratch.coo.emplace(
+            Vector<scalar>(srcExec, sys.offDiagonalMatrix().values().size()), nonLocalSparsity
+        );
+    }
+    getComponent<I>(sys.offDiagonalMatrix().values(), scratch.coo->values());
+
+    getComponent<I>(sys.rhs(), scratch.rhs);
+    getComponent<I>(x, scratch.x);
 
     const CommunicationPattern& commPattern = sys.commPattern();
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
     auto gkoMtx = createGkoMtxDist(
-        exec, comm, mtx, nonLocalMtx, commPattern, imapCache, nonLocalMtxCache, localMatrixFormat
+        exec, comm, *scratch.csr, *scratch.coo, commPattern, imapCache, nonLocalMtxCache,
+        localMatrixFormat
     );
-    // NOTE: the segregated Vec3 path cannot reuse the solver cache here: threading a
-    // std::shared_ptr<gko::LinOp>& through this device-kernel-launching template (getComponent /
-    // setComponent) trips a cudafe++ "__remove_cv(gko::LinOp)" stub bug. Regenerate per solve;
-    // caching for this path needs a host-only restructure (see plan TODO).
+    // NOTE: the segregated Vec3 path still regenerates the solver each solve -- the gko::LinOp cache
+    // cannot be threaded through this device-kernel-launching template (cudafe++ stub bug,
+    // confirmed unfixed on CUDA 13.1.1). #2a only removes the per-solve matrix/vector ALLOCATION;
+    // solver-generation reuse (Layer B) still needs the host-only restructure.
     auto solver = gko::share(factory->generate(gkoMtx));
-    stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
-    setComponent<I>(xcopy, x);
+    stats.entries.push_back(
+        solve_impl_dist(exec, comm, scratch.rhs, scratch.x, gkoMtx, solver, l1Control)
+    );
+    setComponent<I>(scratch.x, x);
 }
 
 // Distributed counterpart of solveImplicitTransformComponent: solve component I of a scalar-matrix
@@ -824,6 +845,13 @@ SolverStats GinkgoSolver::solveDist(
 {
     auto stats = SolverStats {};
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // Lazily construct + return the persistent per-component scratch (#2a). exec_ is the NeoN
+    // executor the system lives on; the scalar CSR/COO matrices inside are emplaced on first use.
+    auto scratch = [this](unsigned int i) -> ComponentScratch&
+    {
+        if (!cmptScratch_[i]) cmptScratch_[i].emplace(exec_);
+        return *cmptScratch_[i];
+    };
     solveComponentDist<0>(
         sys,
         x,
@@ -831,6 +859,7 @@ SolverStats GinkgoSolver::solveDist(
         factory_,
         stats,
         l1Control,
+        scratch(0),
         cachedImap_,
         cachedNonLocalMtx_,
         localMatrixFormat_
@@ -842,6 +871,7 @@ SolverStats GinkgoSolver::solveDist(
         factory_,
         stats,
         l1Control,
+        scratch(1),
         cachedImap_,
         cachedNonLocalMtx_,
         localMatrixFormat_
@@ -853,6 +883,7 @@ SolverStats GinkgoSolver::solveDist(
         factory_,
         stats,
         l1Control,
+        scratch(2),
         cachedImap_,
         cachedNonLocalMtx_,
         localMatrixFormat_

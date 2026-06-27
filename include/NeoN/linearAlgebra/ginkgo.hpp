@@ -478,6 +478,22 @@ private:
     // solver's eagerly constructed workspace. Stays empty for updatable (1b-cached) configs, whose
     // workspace lives inside cachedSolver_. mutable because solve() is const.
     mutable std::array<std::unique_ptr<gko::solver::Workspace>, 3> cachedWorkspace_;
+
+    // #2a: persistent per-component scratch for the segregated Vec3 (momentum) solve. Without it,
+    // each step allocated a FRESH extracted component Vector AND a fresh scalar CSR/COO Matrix (the
+    // Matrix ctor copies the values) per component -- the dominant momentumPredictor allocation
+    // churn (1.29 GB host high-water, all momentumPredictor/Vector). These persist across solves and
+    // are refreshed IN PLACE (in-place getComponent + size-guarded resize), so steady-state solves
+    // do not reallocate. Lazily constructed on first Vec3 solve. mutable because solve() is const.
+    struct ComponentScratch
+    {
+        std::optional<CSRMatrix<scalar, localIdx>> csr; // local matrix, component (values refreshed)
+        std::optional<COOMatrix<scalar, localIdx>> coo; // off-diagonal matrix, component
+        Vector<scalar> rhs;                             // rhs, component
+        Vector<scalar> x;                               // solution, component (solved in place)
+        explicit ComponentScratch(const Executor& e) : rhs(e, 0), x(e, 0) {}
+    };
+    mutable std::array<std::optional<ComponentScratch>, 3> cmptScratch_;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>

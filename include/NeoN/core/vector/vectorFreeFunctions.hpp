@@ -57,6 +57,16 @@ template<unsigned int I>
 [[nodiscard]] Vector<scalar> getComponent(const Vector<Vec3>& in);
 
 /**
+ * @brief In-place variant: extract component I of @p in into the pre-existing buffer @p out,
+ * reusing its storage. @p out is resized only when its size differs from @p in (so in the
+ * steady-state case -- same size every call -- there is NO reallocation). Lets callers (e.g. the
+ * segregated Vec3 solve) keep persistent per-component buffers instead of allocating a fresh
+ * Vector every solve.
+ */
+template<unsigned int I>
+void getComponent(const Vector<Vec3>& in, Vector<scalar>& out);
+
+/**
  * @brief Given a Vector of Vec3 this function sets a single component
  * @returns The resulting scalar vector
  */
