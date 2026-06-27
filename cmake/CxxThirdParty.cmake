@@ -243,6 +243,19 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # Make the distributed Schwarz preconditioner refreshable in place: implement
+    # gko::UpdateMatrixValue on preconditioner::Schwarz so a cached Cg + Schwarz{Multigrid(local)}
+    # solver reuses its per-rank Multigrid hierarchy across solves (cacheSolver=true) instead of
+    # rebuilding it. See cmake/patches/ginkgo_schwarz_update_matrix_value.patch.
+    set(_ginkgo_schwarz_patchfile
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_schwarz_update_matrix_value.patch)
+    # Idempotent: skip when the patch is already applied (a re-configure re-runs PATCH_COMMAND on
+    # the cached source), so `git apply` is not attempted twice.
+    set(GINKGO_SCHWARZ_PATCH
+        sh
+        -c
+        "git apply -R --check '${_ginkgo_schwarz_patchfile}' 2>/dev/null || git apply '${_ginkgo_schwarz_patchfile}'"
+    )
     cpmaddpackage(
       NAME
       Ginkgo
@@ -252,6 +265,8 @@ if(${NeoN_WITH_GINKGO})
       ginkgo-project/ginkgo
       GIT_TAG
       ${NeoN_GINKGO_TAG}
+      PATCH_COMMAND
+      ${GINKGO_SCHWARZ_PATCH}
       SYSTEM
       YES
       OPTIONS

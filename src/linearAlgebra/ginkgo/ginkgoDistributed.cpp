@@ -485,19 +485,41 @@ std::shared_ptr<gko::LinOp> cacheOrUpdateSolver(
         return gko::share(factory->generate(gkoMtx));
     }
 
-    auto updateInPlace = [&gkoMtx](const std::shared_ptr<gko::LinOp>& solver) -> bool
+    auto forwardUpdate = [&gkoMtx](const std::shared_ptr<gko::LinOp>& target) -> bool
     {
-        if (auto upd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(solver))
+        if (auto upd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(target))
         {
             upd->update_matrix_value(gkoMtx);
             return true;
         }
+        return false;
+    };
+    auto updateInPlace = [&gkoMtx,
+                          &forwardUpdate](const std::shared_ptr<gko::LinOp>& solver) -> bool
+    {
+        // The solver itself is updatable: Multigrid as the top-level solver.
+        if (forwardUpdate(solver))
+        {
+            return true;
+        }
+        // Krylov solver wrapping an updatable preconditioner: Cg/Fcg + Multigrid, or
+        // Cg + Schwarz{Multigrid(local)} (the Schwarz UpdateMatrixValue patch forwards to the
+        // per-rank Multigrid).
         if (auto prec = std::dynamic_pointer_cast<gko::Preconditionable>(solver))
         {
-            auto inner = std::const_pointer_cast<gko::LinOp>(prec->get_preconditioner());
-            if (auto innerUpd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(inner))
+            if (forwardUpdate(std::const_pointer_cast<gko::LinOp>(prec->get_preconditioner())))
             {
-                innerUpd->update_matrix_value(gkoMtx);
+                return true;
+            }
+        }
+        // Ir wrapping an updatable inner SOLVER: scale-corrected MG,
+        // Ir(scale_correction){Multigrid}. The Multigrid is Ir's inner solver (get_solver), not its
+        // preconditioner; the outer Ir's own system matrix tracks the re-assembled values
+        // zero-copy, so refreshing the inner Multigrid (Galerkin coarse ops) completes the reuse.
+        if (auto ir = std::dynamic_pointer_cast<gko::solver::Ir<scalar>>(solver))
+        {
+            if (forwardUpdate(std::const_pointer_cast<gko::LinOp>(ir->get_solver())))
+            {
                 return true;
             }
         }
@@ -663,7 +685,8 @@ SolverStats GinkgoSolver::solveDist(
     if (cacheSolver_ && comm.rank() == 0)
     {
         std::cout << "[GinkgoSolver] p-cache: "
-                  << (cachedSolveCount_[0] == 1 ? "rebuild(generate)" : "reuse(update_matrix_value)")
+                  << (cachedSolveCount_[0] == 1 ? "rebuild(generate)" : "reuse(update_matrix_value)"
+                     )
                   << " solve=" << cachedSolveCount_[0]
                   << " rebuildInterval=" << preconditionerRebuildInterval_ << std::endl;
     }

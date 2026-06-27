@@ -1,0 +1,175 @@
+diff --git a/core/distributed/preconditioner/schwarz.cpp b/core/distributed/preconditioner/schwarz.cpp
+index 556ea5260..b13ecfdc8 100644
+--- a/core/distributed/preconditioner/schwarz.cpp
++++ b/core/distributed/preconditioner/schwarz.cpp
+@@ -219,44 +219,9 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
+             "Requires both coarse solver and coarse level to be set.");
+     }
+
+-    auto dist_mat =
+-        as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(system_matrix);
+-    auto diag_matrix = dist_mat->get_diag_matrix();
+-
+-    if (parameters_.l1_smoother) {
+-        auto exec = this->get_executor();
+-
+-        using Csr = matrix::Csr<ValueType, LocalIndexType>;
+-        auto diag_matrix_copy = share(Csr::create(exec));
+-        as<ConvertibleTo<Csr>>(diag_matrix)->convert_to(diag_matrix_copy);
+-
+-        auto off_diag_matrix = copy_and_convert_to<Csr>(
+-            exec, as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(
+-                      system_matrix)
+-                      ->get_off_diag_matrix());
+-
+-        array<ValueType> l1_diag_arr{exec, diag_matrix->get_size()[0]};
+-
+-        exec->run(
+-            make_row_wise_absolute_sum(off_diag_matrix.get(), l1_diag_arr));
+-
+-        // compute diag_matrix_copy <- diag(l1) + diag_matrix_copy
+-        auto l1_diag = matrix::Diagonal<ValueType>::create(
+-            exec, diag_matrix->get_size()[0], std::move(l1_diag_arr));
+-        auto l1_diag_csr = Csr::create(exec);
+-        l1_diag->move_to(l1_diag_csr);
+-        auto id = matrix::Identity<ValueType>::create(
+-            exec, diag_matrix->get_size()[0]);
+-        auto one = initialize<matrix::Dense<ValueType>>(
+-            {::gko::one<ValueType>()}, exec);
+-        l1_diag_csr->apply(one, id, one, diag_matrix_copy);
+-
+-        this->set_solver(gko::share(this->generate_inner(
+-            parameters_.local_solver.get(), diag_matrix_copy, "local_solver")));
+-    } else {
+-        this->set_solver(gko::share(this->generate_inner(
+-            parameters_.local_solver.get(), diag_matrix, "local_solver")));
+-    }
++    this->set_solver(gko::share(this->generate_inner(
++        parameters_.local_solver.get(), this->extract_local_matrix(system_matrix),
++        "local_solver")));
+
+     gko::remove_complex<ValueType> cweight =
+         gko::detail::real_impl(parameters_.coarse_weight);
+@@ -295,6 +260,67 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
+ }
+
+
++template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
++std::shared_ptr<const LinOp>
++Schwarz<ValueType, LocalIndexType, GlobalIndexType>::extract_local_matrix(
++    std::shared_ptr<const LinOp> system_matrix) const
++{
++    auto dist_mat =
++        as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(system_matrix);
++    std::shared_ptr<const LinOp> diag_matrix = dist_mat->get_diag_matrix();
++
++    if (!parameters_.l1_smoother) {
++        return diag_matrix;
++    }
++
++    auto exec = this->get_executor();
++
++    using Csr = matrix::Csr<ValueType, LocalIndexType>;
++    auto diag_matrix_copy = share(Csr::create(exec));
++    as<ConvertibleTo<Csr>>(diag_matrix)->convert_to(diag_matrix_copy);
++
++    auto off_diag_matrix =
++        copy_and_convert_to<Csr>(exec, dist_mat->get_off_diag_matrix());
++
++    array<ValueType> l1_diag_arr{exec, diag_matrix->get_size()[0]};
++
++    exec->run(make_row_wise_absolute_sum(off_diag_matrix.get(), l1_diag_arr));
++
++    // compute diag_matrix_copy <- diag(l1) + diag_matrix_copy
++    auto l1_diag = matrix::Diagonal<ValueType>::create(
++        exec, diag_matrix->get_size()[0], std::move(l1_diag_arr));
++    auto l1_diag_csr = Csr::create(exec);
++    l1_diag->move_to(l1_diag_csr);
++    auto id = matrix::Identity<ValueType>::create(exec,
++                                                  diag_matrix->get_size()[0]);
++    auto one =
++        initialize<matrix::Dense<ValueType>>({::gko::one<ValueType>()}, exec);
++    l1_diag_csr->apply(one, id, one, diag_matrix_copy);
++
++    return diag_matrix_copy;
++}
++
++
++template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
++void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::update_matrix_value(
++    std::shared_ptr<const LinOp> new_system_matrix)
++{
++    this->system_matrix_ = new_system_matrix;
++
++    // A coarse correction cannot be refreshed in place here, so rebuild everything when one is
++    // configured. The common configFile case (Schwarz wrapping a local Multigrid, no coarse
++    // level) takes the fast path below.
++    auto updatable = std::dynamic_pointer_cast<UpdateMatrixValue>(
++        std::const_pointer_cast<LinOp>(local_solver_));
++    if (updatable && !parameters_.coarse_level && !parameters_.coarse_solver) {
++        updatable->update_matrix_value(
++            this->extract_local_matrix(new_system_matrix));
++    } else {
++        this->generate(new_system_matrix);
++    }
++}
++
++
+ #define GKO_DECLARE_SCHWARZ(ValueType, LocalIndexType, GlobalIndexType) \
+     class Schwarz<ValueType, LocalIndexType, GlobalIndexType>
+ GKO_INSTANTIATE_FOR_EACH_VALUE_AND_LOCAL_GLOBAL_INDEX_TYPE(GKO_DECLARE_SCHWARZ);
+diff --git a/include/ginkgo/core/distributed/preconditioner/schwarz.hpp b/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
+index acb49f5f7..260d5672e 100644
+--- a/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
++++ b/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
+@@ -20,6 +20,7 @@
+ #include <ginkgo/core/distributed/matrix.hpp>
+ #include <ginkgo/core/distributed/vector.hpp>
+ #include <ginkgo/core/distributed/vector_cache.hpp>
++#include <ginkgo/core/multigrid/multigrid_level.hpp>
+ #include <ginkgo/core/solver/solver_base.hpp>
+ #include <ginkgo/core/solver/workspace.hpp>
+
+@@ -68,7 +69,8 @@ namespace preconditioner {
+ template <typename ValueType = default_precision,
+           typename LocalIndexType = int32, typename GlobalIndexType = int64>
+ class Schwarz
+-    : public EnableLinOp<Schwarz<ValueType, LocalIndexType, GlobalIndexType>> {
++    : public EnableLinOp<Schwarz<ValueType, LocalIndexType, GlobalIndexType>>,
++      public UpdateMatrixValue {
+     friend class EnableLinOp<Schwarz>;
+     friend class EnablePolymorphicObject<Schwarz, LinOp>;
+     GKO_ASSERT_SUPPORTED_VALUE_AND_DIST_INDEX_TYPE;
+@@ -211,6 +213,17 @@ public:
+         return local_solver_;
+     }
+
++    /**
++     * Refresh the preconditioner for a new system matrix that keeps the same sparsity
++     * structure, reusing the existing local solver instead of rebuilding it. The rank-local
++     * block is re-extracted from @p new_system_matrix and, when the local solver itself
++     * implements UpdateMatrixValue (e.g. a Multigrid local solver, which reuses its Pgm
++     * aggregation), forwarded to it in place; otherwise the local solver is regenerated from the
++     * new local block. Falls back to a full generate() when a coarse correction is configured.
++     */
++    void update_matrix_value(
++        std::shared_ptr<const LinOp> new_system_matrix) override;
++
+ protected:
+     /**
+      * Creates an empty Schwarz preconditioner.
+@@ -249,6 +262,14 @@ protected:
+      */
+     void generate(std::shared_ptr<const LinOp> system_matrix);
+
++    /**
++     * Extract the rank-local matrix block the local solver is built from: the distributed
++     * matrix's diagonal block, with the L1 smoother correction applied when enabled. Shared by
++     * generate() and update_matrix_value() so both see the identical local operator.
++     */
++    std::shared_ptr<const LinOp> extract_local_matrix(
++        std::shared_ptr<const LinOp> system_matrix) const;
++
+     /**
+      * Generate an inner LinOp, threading the workspace view through to the
+      * factory when one is available. Otherwise falls back to the workspace-
