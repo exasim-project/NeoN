@@ -243,10 +243,17 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
-    # Make the distributed Schwarz preconditioner refreshable in place: implement
-    # gko::UpdateMatrixValue on preconditioner::Schwarz so a cached Cg + Schwarz{Multigrid(local)}
-    # solver reuses its per-rank Multigrid hierarchy across solves (cacheSolver=true) instead of
-    # rebuilding it. See cmake/patches/ginkgo_schwarz_update_matrix_value.patch.
+    # Patch bundle (cmake/patches/ginkgo_schwarz_update_matrix_value.patch):
+    #  1. Make the distributed Schwarz preconditioner refreshable in place: implement
+    #     gko::UpdateMatrixValue on preconditioner::Schwarz so a cached Cg + Schwarz{Multigrid(local)}
+    #     solver reuses its per-rank Multigrid hierarchy across solves (cacheSolver=true) instead of
+    #     rebuilding it.
+    #  2. Reduced-precision (float) preconditioner support on a fp64 distributed::Matrix:
+    #     Schwarz::extract_local_matrix converts the fp64 matrix down to float, and
+    #     distributed::Matrix::convert_to/move_to convert each local block precision-first in the
+    #     source format (so a Coo<double> off-diagonal becomes a Csr<float> without the unsupported
+    #     single-step cross-precision+cross-format copy). Enables value_type=float32 MG preconditioners
+    #     (localized and non-localized).
     set(_ginkgo_schwarz_patchfile
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_schwarz_update_matrix_value.patch)
     # Idempotent: skip when the patch is already applied (a re-configure re-runs PATCH_COMMAND on

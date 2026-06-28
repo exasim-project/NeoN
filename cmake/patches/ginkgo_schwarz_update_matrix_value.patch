@@ -1,11 +1,131 @@
+diff --git a/core/distributed/matrix.cpp b/core/distributed/matrix.cpp
+index 5dd5813cc..89b46c60d 100644
+--- a/core/distributed/matrix.cpp
++++ b/core/distributed/matrix.cpp
+@@ -7,6 +7,7 @@
+ #include <utility>
+ 
+ #include <ginkgo/core/base/array.hpp>
++#include <ginkgo/core/base/matrix_data.hpp>
+ #include <ginkgo/core/base/precision_dispatch.hpp>
+ #include <ginkgo/core/distributed/assembly.hpp>
+ #include <ginkgo/core/distributed/neighborhood_communicator.hpp>
+@@ -199,6 +200,53 @@ Matrix<ValueType, LocalIndexType, GlobalIndexType>::create(
+ }
+ 
+ 
++namespace {
++
++
++// Copy one local block (diag or off-diag) into a target block that may differ from the source
++// in BOTH precision and storage format. A single Ginkgo copy_from cannot do a combined
++// cross-precision + cross-format conversion (e.g. a Coo<double> off-diagonal, as assembled by an
++// application, into the default Csr<float> off-diagonal of a reduced-precision copy created by
++// Pgm/Multigrid): copy_from resolves to as<ConvertibleTo<Csr<float>>>(Coo<double>), which throws
++// NotSupported. So convert the PRECISION first while preserving the source format (device-side),
++// then copy_from into the target -- a same-precision format change, which IS supported. Csr/Coo
++// (the formats distributed::Matrix actually uses) take the device path; anything else routes
++// through format- and precision-agnostic matrix_data.
++template <typename SourceValueType, typename TargetValueType, typename IndexType>
++void convert_local_block(const LinOp* source, LinOp* target)
++{
++    auto exec = source->get_executor();
++    if (auto coo =
++            dynamic_cast<const gko::matrix::Coo<SourceValueType, IndexType>*>(
++                source)) {
++        auto lower = gko::matrix::Coo<TargetValueType, IndexType>::create(exec);
++        coo->convert_to(lower.get());
++        target->copy_from(lower.get());
++    } else if (auto csr = dynamic_cast<
++                   const gko::matrix::Csr<SourceValueType, IndexType>*>(
++                   source)) {
++        auto lower = gko::matrix::Csr<TargetValueType, IndexType>::create(exec);
++        csr->convert_to(lower.get());
++        target->copy_from(lower.get());
++    } else {
++        matrix_data<SourceValueType, IndexType> src_data;
++        as<const WritableToMatrixData<SourceValueType, IndexType>>(source)
++            ->write(src_data);
++        matrix_data<TargetValueType, IndexType> dst_data{src_data.size};
++        dst_data.nonzeros.reserve(src_data.nonzeros.size());
++        for (const auto& e : src_data.nonzeros) {
++            dst_data.nonzeros.emplace_back(
++                e.row, e.column, static_cast<TargetValueType>(e.value));
++        }
++        as<ReadableFromMatrixData<TargetValueType, IndexType>>(target)->read(
++            dst_data);
++    }
++}
++
++
++}  // namespace
++
++
+ template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
+ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::convert_to(
+     Matrix<next_precision<value_type>, local_index_type, global_index_type>*
+@@ -207,7 +255,9 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::convert_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->copy_from(this->diag_mtx_);
+-    result->off_diag_mtx_->copy_from(this->off_diag_mtx_);
++    convert_local_block<value_type, next_precision<value_type>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->copy_from(this->row_gatherer_);
+     result->imap_ = this->imap_;
+     result->set_size(this->get_size());
+@@ -222,7 +272,11 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::move_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->move_from(this->diag_mtx_);
+-    result->off_diag_mtx_->move_from(this->off_diag_mtx_);
++    // off-diag may differ in format from the target; a cross-precision move is unsupported, so
++    // convert (copying values is a valid move_to result).
++    convert_local_block<value_type, next_precision<value_type>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->move_from(this->row_gatherer_);
+     result->imap_ = std::move(this->imap_);
+     result->set_size(this->get_size());
+@@ -239,7 +293,9 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::convert_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->copy_from(this->diag_mtx_.get());
+-    result->off_diag_mtx_->copy_from(this->off_diag_mtx_.get());
++    convert_local_block<value_type, next_precision<value_type, 2>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->copy_from(this->row_gatherer_);
+     result->imap_ = this->imap_;
+     result->set_size(this->get_size());
+@@ -254,7 +310,9 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::move_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->move_from(this->diag_mtx_.get());
+-    result->off_diag_mtx_->move_from(this->off_diag_mtx_.get());
++    convert_local_block<value_type, next_precision<value_type, 2>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->move_from(this->row_gatherer_);
+     result->imap_ = std::move(this->imap_);
+     result->set_size(this->get_size());
 diff --git a/core/distributed/preconditioner/schwarz.cpp b/core/distributed/preconditioner/schwarz.cpp
-index 556ea5260..b13ecfdc8 100644
+index 556ea5260..90e886326 100644
 --- a/core/distributed/preconditioner/schwarz.cpp
 +++ b/core/distributed/preconditioner/schwarz.cpp
-@@ -219,44 +219,9 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
+@@ -15,6 +15,7 @@
+ #include <ginkgo/core/config/config.hpp>
+ #include <ginkgo/core/config/registry.hpp>
+ #include <ginkgo/core/distributed/matrix.hpp>
++#include <ginkgo/core/matrix/coo.hpp>
+ #include <ginkgo/core/matrix/csr.hpp>
+ #include <ginkgo/core/matrix/dense.hpp>
+ #include <ginkgo/core/matrix/identity.hpp>
+@@ -219,44 +220,9 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
              "Requires both coarse solver and coarse level to be set.");
      }
-
+ 
 -    auto dist_mat =
 -        as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(system_matrix);
 -    auto diag_matrix = dist_mat->get_diag_matrix();
@@ -47,20 +167,49 @@ index 556ea5260..b13ecfdc8 100644
 +    this->set_solver(gko::share(this->generate_inner(
 +        parameters_.local_solver.get(), this->extract_local_matrix(system_matrix),
 +        "local_solver")));
-
+ 
      gko::remove_complex<ValueType> cweight =
          gko::detail::real_impl(parameters_.coarse_weight);
-@@ -295,6 +260,67 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
+@@ -295,6 +261,96 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
  }
-
-
+ 
+ 
 +template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
 +std::shared_ptr<const LinOp>
 +Schwarz<ValueType, LocalIndexType, GlobalIndexType>::extract_local_matrix(
 +    std::shared_ptr<const LinOp> system_matrix) const
 +{
-+    auto dist_mat =
-+        as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(system_matrix);
++    using Mtx = Matrix<ValueType, LocalIndexType, GlobalIndexType>;
++    // Reduced-precision preconditioner support. The distributed system matrix is
++    // assembled once in fp64, but the Schwarz preconditioner (and the local solver
++    // hierarchy it wraps) may be requested in a lower precision via the config
++    // node's "value_type" -- absent => double, the default. When this Schwarz is a
++    // float preconditioner fed the fp64 distributed::Matrix, convert the matrix down
++    // to float here so the whole local solve runs in float. The dynamic_cast fast
++    // path keeps the same-precision (default double) case allocation-free; this is
++    // the single choke point shared by generate() and update_matrix_value(), so the
++    // cached-refresh path is converted identically.
++    std::shared_ptr<const Mtx> dist_mat;
++    if constexpr (std::is_same<ValueType, float>::value) {
++        dist_mat = std::dynamic_pointer_cast<const Mtx>(system_matrix);
++        if (!dist_mat) {
++            using HighMtx = Matrix<double, LocalIndexType, GlobalIndexType>;
++            auto high_mat = as<HighMtx>(system_matrix);
++            // Match the source block formats (Csr diagonal + Coo off-diagonal, as
++            // assembled by NeoN's createGkoMtxDist) so convert_to() performs a
++            // precision-only conversion of each block. A default-format target
++            // would force an unsupported cross-format + cross-precision
++            // Coo<double> -> Csr<float> copy inside Matrix::convert_to().
++            auto converted = Mtx::create(
++                this->get_executor(), high_mat->get_communicator(),
++                gko::with_matrix_type<matrix::Csr>(),
++                gko::with_matrix_type<matrix::Coo>());
++            high_mat->convert_to(converted.get());
++            dist_mat = gko::share(std::move(converted));
++        }
++    } else {
++        dist_mat = as<Mtx>(system_matrix);
++    }
 +    std::shared_ptr<const LinOp> diag_matrix = dist_mat->get_diag_matrix();
 +
 +    if (!parameters_.l1_smoother) {
@@ -118,6 +267,24 @@ index 556ea5260..b13ecfdc8 100644
  #define GKO_DECLARE_SCHWARZ(ValueType, LocalIndexType, GlobalIndexType) \
      class Schwarz<ValueType, LocalIndexType, GlobalIndexType>
  GKO_INSTANTIATE_FOR_EACH_VALUE_AND_LOCAL_GLOBAL_INDEX_TYPE(GKO_DECLARE_SCHWARZ);
+diff --git a/core/multigrid/pgm.cpp b/core/multigrid/pgm.cpp
+index ddffec5d9..93408927a 100644
+--- a/core/multigrid/pgm.cpp
++++ b/core/multigrid/pgm.cpp
+@@ -568,8 +568,11 @@ void Pgm<ValueType, IndexType>::update_matrix_value(
+                        system_matrix_)) {
+             setup_fine_op(obj);
+         } else {
+-            // handle other ValueTypes.
+-            run<ConvertibleTo, fst_mtx_type, snd_mtx_type>(obj,
++            // handle other ValueTypes (e.g. a reduced-precision Pgm<float> fed the fp64 system
++            // matrix for a mixed-precision preconditioner). Dispatch on system_matrix_, NOT the
++            // null `obj` from the failed cast above -- mirrors generate() (line ~412). Passing the
++            // null obj threw gko::NotSupported("run_impl ... decltype(nullptr)").
++            run<ConvertibleTo, fst_mtx_type, snd_mtx_type>(system_matrix_,
+                                                            convert_fine_op);
+         }
+ 
 diff --git a/include/ginkgo/core/distributed/preconditioner/schwarz.hpp b/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
 index acb49f5f7..260d5672e 100644
 --- a/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
@@ -129,7 +296,7 @@ index acb49f5f7..260d5672e 100644
 +#include <ginkgo/core/multigrid/multigrid_level.hpp>
  #include <ginkgo/core/solver/solver_base.hpp>
  #include <ginkgo/core/solver/workspace.hpp>
-
+ 
 @@ -68,7 +69,8 @@ namespace preconditioner {
  template <typename ValueType = default_precision,
            typename LocalIndexType = int32, typename GlobalIndexType = int64>
@@ -143,7 +310,7 @@ index acb49f5f7..260d5672e 100644
 @@ -211,6 +213,17 @@ public:
          return local_solver_;
      }
-
+ 
 +    /**
 +     * Refresh the preconditioner for a new system matrix that keeps the same sparsity
 +     * structure, reusing the existing local solver instead of rebuilding it. The rank-local
@@ -161,7 +328,7 @@ index acb49f5f7..260d5672e 100644
 @@ -249,6 +262,14 @@ protected:
       */
      void generate(std::shared_ptr<const LinOp> system_matrix);
-
+ 
 +    /**
 +     * Extract the rank-local matrix block the local solver is built from: the distributed
 +     * matrix's diagonal block, with the L1 smoother correction applied when enabled. Shared by
