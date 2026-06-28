@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // assemble sub-phase regions (no-op without a kokkos tool)
+
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
@@ -323,6 +325,10 @@ public:
     template<typename AssemblyType = ValueType>
     void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType>& ls) const
     {
+        // Implicit spatial-operator matrix assembly (e.g. the fused div-laplacian). Profiled
+        // separately so the momentum.assemble "remainder" can be attributed to implicit assembly
+        // vs the explicit source vs the temporal term.
+        Kokkos::Profiling::ScopedRegion region_("assemble.spatialImplicit");
         for (auto& op : spatialOperators_)
         {
             if (op.getType() == Operator::Type::Implicit)
@@ -340,6 +346,7 @@ public:
         la::LinearSystem<AssemblyType, ValueType>& ls, scalar t, scalar dt
     ) const
     {
+        Kokkos::Profiling::ScopedRegion region_("assemble.temporalImplicit");
         for (auto& op : temporalOperators_)
         {
             if (op.getType() == Operator::Type::Implicit)
@@ -355,6 +362,12 @@ public:
         la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
     ) const
     {
+        // Explicit source assembly. The explicitOperation() call allocates a source Vector and runs
+        // every explicit operator -- for the momentum equation this includes the viscous
+        // div(nuEff*dev2(T(grad(U)))) term, which materializes a full Tensor temporary (the largest
+        // per-assemble allocation). Profiled separately so its (host-side) cost is visible apart
+        // from the implicit matrix assembly.
+        Kokkos::Profiling::ScopedRegion region_("assemble.explicitSource");
         auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
         auto [vol, expSource, rhs] = views(mesh.cellVolumes(), expTmp, ls.rhs());
         parallelFor(

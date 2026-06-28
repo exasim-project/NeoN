@@ -5,6 +5,8 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // implicitOperation phase regions (no-op without a tool)
+
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
@@ -412,44 +414,64 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
     const bool cellBased =
         dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) != nullptr;
     const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
-    std::visit(
-        [&](auto&& kernel)
-        {
-            if (auto* cellIter =
-                    dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    // Phase regions to localize the implicit-assembly host cost (assemble.spatialImplicit): the
+    // internal/boundary/proc matrix coefficients, the non-orthogonal laplacian correction, the
+    // deferred gradient correction of a corrected div scheme (e.g. linearUpwindV -- recomputes a
+    // limited grad every assemble), and the bounded diagonal correction.
+    {
+        Kokkos::Profiling::ScopedRegion region_("divlap.matrixCoeffs");
+        std::visit(
+            [&](auto&& kernel)
             {
-                if (!cellIter->getCellBasedData())
+                if (auto* cellIter =
+                        dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
                 {
-                    cellIter->setComputeCellBasedData(
-                        this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                    if (!cellIter->getCellBasedData())
+                    {
+                        cellIter->setComputeCellBasedData(
+                            this->getVector().mesh(),
+                            ls.matrix().sparsity(),
+                            ls.faceToMatrixAddress()
+                        );
+                    }
+                    computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
+                        ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_, bounded_
                     );
                 }
-                computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
-                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_, bounded_
+                else
+                {
+                    computeDivLaplacianIntImpl<ValueType, scalar>(
+                        ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                    );
+                }
+                computeDivLaplacianBoundImpl<ValueType, scalar>(
+                    ls,
+                    this->getVector(),
+                    flux_,
+                    gamma_,
+                    *faceNormalGradient_,
+                    kernel,
+                    coeffA_,
+                    coeffB_
                 );
-            }
-            else
-            {
-                computeDivLaplacianIntImpl<ValueType, scalar>(
+                computeDivLaplacianProcBoundImpl<ValueType, scalar>(
                     ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
                 );
-            }
-            computeDivLaplacianBoundImpl<ValueType, scalar>(
-                ls, this->getVector(), flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
-            );
-            computeDivLaplacianProcBoundImpl<ValueType, scalar>(
-                ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
-            );
-        },
-        inlineKernel
-    );
-    computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
-        ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
-    );
+            },
+            inlineKernel
+        );
+    }
+    {
+        Kokkos::Profiling::ScopedRegion region_("divlap.nonOrthCorr");
+        computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
+            ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
+        );
+    }
 
     // Deferred correction for a corrected div scheme (e.g. linearUpwind), scalar-matrix / Vec3-rhs.
     if (divSurfaceInterpolation_->corrected())
     {
+        Kokkos::Profiling::ScopedRegion region_("divlap.deferredCorr");
         const auto& mesh = this->getVector().mesh();
         SurfaceField<ValueType> correction(
             this->getVector().exec(),
@@ -467,6 +489,7 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
     // the internal-face part into the cell loop, so only boundary/proc faces remain there.
     if (bounded_)
     {
+        Kokkos::Profiling::ScopedRegion region_("divlap.bounded");
         if (cellBased)
         {
             applyBoundedDiagonalCorrectionBoundary<ValueType, scalar>(
@@ -493,8 +516,33 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
         auto dict = std::get<Dictionary>(input);
         std::string lapSchemeName = "laplacian(" + gamma_.name + "," + this->field_.name + ")";
         std::string divSchemeName = "div(" + flux_.name + "," + this->getVector().name + ")";
-        laplTokens = dict.subDict("laplacianSchemes").get<NeoN::TokenList>(lapSchemeName);
-        divTokens = dict.subDict("divSchemes").get<NeoN::TokenList>(divSchemeName);
+        // Resolve a scheme by its exact key, falling back to the subdict's "default" entry when the
+        // explicit key is absent -- the OpenFOAM resolution order. NeoFOAM's expandSchemeDefaults
+        // expands "default" into per-operator keys for the SEPARATE Div/Laplacian operators, but it
+        // does not recognize this fused operator (getName() == "FusedDivLapOperator"), so when
+        // fusing is enabled a subdict such as laplacianSchemes may still carry only "default" (e.g.
+        // "default Gauss linear corrected;" with no explicit laplacian(nuEff,U)). Without this
+        // fallback the get<>() below throws on the missing key.
+        auto resolveScheme = [](Dictionary& sub, const std::string& key) -> TokenList
+        {
+            if (sub.contains(key)) return sub.get<NeoN::TokenList>(key);
+            if (sub.contains("default"))
+            {
+                if (sub.isType<std::string>("default"))
+                {
+                    NeoN::TokenList tl;
+                    tl.insert(sub.get<std::string>("default"));
+                    return tl;
+                }
+                return sub.get<NeoN::TokenList>("default");
+            }
+            NF_ERROR_EXIT(
+                "GaussGreenDivLaplacian: scheme '" << key << "' not found and no 'default' present"
+            );
+            return {};
+        };
+        laplTokens = resolveScheme(dict.subDict("laplacianSchemes"), lapSchemeName);
+        divTokens = resolveScheme(dict.subDict("divSchemes"), divSchemeName);
     }
     else
     {

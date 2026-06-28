@@ -76,6 +76,25 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         }
     }
 
+    // NeoN-level solver-cache and mixed-precision keys: read separately by the GinkgoSolver ctor
+    // (readCacheSolver / readPreconditionerRebuildInterval and the innerPrecision/irIterations IR
+    // wrapper), NOT Ginkgo config keys. The configFile path returns the JSON config below before
+    // reaching the key-by-key build, so these only leak into Ginkgo's parser on the inline-mapped
+    // path (e.g. a PBiCGStab/diagonal U solver with cacheSolver set) -- where gko::config::parse
+    // rejects unknown keys. Strip them here, like l1ScaledResidual above.
+    for (const auto& key : {
+             std::string("cacheSolver"),
+             std::string("preconditionerRebuildInterval"),
+             std::string("innerPrecision"),
+             std::string("irIterations"),
+         })
+    {
+        if (dict.contains(key))
+        {
+            dict.remove(key);
+        }
+    }
+
     // check if an external file name is given
     if (dict.contains("configFile"))
     {

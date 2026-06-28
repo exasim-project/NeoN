@@ -116,6 +116,12 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const std::string& localMatrixFormat
 )
 {
+    // Building the distributed Ginkgo matrix runs on EVERY solve and is NOT part of the reported
+    // "Solve time" (solve_impl_dist times only the apply): on the cached fast path it refreshes the
+    // non-local COO values + re-wraps the local CSR view; on the first solve it also builds the
+    // partition / index_map / column mapping. Profiled to expose this unreported solve-path cost.
+    Kokkos::Profiling::ScopedRegion region_("ginkgo.createMtx");
+
     // commPattern is currently unused here: all the connectivity information needed to build
     // the distributed matrix is already encoded in the row/column indices of `mtx` (local block)
     // and `bmtx` (off-diagonal/processor coupling).
@@ -600,6 +606,10 @@ SolverLease cacheOrUpdateSolver(
     const std::array<gko::size_type, 3>& structure
 )
 {
+    // Solver setup (generate / update_matrix_value / workspace reuse) runs on every solve and is
+    // NOT part of the reported "Solve time". Profiled to expose this unreported solve-path cost.
+    Kokkos::Profiling::ScopedRegion region_("ginkgo.solverSetup");
+
     // Generate a fresh solver, reusing the stashed scratch Workspace when one is available
     // (Strategy 3). The first generate has no workspace yet and uses the solver's own eagerly
     // constructed one, which the SolverLease then extracts to seed cachedWorkspace for reuse.
@@ -768,6 +778,7 @@ void applyTransformDiagDist(
     scalar sign
 )
 {
+    Kokkos::Profiling::ScopedRegion region_("ginkgo.transformDiag");
     parallelFor(
         exec,
         {0, nrows},
@@ -918,7 +929,10 @@ SolverStats GinkgoSolver::solveDist(
         const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
         auto diagC = sys.diagCmpt()->view();
         const localIdx nrows = sys.rhs().size();
-        gkoExec_->synchronize();
+        // No gkoExec_->synchronize() here: getGkoExecutor threads the Kokkos execution-space stream
+        // into the Ginkgo executor, so the diagonal-edit kernels below and the Ginkgo solve run on
+        // the SAME CUDA stream and are already ordered -- the explicit fences were redundant
+        // host-blocking points (EXPERIMENT: removed to measure the slip/symmetry momentum cost).
 
         SolverStats stats;
         // Same matrix structure for all three components (only the diagonal values differ), so one
@@ -939,7 +953,6 @@ SolverStats GinkgoSolver::solveDist(
         // they carry no gko types. The three blocks are unrolled because I must be a constant.
 #define NEON_SOLVE_TRANSFORM_CMPT(I)                                                               \
     applyTransformDiagDist<I>(exec_, values, ma, diagC, nrows, scalar(-1));                        \
-    gkoExec_->synchronize();                                                                       \
     {                                                                                              \
         auto lease = cacheOrUpdateSolver(                                                          \
             cachedSolver_[I],                                                                      \
@@ -959,8 +972,7 @@ SolverStats GinkgoSolver::solveDist(
         );                                                                                         \
         setComponent<I>(xcopy, x);                                                                 \
     }                                                                                              \
-    applyTransformDiagDist<I>(exec_, values, ma, diagC, nrows, scalar(1));                         \
-    gkoExec_->synchronize();
+    applyTransformDiagDist<I>(exec_, values, ma, diagC, nrows, scalar(1));
 
         NEON_SOLVE_TRANSFORM_CMPT(0)
         NEON_SOLVE_TRANSFORM_CMPT(1)

@@ -9,6 +9,8 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/view.hpp"
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // cell-limited-grad phase regions (no-op without a tool)
+
 namespace NeoN::finiteVolume::cellCentred
 {
 
@@ -325,8 +327,13 @@ void computeCellLimitedGradTensor(
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
 
-    // 1. Unlimited base tensor gradient (internal + boundary), without operator scaling.
-    baseScheme.gradTensor(u, gradU, dsl::Coeff(scalar(1)));
+    // 1. Unlimited base tensor gradient (internal + boundary), without operator scaling. This is a
+    // full GaussGreenGrad (grad + boundary reconstruction) -- profiled apart from the limiter so we
+    // can tell the base-gradient cost from the min/max-range + limiter machinery below.
+    {
+        Kokkos::Profiling::ScopedRegion region_("clg.baseGrad");
+        baseScheme.gradTensor(u, gradU, dsl::Coeff(scalar(1)));
+    }
 
     auto g = gradU.internalVector().view();
     const auto uV = u.internalVector().view();
@@ -342,6 +349,11 @@ void computeCellLimitedGradTensor(
         );
         return;
     }
+
+    // The minmod limiter machinery: per-component neighbour-range gather, limiter ratios, and the
+    // final apply. Region declared AFTER the early return so it stays push/pop-balanced; it covers
+    // the remainder of the function (no further return).
+    Kokkos::Profiling::ScopedRegion limiterRegion_("clg.limiter");
 
     // Per cell, per component (Vec3 = one scalar per U component).
     Vector<Vec3> maxDelta(exec, nCells, zero<Vec3>());
