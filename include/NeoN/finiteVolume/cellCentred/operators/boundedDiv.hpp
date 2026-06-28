@@ -15,6 +15,73 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+// Implicit bounded-convection diagonal correction, shared with the fused
+// div-laplacian operator (GaussGreenDivLaplacian). Subtracts the local net
+// face-flux outflow Σ_f φ_f (scaled per cell by `scaling`) from the matrix
+// diagonal — the implicit -fvm::Sp(fvc::surfaceIntegrate(faceFlux), ψ) term —
+// summed over the internal, regular-boundary and processor-boundary faces.
+// Diagonal-only and additive, so it composes with any base convection /
+// laplacian assembly. The kernels live in boundedDiv.cpp (single TU); callers
+// reach them through this entry point.
+template<typename FieldValueType, typename AssemblyType>
+void applyBoundedDiagonalCorrection(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const UnstructuredMesh& mesh,
+    const dsl::Coeff scaling
+);
+
+extern template void applyBoundedDiagonalCorrection<scalar, scalar>(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+extern template void applyBoundedDiagonalCorrection<Vec3, Vec3>(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+extern template void applyBoundedDiagonalCorrection<Vec3, scalar>(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+
+// Boundary-only counterpart of applyBoundedDiagonalCorrection: applies the bounded
+// diagonal correction over the regular-boundary and processor-boundary faces ONLY.
+// For the cell-based assembly the internal-face part of the correction is folded
+// directly into the per-cell loop (so no extra atomic internal-face pass is needed);
+// this entry point supplies the remaining boundary contributions.
+template<typename FieldValueType, typename AssemblyType>
+void applyBoundedDiagonalCorrectionBoundary(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const UnstructuredMesh& mesh,
+    const dsl::Coeff scaling
+);
+
+extern template void applyBoundedDiagonalCorrectionBoundary<scalar, scalar>(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+extern template void applyBoundedDiagonalCorrectionBoundary<Vec3, Vec3>(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+extern template void applyBoundedDiagonalCorrectionBoundary<Vec3, scalar>(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+
 // Mirrors OpenFOAM's Foam::fv::boundedConvectionScheme
 // (src/finiteVolume/finiteVolume/convectionSchemes/boundedConvectionScheme/
 //  boundedConvectionScheme.C):

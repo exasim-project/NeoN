@@ -15,6 +15,8 @@
 #include <memory>
 #include <vector>
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // profiling sub-regions (no-op without a kokkos tool)
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 
 
@@ -677,6 +679,10 @@ void solveComponentDist(
     const std::string& localMatrixFormat
 )
 {
+    // Profiling sub-regions to localise the momentumPredictor cost: matrixPrep (component extract +
+    // distributed-matrix build), generate (per-component BiCGStab/Jacobi factory->generate), apply
+    // (the actual solve). No-op unless a kokkos-tools connector is loaded.
+    Kokkos::Profiling::pushRegion("momentum.matrixPrep");
     auto sparsity = sys.matrix().sparsity();
     auto nonLocalSparsity = sys.offDiagonalMatrix().sparsity();
     const auto srcExec = sys.matrix().values().exec();
@@ -685,8 +691,8 @@ void solveComponentDist(
     // allocating fresh ones every solve. The scalar CSR/COO matrices are constructed ONCE (lazily,
     // with the fixed sparsity); thereafter only their component values are overwritten via the
     // in-place getComponent (size-guarded -> no realloc in steady state). createGkoMtxDist then
-    // VIEWS scratch.csr's values zero-copy, so there is no per-solve big allocation for the momentum
-    // predictor (previously the dominant momentumPredictor host-allocation churn).
+    // VIEWS scratch.csr's values zero-copy, so there is no per-solve big allocation for the
+    // momentum predictor (previously the dominant momentumPredictor host-allocation churn).
     if (!scratch.csr)
     {
         scratch.csr.emplace(Vector<scalar>(srcExec, sys.matrix().values().size()), sparsity);
@@ -709,77 +715,67 @@ void solveComponentDist(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
     auto gkoMtx = createGkoMtxDist(
-        exec, comm, *scratch.csr, *scratch.coo, commPattern, imapCache, nonLocalMtxCache,
+        exec,
+        comm,
+        *scratch.csr,
+        *scratch.coo,
+        commPattern,
+        imapCache,
+        nonLocalMtxCache,
         localMatrixFormat
     );
-    // NOTE: the segregated Vec3 path still regenerates the solver each solve -- the gko::LinOp cache
-    // cannot be threaded through this device-kernel-launching template (cudafe++ stub bug,
+    Kokkos::Profiling::popRegion(); // momentum.matrixPrep
+
+    // NOTE: the segregated Vec3 path still regenerates the solver each solve -- the gko::LinOp
+    // cache cannot be threaded through this device-kernel-launching template (cudafe++ stub bug,
     // confirmed unfixed on CUDA 13.1.1). #2a only removes the per-solve matrix/vector ALLOCATION;
     // solver-generation reuse (Layer B) still needs the host-only restructure.
-    auto solver = gko::share(factory->generate(gkoMtx));
-    stats.entries.push_back(
-        solve_impl_dist(exec, comm, scratch.rhs, scratch.x, gkoMtx, solver, l1Control)
-    );
+    std::shared_ptr<gko::LinOp> solver;
+    {
+        Kokkos::Profiling::ScopedRegion gen {"momentum.generate"};
+        solver = gko::share(factory->generate(gkoMtx));
+    }
+    {
+        Kokkos::Profiling::ScopedRegion app {"momentum.apply"};
+        stats.entries.push_back(
+            solve_impl_dist(exec, comm, scratch.rhs, scratch.x, gkoMtx, solver, l1Control)
+        );
+    }
     setComponent<I>(scratch.x, x);
 }
 
-// Distributed counterpart of solveImplicitTransformComponent: solve component I of a scalar-matrix
-// / Vec3-rhs system under an implicit transform BC (slip/symmetry), temporarily applying the
-// component's diagonal correction to the shared rank-local diagonal in place and reusing
-// solve_impl_dist (which honours the l1ScaledResidual criterion). The correction is rank-local, so
-// only the local diagonal entries are touched.
+// Apply (sign=-1) or restore (sign=+1) component I's implicit-transform diagonal correction to the
+// shared rank-local diagonal in place. Split out from the solve so the gko::LinOp solver cache can
+// live in the host-only solveDist member: a `std::shared_ptr<gko::LinOp>&` in the signature of a
+// template that LEXICALLY contains a __device__ NEON_LAMBDA makes cudafe++ emit a bogus
+// `__remove_cv(gko::LinOp)` stub and fail to compile (see neon-cudafe-gko-linop-signature). This
+// helper takes only field views (no gko types), so it is safe; the caller does the caching.
+//
 // NOTE: explicit template parameters (not abbreviated `auto` params): nvcc rejects the extended
-// __device__ NEON_LAMBDA parallelFor bodies below when they sit inside an abbreviated function
-// template. Mirrors solveImplicitTransformComponent in ginkgo.cpp.
+// __device__ NEON_LAMBDA parallelFor body when it sits inside an abbreviated function template.
 template<
     unsigned int I,
-    typename SystemType,
     typename ExecType,
-    typename FactoryType,
     typename ValuesType,
     typename MatrixAddressingType,
     typename DiagCType>
-void solveImplicitTransformComponentDist(
-    const SystemType& sys,
-    Vector<Vec3>& x,
+void applyTransformDiagDist(
     const ExecType& exec,
-    std::shared_ptr<const gko::Executor> gkoExec,
-    const gko::experimental::mpi::communicator& comm,
-    std::shared_ptr<const gko::LinOp> gkoMtx,
-    const FactoryType& factory,
-    SolverStats& stats,
-    const L1ResidualControl* l1Control,
     ValuesType values,
     const MatrixAddressingType& ma,
     DiagCType diagC,
-    localIdx nrows
+    localIdx nrows,
+    scalar sign
 )
 {
     parallelFor(
         exec,
         {0, nrows},
         NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
+            Kokkos::atomic_add(&values[ma.diagIdx(cell)], sign * diagC[cell][I]);
         },
-        "applyImplicitTransformDiagDist"
+        "applyTransformDiagDist"
     );
-    gkoExec->synchronize();
-
-    auto rhs = getComponent<I>(sys.rhs());
-    auto xcopy = getComponent<I>(x);
-    auto solver = gko::share(factory->generate(gkoMtx));
-    stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
-    setComponent<I>(xcopy, x);
-
-    parallelFor(
-        exec,
-        {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
-        "restoreImplicitTransformDiagDist"
-    );
-    gkoExec->synchronize();
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -925,51 +921,51 @@ SolverStats GinkgoSolver::solveDist(
         gkoExec_->synchronize();
 
         SolverStats stats;
-        solveImplicitTransformComponentDist<0>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            factory_,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        solveImplicitTransformComponentDist<1>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            factory_,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
-        solveImplicitTransformComponentDist<2>(
-            sys,
-            x,
-            exec_,
-            gkoExec_,
-            comm,
-            gkoMtx,
-            factory_,
-            stats,
-            l1Control,
-            values,
-            ma,
-            diagC,
-            nrows
-        );
+        // Same matrix structure for all three components (only the diagonal values differ), so one
+        // structure key drives the per-slot cache decision (update-in-place vs rebuild).
+        const auto structureKey = solverStructureKey(sys);
+
+        // Solve each component segregated, reusing its OWN cached solver (slot I) across timesteps
+        // instead of regenerating it every solve -- the 3x-per-step solver+preconditioner rebuild
+        // dominated the slip/symmetry momentum predictor. applyTransformDiagDist edits the shared
+        // rank-local diagonal in place (createGkoMtxDist views it), so cacheOrUpdateSolver
+        // (update_matrix_value / generate) and the matvec both see matrix_I = base -
+        // diag(diagC[:,I]).
+        //
+        // Inlined here (not a templated helper): a `std::shared_ptr<gko::LinOp>&` in a TEMPLATE
+        // function signature makes cudafe++ emit a bogus `__remove_cv(gko::LinOp)` and fail (see
+        // neon-cudafe-gko-linop-signature). This member is non-template, like the block path below,
+        // so the cache refs are fine here; only the compile-time-I view kernels are templated and
+        // they carry no gko types. The three blocks are unrolled because I must be a constant.
+#define NEON_SOLVE_TRANSFORM_CMPT(I)                                                               \
+    applyTransformDiagDist<I>(exec_, values, ma, diagC, nrows, scalar(-1));                        \
+    gkoExec_->synchronize();                                                                       \
+    {                                                                                              \
+        auto lease = cacheOrUpdateSolver(                                                          \
+            cachedSolver_[I],                                                                      \
+            cachedWorkspace_[I],                                                                   \
+            cachedSolverStructure_[I],                                                             \
+            cachedSolveCount_[I],                                                                  \
+            cacheSolver_,                                                                          \
+            preconditionerRebuildInterval_,                                                        \
+            factory_,                                                                              \
+            gkoMtx,                                                                                \
+            structureKey                                                                           \
+        );                                                                                         \
+        auto rhs = getComponent<I>(sys.rhs());                                                     \
+        auto xcopy = getComponent<I>(x);                                                           \
+        stats.entries.push_back(                                                                   \
+            solve_impl_dist(gkoExec_, comm, rhs, xcopy, gkoMtx, lease.solver(), l1Control)         \
+        );                                                                                         \
+        setComponent<I>(xcopy, x);                                                                 \
+    }                                                                                              \
+    applyTransformDiagDist<I>(exec_, values, ma, diagC, nrows, scalar(1));                         \
+    gkoExec_->synchronize();
+
+        NEON_SOLVE_TRANSFORM_CMPT(0)
+        NEON_SOLVE_TRANSFORM_CMPT(1)
+        NEON_SOLVE_TRANSFORM_CMPT(2)
+#undef NEON_SOLVE_TRANSFORM_CMPT
         return stats;
     }
 

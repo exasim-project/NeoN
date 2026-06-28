@@ -22,7 +22,8 @@ static void computeDdtDivLapImplCell(
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB,
-    std::shared_ptr<la::CellBasedIterator> iterator
+    std::shared_ptr<la::CellBasedIterator> iterator,
+    const bool bounded
 )
 {
     const auto exec = ls.exec();
@@ -99,6 +100,17 @@ static void computeDdtDivLapImplCell(
 
                 values[matrixColumnIdxV[startIdx + i]] += offDiag;
                 diagValue += diagContrib;
+
+                // Bounded-convection correction, folded into the cell loop: subtract the
+                // cell's net internal face-flux outflow Σ_f φ_f (scaled by the div coeff) from
+                // the diagonal — the implicit -Sp(div(phi)) term. signedOutflow = +flux for the
+                // owner, -flux for the neighbour. This operator assembles internal faces only, so
+                // no separate boundary-face correction is applied.
+                if (bounded)
+                {
+                    const auto signedOutflow = (sign > 0) ? flux : -flux;
+                    diagValue -= signedOutflow * cellCoeffA * one<ValueType>();
+                }
             }
 
             values[ma.diagIdx(celli)] += diagValue;
@@ -128,7 +140,8 @@ void GaussGreenDdtDivLaplacian<ValueType>::implicitOperation(
             *faceNormalGradient_,
             coeffA_,
             coeffB_,
-            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
+            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get()),
+            bounded_
         );
         computeLaplacianNonOrthCorrImpl(
             ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_

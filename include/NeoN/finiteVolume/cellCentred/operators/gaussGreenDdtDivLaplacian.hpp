@@ -61,6 +61,15 @@ public:
             NF_ERROR_EXIT("only dictionary input supported");
         }
         laplTokens.remove(0);
+
+        // Optional leading "bounded" convection wrapper (Foam::fv::boundedConvectionScheme):
+        // consume the token and fold the implicit -Sp(div(phi)) diagonal correction into the
+        // cell loop during assembly.
+        if (!divTokens.empty() && divTokens.get<std::string>(0) == "bounded")
+        {
+            bounded_ = true;
+            divTokens.remove(0);
+        }
         divTokens.remove(0);
         //       lapSurfaceInterpolation_ =
         //           std::make_shared<SurfaceInterpolation<ValueType>>(this->exec(), mesh,
@@ -82,6 +91,10 @@ private:
 
     dsl::Coeff coeffA_; // div coeff
     dsl::Coeff coeffB_; // lap coeff
+
+    // True when the div scheme is wrapped in `bounded`: folds the implicit
+    // -Sp(div(phi)) internal-face diagonal correction into the cell loop.
+    bool bounded_ = false;
 
     const SurfaceField<scalar>& gamma_;
     const SurfaceField<scalar>& flux_;

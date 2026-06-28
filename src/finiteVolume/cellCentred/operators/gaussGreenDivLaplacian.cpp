@@ -77,7 +77,8 @@ static void computeDivLaplacianIntCellBasedImpl(
     const FaceNormalGradient<FieldValueType>& faceNormalGradient,
     WeightKernel weightKernel,
     const dsl::Coeff coeffA,
-    const dsl::Coeff coeffB
+    const dsl::Coeff coeffB,
+    const bool bounded
 )
 {
     const UnstructuredMesh& mesh = phi.mesh();
@@ -145,6 +146,18 @@ static void computeDivLaplacianIntCellBasedImpl(
 
                 values[matrixColumnIdxV[startIdx + i]] += offDiag;
                 diagValue += diagContrib;
+
+                // Bounded-convection correction, folded into the cell loop: subtract the
+                // cell's net face-flux outflow Σ_f φ_f (scaled by the div coeff) from the
+                // diagonal — the implicit -Sp(div(phi)) term — without a separate atomic
+                // internal-face pass. signedOutflow = +flux for the owner, -flux for the
+                // neighbour (boundary/proc faces are added by
+                // applyBoundedDiagonalCorrectionBoundary).
+                if (bounded)
+                {
+                    const auto signedOutflow = (sign > 0) ? flux : -flux;
+                    diagValue -= signedOutflow * cellCoeffA * one<AssemblyType>();
+                }
             }
 
             values[ma.diagIdx(celli)] += diagValue;
@@ -319,6 +332,8 @@ void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*s
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
+    const bool cellBased =
+        dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) != nullptr;
     const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
     std::visit(
         [&](auto&& kernel)
@@ -333,7 +348,7 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
                     );
                 }
                 computeDivLaplacianIntCellBasedImpl(
-                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_, bounded_
                 );
             }
             else
@@ -367,6 +382,26 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
         divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
         addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
     }
+
+    // Bounded-convection correction: subtract Σ_f φ_f (scaled by the div coeff) from the
+    // diagonal so continuity-error noise in the face flux can't drive the solution unbounded.
+    // For the cell-based assembly the internal-face part is folded into the cell loop above, so
+    // only the boundary/proc-boundary faces remain; the face-based path needs the full correction.
+    if (bounded_)
+    {
+        if (cellBased)
+        {
+            applyBoundedDiagonalCorrectionBoundary<ValueType, ValueType>(
+                ls, flux_, this->getVector().mesh(), coeffA_
+            );
+        }
+        else
+        {
+            applyBoundedDiagonalCorrection<ValueType, ValueType>(
+                ls, flux_, this->getVector().mesh(), coeffA_
+            );
+        }
+    }
 }
 
 template<typename ValueType>
@@ -374,6 +409,8 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
 ) const
     requires(!std::is_same_v<ValueType, scalar>)
 {
+    const bool cellBased =
+        dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) != nullptr;
     const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
     std::visit(
         [&](auto&& kernel)
@@ -388,7 +425,7 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
                     );
                 }
                 computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
-                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_, bounded_
                 );
             }
             else
@@ -423,6 +460,26 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
         divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
         addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
     }
+
+    // Bounded-convection correction (scalar-matrix / Vec3-rhs path): subtract Σ_f φ_f (scaled
+    // by the div coeff) from the diagonal — the implicit -Sp(div(phi)) term that keeps the
+    // momentum solve conservative on the bounded `div(phi,U)` scheme. Cell-based assembly folds
+    // the internal-face part into the cell loop, so only boundary/proc faces remain there.
+    if (bounded_)
+    {
+        if (cellBased)
+        {
+            applyBoundedDiagonalCorrectionBoundary<ValueType, scalar>(
+                ls, flux_, this->getVector().mesh(), coeffA_
+            );
+        }
+        else
+        {
+            applyBoundedDiagonalCorrection<ValueType, scalar>(
+                ls, flux_, this->getVector().mesh(), coeffA_
+            );
+        }
+    }
 }
 
 template<typename ValueType>
@@ -444,14 +501,24 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
         NF_ERROR_EXIT("only dictionary input supported");
     }
     laplTokens.remove(0);
+
+    // Optional leading `bounded` wrapper on the convection scheme
+    // (Foam::fv::boundedConvectionScheme): consume the token and remember to add
+    // the implicit -Sp(div(phi)) diagonal correction during assembly. Mirrors the
+    // standalone BoundedDiv operator, only fused into the div-laplacian assembly.
+    if (!divTokens.empty() && divTokens.get<std::string>(0) == "bounded")
+    {
+        bounded_ = true;
+        divTokens.remove(0);
+    }
     divTokens.remove(0);
 
     const auto divScheme = divTokens.get<std::string>(0);
-    if (divScheme != "upwind" && divScheme != "linearUpwind")
+    if (divScheme != "upwind" && divScheme != "linearUpwind" && divScheme != "linearUpwindV")
     {
         NF_ERROR_EXIT(
-            "GaussGreenDivLaplacian only supports 'Gauss upwind' or 'Gauss linearUpwind' for "
-            "divSchemes, got: Gauss "
+            "GaussGreenDivLaplacian only supports 'Gauss [bounded] upwind', 'linearUpwind' or "
+            "'linearUpwindV' for divSchemes, got: Gauss "
             << divScheme
         );
     }

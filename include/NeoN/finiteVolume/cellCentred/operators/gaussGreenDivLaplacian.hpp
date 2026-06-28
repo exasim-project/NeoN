@@ -8,6 +8,7 @@
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
 
@@ -45,6 +46,10 @@ private:
 
     dsl::Coeff coeffA_; // div coeff
     dsl::Coeff coeffB_; // lap coeff
+
+    // True when the div scheme is wrapped in `bounded` (Foam::fv::boundedConvectionScheme):
+    // adds the implicit -Sp(div(phi)) diagonal correction during assembly.
+    bool bounded_ = false;
 
     const SurfaceField<scalar>& gamma_;
     const SurfaceField<scalar>& flux_;

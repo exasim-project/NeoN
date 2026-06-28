@@ -219,6 +219,78 @@ void applyBoundedExplicit(
 } // namespace
 
 
+// Shared entry point (declared in boundedDiv.hpp): runs the three implicit
+// bounded-diagonal kernels over the internal / boundary / proc-boundary faces.
+// Used both by BoundedDiv::div(ls, …) below and by the fused
+// GaussGreenDivLaplacian operator, so the sign convention lives in one place.
+template<typename FieldValueType, typename AssemblyType>
+void applyBoundedDiagonalCorrection(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const UnstructuredMesh& mesh,
+    const dsl::Coeff scaling
+)
+{
+    applyBoundedDiagInternal<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+    applyBoundedDiagBoundary<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+    applyBoundedDiagProcBoundary<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+}
+
+template void applyBoundedDiagonalCorrection<scalar, scalar>(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+template void applyBoundedDiagonalCorrection<Vec3, Vec3>(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+template void applyBoundedDiagonalCorrection<Vec3, scalar>(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+
+
+// Boundary + proc-boundary only (declared in boundedDiv.hpp): the internal-face
+// correction is handled inline by the cell-based assembly kernels, so only the
+// boundary contributions are added here.
+template<typename FieldValueType, typename AssemblyType>
+void applyBoundedDiagonalCorrectionBoundary(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const UnstructuredMesh& mesh,
+    const dsl::Coeff scaling
+)
+{
+    applyBoundedDiagBoundary<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+    applyBoundedDiagProcBoundary<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+}
+
+template void applyBoundedDiagonalCorrectionBoundary<scalar, scalar>(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+template void applyBoundedDiagonalCorrectionBoundary<Vec3, Vec3>(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+template void applyBoundedDiagonalCorrectionBoundary<Vec3, scalar>(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+
+
 template<typename FieldValueType, typename AssemblyType>
 BoundedDiv<FieldValueType, AssemblyType>::BoundedDiv(
     const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs
@@ -275,13 +347,7 @@ void BoundedDiv<FieldValueType, AssemblyType>::div(
 ) const
 {
     inner_->div(ls, faceFlux, phi, operatorScaling);
-    applyBoundedDiagInternal<FieldValueType, AssemblyType>(
-        ls, faceFlux, this->mesh_, operatorScaling
-    );
-    applyBoundedDiagBoundary<FieldValueType, AssemblyType>(
-        ls, faceFlux, this->mesh_, operatorScaling
-    );
-    applyBoundedDiagProcBoundary<FieldValueType, AssemblyType>(
+    applyBoundedDiagonalCorrection<FieldValueType, AssemblyType>(
         ls, faceFlux, this->mesh_, operatorScaling
     );
 }
