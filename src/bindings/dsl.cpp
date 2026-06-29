@@ -153,7 +153,17 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
         .def(
             "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
         )
-        .def("size", &Expr::size);
+        .def("size", &Expr::size)
+        // Resolve each operator's discretisation scheme from a schemes Dictionary
+        // (e.g. {"divSchemes": {"div(phi,U)": ["Gauss", "linear"]}}). This is the call
+        // that drives the runtime-selection factory lookup (create("Gauss")), so it is
+        // also the regression hook for operator self-registration inside _neon.
+        .def(
+            "read",
+            [](Expr& self, const Dictionary& schemes) { self.read(schemes); },
+            "schemes"_a,
+            "Resolve operator schemes from a Dictionary"
+        );
 }
 
 void registerDSL(nb::module_& m)
