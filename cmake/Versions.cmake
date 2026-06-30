@@ -21,10 +21,9 @@ set(NeoN_GINKGO_VERSION "2.0.0")
 set(NeoN_GINKGO_TAG "ba5e66073e7a9652ee5e6426c1f8fded4ce9c59a")
 set(NeoN_CATCH2_VERSION "3.4.0")
 set(NeoN_SPDLOG_VERSION "1.16.0")
-# Match the nanobind that pybFoam builds against (pip, currently 2.13.0). The _neon binding shares
-# pybFoam's libnanobind.so at runtime (SONAME), so an ABI mismatch (e.g. the ndarray_create signature
-# change after 2.9.2) makes _neon fail to resolve symbols from pybFoam's lib. Overridable so a
-# downstream (NeoFOAM) can force a different version to track its own pybFoam.
+# Match the nanobind pybFoam builds against (pip, currently 2.13.0): _neon shares pybFoam's
+# libnanobind.so at runtime by SONAME, so a version/ABI mismatch (e.g. the ndarray_create signature
+# change after 2.9.2) breaks symbol resolution. Overridable so a downstream can pin.
 if(NOT DEFINED NeoN_NANOBIND_VERSION)
   set(NeoN_NANOBIND_VERSION "2.13.0")
 endif()
