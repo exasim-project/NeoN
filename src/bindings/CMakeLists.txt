@@ -53,7 +53,7 @@ if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
   set_source_files_properties(${NeoN_PYTHON_BINDING_SRCS} PROPERTIES LANGUAGE CUDA)
 endif()
 
-nanobind_add_module(_neon NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
+nanobind_add_module(_neon NB_SHARED NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
