@@ -46,7 +46,10 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
+    std::shared_ptr<const gko::LinOp>& distMtxCache,
+    const scalar*& localValPtrCache,
+    const std::string& localMatrixFormat
 );
 #endif // NF_WITH_MPI_SUPPORT
 
@@ -482,15 +485,22 @@ private:
     // #2a: persistent per-component scratch for the segregated Vec3 (momentum) solve. Without it,
     // each step allocated a FRESH extracted component Vector AND a fresh scalar CSR/COO Matrix (the
     // Matrix ctor copies the values) per component -- the dominant momentumPredictor allocation
-    // churn (1.29 GB host high-water, all momentumPredictor/Vector). These persist across solves and
-    // are refreshed IN PLACE (in-place getComponent + size-guarded resize), so steady-state solves
-    // do not reallocate. Lazily constructed on first Vec3 solve. mutable because solve() is const.
+    // churn (1.29 GB host high-water, all momentumPredictor/Vector). These persist across solves
+    // and are refreshed IN PLACE (in-place getComponent + size-guarded resize), so steady-state
+    // solves do not reallocate. Lazily constructed on first Vec3 solve. mutable because solve() is
+    // const.
     struct ComponentScratch
     {
-        std::optional<CSRMatrix<scalar, localIdx>> csr; // local matrix, component (values refreshed)
+        std::optional<CSRMatrix<scalar, localIdx>>
+            csr; // local matrix, component (values refreshed)
         std::optional<COOMatrix<scalar, localIdx>> coo; // off-diagonal matrix, component
         Vector<scalar> rhs;                             // rhs, component
         Vector<scalar> x;                               // solution, component (solved in place)
+        // Cached distributed-matrix wrapper for this component + the local CSR value-buffer pointer
+        // it views, so the wrapper is reused across solves (values-only update) instead of rebuilt
+        // every solve. Per component because each component has its own scratch.csr value buffer.
+        std::shared_ptr<const gko::LinOp> distMtx;
+        const scalar* localValPtr = nullptr;
         explicit ComponentScratch(const Executor& e) : rhs(e, 0), x(e, 0) {}
     };
     mutable std::array<std::optional<ComponentScratch>, 3> cmptScratch_;
@@ -499,6 +509,11 @@ private:
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
         cachedImap_;
     mutable std::shared_ptr<gko::matrix::Coo<scalar, localIdx>> cachedNonLocalMtx_;
+    // Cached distributed-matrix wrapper (scalar p/k/omega + transform-BC paths) and the local CSR
+    // value-buffer pointer it views. Reused across solves as a values-only update; rebuilt only
+    // when the pointer changes (in-place-realloc guard). See createGkoMtxDist.
+    mutable std::shared_ptr<const gko::LinOp> cachedDistMtx_;
+    mutable const scalar* cachedLocalValPtr_ = nullptr;
 #endif
 };
 

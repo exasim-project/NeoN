@@ -1,0 +1,63 @@
+diff --git a/common/unified/multigrid/pmis_kernels.cpp b/common/unified/multigrid/pmis_kernels.cpp
+index 6f464b731..551acfc22 100644
+--- a/common/unified/multigrid/pmis_kernels.cpp
++++ b/common/unified/multigrid/pmis_kernels.cpp
+@@ -152,7 +152,7 @@ void initialize_weight_and_status(
+                       auto status) {
+             using type = device_type<remove_complex<ValueType>>;
+             auto w = static_cast<type>(row_ptrs[row + 1] - row_ptrs[row]);
+-            status[row] = (w == 0 ? 0 : -1);
++            status[row] = (w == zero(w) ? 0 : -1);
+             weight[row] = static_cast<type>(random[row]) + w;
+         },
+         num, trans_strong_dep->get_const_row_ptrs(), random.get_const_data(),
+@@ -308,7 +308,7 @@ void direct_interpolation_fill(
+                     diag = val;
+                     continue;
+                 }
+-                if (real(val) >= 0) {
++                if (real(val) >= zero(real(val))) {
+                     pos += val;
+                     if (coarse_map[col] != coarse_map[col + 1] &&
+                         abs(val) >= strength_threshold * max_abs) {
+@@ -337,13 +337,13 @@ void direct_interpolation_fill(
+                 if (col == row || abs(val) < strength_threshold * max_abs) {
+                     continue;
+                 }
+-                if (real(val) >= 0 && enable_pos &&
++                if (real(val) >= zero(real(val)) && enable_pos &&
+                     coarse_map[col] != coarse_map[col + 1]) {
+                     prolong_col_idxs[p_idx] = coarse_map[col];
+                     prolong_values[p_idx] = -pos * val / diag;
+                     p_idx++;
+                 }
+-                if (real(val) < 0 && enable_neg &&
++                if (real(val) < zero(real(val)) && enable_neg &&
+                     coarse_map[col] != coarse_map[col + 1]) {
+                     prolong_col_idxs[p_idx] = coarse_map[col];
+                     prolong_values[p_idx] = -neg * val / diag;
+diff --git a/include/ginkgo/core/multigrid/pmis.hpp b/include/ginkgo/core/multigrid/pmis.hpp
+index bae9c2c59..e77649da4 100644
+--- a/include/ginkgo/core/multigrid/pmis.hpp
++++ b/include/ginkgo/core/multigrid/pmis.hpp
+@@ -123,13 +123,14 @@ protected:
+         : EnableLinOp<Pmis>(std::move(exec))
+     {}
+
+-    explicit Pmis(const Factory* factory,
+-                  std::shared_ptr<const LinOp> system_matrix)
+-        : EnableLinOp<Pmis>(factory->get_executor(), system_matrix->get_size()),
+-          EnableMultigridLevel<ValueType>(system_matrix),
++    explicit Pmis(const Factory* factory, LinOpGenerateComponents components)
++        : EnableLinOp<Pmis>(factory->get_executor(),
++                            components.system_matrix->get_size()),
++          EnableMultigridLevel<ValueType>(components.system_matrix),
+           parameters_{factory->get_parameters()},
+-          system_matrix_{system_matrix},
+-          weight_(factory->get_executor(), system_matrix_->get_size()[0])
++          system_matrix_{components.system_matrix},
++          weight_(factory->get_executor(),
++                  components.system_matrix->get_size()[0])
+     {
+         GKO_ASSERT(parameters_.strength_threshold <= 1.0);
+         GKO_ASSERT(parameters_.strength_threshold >= 0.0);

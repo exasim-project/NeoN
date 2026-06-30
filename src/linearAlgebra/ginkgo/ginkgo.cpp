@@ -5,8 +5,12 @@
 #if NF_WITH_GINKGO
 
 #include <array>
+#include <cstdlib>
+#include <iostream>
 #include <mutex>
 #include <sstream>
+
+#include <ginkgo/core/base/timer.hpp> // gko::Timer (executor-backed timer for the profiler hook)
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
@@ -192,6 +196,64 @@ std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
     return cache;
 }
 
+// Optional Ginkgo operation profiler, opt-in via the NEON_GINKGO_PROFILE environment variable.
+// Ginkgo runs on its own backend (not Kokkos), so the entire solve -- Krylov outer loop, Schwarz
+// preconditioner, and the Multigrid V-cycle (each pre-/post-smoother and coarsest-solver apply,
+// each restriction/prolongation operation) -- is one opaque block to the Kokkos-Tools profilers the
+// rest of NeoFOAM uses. This attaches Ginkgo's own ProfilerHook so those phases become named, timed
+// ranges for performance tuning. Recognised values:
+//   nested   -- print a nested call-tree timing summary at teardown (tool-free; the default)
+//   summary  -- print a flat per-range timing table at teardown
+//   nvtx     -- emit NVTX ranges for an external timeline profiler (NSight Systems / nsys)
+//   off / 0 / unset -- no profiling
+// summary/nested use an executor-backed timer (CUDA events on the GPU) for accurate device timings.
+// The hook is owned by the executor, so it is released -- and its summary printed -- by the Kokkos
+// finalize hook that resets the executor cache (see getGkoExecutor), while the device is still
+// alive. Under MPI every rank prints its own summary.
+void maybeAttachGinkgoProfiler(const std::shared_ptr<gko::Executor>& gkoExec)
+{
+    const char* modeEnv = std::getenv("NEON_GINKGO_PROFILE");
+    if (modeEnv == nullptr)
+    {
+        return;
+    }
+    const std::string mode {modeEnv};
+    if (mode.empty() || mode == "off" || mode == "0")
+    {
+        return;
+    }
+
+    std::shared_ptr<gko::log::ProfilerHook> hook;
+    try
+    {
+        if (mode == "nvtx")
+        {
+            hook = gko::log::ProfilerHook::create_nvtx();
+        }
+        else if (mode == "summary")
+        {
+            hook = gko::log::ProfilerHook::create_summary(
+                std::shared_ptr<gko::Timer>(gko::Timer::create_for_executor(gkoExec))
+            );
+        }
+        else // "nested" (and any other non-empty value) -> nested call-tree summary
+        {
+            hook = gko::log::ProfilerHook::create_nested_summary(
+                std::shared_ptr<gko::Timer>(gko::Timer::create_for_executor(gkoExec))
+            );
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "[GinkgoProfiler] could not create '" << mode << "' profiler: " << e.what()
+                  << " -- continuing without Ginkgo profiling\n";
+        return;
+    }
+
+    gkoExec->add_logger(hook);
+    std::cerr << "[GinkgoProfiler] attached '" << mode << "' profiler to the Ginkgo executor\n";
+}
+
 std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
 {
     // Defer to Ginkgo's Kokkos extension instead of a hand-rolled #ifdef mapping. Each NeoN
@@ -200,7 +262,7 @@ std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
     // consumes. Crucially it threads the Kokkos execution-space stream, host executor and
     // memory-space-matched device allocator through to the Ginkgo executor, so Ginkgo runs on the
     // same stream Kokkos filled the matrix/RHS views on rather than on Ginkgo's default stream.
-    return std::visit(
+    auto gkoExec = std::visit(
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
@@ -208,6 +270,8 @@ std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
         },
         exec
     );
+    maybeAttachGinkgoProfiler(gkoExec);
+    return gkoExec;
 }
 
 } // namespace

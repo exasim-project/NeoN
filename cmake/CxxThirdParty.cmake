@@ -243,25 +243,35 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
-    # Patch bundle (cmake/patches/ginkgo_schwarz_update_matrix_value.patch):
-    #  1. Make the distributed Schwarz preconditioner refreshable in place: implement
-    #     gko::UpdateMatrixValue on preconditioner::Schwarz so a cached Cg + Schwarz{Multigrid(local)}
-    #     solver reuses its per-rank Multigrid hierarchy across solves (cacheSolver=true) instead of
-    #     rebuilding it.
-    #  2. Reduced-precision (float) preconditioner support on a fp64 distributed::Matrix:
-    #     Schwarz::extract_local_matrix converts the fp64 matrix down to float, and
-    #     distributed::Matrix::convert_to/move_to convert each local block precision-first in the
-    #     source format (so a Coo<double> off-diagonal becomes a Csr<float> without the unsupported
-    #     single-step cross-precision+cross-format copy). Enables value_type=float32 MG preconditioners
-    #     (localized and non-localized).
+    # Patch bundle (cmake/patches/ginkgo_schwarz_update_matrix_value.patch): 1. Make the distributed
+    # Schwarz preconditioner refreshable in place: implement gko::UpdateMatrixValue on
+    # preconditioner::Schwarz so a cached Cg + Schwarz{Multigrid(local)} solver reuses its per-rank
+    # Multigrid hierarchy across solves (cacheSolver=true) instead of rebuilding it. 2.
+    # Reduced-precision (float) preconditioner support on a fp64 distributed::Matrix:
+    # Schwarz::extract_local_matrix converts the fp64 matrix down to float, and
+    # distributed::Matrix::convert_to/move_to convert each local block precision-first in the source
+    # format (so a Coo<double> off-diagonal becomes a Csr<float> without the unsupported single-step
+    # cross-precision+cross-format copy). Enables value_type=float32 MG preconditioners (localized
+    # and non-localized).
     set(_ginkgo_schwarz_patchfile
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_schwarz_update_matrix_value.patch)
-    # Idempotent: skip when the patch is already applied (a re-configure re-runs PATCH_COMMAND on
-    # the cached source), so `git apply` is not attempted twice.
+    # Fix two compile errors in the new Pmis multigrid coarsening present at this Ginkgo commit
+    # (cmake/patches/ginkgo_pmis_compile_fix.patch). Pmis is not used by NeoN, but it is part of the
+    # Ginkgo library compile so its failure stops the whole build: 1.
+    # include/ginkgo/core/multigrid/pmis.hpp: the EnableDefaultFactory generate path now passes a
+    # LinOpGenerateComponents, but Pmis's (Factory*, ...) ctor still took shared_ptr<const LinOp>
+    # (Pgm was migrated to the new API, Pmis was missed) -> no matching ctor. Migrate the ctor to
+    # take LinOpGenerateComponents, mirroring Pgm. 2. common/unified/multigrid/pmis_kernels.cpp: `w
+    # == 0` where w is a bfloat16 device type is an ambiguous overload under CUDA 13's bf16 headers;
+    # compare against zero(w), as the rest of the file already does.
+    set(_ginkgo_pmis_patchfile
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_pmis_compile_fix.patch)
+    # Idempotent: skip when a patch is already applied (a re-configure re-runs PATCH_COMMAND on the
+    # cached source), so `git apply` is not attempted twice.
     set(GINKGO_SCHWARZ_PATCH
         sh
         -c
-        "git apply -R --check '${_ginkgo_schwarz_patchfile}' 2>/dev/null || git apply '${_ginkgo_schwarz_patchfile}'"
+        "git apply -R --check '${_ginkgo_schwarz_patchfile}' 2>/dev/null || git apply '${_ginkgo_schwarz_patchfile}'; git apply -R --check '${_ginkgo_pmis_patchfile}' 2>/dev/null || git apply '${_ginkgo_pmis_patchfile}'"
     )
     cpmaddpackage(
       NAME
