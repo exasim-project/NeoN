@@ -11,12 +11,17 @@
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
+#include "NeoN/core/memory/umpire.hpp"
+
+#include <ginkgo/core/base/memory.hpp>
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
     Dictionary dict = dictIn;
-    // remove 'solver Ginkgo;' entry
-    if (dict.contains("solver") && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
+    // remove 'solver Ginkgo;' entry (type-checked: a "solver" key may legitimately hold a
+    // sub-dictionary, e.g. solver::Ir's inner factory, which must not be any_cast to string)
+    if (dict.contains("solver") && dict["solver"].type() == typeid(std::string)
+        && std::any_cast<std::string>(dict["solver"]) == "Ginkgo")
     {
         dict.remove("solver");
     }
@@ -26,7 +31,8 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
     // "solver: Ginkgo" backend-dispatch key). Ginkgo's Ir names its inner factory "solver" and
     // rejects "preconditioner" as an unknown key, so rename it here, after the backend key is gone.
     // Only Ir needs this: Cg/Bicgstab/Multigrid accept a genuine "preconditioner" key.
-    if (dict.contains("type") && std::any_cast<std::string>(dict["type"]) == "solver::Ir"
+    if (dict.contains("type") && dict["type"].type() == typeid(std::string)
+        && std::any_cast<std::string>(dict["type"]) == "solver::Ir"
         && dict.contains("preconditioner") && !dict.contains("solver"))
     {
         Dictionary inner = dict.subDict("preconditioner");
@@ -192,6 +198,41 @@ std::array<std::shared_ptr<gko::Executor>, 3>& gkoExecutorCache()
     return cache;
 }
 
+#if NF_WITH_UMPIRE && defined(KOKKOS_ENABLE_CUDA)
+// Ginkgo CUDA allocator backed by NeoN's Umpire device QuickPool (DEVICE_POOL). Requests are served
+// from the pool's cached free blocks, so Ginkgo's per-solve build/teardown of the multigrid
+// hierarchy reuses device memory instead of churning cudaMalloc/cudaFree -- which fragmented the
+// device heap and made the SECOND pressure solve OOM on large cases. The default Ginkgo executor
+// otherwise uses a raw-cudaMalloc CudaAllocator, fragmenting against NeoN's separate Kokkos memory.
+class UmpireCudaAllocator : public gko::CudaAllocatorBase
+{
+public:
+
+    void* allocate(gko::size_type numBytes) override
+    {
+        ensurePool();
+        return NeoN::UmpireMempoolHandler::getUmpirePool(NeoN::MemorySpace::GPU).allocate(numBytes);
+    }
+
+    void deallocate(void* ptr) override
+    {
+        NeoN::UmpireMempoolHandler::getUmpirePool(NeoN::MemorySpace::GPU).deallocate(ptr);
+    }
+
+private:
+
+    static void ensurePool()
+    {
+        // Idempotent: setupUmpirePool no-ops if DEVICE_POOL already exists. The size argument is
+        // the QuickPool's initial block reservation; the pool grows on demand, so this is just a
+        // tunable starting point (revisit / make env-driven if it over- or under-reserves).
+        NeoN::UmpireMempoolHandler::setupUmpirePool(
+            NeoN::MemorySpace::GPU, std::size_t {512} << 20
+        );
+    }
+};
+#endif
+
 std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
 {
     // Defer to Ginkgo's Kokkos extension instead of a hand-rolled #ifdef mapping. Each NeoN
@@ -204,6 +245,23 @@ std::shared_ptr<gko::Executor> createGkoExecutor(NeoN::Executor exec)
         [](auto concreteExec) -> std::shared_ptr<gko::Executor>
         {
             using ExecType = std::decay_t<decltype(concreteExec)>;
+#if NF_WITH_UMPIRE && defined(KOKKOS_ENABLE_CUDA)
+            // For the CUDA device executor, mirror gko::ext::kokkos's construction (device id, host
+            // executor, Kokkos stream) but substitute the Umpire-pool allocator. Krylov/multigrid
+            // device allocations then come from the reused QuickPool. Serial/CPU keep the default
+            // path; HIP is left on the default path for now (TODO: add an Umpire HIP allocator).
+            if constexpr (std::is_same_v<ExecType, NeoN::GPUExecutor>)
+            {
+                typename ExecType::exec ex {
+                }; // Kokkos::DefaultExecutionSpace (== Kokkos::Cuda here)
+                return gko::CudaExecutor::create(
+                    Kokkos::device_id(),
+                    gko::ext::kokkos::create_default_host_executor(),
+                    std::make_shared<UmpireCudaAllocator>(),
+                    ex.cuda_stream()
+                );
+            }
+#endif
             return gko::ext::kokkos::create_executor(typename ExecType::exec {});
         },
         exec
