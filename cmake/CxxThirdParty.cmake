@@ -296,6 +296,31 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+
+    # Re-apply the Ginkgo patches directly on the resolved source dir, at every configure.
+    # The PATCH_COMMAND above only runs when CPM actually populates the source; on a
+    # CPM_SOURCE_CACHE hit CPM reuses the cached tree WITHOUT re-running download/patch, so a
+    # Ginkgo that was cached unpatched by an earlier build (or a build predating these patches)
+    # stays unpatched -- and wiping the build dir does not help, because the cache lives outside
+    # it. `git apply -R --check` makes each patch idempotent (skips cleanly if already applied),
+    # so this is safe on both fresh and cached sources.
+    if(Ginkgo_ADDED)
+      foreach(_gko_patch "${_ginkgo_schwarz_patchfile}" "${_ginkgo_pmis_patchfile}")
+        execute_process(
+          COMMAND
+            sh -c
+            "git apply -R --check '${_gko_patch}' 2>/dev/null || git apply '${_gko_patch}'"
+          WORKING_DIRECTORY "${Ginkgo_SOURCE_DIR}"
+          RESULT_VARIABLE _gko_patch_rc)
+        if(NOT _gko_patch_rc EQUAL 0)
+          message(
+            FATAL_ERROR
+            "Failed to apply Ginkgo patch '${_gko_patch}' in '${Ginkgo_SOURCE_DIR}'. "
+            "A stale Ginkgo in the shared CPM cache is the usual cause -- remove that cache "
+            "entry (see CPM_SOURCE_CACHE) and reconfigure.")
+        endif()
+      endforeach()
+    endif()
   endif()
 endif()
 
