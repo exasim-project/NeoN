@@ -145,6 +145,20 @@ public:
     void operator=(const Vector<ValueType>& rhs);
 
     /**
+     * @brief Move-assignment operator — transfers ownership of the data buffer.
+     *
+     * Moves the data pointer, size, and executor from rhs without launching any GPU
+     * kernel (O(1) pointer swap).  The old buffer owned by *this is freed first.
+     * After the move, rhs is left in an empty (size=0, data=nullptr) state.
+     *
+     * @note Use this when assigning a temporary (e.g. the result of fromFoamField)
+     *       into an existing Vector to avoid the async GPU→GPU copy in the copy
+     *       operator=(const Vector&), which can race against the temporary's
+     *       destructor freeing the source buffer before the kernel completes.
+     */
+    Vector<ValueType>& operator=(Vector<ValueType>&& rhs) noexcept;
+
+    /**
      * @brief Arithmetic add operator, addition of a second field.
      * @param rhs The field to add with this field.
      * @returns The result of the addition.

@@ -174,6 +174,13 @@ void computeLinearUpwind(
 
     const auto exec = src.exec();
     const auto& mesh = src.mesh();
+
+    // GaussGreenGrad linearly interpolates proc-boundary faces using neighbour ghost values stored
+    // in src.boundaryData(). Without a halo exchange those slots are stale, giving a wrong gradient
+    // at cells adjacent to processor boundaries and therefore a wrong deferred correction.
+    if (mesh.nProcBoundaryFaces() > 0)
+        const_cast<VolumeField<ValueType>&>(src).correctBoundaryConditions();
+
     GaussGreenGrad gradOp(exec, mesh);
 
     if constexpr (std::is_same_v<ValueType, scalar>)

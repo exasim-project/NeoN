@@ -334,15 +334,31 @@ public:
                 );
             }
         }
-        else
+        else if (std::holds_alternative<GPUExecutor>(exec_))
         {
+            // GPU executor but not GPU-aware MPI: data was staged through host buffers.
+            // Copy received host data back to the device in-place (via copy-assign, not
+            // move-assign) so that value_.data() stays the same pointer and any View
+            // obtained from value() before the exchange remains valid.
             auto valH = value_.copyToHost();
             for (const auto& buf : commBuffers_)
             {
                 for (localIdx k = 0; k < buf.patchSize; k++)
                     valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<std::size_t>(k)];
             }
-            value_ = valH.copyToExecutor(exec_);
+            Vector<ValueType> backToDevice = valH.copyToExecutor(exec_);
+            value_ = backToDevice; // operator=(const Vector&): setContainer in-place, no realloc
+        }
+        else
+        {
+            // SerialExecutor or CPUExecutor: value_ lives in host-accessible memory;
+            // write received data directly without any intermediate allocation.
+            for (const auto& buf : commBuffers_)
+            {
+                ValueType* dst = value_.data() + buf.rangeStart;
+                for (localIdx k = 0; k < buf.patchSize; k++)
+                    dst[k] = buf.recvBuf[static_cast<std::size_t>(k)];
+            }
         }
         requests_.clear();
         communicating_ = false;
