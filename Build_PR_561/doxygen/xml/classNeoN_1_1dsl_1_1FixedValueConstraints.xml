@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="218" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="218" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="244" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="244" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1dsl_1_1FixedValueConstraints_1aae8e281814dabfd4855aaae1286e77f8" prot="private" static="no" mutable="no">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="219" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="219" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="245" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="245" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1dsl_1_1FixedValueConstraints_1add2fd51a56391b5a0527df62daf1b0ae" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="220" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="220" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="246" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="246" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="164" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="164" bodyend="166"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="173" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="173" bodyend="175"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1FixedValueConstraints_1a756ecb34596254c9b253def7ef6c8d2d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -100,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="168" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="168" bodyend="214"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="177" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="177" bodyend="240"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -108,7 +108,8 @@
     </briefdescription>
     <detaileddescription>
 <para>For every constrained cell c: <ref refid="classA" kindref="compound">A</ref>[c, j] = 0 for j != c (zero row off-diagonals) <ref refid="classA" kindref="compound">A</ref>[j, c] = 0 for j != c (zero column in neighbour rows, rhs[j] absorbs the dropped term) rhs[c] = <ref refid="classA" kindref="compound">A</ref>[c,c] * value[c]</para>
-<para>Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-rank coupling (offDiagonalMatrix) is not decoupled.</para>
+<para>Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-rank coupling in offDiagonalMatrix is also zeroed for pinned rows.</para>
+<para>Restricted to scalar ValueType: the segregated vector-solve path dispatches through <ref refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1af0170570aa68740698ac111b485cc18c" kindref="member">applyScalarMatrix()</ref>, which this class does not implement.</para>
 <para>mask[cell] != 0 marks a constrained cell; value[cell] holds its target. Both views are sized nCells and must outlive the functor. </para>
     </detaileddescription>
     <inheritancegraph>
@@ -135,7 +136,7 @@
         <link refid="structNeoN_1_1dsl_1_1PostAssemblyBase"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="160" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="161" bodyend="221"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="163" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="164" bodyend="247"/>
     <listofallmembers>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1af0170570aa68740698ac111b485cc18c" prot="public" virt="virtual"><scope>NeoN::dsl::FixedValueConstraints</scope><name>applyScalarMatrix</name></member>
       <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1aa0f467ac39675f57a4dfc63d05097f83" prot="public" virt="non-virtual"><scope>NeoN::dsl::FixedValueConstraints</scope><name>FixedValueConstraints</name></member>

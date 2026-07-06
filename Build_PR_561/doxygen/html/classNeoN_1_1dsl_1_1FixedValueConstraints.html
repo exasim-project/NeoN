@@ -114,10 +114,11 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename IndexType = localIdx&gt;<br />
 class NeoN::dsl::FixedValueConstraints&lt; ValueType, IndexType &gt;</div><p>Post-assembly functor that pins a set of cells to prescribed values. </p>
 <p>For every constrained cell c: <a class="el" href="classA.html">A</a>[c, j] = 0 for j != c (zero row off-diagonals) <a class="el" href="classA.html">A</a>[j, c] = 0 for j != c (zero column in neighbour rows, rhs[j] absorbs the dropped term) rhs[c] = <a class="el" href="classA.html">A</a>[c,c] * value[c]</p>
-<p>Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-rank coupling (offDiagonalMatrix) is not decoupled.</p>
+<p>Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-rank coupling in offDiagonalMatrix is also zeroed for pinned rows.</p>
+<p>Restricted to scalar ValueType: the segregated vector-solve path dispatches through <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#af0170570aa68740698ac111b485cc18c" title="Apply to the segregated scalar-matrix / VectorType-rhs form (a scalar coefficient matrix with a Vecto...">applyScalarMatrix()</a>, which this class does not implement.</p>
 <p>mask[cell] != 0 marks a constrained cell; value[cell] holds its target. Both views are sized nCells and must outlive the functor. </p>
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00160">160</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00163">163</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa0f467ac39675f57a4dfc63d05097f83" name="aa0f467ac39675f57a4dfc63d05097f83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0f467ac39675f57a4dfc63d05097f83">&#9670;&#160;</a></span>FixedValueConstraints()</h2>
@@ -161,7 +162,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00164">164</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00173">173</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -192,7 +193,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00168">168</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00177">177</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>

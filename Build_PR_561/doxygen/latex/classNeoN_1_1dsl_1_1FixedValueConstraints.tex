@@ -40,11 +40,13 @@ Post-\/assembly functor that pins a set of cells to prescribed values.
 
 For every constrained cell c\+: \doxylink{classA}{A}\mbox{[}c, j\mbox{]} = 0 for j != c (zero row off-\/diagonals) \doxylink{classA}{A}\mbox{[}j, c\mbox{]} = 0 for j != c (zero column in neighbour rows, rhs\mbox{[}j\mbox{]} absorbs the dropped term) rhs\mbox{[}c\mbox{]} = \doxylink{classA}{A}\mbox{[}c,c\mbox{]} \texorpdfstring{$\ast$}{*} value\mbox{[}c\mbox{]}
 
-Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-\/rank coupling (off\+Diagonal\+Matrix) is not decoupled.
+Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-\/rank coupling in off\+Diagonal\+Matrix is also zeroed for pinned rows.
+
+Restricted to scalar Value\+Type\+: the segregated vector-\/solve path dispatches through \doxylink{structNeoN_1_1dsl_1_1PostAssemblyBase_af0170570aa68740698ac111b485cc18c}{apply\+Scalar\+Matrix()}, which this class does not implement.
 
 mask\mbox{[}cell\mbox{]} != 0 marks a constrained cell; value\mbox{[}cell\mbox{]} holds its target. Both views are sized n\+Cells and must outlive the functor. 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00160}{160}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -58,7 +60,7 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00160}{160}} of file
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00173}{173}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -72,7 +74,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
