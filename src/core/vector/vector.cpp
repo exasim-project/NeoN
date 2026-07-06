@@ -129,6 +129,25 @@ void Vector<ValueType>::operator=(const Vector<ValueType>& rhs)
 }
 
 template<typename ValueType>
+Vector<ValueType>& Vector<ValueType>::operator=(Vector<ValueType>&& rhs) noexcept
+{
+    if (this != &rhs)
+    {
+        NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
+        // Free the buffer currently owned by *this before we overwrite the pointer.
+        std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+
+        data_ = rhs.data_;
+        size_ = rhs.size_;
+        // exec_ is const — cannot be reassigned; both sides must share the same executor
+
+        rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
+    return *this;
+}
+
+template<typename ValueType>
 Vector<ValueType>& Vector<ValueType>::operator+=(const Vector<ValueType>& rhs)
 {
     validateOtherVector(rhs);
