@@ -1,0 +1,81 @@
+\doxysection{NeoN\+::dsl\+::Fixed\+Value\+Constraints\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints}{}\label{classNeoN_1_1dsl_1_1FixedValueConstraints}\index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}}
+
+
+Post-\/assembly functor that HARD-\/pins a set of cells to prescribed values — the equivalent of Open\+FOAM\textquotesingle{}s fv\+Matrix\+::set\+Values, which omega/epsilon wall functions apply through manipulate\+Matrix(). Unlike \doxylink{classNeoN_1_1dsl_1_1SetReference}{Set\+Reference} (which only removes a constant null space by doubling a single diagonal), this forces each constrained cell\textquotesingle{}s solution exactly to its target.  
+
+
+
+
+{\ttfamily \#include $<$expression.\+hpp$>$}
+
+Inheritance diagram for NeoN\+::dsl\+::Fixed\+Value\+Constraints\texorpdfstring{$<$}{<} Value\+Type, Index\+Type \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classNeoN_1_1dsl_1_1FixedValueConstraints}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints_aa0f467ac39675f57a4dfc63d05097f83}{Fixed\+Value\+Constraints}} (\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ mask, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ values, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells)
+\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ $>$ \&ls) const override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Neo\+N\+::dsl\+::\+Post\+Assembly\+Base$<$ Vector\+Type, Index\+Type $>$}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6ee1fd861a37f190bf64b4525f1ffbaa}{\texorpdfstring{$\sim$}{\string~}\+Post\+Assembly\+Base}} ()=default
+\item 
+virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a145f21d894b17fd1287b3cde7f7f051c}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vector\+Type, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Vector\+Type, Index\+Type $>$ $>$ \&) const
+\item 
+virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af0170570aa68740698ac111b485cc18c}{apply\+Scalar\+Matrix}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{la\+::\+COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&) const
+\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs form (a scalar coefficient matrix with a Vector\+Type right-\/hand side). Default no-\/op; functors that support the segregated form override this. \doxylink{classA}{A} distinct name (rather than an operator() overload) avoids colliding with the same-\/type signature when Vector\+Type == scalar. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, typename Index\+Type = local\+Idx$>$\newline
+class Neo\+N\+::dsl\+::\+Fixed\+Value\+Constraints$<$ Value\+Type, Index\+Type $>$}
+Post-\/assembly functor that HARD-\/pins a set of cells to prescribed values — the equivalent of Open\+FOAM\textquotesingle{}s fv\+Matrix\+::set\+Values, which omega/epsilon wall functions apply through manipulate\+Matrix(). Unlike \doxylink{classNeoN_1_1dsl_1_1SetReference}{Set\+Reference} (which only removes a constant null space by doubling a single diagonal), this forces each constrained cell\textquotesingle{}s solution exactly to its target. 
+
+This now performs Open\+FOAM\textquotesingle{}s FULL decouple (fv\+Matrix\+::set\+Values\+From\+List), not just a row wipe. For every constrained cell c\+: \doxylink{classA}{A}\mbox{[}c, j\mbox{]} = 0 for all j != c (zero the off-\/diagonals of ROW c) \doxylink{classA}{A}\mbox{[}j, c\mbox{]} = 0 for all j != c (zero the COLUMN c in every neighbour row j) rhs\mbox{[}j\mbox{]} -\/= \doxylink{classA}{A}\mbox{[}j, c\mbox{]}\texorpdfstring{$\ast$}{*}value\mbox{[}c\mbox{]} (relocate that coupling into the neighbour SOURCE) rhs\mbox{[}c\mbox{]} = \doxylink{classA}{A}\mbox{[}c, c\mbox{]} \texorpdfstring{$\ast$}{*} value\mbox{[}c\mbox{]} so the row reduces to \doxylink{classA}{A}\mbox{[}c,c\mbox{]}\texorpdfstring{$\ast$}{*}x\+\_\+c = \doxylink{classA}{A}\mbox{[}c,c\mbox{]}\texorpdfstring{$\ast$}{*}value\mbox{[}c\mbox{]} =\texorpdfstring{$>$}{>} x\+\_\+c = value\mbox{[}c\mbox{]} (independent of the relaxed/\+BC-\/augmented diagonal), and — crucially — the Sp\+MV / residual no longer carries the huge in-\/matrix \doxylink{classA}{A}\mbox{[}j,c\mbox{]}\texorpdfstring{$\ast$}{*}value\+\_\+c term (value\+\_\+c is the viscous-\/sublayer wall omega, up to 1e12). Leaving that coefficient in the matrix (the previous row-\/only wipe) made A\texorpdfstring{$\ast$}{*}x at neighbour cells a difference of \texorpdfstring{$\sim$}{\string~}1e18 magnitudes, which underflowed/\+NaN\textquotesingle{}d the L1 residual norm under FOAM\+\_\+\+SIGFPE — Open\+FOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.
+
+Proc-\/boundary caveat\+: a pinned cell\textquotesingle{}s coupling to an off-\/rank ghost lives in off\+Diagonal\+Matrix, not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).
+
+The functor sweeps all n\+Cells; a cell is constrained iff mask\mbox{[}cell\mbox{]} != 0, with value\mbox{[}cell\mbox{]} holding its target. Both views are sized n\+Cells and owned by the caller (must outlive use). 
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00171}{171}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_aa0f467ac39675f57a4dfc63d05097f83}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_aa0f467ac39675f57a4dfc63d05097f83} 
+\index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!FixedValueConstraints@{FixedValueConstraints}}
+\index{FixedValueConstraints@{FixedValueConstraints}!NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{FixedValueConstraints()}{FixedValueConstraints()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+\mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+::\+Fixed\+Value\+Constraints}}$<$ Value\+Type, Index\+Type $>$\+::\+Fixed\+Value\+Constraints (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$}]{mask,  }\item[{\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$}]{values,  }\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{n\+Cells }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00175}{175}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d} 
+\index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+::\+Fixed\+Value\+Constraints}}$<$ Value\+Type, Index\+Type $>$\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00179}{179}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/dsl/\mbox{\hyperlink{expression_8hpp}{expression.\+hpp}}\end{DoxyCompactItemize}
