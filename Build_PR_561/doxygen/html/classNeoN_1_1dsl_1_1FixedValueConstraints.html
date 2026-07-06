@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Post-assembly functor that HARD-pins a set of cells to prescribed values — the equivalent of OpenFOAM's fvMatrix::setValues, which omega/epsilon wall functions apply through manipulateMatrix(). Unlike <a class="el" href="classNeoN_1_1dsl_1_1SetReference.html" title="Post-assembly functor that pins one cell&#39;s value to a reference, removing the constant null space tha...">SetReference</a> (which only removes a constant null space by doubling a single diagonal), this forces each constrained cell's solution exactly to its target.  
+<p>Post-assembly functor that pins a set of cells to prescribed values.  
  <a href="classNeoN_1_1dsl_1_1FixedValueConstraints.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="expression_8hpp_source.html">expression.hpp</a>&gt;</code></p>
@@ -112,12 +112,12 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename ValueType, typename IndexType = localIdx&gt;<br />
-class NeoN::dsl::FixedValueConstraints&lt; ValueType, IndexType &gt;</div><p>Post-assembly functor that HARD-pins a set of cells to prescribed values — the equivalent of OpenFOAM's fvMatrix::setValues, which omega/epsilon wall functions apply through manipulateMatrix(). Unlike <a class="el" href="classNeoN_1_1dsl_1_1SetReference.html" title="Post-assembly functor that pins one cell&#39;s value to a reference, removing the constant null space tha...">SetReference</a> (which only removes a constant null space by doubling a single diagonal), this forces each constrained cell's solution exactly to its target. </p>
-<p>This now performs OpenFOAM's FULL decouple (fvMatrix::setValuesFromList), not just a row wipe. For every constrained cell c: <a class="el" href="classA.html">A</a>[c, j] = 0 for all j != c (zero the off-diagonals of ROW c) <a class="el" href="classA.html">A</a>[j, c] = 0 for all j != c (zero the COLUMN c in every neighbour row j) rhs[j] -= <a class="el" href="classA.html">A</a>[j, c]*value[c] (relocate that coupling into the neighbour SOURCE) rhs[c] = <a class="el" href="classA.html">A</a>[c, c] * value[c] so the row reduces to <a class="el" href="classA.html">A</a>[c,c]*x_c = <a class="el" href="classA.html">A</a>[c,c]*value[c] =&gt; x_c = value[c] (independent of the relaxed/BC-augmented diagonal), and — crucially — the SpMV / residual no longer carries the huge in-matrix <a class="el" href="classA.html">A</a>[j,c]*value_c term (value_c is the viscous-sublayer wall omega, up to 1e12). Leaving that coefficient in the matrix (the previous row-only wipe) made A*x at neighbour cells a difference of ~1e18 magnitudes, which underflowed/NaN'd the L1 residual norm under FOAM_SIGFPE — OpenFOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.</p>
-<p>Proc-boundary caveat: a pinned cell's coupling to an off-rank ghost lives in offDiagonalMatrix, not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).</p>
-<p>The functor sweeps all nCells; a cell is constrained iff mask[cell] != 0, with value[cell] holding its target. Both views are sized nCells and owned by the caller (must outlive use). </p>
+class NeoN::dsl::FixedValueConstraints&lt; ValueType, IndexType &gt;</div><p>Post-assembly functor that pins a set of cells to prescribed values. </p>
+<p>For every constrained cell c: <a class="el" href="classA.html">A</a>[c, j] = 0 for j != c (zero row off-diagonals) <a class="el" href="classA.html">A</a>[j, c] = 0 for j != c (zero column in neighbour rows, rhs[j] absorbs the dropped term) rhs[c] = <a class="el" href="classA.html">A</a>[c,c] * value[c]</p>
+<p>Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-rank coupling (offDiagonalMatrix) is not decoupled.</p>
+<p>mask[cell] != 0 marks a constrained cell; value[cell] holds its target. Both views are sized nCells and must outlive the functor. </p>
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00171">171</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00160">160</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa0f467ac39675f57a4dfc63d05097f83" name="aa0f467ac39675f57a4dfc63d05097f83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0f467ac39675f57a4dfc63d05097f83">&#9670;&#160;</a></span>FixedValueConstraints()</h2>
@@ -161,7 +161,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00175">175</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00164">164</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -192,7 +192,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00179">179</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00168">168</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>

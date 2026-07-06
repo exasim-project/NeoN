@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="232" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="232" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="218" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="218" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1dsl_1_1FixedValueConstraints_1aae8e281814dabfd4855aaae1286e77f8" prot="private" static="no" mutable="no">
         <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
@@ -40,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="233" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="233" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="219" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="219" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1dsl_1_1FixedValueConstraints_1add2fd51a56391b5a0527df62daf1b0ae" prot="private" static="no" mutable="no">
         <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="234" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="234" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="220" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="220" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -82,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="175" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="175" bodyend="177"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="164" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="164" bodyend="166"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1FixedValueConstraints_1a756ecb34596254c9b253def7ef6c8d2d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -100,16 +100,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="179" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="179" bodyend="228"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="168" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="168" bodyend="214"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
-<para>Post-assembly functor that HARD-pins a set of cells to prescribed values — the equivalent of OpenFOAM&apos;s fvMatrix::setValues, which omega/epsilon wall functions apply through manipulateMatrix(). Unlike <ref refid="classNeoN_1_1dsl_1_1SetReference" kindref="compound">SetReference</ref> (which only removes a constant null space by doubling a single diagonal), this forces each constrained cell&apos;s solution exactly to its target. </para>
+<para>Post-assembly functor that pins a set of cells to prescribed values. </para>
     </briefdescription>
     <detaileddescription>
-<para>This now performs OpenFOAM&apos;s FULL decouple (fvMatrix::setValuesFromList), not just a row wipe. For every constrained cell c: <ref refid="classA" kindref="compound">A</ref>[c, j] = 0 for all j != c (zero the off-diagonals of ROW c) <ref refid="classA" kindref="compound">A</ref>[j, c] = 0 for all j != c (zero the COLUMN c in every neighbour row j) rhs[j] -= <ref refid="classA" kindref="compound">A</ref>[j, c]*value[c] (relocate that coupling into the neighbour SOURCE) rhs[c] = <ref refid="classA" kindref="compound">A</ref>[c, c] * value[c] so the row reduces to <ref refid="classA" kindref="compound">A</ref>[c,c]*x_c = <ref refid="classA" kindref="compound">A</ref>[c,c]*value[c] =&gt; x_c = value[c] (independent of the relaxed/BC-augmented diagonal), and — crucially — the SpMV / residual no longer carries the huge in-matrix <ref refid="classA" kindref="compound">A</ref>[j,c]*value_c term (value_c is the viscous-sublayer wall omega, up to 1e12). Leaving that coefficient in the matrix (the previous row-only wipe) made A*x at neighbour cells a difference of ~1e18 magnitudes, which underflowed/NaN&apos;d the L1 residual norm under FOAM_SIGFPE — OpenFOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.</para>
-<para>Proc-boundary caveat: a pinned cell&apos;s coupling to an off-rank ghost lives in offDiagonalMatrix, not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).</para>
-<para>The functor sweeps all nCells; a cell is constrained iff mask[cell] != 0, with value[cell] holding its target. Both views are sized nCells and owned by the caller (must outlive use). </para>
+<para>For every constrained cell c: <ref refid="classA" kindref="compound">A</ref>[c, j] = 0 for j != c (zero row off-diagonals) <ref refid="classA" kindref="compound">A</ref>[j, c] = 0 for j != c (zero column in neighbour rows, rhs[j] absorbs the dropped term) rhs[c] = <ref refid="classA" kindref="compound">A</ref>[c,c] * value[c]</para>
+<para>Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-rank coupling (offDiagonalMatrix) is not decoupled.</para>
+<para>mask[cell] != 0 marks a constrained cell; value[cell] holds its target. Both views are sized nCells and must outlive the functor. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">
@@ -135,7 +135,7 @@
         <link refid="structNeoN_1_1dsl_1_1PostAssemblyBase"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="171" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="172" bodyend="235"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="160" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="161" bodyend="221"/>
     <listofallmembers>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1af0170570aa68740698ac111b485cc18c" prot="public" virt="virtual"><scope>NeoN::dsl::FixedValueConstraints</scope><name>applyScalarMatrix</name></member>
       <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1aa0f467ac39675f57a4dfc63d05097f83" prot="public" virt="non-virtual"><scope>NeoN::dsl::FixedValueConstraints</scope><name>FixedValueConstraints</name></member>
