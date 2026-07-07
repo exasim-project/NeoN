@@ -119,6 +119,7 @@ public:
     Operator::Type getType() const { return model_->getType(); }
 
     std::string getName() const { return model_->getName(); }
+    
     std::string juliaOP() { return model_->juliaOP(); }
 
     std::string juliaOP() const { return model_->juliaOP(); }

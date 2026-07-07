@@ -32,6 +32,9 @@ function(NeoN_unit_test TEST)
   install(TARGETS ${NeoN_COMMAND})
 
   if(NeoN_WITH_JULIA)
+    execute_process(
+      COMMAND echo "Building test for julia"
+    )
 	  #set(JULIA_DIR "/storage/home/lupeterm/.julia/juliaup/julia-1.11.9+0.x64.linux.gnu")
 	  execute_process(
 	  	COMMAND julialauncher +1.11 -e "print(rsplit(Sys.BINDIR, '/', limit=2)[1])"
@@ -103,23 +106,14 @@ function(NeoN_unit_test TEST)
 endfunction()
 
 add_subdirectory(core)
-# FIXME remove 
-if(NOT NeoN_WITH_JULIA)
-  add_subdirectory(dsl)
-  add_subdirectory(fields)
-  add_subdirectory(finiteVolume)
-  add_subdirectory(linearAlgebra)
-  add_subdirectory(mesh)
-  add_subdirectory(timeIntegration)
-  add_subdirectory(dsl)
-  if(NeoN_WITH_MPI)
-    add_subdirectory(distributed)
-  endif()
-  add_subdirectory(fields)
-  add_subdirectory(finiteVolume)
-  add_subdirectory(linearAlgebra)
-  add_subdirectory(mesh)
-  add_subdirectory(timeIntegration)
-
-  add_subdirectory(bindings)
+add_subdirectory(dsl)
+if(NeoN_WITH_MPI)
+  add_subdirectory(distributed)
 endif()
+add_subdirectory(fields)
+add_subdirectory(finiteVolume)
+add_subdirectory(linearAlgebra)
+add_subdirectory(mesh)
+add_subdirectory(timeIntegration)
+
+add_subdirectory(bindings)

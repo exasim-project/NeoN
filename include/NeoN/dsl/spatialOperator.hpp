@@ -104,10 +104,12 @@ public:
 
     std::string getName() const { return model_->getName(); }
 
+// #ifdef USE_JULIA
+
     std::string juliaOP() { return model_->juliaOP(); }
 
     std::string juliaOP() const { return model_->juliaOP(); }
-
+// #endif
     Coeff& getCoefficient() { return model_->getCoefficient(); }
 
     Coeff getCoefficient() const { return model_->getCoefficient(); }

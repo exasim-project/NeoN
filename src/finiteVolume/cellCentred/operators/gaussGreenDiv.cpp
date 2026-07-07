@@ -5,7 +5,9 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
-#include <julia.h>
+// #ifdef USE_JULIA
+// #include <julia.h>
+// #endif
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -623,35 +625,37 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
     if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
     {
-        if (!cellIter->getCellBasedData())
-        {
-            cellIter->setComputeCellBasedData(
-                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-            );
-        }
-        computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
+        // if (!cellIter->getCellBasedData())
+        // {
+        //     cellIter->setComputeCellBasedData(
+        //         phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        //     );
+        // }
+        // computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     }
     else
     {
-        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
+        // computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
     }
-    computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-    computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    // computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    // computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
 
-    // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
-    // upwind weights above, the gradient correction is added explicitly to the rhs.
-    if (surfaceInterpolation_.corrected())
-    {
-        SurfaceField<FieldValueType> correction(
-            phi.exec(),
-            "divCorrection",
-            phi.mesh(),
-            createCalculatedBCs<SurfaceBoundary<FieldValueType>>(phi.mesh())
-        );
-        surfaceInterpolation_.correction(faceFlux, phi, correction);
-        addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
-    }
+    // // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
+    // // upwind weights above, the gradient correction is added explicitly to the rhs.
+    // if (surfaceInterpolation_.corrected())
+    // {
+    //     SurfaceField<FieldValueType> correction(
+    //         phi.exec(),
+    //         "divCorrection",
+    //         phi.mesh(),
+    //         createCalculatedBCs<SurfaceBoundary<FieldValueType>>(phi.mesh())
+    //     );
+    //     surfaceInterpolation_.correction(faceFlux, phi, correction);
+    //     addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
+    // }
 }
 
 template class GaussGreenDiv<scalar>;

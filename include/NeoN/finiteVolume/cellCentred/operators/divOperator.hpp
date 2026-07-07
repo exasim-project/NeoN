@@ -179,13 +179,15 @@ public:
             auto dict = std::get<NeoN::Dictionary>(input);
             std::string schemeName = "div(" + faceFlux_.name + "," + this->getVector().name + ")";
             tokens = dict.subDict("divSchemes").get<NeoN::TokenList>(schemeName);
-            auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            auto scheme = tokens.firstAfterGauss();
             juliaEvalString_ = "Div{Float64, " + scheme + "{Float64}}("+scheme+"{Float64}(), "+std::to_string(operatorScaling[0])+")";
         }
         else
         {
             tokens = std::get<NeoN::TokenList>(input);
-            auto scheme = tokens.get<std::string>(tokens.size() - 1);
+            auto scheme = tokens.firstAfterGauss();
+
+            // auto scheme = tokens.get<std::string>(tokens.size() - 1);
             juliaEvalString_ = "Div{Float64, {" + scheme + "}{Float64}}({"+scheme+"}{Float64}(), "+std::to_string(operatorScaling[0])+")";
         }
         sameTypeStrategy_ = DivOperatorFactory<FieldValueType, FieldValueType>::create(this->exec(), mesh, tokens);

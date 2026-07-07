@@ -601,22 +601,25 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
 {
     if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
     {
-        if (!cellIter->getCellBasedData())
-        {
-            cellIter->setComputeCellBasedData(
-                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-            );
-        }
-        computeLaplacianIntCellBasedImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        // if (!cellIter->getCellBasedData())
+        // {
+        //     cellIter->setComputeCellBasedData(
+        //         phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+        //     );
+        // }
+        // computeLaplacianIntCellBasedImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+
     }
     else
     {
-        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-        // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
+        // computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
-    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    // computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    // computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    // computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
 }
 
 

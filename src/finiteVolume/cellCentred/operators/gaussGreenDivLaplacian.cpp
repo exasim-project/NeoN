@@ -488,9 +488,16 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
         NF_ERROR_EXIT("only dictionary input supported");
     }
     laplTokens.remove(0);
+    auto divScheme = divTokens.get<std::string>(0);
     divTokens.remove(0);
 
-    const auto divScheme = divTokens.get<std::string>(0);
+    divScheme = divTokens.get<std::string>(0);
+    if (divScheme == "Gauss")
+    {
+        divTokens.remove(0);
+    }
+    divScheme = divTokens.get<std::string>(0);
+
     if (divScheme != "upwind" && divScheme != "linearUpwind")
     {
         NF_ERROR_EXIT(

@@ -33,13 +33,6 @@ public:
 
     static std::string schema() { return "none"; }
 
-    // static std::string juliaOP()
-    // {
-    //     auto t = constexpr(std::is_same_v<ValueType, float>) ? "Float32" : "Float64";
-    //     auto scheme = surfaceInterpolation_->name();
-    //     return std::format("Div\{{}, {}\}", t, scheme)
-    // }
-
     GaussGreenDiv(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs)
         : Base(exec, mesh), surfaceInterpolation_(exec, mesh, inputs) {};
 
