@@ -43,6 +43,8 @@ nanobind_add_module(
   surfaceInterpolation.cpp
   inputs.cpp
   coNum.cpp
+  reconstruct.cpp
+  mules.cpp
   initialization.cpp
   linearAlgebra.cpp
   dsl.cpp
