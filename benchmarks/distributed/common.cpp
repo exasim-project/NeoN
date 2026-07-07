@@ -393,6 +393,9 @@ void runDistributedMomentumBenchmark(
             commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
         );
         auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+        std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
+            imapCache0;
+        std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache0;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -401,7 +404,13 @@ void runDistributedMomentumBenchmark(
                 [&]
                 {
                     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
-                        gkoExec, comm, ls.matrix(), ls.offDiagonalMatrix(), commPattern
+                        gkoExec,
+                        comm,
+                        ls.matrix(),
+                        ls.offDiagonalMatrix(),
+                        commPattern,
+                        imapCache0,
+                        nonLocalMtxCache0
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -434,6 +443,10 @@ void runDistributedMomentumBenchmark(
             nonLocalValues0, ls.offDiagonalMatrix().sparsity()
         );
 
+        std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
+            imapCache1;
+        std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache1;
+
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
             MPI_Barrier(MPI_COMM_WORLD);
@@ -441,7 +454,13 @@ void runDistributedMomentumBenchmark(
                 [&]
                 {
                     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
-                        gkoExec, comm, mtx0, nonLocalMtx0, commPattern
+                        gkoExec,
+                        comm,
+                        mtx0,
+                        nonLocalMtx0,
+                        commPattern,
+                        imapCache1,
+                        nonLocalMtxCache1
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -466,6 +485,9 @@ void runDistributedMomentumBenchmark(
             commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
         );
         auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+        std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
+            imapCache2;
+        std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache2;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -474,7 +496,13 @@ void runDistributedMomentumBenchmark(
                 [&]
                 {
                     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
-                        gkoExec, comm, ls.matrix(), ls.offDiagonalMatrix(), commPattern
+                        gkoExec,
+                        comm,
+                        ls.matrix(),
+                        ls.offDiagonalMatrix(),
+                        commPattern,
+                        imapCache2,
+                        nonLocalMtxCache2
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -501,6 +529,9 @@ void runDistributedMomentumBenchmark(
             commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
         );
         auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+        std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>>
+            imapCache3;
+        std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache3;
 
         BENCHMARK_ADVANCED(std::string(execName))(Catch::Benchmark::Chronometer meter)
         {
@@ -509,7 +540,13 @@ void runDistributedMomentumBenchmark(
                 [&]
                 {
                     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
-                        gkoExec, comm, ls.matrix(), ls.offDiagonalMatrix(), commPattern
+                        gkoExec,
+                        comm,
+                        ls.matrix(),
+                        ls.offDiagonalMatrix(),
+                        commPattern,
+                        imapCache3,
+                        nonLocalMtxCache3
                     );
                     fence(exec);
                     MPI_Barrier(MPI_COMM_WORLD);
