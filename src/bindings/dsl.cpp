@@ -179,9 +179,15 @@ void registerDSL(nb::module_& m)
     using VectorVolField = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
     using ScalarSurfField = NeoN::finiteVolume::cellCentred::SurfaceField<scalar>;
 
-    // Implicit factories
-    imp_m.def("ddt", &dsl::imp::ddt<scalar>);
-    imp_m.def("ddt", &dsl::imp::ddt<Vec3>);
+    // Implicit factories. ddt is overloaded (single-field and density-weighted), so bind
+    // via lambdas that resolve the overload by arity rather than taking &ddt<T> directly.
+    imp_m.def("ddt", [](ScalarVolField& phi) { return dsl::imp::ddt<scalar>(phi); });
+    imp_m.def("ddt", [](VectorVolField& phi) { return dsl::imp::ddt<Vec3>(phi); });
+    // Density-weighted ddt(rho, U) overload (two field args).
+    imp_m.def(
+        "ddt",
+        [](ScalarVolField& rho, VectorVolField& phi) { return dsl::imp::ddt<Vec3>(rho, phi); }
+    );
     imp_m.def("div", &dsl::imp::div<scalar>);
     imp_m.def("div", &dsl::imp::div<Vec3>);
     imp_m.def("laplacian", &dsl::imp::laplacian<scalar>);
@@ -202,6 +208,8 @@ void registerDSL(nb::module_& m)
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def("grad", &dsl::exp::grad);
     exp_m.def("source", [](ScalarVolField& coeff) { return dsl::exp::source<scalar>(coeff); });
+    // Vec3 explicit Su source — wraps a reconstructed cell body force as an rhs operator.
+    exp_m.def("source", [](VectorVolField& coeff) { return dsl::exp::source<Vec3>(coeff); });
     exp_m.def(
         "source",
         [](const ScalarVolField& coeff, const ScalarVolField& phi)

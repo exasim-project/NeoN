@@ -40,6 +40,8 @@ set(NeoN_PYTHON_BINDING_SRCS
     surfaceInterpolation.cpp
     inputs.cpp
     coNum.cpp
+    reconstruct.cpp
+    mules.cpp
     initialization.cpp
     linearAlgebra.cpp
     dsl.cpp
