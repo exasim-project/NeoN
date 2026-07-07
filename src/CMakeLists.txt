@@ -62,6 +62,8 @@ set(NeoN_SRCS
     "finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.cpp"
     "finiteVolume/cellCentred/operators/sourceTerm.cpp"
     "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
+    "finiteVolume/cellCentred/operators/reconstruct.cpp"
+    "finiteVolume/cellCentred/operators/mules.cpp"
     "finiteVolume/cellCentred/interpolation/linear.cpp"
     "finiteVolume/cellCentred/interpolation/upwind.cpp"
     "finiteVolume/cellCentred/interpolation/linearUpwind.cpp"

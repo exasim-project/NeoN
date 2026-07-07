@@ -137,6 +137,17 @@ void registerSurfaceField(nb::module_& m)
         )
         .def_rw("name", &fvcc::SurfaceField<NeoN::scalar>::name)
         .def(
+            "assign",
+            [](fvcc::SurfaceField<NeoN::scalar>& self,
+               const fvcc::SurfaceField<NeoN::scalar>& other)
+            {
+                self.internalVector() = other.internalVector();
+                self.boundaryData().value() = other.boundaryData().value();
+            },
+            "other"_a,
+            "Deep-copy internal + boundary from another scalar surface field"
+        )
+        .def(
             "__add__",
             [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
             { return a + b; },
@@ -149,6 +160,25 @@ void registerSurfaceField(nb::module_& m)
             { return a * b; },
             "other"_a,
             "Element-wise multiplication of two scalar surface fields"
+        )
+        .def(
+            "__sub__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
+            { return a - b; },
+            "other"_a,
+            "Element-wise subtraction of two scalar surface fields"
+        )
+        .def(
+            "__mul__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& a, NeoN::scalar s) { return s * a; },
+            "scalar"_a,
+            "Scale a scalar surface field by a constant"
+        )
+        .def(
+            "__rmul__",
+            [](const fvcc::SurfaceField<NeoN::scalar>& a, NeoN::scalar s) { return s * a; },
+            "scalar"_a,
+            "Scale a scalar surface field by a constant"
         );
 
     nb::class_<fvcc::SurfaceField<NeoN::Vec3>>(
