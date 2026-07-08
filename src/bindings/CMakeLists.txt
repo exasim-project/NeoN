@@ -41,7 +41,6 @@ set(NeoN_PYTHON_BINDING_SRCS
     inputs.cpp
     coNum.cpp
     reconstruct.cpp
-    mules.cpp
     initialization.cpp
     linearAlgebra.cpp
     dsl.cpp
