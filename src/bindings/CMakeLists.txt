@@ -28,6 +28,7 @@ endif()
 
 nanobind_add_module(
   _neon
+  NB_SHARED
   NOMINSIZE
   neon.cpp
   executors.cpp
@@ -42,6 +43,7 @@ nanobind_add_module(
   surfaceInterpolation.cpp
   inputs.cpp
   coNum.cpp
+  reconstruct.cpp
   initialization.cpp
   linearAlgebra.cpp
   dsl.cpp

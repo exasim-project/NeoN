@@ -25,6 +25,7 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerSurfaceInterpolation(m);
     NeoN::bindings::registerInputs(m);
     NeoN::bindings::registerCoNum(m);
+    NeoN::bindings::registerReconstruct(m);
     NeoN::bindings::registerInitialization(m);
     NeoN::bindings::registerLinearAlgebra(m);
     NeoN::bindings::registerDSL(m);
