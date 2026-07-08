@@ -19,6 +19,19 @@
 namespace nb = nanobind;
 using namespace amrex;
 
+// Device tag for The_Device_Arena()-backed tile buffers: host memory (=> CPU)
+// on a CPU-only AMReX build, so JAX's from_dlpack doesn't request a nonexistent
+// cuda backend when running CPU-only.
+#if defined(AMREX_USE_CUDA)
+constexpr int kTileDevice = nb::device::cuda::value;
+#elif defined(AMREX_USE_HIP)
+constexpr int kTileDevice = nb::device::rocm::value;
+#elif defined(AMREX_USE_SYCL)
+constexpr int kTileDevice = nb::device::oneapi::value;
+#else
+constexpr int kTileDevice = nb::device::cpu::value;
+#endif
+
 
 struct TileLayout
 {
@@ -193,7 +206,7 @@ registerTileLayout(nb::module_& m)
                 size_t shape[1] = {(size_t)t.n_tiles_padded * 5};
                 return nb::ndarray<nb::jax, int32_t, nb::ndim<1>>(
                     t.d_tiles, 1, shape, nb::handle(), nullptr,
-                    nb::dtype<int32_t>(), nb::device::cuda::value, 0);
+                    nb::dtype<int32_t>(), kTileDevice, 0);
             },
             nb::rv_policy::reference_internal)
         .def_ro("n_tiles", &TileLayout::n_tiles)

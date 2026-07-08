@@ -5,19 +5,33 @@
 import gc
 from . import initialize, finalize
 
+# Re-entrancy guard: AMReX may only be Initialize()'d once per process. Nested
+# ``runtime()`` blocks (e.g. a pytest session fixture wrapping a solver ``run()``
+# that also opens a runtime) count depth so only the outermost init/finalizes.
+_depth = 0
+
+
+def initialized():
+    """True if an AMReX runtime is currently active in this process."""
+    return _depth > 0
+
 
 class _RuntimeCtx:
     """Context manager for AMReX initialization and finalization."""
 
     def __enter__(self):
-        initialize()
+        global _depth
+        if _depth == 0:
+            initialize()
+        _depth += 1
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-
-
-        gc.collect()
-        finalize()
+        global _depth
+        _depth -= 1
+        if _depth == 0:
+            gc.collect()
+            finalize()
         return False
 
 
@@ -41,11 +55,16 @@ def runtime(func=None):
             run()
     """
     if func is not None:
-        initialize()
+        global _depth
+        if _depth == 0:
+            initialize()
+        _depth += 1
         try:
             func()
         finally:
-            gc.collect()
-            finalize()
+            _depth -= 1
+            if _depth == 0:
+                gc.collect()
+                finalize()
     else:
         return _RuntimeCtx()

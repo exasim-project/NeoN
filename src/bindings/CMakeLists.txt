@@ -102,8 +102,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
   install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
+  # Use CMAKE_CURRENT_SOURCE_DIR (this bindings dir) not CMAKE_SOURCE_DIR: when
+  # NeoN is add_subdirectory()'d into neofoam, CMAKE_SOURCE_DIR is the neofoam
+  # root, so ${CMAKE_SOURCE_DIR}/src/neon/__init__.py does not exist.
   install(
-    FILES ${CMAKE_SOURCE_DIR}/src/neon/__init__.py
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/__init__.py
+    DESTINATION neon
+    COMPONENT python)
+  install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
     DESTINATION neon
     COMPONENT python)
   # Install libNeoN.so so _neon.so can find it via RPATH ($ORIGIN/../lib/)

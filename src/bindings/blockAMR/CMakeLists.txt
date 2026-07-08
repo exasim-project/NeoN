@@ -58,8 +58,11 @@ set_target_properties(_blockamr PROPERTIES INSTALL_RPATH "$ORIGIN/../../lib" BUI
 # Installation
 if(DEFINED SKBUILD)
   install(TARGETS _blockamr LIBRARY DESTINATION neon/blockamr COMPONENT python)
+  # CMAKE_CURRENT_SOURCE_DIR (this dir = src/bindings/blockAMR) not
+  # CMAKE_SOURCE_DIR: when NeoN is add_subdirectory()'d into neofoam,
+  # CMAKE_SOURCE_DIR is the neofoam root and the blockamr .py sources are missed.
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/src/neon/blockamr/
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../neon/blockamr/
     DESTINATION neon/blockamr
     COMPONENT python
     FILES_MATCHING

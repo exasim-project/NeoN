@@ -248,6 +248,20 @@ inline int deviceTypeFromArena(const amrex::MultiFab& mf)
 #endif
 }
 
+// Device tag for arrays allocated on The_Device_Arena(). On a CPU-only AMReX
+// build that arena is host memory, so the exported ndarray must report CPU (a
+// hardcoded cuda tag makes JAX's from_dlpack request a nonexistent cuda backend
+// when running CPU-only).
+#if defined(AMREX_USE_CUDA)
+constexpr int kDeviceArenaDevice = nb::device::cuda::value;
+#elif defined(AMREX_USE_HIP)
+constexpr int kDeviceArenaDevice = nb::device::rocm::value;
+#elif defined(AMREX_USE_SYCL)
+constexpr int kDeviceArenaDevice = nb::device::oneapi::value;
+#else
+constexpr int kDeviceArenaDevice = nb::device::cpu::value;
+#endif
+
 // Python-friendly MFIter wrapper that supports __iter__/__next__
 struct MFIterator
 {
@@ -802,7 +816,7 @@ void registerMultiFab(nb::module_& m)
                     size_t shape[1] = {n_padded};
                     return nb::ndarray<nb::jax, int64_t, nb::ndim<1>>(
                         dev_ptr, 1, shape, owner, nullptr,
-                        nb::dtype<int64_t>(), nb::device::cuda::value, 0);
+                        nb::dtype<int64_t>(), kDeviceArenaDevice, 0);
                 };
 
                 nb::dict result;
@@ -934,7 +948,7 @@ void registerMultiFab(nb::module_& m)
                 size_t shape[1] = {n_padded * FIELDS_PER_TILE};
                 auto tiles_arr = nb::ndarray<nb::jax, int32_t, nb::ndim<1>>(
                     dev_ptr, 1, shape, owner, nullptr,
-                    nb::dtype<int32_t>(), nb::device::cuda::value, 0);
+                    nb::dtype<int32_t>(), kDeviceArenaDevice, 0);
 
                 nb::dict result;
                 result["tiles"]    = tiles_arr;
@@ -1124,7 +1138,7 @@ void registerMultiFab(nb::module_& m)
                     size_t shape[1] = {n_padded};
                     return nb::ndarray<nb::jax, int32_t, nb::ndim<1>>(
                         dev_ptr, 1, shape, owner, nullptr,
-                        nb::dtype<int32_t>(), nb::device::cuda::value, 0);
+                        nb::dtype<int32_t>(), kDeviceArenaDevice, 0);
                 };
 
                 nb::dict result;

@@ -12,7 +12,7 @@ from .fillpatch import FillPatchCellConservative, FillPatchSingleLevel
 from .mesh import AmrMesh, Mesh
 from . import dsl
 from . import schemes
-from .runtime import runtime
+from .runtime import initialized, runtime
 
 _default_executor = "cpu"
 _default_backend = "jax"
