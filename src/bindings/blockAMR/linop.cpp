@@ -247,6 +247,21 @@ void registerLinOp(nb::module_& m)
         .def("set_bottom_max_iter", &MLMG::setBottomMaxIter, nb::arg("n"))
         .def("set_bottom_tolerance", &MLMG::setBottomTolerance, nb::arg("t"))
         .def(
+            "set_bottom_solver",
+            [](MLMG& mlmg, const std::string& s)
+            {
+                BottomSolver bs;
+                if (s == "cg") bs = BottomSolver::cg;
+                else if (s == "bicgstab") bs = BottomSolver::bicgstab;
+                else if (s == "smoother") bs = BottomSolver::smoother;
+                else if (s == "cgbicg") bs = BottomSolver::cgbicg;
+                else if (s == "bicgcg") bs = BottomSolver::bicgcg;
+                else if (s == "default") bs = BottomSolver::Default;
+                else throw std::runtime_error("unknown bottom solver: " + s);
+                mlmg.setBottomSolver(bs);
+            },
+            nb::arg("solver"))
+        .def(
             "solve",
             [](MLMG& mlmg, MultiFab& sol, const MultiFab& rhs, double rtol, double atol)
             { return mlmg.solve({&sol}, {&rhs}, rtol, atol); },

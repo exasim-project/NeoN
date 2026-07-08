@@ -59,6 +59,35 @@ class NeumannBC:
             _put(arr, ghost_idx, axis, _take(arr, interior_idx, axis))
 
 
+class SlipBC:
+    """Free-slip / symmetry wall (native BC code 3).
+
+    No penetration + zero tangential shear: the velocity component *normal* to
+    the face is reflected with a sign flip (ghost = -interior → zero normal
+    velocity at the face) while the *tangential* components are copied
+    (ghost = interior → zero gradient). cf. OpenFOAM ``slip`` / ``symmetry``.
+    """
+
+    def fill(self, arr, axis, side, ngrow):
+        n = arr.shape[axis] - 2 * ngrow
+        ncomp = arr.shape[-1] if arr.ndim == 4 else 1
+        for g in range(ngrow):
+            if side == 0:
+                ghost_idx = ngrow - 1 - g
+                interior_idx = ngrow + g
+            else:
+                ghost_idx = ngrow + n + g
+                interior_idx = ngrow + n - 1 - g
+            src = _take(arr, interior_idx, axis)
+            if arr.ndim == 4 and ncomp > 1:
+                val = src.copy()
+                # component normal to this face (== axis) reflects with -sign
+                val[..., axis] = -val[..., axis]
+                _put(arr, ghost_idx, axis, val)
+            else:
+                _put(arr, ghost_idx, axis, src)
+
+
 class BoundaryCondition:
     """Per-face BC specification for a box domain.
 
@@ -112,11 +141,13 @@ def _bc_to_native_spec(bc, geom):
 
 
 def _bc_type_code(bc_obj):
-    """Return 1 for Dirichlet, 2 for Neumann."""
+    """Return 1 for Dirichlet, 2 for Neumann, 3 for slip/symmetry."""
     if isinstance(bc_obj, (DirichletBC, VectorDirichletBC)):
         return 1
     elif isinstance(bc_obj, NeumannBC):
         return 2
+    elif isinstance(bc_obj, SlipBC):
+        return 3
     return 0
 
 
@@ -156,6 +187,45 @@ def fixedValue(vec):
 def noSlip():
     """No-slip wall: fixedValue([0, 0, 0])."""
     return fixedValue([0, 0, 0])
+
+
+def slip():
+    """Free-slip / symmetry wall: :class:`SlipBC`."""
+    return SlipBC()
+
+
+def pressure_domain_bc(u_bc, geom):
+    """Per-face pressure ``LinOpBCType`` derived from a velocity ``VectorBC``.
+
+    Standard incompressible pressure/velocity BC pairing (cf. OpenFOAM
+    ``inlet: U fixedValue / p zeroGradient``, ``outlet: U zeroGradient / p
+    fixedValue``):
+
+    * periodic axis                        → ``Periodic``
+    * velocity Neumann face (outflow)      → pressure ``Dirichlet`` (pins the
+      otherwise-singular reference and lets flow leave the domain)
+    * velocity Dirichlet face (inlet/wall) → pressure ``Neumann`` (zeroGradient)
+
+    Returns ``(lo_bc, hi_bc)`` — two length-3 lists of
+    ``blockamr.LinOpBCType`` for the lo/hi faces of each axis, ready for
+    ``MLLinOp.set_domain_bc(lo_bc, hi_bc)``.
+    """
+    bc_type = blockamr.LinOpBCType
+    is_per = geom.is_periodic()
+
+    def face_bc(face_obj):
+        return bc_type.Dirichlet if isinstance(face_obj, NeumannBC) else bc_type.Neumann
+
+    lo_bc = []
+    hi_bc = []
+    for d in range(3):
+        if is_per[d]:
+            lo_bc.append(bc_type.Periodic)
+            hi_bc.append(bc_type.Periodic)
+        else:
+            lo_bc.append(face_bc(u_bc.lo[d]))
+            hi_bc.append(face_bc(u_bc.hi[d]))
+    return lo_bc, hi_bc
 
 
 class VectorBC(BoundaryCondition):
