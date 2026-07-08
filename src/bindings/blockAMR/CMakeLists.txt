@@ -24,7 +24,9 @@ nanobind_add_module(
   fillpatch.cpp
   linop.cpp
   stencil_kernels.cpp
-  tile_layout.cpp)
+  tile_layout.cpp
+  eb2.cpp
+  ebfactory.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
@@ -48,6 +50,8 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     linop.cpp
     stencil_kernels.cpp
     tile_layout.cpp
+    eb2.cpp
+    ebfactory.cpp
     PROPERTIES LANGUAGE CUDA)
 endif()
 

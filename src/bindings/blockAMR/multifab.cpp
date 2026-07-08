@@ -23,164 +23,12 @@
 #include <utility>
 #include <vector>
 
+#include "arenas.hpp"
+
 namespace nb = nanobind;
 
-// Arena wrapping an externally-owned pointer (e.g. from JAX/numpy).
-// The first alloc() of the exact chunk size returns the external pointer;
-// all subsequent allocations (staging buffers, etc.) go to a fallback arena.
-class ExternalArena final : public amrex::Arena
-{
-    void* m_ptr;
-    std::size_t m_size;
-    amrex::Arena* m_fallback;
-    bool m_chunk_served;
-    bool m_device_accessible;
-    bool m_host_accessible;
-
-public:
-    ExternalArena(
-        void* p,
-        std::size_t sz,
-        amrex::Arena* fallback,
-        bool device,
-        bool host
-    )
-        : m_ptr(p),
-          m_size(sz),
-          m_fallback(fallback),
-          m_chunk_served(false),
-          m_device_accessible(device),
-          m_host_accessible(host)
-    {}
-
-    [[nodiscard]] void* alloc(std::size_t sz) override
-    {
-        if (!m_chunk_served && sz == m_size)
-        {
-            m_chunk_served = true;
-            return m_ptr;
-        }
-        return m_fallback->alloc(sz);
-    }
-
-    void free(void* pt) override
-    {
-        if (pt == m_ptr) { return; }
-        m_fallback->free(pt);
-    }
-
-    [[nodiscard]] bool isDeviceAccessible() const override { return m_device_accessible; }
-
-    [[nodiscard]] bool isHostAccessible() const override { return m_host_accessible; }
-
-    [[nodiscard]] bool isManaged() const override
-    {
-        return m_device_accessible && m_host_accessible;
-    }
-
-    [[nodiscard]] bool isDevice() const override
-    {
-        return m_device_accessible && !m_host_accessible;
-    }
-
-    [[nodiscard]] bool isPinned() const override
-    {
-        return m_host_accessible && m_device_accessible;
-    }
-};
-
-// Arena that overallocates a single chunk with padding.
-// Allocates padded_bytes from a base arena but serves valid_bytes to
-// SingleChunkArena on the first alloc().  The extra bytes are zeroed
-// and sit at the end of the buffer, invisible to AMReX.
-// This allows contiguous_array() to return a shape that stays stable
-// across AMR regrids (hysteresis), avoiding JAX recompilation.
-class PaddedArena final : public amrex::Arena
-{
-    void* m_buf;
-    std::size_t m_valid_size;   // what SingleChunkArena will request
-    std::size_t m_padded_size;  // full allocation
-    amrex::Arena* m_base;
-    bool m_chunk_served;
-    bool m_device_accessible;
-    bool m_host_accessible;
-
-public:
-    PaddedArena(
-        amrex::Arena* base,
-        std::size_t valid_bytes,
-        std::size_t padded_bytes,
-        bool device,
-        bool host
-    )
-        : m_buf(nullptr),
-          m_valid_size(valid_bytes),
-          m_padded_size(padded_bytes),
-          m_base(base),
-          m_chunk_served(false),
-          m_device_accessible(device),
-          m_host_accessible(host)
-    {
-        m_buf = base->alloc(padded_bytes);
-        // Zero the padding region
-        if (padded_bytes > valid_bytes)
-        {
-            char* pad_start = static_cast<char*>(m_buf) + valid_bytes;
-            std::size_t pad_n = padded_bytes - valid_bytes;
-            if (device && !host)
-            {
-                // Allocate a host-side zero buffer and copy to device
-                std::vector<char> zeros(pad_n, 0);
-                amrex::Gpu::htod_memcpy(pad_start, zeros.data(), pad_n);
-            }
-            else
-            {
-                std::memset(pad_start, 0, pad_n);
-            }
-        }
-    }
-
-    ~PaddedArena() override
-    {
-        if (m_buf) { m_base->free(m_buf); }
-    }
-
-    [[nodiscard]] void* alloc(std::size_t sz) override
-    {
-        if (!m_chunk_served && sz == m_valid_size)
-        {
-            m_chunk_served = true;
-            return m_buf;
-        }
-        return m_base->alloc(sz);
-    }
-
-    void free(void* pt) override
-    {
-        if (pt == m_buf) { return; } // freed in destructor
-        m_base->free(pt);
-    }
-
-    [[nodiscard]] std::size_t paddedSize() const { return m_padded_size; }
-
-    [[nodiscard]] bool isDeviceAccessible() const override { return m_device_accessible; }
-    [[nodiscard]] bool isHostAccessible() const override { return m_host_accessible; }
-
-    [[nodiscard]] bool isManaged() const override
-    {
-        return m_device_accessible && m_host_accessible;
-    }
-
-    [[nodiscard]] bool isDevice() const override
-    {
-        return m_device_accessible && !m_host_accessible;
-    }
-
-    [[nodiscard]] bool isPinned() const override
-    {
-        return m_host_accessible && m_device_accessible;
-    }
-};
+using neon::bindings::ExternalArena;
+using neon::bindings::PaddedArena;
 
 // Async copy from ndarray into a single FAB's valid region.
 // Returns (staging_ptr, owns_staging).  Caller must call
@@ -642,6 +490,36 @@ void registerMultiFab(nb::module_& m)
             "set_val",
             [](MultiFab& mf, double val) { mf.setVal(val); },
             nb::arg("val")
+        )
+        .def(
+            "plus",
+            // MultiFab::plus(val, nghost): adds val to every cell of every
+            // component in the valid region (and nghost ghost cells).
+            [](MultiFab& mf, double val, int nghost) { mf.plus(val, nghost); },
+            nb::arg("val"),
+            nb::arg("nghost") = 0
+        )
+        .def(
+            "sum",
+            // MultiFab::sum(comp, local): global reduction over the valid
+            // region of one component. local=false → MPI-reduced sum across
+            // all ranks. For NODAL MultiFabs, shared boundary nodes are
+            // double-counted; use ``sum_unique`` instead in that case.
+            [](const MultiFab& mf, int comp, bool local)
+            { return mf.sum(comp, local); },
+            nb::arg("comp") = 0,
+            nb::arg("local") = false
+        )
+        .def(
+            "sum_unique",
+            // MultiFab::sum_unique: like sum() but counts shared boundary
+            // nodes (in nodal MFs) exactly once. This is the right
+            // operator for the compatibility integral ∫f dV in a nodal
+            // Poisson solve.
+            [](const MultiFab& mf, int comp, bool local)
+            { return mf.sum_unique(comp, local); },
+            nb::arg("comp") = 0,
+            nb::arg("local") = false
         )
         .def_prop_ro(
             "is_device",
@@ -1747,11 +1625,25 @@ void registerMultiFab(nb::module_& m)
                 int nc = mf.nComp();
                 int ng = mf.nGrow();
 
-                // Parse bc_types: 6 ints (lo_x, hi_x, lo_y, hi_y, lo_z, hi_z)
-                // 0=skip, 1=dirichlet, 2=neumann
-                GpuArray<int, 6> bc_types;
-                for (int i = 0; i < 6; ++i)
-                    bc_types[i] = nb::cast<int>(bc_types_list[i]);
+                // Parse bc_types: either 6 scalar ints (legacy: same BC
+                // for all components on each face) OR 6 lists of ints
+                // (per-component, lets slip walls mix Dirichlet/Neumann
+                // by component on the same face). 0=skip, 1=Dirichlet,
+                // 2=Neumann. Stored as 6×ncomp.
+                GpuArray<GpuArray<int, AMREX_SPACEDIM>, 6> bc_types{};
+                for (int f = 0; f < 6; ++f)
+                {
+                    nb::handle h = bc_types_list[f];
+                    if (nb::isinstance<nb::list>(h)) {
+                        auto lst = nb::cast<nb::list>(h);
+                        for (int c = 0; c < std::min(nc, (int)nb::len(lst)); ++c)
+                            bc_types[f][c] = nb::cast<int>(lst[c]);
+                    } else {
+                        int t = nb::cast<int>(h);
+                        for (int c = 0; c < nc; ++c)
+                            bc_types[f][c] = t;
+                    }
+                }
 
                 // Parse bc_values: 6 lists of ncomp doubles
                 // bc_values[face][comp] — wall value for dirichlet
@@ -1773,11 +1665,18 @@ void registerMultiFab(nb::module_& m)
 
                     for (int d = 0; d < AMREX_SPACEDIM; ++d)
                     {
+                        // Helper: any component active on this face?
+                        auto face_active = [&](int face_idx) {
+                            for (int c = 0; c < nc; ++c)
+                                if (bc_types[face_idx][c] != 0) return true;
+                            return false;
+                        };
+
                         // Low side
                         if (!is_per[d] && vbx.smallEnd(d) == domain.smallEnd(d)
-                            && bc_types[2 * d] != 0)
+                            && face_active(2 * d))
                         {
-                            int bct = bc_types[2 * d];
+                            auto bct = bc_types[2 * d];
                             auto bv = bc_vals[2 * d];
 
                             for (int g = 0; g < ng; ++g)
@@ -1792,7 +1691,6 @@ void registerMultiFab(nb::module_& m)
                                 if (onDevice)
                                 {
                                     int dir = d;
-                                    int gi = ghost_idx;
                                     int ii = interior_idx;
                                     ParallelFor(
                                         ghost_bx, nc,
@@ -1803,11 +1701,13 @@ void registerMultiFab(nb::module_& m)
                                             else if (dir == 1) jc = ii;
                                             else kc = ii;
                                             Real interior = arr(ic, jc, kc, n);
-                                            if (bct == 1)
+                                            int bct_n = bct[n];
+                                            if (bct_n == 1)
                                                 arr(i, j, k, n) =
                                                     2.0 * bv[n] - interior;
-                                            else
+                                            else if (bct_n == 2)
                                                 arr(i, j, k, n) = interior;
+                                            // bct_n == 0 → leave alone
                                         });
                                 }
                                 else
@@ -1815,6 +1715,9 @@ void registerMultiFab(nb::module_& m)
                                     const auto lo = lbound(ghost_bx);
                                     const auto hi = ubound(ghost_bx);
                                     for (int n = 0; n < nc; ++n)
+                                    {
+                                        int bct_n = bct[n];
+                                        if (bct_n == 0) continue;
                                         for (int k = lo.z; k <= hi.z; ++k)
                                             for (int j = lo.y; j <= hi.y; ++j)
                                                 for (int i = lo.x; i <= hi.x; ++i)
@@ -1824,21 +1727,22 @@ void registerMultiFab(nb::module_& m)
                                                     else if (d == 1) jc = interior_idx;
                                                     else kc = interior_idx;
                                                     Real interior = arr(ic, jc, kc, n);
-                                                    if (bct == 1)
+                                                    if (bct_n == 1)
                                                         arr(i, j, k, n) =
                                                             2.0 * bv[n] - interior;
                                                     else
                                                         arr(i, j, k, n) = interior;
                                                 }
+                                    }
                                 }
                             }
                         }
 
                         // High side
                         if (!is_per[d] && vbx.bigEnd(d) == domain.bigEnd(d)
-                            && bc_types[2 * d + 1] != 0)
+                            && face_active(2 * d + 1))
                         {
-                            int bct = bc_types[2 * d + 1];
+                            auto bct = bc_types[2 * d + 1];
                             auto bv = bc_vals[2 * d + 1];
 
                             for (int g = 0; g < ng; ++g)
@@ -1853,7 +1757,6 @@ void registerMultiFab(nb::module_& m)
                                 if (onDevice)
                                 {
                                     int dir = d;
-                                    int gi = ghost_idx;
                                     int ii = interior_idx;
                                     ParallelFor(
                                         ghost_bx, nc,
@@ -1864,10 +1767,11 @@ void registerMultiFab(nb::module_& m)
                                             else if (dir == 1) jc = ii;
                                             else kc = ii;
                                             Real interior = arr(ic, jc, kc, n);
-                                            if (bct == 1)
+                                            int bct_n = bct[n];
+                                            if (bct_n == 1)
                                                 arr(i, j, k, n) =
                                                     2.0 * bv[n] - interior;
-                                            else
+                                            else if (bct_n == 2)
                                                 arr(i, j, k, n) = interior;
                                         });
                                 }
@@ -1876,6 +1780,9 @@ void registerMultiFab(nb::module_& m)
                                     const auto lo = lbound(ghost_bx);
                                     const auto hi = ubound(ghost_bx);
                                     for (int n = 0; n < nc; ++n)
+                                    {
+                                        int bct_n = bct[n];
+                                        if (bct_n == 0) continue;
                                         for (int k = lo.z; k <= hi.z; ++k)
                                             for (int j = lo.y; j <= hi.y; ++j)
                                                 for (int i = lo.x; i <= hi.x; ++i)
@@ -1885,12 +1792,13 @@ void registerMultiFab(nb::module_& m)
                                                     else if (d == 1) jc = interior_idx;
                                                     else kc = interior_idx;
                                                     Real interior = arr(ic, jc, kc, n);
-                                                    if (bct == 1)
+                                                    if (bct_n == 1)
                                                         arr(i, j, k, n) =
                                                             2.0 * bv[n] - interior;
                                                     else
                                                         arr(i, j, k, n) = interior;
                                                 }
+                                    }
                                 }
                             }
                         }

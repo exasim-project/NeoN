@@ -104,6 +104,7 @@ private:
     {                                                                                              \
         std::cerr << NF_ERROR_MESSAGE(message);                                                    \
         MPI_Abort(MPI_COMM_WORLD, 1);                                                              \
+        __builtin_unreachable();                                                                   \
     }                                                                                              \
     while (false)
 #else
@@ -112,6 +113,7 @@ private:
     {                                                                                              \
         std::cerr << NF_ERROR_MESSAGE(message);                                                    \
         std::exit(1);                                                                              \
+        __builtin_unreachable();                                                                   \
     }                                                                                              \
     while (false)
 #endif

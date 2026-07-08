@@ -132,6 +132,10 @@ class DSLIncompressibleSolver:
             U.fill_patch(lev, t)
 
         # 6. Nodal pressure solve: laplacian(dt, p) = div(U*)
+        # The DSL builds an EB-aware MLNodeLaplacian internally when
+        # mesh.has_eb (see solve.py:466). The non-EB and EB call sites are
+        # therefore identical — the EB factory selection happens one level
+        # down, in solve.py.
         solve(imp.laplacian(dt, p) == exp.div(U), schemes=self._schemes_p)
 
         # 7. Correct U: U^{n+1} = U* - dt * grad(p)
@@ -247,6 +251,137 @@ class DSLIncompressibleSolver:
             results.append(div_val)
         return results
 
+    def _pressure_correct_eb(self, U, phi):
+        """EB pressure correction: MAC-only (no cell-centred update).
+
+        For an incompressible MAC scheme it is sufficient that the
+        *face-centred* flux ``phi`` is divergence-free. ``phi`` is
+        re-projected at step 3 of every ``step()``, so cell-centred
+        ``U`` is allowed to carry a small (per-step) divergence that
+        gets cleaned up the next time we interpolate-and-project.
+
+        We do **not** apply a cell-centred Chorin correction on EB
+        meshes because it requires a conservative cell-centred
+        divergence operator that respects volume fractions. The
+        plain central-difference divergence treats covered cells as
+        having ``U = 0`` (since ``eb_set_covered`` zeros them) and
+        therefore reports a fake source ``≈ U_inf / dx`` at every
+        fluid cell adjacent to the cylinder. The elliptic pressure
+        solve propagates that fake source throughout the domain and
+        the resulting cell-centred ``grad(p)`` at the inflow corrupts
+        the Dirichlet BC by ~2.4e-3 per step.
+
+        The full fix is M7 Option B (volfrac-weighted divergence with
+        area fractions); until that lands, this helper is restricted
+        to a fill_patch — which is bit-equivalent to the stub
+        verified by ``test_eb_bc.py::test_step_xlo_ghost_preserved_*``.
+
+        Two earlier attempted implementations are in ``git log`` for
+        reference: (a) MAC projection + face-to-cell averaging, and
+        (b) cell-centred Chorin with central-difference divergence.
+        Both produced the same 2.4e-3 per-step BC erosion for the
+        same root cause and are intentionally not used.
+        """
+        for lev in range(self.mesh.n_levels()):
+            U.fill_patch(lev, self._t)
+
+    def _ensure_pressure_cache_unused(self, lev):
+        """RESERVED — left here as a starting point for a future
+        conservative cell-centred EB projection. Currently no caller.
+        Build or return cached cell-centred pressure-projection objects."""
+        if (getattr(self, '_pressure_solver', None) is not None
+                and self._pressure_solver.get('lev') == lev):
+            return self._pressure_solver
+
+        mesh = self.mesh
+        geom = mesh.geom(lev)
+        ba = mesh.box_array(lev)
+        dm = mesh.dm(lev)
+        is_per = geom.is_periodic()
+        ebf = mesh.eb_factory(lev) if mesh.has_eb else None
+
+        # Cell-centred Laplacian operator: -div(grad p) = rhs
+        info = blockamr.LPInfo()
+        if mesh.has_eb:
+            lp = blockamr.MLEBABecLaplacian(geom, ba, dm, info, ebf)
+        else:
+            lp = blockamr.MLABecLaplacian(geom, ba, dm, info)
+
+        lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
+                 else blockamr.LinOpBCType.Neumann for d in range(3)]
+        lp.set_domain_bc(lo_bc, lo_bc[:])
+        lp.set_level_bc(0, None)
+        lp.set_scalars(0.0, 1.0)
+
+        # b-coeffs = 1 on all faces
+        b_mfs = []
+        for d in range(3):
+            ba_face = blockamr.BoxArray(ba)
+            ba_face.surrounding_nodes(d)
+            if ebf is not None:
+                bm = blockamr.make_eb_multifab(ba_face, dm, 1, 0, factory=ebf)
+            else:
+                bm = blockamr.MultiFab(ba_face, dm, 1, 0)
+            bm.set_val(1.0)
+            ba_face.enclosed_cells(d)
+            b_mfs.append(bm)
+        lp.set_b_coeffs(0, b_mfs[0], b_mfs[1], b_mfs[2])
+
+        if mesh.has_eb:
+            # Wall on the EB surface — homogeneous Neumann (no normal flow)
+            # is the physical pressure BC at a no-slip wall. The linop
+            # exposes it via setEBHomogDirichlet on the *velocity*, but
+            # for the pressure projection the equivalent is:
+            lp.set_eb_homog_dirichlet(0, 1.0)
+
+        # Scratch fields
+        if ebf is not None:
+            p_mf = blockamr.make_eb_multifab(ba, dm, 1, 1, factory=ebf)
+            rhs_mf = blockamr.make_eb_multifab(ba, dm, 1, 0, factory=ebf)
+        else:
+            p_mf = blockamr.MultiFab(ba, dm, 1, 1)
+            rhs_mf = blockamr.MultiFab(ba, dm, 1, 0)
+
+        flux_mfs = {}
+        for d, name in enumerate("xyz"):
+            ba_face = blockamr.BoxArray(ba)
+            ba_face.surrounding_nodes(d)
+            if ebf is not None:
+                fm = blockamr.make_eb_multifab(ba_face, dm, 1, 0, factory=ebf)
+            else:
+                fm = blockamr.MultiFab(ba_face, dm, 1, 0)
+            ba_face.enclosed_cells(d)
+            flux_mfs[f'flux_{name}'] = fm
+
+        mlmg = blockamr.MLMG(lp)
+        mlmg.set_verbose(0)
+        mlmg.set_max_iter(200)
+        mlmg.set_bottom_verbose(0)
+
+        self._pressure_solver = {
+            'lp': lp,
+            'mlmg': mlmg,
+            'p_mf': p_mf,
+            'rhs_mf': rhs_mf,
+            'lev': lev,
+            'b_mfs': b_mfs,
+            **flux_mfs,
+        }
+        return self._pressure_solver
+
+    def _make_abec_linop(self, lev, geom, ba, dm):
+        """Return an MLABec-flavoured linop, EB-aware iff the mesh has EB.
+
+        Both ``MLABecLaplacian`` and ``MLEBABecLaplacian`` share the same
+        downstream API (``set_scalars``, ``set_b_coeffs``, ``set_domain_bc``,
+        ``set_level_bc``) so the rest of ``_ensure_mac_cache`` is identical.
+        """
+        info = blockamr.LPInfo()
+        if self.mesh.has_eb:
+            ebf = self.mesh.eb_factory(lev)
+            return blockamr.MLEBABecLaplacian(geom, ba, dm, info, ebf)
+        return blockamr.MLABecLaplacian(geom, ba, dm, info)
+
     def _ensure_mac_cache(self, lev):
         """Build or return cached MAC solver objects for one level."""
         if self._mac_solver is not None and self._mac_solver.get('lev') == lev:
@@ -259,41 +394,61 @@ class DSLIncompressibleSolver:
         dm = mesh.dm(lev)
         is_per = geom.is_periodic()
 
-        # MLABecLaplacian: (alpha*a - beta*div(b*grad)) phi
-        # For MAC: alpha=0, beta=1, b=1 → -div(grad(phi)) = RHS
-        lp = blockamr.MLABecLaplacian(geom, ba, dm, blockamr.LPInfo())
+        # MLABecLaplacian or MLEBABecLaplacian — same equation, same downstream
+        # API; the only branch is constructor + EB Dirichlet wall on the body.
+        lp = self._make_abec_linop(lev, geom, ba, dm)
         lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
                  else blockamr.LinOpBCType.Neumann for d in range(3)]
         lp.set_domain_bc(lo_bc, lo_bc[:])
         lp.set_level_bc(0, None)
         lp.set_scalars(0.0, 1.0)  # alpha=0, beta=1
 
-        # b-coefficients = 1 on all faces
+        # b-coefficients = 1 on all faces. Allocate via the EB factory when
+        # the mesh has EB so face MultiFabs carry the matching factory.
+        ebf = mesh.eb_factory(lev) if mesh.has_eb else None
         b_mfs = []
         for d in range(3):
             ba_copy = blockamr.BoxArray(ba)
             ba_copy.surrounding_nodes(d)
-            b_mf = blockamr.MultiFab(ba_copy, dm, 1, 0)
+            if ebf is not None:
+                b_mf = blockamr.make_eb_multifab(ba_copy, dm, 1, 0, factory=ebf)
+            else:
+                b_mf = blockamr.MultiFab(ba_copy, dm, 1, 0)
             b_mf.set_val(1.0)
             ba_copy.enclosed_cells(d)
             b_mfs.append(b_mf)
         lp.set_b_coeffs(0, b_mfs[0], b_mfs[1], b_mfs[2])
+
+        # Wall on the EB surface — homogeneous Neumann (no-flux) is the
+        # physically correct BC for a MAC projection against a no-slip wall
+        # because the normal velocity is zero. AMReX expresses Neumann as
+        # the default; the explicit Dirichlet call sets phi=0 which is also
+        # consistent for an incompressible projection (gauge fix).
+        if mesh.has_eb:
+            lp.set_eb_homog_dirichlet(0, 1.0)
 
         mlmg = blockamr.MLMG(lp)
         mlmg.set_verbose(0)
         mlmg.set_max_iter(200)
         mlmg.set_bottom_verbose(0)
 
-        # Scratch MultiFabs
-        phi_mf = blockamr.MultiFab(ba, dm, 1, 1)
-        rhs_mf = blockamr.MultiFab(ba, dm, 1, 0)
+        # Scratch MultiFabs — allocated via EB factory when mesh has EB
+        if ebf is not None:
+            phi_mf = blockamr.make_eb_multifab(ba, dm, 1, 1, factory=ebf)
+            rhs_mf = blockamr.make_eb_multifab(ba, dm, 1, 0, factory=ebf)
+        else:
+            phi_mf = blockamr.MultiFab(ba, dm, 1, 1)
+            rhs_mf = blockamr.MultiFab(ba, dm, 1, 0)
 
         # Face-centred flux MultiFabs for getFluxes output
         flux_mfs = {}
         for d, name in enumerate("xyz"):
             ba_face = blockamr.BoxArray(ba)
             ba_face.surrounding_nodes(d)
-            flux_mf = blockamr.MultiFab(ba_face, dm, 1, 0)
+            if ebf is not None:
+                flux_mf = blockamr.make_eb_multifab(ba_face, dm, 1, 0, factory=ebf)
+            else:
+                flux_mf = blockamr.MultiFab(ba_face, dm, 1, 0)
             ba_face.enclosed_cells(d)
             flux_mfs[f'flux_{name}'] = flux_mf
 

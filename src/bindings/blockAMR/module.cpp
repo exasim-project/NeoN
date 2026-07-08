@@ -24,4 +24,6 @@ NB_MODULE(_blockamr, m)
     registerLinOp(m);
     registerStencilKernels(m);
     registerTileLayout(m);
+    registerEB2(m);
+    registerEBFactory(m);
 }

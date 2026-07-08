@@ -88,6 +88,11 @@ class CellField:
             self._fill_patch(self.mesh, self, lev, time)
         else:
             self.mf[lev].fill_boundary(self.mesh.geom(lev))
+        # EB: ensure covered cells stay zero after any fill (boundary fill,
+        # custom fillpatch, etc.). This is the single conditional that
+        # distinguishes EB CellFields from non-EB ones.
+        if self.mesh.has_eb:
+            blockamr.eb_set_covered(self.mf[lev], 0.0)
 
     def build_layout(self, lev, bf=8):
         """Build TileLayout for this level. Call after regrid or first use."""
@@ -108,7 +113,24 @@ class CellField:
         self.mf[lev].copy_from_flat(flat_array)
 
     def _make_padded_mf(self, lev, ba, dm):
-        """Create a MultiFab with hysteresis-padded contiguous buffer."""
+        """Create a MultiFab for one level.
+
+        For EB meshes the single-chunk PaddedArena allocator is incompatible
+        with EBFArrayBoxFactory (each EBFArrayBox carries per-fab metadata),
+        so we fall through to a per-fab allocation via the EB factory and
+        forfeit the JAX zero-copy contiguous-buffer view at this level.
+        """
+        if self.mesh.has_eb:
+            ebf = self.mesh.eb_factory(lev)
+            required = blockamr.MultiFab.required_buffer_size(
+                ba, dm, self.ncomp, self.ngrow)
+            cap = _padded_capacity(required, self._padded_cap[lev])
+            self._padded_cap[lev] = cap
+            mf = blockamr.make_eb_multifab(
+                ba, dm, self.ncomp, self.ngrow,
+                memory=self._memory, padded_n_elems=cap, factory=ebf)
+            mf.set_val(0.0)
+            return mf
         required = blockamr.MultiFab.required_buffer_size(
             ba, dm, self.ncomp, self.ngrow)
         cap = _padded_capacity(required, self._padded_cap[lev])

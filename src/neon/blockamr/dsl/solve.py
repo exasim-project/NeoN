@@ -18,6 +18,24 @@ from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
 from ..schemes.schemes_dict import SchemesDict
 
 
+def _fix_solvability_eb(lp, rhs_mf):
+    """Apply AMReX's volume-fraction-weighted solvability projection.
+
+    Wraps the bound ``MLLinOp.fix_solvability`` which calls
+    ``getSolvabilityOffset`` + ``fixSolvabilityByOffset`` on the linop.
+    For ``MLNodeLaplacian`` + EB the offset is a volfrac-weighted
+    integral, not a simple mean — naive ``rhs - sum/n`` does not work
+    because the cut-cell volume fractions break the unweighted average.
+
+    AMReX's automatic ``MLMG::makeSolvable`` is gated on
+    ``isSingular()``, which returns false in the EB case
+    (``MLNodeLinOp.cpp:295``: ``m_is_bottom_singular`` requires
+    ``m_domain_covered[0]``, which is false whenever an EB factory
+    shrinks the fluid region). We invoke the same machinery manually.
+    """
+    lp.fix_solvability(rhs_mf)
+
+
 def forward_euler(spatial_kernels, dt_over_coeff):
     """Build a fused forward Euler kernel: phi_new = phi - dt * sum(spatial_kernels)."""
     return FusedEulerKernel(
@@ -340,6 +358,12 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
             phi_flat, layout.tiles, cvs, *k_leaves)
         # Extract valid cells only — ghost cells must not be overwritten
         results = _extract_valid_boxes(out_flat, meta, ng, ncomp=1)
+        # M7: volfrac mask. Multiplies operator output by per-cell volfrac
+        # so covered cells get 0 and cut cells get a reduced (first-order)
+        # contribution. No-op when mesh.has_eb is False.
+        vf_per_box = cell_field.mesh.vol_frac(lev)
+        if vf_per_box is not None:
+            results = [r * vf for r, vf in zip(results, vf_per_box)]
         target_mf.copy_arrays(results)
     else:
         # For ncomp>1: run the kernel once per component.
@@ -391,6 +415,10 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
         for bi in range(n_boxes):
             results.append(jnp.stack(
                 [comp_valid[c][bi] for c in range(ncomp)], axis=-1))
+        # M7: volfrac mask (broadcast over component axis)
+        vf_per_box = cell_field.mesh.vol_frac(lev)
+        if vf_per_box is not None:
+            results = [r * vf[..., None] for r, vf in zip(results, vf_per_box)]
         target_mf.copy_arrays(results)
 
 
@@ -428,7 +456,14 @@ def _solve_implicit(eqn, schemes=None):
         if s_old['n_levels'] != n_levels or s_old['sigma'] != sigma:
             needs_rebuild = True
 
-    if needs_rebuild:
+    # IAMReX rebuilds Hydro::NodalProjector every call. We cache the linop
+    # for non-EB meshes (cheap reuse, no degenerate behaviour) but for EB
+    # the cached MLMG multigrid hierarchy can carry stale state across
+    # steps when the box decomposition + EB factory interact at coarse
+    # levels — symptom: step 1 converges (1316 iters), step 2 plateaus at
+    # resid/bnorm ≈ 1.5e-4 and never reaches tolerance. Rebuilding fresh
+    # gives a clean hierarchy each step at the cost of a few ms per call.
+    if needs_rebuild or mesh.has_eb:
         geoms = [mesh.geom(lev) for lev in range(n_levels)]
         bas = [mesh.box_array(lev) for lev in range(n_levels)]
         dms = [mesh.dm(lev) for lev in range(n_levels)]
@@ -454,20 +489,44 @@ def _solve_implicit(eqn, schemes=None):
             fluxes_mfs.append(blockamr.MultiFab(ba_lev, dm_lev, 3, 0))
 
         is_per = geoms[0].is_periodic()
-        if n_levels == 1:
-            lp = blockamr.MLNodeLaplacian(geoms[0], bas[0], dms[0],
-                                          blockamr.LPInfo(), sigma)
+        # If the mesh is EB-aware, build an EB-aware MLNodeLaplacian so the
+        # nodal projection knows about volume / area fractions on the cylinder
+        # (or any other implicit-function geometry). The non-EB constructor
+        # is identical otherwise — same setSigma, compDivergence, getFluxes
+        # interface — so the rest of this function does not branch.
+        info = blockamr.LPInfo()
+        if mesh.has_eb:
+            # AMReX MLNodeLaplacian + multi-box + EB has a known issue
+            # where the singular all-Neumann coarse problem cannot be
+            # solved when one fab carries cut cells and another doesn't.
+            # Limit coarsening so the smoother handles the bulk of the
+            # work on a level the bottom solver can still cope with.
+            info.set_max_coarsening_level(2)
+            ebfs = [mesh.eb_factory(lev) for lev in range(n_levels)]
+            if n_levels == 1:
+                lp = blockamr.MLNodeLaplacian(
+                    geoms[0], bas[0], dms[0], info,
+                    ebfs[0], sigma)
+            else:
+                lp = blockamr.MLNodeLaplacian(
+                    geoms, bas, dms, info,
+                    ebfs, sigma)
         else:
-            lp = blockamr.MLNodeLaplacian(geoms, bas, dms,
-                                          blockamr.LPInfo(), sigma)
+            if n_levels == 1:
+                lp = blockamr.MLNodeLaplacian(geoms[0], bas[0], dms[0],
+                                              info, sigma)
+            else:
+                lp = blockamr.MLNodeLaplacian(geoms, bas, dms,
+                                              info, sigma)
 
         lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
                  else blockamr.LinOpBCType.Neumann for d in range(3)]
         lp.set_domain_bc(lo_bc, lo_bc[:])
 
+        mlmg = blockamr.MLMG(lp)
         p_field._imp_solver = {
             'lp': lp,
-            'mlmg': blockamr.MLMG(lp),
+            'mlmg': mlmg,
             'phi_mfs': phi_mfs,
             'rhs_mfs': rhs_mfs,
             'vel3_mfs': vel3_mfs,
@@ -494,7 +553,25 @@ def _solve_implicit(eqn, schemes=None):
     else:
         s['lp'].comp_divergence(s['rhs_mfs'], s['vel3_mfs'])
 
-    # 3. MLMG.solve (warm-start from previous phi)
+    # 2b. EB compatibility projection.
+    # AMReX MLNodeLaplacian's `isSingular()` returns false when an EB
+    # geometry is present (because m_domain_covered[0] is false), so
+    # MLMG never enforces the singular-solvable mean-zero condition on
+    # the rhs. With multi-box decompositions the per-fab compDivergence
+    # leaves a non-zero net mass source that the all-Neumann solve
+    # cannot remove, and the residual plateaus at ~bnorm * 1.5e-4.
+    # Manually project the rhs to mean-zero before solving.
+    if mesh.has_eb:
+        # Apply AMReX's volume-fraction-weighted solvability projection
+        # to make the rhs compatible with the singular all-Neumann
+        # operator. Without this the cell-centred velocity correction
+        # at fab interfaces leaves a non-removable null-space mode in
+        # the rhs and MLMG plateaus at resid/bnorm ≈ 1.5e-4.
+        for lev in range(n_levels):
+            _fix_solvability_eb(s['lp'], s['rhs_mfs'][lev])
+
+    # 3. MLMG.solve (warm-start from previous phi). For EB meshes the
+    # linop+MLMG were rebuilt above so phi_mfs is already zero.
     if n_levels == 1:
         s['mlmg'].solve(s['phi_mfs'][0], s['rhs_mfs'][0], rtol, atol)
     else:

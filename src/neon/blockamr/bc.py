@@ -91,8 +91,13 @@ def fill_ghost_cells(mf, geom, bc):
 def _bc_to_native_spec(bc, geom):
     """Convert a BoundaryCondition to (bc_types, bc_values) for the C++ binding.
 
-    bc_types: [lo_x, hi_x, lo_y, hi_y, lo_z, hi_z]  — 0=skip, 1=dirichlet, 2=neumann
-    bc_values: [[vals_lo_x], [vals_hi_x], ...]  — per-component wall values
+    bc_types: list of length 6, one entry per face in the order
+        [lo_x, hi_x, lo_y, hi_y, lo_z, hi_z]. Each entry is either:
+            * a single int (legacy: same code for all components), or
+            * a list of 3 ints (per-component code, used by SlipWallBC).
+        Codes: 0=skip (leave alone), 1=Dirichlet, 2=Neumann.
+    bc_values: 6 lists of per-component wall values (used only for
+        Dirichlet components).
     """
     is_per = geom.is_periodic()
     bc_types = []
@@ -103,16 +108,24 @@ def _bc_to_native_spec(bc, geom):
             bc_types.extend([0, 0])
             bc_values.extend([[0.0], [0.0]])
         else:
-            bc_types.append(_bc_type_code(bc.lo[d]))
+            bc_types.append(_bc_type_code(bc.lo[d], normal_dir=d))
             bc_values.append(_bc_wall_values(bc.lo[d]))
-            bc_types.append(_bc_type_code(bc.hi[d]))
+            bc_types.append(_bc_type_code(bc.hi[d], normal_dir=d))
             bc_values.append(_bc_wall_values(bc.hi[d]))
 
     return bc_types, bc_values
 
 
-def _bc_type_code(bc_obj):
-    """Return 1 for Dirichlet, 2 for Neumann."""
+def _bc_type_code(bc_obj, normal_dir=0):
+    """Return the per-face BC code(s) the C++ binding accepts.
+
+    For most BC types this is a single int (1=Dirichlet, 2=Neumann, 0=skip).
+    For ``SlipWallBC`` this is a *list* of 3 ints — Dirichlet 0 on the
+    component normal to the wall (so U_n = 0 → no penetration), Neumann
+    on the two tangential components.
+    """
+    if isinstance(bc_obj, SlipWallBC):
+        return [2 if c != normal_dir else 1 for c in range(3)]
     if isinstance(bc_obj, (DirichletBC, VectorDirichletBC)):
         return 1
     elif isinstance(bc_obj, NeumannBC):
@@ -122,11 +135,35 @@ def _bc_type_code(bc_obj):
 
 def _bc_wall_values(bc_obj):
     """Return list of per-component wall values."""
+    if isinstance(bc_obj, SlipWallBC):
+        # Normal component is Dirichlet 0; tangential are Neumann (value
+        # ignored) — uniform [0,0,0] is the right encoding.
+        return [0.0, 0.0, 0.0]
     if isinstance(bc_obj, VectorDirichletBC):
         return list(bc_obj.vec)
     elif isinstance(bc_obj, DirichletBC):
         return [bc_obj.value]
     return [0.0]
+
+
+class SlipWallBC:
+    """Free-slip / symmetry wall: zero normal velocity, zero gradient
+    on tangential components.
+
+    The "normal" direction is determined by which face this BC is
+    attached to (xlo/xhi → x is normal, ylo/yhi → y is normal, etc.),
+    so the same ``SlipWallBC()`` instance can be reused on any face.
+    The translation to per-component Dirichlet/Neumann codes happens
+    in ``_bc_type_code`` based on the face's normal direction.
+
+    cf. OpenFOAM ``slip``.
+    """
+    pass
+
+
+def slipWall():
+    """Free-slip wall: zero normal velocity, zero gradient on tangential."""
+    return SlipWallBC()
 
 
 class VectorDirichletBC:

@@ -7,12 +7,19 @@
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/optional.h>
 
+#include <AMReX_Config.H>
 #include <AMReX_LO_BCTYPES.H>
 #include <AMReX_MLLinOp.H>
 #include <AMReX_MLPoisson.H>
 #include <AMReX_MLABecLaplacian.H>
 #include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_MLMG.H>
+
+#ifdef AMREX_USE_EB
+#include <AMReX_MLEBABecLap.H>
+#include <AMReX_MLEBTensorOp.H>
+#include <AMReX_EBFabFactory.H>
+#endif
 
 namespace nb = nanobind;
 
@@ -63,7 +70,25 @@ void registerLinOp(nb::module_& m)
         );
 
     // --- Base class (opaque, needed for MLMG to accept derived types) ---
-    nb::class_<MLLinOp>(m, "MLLinOp");
+    nb::class_<MLLinOp>(m, "MLLinOp")
+        .def(
+            "fix_solvability",
+            // Compute the AMReX-internal solvability offset for the
+            // singular all-Neumann case and apply it to the rhs in
+            // place. Wraps ``getSolvabilityOffset`` +
+            // ``fixSolvabilityByOffset``. For MLNodeLaplacian + EB
+            // this is a volume-fraction-weighted projection that the
+            // automatic ``MLMG::makeSolvable`` skips because
+            // ``isSingular()`` returns false on an EB factory (see
+            // ``MLNodeLinOp.cpp:295``: m_is_bottom_singular gates on
+            // m_domain_covered which is false with EB).
+            [](MLLinOp& lp, MultiFab& rhs)
+            {
+                auto offset = lp.getSolvabilityOffset(0, 0, rhs);
+                lp.fixSolvabilityByOffset(0, 0, rhs, offset);
+            },
+            nb::arg("rhs")
+        );
 
     // Helper: convert Python array of LinOpBCType to AMReX Array
     auto setDomainBC = [](MLLinOp& lp,
@@ -150,6 +175,168 @@ void registerLinOp(nb::module_& m)
             nb::arg("bz")
         );
 
+#ifdef AMREX_USE_EB
+    // --- MLEBABecLaplacian: same equation as MLABecLap but EB-aware ---
+    nb::class_<MLEBABecLap, MLLinOp>(m, "MLEBABecLaplacian")
+        .def(
+            "__init__",
+            [](MLEBABecLap* self,
+               const Geometry& geom,
+               const BoxArray& ba,
+               const DistributionMapping& dm,
+               const LPInfo& info,
+               const EBFArrayBoxFactory& factory)
+            {
+                Vector<EBFArrayBoxFactory const*> facs{&factory};
+                new (self) MLEBABecLap({geom}, {ba}, {dm}, info, facs);
+            },
+            nb::arg("geom"),
+            nb::arg("ba"),
+            nb::arg("dm"),
+            nb::arg("info"),
+            nb::arg("factory"),
+            nb::keep_alive<1, 6>()
+        )
+        .def("set_domain_bc", setDomainBC, nb::arg("lo_bc"), nb::arg("hi_bc"))
+        .def(
+            "set_level_bc",
+            [](MLEBABecLap& lp, int lev, MultiFab* levdata) { lp.setLevelBC(lev, levdata); },
+            nb::arg("lev"),
+            nb::arg("levdata") = nullptr
+        )
+        .def(
+            "set_scalars",
+            [](MLEBABecLap& lp, double a, double b) { lp.setScalars(a, b); },
+            nb::arg("a"),
+            nb::arg("b")
+        )
+        .def(
+            "set_a_coeffs",
+            [](MLEBABecLap& lp, int lev, const MultiFab& alpha) { lp.setACoeffs(lev, alpha); },
+            nb::arg("lev"),
+            nb::arg("alpha")
+        )
+        .def(
+            "set_a_coeffs",
+            [](MLEBABecLap& lp, int lev, Real alpha) { lp.setACoeffs(lev, alpha); },
+            nb::arg("lev"),
+            nb::arg("alpha")
+        )
+        .def(
+            "set_b_coeffs",
+            [](MLEBABecLap& lp, int lev, const MultiFab& bx, const MultiFab& by, const MultiFab& bz)
+            {
+                Array<MultiFab const*, AMREX_SPACEDIM> beta = {AMREX_D_DECL(&bx, &by, &bz)};
+                lp.setBCoeffs(lev, beta);
+            },
+            nb::arg("lev"),
+            nb::arg("bx"),
+            nb::arg("by"),
+            nb::arg("bz")
+        )
+        .def(
+            "set_b_coeffs",
+            [](MLEBABecLap& lp, int lev, Real beta) { lp.setBCoeffs(lev, beta); },
+            nb::arg("lev"),
+            nb::arg("beta")
+        )
+        .def(
+            "set_eb_homog_dirichlet",
+            [](MLEBABecLap& lp, int lev, Real beta) { lp.setEBHomogDirichlet(lev, beta); },
+            nb::arg("lev"),
+            nb::arg("beta")
+        )
+        .def(
+            "set_eb_homog_dirichlet",
+            [](MLEBABecLap& lp, int lev, const MultiFab& beta)
+            { lp.setEBHomogDirichlet(lev, beta); },
+            nb::arg("lev"),
+            nb::arg("beta")
+        )
+        .def(
+            "set_eb_dirichlet",
+            [](MLEBABecLap& lp, int lev, const MultiFab& phi, Real beta)
+            { lp.setEBDirichlet(lev, phi, beta); },
+            nb::arg("lev"),
+            nb::arg("phi"),
+            nb::arg("beta")
+        )
+        .def(
+            "set_eb_dirichlet",
+            [](MLEBABecLap& lp, int lev, const MultiFab& phi, const MultiFab& beta)
+            { lp.setEBDirichlet(lev, phi, beta); },
+            nb::arg("lev"),
+            nb::arg("phi"),
+            nb::arg("beta")
+        );
+
+    // --- MLEBTensorOp: viscous-stress tensor operator with EB ---
+    // Inherits from MLEBABecLap, so it slots in under MLLinOp via MLEBABecLap
+    // (multi-level inheritance is fine for nanobind dispatch).
+    nb::class_<MLEBTensorOp, MLEBABecLap>(m, "MLEBTensorOp")
+        .def(
+            "__init__",
+            [](MLEBTensorOp* self,
+               const Geometry& geom,
+               const BoxArray& ba,
+               const DistributionMapping& dm,
+               const LPInfo& info,
+               const EBFArrayBoxFactory& factory)
+            {
+                Vector<EBFArrayBoxFactory const*> facs{&factory};
+                new (self) MLEBTensorOp({geom}, {ba}, {dm}, info, facs);
+            },
+            nb::arg("geom"),
+            nb::arg("ba"),
+            nb::arg("dm"),
+            nb::arg("info"),
+            nb::arg("factory"),
+            nb::keep_alive<1, 6>()
+        )
+        .def(
+            "set_shear_viscosity",
+            [](MLEBTensorOp& lp, int lev, Real eta) { lp.setShearViscosity(lev, eta); },
+            nb::arg("lev"),
+            nb::arg("eta")
+        )
+        .def(
+            "set_shear_viscosity",
+            [](MLEBTensorOp& lp,
+               int lev,
+               const MultiFab& ex,
+               const MultiFab& ey,
+               const MultiFab& ez,
+               int loc)
+            {
+                Array<MultiFab const*, AMREX_SPACEDIM> eta{AMREX_D_DECL(&ex, &ey, &ez)};
+                lp.setShearViscosity(lev, eta, static_cast<MLLinOp::Location>(loc));
+            },
+            nb::arg("lev"),
+            nb::arg("ex"),
+            nb::arg("ey"),
+            nb::arg("ez"),
+            nb::arg("loc") = static_cast<int>(MLLinOp::Location::FaceCenter)
+        )
+        .def(
+            "set_bulk_viscosity",
+            [](MLEBTensorOp& lp, int lev, Real kappa) { lp.setBulkViscosity(lev, kappa); },
+            nb::arg("lev"),
+            nb::arg("kappa")
+        )
+        .def(
+            "set_eb_shear_viscosity",
+            [](MLEBTensorOp& lp, int lev, Real eta) { lp.setEBShearViscosity(lev, eta); },
+            nb::arg("lev"),
+            nb::arg("eta")
+        )
+        .def(
+            "set_eb_bulk_viscosity",
+            [](MLEBTensorOp& lp, int lev, Real kappa) { lp.setEBBulkViscosity(lev, kappa); },
+            nb::arg("lev"),
+            nb::arg("kappa")
+        );
+#endif
+
     // --- MLNodeLaplacian: del dot (sigma * grad phi) at nodes ---
     nb::class_<MLNodeLaplacian, MLLinOp>(m, "MLNodeLaplacian")
         .def(
@@ -199,6 +386,70 @@ void registerLinOp(nb::module_& m)
             nb::arg("info") = LPInfo(),
             nb::arg("const_sigma") = Real(0.0)
         )
+#ifdef AMREX_USE_EB
+        // --- EB-aware constructors. Single level. ---
+        // Same MLNodeLaplacian class, just constructed with an EB factory
+        // so the operator knows about volume / area fractions internally.
+        // This is the path IAMReX uses (their NavierStokesBase wires
+        // EBFArrayBoxFactory through to MLNodeLaplacian via amrex-hydro's
+        // NodalProjector, which is itself only a thin wrapper around the
+        // same constructor we expose here).
+        .def(
+            "__init__",
+            [](MLNodeLaplacian* self,
+               const Geometry& geom,
+               const BoxArray& ba,
+               const DistributionMapping& dm,
+               const LPInfo& info,
+               const EBFArrayBoxFactory& factory,
+               Real const_sigma)
+            {
+                Vector<EBFArrayBoxFactory const*> facs{&factory};
+                new (self) MLNodeLaplacian({geom}, {ba}, {dm}, info, facs, const_sigma);
+            },
+            nb::arg("geom"),
+            nb::arg("ba"),
+            nb::arg("dm"),
+            nb::arg("info"),
+            nb::arg("factory"),
+            nb::arg("const_sigma") = Real(0.0),
+            nb::keep_alive<1, 6>()
+        )
+        .def(
+            "__init__",
+            [](MLNodeLaplacian* self,
+               nb::list geoms_py, nb::list bas_py, nb::list dms_py,
+               const LPInfo& info,
+               nb::list factories_py,
+               Real const_sigma)
+            {
+                auto n = nb::len(geoms_py);
+                Vector<Geometry> geoms;
+                Vector<BoxArray> bas;
+                Vector<DistributionMapping> dms;
+                Vector<EBFArrayBoxFactory const*> facs;
+                geoms.reserve(n);
+                bas.reserve(n);
+                dms.reserve(n);
+                facs.reserve(n);
+                for (size_t i = 0; i < n; ++i)
+                {
+                    geoms.push_back(nb::cast<Geometry>(geoms_py[i]));
+                    bas.push_back(nb::cast<BoxArray>(bas_py[i]));
+                    dms.push_back(nb::cast<DistributionMapping>(dms_py[i]));
+                    facs.push_back(&nb::cast<EBFArrayBoxFactory const&>(factories_py[i]));
+                }
+                new (self) MLNodeLaplacian(geoms, bas, dms, info, facs, const_sigma);
+            },
+            nb::arg("geoms"),
+            nb::arg("bas"),
+            nb::arg("dms"),
+            nb::arg("info"),
+            nb::arg("factories"),
+            nb::arg("const_sigma") = Real(0.0),
+            nb::keep_alive<1, 6>()
+        )
+#endif
         .def("set_domain_bc", setDomainBC, nb::arg("lo_bc"), nb::arg("hi_bc"))
         .def(
             "set_sigma",
@@ -246,6 +497,23 @@ void registerLinOp(nb::module_& m)
         .def("set_bottom_verbose", &MLMG::setBottomVerbose, nb::arg("v"))
         .def("set_bottom_max_iter", &MLMG::setBottomMaxIter, nb::arg("n"))
         .def("set_bottom_tolerance", &MLMG::setBottomTolerance, nb::arg("t"))
+        .def(
+            "set_bottom_solver",
+            [](MLMG& mlmg, const std::string& which)
+            {
+                BottomSolver bs = BottomSolver::Default;
+                if (which == "default")  bs = BottomSolver::Default;
+                else if (which == "smoother") bs = BottomSolver::smoother;
+                else if (which == "bicgstab") bs = BottomSolver::bicgstab;
+                else if (which == "cg")       bs = BottomSolver::cg;
+                else if (which == "bicgcg")   bs = BottomSolver::bicgcg;
+                else if (which == "cgbicg")   bs = BottomSolver::cgbicg;
+                else throw std::invalid_argument(
+                    "unknown bottom solver: " + which);
+                mlmg.setBottomSolver(bs);
+            },
+            nb::arg("which")
+        )
         .def(
             "solve",
             [](MLMG& mlmg, MultiFab& sol, const MultiFab& rhs, double rtol, double atol)
