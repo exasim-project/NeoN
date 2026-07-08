@@ -23,7 +23,6 @@ void registerSurfaceInterpolation(nanobind::module_& m);
 void registerInputs(nanobind::module_& m);
 void registerCoNum(nanobind::module_& m);
 void registerReconstruct(nanobind::module_& m);
-void registerMules(nanobind::module_& m);
 void registerInitialization(nanobind::module_& m);
 void registerLinearAlgebra(nanobind::module_& m);
 void registerDSL(nanobind::module_& m);
