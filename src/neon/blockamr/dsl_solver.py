@@ -49,7 +49,7 @@ class DSLIncompressibleSolver:
     """
 
     def __init__(self, mesh, nu, dt, U_bc=None, schemes_p=None, fill_patch=None,
-                 div_scheme=None, cfl=None):
+                 div_scheme=None, cfl=None, eb=None):
         if U_bc is not None and fill_patch is not None:
             raise ValueError("Specify either U_bc or fill_patch, not both.")
         if U_bc is None and fill_patch is None:
@@ -79,6 +79,32 @@ class DSLIncompressibleSolver:
         self.p = CellField(mesh, ncomp=1, ngrow=0, name="p")
         self.phi = FaceField(mesh, ncomp=1, ngrow=ngrow, name="phi")
 
+        # Per-face pressure BC for the MAC + nodal Poisson solves. Derived from
+        # the velocity BC (outflow face → Dirichlet p, inlet/wall → Neumann p);
+        # None → the periodic/all-Neumann default preserved below. Stashed on the
+        # pressure field so the free-function nodal solve (dsl.solve) can read it.
+        if U_bc is not None:
+            from .bc import pressure_domain_bc
+            self._p_domain_bc = pressure_domain_bc(U_bc, mesh.geom(0))
+        else:
+            self._p_domain_bc = None
+        self.p.pressure_bc = self._p_domain_bc
+        # A Dirichlet pressure face (outflow) reads its boundary value from the
+        # solution's ghost cells, so those must be zeroed before each Poisson
+        # solve (set_val touches only valid cells). Pure Neumann/periodic solves
+        # never read ghosts, so this is skipped there.
+        self._p_has_dirichlet = self._p_domain_bc is not None and any(
+            bc == blockamr.LinOpBCType.Dirichlet
+            for side in self._p_domain_bc for bc in side
+        )
+
+        # Immersed body (direct-forcing IBM). ``eb`` is a dict
+        # {center:[x,y,z], radius:float, axis:int} or None. The solid cell mask
+        # is built once from the mesh geometry; ``step()`` resets U to the wall
+        # value in solid cells so the projection deflects flow around the body.
+        self._eb = eb
+        self._solid_masks = self._build_solid_masks() if eb is not None else None
+
         self._nu_func = lambda x, y, z, t: nu * jnp.ones_like(x)
         self._schemes_p = schemes_p or {
             "rtol": 1e-10, "atol": 1e-12, "max_iter": 200, "verbose": 0,
@@ -88,6 +114,66 @@ class DSLIncompressibleSolver:
     @property
     def time(self):
         return self._t
+
+    # ------------------------------------------------------------------
+    # Immersed body (direct-forcing IBM)
+    # ------------------------------------------------------------------
+
+    def _build_solid_masks(self):
+        """Per-(level, box) boolean masks: True in valid cells inside the body.
+
+        A cell is solid when its centre's distance from the body axis (measured
+        in the plane perpendicular to ``eb.axis``) is below ``eb.radius``. Ghost
+        cells are excluded — they are set by the BC fill.
+        """
+        import numpy as np
+
+        center = [float(c) for c in self._eb["center"]]
+        radius = float(self._eb["radius"])
+        axis = int(self._eb["axis"])
+        plane = [a for a in range(3) if a != axis]
+
+        masks = []
+        for lev in range(self.mesh.n_levels()):
+            geom = self.mesh.geom(lev)
+            dx = [float(v) for v in geom.cell_size()]
+            lo = [float(v) for v in geom.prob_lo()]
+            mf = self.U.mf[lev]
+            ng = mf.n_grow()
+            grown = mf.grown_arrays()
+            boxes = [mfi.valid_box() for mfi in blockamr.MFIterator(mf)]
+
+            lev_masks = []
+            for bi, box in enumerate(boxes):
+                nx, ny, nz = (int(s) for s in grown[bi].shape[:3])
+                small = list(box.small_end())
+                # global cell index of grown position g along dim d: small-ng+g
+                gi = [np.arange(n) + (small[d] - ng)
+                      for d, n in enumerate((nx, ny, nz))]
+                cc = [lo[d] + (gi[d] + 0.5) * dx[d] for d in range(3)]
+                mesh_c = np.meshgrid(cc[0], cc[1], cc[2], indexing="ij")
+                d2 = ((mesh_c[plane[0]] - center[plane[0]]) ** 2
+                      + (mesh_c[plane[1]] - center[plane[1]]) ** 2)
+                solid = d2 < radius * radius
+                valid = np.zeros((nx, ny, nz), dtype=bool)
+                valid[ng:nx - ng, ng:ny - ng, ng:nz - ng] = True
+                lev_masks.append(jnp.asarray(solid & valid))
+            masks.append(lev_masks)
+        return masks
+
+    def _force_solid(self, u_body=(0.0, 0.0, 0.0)):
+        """Reset the velocity in solid cells to the (stationary) wall value."""
+        if self._solid_masks is None:
+            return
+        u_vec = jnp.asarray(u_body).reshape(1, 1, 1, 3)
+        for lev in range(self.mesh.n_levels()):
+            mf = self.U.mf[lev]
+            grown = mf.grown_arrays()
+            results = []
+            for bi, g in enumerate(grown):
+                m = self._solid_masks[lev][bi][..., None]
+                results.append(jnp.where(m, u_vec, g))
+            mf.copy_grown_arrays(results)
 
     def step(self):
         """Advance one time step using the DSL.
@@ -137,6 +223,11 @@ class DSLIncompressibleSolver:
         # 7. Correct U: U^{n+1} = U* - dt * grad(p)
         correct(U, -dt * exp.grad(p))
 
+        # 8. Direct-forcing IBM: pin the velocity in solid cells to the wall
+        #    value so the body is impermeable and no-slip. The projection on the
+        #    next step deflects the flow around the resulting zero-velocity zone.
+        self._force_solid()
+
         self._t += dt
 
         # Adaptive time stepping
@@ -182,8 +273,12 @@ class DSLIncompressibleSolver:
         rhs_arrs = [-arr for arr in self._face_divergence(phi, lev)]
         cache['rhs_mf'].copy_arrays(rhs_arrs)
 
-        # 2. Zero initial guess
+        # 2. Zero initial guess (incl. ghost cells when a Dirichlet outlet face
+        #    reads its boundary value from them)
         cache['phi_mf'].set_val(0.0)
+        if self._p_has_dirichlet:
+            pm = cache['phi_mf']
+            pm.copy_grown_arrays([jnp.zeros_like(a) for a in pm.grown_arrays()])
 
         # 3. Solve: div(beta * grad(p_mac)) = div(phi)
         cfg = self._schemes_p
@@ -262,9 +357,13 @@ class DSLIncompressibleSolver:
         # MLABecLaplacian: (alpha*a - beta*div(b*grad)) phi
         # For MAC: alpha=0, beta=1, b=1 → -div(grad(phi)) = RHS
         lp = blockamr.MLABecLaplacian(geom, ba, dm, blockamr.LPInfo())
-        lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
-                 else blockamr.LinOpBCType.Neumann for d in range(3)]
-        lp.set_domain_bc(lo_bc, lo_bc[:])
+        if self._p_domain_bc is not None:
+            lo_bc, hi_bc = self._p_domain_bc
+        else:
+            lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
+                     else blockamr.LinOpBCType.Neumann for d in range(3)]
+            hi_bc = lo_bc[:]
+        lp.set_domain_bc(lo_bc, hi_bc)
         lp.set_level_bc(0, None)
         lp.set_scalars(0.0, 1.0)  # alpha=0, beta=1
 

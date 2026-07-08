@@ -131,3 +131,57 @@ def test_mixed_bcs(blockamr_session):
     assert np.isclose(arr[ng, 0, ng, 0], 0.5)
     # y_hi: Neumann -> 0.5
     assert np.isclose(arr[ng, -1, ng, 0], 0.5)
+
+
+def test_pressure_domain_bc_inlet_outlet(blockamr_session):
+    """pressure_domain_bc pairs a velocity VectorBC with the matching pressure
+    LinOpBCType: velocity-Dirichlet face (inlet/wall) -> pressure Neumann,
+    velocity-Neumann face (outflow) -> pressure Dirichlet, periodic -> Periodic.
+    """
+    from neon.blockamr.bc import (
+        pressure_domain_bc, VectorBC, fixedValue, noSlip, NeumannBC,
+    )
+
+    box = blockamr.Box([0, 0, 0], [15, 15, 7])
+    rb = blockamr.RealBox([0.0, 0.0, 0.0], [2.0, 1.0, 0.25])
+    geom = blockamr.Geometry(box, rb, 0, [0, 0, 1])  # x,y walls; z periodic
+
+    u_bc = VectorBC(
+        xlo=fixedValue([1.0, 0.0, 0.0]),  # inlet
+        xhi=NeumannBC(),                  # outflow
+        ylo=noSlip(),                     # wall
+        yhi=noSlip(),                     # wall
+    )
+    lo_bc, hi_bc = pressure_domain_bc(u_bc, geom)
+
+    BC = blockamr.LinOpBCType
+    # x: inlet -> Neumann (lo), outflow -> Dirichlet (hi)
+    assert lo_bc[0] == BC.Neumann
+    assert hi_bc[0] == BC.Dirichlet
+    # y walls -> Neumann both sides
+    assert lo_bc[1] == BC.Neumann
+    assert hi_bc[1] == BC.Neumann
+    # z periodic -> Periodic both sides
+    assert lo_bc[2] == BC.Periodic
+    assert hi_bc[2] == BC.Periodic
+
+
+def test_pressure_domain_bc_all_walls_all_neumann(blockamr_session):
+    """A fully-walled (lid-cavity-style) domain has no outflow, so every
+    non-periodic pressure face is Neumann (the closed/singular case)."""
+    from neon.blockamr.bc import pressure_domain_bc, VectorBC, fixedValue, noSlip
+
+    box = blockamr.Box([0, 0, 0], [7, 7, 7])
+    rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
+    geom = blockamr.Geometry(box, rb, 0, [0, 0, 1])
+
+    u_bc = VectorBC(xlo=noSlip(), xhi=noSlip(),
+                    ylo=noSlip(), yhi=fixedValue([1.0, 0.0, 0.0]))
+    lo_bc, hi_bc = pressure_domain_bc(u_bc, geom)
+
+    BC = blockamr.LinOpBCType
+    assert lo_bc[0] == BC.Neumann and hi_bc[0] == BC.Neumann
+    assert lo_bc[1] == BC.Neumann and hi_bc[1] == BC.Neumann
+    assert lo_bc[2] == BC.Periodic and hi_bc[2] == BC.Periodic
+    # no Dirichlet anywhere -> the closed all-Neumann pressure system
+    assert not any(bc == BC.Dirichlet for bc in (*lo_bc, *hi_bc))

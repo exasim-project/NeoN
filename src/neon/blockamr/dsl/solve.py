@@ -453,16 +453,37 @@ def _solve_implicit(eqn, schemes=None):
             fluxes_mfs.append(blockamr.MultiFab(ba_lev, dm_lev, 3, 0))
 
         is_per = geoms[0].is_periodic()
-        if n_levels == 1:
-            lp = blockamr.MLNodeLaplacian(geoms[0], bas[0], dms[0],
-                                          blockamr.LPInfo(), sigma)
-        else:
-            lp = blockamr.MLNodeLaplacian(geoms, bas, dms,
-                                          blockamr.LPInfo(), sigma)
 
-        lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
-                 else blockamr.LinOpBCType.Neumann for d in range(3)]
-        lp.set_domain_bc(lo_bc, lo_bc[:])
+        # Per-face pressure BC: use the solver-derived spec stashed on the
+        # pressure field (outflow face → Dirichlet, inlet/wall → Neumann) when
+        # present; otherwise fall back to the periodic/all-Neumann default.
+        p_bc = getattr(p_field, "pressure_bc", None)
+        if p_bc is not None:
+            lo_bc, hi_bc = p_bc
+        else:
+            lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
+                     else blockamr.LinOpBCType.Neumann for d in range(3)]
+            hi_bc = lo_bc[:]
+
+        # A lone outflow-Dirichlet face anchoring an otherwise-Neumann domain is
+        # badly conditioned for plain nodal multigrid (coarse-grid correction is
+        # ineffective → convergence stalls). Agglomeration + consolidation let
+        # AMReX coarsen far enough for an effective bottom solve — the standard
+        # incflo nodal-projection setup. Only enabled when a Dirichlet face is
+        # present, to leave the periodic/closed (all-Neumann) path untouched.
+        has_dirichlet = any(
+            bc == blockamr.LinOpBCType.Dirichlet for bc in (*lo_bc, *hi_bc)
+        )
+        info = blockamr.LPInfo()
+        if has_dirichlet:
+            info.set_agglomeration(True)
+            info.set_consolidation(True)
+        if n_levels == 1:
+            lp = blockamr.MLNodeLaplacian(geoms[0], bas[0], dms[0], info, sigma)
+        else:
+            lp = blockamr.MLNodeLaplacian(geoms, bas, dms, info, sigma)
+
+        lp.set_domain_bc(lo_bc, hi_bc)
 
         p_field._imp_solver = {
             'lp': lp,
@@ -473,12 +494,21 @@ def _solve_implicit(eqn, schemes=None):
             'fluxes_mfs': fluxes_mfs,
             'n_levels': n_levels,
             'sigma': sigma,
+            'has_dirichlet': has_dirichlet,
         }
 
     s = p_field._imp_solver
     s['mlmg'].set_verbose(verbose)
-    s['mlmg'].set_max_iter(max_iter)
+    # The single-sweep bottom solve (below) needs many more outer V-cycles, so
+    # lift the cap for outflow solves while leaving the closed-case cap as set.
+    s['mlmg'].set_max_iter(max(max_iter, 1000) if s['has_dirichlet'] else max_iter)
     s['mlmg'].set_bottom_verbose(0)
+    # Outflow (Dirichlet pressure) makes the nodal system one on which the
+    # Krylov bottom solvers (BiCGStab, CG) DIVERGE. The relaxation smoother is
+    # unconditionally stable, so use it as the bottom solver for outflow cases.
+    # Closed/periodic (all-Neumann) solves keep the default bottom solver.
+    if s['has_dirichlet']:
+        s['mlmg'].set_bottom_solver("smoother")
 
     # 1. Pack velocity with ghost cells into ncomp=3 MultiFab (per level)
     for lev in range(n_levels):
