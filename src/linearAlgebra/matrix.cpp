@@ -10,10 +10,11 @@
 namespace NeoN::la
 {
 
-template<typename ValueType, typename IndexType>
-Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
+template<typename ValueType, typename SparsityType>
+Vector<ValueType> Matrix<ValueType, SparsityType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
+    fill(diag, zero<ValueType>());
     auto [diagV, rowOffsV, colIdxV, matrixV] =
         views(diag, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_);
 
@@ -33,6 +34,25 @@ Vector<ValueType> Matrix<ValueType, IndexType>::diag() const
         "copyDiag"
     );
     return diag;
+}
+
+
+template<typename ValueType, typename SparsityType>
+Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(Executor dstExec
+) const
+{
+    if (dstExec == values_.exec())
+    {
+        return *this;
+    }
+    return {
+        values_.copyToExecutor(dstExec),
+        std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec)),
+        (faceToMatrixAddress_) ? std::make_shared<const FaceToMatrixAddress>(
+            this->faceToMatrixAddress_->copyToExecutor(dstExec)
+        )
+                               : nullptr
+    };
 }
 
 
@@ -102,6 +122,7 @@ Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>& mtx)
     );
     return upper;
 }
+
 
 void negLUx(
     const CSRMatrix<Vec3, localIdx>& mtx,
@@ -179,6 +200,48 @@ void scaledInvDiagNegLUx(
     );
 }
 
+void scaledInvDiagNegLUx(
+    const CSRMatrix<scalar, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<Vec3>& b,
+    const Vector<scalar>& vol,
+    Vector<scalar>& rAU,
+    Vector<Vec3>& out
+)
+{
+    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
+
+    const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, bV] =
+        views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a, b);
+    auto outV = out.view();
+
+    parallelFor(
+        mtx.exec(),
+        {0, mtx.nRows()},
+        NEON_LAMBDA(const localIdx rowi) {
+            outV[rowi] = zero<Vec3>();
+            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            {
+                auto colI = colIdxV[i];
+                if (rowi == colI)
+                {
+                    // scalar diagonal coefficient scales all components equally
+                    rAUV[rowi] = volV[rowi] / matrixV[i];
+                }
+                else
+                {
+                    // scalar * Vec3 broadcasts the off-diagonal coefficient to each component
+                    outV[rowi] -= matrixV[i] * aV[colI];
+                }
+            }
+
+            outV[rowi] += bV[rowi];
+            outV[rowi] *= rAUV[rowi] / volV[rowi];
+        }
+    );
+}
+
 
 Vector<scalar> scaledInverseDiag(const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a)
 {
@@ -213,9 +276,7 @@ void scaledInverseDiag(
 }
 
 Vector<scalar> scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
-    const Vector<scalar>& a
+    const CSRMatrix<Vec3, localIdx>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
 )
 {
     auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
@@ -225,7 +286,7 @@ Vector<scalar> scaledInverseDiag(
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
+    const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 )
@@ -246,12 +307,46 @@ void scaledInverseDiag(
     );
 }
 
-#define NN_DECLARE_CSRMATRIX(VALUETYPE, INTEGERTYPE)                                               \
-    template class Matrix<VALUETYPE, la::SparsityPattern<INTEGERTYPE>>;                            \
+Vector<scalar> scaledInverseDiag(
+    const CSRMatrix<scalar, localIdx>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
+)
+{
+    auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
+    scaledInverseDiag(mtx, mi, a, diag);
+    return diag;
+}
+
+void scaledInverseDiag(
+    const CSRMatrix<scalar, localIdx>& mtx,
+    const FaceToMatrixAddress& mi,
+    const Vector<scalar>& a,
+    Vector<scalar>& out
+)
+{
+    NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+
+    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
+        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
+
+    const auto diaOffsV = mi.diagOffset().view();
+
+    parallelFor(
+        mtx.exec(),
+        {0, mtx.nRows()},
+        NEON_LAMBDA(const localIdx rowi) {
+            // scalar diagonal coefficient: no per-component selection needed
+            outV[rowi] = aV[rowi] / matrixV[rowOffsV[rowi] + diaOffsV[rowi]];
+        }
+    );
+}
+
+#define NN_DECLARE_MATRIX(VALUETYPE, INTEGERTYPE)                                                  \
+    template class Matrix<VALUETYPE, la::CsrSparsityPattern<INTEGERTYPE>>;                         \
+    template class Matrix<VALUETYPE, la::CooSparsityPattern<INTEGERTYPE>>;                         \
     template Vector<VALUETYPE>                                                                     \
     upper<VALUETYPE, INTEGERTYPE>(const CSRMatrix<VALUETYPE, INTEGERTYPE>&)
 
-NN_DECLARE_CSRMATRIX(scalar, localIdx);
-NN_DECLARE_CSRMATRIX(Vec3, int);
+NN_DECLARE_MATRIX(scalar, localIdx);
+NN_DECLARE_MATRIX(Vec3, localIdx);
 
 }

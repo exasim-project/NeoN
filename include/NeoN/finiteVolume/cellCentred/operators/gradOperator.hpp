@@ -174,6 +174,8 @@ public:
 
     std::string getName() const { return "GradOperator"; }
 
+    Dictionary getConfig() const { return {}; }
+
 private:
 
     std::unique_ptr<GradOperatorFactory<ValueType>> gradOperatorStrategy_;

@@ -14,6 +14,8 @@ endif()
 target_sources(
   NeoN
   PRIVATE "core/primitives/vec3.cpp"
+          "core/primitives/tensor.cpp"
+          "core/primitives/symmTensor.cpp"
           "core/time.cpp"
           "core/vector/vector.cpp"
           "core/vector/vectorFreeFunctions.cpp"
@@ -37,32 +39,47 @@ target_sources(
           "executor/serialExecutor.cpp"
           "linearAlgebra/utilities.cpp"
           "linearAlgebra/matrix.cpp"
-          "linearAlgebra/ginkgo.cpp"
+          "linearAlgebra/ginkgo/ginkgo.cpp"
+          "linearAlgebra/ginkgo/ginkgoL1Stop.cpp"
           "linearAlgebra/faceToMatrixAddress.cpp"
-          "linearAlgebra/sparsityPattern.cpp"
+          "linearAlgebra/cooSparsityPattern.cpp"
+          "linearAlgebra/csrSparsityPattern.cpp"
+          "linearAlgebra/meshIterationStrategies.cpp"
           "mesh/unstructured/boundaryMesh.cpp"
           "mesh/unstructured/unstructuredMesh.cpp"
+          "mesh/unstructured/uniformMeshDataGenerator.cpp"
           "finiteVolume/cellCentred/stencil/geometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/basicGeometryScheme.cpp"
           "finiteVolume/cellCentred/stencil/cellToFaceStencil.cpp"
           "finiteVolume/cellCentred/boundary/boundary.cpp"
+          "finiteVolume/cellCentred/boundary/boundaryContext.cpp"
+          "finiteVolume/cellCentred/boundary/surface/processor.cpp"
+          "finiteVolume/cellCentred/boundary/volume/processor.cpp"
           "finiteVolume/cellCentred/operators/ddtOperator.cpp"
           "finiteVolume/cellCentred/fields/volumeField.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenGrad.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenDiv.cpp"
           "finiteVolume/cellCentred/operators/gaussGreenLaplacian.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.cpp"
+          "finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.cpp"
           "finiteVolume/cellCentred/operators/sourceTerm.cpp"
           "finiteVolume/cellCentred/operators/surfaceIntegrate.cpp"
           "finiteVolume/cellCentred/interpolation/linear.cpp"
           "finiteVolume/cellCentred/interpolation/upwind.cpp"
+          "finiteVolume/cellCentred/interpolation/linearUpwind.cpp"
+          "finiteVolume/cellCentred/faceNormalGradient/corrected.cpp"
+          "finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.cpp"
           "finiteVolume/cellCentred/faceNormalGradient/uncorrected.cpp"
           "finiteVolume/cellCentred/auxiliary/coNum.cpp"
           "timeIntegration/timeIntegration.cpp"
           "timeIntegration/rungeKutta.cpp")
 
-if(NeoN_ENABLE_MPI_SUPPORT)
-  target_sources(NeoN PRIVATE "core/mpi/halfDuplexCommBuffer.cpp"
-                              "mesh/unstructured/communicator.cpp")
+if(NeoN_WITH_MPI)
+  target_sources(
+    NeoN
+    PRIVATE "core/mpi/halfDuplexCommBuffer.cpp" "mesh/unstructured/communicator.cpp"
+            "mesh/unstructured/distributedUnstructuredMesh.cpp"
+            "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
 endif()
 
 if(NeoN_BUILD_PYTHON_BINDINGS)
@@ -74,12 +91,8 @@ enable_sanitizers(NeoN NeoN_ENABLE_SANITIZE_ADDRESS NeoN_ENABLE_SANITIZE_LEAK
                   NeoN_ENABLE_SANITIZE_UB NeoN_ENABLE_SANITIZE_THREAD NeoN_ENABLE_SANITIZE_MEMORY)
 
 target_link_libraries(NeoN PRIVATE NeoN_warnings NeoN_options)
-# target_link_libraries(NeoN PRIVATE spdlog::spdlog_header_only)
 target_link_libraries(NeoN PUBLIC NeoN_public_api)
 
-if(NeoN_ENABLE_MPI_SUPPORT)
-  target_link_libraries(NeoN PUBLIC MPI::MPI_CXX)
-endif()
 if(WIN32)
   set_target_properties(
     NeoN

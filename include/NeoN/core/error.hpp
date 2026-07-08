@@ -20,12 +20,17 @@
 // #include <source_location>
 // #include <experimental/source_location>
 
+// #include "logging.hpp"
 #include "info.hpp"
 
-#ifdef NF_DEBUG_MESSAGING
-#include "cpptrace/cpptrace.hpp"
-#endif
-
+namespace NeoN::Logging::detail
+{
+// Forward declaration: error.hpp must not include logging.hpp — that would form a
+// cycle (logging.hpp -> mpi/environment.hpp -> error.hpp). logFatal is defined in
+// core/logging.cpp; NF_ERROR_EXIT routes through it for rank-tagged output, a
+// stack trace, and a clean MPI_Abort.
+[[noreturn]] void logFatal(const std::string& message);
+}
 
 namespace NeoN
 {
@@ -59,34 +64,15 @@ private:
 
 } // namespace NeoN
 
-#ifdef NF_DEBUG_MESSAGING
 /**
  * @def NF_ERROR_MESSAGE
- * @brief Macro for generating an error message with debug information.
- *
- * This macro generates an error message with the specified message, current file name, current line
- * number, and debug trace information (if available).
+ * @brief Builds an error message fragment with the message, file, and line. The
+ *        stack trace is emitted separately by logFatal()/terminate().
  *
  * @param message The error message to be included in the generated message.
- * @return std::string The generated error message.
- */
-#define NF_ERROR_MESSAGE(message)                                                                  \
-    "Error: " << message << "\nFile: " << __FILE__ << "\nLine: " << __LINE__ << "\n"               \
-              << cpptrace::generate_trace().to_string() << "\n"
-#else
-/**
- * @def NF_ERROR_MESSAGE
- * @brief Macro for generating an error message without debug information.
- *
- * This macro generates an error message with the specified message, current file name, and current
- * line number.
- *
- * @param message The error message to be included in the generated message.
- * @return std::string The generated error message.
  */
 #define NF_ERROR_MESSAGE(message)                                                                  \
     "Error: " << message << "\nFile: " << __FILE__ << "\nLine: " << __LINE__ << "\n"
-#endif
 
 /**
  * @def NF_ERROR_EXIT
@@ -98,23 +84,11 @@ private:
  * @param message The error message to be printed.
  */
 
-#ifdef NF_WITH_MPI_SUPPORT
+// Builds the message into a temporary stringstream (not a named local, so this
+// is usable inside constexpr functions) and routes it through logFatal, which
+// tags the rank, prints a trace, MPI_Aborts, and exits.
 #define NF_ERROR_EXIT(message)                                                                     \
-    do                                                                                             \
-    {                                                                                              \
-        std::cerr << NF_ERROR_MESSAGE(message);                                                    \
-        MPI_Abort(MPI_COMM_WORLD, 1);                                                              \
-    }                                                                                              \
-    while (false)
-#else
-#define NF_ERROR_EXIT(message)                                                                     \
-    do                                                                                             \
-    {                                                                                              \
-        std::cerr << NF_ERROR_MESSAGE(message);                                                    \
-        std::exit(1);                                                                              \
-    }                                                                                              \
-    while (false)
-#endif
+    NeoN::Logging::detail::logFatal((std::stringstream() << NF_ERROR_MESSAGE(message)).str())
 
 /**
  * @def NF_THROW
@@ -146,7 +120,10 @@ private:
     {                                                                                              \
         if (!(condition)) [[unlikely]]                                                             \
         {                                                                                          \
-            NF_ERROR_EXIT("Assertion `" #condition "` failed.\n       " << message);               \
+            NF_ERROR_EXIT(                                                                         \
+                "Assertion `" #condition " in " << __FILE__ << ":" << __LINE__                     \
+                                                << "` failed.\n       " << message                 \
+            );                                                                                     \
         }                                                                                          \
     }                                                                                              \
     while (false)

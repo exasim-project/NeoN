@@ -8,6 +8,7 @@
 
 #include <Kokkos_Core.hpp>
 
+#include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
@@ -48,11 +49,34 @@ public:
 
     virtual ~FaceNormalGradientFactory() {} // Virtual destructor
 
+    /**
+     * @brief Computes the face-normal gradient of @p volVector into @p surfaceVector.
+     *
+     * Processor-boundary contract: processor faces are treated like internal faces
+     * (the standard coupled-patch treatment), i.e. the gradient couples the owner cell
+     * with the true neighbour cell on the far side of the rank boundary. Schemes that
+     * apply a non-orthogonal correction (corrected, limitedCorrected) apply it on
+     * processor faces as well. Scalar and Vec3 fields receive identical treatment.
+     */
     virtual void faceNormalGrad(
         const VolumeField<ValueType>& volVector, SurfaceField<ValueType>& surfaceVector
     ) const = 0;
 
     virtual const SurfaceField<scalar>& deltaCoeffs() const = 0;
+
+    // Returns true when this scheme contributes a non-zero explicit correction
+    // term to the implicit Laplacian RHS (i.e. corrected and limitedCorrected).
+    virtual bool hasImplicitCorrection() const { return false; }
+
+    // Fills corrField.internalVector() with the per-face correction term:
+    //   corrected        → corrVec[f] · interpGrad[f]
+    //   limitedCorrected → limiter[f] * corrVec[f] · interpGrad[f]
+    // Default (uncorrected): fills internal vector with zeros.
+    virtual void
+    implicitCorrection(const VolumeField<ValueType>&, SurfaceField<ValueType>& corrField) const
+    {
+        NeoN::fill(corrField.internalVector(), zero<ValueType>());
+    }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<FaceNormalGradientFactory<ValueType>> clone() const = 0;
@@ -98,6 +122,13 @@ public:
 
     const SurfaceField<scalar>& deltaCoeffs() const { return faceNormalGradKernel_->deltaCoeffs(); }
 
+    bool hasImplicitCorrection() const { return faceNormalGradKernel_->hasImplicitCorrection(); }
+
+    void
+    implicitCorrection(const VolumeField<ValueType>& phi, SurfaceField<ValueType>& corrField) const
+    {
+        faceNormalGradKernel_->implicitCorrection(phi, corrField);
+    }
 
     SurfaceField<ValueType> faceNormalGrad(const VolumeField<ValueType>& volVector) const
     {

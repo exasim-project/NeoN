@@ -7,13 +7,12 @@
 
 #include "NeoN/NeoN.hpp"
 
-using Catch::Approx;
-
-TEST_CASE("symmetry_volume")
+TEST_CASE("symmetry_slip_volume")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
+    auto bcName = GENERATE(std::string("symmetry"), std::string("slip"));
 
-    SECTION("TestDerivedClass" + execName)
+    SECTION("TestDerivedClass" + execName + "_" + bcName)
     {
         auto mesh = NeoN::createSingleCellMesh(exec);
 
@@ -30,7 +29,7 @@ TEST_CASE("symmetry_volume")
             NeoN::Dictionary dict;
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::scalar>::create(
-                    "symmetry", mesh, dict, 0
+                    bcName, mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
@@ -39,7 +38,7 @@ TEST_CASE("symmetry_volume")
                 field.boundaryData().refValue(),
                 field.boundaryData().value(),
                 field.boundaryData().refGrad(),
-                mesh.boundaryMesh().faceCells(),
+                mesh.boundaryMesh().faceOwners(),
                 field.internalVector()
             );
 
@@ -47,18 +46,18 @@ TEST_CASE("symmetry_volume")
             {
                 const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
+                REQUIRE(boundaryValueV == Catch::Approx(internalH.view()[ownerV]));
             }
 
             for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
                 const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
                 const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
+                REQUIRE(boundaryValueV == Catch::Approx(internalH.view()[ownerV]));
             }
 
             for (auto& gradValueV : refGradH.view(boundary->range()))
-                REQUIRE(gradValueV == Approx(0.0));
+                REQUIRE(gradValueV == Catch::Approx(0.0));
         }
 
         // === vector field =====================================================
@@ -72,7 +71,7 @@ TEST_CASE("symmetry_volume")
             NeoN::Dictionary dict;
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
-                    "symmetry", mesh, dict, 0
+                    bcName, mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
@@ -81,8 +80,8 @@ TEST_CASE("symmetry_volume")
                 field.boundaryData().refValue(),
                 field.boundaryData().value(),
                 field.boundaryData().refGrad(),
-                mesh.boundaryMesh().nf(),
-                mesh.boundaryMesh().faceCells(),
+                mesh.boundaryMesh().faceUnitNormals(),
+                mesh.boundaryMesh().faceOwners(),
                 field.internalVector()
             );
 
@@ -96,13 +95,17 @@ TEST_CASE("symmetry_volume")
                 const auto vExpected = intV - nV * (intV & nV); // half-symmetry
 
                 for (auto d = 0u; d < 3; ++d)
-                    REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
+                {
+                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
+                }
             }
 
             for (auto& gradValueV : refGradH.view(boundary->range()))
             {
                 for (auto d = 0u; d < 3; ++d)
-                    REQUIRE(gradValueV[d] == Approx(0.0));
+                {
+                    REQUIRE(gradValueV[d] == Catch::Approx(0.0));
+                }
             }
         }
     }

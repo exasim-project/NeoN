@@ -7,7 +7,8 @@
 #include <nanobind/stl/vector.h>
 
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "bindings.hpp"
 
@@ -29,9 +30,13 @@ void declare_linear_system(nb::module_& m, const std::string& suffix)
 
 void registerLinearAlgebra(nb::module_& m)
 {
-    nb::class_<la::SparsityPattern<localIdx>>(m, "SparsityPattern")
-        .def("rows", &la::SparsityPattern<localIdx>::rows)
-        .def("nnz", &la::SparsityPattern<localIdx>::nnz);
+    nb::class_<la::CsrSparsityPattern<localIdx>>(m, "CsrSparsityPattern")
+        .def("rows", &la::CsrSparsityPattern<localIdx>::rows)
+        .def("nnz", &la::CsrSparsityPattern<localIdx>::nnz);
+
+    nb::class_<la::CooSparsityPattern<localIdx>>(m, "CooSparsityPattern")
+        .def("rows", &la::CooSparsityPattern<localIdx>::rows)
+        .def("nnz", &la::CooSparsityPattern<localIdx>::nnz);
 
     nb::class_<la::SolverStats>(m, "SolverStats").def_rw("entries", &la::SolverStats::entries);
 

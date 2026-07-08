@@ -41,10 +41,9 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
 {
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
-    const auto diagOffs = ls.faceToMatrixAddress()->diagOffset().view();
     const auto oldVector = oldTime(this->field_).internalVector().view();
     auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     const scalar a0a1 = 1.0 / dt;
 
@@ -52,9 +51,8 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            values[idx] += commonCoef * a0a1 * one<ValueType>();
+            values[ma.diagIdx(celli)] += commonCoef * a0a1 * one<ValueType>();
             rhs[celli] += commonCoef * a0a1 * oldVector[celli];
         },
         "ddtOperator::implicitOperation<BDF1>"
@@ -64,15 +62,14 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
 template<typename ValueType>
 void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar, scalar dt) const
 {
-    const auto matIt = ls.faceToMatrixAddress();
     const auto vol = this->getVector().mesh().cellVolumes().view();
     const auto operatorScaling = this->getCoefficient();
     auto& old = oldTime(this->field_);
     auto& oldOld = oldTime(old);
-    const auto [diagOffs, oldVector, oldOldVector] =
-        views(matIt->diagOffset(), old.internalVector(), oldOld.internalVector());
+    const auto [oldVector, oldOldVector] = views(old.internalVector(), oldOld.internalVector());
     auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
-    auto [colIdx, rowOffs] = ls.matrix().sparsity()->view();
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
     const scalar a0 = 1.5 / dt;
     const scalar a1 = 2.0 / dt;
@@ -82,9 +79,8 @@ void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar,
         ls.exec(),
         {0, oldVector.size()},
         NEON_LAMBDA(const localIdx celli) {
-            const auto idx = rowOffs[celli] + diagOffs[celli];
             const auto commonCoef = operatorScaling[celli] * vol[celli];
-            values[idx] += commonCoef * a0 * one<ValueType>();
+            values[ma.diagIdx(celli)] += commonCoef * a0 * one<ValueType>();
             rhs[celli] +=
                 commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
         },
@@ -109,6 +105,87 @@ void DdtOperator<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls, 
     else
     {
         bdf2Kernel(ls, t, dt);
+    }
+}
+
+template<typename ValueType>
+void DdtOperator<ValueType>::bdf1KernelScalarMtx(
+    la::LinearSystem<scalar, ValueType>& ls, scalar, scalar dt
+) const
+{
+    const auto vol = this->getVector().mesh().cellVolumes().view();
+    const auto operatorScaling = this->getCoefficient();
+    const auto oldVector = oldTime(this->field_).internalVector().view();
+    auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const scalar a0a1 = 1.0 / dt;
+
+    parallelFor(
+        ls.exec(),
+        {0, oldVector.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            const auto commonCoef = operatorScaling[celli] * vol[celli];
+            // scalar diagonal coefficient shared across all rhs components
+            values[ma.diagIdx(celli)] += commonCoef * a0a1;
+            rhs[celli] += commonCoef * a0a1 * oldVector[celli];
+        },
+        "ddtOperator::implicitOperationScalarMtx<BDF1>"
+    );
+}
+
+template<typename ValueType>
+void DdtOperator<ValueType>::bdf2KernelScalarMtx(
+    la::LinearSystem<scalar, ValueType>& ls, scalar, scalar dt
+) const
+{
+    const auto vol = this->getVector().mesh().cellVolumes().view();
+    const auto operatorScaling = this->getCoefficient();
+    auto& old = oldTime(this->field_);
+    auto& oldOld = oldTime(old);
+    const auto [oldVector, oldOldVector] = views(old.internalVector(), oldOld.internalVector());
+    auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    const scalar a0 = 1.5 / dt;
+    const scalar a1 = 2.0 / dt;
+    const scalar a2 = -0.5 / dt;
+
+    parallelFor(
+        ls.exec(),
+        {0, oldVector.size()},
+        NEON_LAMBDA(const localIdx celli) {
+            const auto commonCoef = operatorScaling[celli] * vol[celli];
+            // scalar diagonal coefficient shared across all rhs components
+            values[ma.diagIdx(celli)] += commonCoef * a0;
+            rhs[celli] +=
+                commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
+        },
+        "ddtOperator::implicitOperationScalarMtx<BDF2>"
+    );
+}
+
+template<typename ValueType>
+template<typename F>
+    requires(!std::is_same_v<F, scalar>)
+void DdtOperator<ValueType>::implicitOperation(
+    la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
+) const
+{
+    const int level = oldTimeLevel(this->field_);
+
+    if (scheme_ == DdtScheme::BDF1)
+    {
+        bdf1KernelScalarMtx(ls, t, dt);
+    }
+    else if (level < 2)
+    {
+        bdf1KernelScalarMtx(ls, t, dt); // startup step
+    }
+    else
+    {
+        bdf2KernelScalarMtx(ls, t, dt);
     }
 }
 
@@ -151,8 +228,8 @@ void DdtOperator<ValueType>::read(const Input& input)
         return;
     }
 
-    NF_ERROR_EXIT(std::format(
-        "Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2.",
+    NF_ERROR_EXIT(fmt::format(
+        fmt::runtime("Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2."),
         schemeName,
         this->field_.name
     ));
@@ -161,5 +238,11 @@ void DdtOperator<ValueType>::read(const Input& input)
 // instantiate the template class
 template class DdtOperator<scalar>;
 template class DdtOperator<Vec3>;
+
+// The scalar-matrix implicitOperation is a constrained member template (disabled for scalar
+// fields), so it is not covered by the class instantiation above; instantiate it explicitly
+// for the Vec3 segregated vector-solve form.
+template void
+DdtOperator<Vec3>::implicitOperation<Vec3>(la::LinearSystem<scalar, Vec3>&, scalar, scalar) const;
 
 };

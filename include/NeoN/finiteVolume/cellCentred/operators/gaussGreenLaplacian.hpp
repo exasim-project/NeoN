@@ -7,38 +7,33 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
-void computeLaplacianExp(
-    const FaceNormalGradient<ValueType>&,
-    const SurfaceField<scalar>&,
-    const VolumeField<ValueType>&,
-    Vector<ValueType>&,
-    const dsl::Coeff
-);
-
-template<typename ValueType>
-void computeLaplacianImpl(
-    la::LinearSystem<ValueType>& ls,
+// Deferred non-orthogonal correction kernel for the Laplacian (defined in gaussGreenLaplacian.cpp).
+// Declared here so other operators (e.g. GaussGreenDivLaplacian) can reuse it. Adds the explicit
+// snGrad correction to the linear system's rhs; a no-op unless the snGrad scheme is corrected.
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void computeLaplacianNonOrthCorrImpl(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
-    const VolumeField<ValueType>& phi,
-    const dsl::Coeff operatorScaling,
-    const FaceNormalGradient<ValueType>& faceNormalGradient
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
 );
 
-template<typename ValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class GaussGreenLaplacian :
-    public LaplacianOperatorFactory<ValueType>::template Register<GaussGreenLaplacian<ValueType>>
+    public LaplacianOperatorFactory<FieldValueType, AssemblyType>::template Register<
+        GaussGreenLaplacian<FieldValueType, AssemblyType>>
 {
-    using Base =
-        LaplacianOperatorFactory<ValueType>::template Register<GaussGreenLaplacian<ValueType>>;
+    using Base = LaplacianOperatorFactory<FieldValueType, AssemblyType>::template Register<
+        GaussGreenLaplacian<FieldValueType, AssemblyType>>;
 
 public:
 
@@ -53,72 +48,49 @@ public:
           faceNormalGradient_(exec, mesh, inputs) {};
 
     virtual void laplacian(
-        VolumeField<ValueType>& lapPhi,
+        VolumeField<FieldValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
-    ) override
-    {
-        computeLaplacianExp<ValueType>(
-            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), operatorScaling
-        );
-    };
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff coeff
+    ) override;
 
-    virtual VolumeField<ValueType> laplacian(
+    virtual VolumeField<FieldValueType> laplacian(
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
-    ) const override
-    {
-        std::string name = "laplacian(" + gamma.name + "," + phi.name + ")";
-        VolumeField<ValueType> lapPhi(
-            this->exec_,
-            name,
-            this->mesh_,
-            createCalculatedBCs<VolumeBoundary<ValueType>>(this->mesh_)
-        );
-        NeoN::fill(lapPhi.internalVector(), zero<ValueType>());
-        NeoN::fill(lapPhi.boundaryData().value(), zero<ValueType>());
-        computeLaplacianExp<ValueType>(
-            faceNormalGradient_, gamma, phi, lapPhi.internalVector(), operatorScaling
-        );
-        return lapPhi;
-    };
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff coeff
+    ) const override;
 
     virtual void laplacian(
-        Vector<ValueType>& lapPhi,
+        Vector<FieldValueType>& lapPhi,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
-    ) override
-    {
-        computeLaplacianExp<ValueType>(faceNormalGradient_, gamma, phi, lapPhi, operatorScaling);
-    };
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff coeff
+    ) override;
 
     virtual void laplacian(
-        la::LinearSystem<ValueType>& ls,
+        la::LinearSystem<AssemblyType, FieldValueType>& ls,
         const SurfaceField<scalar>& gamma,
-        const VolumeField<ValueType>& phi,
-        const dsl::Coeff operatorScaling
-    ) override
-    {
-        computeLaplacianImpl(ls, gamma, phi, operatorScaling, faceNormalGradient_);
-    };
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff coeff
+    ) override;
 
-    std::unique_ptr<LaplacianOperatorFactory<ValueType>> clone() const override
+    std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>> clone() const override
     {
-        return std::make_unique<GaussGreenLaplacian<ValueType>>(*this);
+        return std::make_unique<GaussGreenLaplacian<FieldValueType, AssemblyType>>(*this);
     };
 
 private:
 
-    SurfaceInterpolation<ValueType> surfaceInterpolation_;
+    SurfaceInterpolation<FieldValueType> surfaceInterpolation_;
 
-    FaceNormalGradient<ValueType> faceNormalGradient_;
+    FaceNormalGradient<FieldValueType> faceNormalGradient_;
 };
 
-// instantiate the template class
-template class GaussGreenLaplacian<scalar>;
-template class GaussGreenLaplacian<Vec3>;
+// Required on MSVC: without extern template, each TU (DLL and EXE) gets its own
+// instantiation of table() static local, so the DLL's addSubType() inserts into
+// a different map than the one the test binary queries.
+extern template class GaussGreenLaplacian<scalar>;
+extern template class GaussGreenLaplacian<Vec3>;
+extern template class GaussGreenLaplacian<Vec3, scalar>;
 
 } // namespace NeoN

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/copyTo.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/vector/vector.hpp"
@@ -127,7 +128,7 @@ public:
  * @ingroup Vectors
  */
 template<typename ValueType, typename IndexType>
-class SegmentedVector
+class SegmentedVector : public SupportsCopyTo<SegmentedVector<ValueType, IndexType>>
 {
 public:
 
@@ -186,14 +187,11 @@ public:
      */
     localIdx numSegments() const { return segments_.size() - 1; }
 
-    /**
-     * @brief Returns a copy of the segmentedVector on the host
-     * @return copy of the segmentedVector on the host
-     */
-    SegmentedVector<ValueType, IndexType> copyToHost() const
+    [[nodiscard]] SegmentedVector<ValueType, IndexType> copyToExecutor(Executor exec) const override
     {
-        SegmentedVector<ValueType, IndexType> result(values_.copyToHost(), segments_.copyToHost());
-        return result;
+        return SegmentedVector<ValueType, IndexType>(
+            values_.copyToExecutor(exec), segments_.copyToExecutor(exec)
+        );
     }
 
 

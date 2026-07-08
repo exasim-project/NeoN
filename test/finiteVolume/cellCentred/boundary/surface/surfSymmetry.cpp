@@ -7,8 +7,6 @@
 
 #include "NeoN/NeoN.hpp"
 
-using Catch::Approx;
-
 TEST_CASE("symmetry_surface")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
@@ -18,12 +16,13 @@ TEST_CASE("symmetry_surface")
         auto mesh = NeoN::createSingleCellMesh(exec);
 
         // === scalar field =====================================================
+        // Surface symmetry for scalars zeros the flux at the symmetry plane
         {
-            auto field =
-                NeoN::Field<NeoN::scalar>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
-            NeoN::fill(field.internalVector(), 5.0);
-            NeoN::fill(field.boundaryData().refValue(), -1.0);
-            NeoN::fill(field.boundaryData().value(), -1.0);
+            auto field = NeoN::Field<NeoN::scalar>(
+                exec, mesh.nInternalFaces(), mesh.boundaryMesh().offset()
+            );
+            NeoN::fill(field.boundaryData().refValue(), 5.0);
+            NeoN::fill(field.boundaryData().value(), 5.0);
 
             NeoN::Dictionary dict;
             auto boundary =
@@ -33,34 +32,23 @@ TEST_CASE("symmetry_surface")
 
             boundary->correctBoundaryCondition(field);
 
-            auto [refValuesH, valuesH, faceCellsH, internalH] = copyToHosts(
-                field.boundaryData().refValue(),
-                field.boundaryData().value(),
-                mesh.boundaryMesh().faceCells(),
-                field.internalVector()
-            );
+            auto [refValuesH, valuesH] =
+                copyToHosts(field.boundaryData().refValue(), field.boundaryData().value());
 
-            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
-            {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
-            }
-
-            for (auto& boundaryValueV : valuesH.view(boundary->range()))
-            {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                REQUIRE(boundaryValueV == Approx(internalH.view()[ownerV]));
-            }
+            for (auto& v : refValuesH.view(boundary->range()))
+                REQUIRE(v == Catch::Approx(0.0));
+            for (auto& v : valuesH.view(boundary->range()))
+                REQUIRE(v == Catch::Approx(0.0));
         }
 
         // === vector field =====================================================
+        // Surface symmetry for Vec3 zeros the normal component of the existing boundary value
         {
-            auto field = NeoN::Field<NeoN::Vec3>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
-            NeoN::fill(field.internalVector(), NeoN::Vec3(1.0, 2.0, 3.0));
+            const NeoN::Vec3 inputVal(1.0, 2.0, 3.0);
+            auto field =
+                NeoN::Field<NeoN::Vec3>(exec, mesh.nInternalFaces(), mesh.boundaryMesh().offset());
             NeoN::fill(field.boundaryData().refValue(), NeoN::Vec3(-1.0, -1.0, -1.0));
-            NeoN::fill(field.boundaryData().value(), NeoN::Vec3(-1.0, -1.0, -1.0));
+            NeoN::fill(field.boundaryData().value(), inputVal);
 
             NeoN::Dictionary dict;
             auto boundary =
@@ -70,38 +58,32 @@ TEST_CASE("symmetry_surface")
 
             boundary->correctBoundaryCondition(field);
 
-            auto [refValuesH, valuesH, faceCellsH, internalH, nHatH] = copyToHosts(
+            auto [refValuesH, valuesH, nHatH] = copyToHosts(
                 field.boundaryData().refValue(),
                 field.boundaryData().value(),
-                mesh.boundaryMesh().faceCells(),
-                field.internalVector(),
-                mesh.boundaryMesh().nf()
+                mesh.boundaryMesh().faceUnitNormals()
             );
-
-            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
-            {
-                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
-                const auto nV = nHatH.view()[i];
-                const auto intV = internalH.view()[ownerV];
-                // const auto vn = vInt & n;
-                const auto vExpected = intV - nV * (intV & nV); // half-symmetry
-
-                for (auto d = 0u; d < 3; ++d)
-                    REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
-            }
 
             for (auto& boundaryValueV : valuesH.view(boundary->range()))
             {
                 const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
-                const auto ownerV = faceCellsH.view()[i];
                 const auto nV = nHatH.view()[i];
-                const auto intV = internalH.view()[ownerV];
-                // const auto vn = vInt & n;
-                const auto vExpected = intV - nV * (intV & nV);
-
+                const auto vExpected = inputVal - nV * (inputVal & nV);
                 for (auto d = 0u; d < 3; ++d)
-                    REQUIRE(boundaryValueV[d] == Approx(vExpected[d]));
+                {
+                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
+                }
+            }
+
+            for (auto& boundaryValueV : refValuesH.view(boundary->range()))
+            {
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - refValuesH.data());
+                const auto nV = nHatH.view()[i];
+                const auto vExpected = inputVal - nV * (inputVal & nV);
+                for (auto d = 0u; d < 3; ++d)
+                {
+                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
+                }
             }
         }
     }

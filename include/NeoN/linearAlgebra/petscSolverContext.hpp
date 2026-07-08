@@ -68,7 +68,7 @@ public:
     bool updated() const noexcept { return updated_; }
 
     //- Create auxiliary rows for calculation purposes
-    void initialize(const LinearSystem<scalar, localIdx>& sys)
+    void initialize(const LinearSystem<scalar>& sys)
     {
         std::size_t size = sys.matrix().values().size();
         std::size_t nrows = sys.rhs().size();

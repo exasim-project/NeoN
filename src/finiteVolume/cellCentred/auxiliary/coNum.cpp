@@ -12,6 +12,10 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/core/mpi/environment.hpp"
+#include "NeoN/core/mpi/operators.hpp"
+#endif
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -23,35 +27,38 @@ std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, con
     VolumeField<scalar> phi(exec, "phi", mesh, createCalculatedBCs<VolumeBoundary<scalar>>(mesh));
     fill(phi.internalVector(), 0.0);
 
-    const auto [surfFaceCells, volPhi, surfOwner, surfNeighbour, surfFaceFlux, surfV] = views(
-        mesh.boundaryMesh().faceCells(),
+    const auto [boundaryFaceOwners, volPhi, faceOwners, faceNeighbors, cellVolumes] = views(
+        mesh.boundaryMesh().faceOwners(),
         phi.internalVector(),
-        mesh.faceOwner(),
-        mesh.faceNeighbour(),
-        faceFlux.internalVector(),
+        mesh.faceOwners(),
+        mesh.faceNeighbors(),
         mesh.cellVolumes()
     );
+    const auto faceFluxes = faceFlux.internalVector().view();
+    const auto bFaceFlux = faceFlux.boundaryData().value().view();
     auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
 
+    auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     scalar maxCoNum = std::numeric_limits<scalar>::lowest();
     scalar meanCoNum = 0.0;
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
-            Kokkos::atomic_add(&volPhi[surfOwner[i]], flux);
-            Kokkos::atomic_add(&volPhi[surfNeighbour[i]], flux);
+            scalar flux = Kokkos::sqrt(faceFluxes[i] * faceFluxes[i]);
+            Kokkos::atomic_add(&volPhi[faceOwners[i]], flux);
+            Kokkos::atomic_add(&volPhi[faceNeighbors[i]], flux);
         },
         "computeCoNum::fluxInternal"
     );
 
     parallelFor(
         exec,
-        {nInternalFaces, faceFlux.size()},
-        NEON_LAMBDA(const localIdx i) {
-            auto own = surfFaceCells[i - nInternalFaces];
-            scalar flux = Kokkos::sqrt(surfFaceFlux[i] * surfFaceFlux[i]);
+        {0, nBoundaryFaces + nProcBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = boundaryFaceOwners[bfi];
+            scalar flux = Kokkos::sqrt(bFaceFlux[bfi] * bFaceFlux[bfi]);
             Kokkos::atomic_add(&volPhi[own], flux);
         },
         "computeCoNum::fluxBoundary"
@@ -65,7 +72,7 @@ std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, con
         exec,
         {0, mesh.nCells()},
         NEON_LAMBDA(const localIdx celli, NeoN::scalar& lmax) {
-            NeoN::scalar val = (volPhi[celli] / surfV[celli]);
+            NeoN::scalar val = (volPhi[celli] / cellVolumes[celli]);
             if (val > lmax) lmax = val;
         },
         maxReducer
@@ -85,12 +92,24 @@ std::pair<scalar, scalar> computeCoNum(const SurfaceField<scalar>& faceFlux, con
     parallelReduce(
         exec,
         {0, mesh.nCells()},
-        NEON_LAMBDA(const localIdx celli, scalar& lsum) { lsum += surfV[celli]; },
+        NEON_LAMBDA(const localIdx celli, scalar& lsum) { lsum += cellVolumes[celli]; },
         sumVol
     );
 
-    maxCoNum = maxReducer.reference() * 0.5 * dt;
-    meanCoNum = 0.5 * (sumPhi.reference() / sumVol.reference()) * dt;
+#ifdef NF_WITH_MPI_SUPPORT
+    if (mesh.boundaryMesh().isDistributed())
+    {
+        mpi::Environment env;
+        mpi::allReduce(maxValue, mpi::ReduceOp::Max, env.comm());
+        scalar sums[2] = {totalPhi, totalVol};
+        MPI_Allreduce(MPI_IN_PLACE, sums, 2, mpi::getType<scalar>(), MPI_SUM, env.comm());
+        totalPhi = sums[0];
+        totalVol = sums[1];
+    }
+#endif
+
+    maxCoNum = maxValue * 0.5 * dt;
+    meanCoNum = 0.5 * (totalPhi / totalVol) * dt;
 
     return {maxCoNum, meanCoNum};
 }

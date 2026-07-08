@@ -19,6 +19,8 @@ class Empty : public VolumeBoundaryFactory<ValueType>::template Register<Empty<V
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     Empty(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
         : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false})
     {}
@@ -26,6 +28,8 @@ public:
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
 
     static std::string name() { return "empty"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "Do nothing on the boundary."; }
 

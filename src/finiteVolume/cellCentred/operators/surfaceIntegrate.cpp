@@ -12,33 +12,34 @@ template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
     localIdx nInternalFaces,
-    View<const int> neighbour,
-    View<const int> owner,
-    View<const int> faceCells,
+    View<const int> neighbors,
+    View<const int> owners,
+    View<const int> faceOwners,
     View<const ValueType> flux,
+    View<const ValueType> bFlux,
     View<const scalar> v,
     View<ValueType> res,
     const dsl::Coeff operatorScaling
 )
 {
     auto nCells = v.size();
-    const auto nBoundaryFaces = faceCells.size();
+    const auto nBoundaryFaces = faceOwners.size();
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux[i]);
-            Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux[i]);
+            Kokkos::atomic_add(&res[owners[i]], flux[i]);
+            Kokkos::atomic_sub(&res[neighbors[i]], flux[i]);
         },
         "surfaceIntegrateInternalFaces"
     );
 
     parallelFor(
         exec,
-        {nInternalFaces, nInternalFaces + nBoundaryFaces},
-        NEON_LAMBDA(const localIdx i) {
-            auto own = faceCells[i - nInternalFaces];
-            Kokkos::atomic_add(&res[own], flux[i]);
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = faceOwners[bfi];
+            Kokkos::atomic_add(&res[own], bFlux[bfi]);
         },
         "surfaceIntegrateBoundaryFaces"
     );
@@ -58,6 +59,7 @@ void surfaceIntegrate(
         View<const int>,                                                                           \
         View<const int>,                                                                           \
         View<const int>,                                                                           \
+        View<const TYPENAME>,                                                                      \
         View<const TYPENAME>,                                                                      \
         View<const scalar>,                                                                        \
         View<TYPENAME>,                                                                            \

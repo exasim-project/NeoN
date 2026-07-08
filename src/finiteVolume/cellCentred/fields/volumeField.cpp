@@ -92,10 +92,40 @@ VolumeField<ValueType>& VolumeField<ValueType>::operator-=(const ValueType rhs)
 template<typename ValueType>
 void VolumeField<ValueType>::correctBoundaryConditions()
 {
+    // One-time set() pass: initialise patch data that is constant for the lifetime of the field
+    // (e.g. the processor BC's unused mixed-BC coefficients). Runs once per field instance.
+    if (!boundaryConditionsSet_)
+    {
+        for (auto& boundaryCondition : boundaryConditions_)
+        {
+            boundaryCondition.set(this->field_);
+        }
+        boundaryConditionsSet_ = true;
+    }
+
+    // Per-iteration update(): each processor BC seeds its owner value and posts a non-blocking
+    // isend/irecv WITHOUT draining (valueNoWait), so that ALL proc patches are in flight before
+    // any completes — completing patch-by-patch mid-loop serialises the exchange and drops the
+    // second patch's halo on a rank that owns more than one.
     for (auto& boundaryCondition : boundaryConditions_)
     {
-        boundaryCondition.correctBoundaryCondition(this->field_);
+        boundaryCondition.update(this->field_);
     }
+    // Drain the processor-halo exchange once, after all proc patches have posted. This leaves
+    // boundaryData().value() holding the true neighbour values on return; without it the result
+    // would depend on whether a later value() read happens to drain first (it often does not),
+    // silently leaving the owner seed at processor faces.
+    this->field_.boundaryData().waitAll();
+}
+
+template<typename ValueType>
+void VolumeField<ValueType>::correctBoundaryConditions(const BoundaryContext& ctx)
+{
+    for (auto& boundaryCondition : boundaryConditions_)
+    {
+        boundaryCondition.correctBoundaryCondition(this->field_, ctx);
+    }
+    this->field_.boundaryData().waitAll();
 }
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>

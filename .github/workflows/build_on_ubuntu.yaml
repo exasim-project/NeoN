@@ -67,7 +67,7 @@ jobs:
           sudo apt update
           sudo apt install \
             ninja-build \
-            clang-16 \
+            clang-19 \
             gcc-10 \
             libomp-16-dev \
             build-essential \
@@ -76,8 +76,8 @@ jobs:
           sudo apt remove clang-14
           sudo rm /usr/bin/clang
           sudo rm /usr/bin/clang++
-          sudo ln -s /usr/bin/clang-16 /usr/bin/clang
-          sudo ln -s /usr/bin/clang++-16 /usr/bin/clang++
+          sudo ln -s /usr/bin/clang-19 /usr/bin/clang
+          sudo ln -s /usr/bin/clang++-19 /usr/bin/clang++
 
       - name: Get versions
         run: |
@@ -85,36 +85,35 @@ jobs:
           ninja --version
           cmake --version
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
+      - name: Install python package
+        run: |
+          # create virtual environment
+          python -m venv venv
+          source venv/bin/activate
+          pip install nanobind pytest numpy
+
       - name: Build NeoN without Ginkgo
         if: ${{!contains(github.event.pull_request.labels.*.name, 'full-ci')}}
         run: |
-          uv venv
-          uv sync --no-install-project --all-extras -v
-          source .venv/bin/activate
-          CMAKE_FLAGS_ARR=(
-            -DNeoN_BUILD_TESTS=ON
-            -DNeoN_BUILD_PYTHON_BINDINGS=ON
-            -DNeoN_DEVEL_TOOLS=OFF
-            -DNeoN_WITH_GINKGO=OFF
+          source venv/bin/activate
+          cmake --preset ${{matrix.preset}} \
+            -DNeoN_BUILD_TESTS=ON \
+            -DNeoN_BUILD_PYTHON_BINDINGS=ON \
+            -DNeoN_DEVEL_TOOLS=OFF \
+            -DNeoN_WITH_GINKGO=OFF \
+            -DMPIEXEC_MAX_NUMPROCS=3 \
+            -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}} \
             -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF
-          )
-
-          CC=${{matrix.compiler.CC}}
-          CXX=${{matrix.compiler.CXX}}
-          cmake --preset ${{matrix.preset}} "${CMAKE_FLAGS_ARR[@]}"
           cmake --build  --preset ${{matrix.preset}}
 
       - name: Execute unit tests NeoN
         run: |
-          source .venv/bin/activate
+          source venv/bin/activate
           ctest --preset ${{matrix.preset}} -E bench
 
       - name: Install NeoN
@@ -122,4 +121,3 @@ jobs:
           sudo cmake --install build/${{matrix.preset}}
           sudo ls -la /usr/local/bin
           sudo ls -la /usr/local/lib
-          neon_test_vector

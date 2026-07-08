@@ -2,29 +2,44 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <algorithm>
+#include <numeric>
+
+#include "NeoN/core/error.hpp"
 #include "NeoN/mesh/unstructured/boundaryMesh.hpp"
+
 
 namespace NeoN
 {
 
+void BoundaryMesh::validate() const {}
+
 BoundaryMesh::BoundaryMesh(
     const Executor& exec,
-    labelVector faceCells,
-    vectorVector cf,
-    vectorVector cn,
-    vectorVector sf,
-    scalarVector magSf,
-    vectorVector nf,
+    labelVector faceOwners,
+    vectorVector faceCenters,
+    vectorVector ownerCellCenters,
+    vectorVector faceNormals,
+    scalarVector faceAreas,
+    vectorVector faceUnitNormals,
     vectorVector delta,
     scalarVector weights,
     scalarVector deltaCoeffs,
-    std::vector<localIdx> offset
+    std::vector<localIdx> offset,
+    localIdx procBoundaryPatches,
+    std::vector<localIdx> neighbourRank
 )
-    : exec_(exec), faceCells_(faceCells), Cf_(cf), Cn_(cn), Sf_(sf), magSf_(magSf), nf_(nf),
-      delta_(delta), weights_(weights), deltaCoeffs_(deltaCoeffs), offset_(offset) {};
+    : exec_(exec), faceOwners_(faceOwners), faceCenters_(faceCenters),
+      ownerCellCenters_(ownerCellCenters), faceNormals_(faceNormals), faceAreas_(faceAreas),
+      faceUnitNormals_(faceUnitNormals), delta_(delta), weights_(weights),
+      deltaCoeffs_(deltaCoeffs), offset_(offset), procBoundaryPatches_(procBoundaryPatches),
+      neighbourRank_(neighbourRank), rowOrderWriteIndex_(exec, 0)
+{
+    computeRowOrderWriteIndex();
+};
 
 // Accessor methods
-const labelVector& BoundaryMesh::faceCells() const { return faceCells_; }
+const labelVector& BoundaryMesh::faceOwners() const { return faceOwners_; }
 
 
 template<typename ValueType>
@@ -37,44 +52,44 @@ extractSubView(const Vector<ValueType>& vec, const std::vector<localIdx>& offs, 
 }
 
 
-View<const label> BoundaryMesh::faceCells(const localIdx i) const
+View<const label> BoundaryMesh::faceOwners(const localIdx i) const
 {
-    return extractSubView(faceCells_, offset_, i);
+    return extractSubView(faceOwners_, offset_, i);
 }
 
-const vectorVector& BoundaryMesh::cf() const { return Cf_; }
+const vectorVector& BoundaryMesh::faceCenters() const { return faceCenters_; }
 
-View<const Vec3> BoundaryMesh::cf(const localIdx i) const
+View<const Vec3> BoundaryMesh::faceCenters(const localIdx i) const
 {
-    return extractSubView(Cf_, offset_, i);
+    return extractSubView(faceCenters_, offset_, i);
 }
 
-const vectorVector& BoundaryMesh::cn() const { return Cn_; }
+const vectorVector& BoundaryMesh::ownerCellCenters() const { return ownerCellCenters_; }
 
-View<const Vec3> BoundaryMesh::cn(const localIdx i) const
+View<const Vec3> BoundaryMesh::ownerCellCenters(const localIdx i) const
 {
-    return extractSubView(Cn_, offset_, i);
+    return extractSubView(ownerCellCenters_, offset_, i);
 }
 
-const vectorVector& BoundaryMesh::sf() const { return Sf_; }
+const vectorVector& BoundaryMesh::faceNormals() const { return faceNormals_; }
 
-View<const Vec3> BoundaryMesh::sf(const localIdx i) const
+View<const Vec3> BoundaryMesh::faceNormals(const localIdx i) const
 {
-    return extractSubView(Sf_, offset_, i);
+    return extractSubView(faceNormals_, offset_, i);
 }
 
-const scalarVector& BoundaryMesh::magSf() const { return magSf_; }
+const scalarVector& BoundaryMesh::faceAreas() const { return faceAreas_; }
 
-View<const scalar> BoundaryMesh::magSf(const localIdx i) const
+View<const scalar> BoundaryMesh::faceAreas(const localIdx i) const
 {
-    return extractSubView(magSf_, offset_, i);
+    return extractSubView(faceAreas_, offset_, i);
 }
 
-const vectorVector& BoundaryMesh::nf() const { return nf_; }
+const vectorVector& BoundaryMesh::faceUnitNormals() const { return faceUnitNormals_; }
 
-View<const Vec3> BoundaryMesh::nf(const localIdx i) const
+View<const Vec3> BoundaryMesh::faceUnitNormals(const localIdx i) const
 {
-    return extractSubView(nf_, offset_, i);
+    return extractSubView(faceUnitNormals_, offset_, i);
 }
 
 const vectorVector& BoundaryMesh::delta() const { return delta_; }
@@ -93,12 +108,68 @@ View<const scalar> BoundaryMesh::weights(const localIdx i) const
 
 const scalarVector& BoundaryMesh::deltaCoeffs() const { return deltaCoeffs_; }
 
+localIdx BoundaryMesh::neighbourRank(const localIdx i) const { return neighbourRank_[i]; }
+
+const std::vector<localIdx>& BoundaryMesh::neighbourRank() const { return neighbourRank_; }
+
+localIdx BoundaryMesh::neighbourRankForRange(std::pair<localIdx, localIdx> range) const
+{
+    const localIdx nInnerBoundaries = nBoundaries() - nProcBoundaryPatches();
+    const localIdx rangeStart = range.first;
+    for (localIdx k = 0; k < static_cast<localIdx>(neighbourRank_.size()); k++)
+    {
+        if (offset_[static_cast<std::size_t>(nInnerBoundaries + k)] == rangeStart)
+            return neighbourRank_[static_cast<std::size_t>(k)];
+    }
+    NF_ERROR_EXIT("No processor patch found for the given range.");
+    return -1;
+}
+
 View<const scalar> BoundaryMesh::deltaCoeffs(const localIdx i) const
 {
     return extractSubView(deltaCoeffs_, offset_, i);
 }
 
+localIdx BoundaryMesh::nProcBoundaryPatches() const { return procBoundaryPatches_; }
+
+localIdx BoundaryMesh::nProcBoundaryFaces() const
+{
+    if (nProcBoundaryPatches() == 0)
+    {
+        return 0;
+    }
+    return offset_[offset_.size() - 1] - offset_[offset_.size() - nProcBoundaryPatches() - 1];
+}
+
 const std::vector<localIdx>& BoundaryMesh::offset() const { return offset_; }
+
+void BoundaryMesh::computeRowOrderWriteIndex()
+{
+    const localIdx nBndFaces = nBoundaryFaces();
+    const localIdx nProcFaces = nProcBoundaryFaces();
+    if (nProcFaces == 0)
+    {
+        return;
+    }
+    const auto ownersHostVec = faceOwners_.copyToHost();
+    const auto ownersHost = ownersHostVec.view();
+    rowSortPerm_.resize(static_cast<std::size_t>(nProcFaces));
+    std::iota(rowSortPerm_.begin(), rowSortPerm_.end(), localIdx(0));
+    std::stable_sort(
+        rowSortPerm_.begin(),
+        rowSortPerm_.end(),
+        [&](localIdx a, localIdx b)
+        { return ownersHost[nBndFaces + a] < ownersHost[nBndFaces + b]; }
+    );
+    std::vector<localIdx> invPerm(static_cast<std::size_t>(nProcFaces));
+    for (localIdx i = 0; i < nProcFaces; ++i)
+        invPerm[static_cast<std::size_t>(rowSortPerm_[static_cast<std::size_t>(i)])] = i;
+    rowOrderWriteIndex_ = Vector<localIdx>(exec_, std::move(invPerm));
+}
+
+const Vector<localIdx>& BoundaryMesh::getRowOrderWriteIndex() const { return rowOrderWriteIndex_; }
+
+const std::vector<localIdx>& BoundaryMesh::getRowSortPerm() const { return rowSortPerm_; }
 
 
 } // namespace NeoN

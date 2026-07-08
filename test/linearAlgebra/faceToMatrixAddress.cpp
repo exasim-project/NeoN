@@ -23,7 +23,8 @@ TEST_CASE("FaceToMatrixAddress")
 
     // TODO use 2D/3D versions of create1DUniform mesh
     auto mesh = create1DUniformMesh(exec, nCells);
-    auto mi = NeoN::la::createSparsityPatternFaceToMatrixAddress<NeoN::localIdx>(mesh);
+    auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
+        NeoN::la::CsrSparsityPattern<NeoN::localIdx>>(mesh);
 
     SECTION("Can construct sparsity pattern " + execName)
     {
@@ -35,19 +36,8 @@ TEST_CASE("FaceToMatrixAddress")
 
     SECTION("has correct diagOffs" + execName)
     {
-        auto diagOffs = mi->diagOffset().copyToHost();
-        auto diagOffsS = diagOffs.view();
-
-        REQUIRE(diagOffsS[0] == 0);
-        REQUIRE(diagOffsS[1] == 1);
-        REQUIRE(diagOffsS[2] == 1);
-        REQUIRE(diagOffsS[3] == 1);
-        REQUIRE(diagOffsS[4] == 1);
-        REQUIRE(diagOffsS[5] == 1);
-        REQUIRE(diagOffsS[6] == 1);
-        REQUIRE(diagOffsS[7] == 1);
-        REQUIRE(diagOffsS[8] == 1);
-        REQUIRE(diagOffsS[9] == 1);
+        auto exp = std::vector<NeoN::localIdx> {0, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        REQUIRE_THAT(mi->diagOffset(), Equals(exp, EqualInt()));
     }
 }
 

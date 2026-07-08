@@ -9,68 +9,57 @@
 #include "benchmarks/catch_main.hpp"
 #include "test/catch2/executorGenerator.hpp"
 
-TEST_CASE("Vector<Vec3>::defaultAllocator", "[bench]")
+TEMPLATE_TEST_CASE(
+    "Allocator::1D", "[bench]", NeoN::Vec3
+) //"Template" for consistency with other benchmarks.
 {
     auto size = GENERATE(1 << 14, 1 << 15, 1 << 16, 1 << 17, 1 << 18);
-    auto exec = NeoN::GPUExecutor();
-    auto execName = executorName(exec);
 
-    DYNAMIC_SECTION("" << size)
+    const std::string sectionName = std::to_string(size);
+
+    DYNAMIC_SECTION(sectionName + " - Default")
     {
-        BENCHMARK(std::string(execName))
+        auto exec = NeoN::GPUExecutor();
+        BENCHMARK(executorName(exec))
         {
-            NeoN::Vector<NeoN::scalar> cpuA(exec, size);
-            NeoN::fill(cpuA, 1.0);
-            NeoN::Vector<NeoN::scalar> cpuB(exec, size);
-            NeoN::fill(cpuB, 2.0);
-            NeoN::Vector<NeoN::scalar> cpuC(exec, size);
-            NeoN::fill(cpuC, 0.0);
+            NeoN::Vector<TestType> cpuA(exec, size);
+            NeoN::fill(cpuA, NeoN::one<TestType>());
+            NeoN::Vector<TestType> cpuB(exec, size);
+            NeoN::fill(cpuB, 2 * NeoN::one<TestType>());
+            NeoN::Vector<TestType> cpuC(exec, size);
+            NeoN::fill(cpuC, NeoN::zero<TestType>());
         };
     }
-}
 
 #if NF_WITH_UMPIRE
-
-TEST_CASE("Vector<Vec3>::umpireAllocator", "[bench]")
-{
-    auto size = GENERATE(1 << 14, 1 << 15, 1 << 16, 1 << 17, 1 << 18);
-    auto exec = NeoN::createDefaultExecutor();
-    auto execName = executorName(exec);
-
-    DYNAMIC_SECTION("" << size)
+    DYNAMIC_SECTION(sectionName + " - Umpire")
     {
-        BENCHMARK(std::string(execName))
+        auto exec = NeoN::createDefaultExecutor();
+        BENCHMARK(executorName(exec))
         {
-            NeoN::Vector<NeoN::scalar> cpuA(exec, size);
-            NeoN::fill(cpuA, 1.0);
-            NeoN::Vector<NeoN::scalar> cpuB(exec, size);
-            NeoN::fill(cpuB, 2.0);
-            NeoN::Vector<NeoN::scalar> cpuC(exec, size);
-            NeoN::fill(cpuC, 0.0);
+            NeoN::Vector<TestType> cpuA(exec, size);
+            NeoN::fill(cpuA, NeoN::one<TestType>());
+            NeoN::Vector<TestType> cpuB(exec, size);
+            NeoN::fill(cpuB, 2 * NeoN::one<TestType>());
+            NeoN::Vector<TestType> cpuC(exec, size);
+            NeoN::fill(cpuC, NeoN::zero<TestType>());
         };
     }
-}
 
-TEST_CASE("Vector<Vec3>::umpirePoolAllocator", "[bench]")
-{
-    auto size = GENERATE(1 << 14, 1 << 15, 1 << 16, 1 << 17, 1 << 18);
-    auto exec = NeoN::createDefaultExecutor(std::make_unique<NeoN::UmpireAllocator>());
-    auto execName = executorName(exec);
-    NeoN::UmpireMempoolHandler::setupUmpirePool(NeoN::memorySpace(exec), 1024 * 1024 * 1024);
-
-    DYNAMIC_SECTION("" << size)
+    DYNAMIC_SECTION(sectionName + " - UmpirePool")
     {
-        BENCHMARK(std::string(execName))
+        auto exec = NeoN::createDefaultExecutor(std::make_unique<NeoN::UmpireAllocator>());
+        NeoN::UmpireMempoolHandler::setupUmpirePool(NeoN::memorySpace(exec), 1024 * 1024 * 1024);
+        BENCHMARK(executorName(exec))
         {
-            NeoN::Vector<NeoN::scalar> cpuA(exec, size);
-            NeoN::fill(cpuA, 1.0);
-            NeoN::Vector<NeoN::scalar> cpuB(exec, size);
-            NeoN::fill(cpuB, 2.0);
-            NeoN::Vector<NeoN::scalar> cpuC(exec, size);
-            NeoN::fill(cpuC, 0.0);
+            NeoN::Vector<TestType> cpuA(exec, size);
+            NeoN::fill(cpuA, NeoN::one<TestType>());
+            NeoN::Vector<TestType> cpuB(exec, size);
+            NeoN::fill(cpuB, 2 * NeoN::one<TestType>());
+            NeoN::Vector<TestType> cpuC(exec, size);
+            NeoN::fill(cpuC, NeoN::zero<TestType>());
         };
+        NeoN::UmpireMempoolHandler::destroyUmpirePool(NeoN::memorySpace(exec));
     }
-    NeoN::UmpireMempoolHandler::destroyUmpirePool(NeoN::memorySpace(exec));
-}
-
 #endif
+}

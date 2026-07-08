@@ -84,6 +84,12 @@ public:
     [[nodiscard]] size_t size() const;
 
     /**
+     * @brief Rewind the read cursor used by next<>() so the list can be
+     *        iterated again from the beginning.
+     */
+    void reset() const { nextIndex_ = 0; }
+
+    /**
      * @brief Retrieves the value associated with the given index, casting it to
      * the specified type.
      * @tparam T The type to cast the value to.
@@ -165,6 +171,18 @@ public:
         const ReturnType& retValue = get<ReturnType>(nextIndex_);
         nextIndex_++;
         return retValue;
+    }
+
+    /**
+     * @brief Checks whether the next token (the one a subsequent next() would
+     * return) holds a value of the given type. Does not advance the index and
+     * does not emit any logging — safe to use as a speculative peek when the
+     * caller wants to consume the token conditionally.
+     */
+    template<typename ReturnType>
+    [[nodiscard]] bool peekIs() const
+    {
+        return nextIndex_ < data_.size() && data_[nextIndex_].type() == typeid(ReturnType);
     }
 
     /**

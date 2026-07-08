@@ -47,12 +47,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Add clang repo
-      run: |
-        sudo add-apt-repository 'deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main'
-        wget https://apt.llvm.org/llvm-snapshot.gpg.key
-        sudo apt-key add llvm-snapshot.gpg.key
-
     - uses: actions/setup-python@v3
       with:
         python-version: "3.12"
@@ -63,8 +57,8 @@ jobs:
         sudo apt install \
            ninja-build \
            iwyu \
-           clang-18 \
-           libomp-18-dev \
+           clang-19 \
+           libomp-19-dev \
            libopenmpi-dev \
            openmpi-bin
 
@@ -77,13 +71,11 @@ jobs:
 
     - name: Create Compilation Database
       run: |
-        CC=clang \
-        CXX=clang++ \
         cmake --preset develop \
           -DNeoN_DEVEL_TOOLS=OFF \
           -DNeoN_WITH_GINKGO=OFF \
           -DNeoN_WITH_SUNDIALS=OFF \
-          -DCMAKE_CXX_COMPILER=clang++-18 \
+          -DCMAKE_CXX_COMPILER=clang++-19 \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
           -DNeoN_ENABLE_MPI_WITH_THREAD_SUPPORT=OFF \
           -DNeoN_ENABLE_IWYU=ON \
@@ -114,8 +106,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install \
-           clang-tidy-18 \
-           libomp-18-dev \
+           clang-tidy-19 \
+           libomp-19-dev \
            libopenmpi-dev \
            openmpi-bin
 
@@ -135,7 +127,7 @@ jobs:
           | sed 's/^"\(.*\)"$/\1/' \
           | grep -F -f pattern - > files
         # run clang-tidy on all specified files
-        clang-tidy-18 --fix --extra-arg=-w -p build/develop $(cat files)
+        clang-tidy-19 --fix --extra-arg=-w -p build/develop $(cat files)
     - name: Check for fixes
       id: tidy-fixes
       run: |

@@ -5,10 +5,9 @@
 #pragma once
 
 #include "NeoN/core/vector/vector.hpp"
-#include "sparsityPattern.hpp"
-#include "faceToMatrixAddress.hpp"
-
-#include <type_traits>
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 namespace NeoN::la
 {
@@ -18,7 +17,7 @@ namespace NeoN::la
  * @brief A view struct to allow easy read/write on all executors.
  *
  * @tparam ValueType The value type of the non-zero entries.
- * @tparam IndexType The index type of the rows and columns.
+ * @tparam SparsityViewType The type of the sparsity pattern, eg COO or CSR.
  */
 template<typename ValueType, typename SparsityViewType>
 struct MatrixView
@@ -68,12 +67,13 @@ struct MatrixView
  * @tparam IndexType The index type of the rows and columns.
  */
 template<typename ValueType, typename SparsityType>
-class Matrix
+class Matrix : public NeoN::SupportsCopyTo<Matrix<ValueType, SparsityType>>
 {
 
     void validate()
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
+        // TODO this is not necessarily true for matrix types with padding like ELL
         NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
     }
 
@@ -102,10 +102,34 @@ public:
     Matrix(
         const Vector<ValueType>& values,
         const Vector<typename SparsityType::SparsityIndexType>& colIdxs,
-        const Vector<typename SparsityType::SparsityIndexType>& rowOffs
+        const Vector<typename SparsityType::SparsityIndexType>& rowOffs,
+        Dimensions dimensions
     )
         : values_(values),
-          sparsityPattern_(std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs)))
+          sparsityPattern_(
+              std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs), dimensions)
+          )
+    {
+        validate();
+    }
+
+    /**
+     * @brief Constructor for Matrix with a FaceToMatrixAddress.
+     *
+     * The sparsity pattern and the face-to-matrix address are passed as independent objects.
+     * Only available for matrices whose index type is localIdx.
+     *
+     * @param values The non-zero values of the matrix.
+     * @param sparsity The sparsity pattern of the matrix.
+     * @param faceToMatrixAddress The face-to-matrix address mapping.
+     */
+    Matrix(
+        const Vector<ValueType>& values,
+        std::shared_ptr<const SparsityType> sparsity,
+        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress
+    )
+        requires std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
+        : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
     {
         validate();
     }
@@ -132,6 +156,9 @@ public:
      * @return Number of non-zero values.
      */
     [[nodiscard]] localIdx nNonZeros() const { return sparsityPattern_->nnz(); }
+
+    void reset() { values_ = ValueType {}; }
+
 
     /**
      * @brief Get a reference to values vector.
@@ -168,17 +195,7 @@ public:
      * @param dstExec The destination executor.
      * @return A copy of the matrix on the destination executor.
      */
-    [[nodiscard]] Matrix<ValueType, SparsityType> copyToExecutor(Executor dstExec) const
-    {
-        if (dstExec == values_.exec())
-        {
-            return *this;
-        }
-        return {
-            values_.copyToExecutor(dstExec),
-            std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec))
-        };
-    }
+    [[nodiscard]] Matrix<ValueType, SparsityType> copyToExecutor(Executor dstExec) const override;
 
     /**
      * @brief Get a reference to column indices vector.
@@ -187,12 +204,11 @@ public:
     [[nodiscard]] std::shared_ptr<const SparsityType> sparsity() const { return sparsityPattern_; }
 
     /**
-     * @brief Copy the matrix to the host.
-     * @return A copy of the matrix on the host.
+     * @brief Get the FaceToMatrixAddress associated with this matrix (may be null).
      */
-    [[nodiscard]] Matrix<ValueType, SparsityType> copyToHost() const
+    [[nodiscard]] std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
     {
-        return copyToExecutor(SerialExecutor());
+        return faceToMatrixAddress_;
     }
 
     /**
@@ -232,18 +248,22 @@ private:
     Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
 
     std::shared_ptr<const SparsityType> sparsityPattern_;
+
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress_;
 };
 
 
 template<typename ValueType, typename IndexType>
-using CSRMatrix = Matrix<ValueType, la::SparsityPattern<IndexType>>;
+using CSRMatrix = Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
+
+template<typename ValueType, typename IndexType>
+using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
 
 /** @brief extract the upper triangular of the matrix
  * @note this function is meant for testing purposes, it will recompute upper offsets
  */
 template<typename ValueType, typename IndexType>
 [[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>&);
-
 
 /** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
  * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
@@ -261,11 +281,25 @@ void scaledInverseDiag(
  * entries are identical
  */
 [[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress<localIdx>& mi, const Vector<scalar>&);
+scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
 
 void scaledInverseDiag(
     const CSRMatrix<Vec3, localIdx>& mtx,
-    const FaceToMatrixAddress<localIdx>& mi,
+    const FaceToMatrixAddress& mi,
+    const Vector<scalar>& a,
+    Vector<scalar>& out
+);
+
+/** @brief scalar-matrix variant of scaledInverseDiag for the segregated vector-solve form
+ * @note used when a vector field is assembled into a scalar coefficient matrix; the scalar
+ * diagonal is shared across all field components, so no per-component selection is needed
+ */
+[[nodiscard]] Vector<scalar>
+scaledInverseDiag(const CSRMatrix<scalar, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
+
+void scaledInverseDiag(
+    const CSRMatrix<scalar, localIdx>& mtx,
+    const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 );
@@ -304,5 +338,21 @@ void scaledInvDiagNegLUx(
     Vector<Vec3>& out
 );
 
+/** @brief scalar-matrix / Vec3-rhs variant of scaledInvDiagNegLUx
+ *
+ * Mirrors the Vec3-matrix overload but for a scalar coefficient matrix assembled from a
+ * vector field (segregated vector-solve form). The scalar diagonal/off-diagonal entries
+ * scale all three rhs components equally.
+ *
+ * @notes explicitly sets out values to zero
+ */
+void scaledInvDiagNegLUx(
+    const CSRMatrix<scalar, localIdx>& mtx,
+    const Vector<Vec3>& a,
+    const Vector<Vec3>& b,
+    const Vector<scalar>& vol,
+    Vector<scalar>& rAU,
+    Vector<Vec3>& out
+);
 
 } // namespace NeoN

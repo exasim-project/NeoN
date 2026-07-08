@@ -23,11 +23,17 @@ if [ "$GPU_VENDOR" == "nvidia" ]; then
     nvcc --version
 
     echo "=== Configuring, building, and testing NeoN on NVIDIA ==="
+    export CUDA_VISIBLE_DEVICES=0
     cmake --preset develop \
         -DCMAKE_CUDA_ARCHITECTURES=89 \
         -DNeoN_WITH_THREADS=OFF \
+        -DNeoN_WITH_MPI=ON \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
+    # The CI OpenMPI uses the shared-memory transport (mca_btl_vader) which is
+    # not CUDA-aware.  Force staging through host buffers to avoid a SIGSEGV
+    # when device pointers are passed to MPI_Isend.
+    export NEON_FORCE_HOST_BUFFER=1
     ctest --preset develop -E bench --output-on-failure
 
 elif [ "$GPU_VENDOR" == "amd" ]; then
@@ -40,6 +46,7 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
     echo "=== AMD GPU and compiler driver info ==="
     rocminfo | grep "AMD"
     hipcc --version
+    which mpirun
 
     echo "=== Configuring, building, and testing NeoN on AMD ==="
     cmake --preset develop \
@@ -51,14 +58,16 @@ elif [ "$GPU_VENDOR" == "amd" ]; then
         -DCMAKE_HIP_ARCHITECTURES=gfx90a \
         -DKokkos_ARCH_AMD_GFX90A=ON \
         -DNeoN_WITH_THREADS=OFF \
+        -DNeoN_WITH_MPI=ON \
         -DNeoN_BUILD_BENCHMARKS=ON
     cmake --build --preset develop
+    # See NVIDIA comment above — same rationale for AMD ROCm MPI.
+    export NEON_FORCE_HOST_BUFFER=1
     ctest --preset develop -E bench --output-on-failure
 
 elif [ "$GPU_VENDOR" == "intel" ]; then
-    if ! sycl-ls --ignore-device-selectors 2>/dev/null | grep -qi intel; then
-        echo "No Intel GPU found or Level Zero runtime not available"
-    fi
+    SYCL_PI_TRACE=1
+    sycl-ls 2>/dev/null | grep '^\[level_zero:gpu\]'
 
     # Compiler info (non-fatal)
     icpx --version 2>/dev/null | head -1 || echo "icpx not found"
@@ -68,11 +77,12 @@ elif [ "$GPU_VENDOR" == "intel" ]; then
         -DCMAKE_CXX_COMPILER=icpx \
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-sycl-2020-compat" \
         -DKokkos_ENABLE_SYCL=ON \
+        -DKokkos_ARCH_INTEL_PVC=ON \
         -DNeoN_WITH_THREADS=OFF \
+        -DNeoN_WITH_MPI=OFF \
         -DNeoN_BUILD_BENCHMARKS=ON \
         -DCMAKE_BUILD_TYPE="release"
     cmake --build --preset develop
-    export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
     ctest --preset develop -E bench --output-on-failure
 
 else

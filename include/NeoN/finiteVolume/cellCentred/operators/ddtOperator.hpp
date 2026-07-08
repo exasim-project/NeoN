@@ -4,12 +4,13 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -41,6 +42,19 @@ public:
     void bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
 
     void bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
+
+    /* @brief Implicit temporal assembly into a scalar-matrix / ValueType-rhs linear system
+     *        (segregated vector-solve form). Only present when ValueType != scalar; for scalar
+     *        fields the same-type overload above already covers LinearSystem<scalar, scalar>.
+     *        The scalar diagonal entry scales every rhs component equally.
+     */
+    template<typename F = ValueType>
+        requires(!std::is_same_v<F, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls, scalar, scalar dt) const;
+
+    void bdf1KernelScalarMtx(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const;
+
+    void bdf2KernelScalarMtx(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const;
 
     DdtScheme scheme() const noexcept { return scheme_; }
 

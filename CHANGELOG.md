@@ -1,12 +1,30 @@
 # Version 0.3.0 (unreleased)
 ## Features
+- Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
+- Add experimental support for cell based assembly strategies [#471](https://github.com/exasim-project/NeoN/pull/471),[#517](https://github.com/exasim-project/NeoN/pull/517), [#473](https://github.com/exasim-project/NeoN/pull/473)
+- Add experimental support for COO and CSR Matrices [#486](https://github.com/exasim-project/NeoN/pull/486)
 - Add experimental umpire support [#455](https://github.com/exasim-project/NeoN/pull/455)
+- Add experimental MPI support [#519](https://github.com/exasim-project/NeoN/pull/519), [#520](https://github.com/exasim-project/NeoN/pull/520), [#512](https://github.com/exasim-project/NeoN/pull/512), [#525](https://github.com/exasim-project/NeoN/pull/525), [#531](https://github.com/exasim-project/NeoN/pull/531), [#522](https://github.com/exasim-project/NeoN/pull/522)
 - Add python bindings via nanobind [#382](https://github.com/exasim-project/NeoN/pull/382)
+- Correct the Ginkgo version to 2.0.0 (unreleased) [#493](https://github.com/exasim-project/NeoN/pull/493)
+- Add tensor and symmTensor primitives, Su type sourceTerm and passing of fields to BCs [#428](https://github.com/exasim-project/NeoN/pull/428)
+- Add uniform mesh generator [#475](https://github.com/exasim-project/NeoN/pull/475)
+- Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
+- Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
+- Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
 
 ### Misc
-- Bump Ginkgo to 1.11 and Kokkos 4.7.01 [#409](https://github.com/exasim-project/NeoN/pull/409)
+- Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)
+- Include RHS / explicit source assembly [#539](https://github.com/exasim-project/NeoN/pull/539)
+- Build the distributed off-diagonal matrix with local row indices and widen non-local columns on the executor, removing host round-trips in the Ginkgo distributed matrix assembly
 - Remove stencilDataBase [#416](https://github.com/exasim-project/NeoN/pull/416)
 - Added backward ddtScheme and scheme selection mechanism [#419](https://github.com/exasim-project/NeoN/pull/419)
+- Support AssemblyType != ValueType for Vec3 fields [#536](https://github.com/exasim-project/NeoN/pull/536)
+- Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
+- Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
+
+## Fixes
+- Fix distributed processor-face correctness: multi-patch (scotch) halo exchange, ddtFluxCorr proc-face correction, processor BC on coupled patches, and row-sorted non-local COO for correct CUDA distributed apply [#528](https://github.com/exasim-project/NeoN/pull/528)
 
 # Version 0.2.0 (2025/12/03)
 ## Features

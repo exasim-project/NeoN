@@ -49,9 +49,7 @@ public:
             exec,
             fieldName,
             mesh,
-            Field<ValueType>(
-                exec, mesh.nInternalFaces() + mesh.nBoundaryFaces(), mesh.boundaryMesh().offset()
-            )
+            Field<ValueType>(exec, mesh.nInternalFaces(), mesh.boundaryMesh().offset())
         ),
           FieldDatabaseMixin(), boundaryConditions_(boundaryConditions)
     {}
@@ -138,10 +136,25 @@ public:
      */
     void correctBoundaryConditions()
     {
+        // One-time set() pass: initialise constant patch data once per field instance (e.g. the
+        // processor BC's unused mixed-BC coefficients).
+        if (!boundaryConditionsSet_)
+        {
+            for (auto& boundaryCondition : boundaryConditions_)
+            {
+                boundaryCondition.set(this->field_);
+            }
+            boundaryConditionsSet_ = true;
+        }
+        // Per-iteration update(): proc patches post their (already face-valued) data without
+        // draining, so all are in flight before any completes.
         for (auto& boundaryCondition : boundaryConditions_)
         {
-            boundaryCondition.correctBoundaryCondition(this->field_);
+            boundaryCondition.update(this->field_);
         }
+        // Drain any processor-halo exchange once, after all proc patches have posted. See
+        // VolumeField::correctBoundaryConditions for the rationale (batched post-then-wait).
+        this->field_.boundaryData().waitAll();
     }
 
     std::vector<SurfaceBoundary<ValueType>> boundaryConditions() const
@@ -154,6 +167,10 @@ private:
     std::vector<SurfaceBoundary<ValueType>>
         boundaryConditions_;      // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
+
+    // Whether the one-time boundary set() pass has run for this field instance. Default-init to
+    // false so copies re-run set() on their first correctBoundaryConditions() call.
+    bool boundaryConditionsSet_ {false};
 };
 
 inline SurfaceField<scalar>
@@ -164,6 +181,7 @@ operator*(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
     result.boundaryData().value() *= rhs.boundaryData().value();
     return result;
 }
+
 inline SurfaceField<scalar>
 operator+(const SurfaceField<scalar>& lhs, const SurfaceField<scalar>& rhs)
 {

@@ -32,7 +32,9 @@ void registerInputs(nb::module_& m)
             {
                 new (&self) NeoN::TokenList();
                 for (const auto& s : strings)
+                {
                     self.insert(std::any(s));
+                }
             },
             "strings"_a,
             "Create a TokenList from a Python list of strings (e.g. TokenList(['linear']))"
@@ -171,6 +173,22 @@ void registerInputs(nb::module_& m)
             "key"_a,
             "value"_a,
             "Insert bool value"
+        )
+        .def(
+            "insert_dict",
+            [](NeoN::Dictionary& self, const std::string& key, const NeoN::Dictionary& value)
+            { self.insert(key, std::any(value)); },
+            "key"_a,
+            "value"_a,
+            "Insert a sub-dictionary value (e.g. divSchemes)"
+        )
+        .def(
+            "insert_token_list",
+            [](NeoN::Dictionary& self, const std::string& key, const NeoN::TokenList& value)
+            { self.insert(key, std::any(value)); },
+            "key"_a,
+            "value"_a,
+            "Insert a TokenList value (e.g. a discretisation scheme)"
         )
         .def(
             "__repr__",

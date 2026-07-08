@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include "NeoN/core/macros.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
@@ -160,9 +161,12 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
     );
 }
 
-template<typename MatrixType>
+template<typename MatrixType, typename ValueType>
 void computeResidual(
-    const MatrixType& mtx, const Vector<scalar>& bV, const Vector<scalar>& xV, Vector<scalar>& resV
+    const MatrixType& mtx,
+    const Vector<ValueType>& bV,
+    const Vector<ValueType>& xV,
+    Vector<ValueType>& resV
 )
 {
     auto [res, b, x] = views(resV, bV, xV);
@@ -174,7 +178,9 @@ void computeResidual(
         NEON_LAMBDA(const localIdx rowi) {
             auto rowStart = sparsity.rowOffs[rowi];
             auto rowEnd = sparsity.rowOffs[rowi + 1];
-            scalar sum = 0.0;
+            // ValueType sum: scalar coeffs * Vec3 x broadcasts to each component for
+            // the segregated vector-solve form (scalar matrix, Vec3 rhs)
+            ValueType sum = zero<ValueType>();
             for (localIdx coli = rowStart; coli < rowEnd; coli++)
             {
                 sum += coeffs[coli] * x[sparsity.colIdxs[coli]];
@@ -185,8 +191,53 @@ void computeResidual(
     );
 }
 
-template void computeResidual<CSRMatrix<
-    scalar,
-    localIdx>>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
+template void computeResidual<
+    CSRMatrix<scalar, localIdx>,
+    scalar>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
+
+template void computeResidual<
+    CSRMatrix<scalar, localIdx>,
+    Vec3>(const CSRMatrix<scalar, localIdx>&, const Vector<Vec3>&, const Vector<Vec3>&, Vector<Vec3>&);
+
+template<typename IndexType>
+Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows)
+{
+    auto rowsHost = rows.copyToHost();
+    const auto rowsV = rowsHost.view();
+    const auto nnz = rowsV.size();
+
+    if (nnz == 0)
+    {
+        return Vector<IndexType>(SerialExecutor {}, 1, IndexType(0)).copyToExecutor(rows.exec());
+    }
+
+    // TODO can this be realized without copying to host?
+    IndexType maxRow = 0;
+    for (localIdx i = 0; i < nnz; i++)
+    {
+        if (rowsV[i] > maxRow) maxRow = rowsV[i];
+    }
+
+    const IndexType nRows = maxRow + 1;
+    Vector<IndexType> rowOffs(SerialExecutor {}, nRows + 1, IndexType(0));
+    auto rowOffsV = rowOffs.view();
+
+    for (localIdx i = 0; i < nnz; i++)
+    {
+        rowOffsV[rowsV[i] + 1]++;
+    }
+
+    for (IndexType r = 0; r < nRows; r++)
+    {
+        rowOffsV[r + 1] += rowOffsV[r];
+    }
+
+    return rowOffs.copyToExecutor(rows.exec());
+}
+
+#define NN_INSTANTIATE_ROWS_TO_ROW_OFFS(TYPENAME)                                                  \
+    template Vector<TYPENAME> rowsToRowOffs<TYPENAME>(const Vector<TYPENAME>&)
+
+NN_FOR_ALL_INTEGER_TYPES(NN_INSTANTIATE_ROWS_TO_ROW_OFFS);
 
 }

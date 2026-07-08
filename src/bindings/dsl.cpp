@@ -23,6 +23,24 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
 
+// TODO(operator-registration workaround): drop this once the runtime-selection registry is shared
+// across shared objects (e.g. exporting the factory table with default visibility). The operators
+// above are declared `extern template`, so simply including the headers does NOT instantiate them
+// here and their self-registration only fires in libNeoN. The `_neon` module is compiled
+// `-fvisibility=hidden`, giving it a private, empty copy of the factory's lookup table, so scheme
+// resolution at assembly time (e.g. "Gauss" for div/laplacian) aborts with "Could not find
+// constructor for Gauss". Forcing explicit instantiation here runs the self-registration inside
+// `_neon` so its table is populated.
+namespace NeoN::finiteVolume::cellCentred
+{
+template class GaussGreenDiv<scalar>;
+template class GaussGreenDiv<Vec3>;
+template class GaussGreenDiv<Vec3, scalar>;
+template class GaussGreenLaplacian<scalar>;
+template class GaussGreenLaplacian<Vec3>;
+template class GaussGreenLaplacian<Vec3, scalar>;
+} // namespace NeoN::finiteVolume::cellCentred
+
 namespace nb = nanobind;
 using namespace nb::literals;
 
@@ -135,7 +153,17 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
         .def(
             "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
         )
-        .def("size", &Expr::size);
+        .def("size", &Expr::size)
+        // Resolve each operator's discretisation scheme from a schemes Dictionary
+        // (e.g. {"divSchemes": {"div(phi,U)": ["Gauss", "linear"]}}). This is the call
+        // that drives the runtime-selection factory lookup (create("Gauss")), so it is
+        // also the regression hook for operator self-registration inside _neon.
+        .def(
+            "read",
+            [](Expr& self, const Dictionary& schemes) { self.read(schemes); },
+            "schemes"_a,
+            "Resolve operator schemes from a Dictionary"
+        );
 }
 
 void registerDSL(nb::module_& m)
@@ -172,7 +200,12 @@ void registerDSL(nb::module_& m)
     exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def("grad", &dsl::exp::grad);
-    exp_m.def("source", &dsl::exp::source<scalar>);
+    exp_m.def("source", [](ScalarVolField& coeff) { return dsl::exp::source<scalar>(coeff); });
+    exp_m.def(
+        "source",
+        [](const ScalarVolField& coeff, const ScalarVolField& phi)
+        { return dsl::exp::source<scalar>(coeff, phi); }
+    );
 
     // solve
     m.def(

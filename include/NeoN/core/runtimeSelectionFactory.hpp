@@ -14,10 +14,11 @@
 // how-to-force-a-static-member-to-be-initialized?noredirect=1&lq=1
 #pragma once
 
-#include <memory>
-#include <unordered_map>
-#include <iostream>
 #include <functional>
+#include <iostream>
+#include <memory>
+#include <ranges>
+#include <unordered_map>
 
 #include "error.hpp"
 
@@ -236,12 +237,8 @@ public:
      */
     static std::vector<std::string> entries()
     {
-        std::vector<std::string> entries;
-        for (const auto& it : table())
-        {
-            entries.push_back(it.first);
-        }
-        return entries;
+        auto k = table() | std::views::keys;
+        return {k.begin(), k.end()};
     }
 
 
@@ -390,7 +387,7 @@ private:
     static void keyExistsOrError(const std::string& name)
     {
         const auto& tbl = table();
-        if (tbl.find(name) == tbl.end())
+        if (!tbl.contains(name))
         {
             auto msg = std::string {" Could not find constructor for "} + name + "\n";
             msg += "valid constructors are: \n";

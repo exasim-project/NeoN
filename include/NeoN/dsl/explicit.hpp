@@ -9,7 +9,7 @@
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/dsl/temporalOperator.hpp"
 #include "NeoN/dsl/ddt.hpp"
-
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 // TODO: decouple from fvcc
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
@@ -58,5 +58,11 @@ laplacian(const fvcc::SurfaceField<scalar>& gamma, fvcc::VolumeField<ValueType>&
 }
 
 SpatialOperator<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
+
+template<typename ValueType>
+SpatialOperator<ValueType> source(fvcc::VolumeField<ValueType>& coeff)
+{
+    return SpatialOperator<ValueType>(fvcc::SourceTerm(dsl::Operator::Type::Explicit, coeff));
+}
 
 } // namespace NeoN

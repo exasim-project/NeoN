@@ -17,14 +17,6 @@ if(APPLE)
 endif()
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-# Ninja requires this to avoid RPATH relinking errors during install. Must be a CACHE variable so it
-# survives cmake re-configuration when CMAKE_CUDA_COMPILER changes mid-configure.
-if(DEFINED SKBUILD)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH
-      ON
-      CACHE BOOL "" FORCE)
-endif()
-
 # Add the cmake folder so the find_package command finds custom packages
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -66,6 +58,7 @@ option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
 option(NeoN_WITH_SPDLOG "Use spdlog for logging" OFF)
 option(NeoN_WITH_THREADS "Prefer Kokkos Threads over OMP" ON)
+option(NeoN_WITH_MPI "Enable MPI" ON)
 
 option(NeoN_ENABLE_SANITIZE_ADDRESS "Enable address sanitizer" OFF)
 option(NeoN_ENABLE_SANITIZE_LEAK "Enable leak sanitizer" OFF)
@@ -76,8 +69,9 @@ option(NeoN_ENABLE_CPP_CHECK "Enable cpp check static analyzer" OFF)
 option(NeoN_ENABLE_CLANG_TIDY "Enable clang tidy static analyzer" OFF)
 option(NeoN_ENABLE_PCH "Enable precompiled header" OFF)
 option(NeoN_ENABLE_IWYU "Enable iwyu checks" OFF)
-option(NeoN_ENABLE_MPI_SUPPORT "Enable MPI" ON)
-option(NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT "Enable MPI with threading support" OFF)
+# NeoN_ENABLE_MPI_WITH_THREAD_SUPPORT is defined in cmake/DetectMpiThreadSupport.cmake (included via
+# cmake/CxxThirdParty.cmake when NeoN_WITH_MPI is ON) so that its default value reflects the runtime
+# capability of the local MPI installation.
 option(NeoN_ENABLE_WARNINGS "Treat compiler warnings as errors" OFF)
 mark_as_advanced(NeoN_ENABLE_WARNINGS)
 option(NeoN_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
@@ -127,8 +121,8 @@ if(DEFINED SKBUILD)
 endif()
 
 # Enable CUDA early so Kokkos doesn't replace CMAKE_CXX_COMPILER with
-# kokkos_launch_compiler, which triggers a CMake re-configure that loses
-# all -D flags and preset variables.
+# kokkos_launch_compiler, which triggers a CMake re-configure that loses all -D
+# flags and preset variables (e.g. NeoN_WITH_AMREX / NeoN_AMREX_GPU_BACKEND).
 include(CheckLanguage)
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
@@ -146,6 +140,26 @@ add_library(NeoN_options INTERFACE)
 add_library(NeoN_warnings INTERFACE)
 if(NeoN_ENABLE_WARNINGS)
   neon_set_project_warnings(NeoN_warnings ${NeoN_WARNINGS_AS_ERRORS} "" "" "")
+endif()
+
+# Promote nvcc's "constexpr __host__ function called from a __host__ __device__ function"
+# diagnostics (20013 / 20015) to hard errors on CUDA builds. With Kokkos_ENABLE_CUDA_CONSTEXPR=ON
+# (forced in cmake/AutoEnableDevice.cmake) these never fire. If that flag is ever disabled, nvcc
+# would otherwise SILENTLY miscompile device-side element access through View/std::span operator[]
+# (writes vanish on the GPU, results are garbage). Failing the build is far safer than shipping
+# wrong numerics. -Xcudafe needs each number in its own flag; SHELL: keeps the repeated tokens from
+# being de-duplicated by CMake.
+if(Kokkos_ENABLE_CUDA)
+  set(_neon_cuda_diag_errors "SHELL:-Xcudafe --diag_error=20013"
+                             "SHELL:-Xcudafe --diag_error=20015")
+  # Always apply to CUDA-language translation units (nvcc compiles .cu files directly).
+  target_compile_options(NeoN_warnings
+                         INTERFACE "$<$<COMPILE_LANGUAGE:CUDA>:${_neon_cuda_diag_errors}>")
+  # Apply to CXX only when nvcc_wrapper is the CXX compiler; plain g++/clang++ reject -Xcudafe.
+  if(CMAKE_CXX_COMPILER MATCHES "nvcc_wrapper")
+    target_compile_options(NeoN_warnings
+                           INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:${_neon_cuda_diag_errors}>")
+  endif()
 endif()
 
 if(NeoN_BUILD_PCH)
@@ -219,98 +233,104 @@ endif()
 
 if(NeoN_ENABLE_IWYU)
   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
-  set(IWYU_PATH_AND_OPTIONS ${iwyu_path})
+  set(IWYU_PATH_AND_OPTIONS ${iwyu_path} -Xiwyu --mapping_file=${PROJECT_SOURCE_DIR}/cmake/iwyu.imp)
   set_property(TARGET NeoN PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_AND_OPTIONS})
+  # IWYU 8.21 (clang-19) segfaults on volume/processor.cpp due to the template complexity of the
+  # processor boundary hierarchy (scalar/Vec3/Tensor instantiations); a segfault cannot be fixed by
+  # cleaning includes, so the file is excluded. surface/processor.cpp lints fine, so only the volume
+  # variant is excluded. The property must be set in the NeoN target's directory scope
+  # (TARGET_DIRECTORY) with an absolute path, or it silently fails to attach and IWYU runs anyway.
+  set_source_files_properties(
+    ${PROJECT_SOURCE_DIR}/src/finiteVolume/cellCentred/boundary/volume/processor.cpp
+    TARGET_DIRECTORY NeoN PROPERTIES SKIP_LINTING ON)
 endif()
 
 include(cmake/banner.cmake)
 
-if(NOT DEFINED SKBUILD)
+install(
+  TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
+  EXPORT NeoNTargets
+  INCLUDES
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(
+  EXPORT NeoNTargets
+  FILE NeoNTargets.cmake
+  NAMESPACE NeoN::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+# install internal ginkgo version
+if(ginkgo_POPULATED)
   install(
-    TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
-    EXPORT NeoNTargets
+    TARGETS ginkgo
+    EXPORT GinkgoTargets
     INCLUDES
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    DESTINATION include)
+  install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
+endif()
 
+if(nlohmann_json_POPULATED)
   install(
-    EXPORT NeoNTargets
-    FILE NeoNTargets.cmake
-    NAMESPACE NeoN::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+    TARGETS nlohmann_json
+    EXPORT nlohmannTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
+endif()
 
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
-  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+# umpire installs its own targets when fetched via CPM
 
-  include(CMakePackageConfigHelpers)
-  configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
-    "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+# install internal cpptrace version
+if(cpptrace_POPULATED)
+  install(
+    TARGETS cpptrace
+    EXPORT CpptraceTargets
+    INCLUDES
+    DESTINATION include)
+  install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
+endif()
 
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
-
-  # install internal ginkgo version
-  if(ginkgo_POPULATED)
-    install(
-      TARGETS ginkgo
-      EXPORT GinkgoTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
-  endif()
-
-  if(nlohmann_json_POPULATED)
-    install(
-      TARGETS nlohmann_json
-      EXPORT nlohmannTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
-  endif()
-
-  # umpire installs its own targets when fetched via CPM
-
-  # install internal cpptrace version
-  if(cpptrace_POPULATED)
-    install(
-      TARGETS cpptrace
-      EXPORT CpptraceTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
-  endif()
-
-  # install internal spdlog version TODO why does spdlog_POPULATED not work?
-  if(spdlog_ADDED)
-    install(
-      TARGETS spdlog_header_only
-      EXPORT SpdlogTargets
-      INCLUDES
-      DESTINATION include)
-    install(
-      EXPORT SpdlogTargets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spdlog
-      NAMESPACE spdlog::)
-  endif()
-
+# install internal spdlog version TODO why does spdlog_POPULATED not work?
+if(spdlog_ADDED)
+  install(
+    TARGETS spdlog_header_only
+    EXPORT SpdlogTargets
+    INCLUDES
+    DESTINATION include)
   if(fmt_ADDED)
-    install(
-      TARGETS fmt-header-only
-      EXPORT NeoNTargets
-      INCLUDES
-      DESTINATION include)
+    install(TARGETS fmt-header-only EXPORT SpdlogTargets)
   endif()
+  install(
+    EXPORT SpdlogTargets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spdlog
+    NAMESPACE spdlog::)
+endif()
 
-  # install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
-  # sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
-  # SundialsTargets NAMESPACE SUNDIALS::) endif()
+if(fmt_ADDED)
+  install(TARGETS fmt-header-only EXPORT NeoNTargets)
+  install(DIRECTORY "${fmt_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
 
-  if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
-    export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
-  else()
-    message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
-  endif()
-endif() # NOT DEFINED SKBUILD
+# install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
+# sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
+# SundialsTargets NAMESPACE SUNDIALS::) endif()
+
+if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
+  export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
+else()
+  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
+endif()

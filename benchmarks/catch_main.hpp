@@ -26,5 +26,5 @@ int main(int argc, char* argv[])
 
     int result = session.run();
 
-    return result;
+    std::_Exit(result); // Note: Fix for bench_allocator failure
 }

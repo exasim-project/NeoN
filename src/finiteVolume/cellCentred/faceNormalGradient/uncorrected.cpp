@@ -19,39 +19,57 @@ void computeFaceNormalGrad(
     const UnstructuredMesh& mesh = surfaceVector.mesh();
     const auto& exec = surfaceVector.exec();
 
-    const auto [owner, neighbour, surfFaceCells] =
-        views(mesh.faceOwner(), mesh.faceNeighbour(), mesh.boundaryMesh().faceCells());
+    const auto [owners, neighbors, boundaryFaceOwners] =
+        views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
-
-    const auto [phif, phi, phiBCValue, nonOrthDeltaCoeffs] = views(
+    // The uncorrected surface-normal gradient uses nonOrthDeltaCoeffs (1/(n.d)), the over-relaxed
+    // face-normal distance, NOT the orthogonal 1/|d|. On a non-orthogonal mesh 1/(n.d) is the
+    // consistent first-order normal-gradient coefficient; the two coincide on orthogonal meshes.
+    const auto [phif, phifB, phi, phiBCValue, nonOrthDeltaCoeffs, nonOrthDeltaCoeffsB] = views(
         surfaceVector.internalVector(),
+        surfaceVector.boundaryData().value(),
         volVector.internalVector(),
         volVector.boundaryData().value(),
-        geometryScheme->nonOrthDeltaCoeffs().internalVector()
+        geometryScheme->nonOrthDeltaCoeffs().internalVector(),
+        geometryScheme->nonOrthDeltaCoeffs().boundaryData().value()
     );
 
     auto nInternalFaces = mesh.nInternalFaces();
+    auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     NeoN::parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx facei) {
-            phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbour[facei]] - phi[owner[facei]]);
+            phif[facei] = nonOrthDeltaCoeffs[facei] * (phi[neighbors[facei]] - phi[owners[facei]]);
         },
         "computeFaceNormalGradInternal"
     );
 
     NeoN::parallelFor(
         exec,
-        {nInternalFaces, phif.size()},
-        NEON_LAMBDA(const localIdx facei) {
-            auto faceBCI = facei - nInternalFaces;
-            auto own = surfFaceCells[faceBCI];
-
-            phif[facei] = nonOrthDeltaCoeffs[facei] * (phiBCValue[faceBCI] - phi[own]);
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = boundaryFaceOwners[bfi];
+            phifB[bfi] = nonOrthDeltaCoeffsB[bfi] * (phiBCValue[bfi] - phi[own]);
         },
         "computeFaceNormalGradBoundary"
     );
+
+    auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    if (nProcBoundaryFaces > 0)
+    {
+        NeoN::parallelFor(
+            exec,
+            {0, nProcBoundaryFaces},
+            NEON_LAMBDA(const localIdx procFacei) {
+                auto bcfacei = nBoundaryFaces + procFacei;
+                auto own = boundaryFaceOwners[bcfacei];
+                phifB[bcfacei] = nonOrthDeltaCoeffsB[bcfacei] * (phiBCValue[bcfacei] - phi[own]);
+            },
+            "computeFaceNormalGradProcBoundary"
+        );
+    }
 }
 
 #define NF_DECLARE_COMPUTE_IMP_FNG(TYPENAME)                                                       \

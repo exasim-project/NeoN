@@ -20,4 +20,5 @@ SpatialOperator<NeoN::Vec3> grad(const fvcc::VolumeField<NeoN::scalar>& phi)
     );
 }
 
+
 } // namespace NeoN

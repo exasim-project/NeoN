@@ -14,13 +14,20 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+template<typename ValueType>
+class VolumeField;
+
+class BoundaryContext;
+
 /* collects attributes of a boundary for simple queries
  *
  */
 struct BoundaryAttributes
 {
     bool assignable; ///< whether values can be assigned to the boundary patch
-    bool fixesValue;
+    bool fixesValue; ///< whether the bc enforces a fixed field value (Dirichlet), not a
+                     ///< gradient/Neumann condition NOTE this is somewhat redundant to
+                     ///< valueFraction of boundaryData
 };
 
 template<typename ValueType>
@@ -46,7 +53,32 @@ public:
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) = 0;
 
+    virtual void correctBoundaryCondition(Field<ValueType>& domainVector, const BoundaryContext&)
+    {
+        correctBoundaryCondition(domainVector);
+    }
+
+    /**
+     * @brief One-time patch initialisation, applied once per field before the first update().
+     *
+     * For patch data that is fixed for the lifetime of the field (e.g. constant mixed-BC
+     * coefficients). The default is a no-op; BCs that have nothing constant to set leave it
+     * untouched and do all their work in update().
+     */
+    virtual void set([[maybe_unused]] Field<ValueType>& domainVector) {}
+
+    /**
+     * @brief Per-iteration boundary update, applied on every correctBoundaryConditions() call.
+     *
+     * The default forwards to correctBoundaryCondition(), so a BC that does not implement the
+     * set()/update() split keeps its previous behaviour (full correction every iteration).
+     * BCs that split move only the per-iteration work here and the one-time work into set().
+     */
+    virtual void update(Field<ValueType>& domainVector) { correctBoundaryCondition(domainVector); }
+
     virtual std::unique_ptr<VolumeBoundaryFactory> clone() const = 0;
+
+    virtual std::string getName() const = 0;
 
     BoundaryAttributes attributes() const { return attributes_; }
 
@@ -87,10 +119,28 @@ public:
         boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector);
     }
 
+    virtual void
+    correctBoundaryCondition(Field<ValueType>& domainVector, const BoundaryContext& ctx)
+    {
+        boundaryCorrectionStrategy_->correctBoundaryCondition(domainVector, ctx);
+    }
+
+    virtual void set(Field<ValueType>& domainVector)
+    {
+        boundaryCorrectionStrategy_->set(domainVector);
+    }
+
+    virtual void update(Field<ValueType>& domainVector)
+    {
+        boundaryCorrectionStrategy_->update(domainVector);
+    }
+
     const BoundaryAttributes attributes() const
     {
         return boundaryCorrectionStrategy_->attributes();
     }
+
+    const std::string name() const { return boundaryCorrectionStrategy_->getName(); }
 
 private:
 

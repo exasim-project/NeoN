@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include <unordered_map>
+#include <algorithm>
+#include <ranges>
 #include <string>
+#include <unordered_map>
 #include <memory>
-#include <algorithm> // for std::sort
 
 #include "NeoN/core/database/document.hpp"
 
@@ -322,12 +323,9 @@ public:
      */
     std::vector<std::string> sortedKeys() const
     {
-        std::vector<std::string> result;
-        for (const auto& [key, doc] : docs_)
-        {
-            result.push_back(key);
-        }
-        std::sort(result.begin(), result.end());
+        auto k = docs_ | std::views::keys;
+        std::vector<std::string> result(k.begin(), k.end());
+        std::ranges::sort(result);
         return result;
     }
 

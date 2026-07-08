@@ -9,7 +9,6 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -24,11 +23,15 @@ public:
 
     using VectorValueType = ValueType;
 
+    // Sp: source += scaling * coefficients * field  (implicit or explicit)
     SourceTerm(
         dsl::Operator::Type termType,
         const VolumeField<scalar>& coefficients,
         const VolumeField<ValueType>& field
     );
+
+    // Su: source += scaling * coefficients  (explicit only)
+    SourceTerm(dsl::Operator::Type termType, VolumeField<ValueType>& coefficients);
 
     ~SourceTerm();
 
@@ -40,10 +43,14 @@ public:
 
     std::string getName() const { return "sourceTerm"; }
 
+
+    Dictionary getConfig() const { return {}; }
+
 private:
 
-    const VolumeField<scalar>& coefficients_;
+    // Non-null for Sp mode. Null for Su mode (field_ from mixin IS the coefficient).
+    const VolumeField<scalar>* spCoeff_;
 };
 
 
-} // namespace NeoN
+} // namespace NeoN::finiteVolume::cellCentred
