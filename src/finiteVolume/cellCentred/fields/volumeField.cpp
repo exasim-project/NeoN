@@ -114,6 +114,10 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     }
     // Drain the processor-halo exchange once, after all proc patches have posted.
     this->field_.boundaryData().waitAll();
+    // Fence the GPU execution space: BC update() kernels are dispatched asynchronously and
+    // caller code (e.g. constructFrom / constructAndRegister) may copy the boundary data
+    // immediately after this call. Without the fence the copy races with the kernel.
+    fence(this->exec());
 }
 
 template<typename ValueType>
@@ -124,6 +128,7 @@ void VolumeField<ValueType>::correctBoundaryConditions(const BoundaryContext& ct
         boundaryCondition.correctBoundaryCondition(this->field_, ctx);
     }
     this->field_.boundaryData().waitAll();
+    fence(this->exec());
 }
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>
