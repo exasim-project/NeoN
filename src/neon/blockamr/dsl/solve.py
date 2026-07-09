@@ -414,6 +414,10 @@ def _solve_implicit(eqn, schemes=None):
     atol = cfg.get("atol", 1e-12)
     max_iter = cfg.get("max_iter", 200)
     verbose = cfg.get("verbose", 0)
+    # Optional explicit nodal bottom solver: one of "cg", "bicgstab", "smoother",
+    # "cgbicg", "bicgcg", "default". None → let AMReX pick its default (a Krylov
+    # solver, which converges this system in ~5 V-cycles).
+    bottom_solver = cfg.get("bottom_solver", None)
 
     p_field = imp_op.field
     U_field = rhs_op.vel_field
@@ -499,16 +503,15 @@ def _solve_implicit(eqn, schemes=None):
 
     s = p_field._imp_solver
     s['mlmg'].set_verbose(verbose)
-    # The single-sweep bottom solve (below) needs many more outer V-cycles, so
-    # lift the cap for outflow solves while leaving the closed-case cap as set.
-    s['mlmg'].set_max_iter(max(max_iter, 1000) if s['has_dirichlet'] else max_iter)
+    s['mlmg'].set_max_iter(max_iter)
     s['mlmg'].set_bottom_verbose(0)
-    # Outflow (Dirichlet pressure) makes the nodal system one on which the
-    # Krylov bottom solvers (BiCGStab, CG) DIVERGE. The relaxation smoother is
-    # unconditionally stable, so use it as the bottom solver for outflow cases.
-    # Closed/periodic (all-Neumann) solves keep the default bottom solver.
-    if s['has_dirichlet']:
-        s['mlmg'].set_bottom_solver("smoother")
+    # Bottom solver: default (None) lets AMReX use its Krylov default, which —
+    # with the agglomeration+consolidation enabled above for the has_dirichlet
+    # (outflow) case — converges the nodal projection in ~5 V-cycles. Override
+    # via schemes["bottom_solver"] if needed. (Do NOT force "smoother" here: it
+    # cost ~600 iters/solve, ~100x the Krylov default, and dominated runtime.)
+    if bottom_solver is not None:
+        s['mlmg'].set_bottom_solver(bottom_solver)
 
     # 1. Pack velocity with ghost cells into ncomp=3 MultiFab (per level)
     for lev in range(n_levels):

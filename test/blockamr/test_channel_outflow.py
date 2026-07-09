@@ -45,7 +45,14 @@ def _make_channel():
         yhi=fixedValue([U0, 0.0, 0.0]),
     )
     dt = 0.25 * float(geom.cell_size()[0]) / U0
-    return DSLIncompressibleSolver(mesh, NU, dt, u_bc)
+    # This free-stream-wall channel is one of the outflow cases where the Krylov
+    # nodal bottom solvers diverge; it needs the relaxation smoother. (The slip-
+    # wall immersed-cylinder outflow, by contrast, converges in ~5 V-cycles with
+    # the default Krylov bottom — hence the bottom solver is a per-case scheme,
+    # not a hardcoded default.)
+    schemes_p = {"rtol": 1e-10, "atol": 1e-12, "max_iter": 200,
+                 "bottom_solver": "smoother"}
+    return DSLIncompressibleSolver(mesh, NU, dt, u_bc, schemes_p=schemes_p)
 
 
 def _seed_plug_flow_with_blob(solver, amp):
