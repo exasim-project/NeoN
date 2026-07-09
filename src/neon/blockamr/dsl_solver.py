@@ -104,6 +104,15 @@ class DSLIncompressibleSolver:
         # value in solid cells so the projection deflects flow around the body.
         self._eb = eb
         self._solid_masks = self._build_solid_masks() if eb is not None else None
+        # History of the direct-forcing reaction force on the body, one entry
+        # per ``step()``: ``(t, Fx, Fy, Fz)`` in kinematic units (force / rho).
+        # For a stationary no-slip body the forcing sets U=0 in the solid cells,
+        # so the momentum removed from the fluid per unit time,
+        # ``F = (rho/dt) * sum_solid(U_before) * cell_vol``, is (Newton's third
+        # law) the hydrodynamic force the fluid exerts on the body — the drag /
+        # lift. Post-processing (``postpro.force_coefficients`` / ``strouhal``)
+        # reads this. Empty when there is no immersed body.
+        self._ibm_force_history: list[tuple[float, float, float, float]] = []
 
         self._nu_func = lambda x, y, z, t: nu * jnp.ones_like(x)
         self._schemes_p = schemes_p or {
@@ -162,18 +171,34 @@ class DSLIncompressibleSolver:
         return masks
 
     def _force_solid(self, u_body=(0.0, 0.0, 0.0)):
-        """Reset the velocity in solid cells to the (stationary) wall value."""
+        """Reset the velocity in solid cells to the (stationary) wall value.
+
+        Records the reaction force on the body (momentum removed per unit time,
+        ``F = (rho/dt) * sum_solid(U_before - u_body) * cell_vol``, rho=1) in
+        ``self._ibm_force_history`` for the post-processing observables.
+        """
         if self._solid_masks is None:
             return
         u_vec = jnp.asarray(u_body).reshape(1, 1, 1, 3)
+        force = jnp.zeros(3)
         for lev in range(self.mesh.n_levels()):
             mf = self.U.mf[lev]
+            dx = [float(v) for v in self.mesh.geom(lev).cell_size()]
+            cell_vol = dx[0] * dx[1] * dx[2]
             grown = mf.grown_arrays()
             results = []
             for bi, g in enumerate(grown):
                 m = self._solid_masks[lev][bi][..., None]
+                # momentum removed from the fluid in this box (per rho)
+                force = force + jnp.sum(
+                    jnp.where(m, g - u_vec, 0.0), axis=(0, 1, 2)
+                ) * cell_vol
                 results.append(jnp.where(m, u_vec, g))
             mf.copy_grown_arrays(results)
+        fvec = force / self.dt
+        self._ibm_force_history.append(
+            (self._t, float(fvec[0]), float(fvec[1]), float(fvec[2]))
+        )
 
     def step(self):
         """Advance one time step using the DSL.
