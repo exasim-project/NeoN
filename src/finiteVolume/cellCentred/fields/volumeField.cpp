@@ -4,6 +4,7 @@
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/macros.hpp"
+#include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -111,11 +112,12 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     {
         boundaryCondition.update(this->field_);
     }
-    // Drain the processor-halo exchange once, after all proc patches have posted. This leaves
-    // boundaryData().value() holding the true neighbour values on return; without it the result
-    // would depend on whether a later value() read happens to drain first (it often does not),
-    // silently leaving the owner seed at processor faces.
+    // Drain the processor-halo exchange once, after all proc patches have posted.
     this->field_.boundaryData().waitAll();
+    // Fence the GPU execution space: BC update() kernels are dispatched asynchronously and
+    // caller code (e.g. constructFrom / constructAndRegister) may copy the boundary data
+    // immediately after this call. Without the fence the copy races with the kernel.
+    fence(this->exec());
 }
 
 template<typename ValueType>
@@ -126,6 +128,7 @@ void VolumeField<ValueType>::correctBoundaryConditions(const BoundaryContext& ct
         boundaryCondition.correctBoundaryCondition(this->field_, ctx);
     }
     this->field_.boundaryData().waitAll();
+    fence(this->exec());
 }
 
 #define NN_DECLARE_FIELD(TYPENAME) template class VolumeField<TYPENAME>
