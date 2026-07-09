@@ -28,6 +28,15 @@ TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
     return fvcc::DdtOperator(dsl::Operator::Type::Implicit, phi);
 }
 
+// Density-weighted temporal operator ddt(rho, phi): diagonal uses rho, rhs uses
+// oldTime(rho), giving the conservative (rho_n*phi - rho_o*phi_o)/dt form.
+template<typename ValueType>
+TemporalOperator<ValueType>
+ddt(fvcc::VolumeField<scalar>& rho, fvcc::VolumeField<ValueType>& phi)
+{
+    return fvcc::DdtOperator<ValueType>(dsl::Operator::Type::Implicit, rho, phi);
+}
+
 template<typename ValueType>
 SpatialOperator<ValueType>
 source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
