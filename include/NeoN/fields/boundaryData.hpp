@@ -347,7 +347,10 @@ public:
                     valH.view()[buf.rangeStart + k] = buf.recvBuf[static_cast<std::size_t>(k)];
             }
             Vector<ValueType> backToDevice = valH.copyToExecutor(exec_);
-            value_ = backToDevice; // operator=(const Vector&): setContainer in-place, no realloc
+            value_ = backToDevice; // operator=(const Vector&): setContainer dispatches async kernel
+            // Fence before backToDevice goes out of scope: the setContainer kernel reads from
+            // backToDevice.data_; freeing it while the kernel runs is a GPU page fault.
+            fence(exec_);
         }
         else
         {
