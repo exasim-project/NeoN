@@ -130,45 +130,42 @@
 \DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Drain\ any\ processor-\/halo\ exchange\ once,\ after\ all\ proc\ patches\ have\ posted.\ See}}
 \DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VolumeField::correctBoundaryConditions\ for\ the\ rationale\ (batched\ post-\/then-\/wait).}}
 \DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_afef01a21b9579a76855ce85e318e2cab}{field\_}}.boundaryData().waitAll();}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Mirror\ VolumeField:\ fence\ after\ BC\ update\ kernels\ so\ callers\ that\ immediately}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ read\ boundary\ data\ see\ fully-\/committed\ values\ on\ GPU.}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a3457b41aba26d227a5cfa86d052abbfb}{fence}}(this-\/>\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}());}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00161}00161\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00162}00162\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00163}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{00163}}\ \ \ \ \ std::vector<SurfaceBoundary<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{boundaryConditions}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00164}00164\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ boundaryConditions\_;}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00166}00166\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00167}00167\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00168}00168\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00169}00169\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00170}00170\ \ \ \ \ std::vector<SurfaceBoundary<ValueType>>}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ boundaryConditions\_;\ \ \ \ \ \ \textcolor{comment}{//\ The\ vector\ of\ boundary\ conditions}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00172}00172\ \ \ \ \ std::optional<Database*>\ db\_;\ \textcolor{comment}{//\ The\ optional\ pointer\ to\ the\ database}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00173}00173\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{comment}{//\ Whether\ the\ one-\/time\ boundary\ set()\ pass\ has\ run\ for\ this\ field\ instance.\ Default-\/init\ to}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00175}00175\ \ \ \ \ \textcolor{comment}{//\ false\ so\ copies\ re-\/run\ set()\ on\ their\ first\ correctBoundaryConditions()\ call.}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00176}00176\ \ \ \ \ \textcolor{keywordtype}{bool}\ boundaryConditionsSet\_\ \{\textcolor{keyword}{false}\};}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00177}00177\ \};}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00178}00178\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00179}00179\ \textcolor{keyword}{inline}\ SurfaceField<scalar>}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00180}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aee25e9fd121df9a620046de2aeec8093}{00180}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aee25e9fd121df9a620046de2aeec8093}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00181}00181\ \{}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00182}00182\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ result(lhs);}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00183}00183\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}()\ *=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}();}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00184}00184\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value()\ *=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value();}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00185}00185\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00186}00186\ \}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00187}00187\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00188}00188\ \textcolor{keyword}{inline}\ SurfaceField<scalar>}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00189}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3deeafaf46d7d4e44bef4d6206b2604a}{00189}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3deeafaf46d7d4e44bef4d6206b2604a}{operator+}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ rhs)}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00190}00190\ \{}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00191}00191\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ result(lhs);}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00192}00192\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}()\ +=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}();}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00193}00193\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value()\ +=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value();}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00195}00195\ \}}
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00196}00196\ }
-\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00197}00197\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00158}00158\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00160}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{00160}}\ \ \ \ \ std::vector<SurfaceBoundary<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField_a6649cd216863a27aca6dba2f0b42f30b}{boundaryConditions}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00161}00161\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ boundaryConditions\_;}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00163}00163\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00165}00165\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00167}00167\ \ \ \ \ std::vector<SurfaceBoundary<ValueType>>}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ boundaryConditions\_;\ \ \ \ \ \ \textcolor{comment}{//\ The\ vector\ of\ boundary\ conditions}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00169}00169\ \ \ \ \ std::optional<Database*>\ db\_;\ \textcolor{comment}{//\ The\ optional\ pointer\ to\ the\ database}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00171}00171\ \ \ \ \ \textcolor{comment}{//\ Whether\ the\ one-\/time\ boundary\ set()\ pass\ has\ run\ for\ this\ field\ instance.\ Default-\/init\ to}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00172}00172\ \ \ \ \ \textcolor{comment}{//\ false\ so\ copies\ re-\/run\ set()\ on\ their\ first\ correctBoundaryConditions()\ call.}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00173}00173\ \ \ \ \ \textcolor{keywordtype}{bool}\ boundaryConditionsSet\_\ \{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00174}00174\ \};}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00175}00175\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00176}00176\ \textcolor{keyword}{inline}\ SurfaceField<scalar>}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00177}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aee25e9fd121df9a620046de2aeec8093}{00177}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_aee25e9fd121df9a620046de2aeec8093}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00178}00178\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00179}00179\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ result(lhs);}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00180}00180\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}()\ *=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}();}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00181}00181\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value()\ *=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value();}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00182}00182\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00183}00183\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00184}00184\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00185}00185\ \textcolor{keyword}{inline}\ SurfaceField<scalar>}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00186}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3deeafaf46d7d4e44bef4d6206b2604a}{00186}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3deeafaf46d7d4e44bef4d6206b2604a}{operator+}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ lhs,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ rhs)}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00187}00187\ \{}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00188}00188\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ result(lhs);}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00189}00189\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}()\ +=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_af26fd248fd921be40c9dd98d912feddb}{internalVector}}();}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00190}00190\ \ \ \ \ result.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value()\ +=\ rhs.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a8cad826fe324b211022770b2d4eb7a31}{boundaryData}}().value();}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00191}00191\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00192}00192\ \}}
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{surfaceField_8hpp_source_l00194}00194\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
