@@ -193,6 +193,8 @@ void registerDSL(nb::module_& m)
     imp_m.def("laplacian", &dsl::imp::laplacian<Vec3>);
     imp_m.def("source", &dsl::imp::source<scalar>);
     imp_m.def("source", &dsl::imp::source<Vec3>);
+    imp_m.def("susp", &dsl::imp::susp<scalar>);
+    imp_m.def("susp", &dsl::imp::susp<Vec3>);
 
     // Explicit factories
     exp_m.def("ddt", &dsl::exp::ddt<scalar>);
