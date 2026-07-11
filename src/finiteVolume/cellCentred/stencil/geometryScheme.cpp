@@ -166,11 +166,6 @@ void GeometryScheme::update()
             exec_
         );
         computeFaceDeltaVectors(exec_, mesh_, faceDeltaOwner_, faceDeltaNeighbour_);
-        // Drain all geometry kernels before reset() unmaps the mesh arrays they read.
-        // resize(0) inside reset() also fences, but an explicit barrier here makes the
-        // synchronisation boundary unambiguous on Intel PVC where Kokkos::fence() and
-        // sycl::free() interact in subtle ways across multiple CCS engines.
-        fence(exec_);
         reset();
     }
 }
