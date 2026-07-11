@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+import pytest
+
 import neon
 
 
@@ -17,3 +19,58 @@ def test_scalar_volume_field_and_bcs(executor):
 
     neon.fill(field.internal_vector(), 2.0)
     assert neon.equal(field.internal_vector(), 2.0)
+
+
+def _filled(exec, mesh, value):
+    """A scalar volume field of the given uniform value (helper for the op tests)."""
+    field = neon.ScalarVolumeField(exec, "f", mesh)
+    neon.fill(field.internal_vector(), value)
+    return field
+
+
+def _values(field):
+    """The field's internal values as a host NumPy array (works on any executor)."""
+    np = pytest.importorskip("numpy")
+    return np.asarray(field.internal_vector().copy_to_host())
+
+
+def test_scalar_field_elementwise_operators(executor):
+    """The on-device elementwise operators the turbulence closures need.
+
+    These are elementwise Kokkos kernels, so the assertions hold on every executor
+    (serial / cpu / gpu) the fixture parameterises — i.e. the Spalart-Allmaras maths
+    (chi/fv1/fv2/Stilda/r/g/fw) can be authored as field ops that run on-device.
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 8)
+
+    a = _filled(exec, mesh, 3.0)
+    b = _filled(exec, mesh, 5.0)
+
+    # power: integer, square-root and a fractional exponent (the fw (...)^(1/6) case)
+    assert np.allclose(_values(a**3.0), 27.0)
+    assert np.allclose(_values(_filled(exec, mesh, 16.0) ** 0.5), 4.0)
+    assert np.allclose(_values(_filled(exec, mesh, 64.0) ** (1.0 / 6.0)), 2.0)
+
+    # elementwise max / min against another field and against a scalar
+    assert np.allclose(_values(neon.field_max(a, b)), 5.0)
+    assert np.allclose(_values(neon.field_min(a, b)), 3.0)
+    assert np.allclose(_values(neon.field_max(a, 4.0)), 4.0)
+    assert np.allclose(_values(neon.field_min(a, 1.0)), 1.0)
+
+    # reflected scalar-op-field and negation
+    assert np.allclose(_values(10.0 - a), 7.0)  # __rsub__
+    assert np.allclose(_values(12.0 / a), 4.0)  # __rtruediv__
+    assert np.allclose(_values(a - 1.0), 2.0)  # __sub__ (field - scalar)
+    assert np.allclose(_values(-a), -3.0)  # __neg__
+
+    # tanh / sqrt (kOmegaSST blending F1/F2 = tanh(...), sqrt(k) arguments)
+    assert np.allclose(_values(neon.sqrt(_filled(exec, mesh, 9.0))), 3.0)
+    assert np.allclose(_values(neon.tanh(_filled(exec, mesh, 0.0))), 0.0)
+    assert np.allclose(_values(neon.tanh(a)), np.tanh(3.0))
+
+    # a small chained expression like a closure would write it stays on-device
+    chi = _filled(exec, mesh, 2.0)
+    fv1 = chi**3 / (chi**3 + 7.1**3)  # SA fv1(chi)
+    assert np.allclose(_values(fv1), 8.0 / (8.0 + 7.1**3))
