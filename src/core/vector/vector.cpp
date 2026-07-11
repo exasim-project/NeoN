@@ -50,9 +50,6 @@ Vector<ValueType>::Vector(const Executor& exec, localIdx size, ValueType value)
     );
     data_ = static_cast<ValueType*>(ptr);
     NeoN::fill(*this, value);
-    // fill dispatches an async GPU parallelFor; fence here so that the constructor's postcondition
-    // holds: after it returns, data_ contains the requested value with no in-flight writes pending.
-    fence(exec_);
 }
 
 template<typename ValueType>

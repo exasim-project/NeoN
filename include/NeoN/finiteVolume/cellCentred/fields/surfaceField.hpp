@@ -155,9 +155,6 @@ public:
         // Drain any processor-halo exchange once, after all proc patches have posted. See
         // VolumeField::correctBoundaryConditions for the rationale (batched post-then-wait).
         this->field_.boundaryData().waitAll();
-        // Mirror VolumeField: fence after BC update kernels so callers that immediately
-        // read boundary data see fully-committed values on GPU.
-        fence(this->exec());
     }
 
     std::vector<SurfaceBoundary<ValueType>> boundaryConditions() const
