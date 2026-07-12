@@ -54,6 +54,8 @@ struct LinearUpwindGradType<Vec3>
 ** internally with a Gauss-Green scheme. This reduces to plain upwind where the
 ** field is locally constant and is second-order accurate for smooth fields.
 **
+** @pre src.correctBoundaryConditions() must have been called by the caller so that
+**      processor-boundary ghost values are up to date before the gradient is computed.
 ** @param src the input field
 ** @param flux the face flux determining the upwind direction
 ** @param faceDeltaOwner Cf - C_owner per internal face (from the geometry scheme)
@@ -73,6 +75,9 @@ void computeLinearUpwindInterpolation(
 ** `(Cf - C_U) & grad(phi)_U`, into dst (without the upwind cell value). Boundary faces are set to
 ** zero, matching OpenFOAM which corrects only coupled patches. Used for the implicit deferred
 ** correction (the explicit RHS source added by the divergence operator).
+**
+** @pre src.correctBoundaryConditions() must have been called by the caller so that
+**      processor-boundary ghost values are up to date before the gradient is computed.
 */
 template<typename ValueType>
 void computeLinearUpwindCorrection(

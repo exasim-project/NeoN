@@ -174,6 +174,7 @@ void computeLinearUpwind(
 
     const auto exec = src.exec();
     const auto& mesh = src.mesh();
+
     GaussGreenGrad gradOp(exec, mesh);
 
     if constexpr (std::is_same_v<ValueType, scalar>)
