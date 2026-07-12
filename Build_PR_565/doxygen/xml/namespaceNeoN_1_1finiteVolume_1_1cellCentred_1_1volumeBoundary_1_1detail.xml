@@ -2,7 +2,175 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail" kind="namespace" language="C++">
     <compoundname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail</compoundname>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>NormalDamping</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::NormalDamping</qualifiedname>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a4ed71db54748b36eeb398876b0c747ac" prot="public">
+          <name>Deferred</name>
+          <briefdescription>
+<para>normal damping via refGrad -&gt; per-component RHS (multi-RHS friendly) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a07e01d7a96d9fd76cf08aa5916f7c788" prot="public">
+          <name>Implicit</name>
+          <briefdescription>
+<para>normal damping via per-component diagonal correction (segregated solve) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="37" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="38" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aa1b62e12928cc3869c00b94b0359a31d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool NeoN::finiteVolume::cellCentred::volumeBoundary::detail::readTransformImplicit</definition>
+        <argsstring>(const Dictionary &amp;dict)</argsstring>
+        <name>readTransformImplicit</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::readTransformImplicit</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>dict</declname>
+        </param>
+        <briefdescription>
+<para>Read the &quot;implicit&quot; flag from a slip/symmetry patch dictionary. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Defaults to FALSE (Deferred), the multi-RHS-friendly mode. Set &quot;implicit true&quot; to opt into the fully-implicit per-component diagonal correction path (required when the shared scalar matrix + multi-RHS solve cannot carry the direction-dependent normal damping, e.g. occDrivAre ground/ freestream patches where U_normal diverges with Deferred). <ref refid="classA" kindref="compound">A</ref> boolean read from a dictionary arrives as a word/string, so accept bool, int, and the common truthy spellings. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="51" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="51" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4857f8d14e6706a3bdf5dfc5205bf685" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+        <definition>NormalDamping NeoN::finiteVolume::cellCentred::volumeBoundary::detail::normalDampingMode</definition>
+        <argsstring>(bool implicit)</argsstring>
+        <name>normalDampingMode</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::normalDampingMode</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>implicit</declname>
+        </param>
+        <briefdescription>
+<para>Map the implicit flag onto the NormalDamping mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="66" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="66" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4d8ed8bc4e9f796c4d3068c5a88f3abe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, NormalDamping mode)</argsstring>
+        <name>setSlipSymmetryValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="73" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" declline="73" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a64b67045dc60ae731f132eb803366ae4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::scalar &gt;</definition>
+        <argsstring>(Field&lt; NeoN::scalar &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, NormalDamping mode)</argsstring>
+        <name>setSlipSymmetryValue&lt; NeoN::scalar &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::scalar &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="82" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="82" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a808902e55e1427e037c57626ea91ebcf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</definition>
+        <argsstring>(Field&lt; NeoN::Vec3 &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, NormalDamping mode)</argsstring>
+        <name>setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">NeoN::Vec3</ref> &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="117" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="117" bodyend="172"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a2864d5431aa5578080a90ff1e791f389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -335,6 +503,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" line="17" column="1"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="34" column="1"/>
   </compounddef>
 </doxygen>
