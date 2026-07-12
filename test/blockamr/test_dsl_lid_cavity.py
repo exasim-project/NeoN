@@ -8,7 +8,7 @@ import numpy as np
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.bc import VectorBC, fixedValue, noSlip
-from neon.blockamr.dsl_solver import DSLIncompressibleSolver
+from neon.blockamr.incompressible import build_incompressible, step
 
 
 # Ghia et al. (1982), Table I — Re=100
@@ -77,7 +77,7 @@ def _make_dsl_cavity_solver(N, Re, cfl=0.25):
         yhi=fixedValue([1, 0, 0]),  # lid
     )
 
-    solver = DSLIncompressibleSolver(mesh, nu, dt, U_bc=U_bc)
+    solver = build_incompressible(mesh, nu, dt, U_bc=U_bc)
     return solver, geom
 
 
@@ -101,7 +101,7 @@ def test_dsl_lid_cavity_velocity_bounded(blockamr_session):
     solver, geom = _make_dsl_cavity_solver(N, Re=100, cfl=0.25)
 
     for _ in range(20):
-        solver.step()
+        step(solver)
 
     U_arrs = solver.U.mf[0].arrays()[0]
     max_vel = float(np.max(np.abs(np.array(U_arrs))))
@@ -120,8 +120,8 @@ def test_dsl_lid_cavity_re100_centreline(blockamr_session):
     solver, geom = _make_dsl_cavity_solver(N, Re, cfl=0.25)
 
     n_steps = 3000
-    for step in range(n_steps):
-        solver.step()
+    for _ in range(n_steps):
+        step(solver)
 
     y_coords, u_profile = _extract_centreline_u(solver, geom, N)
 

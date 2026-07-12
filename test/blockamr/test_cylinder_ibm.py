@@ -19,7 +19,7 @@ import pytest
 
 import neon.blockamr as blockamr
 from neon.blockamr.bc import VectorBC, fixedValue, NeumannBC, slip
-from neon.blockamr.dsl_solver import DSLIncompressibleSolver
+from neon.blockamr.incompressible import build_incompressible, step
 from neon.blockamr.ibm import IBM, Cylinder, DirectForcing
 from neon.blockamr.mesh import AmrMesh, Mesh
 
@@ -49,7 +49,7 @@ def _make_cylinder_solver():
         yhi=slip(),
     )
     dt = 0.2 * float(geom.cell_size()[0]) / U0
-    solver = DSLIncompressibleSolver(mesh, NU, dt, U_bc=u_bc, sol_U={"ibm": "directForcing"})
+    solver = build_incompressible(mesh, NU, dt, U_bc=u_bc, sol_U={"ibm": "directForcing"})
 
     ng = solver.U.mf[0].n_grow()
     g = solver.U.mf[0].grown_arrays()[0]
@@ -80,7 +80,7 @@ def test_cylinder_wake_and_noslip(blockamr_session):
     """Direct forcing holds U=0 in the body and produces a sane wake."""
     solver, ng = _make_cylinder_solver()
     for _ in range(150):
-        solver.step()
+        step(solver)
 
     u, arr = _valid_u(solver, ng)
     ux = u[..., 0]
@@ -239,7 +239,7 @@ def test_force_history_matches_pre_refactor_baseline(blockamr_session):
     history exactly — the Cd/Cl/St acceptance oracle depends on this."""
     solver, _ng = _make_cylinder_solver()
     for _ in range(len(_BASELINE_FORCE_HISTORY)):
-        solver.step()
+        step(solver)
 
     data = solver.mesh.ibm_data(DirectForcing)
     hist = DirectForcing.force_history(data)

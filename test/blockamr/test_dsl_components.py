@@ -368,7 +368,7 @@ def test_dsl_solver_lid_cavity_physical(blockamr_session):
     After 500 steps at Re=100, velocity should be bounded, non-zero,
     and show lid-driven flow structure.
     """
-    from neon.blockamr.dsl_solver import DSLIncompressibleSolver
+    from neon.blockamr.incompressible import build_incompressible, step
 
     N = 16
     Re = 100
@@ -383,10 +383,10 @@ def test_dsl_solver_lid_cavity_physical(blockamr_session):
         ylo=noSlip(),
         yhi=fixedValue([1, 0, 0]),
     )
-    solver = DSLIncompressibleSolver(mesh, nu, dt, U_bc=U_bc)
+    solver = build_incompressible(mesh, nu, dt, U_bc=U_bc)
 
     for _ in range(500):
-        solver.step()
+        step(solver)
 
     # Extract velocity data
     ng = solver.U.mf[0].n_grow()

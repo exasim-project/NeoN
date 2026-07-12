@@ -5,8 +5,7 @@
 """Free MAC projection helper: mac_project(phi, sol_p).
 
 Not modeled as an ``Equation`` (the API doc's worked ``step`` calls it
-directly). Logic moved verbatim from the old
-``DSLIncompressibleSolver._mac_project`` family; tolerances come from
+directly). Tolerances come from
 ``sol_p`` (the field's ``fvSolution.solvers['p']`` block). The MAC cache
 lives on the ``phi`` field (same regrid-invalidation route as the MLMG
 implicit-solve cache on the pressure field).

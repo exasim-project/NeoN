@@ -38,7 +38,13 @@ import jax.numpy as jnp
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh, AmrMesh
 from neon.blockamr.field import CellField
-from neon.blockamr.dsl_solver import DSLIncompressibleSolver
+from neon.blockamr.incompressible import (
+    build_incompressible,
+    max_velocity,
+    regrid_fields,
+    step,
+    write_plotfile,
+)
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.schemes.div_schemes import VanLeer
 
@@ -186,7 +192,7 @@ def run(
     # --- solver ---
     sol_p = {"rtol": 0, "atol": 1e-8, "maxIter": 200, "verbose": 0}
     div_scheme = VanLeer()  # VanLeer()
-    solver = DSLIncompressibleSolver(
+    solver = build_incompressible(
         mesh,
         nu,
         dt,
@@ -255,24 +261,24 @@ def run(
         for lev in range(mesh.n_levels()):
             solver.U.fill_patch(lev, solver.time)
         compute_vorticity(solver.U, omega)
-        solver.write_plotfile(pdir, fields=[solver.U, omega, tag_field])
+        write_plotfile(mesh, solver.time, pdir, [solver.U, omega, tag_field])
         print(f"  -> wrote {pdir}")
         plot_count += 1
 
     # --- time loop ---
-    for step in range(1, n_steps + 1):
+    for step_num in range(1, n_steps + 1):
         print(
-            f"Step {step:6d}, t = {solver.time:.4f}, dt = {solver.dt:.6f}, "
-            f"max|U| = {solver._max_velocity():.6f}"
+            f"Step {step_num:6d}, t = {solver.time:.4f}, dt = {solver.dt:.6f}, "
+            f"max|U| = {max_velocity(solver.U):.6f}"
         )
 
-        if step % 10 == 0:
-            solver.regrid(tag=tag_func)
+        if step_num % 10 == 0:
+            regrid_fields(solver, tag_func)
 
-        solver.step()
+        step(solver)
 
-        if plotfile and step % plot_interval == 0:
-            write_plot(step)
+        if plotfile and step_num % plot_interval == 0:
+            write_plot(step_num)
 
 
 if __name__ == "__main__":
