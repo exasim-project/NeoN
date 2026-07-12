@@ -26,129 +26,277 @@ namespace
 using ScalarVol = NeoN::finiteVolume::cellCentred::VolumeField<NeoN::scalar>;
 
 // Allocate a scalar VolumeField sized like `proto` (same executor/mesh, calculated
-// boundaries), pre-seeded with `proto`'s internal values — the mutable target an
-// elementwise arithmetic kernel then overwrites. These operators return fresh
-// fields so a closure reads like the maths (``Cmu * k * k / epsilon``); the result
-// carries placeholder (calculated) boundaries — assign it into a properly
-// boundary-conditioned field and ``correct_boundary_conditions`` for solver use.
+// boundaries), pre-seeded with `proto`'s internal AND boundary values — the mutable
+// target an elementwise arithmetic kernel then overwrites. These operators return
+// fresh fields so a closure reads like the maths (``Cmu * k * k / epsilon``).
 ScalarVol seededLike(const ScalarVol& proto)
 {
     namespace fvcc = NeoN::finiteVolume::cellCentred;
     auto bcs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<NeoN::scalar>>(proto.mesh());
     ScalarVol result(proto.exec(), "tmp", proto.mesh(), bcs);
     result.internalVector() = proto.internalVector();
+    result.boundaryData().value() = proto.boundaryData().value();
     return result;
 }
 
-// The elementwise kernels live in free functions (not inside the binding lambdas):
-// NEON_LAMBDA expands to an extended __device__ lambda under CUDA, which nvcc
-// forbids from being defined inside another lambda.
+// The elementwise kernels live in free functions on raw vectors (not inside the
+// binding lambdas): NEON_LAMBDA expands to an extended __device__ lambda under
+// CUDA, which nvcc forbids from being defined inside another lambda. Each field
+// operator applies its kernel to the internal AND the boundary vector — NeoN
+// volume-field maths mirrors OpenFOAM GeometricField arithmetic, which evaluates
+// boundary values too (a closure's nut/nuEff boundary values feed the momentum
+// wall fluxes; internal-only maths leaves them stale at their on-disk values).
+using ScalarVec = NeoN::Vector<NeoN::scalar>;
+
+void mulVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] * bv[i]; },
+        std::move(label)
+    );
+}
+
+void divVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] / bv[i]; },
+        std::move(label)
+    );
+}
+
+void addVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] + bv[i]; },
+        std::move(label)
+    );
+}
+
+void subVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] - bv[i]; },
+        std::move(label)
+    );
+}
+
+void maxVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] > bv[i] ? rv[i] : bv[i]; },
+        std::move(label)
+    );
+}
+
+void minVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
+{
+    auto [rv, bv] = NeoN::views(r, b);
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] < bv[i] ? rv[i] : bv[i]; },
+        std::move(label)
+    );
+}
+
+void mulVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] * s; },
+        std::move(label)
+    );
+}
+
+void addVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] + s; },
+        std::move(label)
+    );
+}
+
+void subVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] - s; },
+        std::move(label)
+    );
+}
+
+void rsubVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = s - rv[i]; },
+        std::move(label)
+    );
+}
+
+void rdivVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar s, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = s / rv[i]; },
+        std::move(label)
+    );
+}
+
+void maxVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar low, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] > low ? rv[i] : low; },
+        std::move(label)
+    );
+}
+
+void minVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar high, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] < high ? rv[i] : high; },
+        std::move(label)
+    );
+}
+
+void powVecScalar(const NeoN::Executor& exec, ScalarVec& r, NeoN::scalar e, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = Kokkos::pow(rv[i], e); },
+        std::move(label)
+    );
+}
+
+void negVec(const NeoN::Executor& exec, ScalarVec& r, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = -rv[i]; },
+        std::move(label)
+    );
+}
+
+void tanhVec(const NeoN::Executor& exec, ScalarVec& r, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = Kokkos::tanh(rv[i]); },
+        std::move(label)
+    );
+}
+
+void sqrtVec(const NeoN::Executor& exec, ScalarVec& r, std::string label)
+{
+    auto rv = r.view();
+    NeoN::parallelFor(
+        exec,
+        {0, r.size()},
+        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = Kokkos::sqrt(rv[i]); },
+        std::move(label)
+    );
+}
+
 ScalarVol mulFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    auto bv = b.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] * bv[i]; },
-        "fieldMul"
-    );
+    mulVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldMul");
+    mulVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldMul::b");
     return r;
 }
 
 ScalarVol mulFieldScalar(const ScalarVol& a, NeoN::scalar s)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] * s; },
-        "fieldMulScalar"
-    );
+    mulVecScalar(r.exec(), r.internalVector(), s, "fieldMulScalar");
+    mulVecScalar(r.exec(), r.boundaryData().value(), s, "fieldMulScalar::b");
     return r;
 }
 
 ScalarVol divFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    auto bv = b.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] / bv[i]; },
-        "fieldDiv"
-    );
+    divVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldDiv");
+    divVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldDiv::b");
     return r;
 }
 
 ScalarVol divFieldScalar(const ScalarVol& a, NeoN::scalar s)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
     const NeoN::scalar inv = NeoN::scalar(1.0) / s;
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] * inv; },
-        "fieldDivScalar"
-    );
+    mulVecScalar(r.exec(), r.internalVector(), inv, "fieldDivScalar");
+    mulVecScalar(r.exec(), r.boundaryData().value(), inv, "fieldDivScalar::b");
     return r;
 }
 
 ScalarVol addFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    auto bv = b.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] + bv[i]; },
-        "fieldAdd"
-    );
+    addVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldAdd");
+    addVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldAdd::b");
     return r;
 }
 
 ScalarVol addFieldScalar(const ScalarVol& a, NeoN::scalar s)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] + s; },
-        "fieldAddScalar"
-    );
+    addVecScalar(r.exec(), r.internalVector(), s, "fieldAddScalar");
+    addVecScalar(r.exec(), r.boundaryData().value(), s, "fieldAddScalar::b");
     return r;
 }
 
 ScalarVol subFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    auto bv = b.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] - bv[i]; },
-        "fieldSub"
-    );
+    subVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldSub");
+    subVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldSub::b");
     return r;
 }
 
 ScalarVol maxFieldScalar(const ScalarVol& a, NeoN::scalar low)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] > low ? rv[i] : low; },
-        "fieldMaxScalar"
-    );
+    maxVecScalar(r.exec(), r.internalVector(), low, "fieldMaxScalar");
+    maxVecScalar(r.exec(), r.boundaryData().value(), low, "fieldMaxScalar::b");
     return r;
 }
 
@@ -156,13 +304,8 @@ ScalarVol maxFieldScalar(const ScalarVol& a, NeoN::scalar low)
 ScalarVol subFieldScalar(const ScalarVol& a, NeoN::scalar s)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] - s; },
-        "fieldSubScalar"
-    );
+    subVecScalar(r.exec(), r.internalVector(), s, "fieldSubScalar");
+    subVecScalar(r.exec(), r.boundaryData().value(), s, "fieldSubScalar::b");
     return r;
 }
 
@@ -170,13 +313,8 @@ ScalarVol subFieldScalar(const ScalarVol& a, NeoN::scalar s)
 ScalarVol rsubScalarField(const ScalarVol& a, NeoN::scalar s)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = s - rv[i]; },
-        "fieldRsubScalar"
-    );
+    rsubVecScalar(r.exec(), r.internalVector(), s, "fieldRsubScalar");
+    rsubVecScalar(r.exec(), r.boundaryData().value(), s, "fieldRsubScalar::b");
     return r;
 }
 
@@ -184,13 +322,8 @@ ScalarVol rsubScalarField(const ScalarVol& a, NeoN::scalar s)
 ScalarVol rdivScalarField(const ScalarVol& a, NeoN::scalar s)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = s / rv[i]; },
-        "fieldRdivScalar"
-    );
+    rdivVecScalar(r.exec(), r.internalVector(), s, "fieldRdivScalar");
+    rdivVecScalar(r.exec(), r.boundaryData().value(), s, "fieldRdivScalar::b");
     return r;
 }
 
@@ -198,13 +331,8 @@ ScalarVol rdivScalarField(const ScalarVol& a, NeoN::scalar s)
 ScalarVol negField(const ScalarVol& a)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = -rv[i]; },
-        "fieldNeg"
-    );
+    negVec(r.exec(), r.internalVector(), "fieldNeg");
+    negVec(r.exec(), r.boundaryData().value(), "fieldNeg::b");
     return r;
 }
 
@@ -213,13 +341,8 @@ ScalarVol negField(const ScalarVol& a)
 ScalarVol powFieldScalar(const ScalarVol& a, NeoN::scalar e)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = Kokkos::pow(rv[i], e); },
-        "fieldPowScalar"
-    );
+    powVecScalar(r.exec(), r.internalVector(), e, "fieldPowScalar");
+    powVecScalar(r.exec(), r.boundaryData().value(), e, "fieldPowScalar::b");
     return r;
 }
 
@@ -227,14 +350,8 @@ ScalarVol powFieldScalar(const ScalarVol& a, NeoN::scalar e)
 ScalarVol maxFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    auto bv = b.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] > bv[i] ? rv[i] : bv[i]; },
-        "fieldMaxField"
-    );
+    maxVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldMaxField");
+    maxVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldMaxField::b");
     return r;
 }
 
@@ -242,13 +359,8 @@ ScalarVol maxFieldField(const ScalarVol& a, const ScalarVol& b)
 ScalarVol minFieldScalar(const ScalarVol& a, NeoN::scalar high)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] < high ? rv[i] : high; },
-        "fieldMinScalar"
-    );
+    minVecScalar(r.exec(), r.internalVector(), high, "fieldMinScalar");
+    minVecScalar(r.exec(), r.boundaryData().value(), high, "fieldMinScalar::b");
     return r;
 }
 
@@ -256,14 +368,8 @@ ScalarVol minFieldScalar(const ScalarVol& a, NeoN::scalar high)
 ScalarVol minFieldField(const ScalarVol& a, const ScalarVol& b)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    auto bv = b.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = rv[i] < bv[i] ? rv[i] : bv[i]; },
-        "fieldMinField"
-    );
+    minVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldMinField");
+    minVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldMinField::b");
     return r;
 }
 
@@ -271,13 +377,8 @@ ScalarVol minFieldField(const ScalarVol& a, const ScalarVol& b)
 ScalarVol tanhField(const ScalarVol& a)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = Kokkos::tanh(rv[i]); },
-        "fieldTanh"
-    );
+    tanhVec(r.exec(), r.internalVector(), "fieldTanh");
+    tanhVec(r.exec(), r.boundaryData().value(), "fieldTanh::b");
     return r;
 }
 
@@ -285,13 +386,8 @@ ScalarVol tanhField(const ScalarVol& a)
 ScalarVol sqrtField(const ScalarVol& a)
 {
     ScalarVol r = seededLike(a);
-    auto rv = r.internalVector().view();
-    NeoN::parallelFor(
-        r.exec(),
-        {0, r.internalVector().size()},
-        NEON_LAMBDA(const NeoN::localIdx i) { rv[i] = Kokkos::sqrt(rv[i]); },
-        "fieldSqrt"
-    );
+    sqrtVec(r.exec(), r.internalVector(), "fieldSqrt");
+    sqrtVec(r.exec(), r.boundaryData().value(), "fieldSqrt::b");
     return r;
 }
 } // namespace
@@ -387,6 +483,13 @@ void registerVolumeField(nb::module_& m)
             "Get the internal vector"
         )
         .def(
+            "boundary_data_value",
+            [](fvcc::VolumeField<NeoN::scalar>& field) -> NeoN::Vector<NeoN::scalar>&
+            { return field.boundaryData().value(); },
+            nb::rv_policy::reference_internal,
+            "Get the boundary data value vector"
+        )
+        .def(
             "mesh",
             &fvcc::VolumeField<NeoN::scalar>::mesh,
             nb::rv_policy::reference_internal,
@@ -411,9 +514,12 @@ void registerVolumeField(nb::module_& m)
         .def(
             "assign",
             [](fvcc::VolumeField<NeoN::scalar>& self, const fvcc::VolumeField<NeoN::scalar>& other)
-            { self.internalVector() = other.internalVector(); },
+            {
+                self.internalVector() = other.internalVector();
+                self.boundaryData().value() = other.boundaryData().value();
+            },
             "other"_a,
-            "Deep-copy internal vector from another scalar field (mirrors C++ = operator)"
+            "Deep-copy internal + boundary values from another scalar field (mirrors C++ =)"
         )
         // Elementwise arithmetic — each returns a fresh scalar field so a
         // turbulence closure can be written as readable field maths. The field
@@ -442,13 +548,7 @@ void registerVolumeField(nb::module_& m)
         "Elementwise max(field, low) — lower-bound a scalar field (e.g. bound k, epsilon)"
     );
     // Elementwise max(field, field) — e.g. Spalart-Allmaras Stilda.
-    m.def(
-        "field_max",
-        &maxFieldField,
-        "a"_a,
-        "b"_a,
-        "Elementwise max(a, b) of two scalar fields"
-    );
+    m.def("field_max", &maxFieldField, "a"_a, "b"_a, "Elementwise max(a, b) of two scalar fields");
     // Elementwise min(field, high) — e.g. the Spalart-Allmaras r clamp.
     m.def(
         "field_min",
@@ -458,13 +558,7 @@ void registerVolumeField(nb::module_& m)
         "Elementwise min(field, high) — upper-bound a scalar field"
     );
     // Elementwise min(field, field) — e.g. the kOmegaSST production limiter.
-    m.def(
-        "field_min",
-        &minFieldField,
-        "a"_a,
-        "b"_a,
-        "Elementwise min(a, b) of two scalar fields"
-    );
+    m.def("field_min", &minFieldField, "a"_a, "b"_a, "Elementwise min(a, b) of two scalar fields");
     // Elementwise tanh / sqrt — kOmegaSST blending functions and sqrt(k) arguments.
     m.def("tanh", &tanhField, "field"_a, "Elementwise tanh of a scalar field");
     m.def("sqrt", &sqrtField, "field"_a, "Elementwise sqrt of a scalar field");
@@ -553,9 +647,12 @@ void registerVolumeField(nb::module_& m)
         .def(
             "assign",
             [](fvcc::VolumeField<NeoN::Vec3>& self, const fvcc::VolumeField<NeoN::Vec3>& other)
-            { self.internalVector() = other.internalVector(); },
+            {
+                self.internalVector() = other.internalVector();
+                self.boundaryData().value() = other.boundaryData().value();
+            },
             "other"_a,
-            "Deep-copy internal vector from another Vec3 field (mirrors C++ = operator)"
+            "Deep-copy internal + boundary values from another Vec3 field (mirrors C++ =)"
         );
 
     m.def(

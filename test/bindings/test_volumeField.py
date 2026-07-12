@@ -74,3 +74,45 @@ def test_scalar_field_elementwise_operators(executor):
     chi = _filled(exec, mesh, 2.0)
     fv1 = chi**3 / (chi**3 + 7.1**3)  # SA fv1(chi)
     assert np.allclose(_values(fv1), 8.0 / (8.0 + 7.1**3))
+
+
+def test_scalar_field_operators_evaluate_boundaries(executor):
+    """Field maths mirrors OpenFOAM GeometricField arithmetic: boundary values too.
+
+    A closure's ``nut = Cmu k^2/epsilon`` boundary values feed the momentum wall
+    fluxes (dev2 stress, nuEff laplacian) — internal-only maths would leave them
+    stale at their on-disk values.
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 8)
+
+    def filled(value_internal, value_boundary):
+        field = neon.ScalarVolumeField(exec, "f", mesh)
+        neon.fill(field.internal_vector(), value_internal)
+        neon.fill(field.boundary_data_value(), value_boundary)
+        return field
+
+    def boundary(field):
+        return np.asarray(field.boundary_data_value().copy_to_host())
+
+    a = filled(3.0, 30.0)
+    b = filled(5.0, 50.0)
+
+    assert np.allclose(boundary(a * b), 1500.0)
+    assert np.allclose(boundary(a + b), 80.0)
+    assert np.allclose(boundary(b / a), 5.0 / 3.0)
+    assert np.allclose(boundary(a - 1.0), 29.0)
+    assert np.allclose(boundary(2.0 * a), 60.0)
+    assert np.allclose(boundary(-a), -30.0)
+    assert np.allclose(boundary(a**2.0), 900.0)
+    assert np.allclose(boundary(neon.field_max(a, 40.0)), 40.0)
+    assert np.allclose(boundary(neon.field_min(a, b)), 30.0)
+    assert np.allclose(boundary(neon.sqrt(filled(9.0, 900.0))), 30.0)
+    assert np.allclose(boundary(neon.tanh(filled(0.0, 0.0))), 0.0)
+
+    # assign copies boundary values too (mirrors the C++ = operator)
+    target = filled(0.0, 0.0)
+    target.assign(a * b)
+    assert np.allclose(_values(target), 15.0)
+    assert np.allclose(boundary(target), 1500.0)
