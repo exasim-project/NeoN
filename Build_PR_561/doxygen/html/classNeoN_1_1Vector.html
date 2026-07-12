@@ -615,7 +615,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Direct access to the underlying field data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00240">240</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00238">238</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -647,7 +647,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Direct access to the underlying field data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00246">246</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00244">244</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -759,7 +759,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Direct access to the underlying field data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00228">228</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00226">226</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -791,7 +791,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Direct access to the underlying field data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00234">234</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00232">232</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -823,7 +823,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Checks if the field is empty. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the field is empty, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00282">282</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00280">280</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -855,7 +855,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Direct access to the underlying field data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00252">252</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00250">250</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -887,7 +887,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Direct access to the underlying field data. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the first cell data in the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00258">258</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00256">256</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -919,7 +919,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets the executor associated with the field. </p>
 <dl class="section return"><dt>Returns</dt><dd>Reference to the executor. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00264">264</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00262">262</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1184,8 +1184,8 @@ template&lt;typename ValueType &gt; </div>
 </div><div class="memdoc">
 
 <p>Move-assignment operator — transfers ownership of the data buffer. </p>
-<p>Moves the data pointer, size, and executor from rhs without launching any GPU kernel (O(1) pointer swap). The old buffer owned by *this is freed first. After the move, rhs is left in an empty (size=0, data=nullptr) state.</p>
-<dl class="section note"><dt>Note</dt><dd>Use this when assigning a temporary (e.g. the result of fromFoamField) into an existing <a class="el" href="classNeoN_1_1Vector.html" title="A class to contain the data and executors for a field and define some basic operations.">Vector</a> to avoid the async GPU→GPU copy in the copy <a class="el" href="classNeoN_1_1Vector.html#ae8e2493ea02950235947c1c5e128e3c0" title="Assignment operator, Sets the field values to that of the parsed field.">operator=(const Vector&amp;)</a>, which can race against the temporary's destructor freeing the source buffer before the kernel completes. </dd></dl>
+<p>Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by *this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec_ is const and cannot be moved.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Invalidates any existing <a class="el" href="classNeoN_1_1View.html">View</a> objects that point into *this. </dd></dl>
 
 </div>
 </div>
@@ -1273,7 +1273,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets the range of the field. </p>
 <dl class="section return"><dt>Returns</dt><dd>The range of the field {0, <a class="el" href="classNeoN_1_1Vector.html#a2ab8411bc0c72d42ce04c21f8a8a3438" title="Gets the size of the field.">size()</a>}. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00340">340</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00338">338</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1333,7 +1333,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets the size of the field. </p>
 <dl class="section return"><dt>Returns</dt><dd>The size of the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00270">270</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00268">268</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1365,7 +1365,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets the size of the field. </p>
 <dl class="section return"><dt>Returns</dt><dd>The size of the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00276">276</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00274">274</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1397,7 +1397,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets the field as a view. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00294">294</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00292">292</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1456,7 +1456,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets the field as a view. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00303">303</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00301">301</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1516,7 +1516,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets a sub view of the field as a view. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00318">318</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00316">316</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
@@ -1577,7 +1577,7 @@ template&lt;typename ValueType &gt; </div>
 <p>Gets a sub view of the field as a view. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classNeoN_1_1View.html">View</a> of the field. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00329">329</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00327">327</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
 
 </div>
 </div>
