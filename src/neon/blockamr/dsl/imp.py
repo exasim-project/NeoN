@@ -8,23 +8,24 @@ These create lazy operator objects that are resolved to AMReX MLMG solves
 when passed to solve().
 """
 
+from .eqterm import EqTerm
 
-class ImplicitLaplacian:
+
+class ImplicitLaplacian(EqTerm):
     """Implicit Laplacian: div(sigma * grad(field)).
 
     Created by imp.laplacian(sigma, field). The actual MLNodeLaplacian + MLMG
-    are set up lazily on first solve.
+    are set up lazily on first solve. ``== rhs`` builds an implicit Equation
+    (via EqTerm.__eq__).
     """
 
-    _name = "ImplicitLaplacian"
+    kind = "implicit"
+    _scheme_operator = "laplacian"
+    scheme_key = "laplacian"
 
     def __init__(self, sigma, field):
+        super().__init__(field, coefficient=sigma)
         self.sigma = sigma
-        self.field = field
-
-    def __eq__(self, rhs):
-        from .equation import Equation
-        return Equation(lhs=self, rhs=rhs)
 
 
 def laplacian(sigma, field):

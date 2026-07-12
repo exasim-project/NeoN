@@ -5,22 +5,22 @@
 import jax.numpy as jnp
 
 from ..schemes.grad_schemes import CentralDiffGrad
+from ..dsl.eqterm import EqTerm
 
 
-class Grad:
+class Grad(EqTerm):
     """Gradient operator: (dphi/dx, dphi/dy, dphi/dz).
 
     Returns shape (nx, ny, nz, 3) — a vector field.
     """
 
-    def __init__(self, field, coeff=1.0, scheme=None):
-        self.field = field
-        self.coeff = coeff
-        self.scheme = scheme or CentralDiffGrad()
-        self._name = "Grad"
+    kind = "spatial"
+    _scheme_operator = "grad"
+    scheme_key = "grad"
 
-    def __rmul__(self, scalar):
-        return Grad(self.field, coeff=self.coeff * scalar, scheme=self.scheme)
+    def __init__(self, field, coeff=1.0, scheme=None):
+        super().__init__(field, coeff=coeff, scheme=scheme or CentralDiffGrad())
+        self._scheme_explicit = scheme is not None
 
     def build_kernel(self, mfi, t, lev=0):
         """Return a scheme functor bound to this field's dh."""
