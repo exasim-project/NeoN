@@ -12,6 +12,7 @@ import neon.blockamr as blockamr
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.mesh import Mesh, AmrMesh
 from neon.blockamr.dsl import exp, imp, solve, Equation
+from neon.blockamr.operators.div import Div
 from neon.blockamr.schemes.div_schemes import Upwind
 
 
@@ -53,7 +54,7 @@ def test_solve_single_level_constant_advection(blockamr_session):
             arr[:] = 1.0
             ff[0][d].mf.copy_from(mfi, arr)
 
-    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
     solve(expr, t=0.0, dt=0.001)
 
     for mfi in blockamr.MFIterator(phi.mf[0]):
@@ -95,7 +96,7 @@ def test_solve_multilevel_average_down(blockamr_session):
                 arr[:] = 1.0
                 ff[lev][d].mf.copy_from(mfi, arr)
 
-    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
     solve(expr, t=0.0, dt=0.001)
 
     # After solve, coarse and fine should exist

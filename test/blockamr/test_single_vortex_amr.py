@@ -17,7 +17,7 @@ from neon.blockamr.mesh import AmrMesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import update_face_fluxes
+from neon.blockamr.operators.div import Div, update_face_fluxes
 from neon.blockamr.schemes.div_schemes import Upwind
 
 
@@ -117,7 +117,7 @@ def test_amr_vortex_mass_conservation():
     for _ in range(10):
         for lev in range(mesh.n_levels()):
             update_face_fluxes(face_vel[lev], vel, mesh.geom(lev), t)
-        expr = exp.ddt(phi) + exp.div(face_vel, phi, scheme=div_scheme)
+        expr = exp.ddt(phi) + Div(face_vel, phi, scheme=div_scheme)
         solve(expr, t=t, dt=dt)
         t += dt
 

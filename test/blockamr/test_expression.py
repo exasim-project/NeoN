@@ -9,7 +9,6 @@ import numpy as np
 from neon.blockamr.field import CellField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.dsl import exp, solve, Equation
-from neon.blockamr.dsl.expression import Expression
 from neon.blockamr.operators.div import build_face_fluxes
 from neon.blockamr.schemes.div_schemes import Linear
 
@@ -91,23 +90,6 @@ def test_equation_subtraction():
     assert len(eqn.spatial_ops) == 1
     assert eqn.spatial_ops[0].coeff == -1.0
     assert div_op.coeff == 1.0  # original term is not mutated
-
-
-def test_expression_shim_still_works():
-    """The deprecated Expression adapter still composes (removed in plan 06)."""
-    mesh, box, dm, geom = _make_mesh()
-    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
-
-    def vel(x, y, z, t):
-        return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
-
-    ff = build_face_fluxes(vel, box, dm, geom, ngrow=1, t=0.0)
-    expr = Expression()
-    assert isinstance(expr, Equation)
-    expr = expr + exp.ddt(phi) + exp.div(ff, phi)
-    assert len(expr.temporal_ops) == 1
-    assert len(expr.spatial_ops) == 1
-    assert expr.required_ngrow == 1
 
 
 def test_solve_constant_field_unchanged():

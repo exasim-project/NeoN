@@ -4,18 +4,15 @@
 
 from . import exp
 from . import imp
-from .solve import solve, evaluate, forward_euler
+from .solve import solve, evaluate
 from .eqterm import EqTerm
 from .equation import Equation
-from .expression import Expression  # deprecated shim, removed in plan 06
 
 __all__ = [
     "exp",
     "imp",
-    "solve",
-    "evaluate",
-    "forward_euler",
     "EqTerm",
     "Equation",
-    "Expression",
+    "solve",
+    "evaluate",
 ]

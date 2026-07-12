@@ -13,9 +13,12 @@ Every ``exp.*`` / ``imp.*`` operator returns an ``EqTerm``. A term knows:
 - its ``scheme_key`` — the OpenFOAM-style string it looks up in the
   equation's schemes dict (e.g. ``"div(phi,U)"``, ``"ddt"``).
 
-The ``scheme`` slot holds the resolved scheme *object*; it is set at
-discretise time (inside ``solve()``) — never by the caller, except through
-the deprecated per-call ``scheme=`` kwarg which then wins over the dict.
+The ``scheme`` slot holds the resolved scheme *object*; ``exp.*`` operators
+resolve it purely from the equation's ``schemes`` dict at discretise time
+(inside ``solve()``). Constructing an operator class directly (e.g.
+``Div(ff, phi, scheme=Upwind())``) can still pin an explicit scheme object,
+which then wins over the dict — used by low-level scheme-accuracy tests that
+bypass the DSL's dict-driven flow.
 
 Terms compose lazily and immutably — composition returns NEW objects,
 nothing evaluates until ``solve()``:

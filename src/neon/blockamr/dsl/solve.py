@@ -65,8 +65,9 @@ def solve(equation, *, dt=None, t=None, solution=None):
     ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
 
     # Resolve operator schemes from the schemes dict (names or objects,
-    # keyed by scheme_key or class name). A scheme object passed at the
-    # call site (exp.div(..., scheme=obj)) wins over the dict.
+    # keyed by scheme_key or class name). A scheme object pinned via direct
+    # operator construction (Div(..., scheme=obj)) wins over the dict; the
+    # exp.* DSL surface has no scheme= kwarg and always resolves by name.
     for sp_op in equation.spatial_ops:
         if sp_op._scheme_explicit or sp_op._scheme_operator is None:
             continue
@@ -114,8 +115,8 @@ def evaluate(expr, t=0.0):
 
     Parameters
     ----------
-    expr : Expression or single spatial operator
-        e.g. ``exp.div(phi, U, scheme=VanLeer())`` or
+    expr : Equation or single spatial operator
+        e.g. ``Div(phi, U, scheme=VanLeer())`` or
         ``exp.div(phi, U) - exp.laplacian(nu, U)``.
     t : float
         Current time (for time-dependent coefficients).
