@@ -15,13 +15,12 @@ from ..cell_kernels_3d import FusedEulerKernel, CombinedSource
 from ..flat_refs import FlatCellRef
 from ..tiled_context import TiledContext
 from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
-from ..schemes.schemes_dict import SchemesDict
+from ..schemes.registry import lookup_scheme
 
 
 def forward_euler(spatial_kernels, dt_over_coeff):
     """Build a fused forward Euler kernel: phi_new = phi - dt * sum(spatial_kernels)."""
-    return FusedEulerKernel(
-        spatial_kernels=spatial_kernels, dt_over_coeff=dt_over_coeff)
+    return FusedEulerKernel(spatial_kernels=spatial_kernels, dt_over_coeff=dt_over_coeff)
 
 
 def solve(expr, t=None, dt=None, schemes=None):
@@ -35,22 +34,31 @@ def solve(expr, t=None, dt=None, schemes=None):
         → implicit MLMG solve (AMReX C++)
     """
     from .equation import Equation
-    if isinstance(expr, Equation):
+
+    if isinstance(expr, Equation) and expr.implicit_lhs is not None:
         _solve_implicit(expr, schemes=schemes)
         return
+
+    # An Equation may carry its own schemes (bound at construction); an
+    # explicit schemes= argument wins.
+    if schemes is None and isinstance(expr, Equation) and expr.schemes:
+        schemes = expr.schemes
 
     assert len(expr.temporal_ops) == 1
     cell_field = expr.temporal_ops[0].field  # CellField
     mesh = cell_field.mesh
     ddt_coeff = expr.temporal_ops[0].coeff
 
-    sd = SchemesDict(schemes)
-    ddt_scheme = sd.lookup("Ddt", ForwardEuler())
+    ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
 
-    # Override operator schemes from schemes dict
+    # Resolve operator schemes from the schemes dict (names or objects,
+    # keyed by scheme_key or class name). A scheme object passed at the
+    # call site (exp.div(..., scheme=obj)) wins over the dict.
     for sp_op in expr.spatial_ops:
-        resolved = sd.lookup(sp_op._name, sp_op.scheme)
-        sp_op.scheme = resolved
+        if sp_op._scheme_explicit or sp_op._scheme_operator is None:
+            continue
+        keys = [sp_op._scheme_key_or_none(), type(sp_op).__name__]
+        sp_op.scheme = lookup_scheme(schemes, keys, sp_op._scheme_operator, sp_op.scheme)
 
     # Validate that the field has enough ghost cells for the widest stencil
     required = expr.required_ngrow
@@ -70,9 +78,13 @@ def solve(expr, t=None, dt=None, schemes=None):
         # restrict fine -> coarse
         for lev in reversed(range(mesh.n_levels() - 1)):
             blockamr.average_down(
-                cell_field.mf[lev + 1], cell_field.mf[lev],
-                mesh.geom(lev + 1), mesh.geom(lev),
-                0, cell_field.ncomp, mesh.ref_ratio(lev),
+                cell_field.mf[lev + 1],
+                cell_field.mf[lev],
+                mesh.geom(lev + 1),
+                mesh.geom(lev),
+                0,
+                cell_field.ncomp,
+                mesh.ref_ratio(lev),
             )
     elif isinstance(ddt_scheme, (RungeKutta2, RungeKutta4)):
         raise NotImplementedError(f"{ddt_scheme.type} is not yet implemented")
@@ -101,10 +113,10 @@ def evaluate(expr, t=0.0):
         Each array has shape (vNx, vNy, vNz) for ncomp=1
         or (vNx, vNy, vNz, ncomp) for ncomp>1.
     """
-    from .expression import Expression
+    from .equation import Equation
 
-    # Wrap a bare operator in an expression if needed
-    if not isinstance(expr, Expression):
+    # Wrap a bare operator in an equation if needed
+    if not isinstance(expr, Equation):
         op = expr
         cell_field = op.field
         spatial_ops = [op]
@@ -122,14 +134,13 @@ def evaluate(expr, t=0.0):
         ng = mf.n_grow()
 
         ctx = TiledContext(dh=dh, ng=ng, lev=lev)
-        spatial_kernels = tuple(
-            op.build_kernel_3d(ctx, t) for op in spatial_ops)
+        spatial_kernels = tuple(op.build_kernel_3d(ctx, t) for op in spatial_ops)
         kernel = CombinedSource(spatial_kernels)
 
         # Create temp MultiFab for output
         out_mf = blockamr.MultiFab(
-            mesh.box_array(lev), mesh.dm(lev),
-            cell_field.ncomp, ng, memory="default")
+            mesh.box_array(lev), mesh.dm(lev), cell_field.ncomp, ng, memory="default"
+        )
         out_mf.set_val(0.0)
 
         parallel_for(kernel, cell_field, lev, out_mf=out_mf)
@@ -139,9 +150,8 @@ def evaluate(expr, t=0.0):
         lev_results = []
         for arr, m in zip(out_mf.arrays(), meta):
             Nx, Ny, Nz = m[1], m[2], m[3]
-            vNx, vNy, vNz = Nx - 2*ng, Ny - 2*ng, Nz - 2*ng
-            lev_results.append(arr[ng:ng+vNx, ng:ng+vNy, ng:ng+vNz,
-                                   :cell_field.ncomp])
+            vNx, vNy, vNz = Nx - 2 * ng, Ny - 2 * ng, Nz - 2 * ng
+            lev_results.append(arr[ng : ng + vNx, ng : ng + vNy, ng : ng + vNz, : cell_field.ncomp])
         all_levels.append(lev_results)
 
     return all_levels
@@ -169,22 +179,20 @@ def _forward_euler_level(expr, cell_field, lev, t, dt, ddt_coeff):
     dt_over_coeff = dt / ddt_coeff
 
     ctx = TiledContext(dh=dh, ng=ng, lev=lev)
-    spatial_kernels = tuple(
-        op.build_kernel_3d(ctx, t) for op in expr.spatial_ops)
+    spatial_kernels = tuple(op.build_kernel_3d(ctx, t) for op in expr.spatial_ops)
     kernel = FusedEulerKernel(spatial_kernels, dt_over_coeff)
 
     parallel_for(kernel, cell_field, lev)
 
 
 @functools.partial(jax.jit, static_argnums=(0, 1, 2, 3, 4))
-def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf,
-                phi_flat, tiles, cvs, *k_leaves):
+def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf, phi_flat, tiles, cvs, *k_leaves):
     """JIT'd Pallas dispatch. Static args define the compilation key.
 
     cvs: per-box cell-valid-start offsets (int32, n_boxes_padded).
     """
     n_k = k_treedef.num_leaves
-    tile_vol = bf ** 3
+    tile_vol = bf**3
 
     def pallas_kernel(*refs):
         from ..flat_refs import _FaceAxisBoxed
@@ -223,28 +231,29 @@ def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf,
 
             # Bind real box_id on face refs (replaces dummy box_id=0)
             fn_bound = fn
-            face_axes = [l for l in jax.tree.leaves(
-                fn, is_leaf=lambda x: isinstance(x, _FaceAxisBoxed))
-                if isinstance(l, _FaceAxisBoxed)]
+            face_axes = [
+                l
+                for l in jax.tree.leaves(fn, is_leaf=lambda x: isinstance(x, _FaceAxisBoxed))
+                if isinstance(l, _FaceAxisBoxed)
+            ]
             if face_axes:
                 fn_bound = eqx.tree_at(
                     lambda k: tuple(
-                        l.box_id for l in jax.tree.leaves(
-                            k, is_leaf=lambda x: isinstance(x, _FaceAxisBoxed))
-                        if isinstance(l, _FaceAxisBoxed)),
-                    fn, tuple(bid for _ in face_axes))
+                        l.box_id
+                        for l in jax.tree.leaves(k, is_leaf=lambda x: isinstance(x, _FaceAxisBoxed))
+                        if isinstance(l, _FaceAxisBoxed)
+                    ),
+                    fn,
+                    tuple(bid for _ in face_axes),
+                )
 
             val = fn_bound(bid, gi, gj, gk, phi)
             oi = cell_vs + gi * c_sx + gj * c_sy + gk * c_sz
-            plt.store(out_ref.at[oi.reshape(tile_vol)],
-                      val=val.reshape(tile_vol))
+            plt.store(out_ref.at[oi.reshape(tile_vol)], val=val.reshape(tile_vol))
 
     k_leaf_shapes = tuple(l.shape for l in k_leaves)
     n_cvs = cvs.shape[0]
-    in_specs = [
-        pl.BlockSpec(s, lambda i, _n=len(s): (0,) * _n)
-        for s in k_leaf_shapes
-    ] + [
+    in_specs = [pl.BlockSpec(s, lambda i, _n=len(s): (0,) * _n) for s in k_leaf_shapes] + [
         pl.BlockSpec((total_phi,), lambda i: (0,)),
         pl.BlockSpec((n_padded * 5,), lambda i: (0,)),
         pl.BlockSpec((n_cvs,), lambda i: (0,)),
@@ -256,8 +265,7 @@ def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf,
         grid=(n_padded,),
         in_specs=in_specs,
         out_specs=pl.BlockSpec((total_phi,), lambda i: (0,)),
-        compiler_params=plt.CompilerParams(
-            num_warps=NUM_WARPS, num_stages=NUM_STAGES),
+        compiler_params=plt.CompilerParams(num_warps=NUM_WARPS, num_stages=NUM_STAGES),
     )(*k_leaves, phi_flat, tiles, cvs)
 
 
@@ -265,11 +273,9 @@ def _gather_valid(flat, box_off, Nx, Ny, Nz, ng):
     """Extract valid (non-ghost) cells from a flat Fortran-ordered buffer."""
     vNx, vNy, vNz = Nx - 2 * ng, Ny - 2 * ng, Nz - 2 * ng
     ix = jnp.arange(vNx) + ng
-    iy = jnp.arange(vNy) + ng
+    it = jnp.arange(vNy) + ng
     iz = jnp.arange(vNz) + ng
-    idx = (ix[:, None, None]
-           + Nx * iy[None, :, None]
-           + Nx * Ny * iz[None, None, :])
+    idx = ix[:, None, None] + Nx * it[None, :, None] + Nx * Ny * iz[None, None, :]
     return flat[box_off + idx.reshape(-1)].reshape(vNx, vNy, vNz)
 
 
@@ -282,8 +288,7 @@ def _extract_valid_boxes(flat, meta, ng, ncomp):
             results.append(_gather_valid(flat, off, Nx, Ny, Nz, ng))
         else:
             bM = Nx * Ny * Nz
-            comps = [_gather_valid(flat, off + c * bM, Nx, Ny, Nz, ng)
-                     for c in range(ncomp)]
+            comps = [_gather_valid(flat, off + c * bM, Nx, Ny, Nz, ng) for c in range(ncomp)]
             results.append(jnp.stack(comps, axis=-1))
     return results
 
@@ -304,9 +309,7 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
     meta = mf.fab_metadata()
     while bf > 1:
         if all(
-            (m[1] - 2 * ng) % bf == 0
-            and (m[2] - 2 * ng) % bf == 0
-            and (m[3] - 2 * ng) % bf == 0
+            (m[1] - 2 * ng) % bf == 0 and (m[2] - 2 * ng) % bf == 0 and (m[3] - 2 * ng) % bf == 0
             for m in meta
         ):
             break
@@ -316,8 +319,7 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
     total_phi = phi_flat.shape[0]
 
     k_leaves, k_treedef = jax.tree.flatten(kernel)
-    k_leaves = [jnp.asarray(l) if not hasattr(l, 'shape') else l
-                for l in k_leaves]
+    k_leaves = [jnp.asarray(l) if not hasattr(l, "shape") else l for l in k_leaves]
 
     # Per-box cell-valid-start: offset to first valid cell (ng, ng, ng)
     n_boxes = len(meta)
@@ -334,9 +336,16 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
 
     if ncomp == 1:
         out_flat = _run_pallas(
-            k_treedef, layout.n_tiles, layout.n_tiles_padded,
-            total_phi, bf,
-            phi_flat, layout.tiles, cvs, *k_leaves)
+            k_treedef,
+            layout.n_tiles,
+            layout.n_tiles_padded,
+            total_phi,
+            bf,
+            phi_flat,
+            layout.tiles,
+            cvs,
+            *k_leaves,
+        )
         # Extract valid cells only — ghost cells must not be overwritten
         results = _extract_valid_boxes(out_flat, meta, ng, ncomp=1)
         target_mf.copy_arrays(results)
@@ -360,8 +369,8 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
             while mb < n_boxes:
                 mb <<= 1
             padded_strides = jnp.pad(
-                comp_strides, (0, mb - n_boxes),
-                constant_values=int(comp_strides[0]))
+                comp_strides, (0, mb - n_boxes), constant_values=int(comp_strides[0])
+            )
             box_ids = layout.tiles[4::5][:n_t]
             per_tile_M = padded_strides[box_ids]
 
@@ -369,33 +378,42 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
         comp_valid = []  # comp_valid[c][bi] = (vNx, vNy, vNz) array
         for c in range(ncomp):
             shifted_tiles = layout.tiles.at[offset_idx].add(per_tile_M * c)
-            shifted_cvs = cvs + jnp.array(
-                [m[1] * m[2] * m[3] * c for m in meta] + [0] * (mb - n_boxes),
-                dtype=jnp.int32)[:mb]
+            shifted_cvs = (
+                cvs
+                + jnp.array(
+                    [m[1] * m[2] * m[3] * c for m in meta] + [0] * (mb - n_boxes), dtype=jnp.int32
+                )[:mb]
+            )
             out_c = _run_pallas(
-                k_treedef, layout.n_tiles, layout.n_tiles_padded,
-                total_phi, bf,
-                phi_flat, shifted_tiles, shifted_cvs, *k_leaves)
+                k_treedef,
+                layout.n_tiles,
+                layout.n_tiles_padded,
+                total_phi,
+                bf,
+                phi_flat,
+                shifted_tiles,
+                shifted_cvs,
+                *k_leaves,
+            )
             # Extract valid cells for comp c from each box
             per_box = []
             for bi, m in enumerate(meta):
                 off, Nx, Ny, Nz = int(m[0]), m[1], m[2], m[3]
                 bM = Nx * Ny * Nz
-                per_box.append(
-                    _gather_valid(out_c, off + c * bM, Nx, Ny, Nz, ng))
+                per_box.append(_gather_valid(out_c, off + c * bM, Nx, Ny, Nz, ng))
             comp_valid.append(per_box)
 
         # Assemble per-box (vNx, vNy, vNz, ncomp) and write back
         results = []
         for bi in range(n_boxes):
-            results.append(jnp.stack(
-                [comp_valid[c][bi] for c in range(ncomp)], axis=-1))
+            results.append(jnp.stack([comp_valid[c][bi] for c in range(ncomp)], axis=-1))
         target_mf.copy_arrays(results)
 
 
 # ---------------------------------------------------------------------------
 # Implicit equation solver (AMReX MLMG — unchanged)
 # ---------------------------------------------------------------------------
+
 
 def _solve_implicit(eqn, schemes=None):
     """Solve imp.laplacian(sigma, p) == exp.div(U).
@@ -406,7 +424,7 @@ def _solve_implicit(eqn, schemes=None):
     3. MLMG.solve → nodal p (all levels simultaneously)
     4. getFluxes → store cell-centred gradient on p.grad (per level)
     """
-    imp_op = eqn.lhs  # ImplicitLaplacian
+    imp_op = eqn.implicit_lhs  # ImplicitLaplacian
     rhs_op = eqn.rhs  # CellDivergence
 
     cfg = schemes or {}
@@ -425,10 +443,10 @@ def _solve_implicit(eqn, schemes=None):
     mesh = U_field.mesh
     n_levels = mesh.n_levels()
 
-    needs_rebuild = not hasattr(p_field, '_imp_solver')
+    needs_rebuild = not hasattr(p_field, "_imp_solver")
     if not needs_rebuild:
         s_old = p_field._imp_solver
-        if s_old['n_levels'] != n_levels or s_old['sigma'] != sigma:
+        if s_old["n_levels"] != n_levels or s_old["sigma"] != sigma:
             needs_rebuild = True
 
     if needs_rebuild:
@@ -465,8 +483,10 @@ def _solve_implicit(eqn, schemes=None):
         if p_bc is not None:
             lo_bc, hi_bc = p_bc
         else:
-            lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
-                     else blockamr.LinOpBCType.Neumann for d in range(3)]
+            lo_bc = [
+                blockamr.LinOpBCType.Periodic if is_per[d] else blockamr.LinOpBCType.Neumann
+                for d in range(3)
+            ]
             hi_bc = lo_bc[:]
 
         # A lone outflow-Dirichlet face anchoring an otherwise-Neumann domain is
@@ -475,9 +495,7 @@ def _solve_implicit(eqn, schemes=None):
         # AMReX coarsen far enough for an effective bottom solve — the standard
         # incflo nodal-projection setup. Only enabled when a Dirichlet face is
         # present, to leave the periodic/closed (all-Neumann) path untouched.
-        has_dirichlet = any(
-            bc == blockamr.LinOpBCType.Dirichlet for bc in (*lo_bc, *hi_bc)
-        )
+        has_dirichlet = any(bc == blockamr.LinOpBCType.Dirichlet for bc in (*lo_bc, *hi_bc))
         info = blockamr.LPInfo()
         if has_dirichlet:
             info.set_agglomeration(True)
@@ -490,59 +508,61 @@ def _solve_implicit(eqn, schemes=None):
         lp.set_domain_bc(lo_bc, hi_bc)
 
         p_field._imp_solver = {
-            'lp': lp,
-            'mlmg': blockamr.MLMG(lp),
-            'phi_mfs': phi_mfs,
-            'rhs_mfs': rhs_mfs,
-            'vel3_mfs': vel3_mfs,
-            'fluxes_mfs': fluxes_mfs,
-            'n_levels': n_levels,
-            'sigma': sigma,
-            'has_dirichlet': has_dirichlet,
+            "lp": lp,
+            "mlmg": blockamr.MLMG(lp),
+            "phi_mfs": phi_mfs,
+            "rhs_mfs": rhs_mfs,
+            "vel3_mfs": vel3_mfs,
+            "fluxes_mfs": fluxes_mfs,
+            "n_levels": n_levels,
+            "sigma": sigma,
+            "has_dirichlet": has_dirichlet,
         }
 
     s = p_field._imp_solver
-    s['mlmg'].set_verbose(verbose)
-    s['mlmg'].set_max_iter(max_iter)
-    s['mlmg'].set_bottom_verbose(0)
+    s["mlmg"].set_verbose(verbose)
+    s["mlmg"].set_max_iter(max_iter)
+    s["mlmg"].set_bottom_verbose(cfg.get("bottom_verbose", 0))
     # Bottom solver: default (None) lets AMReX use its Krylov default, which —
     # with the agglomeration+consolidation enabled above for the has_dirichlet
     # (outflow) case — converges the nodal projection in ~5 V-cycles. Override
     # via schemes["bottom_solver"] if needed. (Do NOT force "smoother" here: it
     # cost ~600 iters/solve, ~100x the Krylov default, and dominated runtime.)
     if bottom_solver is not None:
-        s['mlmg'].set_bottom_solver(bottom_solver)
+        s["mlmg"].set_bottom_solver(bottom_solver)
 
     # 1. Pack velocity with ghost cells into ncomp=3 MultiFab (per level)
     for lev in range(n_levels):
         mf = U_field.mf[lev]
         grown = mf.grown_arrays()
-        for bi, mfi in enumerate(blockamr.MFIterator(s['vel3_mfs'][lev])):
-            s['vel3_mfs'][lev].copy_grown_from(mfi, grown[bi])
+        for bi, mfi in enumerate(blockamr.MFIterator(s["vel3_mfs"][lev])):
+            s["vel3_mfs"][lev].copy_grown_from(mfi, grown[bi])
 
     # 2. compDivergence → nodal RHS
     if n_levels == 1:
-        s['lp'].comp_divergence(s['rhs_mfs'][0], s['vel3_mfs'][0])
+        s["lp"].comp_divergence(s["rhs_mfs"][0], s["vel3_mfs"][0])
     else:
-        s['lp'].comp_divergence(s['rhs_mfs'], s['vel3_mfs'])
+        s["lp"].comp_divergence(s["rhs_mfs"], s["vel3_mfs"])
 
     # 3. MLMG.solve (warm-start from previous phi)
     if n_levels == 1:
-        s['mlmg'].solve(s['phi_mfs'][0], s['rhs_mfs'][0], rtol, atol)
+        s["mlmg"].solve(s["phi_mfs"][0], s["rhs_mfs"][0], rtol, atol)
     else:
-        s['mlmg'].solve(s['phi_mfs'], s['rhs_mfs'], rtol, atol)
+        s["mlmg"].solve(s["phi_mfs"], s["rhs_mfs"], rtol, atol)
 
-    print(f"  MLMG  iters={s['mlmg'].get_num_iters()}  "
-          f"init_res={s['mlmg'].get_init_residual():.6e}  "
-          f"final_res={s['mlmg'].get_final_residual():.6e}")
+    print(
+        f"  MLMG  iters={s['mlmg'].get_num_iters()}  "
+        f"init_res={s['mlmg'].get_init_residual():.6e}  "
+        f"final_res={s['mlmg'].get_final_residual():.6e}"
+    )
 
     # 4. getFluxes → store gradient on p_field for correct()
     if n_levels == 1:
-        s['mlmg'].get_fluxes(s['fluxes_mfs'][0])
+        s["mlmg"].get_fluxes(s["fluxes_mfs"][0])
     else:
-        s['mlmg'].get_fluxes(s['fluxes_mfs'])
+        s["mlmg"].get_fluxes(s["fluxes_mfs"])
 
     p_field.grad = []
     for lev in range(n_levels):
-        box_grads = [-arr / sigma for arr in s['fluxes_mfs'][lev].arrays()]
+        box_grads = [-arr / sigma for arr in s["fluxes_mfs"][lev].arrays()]
         p_field.grad.append(box_grads)

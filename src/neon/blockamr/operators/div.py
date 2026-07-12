@@ -5,36 +5,34 @@
 import jax.numpy as jnp
 
 import neon.blockamr as blockamr
-from ..array_types import FaceArray
-from ..field import FaceField, CellField
+from ..field import FaceField
 from ..flattened_boxes import FlattenedFaceBoxes
 from ..mesh import Mesh
 from ..schemes.div_schemes import Upwind
+from ..dsl.eqterm import EqTerm
 
 
-class Div:
+class Div(EqTerm):
     """Divergence operator: div(U * phi).
 
     Accepts a FaceField (multi-level) and a CellField (multi-level).
     """
 
+    kind = "spatial"
+    _scheme_operator = "div"
+
     def __init__(self, face_field, cell_field, coeff=1.0, scheme=None):
+        super().__init__(cell_field, coeff=coeff, coefficient=face_field, scheme=scheme or Upwind())
         self.face_field = face_field
         self.cell_field = cell_field
-        self.coeff = coeff
-        self.scheme = scheme or Upwind()
-        self._name = "Div"
-        self.field = cell_field
+        self._scheme_explicit = scheme is not None
 
-    def __rmul__(self, scalar):
-        obj = Div.__new__(Div)
-        obj.face_field = self.face_field
-        obj.cell_field = self.cell_field
-        obj.field = self.cell_field
-        obj.coeff = self.coeff * scalar
-        obj.scheme = self.scheme
-        obj._name = "Div"
-        return obj
+    @property
+    def scheme_key(self):
+        return (
+            f"div({self._named(self.face_field, 'face-flux')},"
+            f"{self._named(self.cell_field, 'cell')})"
+        )
 
     def build_kernel_3d(self, ctx, t):
         """Build a 3D spatial kernel from TiledContext.
@@ -64,8 +62,9 @@ class Div:
             strs = []
             for b in range(n_boxes):
                 _, fNx, fNy, _, _ = face_metas[d][b]
-                offs.append(int(face_metas[d][b][0])
-                            + ng_face + fNx * ng_face + fNx * fNy * ng_face)
+                offs.append(
+                    int(face_metas[d][b][0]) + ng_face + fNx * ng_face + fNx * fNy * ng_face
+                )
                 strs.append([1, fNx, fNx * fNy])
             all_offs.append(offs)
             all_strs.append(strs)
@@ -80,16 +79,18 @@ class Div:
 
         box_id = jnp.int32(0)
         face = FlatFaceBoxed(
-            face_fb.bufs[0], face_fb.bufs[1], face_fb.bufs[2],
+            face_fb.bufs[0],
+            face_fb.bufs[1],
+            face_fb.bufs[2],
             jnp.array(all_offs[0], dtype=jnp.int32),
             jnp.array(all_offs[1], dtype=jnp.int32),
             jnp.array(all_offs[2], dtype=jnp.int32),
             jnp.array(all_strs[0], dtype=jnp.int32),
             jnp.array(all_strs[1], dtype=jnp.int32),
             jnp.array(all_strs[2], dtype=jnp.int32),
-            box_id)
-        return self.scheme.build_spatial_kernel(
-            face=face, dh=ctx.dh, coeff=self.coeff)
+            box_id,
+        )
+        return self.scheme.build_spatial_kernel(face=face, dh=ctx.dh, coeff=self.coeff)
 
     def build_kernel(self, bucket, t):
         """Build a cell-level kernel for a bucket of boxes.
@@ -106,14 +107,13 @@ class Div:
 
         # Cache face offsets keyed on (box_indices, max_boxes, lev)
         cache_key = (bucket.box_indices, bucket.max_boxes, lev)
-        if not hasattr(self, '_face_offset_cache'):
+        if not hasattr(self, "_face_offset_cache"):
             self._face_offset_cache = {}
         if cache_key not in self._face_offset_cache:
             n_pad = bucket.max_boxes - len(bucket.box_indices)
             face_offsets = tuple(
                 jnp.array(
-                    [int(face_fb.offsets[d][mf_idx])
-                     for mf_idx in bucket.box_indices]
+                    [int(face_fb.offsets[d][mf_idx]) for mf_idx in bucket.box_indices]
                     + [0] * n_pad,
                     dtype=jnp.int32,
                 )
@@ -125,16 +125,20 @@ class Div:
         face_offsets, ng_face = self._face_offset_cache[cache_key]
 
         return self.scheme.build_kernel(
-            face_bufs=face_fb.bufs, face_offsets=face_offsets,
-            Nx=bucket.Nx_arr, Ny=bucket.Ny_arr, Nz=bucket.Nz_arr,
-            ng=bucket.ng, dh=bucket.dh_arr, coeff=self.coeff,
-            ncomp=self.cell_field.ncomp, ng_face=ng_face,
+            face_bufs=face_fb.bufs,
+            face_offsets=face_offsets,
+            Nx=bucket.Nx_arr,
+            Ny=bucket.Ny_arr,
+            Nz=bucket.Nz_arr,
+            ng=bucket.ng,
+            dh=bucket.dh_arr,
+            coeff=self.coeff,
+            ncomp=self.cell_field.ncomp,
+            ng_face=ng_face,
         )
 
 
-
-def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32,
-                      memory="default"):
+def build_face_fluxes(vel_func, box, dm, geom, ngrow, t, max_size=32, memory="default"):
     """Build a FaceField containing normal velocity at face centers."""
     ba = blockamr.BoxArray(box)
     ba.max_size(max_size)
@@ -159,9 +163,7 @@ def _fill_face_component(comp, d, vel_func, dx, prob_lo, t):
         for e in range(3):
             n = [nx, ny, nz][e]
             offset = 0.0 if e == d else 0.5
-            coords.append(
-                jnp.arange(n) * dx[e] + (prob_lo[e] + (lo[e] + offset) * dx[e])
-            )
+            coords.append(jnp.arange(n) * dx[e] + (prob_lo[e] + (lo[e] + offset) * dx[e]))
 
         X, Y, Z = jnp.meshgrid(*coords, indexing="ij")
         vel = vel_func(X, Y, Z, t)
@@ -215,10 +217,7 @@ class FaceFluxUpdater:
                 for e in range(3):
                     n = [nx, ny, nz][e]
                     offset = 0.0 if e == d else 0.5
-                    coords.append(
-                        jnp.arange(n) * dx[e]
-                        + (prob_lo[e] + (lo[e] + offset) * dx[e])
-                    )
+                    coords.append(jnp.arange(n) * dx[e] + (prob_lo[e] + (lo[e] + offset) * dx[e]))
                 X, Y, Z = jnp.meshgrid(*coords, indexing="ij")
                 shape_to_boxes.setdefault(shape_key, []).append((idx, X, Y, Z))
                 idx += 1
@@ -236,9 +235,7 @@ class FaceFluxUpdater:
 
         @jax.jit
         def _batched_vel(all_X, all_Y, all_Z, t):
-            return jax.vmap(lambda x, y, z: vel_func(x, y, z, t))(
-                all_X, all_Y, all_Z
-            )
+            return jax.vmap(lambda x, y, z: vel_func(x, y, z, t))(all_X, all_Y, all_Z)
 
         self._batched_vel = _batched_vel
 

@@ -6,6 +6,8 @@ from typing import NamedTuple
 
 import jax.numpy as jnp
 
+from ..dsl.eqterm import EqTerm
+
 
 class SourceKernel(NamedTuple):
     S: object  # Array
@@ -13,24 +15,24 @@ class SourceKernel(NamedTuple):
     coeff: float
 
     def __call__(self, phi):
-        phi_valid = phi[self.ng : -self.ng, self.ng : -self.ng, self.ng : -self.ng] if self.ng > 0 else phi
+        phi_valid = (
+            phi[self.ng : -self.ng, self.ng : -self.ng, self.ng : -self.ng] if self.ng > 0 else phi
+        )
         return self.coeff * self.S * phi_valid
 
 
-class Source:
+class Source(EqTerm):
     """Pointwise source term: S(x,y,z,t) * phi.
 
     coeff_func(x, y, z, t) -> scalar_array evaluated at cell centers.
     """
 
-    def __init__(self, coeff_func, field, coeff=1.0):
-        self.coeff_func = coeff_func
-        self.field = field
-        self.coeff = coeff
-        self._name = "Source"
+    kind = "spatial"
+    scheme_key = "source"
 
-    def __rmul__(self, scalar):
-        return Source(self.coeff_func, self.field, coeff=self.coeff * scalar)
+    def __init__(self, coeff_func, field, coeff=1.0):
+        super().__init__(field, coeff=coeff, coefficient=coeff_func)
+        self.coeff_func = coeff_func
 
     def build_kernel(self, mfi, t, lev=0):
         """Return a SourceKernel functor for this mfi."""
