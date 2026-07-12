@@ -14,7 +14,11 @@ from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.dsl import exp, imp, solve
 from neon.blockamr.bc import (
-    BoundaryCondition, DirichletBC, VectorBC, fixedValue, noSlip,
+    BoundaryCondition,
+    DirichletBC,
+    VectorBC,
+    fixedValue,
+    noSlip,
 )
 from neon.blockamr.fillpatch import FillPatchWithBC
 from neon.blockamr.operators.interpolate import interpolate
@@ -24,6 +28,7 @@ from neon.blockamr.operators.correct import correct
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_periodic_mesh(N, max_size=None):
     """Fully periodic mesh on [0,1]^3."""
@@ -84,6 +89,7 @@ def _set_face_field_constant(face_field, geom, ux, uy, uz):
 # Test 1: Interpolation of linear field is exact
 # ---------------------------------------------------------------------------
 
+
 def test_interpolate_linear_field_exact(blockamr_session):
     """Linear interpolation of a linear field U_x = x is exact at face centres.
 
@@ -122,13 +128,13 @@ def test_interpolate_linear_field_exact(blockamr_session):
         cell_right = cell_grown[cell_ng + i, cell_ng + jy, cell_ng + jz]
         expected = 0.5 * (cell_left + cell_right)
         got = face_valid[i, jy, jz]
-        assert abs(got - expected) < 1e-12, \
-            f"Face {i}: got {got:.6f}, expected {expected:.6f}"
+        assert abs(got - expected) < 1e-12, f"Face {i}: got {got:.6f}, expected {expected:.6f}"
 
 
 # ---------------------------------------------------------------------------
 # Test 2: Advection-diffusion convergence with fixedValue BCs
 # ---------------------------------------------------------------------------
+
 
 def _advdiff_error(N, nu, n_steps=1):
     """Compute error of advection-diffusion of sin(2π·x) in uniform flow U=1.
@@ -140,7 +146,7 @@ def _advdiff_error(N, nu, n_steps=1):
     k = 2 * pi
     dx_val = 1.0 / N
     # dt = O(dx²) so temporal error is subdominant
-    dt = 0.5 * dx_val ** 2 / nu
+    dt = 0.5 * dx_val**2 / nu
 
     mesh, geom = _make_cavity_mesh(N)
     dx = geom.cell_size()
@@ -148,7 +154,7 @@ def _advdiff_error(N, nu, n_steps=1):
 
     # Analytical solution: φ(x,t) = sin(k*(x - t)) * exp(-ν*k²*t)
     def exact(x, t):
-        return jnp.sin(k * (x - t)) * jnp.exp(-nu * k ** 2 * t)
+        return jnp.sin(k * (x - t)) * jnp.exp(-nu * k**2 * t)
 
     # BCs: Dirichlet with value at the boundary (value = average of exact at face)
     # For simplicity use the exact cell-centre value at the boundary cells
@@ -160,7 +166,10 @@ def _advdiff_error(N, nu, n_steps=1):
     )
 
     phi_field = CellField(
-        mesh, ncomp=1, ngrow=1, name="phi",
+        mesh,
+        ncomp=1,
+        ngrow=1,
+        name="phi",
         fill_patch=FillPatchWithBC(scalar_bc),
     )
 
@@ -180,9 +189,9 @@ def _advdiff_error(N, nu, n_steps=1):
     t = 0.0
     for _ in range(n_steps):
         solve(
-            exp.ddt(phi_field) + exp.div(face_flux, phi_field)
-            - exp.laplacian(nu_func, phi_field),
-            t, dt,
+            exp.ddt(phi_field) + exp.div(face_flux, phi_field) - exp.laplacian(nu_func, phi_field),
+            t=t,
+            dt=dt,
         )
         t += dt
 
@@ -227,6 +236,7 @@ def test_advection_diffusion_convergence(blockamr_session):
 # Test 3: Pressure solve with known divergence
 # ---------------------------------------------------------------------------
 
+
 def test_pressure_solve_known_divergence(blockamr_session):
     """Implicit pressure solve produces non-zero solution for divergent velocity.
 
@@ -242,20 +252,25 @@ def test_pressure_solve_known_divergence(blockamr_session):
     p = CellField(mesh, ncomp=1, ngrow=0, name="p")
 
     def sin_vel(X, Y, Z):
-        return jnp.stack([
-            jnp.sin(2 * pi * X),
-            jnp.zeros_like(X),
-            jnp.zeros_like(X),
-        ], axis=-1)
+        return jnp.stack(
+            [
+                jnp.sin(2 * pi * X),
+                jnp.zeros_like(X),
+                jnp.zeros_like(X),
+            ],
+            axis=-1,
+        )
 
     _set_cellfield_from_func(U, geom, sin_vel)
 
-    solve(imp.laplacian(dt, p) == exp.div(U),
-          schemes={"rtol": 1e-10, "atol": 1e-12, "max_iter": 200, "verbose": 0})
+    solve(
+        imp.laplacian(dt, p) == exp.div(U),
+        solution={"rtol": 1e-10, "atol": 1e-12, "maxIter": 200, "verbose": 0},
+    )
 
-    s = p._imp_solver
-    assert s['mlmg'].get_num_iters() > 0, "MLMG did zero iterations — RHS may be zero"
-    assert s['mlmg'].get_init_residual() > 0, "Initial residual is zero"
+    s = p._imp_cache
+    assert s.mlmg.get_num_iters() > 0, "MLMG did zero iterations — RHS may be zero"
+    assert s.mlmg.get_init_residual() > 0, "Initial residual is zero"
     assert p.grad is not None, "p.grad was not set"
     max_grad = max(float(jnp.max(jnp.abs(g))) for lev_grads in p.grad for g in lev_grads)
     assert max_grad > 0, "Gradient is zero"
@@ -264,6 +279,7 @@ def test_pressure_solve_known_divergence(blockamr_session):
 # ---------------------------------------------------------------------------
 # Test 4: Pressure correction yields divergence-free velocity
 # ---------------------------------------------------------------------------
+
 
 def test_pressure_correction_divergence_free(blockamr_session):
     """After pressure projection, velocity is divergence-free.
@@ -282,11 +298,14 @@ def test_pressure_correction_divergence_free(blockamr_session):
     phi = FaceField(mesh, ncomp=1, ngrow=1, name="phi")
 
     def shear_vel(X, Y, Z):
-        return jnp.stack([
-            jnp.sin(2 * pi * Y),
-            jnp.zeros_like(X),
-            jnp.zeros_like(X),
-        ], axis=-1)
+        return jnp.stack(
+            [
+                jnp.sin(2 * pi * Y),
+                jnp.zeros_like(X),
+                jnp.zeros_like(X),
+            ],
+            axis=-1,
+        )
 
     _set_cellfield_from_func(U, geom, shear_vel)
 
@@ -294,12 +313,14 @@ def test_pressure_correction_divergence_free(blockamr_session):
 
     # One explicit step → U* may have non-zero divergence
     interpolate(U, phi)
-    solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu_func, U), 0.0, dt)
+    solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu_func, U), t=0.0, dt=dt)
     U.fill_patch(0, 0.0)
 
     # Pressure projection
-    solve(imp.laplacian(dt, p) == exp.div(U),
-          schemes={"rtol": 1e-10, "atol": 1e-12, "max_iter": 200, "verbose": 0})
+    solve(
+        imp.laplacian(dt, p) == exp.div(U),
+        solution={"rtol": 1e-10, "atol": 1e-12, "maxIter": 200, "verbose": 0},
+    )
     correct(U, -dt * exp.grad(p))
     U.fill_patch(0, 0.0)
 
@@ -324,20 +345,22 @@ def test_pressure_correction_divergence_free(blockamr_session):
     sigma = dt
     lp = blockamr.MLNodeLaplacian(geom, ba, dm, blockamr.LPInfo(), sigma)
     is_per = geom.is_periodic()
-    lo_bc = [blockamr.LinOpBCType.Periodic if is_per[d]
-             else blockamr.LinOpBCType.Neumann for d in range(3)]
+    lo_bc = [
+        blockamr.LinOpBCType.Periodic if is_per[d] else blockamr.LinOpBCType.Neumann
+        for d in range(3)
+    ]
     lp.set_domain_bc(lo_bc, lo_bc[:])
     lp.comp_divergence(rhs, vel3)
 
     rhs_arr = rhs.arrays()[0]
     max_div = float(jnp.max(jnp.abs(rhs_arr)))
-    assert max_div < 1e-8, \
-        f"max|div(U)| = {max_div:.2e} after projection — should be ~0"
+    assert max_div < 1e-8, f"max|div(U)| = {max_div:.2e} after projection — should be ~0"
 
 
 # ---------------------------------------------------------------------------
 # Test 5: DSL solver lid-driven cavity physical sanity
 # ---------------------------------------------------------------------------
+
 
 def test_dsl_solver_lid_cavity_physical(blockamr_session):
     """DSL solver produces physically reasonable lid-driven cavity flow.
@@ -355,10 +378,12 @@ def test_dsl_solver_lid_cavity_physical(blockamr_session):
 
     mesh, geom = _make_cavity_mesh(N)
     U_bc = VectorBC(
-        xlo=noSlip(), xhi=noSlip(),
-        ylo=noSlip(), yhi=fixedValue([1, 0, 0]),
+        xlo=noSlip(),
+        xhi=noSlip(),
+        ylo=noSlip(),
+        yhi=fixedValue([1, 0, 0]),
     )
-    solver = DSLIncompressibleSolver(mesh, nu, dt, U_bc)
+    solver = DSLIncompressibleSolver(mesh, nu, dt, U_bc=U_bc)
 
     for _ in range(500):
         solver.step()
@@ -368,7 +393,7 @@ def test_dsl_solver_lid_cavity_physical(blockamr_session):
     U_arrs = np.array(solver.U.mf[0].arrays()[0])
 
     # Valid region
-    u_valid = U_arrs[ng:ng + N, ng:ng + N, ng:ng + N, :]
+    u_valid = U_arrs[ng : ng + N, ng : ng + N, ng : ng + N, :]
 
     max_vel = np.max(np.abs(u_valid))
     assert max_vel < 2.0, f"Max velocity {max_vel:.3f} — solver may be unstable"

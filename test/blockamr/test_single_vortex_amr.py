@@ -90,8 +90,7 @@ def test_amr_vortex_mass_conservation():
     info.set_blocking_factor(0, 8)
 
     mesh = AmrMesh(geom, info)
-    phi = CellField(mesh, ncomp=1, ngrow=2, name="phi",
-                    fill_patch=FillPatchCellConservative())
+    phi = CellField(mesh, ncomp=1, ngrow=2, name="phi", fill_patch=FillPatchCellConservative())
     face_vel = FaceField(mesh, ncomp=1, ngrow=2, name="U")
 
     mesh.init_from_scratch(0.0)
@@ -119,7 +118,7 @@ def test_amr_vortex_mass_conservation():
         for lev in range(mesh.n_levels()):
             update_face_fluxes(face_vel[lev], vel, mesh.geom(lev), t)
         expr = exp.ddt(phi) + exp.div(face_vel, phi, scheme=div_scheme)
-        solve(expr, t, dt)
+        solve(expr, t=t, dt=dt)
         t += dt
 
     mass_final = _compute_level0_mass(phi, mesh)

@@ -10,8 +10,6 @@ is crossed), forcing JAX to retrace every JIT-compiled function.
 """
 
 import jax
-import jax.numpy as jnp
-import numpy as np
 
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh
@@ -23,6 +21,7 @@ from neon.blockamr.schemes.div_schemes import Upwind
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_mesh(N, Nz, max_size):
     """Create a periodic single-level mesh with given max_size."""
@@ -81,6 +80,7 @@ class CompileCounter:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 def test_same_box_count_no_recompile(blockamr_session):
     """Repeated solve with the same box count does not recompile."""
     N, Nz = 16, 4
@@ -90,7 +90,7 @@ def test_same_box_count_no_recompile(blockamr_session):
     expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
 
     # Warmup: first call compiles
-    solve(expr, 0.0, 0.001)
+    solve(expr, t=0.0, dt=0.001)
     jax.block_until_ready(phi.mf[0].contiguous_array())
 
     # Second call with same mesh → no recompilation
@@ -104,13 +104,11 @@ def test_same_box_count_no_recompile(blockamr_session):
         phi.mf[0].copy_from(mfi, arr)
     phi.fill_patch(0, 0.0)
 
-    solve(expr, 0.0, 0.001)
+    solve(expr, t=0.0, dt=0.001)
     jax.block_until_ready(phi.mf[0].contiguous_array())
     counter.stop()
 
-    assert counter.count == 0, (
-        f"Expected 0 recompilations for same box count, got {counter.count}"
-    )
+    assert counter.count == 0, f"Expected 0 recompilations for same box count, got {counter.count}"
 
 
 def test_different_box_count_recompiles(blockamr_session):
@@ -129,7 +127,7 @@ def test_different_box_count_recompiles(blockamr_session):
     phi_a, ff_a = _setup_fields(mesh_a)
     expr_a = exp.ddt(phi_a) + exp.div(ff_a, phi_a, scheme=Upwind())
 
-    solve(expr_a, 0.0, 0.001)
+    solve(expr_a, t=0.0, dt=0.001)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
     # --- Setup B: 4 boxes (different n_boxes_padded) ---
@@ -139,13 +137,12 @@ def test_different_box_count_recompiles(blockamr_session):
 
     counter = CompileCounter()
     counter.start()
-    solve(expr_b, 0.0, 0.001)
+    solve(expr_b, t=0.0, dt=0.001)
     jax.block_until_ready(phi_b.mf[0].contiguous_array())
     counter.stop()
 
     assert counter.count > 0, (
-        f"Expected recompilation when box count changes (1 → 4 boxes), "
-        f"but got 0 recompilations"
+        "Expected recompilation when box count changes (1 → 4 boxes), but got 0 recompilations"
     )
 
 
@@ -170,7 +167,7 @@ def test_crossing_power_of_2_boundary_recompiles(blockamr_session):
 
     phi_a, ff_a = _setup_fields(mesh_a)
     expr_a = exp.ddt(phi_a) + exp.div(ff_a, phi_a, scheme=Upwind())
-    solve(expr_a, 0.0, 0.001)
+    solve(expr_a, t=0.0, dt=0.001)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
     # --- 5 boxes → padded to 8 (crosses power-of-2 boundary) ---
@@ -187,13 +184,13 @@ def test_crossing_power_of_2_boundary_recompiles(blockamr_session):
 
     counter = CompileCounter()
     counter.start()
-    solve(expr_b, 0.0, 0.001)
+    solve(expr_b, t=0.0, dt=0.001)
     jax.block_until_ready(phi_b.mf[0].contiguous_array())
     counter.stop()
 
     assert counter.count > 0, (
-        f"Expected recompilation when crossing power-of-2 boundary "
-        f"(3 boxes padded=4 → 5 boxes padded=8), got 0 recompilations"
+        "Expected recompilation when crossing power-of-2 boundary "
+        "(3 boxes padded=4 → 5 boxes padded=8), got 0 recompilations"
     )
 
 
@@ -216,7 +213,7 @@ def test_same_padded_count_no_recompile(blockamr_session):
 
     phi_a, ff_a = _setup_fields(mesh_a)
     expr_a = exp.ddt(phi_a) + exp.div(ff_a, phi_a, scheme=Upwind())
-    solve(expr_a, 0.0, 0.001)
+    solve(expr_a, t=0.0, dt=0.001)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
     # --- 3 boxes → also padded to 4 ---
@@ -233,7 +230,7 @@ def test_same_padded_count_no_recompile(blockamr_session):
 
     counter = CompileCounter()
     counter.start()
-    solve(expr_b, 0.0, 0.001)
+    solve(expr_b, t=0.0, dt=0.001)
     jax.block_until_ready(phi_b.mf[0].contiguous_array())
     counter.stop()
 

@@ -89,16 +89,12 @@ class Equation:
     def solve(self, *, dt=None, t=None, solution=None):
         """Discretise and solve: optimize() then delegate to the free solve().
 
-        solution : the field's fvSolution.solvers[field] block. Until the
-            free solve() gains its new signature (plan 02), this adapts to
-            the old one: an implicit system passes ``solution`` through as
-            the MLMG config (old ``schemes=`` kwarg); an explicit system
-            passes the equation's own ``schemes`` names.
+        solution : the field's fvSolution.solvers[field] block — the linear
+            solver + tolerances (MLMG rtol/atol/maxIter/bottomSolver) and the
+            field's IBM method. Discretisation schemes are NOT passed here —
+            they are the equation's own ``schemes`` (bound at construction).
         """
         from .solve import solve as _solve
 
         eqn = self.optimize()
-        if eqn.implicit_lhs is not None:
-            _solve(eqn, t=t, dt=dt, schemes=solution)
-        else:
-            _solve(eqn, t=t, dt=dt, schemes=eqn.schemes or None)
+        _solve(eqn, t=t, dt=dt, solution=solution)

@@ -61,6 +61,7 @@ def _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16):
 
 def _make_tag_func(mesh, width):
     """Tag cells within `width` of the domain center."""
+
     def _tag(lev, tags, time, ngrow):
         dx = mesh.geom(lev).cell_size()
         prob_lo = mesh.geom(lev).prob_lo()
@@ -73,11 +74,10 @@ def _make_tag_func(mesh, width):
             nz = hi[2] - lo[2] + 1
             xs = (np.arange(nx) + lo[0] + 0.5) * dx[0] + prob_lo[0]
             ys = (np.arange(ny) + lo[1] + 0.5) * dx[1] + prob_lo[1]
-            mask_2d = ((np.abs(xs - 0.5)[:, None] < width)
-                       & (np.abs(ys - 0.5)[None, :] < width))
-            mask = np.broadcast_to(
-                mask_2d[:, :, None], (nx, ny, nz)).astype(np.int32).copy()
+            mask_2d = (np.abs(xs - 0.5)[:, None] < width) & (np.abs(ys - 0.5)[None, :] < width)
+            mask = np.broadcast_to(mask_2d[:, :, None], (nx, ny, nz)).astype(np.int32).copy()
             tbi.set_tags(mask)
+
     return _tag
 
 
@@ -113,16 +113,15 @@ def _do_step(phi, ff, mesh, t=0.0, dt=0.001):
         phi.fill_patch(lev, t)
         if ff[lev] is not None:
             update_face_fluxes(ff[lev], _vel_func, mesh.geom(lev), t)
-    expr = (exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind()))
-    solve(expr, t, dt)
+    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    solve(expr, t=t, dt=dt)
     jax.block_until_ready(None)
 
 
 def test_amr_recompilation_stable_grid(blockamr_session):
     """Repeated solve on a stable AMR grid produces 0 recompiles."""
     mesh = _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16)
-    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi",
-                    fill_patch=FillPatchCellConservative())
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi", fill_patch=FillPatchCellConservative())
     ff = FaceField(mesh, ncomp=1, ngrow=0, name="U")
 
     tag_center = _make_tag_func(mesh, width=0.2)
@@ -143,15 +142,13 @@ def test_amr_recompilation_stable_grid(blockamr_session):
     counter.stop()
 
     print(f"3 solves on stable grid: {counter.count} recompiles")
-    assert counter.count == 0, (
-        f"Stable grid should produce 0 recompiles, got {counter.count}")
+    assert counter.count == 0, f"Stable grid should produce 0 recompiles, got {counter.count}"
 
 
 def test_amr_recompilation_same_tag_regrid(blockamr_session):
     """Regrid with identical tagging produces 0 recompiles."""
     mesh = _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16)
-    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi",
-                    fill_patch=FillPatchCellConservative())
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi", fill_patch=FillPatchCellConservative())
     ff = FaceField(mesh, ncomp=1, ngrow=0, name="U")
 
     tag_center = _make_tag_func(mesh, width=0.2)
@@ -175,8 +172,8 @@ def test_amr_recompilation_same_tag_regrid(blockamr_session):
     print(f"Solve after same-tag regrid: {counter.count} recompiles")
     assert boxes_after == boxes_before, "Sanity: same tag should give same layout"
     assert counter.count == 0, (
-        f"Same layout after regrid should produce 0 recompiles, "
-        f"got {counter.count}")
+        f"Same layout after regrid should produce 0 recompiles, got {counter.count}"
+    )
 
 
 def test_amr_recompilation_level_change(blockamr_session):
@@ -186,8 +183,7 @@ def test_amr_recompilation_level_change(blockamr_session):
     has been seen (warmup), revisiting it produces 0 recompiles.
     """
     mesh = _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16)
-    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi",
-                    fill_patch=FillPatchCellConservative())
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi", fill_patch=FillPatchCellConservative())
     ff = FaceField(mesh, ncomp=1, ngrow=0, name="U")
 
     tag_center = _make_tag_func(mesh, width=0.2)
@@ -223,8 +219,8 @@ def test_amr_recompilation_level_change(blockamr_session):
     # Both configs were warmed up → 0 recompiles when revisiting
     if boxes_restored == boxes_2level:
         assert counter.count == 0, (
-            f"Restored same layout — expected 0 recompiles, "
-            f"got {counter.count}")
+            f"Restored same layout — expected 0 recompiles, got {counter.count}"
+        )
 
 
 def test_amr_tile_padding_through_regrids(blockamr_session):
@@ -235,11 +231,9 @@ def test_amr_tile_padding_through_regrids(blockamr_session):
     2. n_padded is always a power of 2 ≥ n_tiles
     3. After warmup of both configs, switching between them → 0 recompiles
     """
-    from neon.blockamr.flattened_boxes import flattened_boxes_from_mf
 
     mesh = _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16)
-    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi",
-                    fill_patch=FillPatchCellConservative())
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi", fill_patch=FillPatchCellConservative())
     ff = FaceField(mesh, ncomp=1, ngrow=0, name="U")
 
     bf = 4  # blocking factor for tiles
@@ -257,15 +251,17 @@ def test_amr_tile_padding_through_regrids(blockamr_session):
         n_tiles = int(d["n_tiles"])
         n_padded = int(d["n_padded"])
         is_pow2 = (n_padded & (n_padded - 1)) == 0
-        configs.append({
-            "lev": lev, "n_boxes": n_boxes,
-            "n_tiles": n_tiles, "n_padded": n_padded,
-        })
-        print(f"\nConfig A lev {lev}: {n_boxes} boxes, "
-              f"{n_tiles} tiles, padded to {n_padded}")
+        configs.append(
+            {
+                "lev": lev,
+                "n_boxes": n_boxes,
+                "n_tiles": n_tiles,
+                "n_padded": n_padded,
+            }
+        )
+        print(f"\nConfig A lev {lev}: {n_boxes} boxes, {n_tiles} tiles, padded to {n_padded}")
         assert is_pow2, f"n_padded={n_padded} is not a power of 2"
-        assert n_padded >= n_tiles, (
-            f"n_padded={n_padded} < n_tiles={n_tiles}")
+        assert n_padded >= n_tiles, f"n_padded={n_padded} < n_tiles={n_tiles}"
 
     # Warmup solve with config A
     _do_step(phi, ff, mesh)
@@ -282,12 +278,15 @@ def test_amr_tile_padding_through_regrids(blockamr_session):
         n_tiles = int(d["n_tiles"])
         n_padded = int(d["n_padded"])
         is_pow2 = (n_padded & (n_padded - 1)) == 0
-        configs_b.append({
-            "lev": lev, "n_boxes": n_boxes,
-            "n_tiles": n_tiles, "n_padded": n_padded,
-        })
-        print(f"Config B lev {lev}: {n_boxes} boxes, "
-              f"{n_tiles} tiles, padded to {n_padded}")
+        configs_b.append(
+            {
+                "lev": lev,
+                "n_boxes": n_boxes,
+                "n_tiles": n_tiles,
+                "n_padded": n_padded,
+            }
+        )
+        print(f"Config B lev {lev}: {n_boxes} boxes, {n_tiles} tiles, padded to {n_padded}")
         assert is_pow2, f"n_padded={n_padded} is not a power of 2"
         assert n_padded >= n_tiles
 
@@ -315,21 +314,18 @@ def test_amr_tile_padding_through_regrids(blockamr_session):
     switch_a = counter.count
     counter.stop()
 
-    print(f"\nAfter warmup of both configs:")
+    print("\nAfter warmup of both configs:")
     print(f"  Switch A→B: {switch_b} recompiles")
     print(f"  Switch B→A: {switch_a} recompiles")
 
     # Tile counts should differ between configs (more boxes → more tiles)
     if len(configs_b) > 1 and len(configs) > 1:
-        print(f"\nTile growth: lev1 {configs[1]['n_tiles']} → "
-              f"{configs_b[1]['n_tiles']} tiles")
+        print(f"\nTile growth: lev1 {configs[1]['n_tiles']} → {configs_b[1]['n_tiles']} tiles")
 
     assert switch_a == 0, (
-        f"Switching back to cached config A should be 0 recompiles, "
-        f"got {switch_a}")
-    assert switch_b == 0, (
-        f"Switching to cached config B should be 0 recompiles, "
-        f"got {switch_b}")
+        f"Switching back to cached config A should be 0 recompiles, got {switch_a}"
+    )
+    assert switch_b == 0, f"Switching to cached config B should be 0 recompiles, got {switch_b}"
 
 
 def test_amr_new_tier_recompiles_once(blockamr_session):
@@ -340,8 +336,7 @@ def test_amr_new_tier_recompiles_once(blockamr_session):
     Revisiting all 3 cached tiers produces 0 recompiles.
     """
     mesh = _make_amr_mesh(N=64, Nz=4, max_level=1, max_size=8)
-    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi",
-                    fill_patch=FillPatchCellConservative())
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi", fill_patch=FillPatchCellConservative())
     ff = FaceField(mesh, ncomp=1, ngrow=0, name="U")
 
     widths = [0.10, 0.25, 0.40]
@@ -361,8 +356,7 @@ def test_amr_new_tier_recompiles_once(blockamr_session):
         if mesh.n_levels() > 1:
             d = phi.mf[1].packed_tiles(bf)
             padded_sizes.append(int(d["n_padded"]))
-            print(f"\nWidth={w:.2f} lev1: {int(d['n_tiles'])} tiles, "
-                  f"padded={int(d['n_padded'])}")
+            print(f"\nWidth={w:.2f} lev1: {int(d['n_tiles'])} tiles, padded={int(d['n_padded'])}")
 
         # First visit — should recompile (new tier)
         counter.reset()
@@ -377,17 +371,15 @@ def test_amr_new_tier_recompiles_once(blockamr_session):
         print(f"  First visit:  {first} recompiles")
         print(f"  Second visit: {second} recompiles")
 
-        assert first > 0, (
-            f"Width={w}: new tier should recompile, got 0")
-        assert second == 0, (
-            f"Width={w}: repeat on same tier should not recompile, "
-            f"got {second}")
+        assert first > 0, f"Width={w}: new tier should recompile, got 0"
+        assert second == 0, f"Width={w}: repeat on same tier should not recompile, got {second}"
 
     # Verify we actually hit different padded sizes
     unique_padded = set(padded_sizes)
     print(f"\nPadded tiers seen: {sorted(unique_padded)}")
     assert len(unique_padded) >= 2, (
-        f"Expected at least 2 different padded tiers, got {unique_padded}")
+        f"Expected at least 2 different padded tiers, got {unique_padded}"
+    )
 
     # Revisit all 3 cached tiers — all should be 0
     print("\nRevisiting all cached tiers:")
@@ -397,7 +389,7 @@ def test_amr_new_tier_recompiles_once(blockamr_session):
         _do_step(phi, ff, mesh)
         print(f"  Width={w:.2f}: {counter.count} recompiles")
         assert counter.count == 0, (
-            f"Width={w}: revisiting cached tier should be 0 recompiles, "
-            f"got {counter.count}")
+            f"Width={w}: revisiting cached tier should be 0 recompiles, got {counter.count}"
+        )
 
     counter.stop()

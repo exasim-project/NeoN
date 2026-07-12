@@ -45,7 +45,7 @@ import jax.numpy as jnp
 import numpy as np
 
 import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
+from neon.blockamr.field import CellField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.dsl import exp, solve
 from neon.blockamr.operators.div import build_face_fluxes, FaceFluxUpdater
@@ -189,8 +189,7 @@ def run(
     def vel(x, y, z, t):
         return vortex_velocity(x, y, z, t, period=period)
 
-    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
-                           max_size=max_size, memory=memory)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0, max_size=max_size, memory=memory)
 
     # ---- time loop (OpenFOAM-style) ----
     u_max = 2.0  # max velocity magnitude
@@ -210,7 +209,7 @@ def run(
             dt = period - t
         flux_updater.update(t)
         expr = exp.ddt(phi) + exp.div(ff, phi, scheme=div_scheme)
-        solve(expr, t, dt)
+        solve(expr, t=t, dt=dt)
         t += dt
         nsteps += 1
 
@@ -240,13 +239,17 @@ if __name__ == "__main__":
     parser.add_argument("--max-size", type=int, default=32, help="max grid size")
     parser.add_argument("--cfl", type=float, default=0.3, help="CFL number")
     parser.add_argument("--period", type=float, default=2.0, help="vortex period")
-    parser.add_argument("--write-interval", type=float, default=0.1,
-                        help="plotfile write interval in seconds")
+    parser.add_argument(
+        "--write-interval", type=float, default=0.1, help="plotfile write interval in seconds"
+    )
     parser.add_argument("--no-plot", action="store_true", help="skip plotfile output")
-    parser.add_argument("--device", choices=["cpu", "gpu"], default=None,
-                        help="force cpu or gpu")
-    parser.add_argument("--backend", choices=["jax", "pallas", "triton"],
-                        default="jax", help="dispatch backend (default: jax)")
+    parser.add_argument("--device", choices=["cpu", "gpu"], default=None, help="force cpu or gpu")
+    parser.add_argument(
+        "--backend",
+        choices=["jax", "pallas", "triton"],
+        default="jax",
+        help="dispatch backend (default: jax)",
+    )
     parser.add_argument(
         "--scheme",
         choices=list(DIV_SCHEMES),
