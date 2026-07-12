@@ -11,7 +11,7 @@ enum class \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volu
 \begin{DoxyCompactItemize}
 \item 
 bool \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa1b62e12928cc3869c00b94b0359a31d}{read\+Transform\+Implicit}} (const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&dict)
-\begin{DoxyCompactList}\small\item\em Read the opt-\/in "{}implicit"{} flag from a slip/symmetry patch dictionary. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Read the "{}implicit"{} flag from a slip/symmetry patch dictionary. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Normal\+Damping}} \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4857f8d14e6706a3bdf5dfc5205bf685}{normal\+Damping\+Mode}} (bool implicit)
 \begin{DoxyCompactList}\small\item\em Map the implicit flag onto the Normal\+Damping mode. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4d8ed8bc4e9f796c4d3068c5a88f3abe}{set\+Slip\+Symmetry\+Value}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector, const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_ad3b44c9bd9296aadc06f4af287fe2ad6}{Normal\+Damping}} mode)
@@ -93,7 +93,7 @@ Map the implicit flag onto the Normal\+Damping mode.
 
 
 
-Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00064}{64}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
+Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa1b62e12928cc3869c00b94b0359a31d}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa1b62e12928cc3869c00b94b0359a31d} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!readTransformImplicit@{readTransformImplicit}}
@@ -103,11 +103,11 @@ Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00064}{64}} of fil
 
 
 
-Read the opt-\/in "{}implicit"{} flag from a slip/symmetry patch dictionary. 
+Read the "{}implicit"{} flag from a slip/symmetry patch dictionary. 
 
-Defaults to false (Deferred). \doxylink{classA}{A} boolean read from a dictionary file arrives as a word/string rather than a bool, so accept bool, int, and the common truthy spellings — mirroring the tolerant parsing used for the solver\textquotesingle{}s l1\+Scaled\+Residual flag. 
+Defaults to TRUE (Implicit). The velocity is solved as a shared scalar matrix with a \doxylink{classNeoN_1_1Vec3}{Vec3} (multi-\/\+RHS) Ginkgo solve, so the direction-\/dependent slip/symmetry normal damping (gamma\texorpdfstring{$\vert$}{|}\+S\texorpdfstring{$\vert$}{|}\texorpdfstring{$\ast$}{*}\+Delta\texorpdfstring{$\ast$}{*}\texorpdfstring{$\vert$}{|}n\+\_\+c\texorpdfstring{$\vert$}{|}, different per component) cannot be carried by the shared scalar diagonal. Implicit mode routes it through the per-\/component diag\+Cmpt store, which the solver applies column-\/by-\/column, constraining the wall-\/normal velocity in the solve. The Deferred alternative only writes the damping into ref\+Grad (RHS) and lags it one outer iteration, which is too weak to hold the normal component on a developed field and lets it diverge in the momentum solve (observed on occ\+Driv\+Aer\+: U\+\_\+normal runs away at the ground/freestream slip-\/symmetry boundaries). Set "{}implicit no"{} on a patch to opt back into the Deferred treatment. \doxylink{classA}{A} boolean read from a dictionary arrives as a word/string, so accept bool, int, and the common truthy spellings. 
 
-Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00049}{49}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
+Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00056}{56}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a2ef18c0f426de4e5522a05bf1135e770} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!setFixedValue@{setFixedValue}}
@@ -183,7 +183,7 @@ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoun
 
 
 
-Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00080}{80}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
+Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a808902e55e1427e037c57626ea91ebcf}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a808902e55e1427e037c57626ea91ebcf} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!setSlipSymmetryValue$<$ NeoN::Vec3 $>$@{setSlipSymmetryValue$<$ NeoN::Vec3 $>$}}
@@ -194,7 +194,7 @@ void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoun
 
 
 
-Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00115}{115}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
+Definition at line \mbox{\hyperlink{slipSymmetry_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{slipSymmetry_8hpp_source}{slip\+Symmetry.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a0a401e2e06952f4f8fa8072a22833aad}\label{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a0a401e2e06952f4f8fa8072a22833aad} 
 \index{NeoN::finiteVolume::cellCentred::volumeBoundary::detail@{NeoN::finiteVolume::cellCentred::volumeBoundary::detail}!updateProcBoundaryOwnerValue@{updateProcBoundaryOwnerValue}}

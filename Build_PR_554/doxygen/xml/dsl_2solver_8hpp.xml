@@ -17,6 +17,7 @@
     <includes refid="linearSystem_8hpp" local="yes">NeoN/linearAlgebra/linearSystem.hpp</includes>
     <includes refid="linearAlgebra_2solver_8hpp" local="yes">NeoN/linearAlgebra/solver.hpp</includes>
     <includedby refid="backwardEuler_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</includedby>
+    <includedby refid="steadyState_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/steadyState.hpp</includedby>
     <incdepgraph>
       <node id="59">
         <label>NeoN/core/array.hpp</label>
@@ -1290,10 +1291,16 @@
         <link refid="dsl_2solver_8hpp"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/backwardEuler.hpp</label>
         <link refid="backwardEuler_8hpp"/>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/timeIntegration/steadyState.hpp</label>
+        <link refid="steadyState_8hpp"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
@@ -1354,7 +1361,7 @@
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>subtract<sp/>the<sp/>explicit<sp/>source<sp/>term<sp/>from<sp/>the<sp/>rhs</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>expTmp<sp/>=<sp/>optExp.explicitOperation(solution.mesh().nCells());</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[vol,<sp/>expSource,<sp/>rhs]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.mesh().cellVolumes(),<sp/>expTmp,<sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1a0e2eea387da236713807b3c627469e19" kindref="member">rhs</ref>());</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">parallelFor</ref>(</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>rhs.size()},</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{<sp/>rhs[i]<sp/>-=<sp/>expSource[i]<sp/>*<sp/>vol[i];<sp/>}</highlight></codeline>
@@ -1541,7 +1548,7 @@
 <codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>unrelaxed<sp/>fixed<sp/>point.<sp/>Off-diagonal<sp/>sum<sp/>+<sp/>diagonal<sp/>algebra<sp/>are<sp/>in<sp/>MatrixValueType;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>source-correction<sp/>cross<sp/>term<sp/>(dRelaxed<sp/>-<sp/>dAug)*field<sp/>is<sp/>MatrixValueType<sp/>*<sp/>RHSValueType</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(scalar<sp/>*<sp/>Vec3<sp/>in<sp/>the<sp/>segregated<sp/>momentum<sp/>form).</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">parallelFor</ref>(</highlight></codeline>
 <codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ls.<ref refid="classNeoN_1_1la_1_1LinearSystem_1abdfd64b78fd8b121e6de388edbb4ea4e" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>nCells},</highlight></codeline>
 <codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli)<sp/>{</highlight></codeline>
@@ -1607,7 +1614,7 @@
 <codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1aecc669a189db22f652ffb9788f01a99b" kindref="member">NF_ASSERT</ref>(solution.size()<sp/>==<sp/>previous.<ref refid="classNeoN_1_1Vector_1a2ab8411bc0c72d42ce04c21f8a8a3438" kindref="member">size</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;applyFieldRelaxation:<sp/>field/prev<sp/>size<sp/>mismatch&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="310"><highlight class="normal"></highlight></codeline>
 <codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>[current,<sp/>prev]<sp/>=<sp/><ref refid="namespaceNeoN_1af9198d29681d27f9a478aa99c01c00b9" kindref="member">views</ref>(solution.internalVector(),<sp/>previous);</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">parallelFor</ref>(</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">parallelFor</ref>(</highlight></codeline>
 <codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>solution.exec(),</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{0,<sp/>solution.size()},</highlight></codeline>
 <codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>celli)<sp/>{</highlight></codeline>

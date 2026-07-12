@@ -108,6 +108,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv.html">BoundedDiv</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad.html">CellLimitedGrad</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil.html">CellToFaceStencil</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected.html">Corrected</a></td></tr>
@@ -217,6 +219,7 @@ Typedefs</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:a629e77bbe66a0a80dd0fbda8fe6821e8" id="r_a629e77bbe66a0a80dd0fbda8fe6821e8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a629e77bbe66a0a80dd0fbda8fe6821e8">DdtScheme</a> { <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a629e77bbe66a0a80dd0fbda8fe6821e8a936336a4a2b22a66aca8458db0cf9a85">SteadyState</a>
 , <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377">BDF1</a>
 , <a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09">BDF2</a>
  }</td></tr>
@@ -279,12 +282,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a5ee2b2f0634716198d36459918063de3" id="r_a5ee2b2f0634716198d36459918063de3"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a5ee2b2f0634716198d36459918063de3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a5ee2b2f0634716198d36459918063de3">computeLinearInterpolation</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;src, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;weights, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;dst)</td></tr>
 <tr class="separator:a5ee2b2f0634716198d36459918063de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac77153b0c46296b5f78524525d189a9a" id="r_ac77153b0c46296b5f78524525d189a9a"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:ac77153b0c46296b5f78524525d189a9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac77153b0c46296b5f78524525d189a9a">computeLinearUpwindInterpolation</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;src, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;flux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaOwner, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaNeighbour, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;dst)</td></tr>
-<tr class="separator:ac77153b0c46296b5f78524525d189a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75f62e51f59b86061f79298071824f55" id="r_a75f62e51f59b86061f79298071824f55"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a75f62e51f59b86061f79298071824f55"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a75f62e51f59b86061f79298071824f55">computeLinearUpwindCorrection</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;src, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;flux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaOwner, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaNeighbour, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;dst)</td></tr>
-<tr class="separator:a75f62e51f59b86061f79298071824f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81b9410ce90e1bd8e6666140a8893a6f" id="r_a81b9410ce90e1bd8e6666140a8893a6f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:a81b9410ce90e1bd8e6666140a8893a6f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a81b9410ce90e1bd8e6666140a8893a6f">computeLinearUpwindInterpolation</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;src, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;flux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaOwner, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaNeighbour, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;dst, const bool cellLimitedGradient=false)</td></tr>
+<tr class="separator:a81b9410ce90e1bd8e6666140a8893a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadcf276aad95b11276bd39da07cdf8bf" id="r_aadcf276aad95b11276bd39da07cdf8bf"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:aadcf276aad95b11276bd39da07cdf8bf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#aadcf276aad95b11276bd39da07cdf8bf">computeLinearUpwindCorrection</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;src, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;flux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaOwner, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;faceDeltaNeighbour, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;dst, const bool cellLimitedGradient=false)</td></tr>
+<tr class="separator:aadcf276aad95b11276bd39da07cdf8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9d7a25056cb046afef32003276efb73" id="r_aa9d7a25056cb046afef32003276efb73"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:aa9d7a25056cb046afef32003276efb73"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#aa9d7a25056cb046afef32003276efb73">computeUpwindInterpolation</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;src, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;flux, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;weights, <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;dst)</td></tr>
 <tr class="separator:aa9d7a25056cb046afef32003276efb73"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -406,6 +409,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754" name="a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a629e77bbe66a0a80dd0fbda8fe6821e8a936336a4a2b22a66aca8458db0cf9a85" name="a629e77bbe66a0a80dd0fbda8fe6821e8a936336a4a2b22a66aca8458db0cf9a85"></a>SteadyState&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377" name="a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377"></a>BDF1&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09" name="a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09"></a>BDF2&#160;</td><td class="fielddoc"></td></tr>
 </table>
@@ -905,8 +909,8 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
-<a id="a75f62e51f59b86061f79298071824f55" name="a75f62e51f59b86061f79298071824f55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75f62e51f59b86061f79298071824f55">&#9670;&#160;</a></span>computeLinearUpwindCorrection()</h2>
+<a id="aadcf276aad95b11276bd39da07cdf8bf" name="aadcf276aad95b11276bd39da07cdf8bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadcf276aad95b11276bd39da07cdf8bf">&#9670;&#160;</a></span>computeLinearUpwindCorrection()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -941,7 +945,13 @@ template&lt;typename ValueType &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>dst</em>&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>cellLimitedGradient</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -953,8 +963,8 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
-<a id="ac77153b0c46296b5f78524525d189a9a" name="ac77153b0c46296b5f78524525d189a9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac77153b0c46296b5f78524525d189a9a">&#9670;&#160;</a></span>computeLinearUpwindInterpolation()</h2>
+<a id="a81b9410ce90e1bd8e6666140a8893a6f" name="a81b9410ce90e1bd8e6666140a8893a6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81b9410ce90e1bd8e6666140a8893a6f">&#9670;&#160;</a></span>computeLinearUpwindInterpolation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -989,7 +999,13 @@ template&lt;typename ValueType &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; ValueType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>dst</em>&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>cellLimitedGradient</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

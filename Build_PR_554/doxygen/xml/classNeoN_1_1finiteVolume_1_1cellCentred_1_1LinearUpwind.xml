@@ -8,11 +8,17 @@
       <param>
         <type>typename ValueType</type>
       </param>
+      <param>
+        <type>bool</type>
+        <declname>CellLimited</declname>
+        <defname>CellLimited</defname>
+        <defval>false</defval>
+      </param>
     </templateparamlist>
     <sectiondef kind="private-type">
-      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ad3ffc51a7c3de450ef51c505487cf322" prot="private" static="no">
-        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" kindref="compound">SurfaceInterpolationFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind" kindref="compound">LinearUpwind</ref>&lt; ValueType &gt; &gt;</type>
-        <definition>using NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::Base =  SurfaceInterpolationFactory&lt;ValueType&gt;::template Register&lt;LinearUpwind&lt;ValueType&gt; &gt;</definition>
+      <memberdef kind="typedef" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a4c51768a8053dab3b9d0b0ab2729a10f" prot="private" static="no">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" kindref="compound">SurfaceInterpolationFactory</ref>&lt; ValueType &gt;::template <ref refid="classRuntimeSelectionFactory_1_1Register" kindref="compound">Register</ref>&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind" kindref="compound">LinearUpwind</ref>&lt; ValueType, CellLimited &gt; &gt;</type>
+        <definition>using NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::Base =  SurfaceInterpolationFactory&lt;ValueType&gt;::template Register&lt; LinearUpwind&lt;ValueType, CellLimited&gt; &gt;</definition>
         <argsstring></argsstring>
         <name>Base</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::Base</qualifiedname>
@@ -22,13 +28,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="90" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="90" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="102" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="103" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-attrib">
-      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a3fce567124a36ae4c14c198fb1bcdd3c" prot="private" static="no" mutable="no">
+      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aa04d337e1f52abb47ea46d68e43fc9f4" prot="private" static="no" mutable="no">
         <type>const std::shared_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme" kindref="compound">GeometryScheme</ref> &gt;</type>
-        <definition>const std::shared_ptr&lt;GeometryScheme&gt; NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::geometryScheme_</definition>
+        <definition>const std::shared_ptr&lt;GeometryScheme&gt; NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::geometryScheme_</definition>
         <argsstring></argsstring>
         <name>geometryScheme_</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::geometryScheme_</qualifiedname>
@@ -38,11 +44,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="192" column="27" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="192" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="215" column="27" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="215" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ac5f9ca9ecc2f01c79ec148909ddec09e" prot="private" static="no" mutable="no">
+      <memberdef kind="variable" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a7e3f553b27c55d2f49e74133bad91df8" prot="private" static="no" mutable="no">
         <type>std::string</type>
-        <definition>std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::gradSchemeName_</definition>
+        <definition>std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::gradSchemeName_</definition>
         <argsstring></argsstring>
         <name>gradSchemeName_</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::gradSchemeName_</qualifiedname>
@@ -52,13 +58,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="193" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="193" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="216" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="216" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a1af8f904c64197799ea78363f6399362" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a65809ffb1530dee5eb07d911bc7d31f5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
-        <definition>NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::LinearUpwind</definition>
+        <definition>NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::LinearUpwind</definition>
         <argsstring>(const Executor &amp;exec, const UnstructuredMesh &amp;mesh, Input input)</argsstring>
         <name>LinearUpwind</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::LinearUpwind</qualifiedname>
@@ -80,11 +86,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="94" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="94" bodyend="103"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="107" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="107" bodyend="116"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a94e4fe16a26e1e209b3c6406fabd9ce5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a94c5c38c1efe3f1c7d8d7e57e83db6e0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::interpolate</definition>
+        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::interpolate</definition>
         <argsstring>(const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; ValueType &gt; &amp;dst) const override</argsstring>
         <name>interpolate</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::interpolate</qualifiedname>
@@ -102,11 +108,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="111" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="111" bodyend="117"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="128" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="128" bodyend="134"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a7b529ec6ff1f1561afba9bec5ace4674" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aad2929548c83ec20676b9f2a9b8b9dd9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::interpolate</definition>
+        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::interpolate</definition>
         <argsstring>(const SurfaceField&lt; scalar &gt; &amp;flux, const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; ValueType &gt; &amp;dst) const override</argsstring>
         <name>interpolate</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::interpolate</qualifiedname>
@@ -128,11 +134,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="119" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="119" bodyend="128"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="136" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="136" bodyend="150"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ab6036a456252c6e2d42c8a07d2d35ffa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aaf108863906f464cbcf1f8a7de6f83b5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::weight</definition>
+        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::weight</definition>
         <argsstring>(const VolumeField&lt; ValueType &gt; &amp;, SurfaceField&lt; scalar &gt; &amp;) const override</argsstring>
         <name>weight</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::weight</qualifiedname>
@@ -148,11 +154,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="132" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="132" bodyend="135"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="154" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="154" bodyend="157"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a9d4b4eea89ebf09f84578f63d540a7e4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1afa46d5a077b3751e0c63f39570447580" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::weight</definition>
+        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::weight</definition>
         <argsstring>(const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; scalar &gt; &amp;weights) const override</argsstring>
         <name>weight</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::weight</qualifiedname>
@@ -174,11 +180,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="137" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="137" bodyend="144"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="159" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="159" bodyend="166"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a0906bb5d635e38634495534f10039681" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1abb3b2611a4ba851896a3dcf2f827d27e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
-        <definition>bool NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::corrected</definition>
+        <definition>bool NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::corrected</definition>
         <argsstring>() const override</argsstring>
         <name>corrected</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::corrected</qualifiedname>
@@ -188,11 +194,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="147" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="147" bodyend="147"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="169" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="169" bodyend="169"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a4c541153595f12017f6fa52e8338ec6d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a6f4a28404a276651a67042aff4f4428e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::correction</definition>
+        <definition>void NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::correction</definition>
         <argsstring>(const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; ValueType &gt; &amp;src, SurfaceField&lt; ValueType &gt; &amp;corr) const override</argsstring>
         <name>correction</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::correction</qualifiedname>
@@ -214,11 +220,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="149" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="149" bodyend="162"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="171" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="171" bodyend="185"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1af5cf0fa9cad11d96a298a771d3e97a9b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ae9e11afcffcfc474b5fd1366991a6652" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a5c69325c628a6f13afea926b36ac6d04" kindref="member">InlineWeightKernel</ref></type>
-        <definition>InlineWeightKernel NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::inlineWeightKernel</definition>
+        <definition>InlineWeightKernel NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::inlineWeightKernel</definition>
         <argsstring>(const SurfaceField&lt; scalar &gt; &amp;) const override</argsstring>
         <name>inlineWeightKernel</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::inlineWeightKernel</qualifiedname>
@@ -231,11 +237,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="164" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="164" bodyend="167"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="187" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="187" bodyend="190"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1af1cf12158379a3ed77d9307277b80eec" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aee5518f6a43920294649fae274e5baa0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory" kindref="compound">SurfaceInterpolationFactory</ref>&lt; ValueType &gt; &gt;</type>
-        <definition>std::unique_ptr&lt; SurfaceInterpolationFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::clone</definition>
+        <definition>std::unique_ptr&lt; SurfaceInterpolationFactory&lt; ValueType &gt; &gt; NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::clone</definition>
         <argsstring>() const override</argsstring>
         <name>clone</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::clone</qualifiedname>
@@ -245,13 +251,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="169" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="169" bodyend="172"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="192" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="192" bodyend="195"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1acb63829d085514f6d10b89eb8dc7e91c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a54316a49952717ab94b16715d9f9afbc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::name</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::name</definition>
         <argsstring>()</argsstring>
         <name>name</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::name</qualifiedname>
@@ -261,11 +267,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="105" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="105" bodyend="105"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="118" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="118" bodyend="118"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ac4a34527fd2134dd23c78015c77d158f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a9601a87ce2e9d502a4594ba523999597" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::doc</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::doc</definition>
         <argsstring>()</argsstring>
         <name>doc</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::doc</qualifiedname>
@@ -275,11 +281,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="107" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="107" bodyend="107"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="120" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="120" bodyend="124"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a295a9e1a591f6244c440b33dd3358ff0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1abcb3ba9939f9771fa41ef7a9d0d68ac3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::schema</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::schema</definition>
         <argsstring>()</argsstring>
         <name>schema</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::schema</qualifiedname>
@@ -289,13 +295,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="109" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="109" bodyend="109"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="126" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="126" bodyend="126"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-static-func">
-      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a28d68b17fb6727a7e9aec3f67ee30596" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aedf26dea261498b51a8d1b365e560a83" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
-        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;::readGradSchemeName</definition>
+        <definition>static std::string NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;::readGradSchemeName</definition>
         <argsstring>(Input &amp;input)</argsstring>
         <name>readGradSchemeName</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::LinearUpwind::readGradSchemeName</qualifiedname>
@@ -309,7 +315,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="179" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="179" bodyend="190"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="202" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="202" bodyend="213"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -318,44 +324,44 @@
     </detaileddescription>
     <inheritancegraph>
       <node id="1">
-        <label>NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;</label>
+        <label>NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">
-        <label>SurfaceInterpolationFactory::template Register&lt; LinearUpwind&lt; ValueType &gt; &gt;</label>
+        <label>SurfaceInterpolationFactory::template Register&lt; LinearUpwind&lt; ValueType, false &gt; &gt;</label>
       </node>
     </inheritancegraph>
     <collaborationgraph>
       <node id="1">
-        <label>NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType &gt;</label>
+        <label>NeoN::finiteVolume::cellCentred::LinearUpwind&lt; ValueType, CellLimited &gt;</label>
         <link refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">
-        <label>SurfaceInterpolationFactory::template Register&lt; LinearUpwind&lt; ValueType &gt; &gt;</label>
+        <label>SurfaceInterpolationFactory::template Register&lt; LinearUpwind&lt; ValueType, false &gt; &gt;</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="87" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="89" bodyend="194"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" line="98" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" bodystart="101" bodyend="217"/>
     <listofallmembers>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ad3ffc51a7c3de450ef51c505487cf322" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>Base</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1af1cf12158379a3ed77d9307277b80eec" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>clone</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a0906bb5d635e38634495534f10039681" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>corrected</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a4c541153595f12017f6fa52e8338ec6d" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>correction</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ac4a34527fd2134dd23c78015c77d158f" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>doc</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a3fce567124a36ae4c14c198fb1bcdd3c" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>geometryScheme_</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ac5f9ca9ecc2f01c79ec148909ddec09e" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>gradSchemeName_</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1af5cf0fa9cad11d96a298a771d3e97a9b" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>inlineWeightKernel</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a94e4fe16a26e1e209b3c6406fabd9ce5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>interpolate</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a7b529ec6ff1f1561afba9bec5ace4674" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>interpolate</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a1af8f904c64197799ea78363f6399362" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>LinearUpwind</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1acb63829d085514f6d10b89eb8dc7e91c" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>name</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a28d68b17fb6727a7e9aec3f67ee30596" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>readGradSchemeName</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a295a9e1a591f6244c440b33dd3358ff0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>schema</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ab6036a456252c6e2d42c8a07d2d35ffa" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>weight</name></member>
-      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a9d4b4eea89ebf09f84578f63d540a7e4" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>weight</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a4c51768a8053dab3b9d0b0ab2729a10f" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>Base</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aee5518f6a43920294649fae274e5baa0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>clone</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1abb3b2611a4ba851896a3dcf2f827d27e" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>corrected</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a6f4a28404a276651a67042aff4f4428e" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>correction</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a9601a87ce2e9d502a4594ba523999597" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>doc</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aa04d337e1f52abb47ea46d68e43fc9f4" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>geometryScheme_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a7e3f553b27c55d2f49e74133bad91df8" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>gradSchemeName_</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1ae9e11afcffcfc474b5fd1366991a6652" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>inlineWeightKernel</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a94c5c38c1efe3f1c7d8d7e57e83db6e0" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>interpolate</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aad2929548c83ec20676b9f2a9b8b9dd9" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>interpolate</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a65809ffb1530dee5eb07d911bc7d31f5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>LinearUpwind</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1a54316a49952717ab94b16715d9f9afbc" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>name</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aedf26dea261498b51a8d1b365e560a83" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>readGradSchemeName</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1abcb3ba9939f9771fa41ef7a9d0d68ac3" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>schema</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1aaf108863906f464cbcf1f8a7de6f83b5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>weight</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LinearUpwind_1afa46d5a077b3751e0c63f39570447580" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::LinearUpwind</scope><name>weight</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
