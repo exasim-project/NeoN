@@ -15,6 +15,7 @@ import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.dsl import exp, solve
+from neon.blockamr.operators.div import Div
 from neon.blockamr.schemes.div_schemes import Upwind
 
 
@@ -87,7 +88,7 @@ def test_same_box_count_no_recompile(blockamr_session):
     mesh = _make_mesh(N, Nz, max_size=16)  # 1 box
     phi, ff = _setup_fields(mesh)
 
-    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
 
     # Warmup: first call compiles
     solve(expr, t=0.0, dt=0.001)
@@ -125,7 +126,7 @@ def test_different_box_count_recompiles(blockamr_session):
     # --- Setup A: 1 box ---
     mesh_a = _make_mesh(N, Nz, max_size=32)
     phi_a, ff_a = _setup_fields(mesh_a)
-    expr_a = exp.ddt(phi_a) + exp.div(ff_a, phi_a, scheme=Upwind())
+    expr_a = exp.ddt(phi_a) + Div(ff_a, phi_a, scheme=Upwind())
 
     solve(expr_a, t=0.0, dt=0.001)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
@@ -133,7 +134,7 @@ def test_different_box_count_recompiles(blockamr_session):
     # --- Setup B: 4 boxes (different n_boxes_padded) ---
     mesh_b = _make_mesh(N, Nz, max_size=16)
     phi_b, ff_b = _setup_fields(mesh_b)
-    expr_b = exp.ddt(phi_b) + exp.div(ff_b, phi_b, scheme=Upwind())
+    expr_b = exp.ddt(phi_b) + Div(ff_b, phi_b, scheme=Upwind())
 
     counter = CompileCounter()
     counter.start()
@@ -166,7 +167,7 @@ def test_crossing_power_of_2_boundary_recompiles(blockamr_session):
     mesh_a = Mesh(ba_a, dm_a, geom_a)
 
     phi_a, ff_a = _setup_fields(mesh_a)
-    expr_a = exp.ddt(phi_a) + exp.div(ff_a, phi_a, scheme=Upwind())
+    expr_a = exp.ddt(phi_a) + Div(ff_a, phi_a, scheme=Upwind())
     solve(expr_a, t=0.0, dt=0.001)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
@@ -180,7 +181,7 @@ def test_crossing_power_of_2_boundary_recompiles(blockamr_session):
     mesh_b = Mesh(ba_b, dm_b, geom_b)
 
     phi_b, ff_b = _setup_fields(mesh_b)
-    expr_b = exp.ddt(phi_b) + exp.div(ff_b, phi_b, scheme=Upwind())
+    expr_b = exp.ddt(phi_b) + Div(ff_b, phi_b, scheme=Upwind())
 
     counter = CompileCounter()
     counter.start()
@@ -212,7 +213,7 @@ def test_same_padded_count_no_recompile(blockamr_session):
     mesh_a = Mesh(ba_a, dm_a, geom_a)
 
     phi_a, ff_a = _setup_fields(mesh_a)
-    expr_a = exp.ddt(phi_a) + exp.div(ff_a, phi_a, scheme=Upwind())
+    expr_a = exp.ddt(phi_a) + Div(ff_a, phi_a, scheme=Upwind())
     solve(expr_a, t=0.0, dt=0.001)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
@@ -226,7 +227,7 @@ def test_same_padded_count_no_recompile(blockamr_session):
     mesh_b = Mesh(ba_b, dm_b, geom_b)
 
     phi_b, ff_b = _setup_fields(mesh_b)
-    expr_b = exp.ddt(phi_b) + exp.div(ff_b, phi_b, scheme=Upwind())
+    expr_b = exp.ddt(phi_b) + Div(ff_b, phi_b, scheme=Upwind())
 
     counter = CompileCounter()
     counter.start()

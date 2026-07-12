@@ -9,17 +9,15 @@ import math
 import equinox as eqx
 import jax.numpy as jnp
 import numpy as np
-import pytest
 
 import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
+from neon.blockamr.field import CellField
 from neon.blockamr.flattened_boxes import BucketContext, flattened_boxes_from_mf
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.operators.div import Div, build_face_fluxes
 from neon.blockamr.operators.laplacian import Laplacian
 from neon.blockamr.schemes.div_schemes import Upwind, VanLeer
 from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
-from neon.blockamr.cell_accessor import CellAccessor
 from neon.blockamr.cell_kernels import CellLaplacianKernel
 
 
@@ -59,6 +57,7 @@ def _init_sin3d_cell(phi, geom):
 def _make_fluxes(box, dm, geom, ngrow=1):
     def vel(x, y, z, t):
         return np.ones_like(x), np.zeros_like(x), np.zeros_like(x)
+
     return build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0)
 
 
@@ -73,6 +72,7 @@ def _make_bucket(cell_field, lev=0):
     n_boxes = len(meta)
     box_indices = tuple(range(n_boxes))
     from neon.blockamr.flattened_boxes import _cell_tier
+
     n_cells = (Nx - 2 * ng) * (Ny - 2 * ng) * (Nz - 2 * ng)
     return BucketContext(
         box_offsets=fb.offsets,
@@ -132,9 +132,14 @@ class TestUpwindSchemeBuildKernel:
         scheme = Upwind()
         face_bufs = (jnp.zeros(10), jnp.zeros(10), jnp.zeros(10))
         kernel = scheme.build_kernel(
-            face_bufs, face_offsets=jnp.zeros(1, dtype=jnp.int32),
-            Nx=6, Ny=6, Nz=6, ng=1,
-            dh=(1.0, 1.0, 1.0), coeff=1.0,
+            face_bufs,
+            face_offsets=jnp.zeros(1, dtype=jnp.int32),
+            Nx=6,
+            Ny=6,
+            Nz=6,
+            ng=1,
+            dh=(1.0, 1.0, 1.0),
+            coeff=1.0,
         )
         assert isinstance(kernel, eqx.Module)
         assert callable(kernel)
@@ -145,9 +150,14 @@ class TestVanLeerSchemeBuildKernel:
         scheme = VanLeer()
         face_bufs = (jnp.zeros(10), jnp.zeros(10), jnp.zeros(10))
         kernel = scheme.build_kernel(
-            face_bufs, face_offsets=jnp.zeros(1, dtype=jnp.int32),
-            Nx=8, Ny=8, Nz=8, ng=2,
-            dh=(1.0, 1.0, 1.0), coeff=1.0,
+            face_bufs,
+            face_offsets=jnp.zeros(1, dtype=jnp.int32),
+            Nx=8,
+            Ny=8,
+            Nz=8,
+            ng=2,
+            dh=(1.0, 1.0, 1.0),
+            coeff=1.0,
         )
         assert isinstance(kernel, eqx.Module)
         assert callable(kernel)
@@ -162,13 +172,13 @@ class TestLaplacianSchemeBuildKernel:
 
 
 # ---------------------------------------------------------------------------
-# Expression.__sub__ mutation test
+# Equation.__sub__ mutation test
 # ---------------------------------------------------------------------------
 
 
-class TestExpressionSubDoesNotMutate:
+class TestEquationSubDoesNotMutate:
     def test_sub_preserves_original_coeff(self):
-        from neon.blockamr.dsl.expression import Expression
+        from neon.blockamr.dsl.equation import Equation
 
         mesh, box, dm, geom = _make_mesh()
         phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
@@ -176,7 +186,7 @@ class TestExpressionSubDoesNotMutate:
         div_op = Div(ff, phi)
         original_coeff = div_op.coeff
 
-        expr = Expression()
+        expr = Equation()
         expr = expr - div_op
 
         assert div_op.coeff == original_coeff

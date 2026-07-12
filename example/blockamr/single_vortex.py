@@ -48,7 +48,7 @@ import neon.blockamr as blockamr
 from neon.blockamr.field import CellField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import build_face_fluxes, FaceFluxUpdater
+from neon.blockamr.operators.div import build_face_fluxes, Div, FaceFluxUpdater
 from neon.blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
 
 DIV_SCHEMES = {
@@ -208,7 +208,7 @@ def run(
         if t + dt > period:
             dt = period - t
         flux_updater.update(t)
-        expr = exp.ddt(phi) + exp.div(ff, phi, scheme=div_scheme)
+        expr = exp.ddt(phi) + Div(ff, phi, scheme=div_scheme)
         solve(expr, t=t, dt=dt)
         t += dt
         nsteps += 1

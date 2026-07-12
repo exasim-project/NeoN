@@ -205,11 +205,11 @@ def test_div_with_vanleer_scheme(blockamr_session):
 
 
 def test_factory_div_with_scheme(blockamr_session):
-    """exp.div() accepts optional scheme parameter."""
+    """Div() accepts an explicit scheme object (exp.div() resolves by name only)."""
     mesh, box, dm, geom = _make_mesh(n_cell=32, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
     ff = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
-    div_op = exp.div(ff, phi, scheme=Linear())
+    div_op = Div(ff, phi, scheme=Linear())
     assert isinstance(div_op.scheme, Linear)
 
 

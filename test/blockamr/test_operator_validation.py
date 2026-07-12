@@ -13,12 +13,12 @@ import math
 
 import pytest
 import jax.numpy as jnp
-import numpy as np
 
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
+from neon.blockamr.operators.div import Div
 from neon.blockamr.operators.interpolate import interpolate
 from neon.blockamr.dsl import exp, evaluate
 from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
@@ -30,6 +30,7 @@ TWO_PI = 2.0 * PI
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_thin_mesh(nx=64, ny=64, nz=4, max_size=None):
     """Non-cubic periodic mesh on [0,1]^3. Single box if max_size >= max(nx,ny,nz).
@@ -114,11 +115,14 @@ def _extract_valid(results_lev):
 # Exact analytical solutions
 # ---------------------------------------------------------------------------
 
+
 def _exact_div_sin3d(X, Y, Z, vel=(1.0, 2.0, 3.0)):
     """div(U * phi) = U . grad(phi) for constant U."""
-    return (vel[0] * TWO_PI * jnp.cos(TWO_PI * X) * jnp.sin(TWO_PI * Y) * jnp.sin(TWO_PI * Z)
-          + vel[1] * TWO_PI * jnp.sin(TWO_PI * X) * jnp.cos(TWO_PI * Y) * jnp.sin(TWO_PI * Z)
-          + vel[2] * TWO_PI * jnp.sin(TWO_PI * X) * jnp.sin(TWO_PI * Y) * jnp.cos(TWO_PI * Z))
+    return (
+        vel[0] * TWO_PI * jnp.cos(TWO_PI * X) * jnp.sin(TWO_PI * Y) * jnp.sin(TWO_PI * Z)
+        + vel[1] * TWO_PI * jnp.sin(TWO_PI * X) * jnp.cos(TWO_PI * Y) * jnp.sin(TWO_PI * Z)
+        + vel[2] * TWO_PI * jnp.sin(TWO_PI * X) * jnp.sin(TWO_PI * Y) * jnp.cos(TWO_PI * Z)
+    )
 
 
 def _exact_lap_sin3d(X, Y, Z):
@@ -140,6 +144,7 @@ def _exact_grad_sin3d(X, Y, Z):
 
 # -- interpolate --
 
+
 def test_interpolate_single_box():
     """Cell-to-face interpolation produces exact linear average of cell values.
 
@@ -147,8 +152,7 @@ def test_interpolate_single_box():
     including ghost cells at periodic boundaries.
     """
     mesh = _make_thin_mesh(nx=64, ny=64, nz=4)
-    U = CellField(mesh, ncomp=3, ngrow=2, name="U",
-                  fill_patch=FillPatchCellConservative())
+    U = CellField(mesh, ncomp=3, ngrow=2, name="U", fill_patch=FillPatchCellConservative())
     dx = mesh.geom(0).cell_size()
 
     # Init all 3 components to sin3d
@@ -214,7 +218,7 @@ _ALL_SCHEMES = [
 _EXPECTED_ORDER = {
     "Upwind": 0.8,
     "Linear": 1.8,
-    "VanLeer": 0.8,   # TVD limiter clips to first-order near extrema
+    "VanLeer": 0.8,  # TVD limiter clips to first-order near extrema
     "QUICK": 1.8,
 }
 
@@ -231,13 +235,18 @@ def test_div_single_box_convergence(scheme, face_ng):
     for nx in [16, 32, 64]:
         nz = nx // 4  # refine z proportionally
         mesh = _make_thin_mesh(nx=nx, ny=nx, nz=nz)
-        U = CellField(mesh, ncomp=1, ngrow=scheme.stencil_width, name="U",
-                       fill_patch=FillPatchCellConservative())
+        U = CellField(
+            mesh,
+            ncomp=1,
+            ngrow=scheme.stencil_width,
+            name="U",
+            fill_patch=FillPatchCellConservative(),
+        )
         _init_sin3d(U, mesh)
         phi = FaceField(mesh, ncomp=1, ngrow=face_ng, name="phi")
         _init_uniform_face_flux(phi, mesh, vel=(1.0, 2.0, 3.0))
 
-        source = evaluate(exp.div(phi, U, scheme=scheme), t=0.0)
+        source = evaluate(Div(phi, U, scheme=scheme), t=0.0)
         result = _extract_valid(source[0])
 
         X, Y, Z = _cell_centres(mesh)
@@ -256,14 +265,14 @@ def test_div_single_box_convergence(scheme, face_ng):
 
 # -- laplacian --
 
+
 def test_laplacian_single_box_convergence():
     """laplacian(phi) converges at O(dx^2) on non-cubic single-box mesh."""
     errors = []
     for nx in [16, 32, 64]:
         nz = nx // 4  # refine z proportionally
         mesh = _make_thin_mesh(nx=nx, ny=nx, nz=nz)
-        U = CellField(mesh, ncomp=1, ngrow=1, name="U",
-                       fill_patch=FillPatchCellConservative())
+        U = CellField(mesh, ncomp=1, ngrow=1, name="U", fill_patch=FillPatchCellConservative())
         _init_sin3d(U, mesh)
 
         nu_func = lambda x, y, z, t: jnp.ones_like(x)
@@ -281,11 +290,11 @@ def test_laplacian_single_box_convergence():
 
 # -- grad --
 
+
 def test_grad_single_box():
     """grad(phi) all 3 components correct on non-cubic single-box mesh."""
     mesh = _make_thin_mesh(nx=64, ny=64, nz=4)
-    U = CellField(mesh, ncomp=1, ngrow=1, name="U",
-                   fill_patch=FillPatchCellConservative())
+    U = CellField(mesh, ncomp=1, ngrow=1, name="U", fill_patch=FillPatchCellConservative())
     _init_sin3d(U, mesh)
 
     g = exp.grad(U)
@@ -308,16 +317,16 @@ def test_grad_single_box():
         nz = hi[2] - lo[2] + 1
 
         # Extract matching region from exact
-        ex_gx = exact_gx[lo[0]:lo[0]+nx, lo[1]:lo[1]+ny, lo[2]:lo[2]+nz]
-        ex_gy = exact_gy[lo[0]:lo[0]+nx, lo[1]:lo[1]+ny, lo[2]:lo[2]+nz]
-        ex_gz = exact_gz[lo[0]:lo[0]+nx, lo[1]:lo[1]+ny, lo[2]:lo[2]+nz]
+        ex_gx = exact_gx[lo[0] : lo[0] + nx, lo[1] : lo[1] + ny, lo[2] : lo[2] + nz]
+        ex_gy = exact_gy[lo[0] : lo[0] + nx, lo[1] : lo[1] + ny, lo[2] : lo[2] + nz]
+        ex_gz = exact_gz[lo[0] : lo[0] + nx, lo[1] : lo[1] + ny, lo[2] : lo[2] + nz]
 
         err_x = float(jnp.max(jnp.abs(grad_result[:, :, :, 0] - ex_gx)))
         err_y = float(jnp.max(jnp.abs(grad_result[:, :, :, 1] - ex_gy)))
         err_z = float(jnp.max(jnp.abs(grad_result[:, :, :, 2] - ex_gz)))
         # Central diff is O(dx^2); dz=1/4 so z-error is larger
         max_dz = max(mesh.geom(0).cell_size())
-        tol = 5.0 * (TWO_PI * max_dz)**2
+        tol = 5.0 * (TWO_PI * max_dz) ** 2
         assert err_x < tol, f"grad_x error = {err_x:.6e}, tol={tol:.6e}"
         assert err_y < tol, f"grad_y error = {err_y:.6e}, tol={tol:.6e}"
         assert err_z < tol, f"grad_z error = {err_z:.6e}, tol={tol:.6e}"
@@ -326,6 +335,7 @@ def test_grad_single_box():
 # ---------------------------------------------------------------------------
 # Stage 2: Multi-box validation — single-box vs multi-box consistency
 # ---------------------------------------------------------------------------
+
 
 def _assemble_full_field(results_lev, mesh):
     """Reassemble per-box results into a single full-domain 3D array."""
@@ -350,7 +360,7 @@ def _assemble_full_field(results_lev, mesh):
         r = results_lev[idx]
         if r.ndim == 4:
             r = r[:, :, :, 0]
-        full = full.at[lo[0]:lo[0]+bnx, lo[1]:lo[1]+bny, lo[2]:lo[2]+bnz].set(r)
+        full = full.at[lo[0] : lo[0] + bnx, lo[1] : lo[1] + bny, lo[2] : lo[2] + bnz].set(r)
         idx += 1
 
     return full
@@ -364,20 +374,23 @@ def test_div_single_vs_multi_box(scheme, face_ng):
     results = []
     for max_sz in [max(nx, nz), nx // 2]:  # single box, then 4 boxes
         mesh = _make_thin_mesh(nx=nx, ny=nx, nz=nz, max_size=max_sz)
-        U = CellField(mesh, ncomp=1, ngrow=scheme.stencil_width, name="U",
-                       fill_patch=FillPatchCellConservative())
+        U = CellField(
+            mesh,
+            ncomp=1,
+            ngrow=scheme.stencil_width,
+            name="U",
+            fill_patch=FillPatchCellConservative(),
+        )
         _init_sin3d(U, mesh)
         phi = FaceField(mesh, ncomp=1, ngrow=face_ng, name="phi")
         _init_uniform_face_flux(phi, mesh, vel=(1.0, 2.0, 3.0))
 
-        source = evaluate(exp.div(phi, U, scheme=scheme), t=0.0)
+        source = evaluate(Div(phi, U, scheme=scheme), t=0.0)
         assembled = _assemble_full_field(source[0], mesh)
         results.append(assembled)
 
     diff = float(jnp.max(jnp.abs(results[0] - results[1])))
-    assert diff < 1e-10, (
-        f"{scheme.type} face_ng={face_ng}: single vs multi-box diff = {diff:.6e}"
-    )
+    assert diff < 1e-10, f"{scheme.type} face_ng={face_ng}: single vs multi-box diff = {diff:.6e}"
 
 
 def test_laplacian_single_vs_multi_box():
@@ -386,8 +399,7 @@ def test_laplacian_single_vs_multi_box():
     results = []
     for max_sz in [max(nx, nz), nx // 2]:
         mesh = _make_thin_mesh(nx=nx, ny=nx, nz=nz, max_size=max_sz)
-        U = CellField(mesh, ncomp=1, ngrow=1, name="U",
-                       fill_patch=FillPatchCellConservative())
+        U = CellField(mesh, ncomp=1, ngrow=1, name="U", fill_patch=FillPatchCellConservative())
         _init_sin3d(U, mesh)
         nu_func = lambda x, y, z, t: jnp.ones_like(x)
         source = evaluate(exp.laplacian(nu_func, U), t=0.0)
@@ -404,8 +416,7 @@ def test_interpolate_single_vs_multi_box():
     dx_vals = []
     for max_sz in [max(nx, nz), nx // 2]:
         mesh = _make_thin_mesh(nx=nx, ny=nx, nz=nz, max_size=max_sz)
-        U = CellField(mesh, ncomp=3, ngrow=2, name="U",
-                       fill_patch=FillPatchCellConservative())
+        U = CellField(mesh, ncomp=3, ngrow=2, name="U", fill_patch=FillPatchCellConservative())
         dx = mesh.geom(0).cell_size()
         for mfi in blockamr.MFIterator(U.mf[0]):
             bx = mfi.valid_box()
@@ -443,7 +454,9 @@ def test_interpolate_single_vs_multi_box():
                 bnx = hi[0] - lo[0] + 1
                 bny = hi[1] - lo[1] + 1
                 bnz = hi[2] - lo[2] + 1
-                full = full.at[lo[0]:lo[0]+bnx, lo[1]:lo[1]+bny, lo[2]:lo[2]+bnz].set(arr)
+                full = full.at[lo[0] : lo[0] + bnx, lo[1] : lo[1] + bny, lo[2] : lo[2] + bnz].set(
+                    arr
+                )
             face_assembled.append(full)
         dx_vals.append(face_assembled)
 

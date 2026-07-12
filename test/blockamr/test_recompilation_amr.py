@@ -16,7 +16,7 @@ import neon.blockamr as blockamr
 from neon.blockamr.mesh import AmrMesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.operators.div import update_face_fluxes
+from neon.blockamr.operators.div import Div, update_face_fluxes
 from neon.blockamr.dsl import exp, solve
 from neon.blockamr.schemes.div_schemes import Upwind
 
@@ -113,7 +113,7 @@ def _do_step(phi, ff, mesh, t=0.0, dt=0.001):
         phi.fill_patch(lev, t)
         if ff[lev] is not None:
             update_face_fluxes(ff[lev], _vel_func, mesh.geom(lev), t)
-    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
     solve(expr, t=t, dt=dt)
     jax.block_until_ready(None)
 
@@ -125,7 +125,7 @@ def _do_cpp_step(phi, ff, mesh, t=0.0, dt=0.25):
         phi.fill_patch(lev, t)
         if ff[lev] is not None:
             update_face_fluxes(ff[lev], _vel_func, mesh.geom(lev), t)
-    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
     solve(expr, t=t, dt=dt, solution={"backend": "cpp"})
 
 

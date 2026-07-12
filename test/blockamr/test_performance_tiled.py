@@ -18,7 +18,7 @@ import pytest
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.operators.div import update_face_fluxes
+from neon.blockamr.operators.div import Div, update_face_fluxes
 from neon.blockamr.dsl import exp
 from neon.blockamr.dsl.solve import solve, evaluate
 from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
@@ -136,7 +136,7 @@ def test_evaluate_div_scheme(blockamr_session, scheme):
     N = 64
     mesh, geom, phi, ff = _setup_advdiff(N, ngrow)
 
-    div_expr = exp.div(ff, phi, scheme=scheme)
+    div_expr = Div(ff, phi, scheme=scheme)
     result = evaluate(div_expr, t=0.0)
 
     max_val = max(float(jnp.max(jnp.abs(box.squeeze()))) for box in result[0])
@@ -155,7 +155,7 @@ def test_evaluate_div_scheme(blockamr_session, scheme):
 def _solve_one_step(phi, ff, geom, scheme, nu, dt):
     """Run one DSL forward Euler step."""
     _init_sin3d(phi.mf[0], geom)
-    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=scheme) - exp.laplacian(nu, phi)
+    expr = exp.ddt(phi) + Div(ff, phi, scheme=scheme) - exp.laplacian(nu, phi)
     solve(expr, t=0.0, dt=dt)
 
 
@@ -199,7 +199,7 @@ def test_evaluate_div_perf(blockamr_session, scheme):
     mesh, geom, phi, ff = _setup_advdiff(N, ngrow)
     out = CellField(mesh, ncomp=1, ngrow=0, name="out")
 
-    div_expr = exp.div(ff, phi, scheme=scheme)
+    div_expr = Div(ff, phi, scheme=scheme)
     evaluate(div_expr, t=0.0)  # warmup
 
     cpp_fn = getattr(blockamr, CPP_DIV_BASELINES[scheme.type])

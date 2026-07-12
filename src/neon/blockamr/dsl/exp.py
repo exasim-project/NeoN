@@ -19,20 +19,24 @@ def ddt(field):
     return Ddt(field)
 
 
-def div(face_fluxes_or_field, field=None, scheme=None):
+def div(face_fluxes_or_field, field=None):
     """Divergence operator.
 
     Two forms:
       exp.div(phi, U)  — advective flux divergence (existing Div operator)
       exp.div(U)       — cell velocity divergence for pressure RHS
+
+    The discretisation scheme is resolved by name from the equation's
+    ``schemes`` dict at solve time — construct ``Div`` directly if an
+    explicit scheme object is needed outside the DSL's dict-based flow.
     """
     if field is None:
         return CellDivergence(face_fluxes_or_field)
     else:
-        return Div(face_fluxes_or_field, field, scheme=scheme)
+        return Div(face_fluxes_or_field, field)
 
 
-def grad(field, scheme=None):
+def grad(field):
     """Gradient operator.
 
     For a pressure NodalField after an implicit solve, returns a
@@ -41,11 +45,11 @@ def grad(field, scheme=None):
     """
     if hasattr(field, "grad") and field.grad is not None:
         return PressureGradient(field)
-    return Grad(field, scheme=scheme)
+    return Grad(field)
 
 
-def laplacian(gamma_func, field, scheme=None):
-    return Laplacian(gamma_func, field, scheme=scheme)
+def laplacian(gamma_func, field):
+    return Laplacian(gamma_func, field)
 
 
 def source(coeff_func, field):

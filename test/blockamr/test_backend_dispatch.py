@@ -21,6 +21,7 @@ from neon.blockamr.backends.cpp_backend import CppBackend
 from neon.blockamr.dsl import exp, imp, solve
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.mesh import Mesh
+from neon.blockamr.operators.div import Div
 from neon.blockamr.schemes.div_schemes import Upwind
 
 
@@ -52,7 +53,7 @@ def test_unknown_backend_lists_valid_set(blockamr_session):
 
     with pytest.raises(KeyError) as excinfo:
         solve(
-            exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind()),
+            exp.ddt(phi) + Div(ff, phi, scheme=Upwind()),
             t=0.0,
             dt=0.01,
             solution={"backend": "quantum"},
@@ -86,7 +87,7 @@ def test_per_field_split_cpp_explicit_plus_mlmg_pressure(blockamr_session):
 
     # Explicit momentum step on cpp.
     solve(
-        exp.ddt(U) + exp.div(ff, U, scheme=Upwind()),
+        exp.ddt(U) + Div(ff, U, scheme=Upwind()),
         t=0.0,
         dt=0.01,
         solution={"backend": "cpp"},

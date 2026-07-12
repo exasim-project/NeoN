@@ -26,7 +26,7 @@ from neon.blockamr.mesh import AmrMesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import AmrFaceFluxUpdater
+from neon.blockamr.operators.div import AmrFaceFluxUpdater, Div
 from neon.blockamr.schemes.div_schemes import VanLeer
 
 
@@ -164,7 +164,7 @@ def run(
         mesh.regrid(t, tag=tag_gradient(phi, threshold=1.0))
         flux_updater.update(t)
 
-        expr = exp.ddt(phi) + exp.div(face_vel, phi, scheme=div_scheme)
+        expr = exp.ddt(phi) + Div(face_vel, phi, scheme=div_scheme)
         solve(expr, t=t, dt=dt)
 
         t += dt

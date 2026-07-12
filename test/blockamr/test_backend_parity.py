@@ -27,7 +27,7 @@ from neon.blockamr.dsl import exp, solve
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.mesh import AmrMesh, Mesh
-from neon.blockamr.operators.div import update_face_fluxes
+from neon.blockamr.operators.div import Div, update_face_fluxes
 from neon.blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
 
 # dt = 2**-2 → dt_over_coeff exactly representable as float32 (see module docstring).
@@ -148,13 +148,13 @@ def test_div_euler_step_jax_cpp_parity(blockamr_session, scheme_name, ncomp, mes
         update_face_fluxes(ff[lev], _vel, mesh.geom(lev), 0.0)
 
     solve(
-        exp.ddt(phi_jax) + exp.div(ff, phi_jax, scheme=scheme),
+        exp.ddt(phi_jax) + Div(ff, phi_jax, scheme=scheme),
         t=0.0,
         dt=DT,
         solution={"backend": "jax"},
     )
     solve(
-        exp.ddt(phi_cpp) + exp.div(ff, phi_cpp, scheme=scheme),
+        exp.ddt(phi_cpp) + Div(ff, phi_cpp, scheme=scheme),
         t=0.0,
         dt=DT,
         solution={"backend": "cpp"},
