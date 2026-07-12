@@ -13,6 +13,11 @@ class Mesh:
         self._dm = dm
         self._geom = geom
         self._fields = []
+        # Immersed-body geometry + precomputed per-method IBM data (API doc
+        # §6). ``body`` is set by the caller (e.g. the mesh factory, from
+        # meshDict); ``build_ibm``/``ibm_data`` below.
+        self.body = None
+        self._ibm_data = {}
 
     @property
     def max_level(self):
@@ -36,6 +41,33 @@ class Mesh:
     def register_field(self, field):
         self._fields.append(field)
         field._on_new_level(0, self._ba, self._dm)
+
+    # ------------------------------------------------------------------
+    # Immersed body (API doc §6): geometry on ``self.body``, per-method
+    # data precomputed eagerly by ``build_ibm`` and read back by
+    # ``ibm_data``. Single-level ``Mesh`` never regrids, so there is no
+    # rebuild hook here (see ``AmrMesh.regrid``).
+    # ------------------------------------------------------------------
+
+    def build_ibm(self, methods):
+        """Eagerly precompute each method's data (masks/fractions) from
+        ``self.body``. ``methods`` is a list of IBM strategy classes (e.g.
+        ``[DirectForcing]``, or via ``IBM.lookup(name)``)."""
+        if self.body is None:
+            raise ValueError("mesh.body must be set before build_ibm(...)")
+        self._ibm_methods = list(methods)
+        self._ibm_data = {method: method.build_data(self, self.body) for method in methods}
+
+    def ibm_data(self, method):
+        """Return the precomputed data for ``method`` (as built by
+        ``build_ibm``); raises a clear error when it hasn't been built."""
+        data = self._ibm_data.get(method)
+        if data is None:
+            name = getattr(method, "__name__", method)
+            raise RuntimeError(
+                f"IBM data for '{name}' not built; call mesh.build_ibm([...]) first."
+            )
+        return data
 
 
 class _AmrCoreDelegate(blockamr.AmrCore):
@@ -68,6 +100,11 @@ class AmrMesh:
         self._core = _AmrCoreDelegate(geom, amr_info, owner=self)
         self._fields = []
         self._tag_func = None
+        # Immersed-body geometry + precomputed per-method IBM data (API doc
+        # §6). ``body`` is set by the caller (e.g. the mesh factory, from
+        # meshDict); ``build_ibm``/``ibm_data`` below.
+        self.body = None
+        self._ibm_data = {}
 
     # Metadata delegates
     def n_levels(self):
@@ -103,6 +140,45 @@ class AmrMesh:
     def regrid(self, t, tag):
         self._tag_func = tag
         self._core.regrid(0, t)
+        self._rebuild_ibm()
+
+    # ------------------------------------------------------------------
+    # Immersed body (API doc §6): geometry on ``self.body``, per-method
+    # data precomputed eagerly by ``build_ibm``, read back by ``ibm_data``,
+    # and rebuilt for the new box arrays after every regrid.
+    # ------------------------------------------------------------------
+
+    def build_ibm(self, methods):
+        """Eagerly precompute each method's data (masks/fractions) from
+        ``self.body``. ``methods`` is a list of IBM strategy classes (e.g.
+        ``[DirectForcing]``, or via ``IBM.lookup(name)``)."""
+        if self.body is None:
+            raise ValueError("mesh.body must be set before build_ibm(...)")
+        self._ibm_methods = list(methods)
+        self._ibm_data = {method: method.build_data(self, self.body) for method in methods}
+
+    def ibm_data(self, method):
+        """Return the precomputed data for ``method`` (as built by
+        ``build_ibm``); raises a clear error when it hasn't been built."""
+        data = self._ibm_data.get(method)
+        if data is None:
+            name = getattr(method, "__name__", method)
+            raise RuntimeError(
+                f"IBM data for '{name}' not built; call mesh.build_ibm([...]) first."
+            )
+        return data
+
+    def _rebuild_ibm(self):
+        """Recompute per-method IBM data for the current box arrays (regrid
+        hook). Masks are spatial and must be rebuilt; ``force_history`` is a
+        time series and is carried forward onto the rebuilt data."""
+        if not getattr(self, "_ibm_methods", None):
+            return
+        for method in self._ibm_methods:
+            old = self._ibm_data[method]
+            new = method.build_data(self, self.body)
+            new.force_history = old.force_history
+            self._ibm_data[method] = new
 
     # Callbacks — dispatch to fields
     def _on_new_level(self, lev, time, ba, dm):

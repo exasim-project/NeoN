@@ -21,6 +21,7 @@ from .field import CellField, FaceField
 from .fillpatch import FillPatchWithBC
 from .dsl import exp, imp
 from .dsl.equation import Equation
+from .ibm import IBM
 from .operators.interpolate import interpolate
 from .operators.correct import correct
 from .operators.mac_project import mac_project
@@ -58,8 +59,6 @@ class DSLIncompressibleSolver:
         Mutually exclusive with *U_bc*.
     cfl : float, optional
         Adaptive time-stepping CFL target.
-    eb : dict, optional
-        Deprecated direct-forcing IBM alias: {center, radius, axis}.
     """
 
     def __init__(
@@ -74,7 +73,6 @@ class DSLIncompressibleSolver:
         U_bc=None,
         fill_patch=None,
         cfl=None,
-        eb=None,
     ):
         if U_bc is not None and fill_patch is not None:
             raise ValueError("Specify either U_bc or fill_patch, not both.")
@@ -121,22 +119,6 @@ class DSLIncompressibleSolver:
         self.p.pressure_bc = self._p_domain_bc
         self.phi.pressure_bc = self._p_domain_bc
 
-        # Immersed body (direct-forcing IBM). ``eb`` is a dict
-        # {center:[x,y,z], radius:float, axis:int} or None. The solid cell mask
-        # is built once from the mesh geometry; ``step()`` resets U to the wall
-        # value in solid cells so the projection deflects flow around the body.
-        self._eb = eb
-        self._solid_masks = self._build_solid_masks() if eb is not None else None
-        # History of the direct-forcing reaction force on the body, one entry
-        # per ``step()``: ``(t, Fx, Fy, Fz)`` in kinematic units (force / rho).
-        # For a stationary no-slip body the forcing sets U=0 in the solid cells,
-        # so the momentum removed from the fluid per unit time,
-        # ``F = (rho/dt) * sum_solid(U_before) * cell_vol``, is (Newton's third
-        # law) the hydrodynamic force the fluid exerts on the body — the drag /
-        # lift. Post-processing (``postpro.force_coefficients`` / ``strouhal``)
-        # reads this. Empty when there is no immersed body.
-        self._ibm_force_history: list[tuple[float, float, float, float]] = []
-
         self._nu_func = lambda x, y, z, t: nu * jnp.ones_like(x)
         self.sol_U = sol_U or {}
         self.sol_p = sol_p or {
@@ -145,6 +127,20 @@ class DSLIncompressibleSolver:
             "maxIter": 200,
             "verbose": 0,
         }
+
+        # Immersed body (API doc §6): geometry lives on ``mesh.body`` (set by
+        # the caller, e.g. from meshDict); the method is chosen per field via
+        # ``solution["ibm"]`` (``sol_U`` / ``sol_p``). Precompute every
+        # distinct method's data eagerly, ready before the first solve.
+        ibm_methods = []
+        for sol in (self.sol_U, self.sol_p):
+            ibm_name = sol.get("ibm")
+            if ibm_name is not None:
+                method = IBM.lookup(ibm_name)
+                if method not in ibm_methods:
+                    ibm_methods.append(method)
+        if ibm_methods:
+            mesh.build_ibm(ibm_methods)
 
         # UEqn/pEqn are built once — an Equation is a value: terms hold field
         # references (U, p, phi), which survive regrid because fields
@@ -161,78 +157,6 @@ class DSLIncompressibleSolver:
     @property
     def time(self):
         return self._t
-
-    # ------------------------------------------------------------------
-    # Immersed body (direct-forcing IBM)
-    # ------------------------------------------------------------------
-
-    def _build_solid_masks(self):
-        """Per-(level, box) boolean masks: True in valid cells inside the body.
-
-        A cell is solid when its centre's distance from the body axis (measured
-        in the plane perpendicular to ``eb.axis``) is below ``eb.radius``. Ghost
-        cells are excluded — they are set by the BC fill.
-        """
-        import numpy as np
-
-        center = [float(c) for c in self._eb["center"]]
-        radius = float(self._eb["radius"])
-        axis = int(self._eb["axis"])
-        plane = [a for a in range(3) if a != axis]
-
-        masks = []
-        for lev in range(self.mesh.n_levels()):
-            geom = self.mesh.geom(lev)
-            dx = [float(v) for v in geom.cell_size()]
-            lo = [float(v) for v in geom.prob_lo()]
-            mf = self.U.mf[lev]
-            ng = mf.n_grow()
-            grown = mf.grown_arrays()
-            boxes = [mfi.valid_box() for mfi in blockamr.MFIterator(mf)]
-
-            lev_masks = []
-            for bi, box in enumerate(boxes):
-                nx, ny, nz = (int(s) for s in grown[bi].shape[:3])
-                small = list(box.small_end())
-                # global cell index of grown position g along dim d: small-ng+g
-                gi = [np.arange(n) + (small[d] - ng) for d, n in enumerate((nx, ny, nz))]
-                cc = [lo[d] + (gi[d] + 0.5) * dx[d] for d in range(3)]
-                mesh_c = np.meshgrid(cc[0], cc[1], cc[2], indexing="ij")
-                d2 = (mesh_c[plane[0]] - center[plane[0]]) ** 2 + (
-                    mesh_c[plane[1]] - center[plane[1]]
-                ) ** 2
-                solid = d2 < radius * radius
-                valid = np.zeros((nx, ny, nz), dtype=bool)
-                valid[ng : nx - ng, ng : ny - ng, ng : nz - ng] = True
-                lev_masks.append(jnp.asarray(solid & valid))
-            masks.append(lev_masks)
-        return masks
-
-    def _force_solid(self, u_body=(0.0, 0.0, 0.0)):
-        """Reset the velocity in solid cells to the (stationary) wall value.
-
-        Records the reaction force on the body (momentum removed per unit time,
-        ``F = (rho/dt) * sum_solid(U_before - u_body) * cell_vol``, rho=1) in
-        ``self._ibm_force_history`` for the post-processing observables.
-        """
-        if self._solid_masks is None:
-            return
-        u_vec = jnp.asarray(u_body).reshape(1, 1, 1, 3)
-        force = jnp.zeros(3)
-        for lev in range(self.mesh.n_levels()):
-            mf = self.U.mf[lev]
-            dx = [float(v) for v in self.mesh.geom(lev).cell_size()]
-            cell_vol = dx[0] * dx[1] * dx[2]
-            grown = mf.grown_arrays()
-            results = []
-            for bi, g in enumerate(grown):
-                m = self._solid_masks[lev][bi][..., None]
-                # momentum removed from the fluid in this box (per rho)
-                force = force + jnp.sum(jnp.where(m, g - u_vec, 0.0), axis=(0, 1, 2)) * cell_vol
-                results.append(jnp.where(m, u_vec, g))
-            mf.copy_grown_arrays(results)
-        fvec = force / self.dt
-        self._ibm_force_history.append((self._t, float(fvec[0]), float(fvec[1]), float(fvec[2])))
 
     def step(self):
         """Advance one time step using the DSL.
@@ -282,10 +206,20 @@ class DSLIncompressibleSolver:
         # 7. Correct U: U^{n+1} = U* - dt * grad(p)
         correct(U, -dt * exp.grad(p))
 
-        # 8. Direct-forcing IBM: pin the velocity in solid cells to the wall
-        #    value so the body is impermeable and no-slip. The projection on the
-        #    next step deflects the flow around the resulting zero-velocity zone.
-        self._force_solid()
+        # 8. Immersed-body method (API doc §6): per-field solution["ibm"],
+        #    e.g. direct forcing pins solid-cell velocity to the wall value so
+        #    the body is impermeable and no-slip; the projection on the next
+        #    step deflects the flow around the resulting zero-velocity zone.
+        #    Applied AFTER the full projection, matching the pre-refactor
+        #    apply order exactly (plan 04's acceptance oracle is identical
+        #    Cd/Cl/St) — the coupling therefore sits here rather than inside
+        #    UEqn.solve()'s explicit-predictor branch, which fires before the
+        #    pressure correction and would change the physics.
+        ibm_name = self.sol_U.get("ibm")
+        if ibm_name is not None:
+            method = IBM.lookup(ibm_name)
+            data = self.mesh.ibm_data(method)
+            method.apply(U, dt, t, data)
 
         self._t += dt
 
