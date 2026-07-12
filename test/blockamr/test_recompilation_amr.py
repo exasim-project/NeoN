@@ -118,6 +118,59 @@ def _do_step(phi, ff, mesh, t=0.0, dt=0.001):
     jax.block_until_ready(None)
 
 
+def _do_cpp_step(phi, ff, mesh, t=0.0, dt=0.25):
+    """A full DSL step on the composable cpp explicit backend."""
+    for lev in range(mesh.n_levels()):
+        phi.mf[lev].set_val(1.0)
+        phi.fill_patch(lev, t)
+        if ff[lev] is not None:
+            update_face_fluxes(ff[lev], _vel_func, mesh.geom(lev), t)
+    expr = exp.ddt(phi) + exp.div(ff, phi, scheme=Upwind())
+    solve(expr, t=t, dt=dt, solution={"backend": "cpp"})
+
+
+def test_amr_cpp_scratch_invalidates_on_regrid(blockamr_session):
+    """The cpp backend's scratch MultiFab cache tracks the box array across regrid.
+
+    After a cpp solve step, ``phi._cpp_scratch[lev]`` holds one scratch MultiFab
+    per level, keyed on the ``fab_metadata`` box-size signature. A regrid that
+    changes a level's box array must invalidate that level's scratch (new
+    signature → new MultiFab), with the box count tracking ``_box_counts``.
+    """
+    mesh = _make_amr_mesh(N=64, Nz=4, max_level=1, max_size=8)
+    phi = CellField(mesh, ncomp=1, ngrow=1, name="phi", fill_patch=FillPatchCellConservative())
+    ff = FaceField(mesh, ncomp=1, ngrow=0, name="U")
+
+    tag_small = _make_tag_func(mesh, width=0.10)
+    tag_big = _make_tag_func(mesh, width=0.40)
+    mesh.init_from_scratch(0.0)
+    mesh.regrid(0.0, tag=tag_small)
+
+    # First cpp step — scratch built per level; box count matches the grid.
+    _do_cpp_step(phi, ff, mesh)
+    boxes_small = _box_counts(phi, mesh)
+    print(f"\ntag_small: {mesh.n_levels()} levels, boxes={boxes_small}")
+    assert set(phi._cpp_scratch) == set(range(mesh.n_levels()))
+    for lev in range(mesh.n_levels()):
+        assert len(phi._cpp_scratch[lev][0]) == boxes_small[lev], (
+            f"scratch box count on lev {lev} != grid box count"
+        )
+    fine_sig = phi._cpp_scratch[1][0]
+    fine_mf = phi._cpp_scratch[1][1]
+
+    # Regrid to a much larger fine region → the level-1 box array changes.
+    mesh.regrid(0.0, tag=tag_big)
+    boxes_big = _box_counts(phi, mesh)
+    _do_cpp_step(phi, ff, mesh)
+    print(f"tag_big:   {mesh.n_levels()} levels, boxes={boxes_big}")
+
+    for lev in range(mesh.n_levels()):
+        assert len(phi._cpp_scratch[lev][0]) == boxes_big[lev]
+    assert boxes_big[1] != boxes_small[1], "fixture sanity: fine box count should change"
+    assert phi._cpp_scratch[1][0] != fine_sig, "scratch signature not invalidated on regrid"
+    assert phi._cpp_scratch[1][1] is not fine_mf, "scratch MultiFab not rebuilt on regrid"
+
+
 def test_amr_recompilation_stable_grid(blockamr_session):
     """Repeated solve on a stable AMR grid produces 0 recompiles."""
     mesh = _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16)
