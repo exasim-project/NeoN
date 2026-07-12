@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """Direct-forcing IBM strategy: pin the velocity to a wall value in solid
-cells each step. Moved from ``DSLIncompressibleSolver`` (``_build_solid_masks``
-/ ``_force_solid``) — mesh-owned data, per-field method (API doc §6)."""
+cells each step. Mesh-owned data, per-field method (API doc §6)."""
 
 from dataclasses import dataclass, field as _dc_field
 

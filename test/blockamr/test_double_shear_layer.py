@@ -10,7 +10,7 @@ import jax.numpy as jnp
 import neon.blockamr as blockamr
 from neon.blockamr.mesh import Mesh, AmrMesh
 from neon.blockamr.field import CellField
-from neon.blockamr.dsl_solver import DSLIncompressibleSolver
+from neon.blockamr.incompressible import build_incompressible, max_velocity, regrid_fields, step
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.operators.interpolate import interpolate
 from neon.blockamr.schemes.div_schemes import VanLeer
@@ -60,7 +60,7 @@ def _make_single_level_solver(N=16, Re=1000, cfl=0.25, max_size=64):
     dm = blockamr.DistributionMapping(ba)
     mesh = Mesh(ba, dm, geom)
 
-    solver = DSLIncompressibleSolver(
+    solver = build_incompressible(
         mesh,
         nu,
         dt,
@@ -112,7 +112,7 @@ def _make_example_solver(N=128, Re=10000, cfl=0.25, max_size=64, rho=80.0, delta
     dm = blockamr.DistributionMapping(ba)
     mesh = Mesh(ba, dm, geom)
 
-    solver = DSLIncompressibleSolver(
+    solver = build_incompressible(
         mesh,
         nu,
         dt,
@@ -155,7 +155,7 @@ def _make_amr_solver(N=16, Re=1000, cfl=0.25, max_level=1, max_size=32):
     info.set_blocking_factor(0, 4)
     mesh = AmrMesh(geom, info)
 
-    solver = DSLIncompressibleSolver(
+    solver = build_incompressible(
         mesh,
         nu,
         dt,
@@ -183,7 +183,7 @@ def test_single_level_velocity_bounded(blockamr_session):
     solver, geom = _make_single_level_solver(N=16, Re=1000)
 
     for _ in range(20):
-        solver.step()
+        step(solver)
 
     U_arrs = solver.U.mf[0].arrays()[0]
     max_vel = float(jnp.max(jnp.abs(U_arrs)))
@@ -196,7 +196,7 @@ def test_single_level_multi_box(blockamr_session):
     solver, geom = _make_single_level_solver(N=32, Re=1000, max_size=16)
 
     for _ in range(10):
-        solver.step()
+        step(solver)
 
     U_arrs = solver.U.mf[0].arrays()[0]
     max_vel = float(jnp.max(jnp.abs(U_arrs)))
@@ -213,7 +213,7 @@ def test_amr_solver_runs(blockamr_session):
     assert mesh.n_levels() == 2
 
     for _ in range(5):
-        solver.step()
+        step(solver)
 
     U_arrs = solver.U.mf[0].arrays()[0]
     max_vel = float(jnp.max(jnp.abs(U_arrs)))
@@ -226,7 +226,7 @@ def test_amr_fine_level_has_data(blockamr_session):
     solver, mesh = _make_amr_solver(N=16, Re=1000, max_level=1)
 
     for _ in range(5):
-        solver.step()
+        step(solver)
 
     # Fine level should exist and have data
     assert solver.U.mf[1] is not None
@@ -247,13 +247,13 @@ def test_amr_levels_persist_after_regrid(blockamr_session):
 
     # Run a few steps, then regrid, then run more steps
     for _ in range(5):
-        solver.step()
+        step(solver)
 
-    solver.regrid(tag=_tag_all)
+    regrid_fields(solver, _tag_all)
     assert mesh.n_levels() == 2, f"Fine level lost after regrid: n_levels={mesh.n_levels()}"
 
     for _ in range(5):
-        solver.step()
+        step(solver)
 
     # Velocity must be finite and bounded on both levels
     for lev in range(mesh.n_levels()):
@@ -289,12 +289,12 @@ def test_face_flux_divergence_bounded(blockamr_session):
     max_div_history = []
     sum_div_history = []
     vel_history = []
-    for step in range(1, n_steps + 1):
-        solver.step()
+    for _ in range(1, n_steps + 1):
+        step(solver)
 
         # Measure div(phi) AFTER the step — phi has been corrected at step 7
         max_div, sum_div = _measure_face_div(solver.phi, mesh)
-        max_vel = solver._max_velocity()
+        max_vel = max_velocity(solver.U)
 
         max_div_history.append(max_div)
         sum_div_history.append(sum_div)
@@ -364,13 +364,13 @@ def test_momentum_solve_max_size_independence(blockamr_session):
 
 
 def test_full_step_max_size_independence(blockamr_session):
-    """Full solver.step() must produce identical valid cells regardless of max_size."""
+    """Full step(solver) must produce identical valid cells regardless of max_size."""
     N, Nz, Re = 32, 4, 1000
 
     def run_step(max_size):
         solver, geom = _make_single_level_solver(N=N, Re=Re, max_size=max_size)
         _shear_layer_ic(solver.U.mf[0], geom)
-        solver.step()
+        step(solver)
         mf = solver.U.mf[0]
         ng = mf.n_grow()
         all_valid = []

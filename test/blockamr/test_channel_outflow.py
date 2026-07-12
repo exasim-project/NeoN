@@ -20,7 +20,7 @@ import pytest
 
 import neon.blockamr as blockamr
 from neon.blockamr.bc import VectorBC, fixedValue, NeumannBC
-from neon.blockamr.dsl_solver import DSLIncompressibleSolver
+from neon.blockamr.incompressible import build_incompressible, step
 from neon.blockamr.mesh import Mesh
 
 U0 = 1.0
@@ -51,7 +51,7 @@ def _make_channel():
     # the default Krylov bottom — hence the bottom solver is a per-case scheme,
     # not a hardcoded default.)
     sol_p = {"rtol": 1e-10, "atol": 1e-12, "maxIter": 200, "bottomSolver": "smoother"}
-    return DSLIncompressibleSolver(mesh, NU, dt, U_bc=u_bc, sol_p=sol_p)
+    return build_incompressible(mesh, NU, dt, U_bc=u_bc, sol_p=sol_p)
 
 
 def _seed_plug_flow_with_blob(solver, amp):
@@ -80,7 +80,7 @@ def test_channel_outflow_mass_conserved_and_stable(blockamr_session):
     assert initial_disturbance > 0.1  # the blob is really there
 
     for _ in range(80):
-        solver.step()
+        step(solver)
 
     u = _interior_u(solver, ng)
     arr = np.array(solver.U.mf[0].arrays()[0])
