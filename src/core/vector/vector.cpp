@@ -81,7 +81,16 @@ Vector<ValueType>::Vector(Vector<ValueType>&& rhs) noexcept
 template<typename ValueType>
 Vector<ValueType>::~Vector()
 {
-    std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+    // Fence before freeing: any in-flight GPU kernel (fill, setContainer, parallelFor) that
+    // captured a View of data_ must complete before the memory is returned to the allocator.
+    // Without this, async kernels dispatched on *this race with the destructor.
+    fence(exec_);
+    // Guard against nullptr: move-constructed-from Vectors have data_==nullptr.
+    // kokkos_free(nullptr) is implementation-defined (may throw); skip the call.
+    if (data_ != nullptr)
+    {
+        std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+    }
     data_ = nullptr;
 }
 
@@ -126,6 +135,29 @@ void Vector<ValueType>::operator=(const Vector<ValueType>& rhs)
         this->resize(rhs.size());
     }
     setContainer(*this, rhs.view());
+}
+
+template<typename ValueType>
+Vector<ValueType>& Vector<ValueType>::operator=(Vector<ValueType>&& rhs) noexcept
+{
+    if (this != &rhs)
+    {
+        NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
+        // Fence before freeing data_: same reasoning as the destructor.
+        fence(exec_);
+        if (data_ != nullptr)
+        {
+            std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
+        }
+
+        data_ = rhs.data_;
+        size_ = rhs.size_;
+        // exec_ is const — cannot be reassigned; both sides must share the same executor
+
+        rhs.data_ = nullptr;
+        rhs.size_ = 0;
+    }
+    return *this;
 }
 
 template<typename ValueType>
@@ -190,6 +222,7 @@ void Vector<ValueType>::resize(const localIdx size)
     void* ptr = nullptr;
     if (!empty())
     {
+        fence(exec_); // same as destructor: pending kernels on data_ must finish before realloc
         std::visit(
             [this, &ptr, size](const auto& exec)
             { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
