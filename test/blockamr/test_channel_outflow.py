@@ -40,7 +40,7 @@ def _make_channel():
 
     u_bc = VectorBC(
         xlo=fixedValue([U0, 0.0, 0.0]),  # inlet
-        xhi=NeumannBC(),                 # outlet (streamed / zeroGradient)
+        xhi=NeumannBC(),  # outlet (streamed / zeroGradient)
         ylo=fixedValue([U0, 0.0, 0.0]),  # free-stream walls
         yhi=fixedValue([U0, 0.0, 0.0]),
     )
@@ -50,9 +50,8 @@ def _make_channel():
     # wall immersed-cylinder outflow, by contrast, converges in ~5 V-cycles with
     # the default Krylov bottom — hence the bottom solver is a per-case scheme,
     # not a hardcoded default.)
-    schemes_p = {"rtol": 1e-10, "atol": 1e-12, "max_iter": 200,
-                 "bottom_solver": "smoother"}
-    return DSLIncompressibleSolver(mesh, NU, dt, u_bc, schemes_p=schemes_p)
+    sol_p = {"rtol": 1e-10, "atol": 1e-12, "maxIter": 200, "bottomSolver": "smoother"}
+    return DSLIncompressibleSolver(mesh, NU, dt, U_bc=u_bc, sol_p=sol_p)
 
 
 def _seed_plug_flow_with_blob(solver, amp):
@@ -61,14 +60,14 @@ def _seed_plug_flow_with_blob(solver, amp):
     g = solver.U.mf[0].grown_arrays()[0]
     g = g.at[:, :, :, 0].set(U0).at[:, :, :, 1:].set(0.0)
     cx, cy = ng + NX // 3, ng + NY // 2
-    g = g.at[cx - 2:cx + 2, cy - 2:cy + 2, :, 0].set((1.0 + amp) * U0)
+    g = g.at[cx - 2 : cx + 2, cy - 2 : cy + 2, :, 0].set((1.0 + amp) * U0)
     solver.U.mf[0].copy_grown_arrays([g])
     return ng
 
 
 def _interior_u(solver, ng):
     arr = np.array(solver.U.mf[0].arrays()[0])
-    return arr[ng:ng + NX, ng:ng + NY, ng:ng + NZ, 0]
+    return arr[ng : ng + NX, ng : ng + NY, ng : ng + NZ, 0]
 
 
 def test_channel_outflow_mass_conserved_and_stable(blockamr_session):

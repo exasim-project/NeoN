@@ -61,8 +61,11 @@ def _make_single_level_solver(N=16, Re=1000, cfl=0.25, max_size=64):
     mesh = Mesh(ba, dm, geom)
 
     solver = DSLIncompressibleSolver(
-        mesh, nu, dt, fill_patch=FillPatchCellConservative(),
-        schemes_p={"rtol": 1e-10, "atol": 1e-8, "max_iter": 200, "verbose": 0},
+        mesh,
+        nu,
+        dt,
+        fill_patch=FillPatchCellConservative(),
+        sol_p={"rtol": 1e-10, "atol": 1e-8, "maxIter": 200, "verbose": 0},
     )
     _shear_layer_ic(solver.U.mf[0], geom)
     return solver, geom
@@ -110,9 +113,13 @@ def _make_example_solver(N=128, Re=10000, cfl=0.25, max_size=64, rho=80.0, delta
     mesh = Mesh(ba, dm, geom)
 
     solver = DSLIncompressibleSolver(
-        mesh, nu, dt, fill_patch=FillPatchCellConservative(),
-        schemes_p={"rtol": 0, "atol": 1e-8, "max_iter": 200, "verbose": 0},
-        div_scheme=VanLeer(), cfl=cfl,
+        mesh,
+        nu,
+        dt,
+        fill_patch=FillPatchCellConservative(),
+        sol_p={"rtol": 0, "atol": 1e-8, "maxIter": 200, "verbose": 0},
+        schemes={"div(phi,U)": VanLeer()},
+        cfl=cfl,
     )
     _shear_layer_ic(solver.U.mf[0], geom, rho=rho, delta=delta)
     return solver, mesh
@@ -149,8 +156,11 @@ def _make_amr_solver(N=16, Re=1000, cfl=0.25, max_level=1, max_size=32):
     mesh = AmrMesh(geom, info)
 
     solver = DSLIncompressibleSolver(
-        mesh, nu, dt, fill_patch=FillPatchCellConservative(),
-        schemes_p={"rtol": 1e-10, "atol": 1e-8, "max_iter": 200, "verbose": 0},
+        mesh,
+        nu,
+        dt,
+        fill_patch=FillPatchCellConservative(),
+        sol_p={"rtol": 1e-10, "atol": 1e-8, "maxIter": 200, "verbose": 0},
     )
 
     mesh.init_from_scratch(0.0)
@@ -166,6 +176,7 @@ def _make_amr_solver(N=16, Re=1000, cfl=0.25, max_level=1, max_size=32):
 
 
 # --- Single-level tests ---
+
 
 def test_single_level_velocity_bounded(blockamr_session):
     """Single-level shear layer velocity should remain bounded."""
@@ -194,6 +205,7 @@ def test_single_level_multi_box(blockamr_session):
 
 
 # --- AMR tests ---
+
 
 def test_amr_solver_runs(blockamr_session):
     """AMR solver should run without errors."""
@@ -238,9 +250,7 @@ def test_amr_levels_persist_after_regrid(blockamr_session):
         solver.step()
 
     solver.regrid(tag=_tag_all)
-    assert mesh.n_levels() == 2, (
-        f"Fine level lost after regrid: n_levels={mesh.n_levels()}"
-    )
+    assert mesh.n_levels() == 2, f"Fine level lost after regrid: n_levels={mesh.n_levels()}"
 
     for _ in range(5):
         solver.step()
@@ -256,12 +266,13 @@ def test_amr_levels_persist_after_regrid(blockamr_session):
         ng = mf.n_grow()
         for arr in mf.arrays():
             u_int = arr[ng:-ng, ng:-ng, ng:-ng, :]
-            mag = float(jnp.max(jnp.sqrt(jnp.sum(u_int ** 2, axis=-1))))
+            mag = float(jnp.max(jnp.sqrt(jnp.sum(u_int**2, axis=-1))))
             assert mag < 5.0, f"Velocity blowup on level {lev}: max|U|={mag}"
             assert mag > 0.01, f"Velocity collapsed on level {lev}: max|U|={mag}"
 
 
 # --- Diagnostic: face flux divergence ---
+
 
 def test_face_flux_divergence_bounded(blockamr_session):
     """Face flux divergence should stay bounded over 200 steps at N=128.
@@ -289,15 +300,15 @@ def test_face_flux_divergence_bounded(blockamr_session):
         sum_div_history.append(sum_div)
         vel_history.append(max_vel)
 
-    print(f"\n  Face flux divergence diagnostic (N=128, Re=10000, VanLeer):")
+    print("\n  Face flux divergence diagnostic (N=128, Re=10000, VanLeer):")
     print(f"  {'step':>6s}  {'max|div(phi)|':>14s}  {'sum(div(phi))':>14s}  {'max|U|':>10s}")
     for i in [0, 49, 99, 199]:
-        print(f"  {i+1:6d}  {max_div_history[i]:14.6e}  {sum_div_history[i]:14.6e}  {vel_history[i]:10.6f}")
+        print(
+            f"  {i + 1:6d}  {max_div_history[i]:14.6e}  {sum_div_history[i]:14.6e}  {vel_history[i]:10.6f}"
+        )
 
     # Velocity must remain bounded
-    assert vel_history[-1] < 5.0, (
-        f"Velocity blowup: max|U|={vel_history[-1]:.4f} at step {n_steps}"
-    )
+    assert vel_history[-1] < 5.0, f"Velocity blowup: max|U|={vel_history[-1]:.4f} at step {n_steps}"
     assert all(np.isfinite(v) for v in vel_history), "NaN/Inf in velocity history"
 
     # div(phi) should not grow unboundedly
@@ -323,8 +334,7 @@ def test_momentum_solve_max_size_independence(blockamr_session):
         dm = blockamr.DistributionMapping(ba)
         mesh = Mesh(ba, dm, geom)
 
-        U = CellField(mesh, ncomp=3, ngrow=1, name="U",
-                       fill_patch=FillPatchCellConservative())
+        U = CellField(mesh, ncomp=3, ngrow=1, name="U", fill_patch=FillPatchCellConservative())
         _shear_layer_ic(U.mf[0], geom)
         U.fill_patch(0, 0.0)
 
@@ -333,7 +343,7 @@ def test_momentum_solve_max_size_independence(blockamr_session):
 
         dt = 0.25 / N
         nu = 1e-3
-        solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U), 0.0, dt)
+        solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U), t=0.0, dt=dt)
 
         ng = U.mf[0].n_grow()
         all_valid = []
@@ -345,7 +355,10 @@ def test_momentum_solve_max_size_independence(blockamr_session):
     multi_box = run_momentum(max_size=8)
 
     np.testing.assert_allclose(
-        single_box, multi_box, rtol=1e-5, atol=1e-10,
+        single_box,
+        multi_box,
+        rtol=1e-5,
+        atol=1e-10,
         err_msg="Momentum solve results depend on max_size (box decomposition)",
     )
 
@@ -369,6 +382,9 @@ def test_full_step_max_size_independence(blockamr_session):
     multi = run_step(max_size=8)
 
     np.testing.assert_allclose(
-        single, multi, rtol=1e-5, atol=1e-10,
+        single,
+        multi,
+        rtol=1e-5,
+        atol=1e-10,
         err_msg="Full solver step depends on max_size (box decomposition)",
     )

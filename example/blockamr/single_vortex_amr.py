@@ -14,7 +14,6 @@ Usage:
 """
 
 import argparse
-import math
 import os
 
 os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
@@ -27,8 +26,8 @@ from neon.blockamr.mesh import AmrMesh
 from neon.blockamr.field import CellField, FaceField
 from neon.blockamr.fillpatch import FillPatchCellConservative
 from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import update_face_fluxes, AmrFaceFluxUpdater
-from neon.blockamr.schemes.div_schemes import Upwind, VanLeer
+from neon.blockamr.operators.div import AmrFaceFluxUpdater
+from neon.blockamr.schemes.div_schemes import VanLeer
 
 
 def vortex_velocity(x, y, z, t, period=2.0):
@@ -70,10 +69,14 @@ def tag_gradient(phi, threshold=1.5):
             lo = bx.small_end()
             hi = bx.big_end()
             vn = [hi[d] - lo[d] + 1 for d in range(3)]
-            gx = jnp.abs(data[ng+1:ng+1+vn[0], ng:ng+vn[1], ng:ng+vn[2]]
-                         - data[ng-1:ng-1+vn[0], ng:ng+vn[1], ng:ng+vn[2]]) / (2 * dx[0])
-            gy = jnp.abs(data[ng:ng+vn[0], ng+1:ng+1+vn[1], ng:ng+vn[2]]
-                         - data[ng:ng+vn[0], ng-1:ng-1+vn[1], ng:ng+vn[2]]) / (2 * dx[1])
+            gx = jnp.abs(
+                data[ng + 1 : ng + 1 + vn[0], ng : ng + vn[1], ng : ng + vn[2]]
+                - data[ng - 1 : ng - 1 + vn[0], ng : ng + vn[1], ng : ng + vn[2]]
+            ) / (2 * dx[0])
+            gy = jnp.abs(
+                data[ng : ng + vn[0], ng + 1 : ng + 1 + vn[1], ng : ng + vn[2]]
+                - data[ng : ng + vn[0], ng - 1 : ng - 1 + vn[1], ng : ng + vn[2]]
+            ) / (2 * dx[1])
             mask = ((gx + gy) > threshold).astype(jnp.int32)
             tags.set_tags(mfi, mask)
 
@@ -92,7 +95,14 @@ def compute_level0_mass(phi, mesh):
 
 
 def run(
-    n_cell=32, max_level=1, cfl=0.3, period=2.0, scheme="Upwind", plotfile=True, write_interval=0.1, max_grid_size=32
+    n_cell=32,
+    max_level=1,
+    cfl=0.3,
+    period=2.0,
+    scheme="Upwind",
+    plotfile=True,
+    write_interval=0.1,
+    max_grid_size=32,
 ):
     box = blockamr.Box([0, 0, 0], [n_cell - 1, n_cell - 1, n_cell - 1])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
@@ -155,7 +165,7 @@ def run(
         flux_updater.update(t)
 
         expr = exp.ddt(phi) + exp.div(face_vel, phi, scheme=div_scheme)
-        solve(expr, t, dt)
+        solve(expr, t=t, dt=dt)
 
         t += dt
         nsteps += 1
@@ -187,8 +197,9 @@ if __name__ == "__main__":
         "--write-interval", type=float, default=0.1, help="plotfile write interval in seconds"
     )
     parser.add_argument("--no-plot", action="store_true", help="skip plotfile output")
-    parser.add_argument("--backend", choices=["jax", "pallas", "triton"],
-                        default="jax", help="dispatch backend")
+    parser.add_argument(
+        "--backend", choices=["jax", "pallas", "triton"], default="jax", help="dispatch backend"
+    )
     args = parser.parse_args()
 
     with blockamr.runtime():

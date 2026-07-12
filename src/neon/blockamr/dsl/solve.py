@@ -23,45 +23,57 @@ def forward_euler(spatial_kernels, dt_over_coeff):
     return FusedEulerKernel(spatial_kernels=spatial_kernels, dt_over_coeff=dt_over_coeff)
 
 
-def solve(expr, t=None, dt=None, schemes=None):
-    """Solve an expression or equation.
+def solve(equation, *, dt=None, t=None, solution=None):
+    """Discretise and solve an Equation.
 
-    Two forms:
-      solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U), t, dt)
-        → explicit Forward Euler (JAX/Pallas)
+    Two forms, dispatched on the equation's terms:
 
-      solve(imp.laplacian(sigma, p) == exp.div(U), schemes=schemes_p)
-        → implicit MLMG solve (AMReX C++)
+      solve(Equation(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U),
+                     schemes=schemes), dt=dt, t=t)
+        → explicit Forward Euler (JAX/Pallas). Schemes are resolved from the
+          equation's own ``schemes`` (bound at construction); ``solution``
+          may carry the field's IBM method.
+
+      solve(Equation(imp.laplacian(sigma, p) == exp.div(U)), dt=dt,
+            solution=sol_p)
+        → implicit MLMG solve (AMReX C++), configured by ``solution``
+          (solver/rtol/atol/maxIter/bottomSolver/verbose/bottomVerbose).
     """
     from .equation import Equation
 
-    if isinstance(expr, Equation) and expr.implicit_lhs is not None:
-        _solve_implicit(expr, schemes=schemes)
+    if not isinstance(equation, Equation):
+        raise TypeError(f"solve() expects an Equation, got {type(equation).__name__}")
+
+    if equation.implicit_lhs is not None:
+        _solve_implicit(equation, solution=solution)
         return
 
-    # An Equation may carry its own schemes (bound at construction); an
-    # explicit schemes= argument wins.
-    if schemes is None and isinstance(expr, Equation) and expr.schemes:
-        schemes = expr.schemes
+    if len(equation.temporal_ops) != 1:
+        raise ValueError(
+            "solve() can only dispatch an equation with either an implicit_lhs "
+            "(imp.laplacian(...) == ...) or exactly one explicit ddt term "
+            f"(momentum predictor); got {len(equation.temporal_ops)} ddt term(s) "
+            "and no implicit_lhs."
+        )
 
-    assert len(expr.temporal_ops) == 1
-    cell_field = expr.temporal_ops[0].field  # CellField
+    schemes = equation.schemes
+    cell_field = equation.temporal_ops[0].field  # CellField
     mesh = cell_field.mesh
-    ddt_coeff = expr.temporal_ops[0].coeff
+    ddt_coeff = equation.temporal_ops[0].coeff
 
     ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
 
     # Resolve operator schemes from the schemes dict (names or objects,
     # keyed by scheme_key or class name). A scheme object passed at the
     # call site (exp.div(..., scheme=obj)) wins over the dict.
-    for sp_op in expr.spatial_ops:
+    for sp_op in equation.spatial_ops:
         if sp_op._scheme_explicit or sp_op._scheme_operator is None:
             continue
         keys = [sp_op._scheme_key_or_none(), type(sp_op).__name__]
         sp_op.scheme = lookup_scheme(schemes, keys, sp_op._scheme_operator, sp_op.scheme)
 
     # Validate that the field has enough ghost cells for the widest stencil
-    required = expr.required_ngrow
+    required = equation.required_ngrow
     actual = cell_field.ngrow
     if actual < required:
         raise ValueError(
@@ -73,7 +85,7 @@ def solve(expr, t=None, dt=None, schemes=None):
     if isinstance(ddt_scheme, ForwardEuler):
         for lev in range(mesh.n_levels()):
             cell_field.fill_patch(lev, t)
-            _forward_euler_level(expr, cell_field, lev, t, dt, ddt_coeff)
+            _forward_euler_level(equation, cell_field, lev, t, dt, ddt_coeff)
 
         # restrict fine -> coarse
         for lev in reversed(range(mesh.n_levels() - 1)):
@@ -414,8 +426,49 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
 # Implicit equation solver (AMReX MLMG — unchanged)
 # ---------------------------------------------------------------------------
 
+# Old snake_case `solution` keys, renamed to the fvSolution camelCase
+# spellings (API doc §5). Passing an old key is a clear migration error
+# rather than a silently-ignored setting.
+_DEPRECATED_SOLUTION_KEYS = {
+    "max_iter": "maxIter",
+    "bottom_solver": "bottomSolver",
+    "bottom_verbose": "bottomVerbose",
+}
 
-def _solve_implicit(eqn, schemes=None):
+
+def _check_solution_keys(solution):
+    """Raise a clear error for renamed (dropped) snake_case solution keys."""
+    if not solution:
+        return
+    for key in solution:
+        new_key = _DEPRECATED_SOLUTION_KEYS.get(key)
+        if new_key is not None:
+            raise ValueError(
+                f"solution key '{key}' was renamed to '{new_key}' "
+                "(fvSolution.solvers[field] key spellings changed) — "
+                f"use solution={{'{new_key}': ...}}."
+            )
+
+
+class ImplicitSolveCache:
+    """Cached AMReX MLMG solver objects for one field's implicit solve.
+
+    Stored on the field (``p_field._imp_cache``); rebuilt whenever *key*
+    (n_levels, sigma, bottomSolver) changes — see ``_solve_implicit``.
+    """
+
+    def __init__(self, key, lp, mlmg, phi_mfs, rhs_mfs, vel3_mfs, fluxes_mfs, has_dirichlet):
+        self.key = key
+        self.lp = lp
+        self.mlmg = mlmg
+        self.phi_mfs = phi_mfs
+        self.rhs_mfs = rhs_mfs
+        self.vel3_mfs = vel3_mfs
+        self.fluxes_mfs = fluxes_mfs
+        self.has_dirichlet = has_dirichlet
+
+
+def _solve_implicit(eqn, solution=None):
     """Solve imp.laplacian(sigma, p) == exp.div(U).
 
     Supports single-level and multi-level AMR meshes:
@@ -427,15 +480,19 @@ def _solve_implicit(eqn, schemes=None):
     imp_op = eqn.implicit_lhs  # ImplicitLaplacian
     rhs_op = eqn.rhs  # CellDivergence
 
-    cfg = schemes or {}
+    _check_solution_keys(solution)
+    cfg = solution or {}
+    solver_name = cfg.get("solver", "MLMG")
+    if solver_name != "MLMG":
+        raise ValueError(f"Unknown solution['solver']='{solver_name}': only 'MLMG' is supported.")
     rtol = cfg.get("rtol", 1e-10)
     atol = cfg.get("atol", 1e-12)
-    max_iter = cfg.get("max_iter", 200)
+    max_iter = cfg.get("maxIter", 200)
     verbose = cfg.get("verbose", 0)
     # Optional explicit nodal bottom solver: one of "cg", "bicgstab", "smoother",
     # "cgbicg", "bicgcg", "default". None → let AMReX pick its default (a Krylov
     # solver, which converges this system in ~5 V-cycles).
-    bottom_solver = cfg.get("bottom_solver", None)
+    bottom_solver = cfg.get("bottomSolver", None)
 
     p_field = imp_op.field
     U_field = rhs_op.vel_field
@@ -443,11 +500,12 @@ def _solve_implicit(eqn, schemes=None):
     mesh = U_field.mesh
     n_levels = mesh.n_levels()
 
-    needs_rebuild = not hasattr(p_field, "_imp_solver")
-    if not needs_rebuild:
-        s_old = p_field._imp_solver
-        if s_old["n_levels"] != n_levels or s_old["sigma"] != sigma:
-            needs_rebuild = True
+    # The rebuild key includes the `solution` values that affect the built
+    # AMReX objects (bottomSolver changes take effect only via a rebuild —
+    # `set_bottom_solver` is otherwise sticky across calls that omit it).
+    cache_key = (n_levels, sigma, bottom_solver)
+    cache = getattr(p_field, "_imp_cache", None)
+    needs_rebuild = cache is None or cache.key != cache_key
 
     if needs_rebuild:
         geoms = [mesh.geom(lev) for lev in range(n_levels)]
@@ -507,62 +565,62 @@ def _solve_implicit(eqn, schemes=None):
 
         lp.set_domain_bc(lo_bc, hi_bc)
 
-        p_field._imp_solver = {
-            "lp": lp,
-            "mlmg": blockamr.MLMG(lp),
-            "phi_mfs": phi_mfs,
-            "rhs_mfs": rhs_mfs,
-            "vel3_mfs": vel3_mfs,
-            "fluxes_mfs": fluxes_mfs,
-            "n_levels": n_levels,
-            "sigma": sigma,
-            "has_dirichlet": has_dirichlet,
-        }
+        cache = ImplicitSolveCache(
+            key=cache_key,
+            lp=lp,
+            mlmg=blockamr.MLMG(lp),
+            phi_mfs=phi_mfs,
+            rhs_mfs=rhs_mfs,
+            vel3_mfs=vel3_mfs,
+            fluxes_mfs=fluxes_mfs,
+            has_dirichlet=has_dirichlet,
+        )
+        p_field._imp_cache = cache
 
-    s = p_field._imp_solver
-    s["mlmg"].set_verbose(verbose)
-    s["mlmg"].set_max_iter(max_iter)
-    s["mlmg"].set_bottom_verbose(cfg.get("bottom_verbose", 0))
+    cache.mlmg.set_verbose(verbose)
+    cache.mlmg.set_max_iter(max_iter)
+    cache.mlmg.set_bottom_verbose(cfg.get("bottomVerbose", 0))
     # Bottom solver: default (None) lets AMReX use its Krylov default, which —
     # with the agglomeration+consolidation enabled above for the has_dirichlet
     # (outflow) case — converges the nodal projection in ~5 V-cycles. Override
-    # via schemes["bottom_solver"] if needed. (Do NOT force "smoother" here: it
+    # via solution["bottomSolver"] if needed. (Do NOT force "smoother" here: it
     # cost ~600 iters/solve, ~100x the Krylov default, and dominated runtime.)
     if bottom_solver is not None:
-        s["mlmg"].set_bottom_solver(bottom_solver)
+        cache.mlmg.set_bottom_solver(bottom_solver)
 
     # 1. Pack velocity with ghost cells into ncomp=3 MultiFab (per level)
     for lev in range(n_levels):
         mf = U_field.mf[lev]
         grown = mf.grown_arrays()
-        for bi, mfi in enumerate(blockamr.MFIterator(s["vel3_mfs"][lev])):
-            s["vel3_mfs"][lev].copy_grown_from(mfi, grown[bi])
+        for bi, mfi in enumerate(blockamr.MFIterator(cache.vel3_mfs[lev])):
+            cache.vel3_mfs[lev].copy_grown_from(mfi, grown[bi])
 
     # 2. compDivergence → nodal RHS
     if n_levels == 1:
-        s["lp"].comp_divergence(s["rhs_mfs"][0], s["vel3_mfs"][0])
+        cache.lp.comp_divergence(cache.rhs_mfs[0], cache.vel3_mfs[0])
     else:
-        s["lp"].comp_divergence(s["rhs_mfs"], s["vel3_mfs"])
+        cache.lp.comp_divergence(cache.rhs_mfs, cache.vel3_mfs)
 
     # 3. MLMG.solve (warm-start from previous phi)
     if n_levels == 1:
-        s["mlmg"].solve(s["phi_mfs"][0], s["rhs_mfs"][0], rtol, atol)
+        cache.mlmg.solve(cache.phi_mfs[0], cache.rhs_mfs[0], rtol, atol)
     else:
-        s["mlmg"].solve(s["phi_mfs"], s["rhs_mfs"], rtol, atol)
+        cache.mlmg.solve(cache.phi_mfs, cache.rhs_mfs, rtol, atol)
 
-    print(
-        f"  MLMG  iters={s['mlmg'].get_num_iters()}  "
-        f"init_res={s['mlmg'].get_init_residual():.6e}  "
-        f"final_res={s['mlmg'].get_final_residual():.6e}"
-    )
+    if verbose:
+        print(
+            f"  MLMG  iters={cache.mlmg.get_num_iters()}  "
+            f"init_res={cache.mlmg.get_init_residual():.6e}  "
+            f"final_res={cache.mlmg.get_final_residual():.6e}"
+        )
 
     # 4. getFluxes → store gradient on p_field for correct()
     if n_levels == 1:
-        s["mlmg"].get_fluxes(s["fluxes_mfs"][0])
+        cache.mlmg.get_fluxes(cache.fluxes_mfs[0])
     else:
-        s["mlmg"].get_fluxes(s["fluxes_mfs"])
+        cache.mlmg.get_fluxes(cache.fluxes_mfs)
 
     p_field.grad = []
     for lev in range(n_levels):
-        box_grads = [-arr / sigma for arr in s["fluxes_mfs"][lev].arrays()]
+        box_grads = [-arr / sigma for arr in cache.fluxes_mfs[lev].arrays()]
         p_field.grad.append(box_grads)

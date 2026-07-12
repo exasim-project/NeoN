@@ -7,15 +7,15 @@
 import math
 
 import neon.blockamr as blockamr
-import jax.numpy as jnp
 import numpy as np
-from neon.blockamr.field import CellField, FaceField
+from neon.blockamr.field import CellField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.dsl import exp, solve
+from neon.blockamr.dsl.equation import Equation
 from neon.blockamr.operators.div import Div, build_face_fluxes
 from neon.blockamr.operators.grad import Grad
 from neon.blockamr.operators.laplacian import Laplacian
-from neon.blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
+from neon.blockamr.schemes.div_schemes import Linear, Upwind, VanLeer
 from neon.blockamr.schemes.grad_schemes import CentralDiffGrad
 from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
 from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
@@ -68,7 +68,7 @@ def test_div_default_unchanged(blockamr_session):
         kernel = div_op.build_kernel(bucket, 0.0)
         result = process_bucket(bucket, 1.0, (kernel,))
         # result = phi - dt*div(phi); for constant phi=1, div=0, result=1
-        valid = result[:bucket.n_valid]
+        valid = result[: bucket.n_valid]
         assert np.allclose(valid, 1.0, atol=1e-12)
 
 
@@ -109,7 +109,7 @@ def test_div_with_linear_scheme(blockamr_session):
         r_up = process_bucket(bucket, 1.0, (k_up,))
         r_lin = process_bucket(bucket, 1.0, (k_lin,))
         # They should differ (Linear is 2nd-order, Upwind is 1st-order)
-        assert not np.allclose(r_up[:bucket.n_valid], r_lin[:bucket.n_valid], atol=1e-6)
+        assert not np.allclose(r_up[: bucket.n_valid], r_lin[: bucket.n_valid], atol=1e-6)
 
 
 def test_laplacian_default_scheme(blockamr_session):
@@ -133,7 +133,11 @@ def test_grad_default_scheme(blockamr_session):
 
 
 def test_solve_with_schemes_dict(blockamr_session):
-    """solve() with schemes dict overrides operator's default scheme."""
+    """Equation(schemes=...) overrides an operator's default scheme.
+
+    schemes is bound at Equation construction (fvSchemes); solve() no
+    longer takes a schemes= kwarg (plan 02).
+    """
     mesh, box, dm, geom = _make_mesh(n_cell=32, max_size=32)
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
     dx = geom.cell_size()
@@ -155,8 +159,8 @@ def test_solve_with_schemes_dict(blockamr_session):
         phi_before[tuple(lo)] = phi.mf[0].copy_to_host(mfi)[:, :, :, 0].copy()
 
     ff = build_face_fluxes(_x_vel, box, dm, geom, ngrow=1, t=0.0)
-    expr = exp.ddt(phi) + exp.div(ff, phi)
-    solve(expr, t=0.0, dt=1e-4, schemes={"Div": Linear()})
+    expr = Equation(exp.ddt(phi) + exp.div(ff, phi), schemes={"Div": Linear()})
+    solve(expr, t=0.0, dt=1e-4)
 
     # The field should have changed (not zero div for non-uniform field)
     for mfi in blockamr.MFIterator(phi.mf[0]):
@@ -196,7 +200,7 @@ def test_div_with_vanleer_scheme(blockamr_session):
             continue
         kernel = div_vanleer.build_kernel(bucket, 0.0)
         result = process_bucket(bucket, 1.0, (kernel,))
-        valid = result[:bucket.n_valid]
+        valid = result[: bucket.n_valid]
         assert np.all(np.isfinite(valid))
 
 

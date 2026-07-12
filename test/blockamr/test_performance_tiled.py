@@ -28,6 +28,7 @@ from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_mesh(N, max_size=None):
     if max_size is None:
         max_size = N
@@ -51,9 +52,9 @@ def _init_sin3d(phi_mf, geom):
         ys = (jnp.arange(ny) + lo[1] + 0.5) * dx[1]
         zs = (jnp.arange(nz) + lo[2] + 0.5) * dx[2]
         X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
-        arr[:, :, :, 0] = (jnp.sin(2 * math.pi * X)
-                           * jnp.sin(2 * math.pi * Y)
-                           * jnp.sin(2 * math.pi * Z))
+        arr[:, :, :, 0] = (
+            jnp.sin(2 * math.pi * X) * jnp.sin(2 * math.pi * Y) * jnp.sin(2 * math.pi * Z)
+        )
         phi_mf.copy_from(mfi, arr)
     phi_mf.fill_boundary(geom)
 
@@ -79,6 +80,7 @@ def _setup_advdiff(N, ngrow):
 
     def vel(x, y, z, t):
         return (jnp.ones_like(x), jnp.ones_like(x), jnp.ones_like(x))
+
     update_face_fluxes(ff[0], vel, geom, 0.0)
 
     return mesh, geom, phi, ff
@@ -87,6 +89,7 @@ def _setup_advdiff(N, ngrow):
 # ---------------------------------------------------------------------------
 # Laplacian (source term)
 # ---------------------------------------------------------------------------
+
 
 def test_evaluate_laplacian_vs_cpp(blockamr_session):
     """DSL evaluate(laplacian) matches C++ and measures performance."""
@@ -116,16 +119,15 @@ def test_evaluate_laplacian_vs_cpp(blockamr_session):
 
     # Performance
     pallas_ms = _time_fn(lambda: evaluate(lap_expr, t=0.0))
-    cpp_ms = _time_fn(
-        lambda: blockamr.laplacian(out.mf[0], phi.mf[0], geom))
+    cpp_ms = _time_fn(lambda: blockamr.laplacian(out.mf[0], phi.mf[0], geom))
 
-    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, "
-          f"ratio: {pallas_ms/cpp_ms:.2f}x")
+    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, ratio: {pallas_ms / cpp_ms:.2f}x")
 
 
 # ---------------------------------------------------------------------------
 # Per-scheme evaluate (source term, no time step)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("scheme", [Upwind(), Linear(), VanLeer(), QUICK()])
 def test_evaluate_div_scheme(blockamr_session, scheme):
@@ -137,8 +139,7 @@ def test_evaluate_div_scheme(blockamr_session, scheme):
     div_expr = exp.div(ff, phi, scheme=scheme)
     result = evaluate(div_expr, t=0.0)
 
-    max_val = max(float(jnp.max(jnp.abs(box.squeeze())))
-                  for box in result[0])
+    max_val = max(float(jnp.max(jnp.abs(box.squeeze()))) for box in result[0])
     print(f"\n{scheme.type} div {N}^3: max|source| = {max_val:.6f}")
     assert max_val > 1e-6, f"{scheme.type} div result near-zero: {max_val}"
 
@@ -150,16 +151,18 @@ def test_evaluate_div_scheme(blockamr_session, scheme):
 # Per-scheme solve (forward Euler step) vs C++ where available
 # ---------------------------------------------------------------------------
 
+
 def _solve_one_step(phi, ff, geom, scheme, nu, dt):
     """Run one DSL forward Euler step."""
     _init_sin3d(phi.mf[0], geom)
     expr = exp.ddt(phi) + exp.div(ff, phi, scheme=scheme) - exp.laplacian(nu, phi)
-    solve(expr, 0.0, dt)
+    solve(expr, t=0.0, dt=dt)
 
 
 # ---------------------------------------------------------------------------
 # Per-operator evaluate (source term only, no fusing)
 # ---------------------------------------------------------------------------
+
 
 def test_evaluate_laplacian_perf(blockamr_session):
     """Laplacian source term alone: DSL evaluate vs C++."""
@@ -177,8 +180,7 @@ def test_evaluate_laplacian_perf(blockamr_session):
     cpp_ms = _time_fn(lambda: blockamr.laplacian(out.mf[0], phi.mf[0], geom))
 
     print(f"\nLaplacian only {N}^3:")
-    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, "
-          f"ratio: {pallas_ms/cpp_ms:.2f}x")
+    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, ratio: {pallas_ms / cpp_ms:.2f}x")
 
 
 CPP_DIV_BASELINES = {
@@ -201,18 +203,16 @@ def test_evaluate_div_perf(blockamr_session, scheme):
     evaluate(div_expr, t=0.0)  # warmup
 
     cpp_fn = getattr(blockamr, CPP_DIV_BASELINES[scheme.type])
-    cpp_fn(out.mf[0], phi.mf[0],
-           ff[0][0].mf, ff[0][1].mf, ff[0][2].mf, geom)  # warmup
+    cpp_fn(out.mf[0], phi.mf[0], ff[0][0].mf, ff[0][1].mf, ff[0][2].mf, geom)  # warmup
     jax.block_until_ready(None)
 
     pallas_ms = _time_fn(lambda: evaluate(div_expr, t=0.0))
-    cpp_ms = _time_fn(lambda: cpp_fn(
-        out.mf[0], phi.mf[0],
-        ff[0][0].mf, ff[0][1].mf, ff[0][2].mf, geom))
+    cpp_ms = _time_fn(
+        lambda: cpp_fn(out.mf[0], phi.mf[0], ff[0][0].mf, ff[0][1].mf, ff[0][2].mf, geom)
+    )
 
     print(f"\n{scheme.type} div only {N}^3:")
-    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, "
-          f"ratio: {pallas_ms/cpp_ms:.2f}x")
+    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, ratio: {pallas_ms / cpp_ms:.2f}x")
 
 
 # ---------------------------------------------------------------------------
@@ -245,11 +245,12 @@ def test_solve_scheme_vs_cpp(blockamr_session, scheme):
 
     def cpp_step():
         _init_sin3d(phi_cpp.mf[0], geom)
-        cpp_fn(phi_cpp.mf[0], ff[0][0].mf, ff[0][1].mf, ff[0][2].mf,
-               geom, dt, nu, 1)
+        cpp_fn(phi_cpp.mf[0], ff[0][0].mf, ff[0][1].mf, ff[0][2].mf, geom, dt, nu, 1)
 
     # Warmup
-    dsl_step(); cpp_step(); jax.block_until_ready(None)
+    dsl_step()
+    cpp_step()
+    jax.block_until_ready(None)
 
     # Performance
     pallas_ms = _time_fn(dsl_step)
@@ -257,16 +258,12 @@ def test_solve_scheme_vs_cpp(blockamr_session, scheme):
     ratio = pallas_ms / cpp_ms
 
     print(f"\n{scheme.type}+Lap solve {N}^3:")
-    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, "
-          f"ratio: {ratio:.2f}x")
-    assert ratio < 10.0, (
-        f"{scheme.type}+Lap {ratio:.1f}x C++ — expected < 10x")
+    print(f"  Pallas: {pallas_ms:.3f} ms, C++: {cpp_ms:.3f} ms, ratio: {ratio:.2f}x")
+    assert ratio < 10.0, f"{scheme.type}+Lap {ratio:.1f}x C++ — expected < 10x"
 
     # Correctness: result should be bounded and non-NaN
     for arr in phi.mf[0].arrays():
         vals = arr[:, :, :, 0]
-        assert not bool(jnp.any(jnp.isnan(vals))), \
-            f"{scheme.type}: NaN in DSL result"
+        assert not bool(jnp.any(jnp.isnan(vals))), f"{scheme.type}: NaN in DSL result"
         max_val = float(jnp.max(jnp.abs(vals)))
-        assert max_val < 10.0, \
-            f"{scheme.type}: result unbounded (max={max_val})"
+        assert max_val < 10.0, f"{scheme.type}: result unbounded (max={max_val})"

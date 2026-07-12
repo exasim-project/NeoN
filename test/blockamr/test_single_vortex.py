@@ -15,7 +15,7 @@ time-dependent velocity is captured correctly.
 import math
 
 import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
+from neon.blockamr.field import CellField
 from neon.blockamr.mesh import Mesh
 from neon.blockamr.dsl import exp, solve
 from neon.blockamr.operators.div import build_face_fluxes, update_face_fluxes
@@ -80,8 +80,7 @@ def test_single_vortex_advection():
     def vel(x, y, z, t):
         return _vortex_velocity(x, y, z, t, period=period)
 
-    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
-                           max_size=max_size)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0, max_size=max_size)
 
     u_max = 2.0
     dt = cfl * min(dx) / u_max
@@ -93,7 +92,7 @@ def test_single_vortex_advection():
             dt = period - t
         update_face_fluxes(ff[0], vel, geom, t)
         expr = exp.ddt(phi) + exp.div(ff, phi)
-        solve(expr, t, dt)
+        solve(expr, t=t, dt=dt)
         t += dt
         nsteps += 1
 
@@ -153,15 +152,14 @@ def test_conservation():
     def vel(x, y, z, t):
         return _vortex_velocity(x, y, z, t, period=2.0)
 
-    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0,
-                           max_size=max_size)
+    ff = build_face_fluxes(vel, box, dm, geom, ngrow=ngrow, t=0.0, max_size=max_size)
 
     dt = cfl * min(dx) / 2.0
     t = 0.0
     for _ in range(20):
         update_face_fluxes(ff[0], vel, geom, t)
         expr = exp.ddt(phi) + exp.div(ff, phi)
-        solve(expr, t, dt)
+        solve(expr, t=t, dt=dt)
         t += dt
 
     mass_final = compute_mass()

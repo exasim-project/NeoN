@@ -38,12 +38,14 @@ def _make_cylinder_solver():
     mesh = Mesh(ba, dm, geom)
 
     u_bc = VectorBC(
-        xlo=fixedValue([U0, 0.0, 0.0]), xhi=NeumannBC(),
-        ylo=slip(), yhi=slip(),
+        xlo=fixedValue([U0, 0.0, 0.0]),
+        xhi=NeumannBC(),
+        ylo=slip(),
+        yhi=slip(),
     )
     dt = 0.2 * float(geom.cell_size()[0]) / U0
     eb = {"center": CENTER, "radius": RADIUS, "axis": 2}
-    solver = DSLIncompressibleSolver(mesh, NU, dt, u_bc, eb=eb)
+    solver = DSLIncompressibleSolver(mesh, NU, dt, U_bc=u_bc, eb=eb)
 
     ng = solver.U.mf[0].n_grow()
     g = solver.U.mf[0].grown_arrays()[0]
@@ -54,15 +56,15 @@ def _make_cylinder_solver():
 
 def _valid_u(solver, ng):
     arr = np.array(solver.U.mf[0].arrays()[0])
-    return arr[ng:ng + NX, ng:ng + NY, ng:ng + NZ, :], arr
+    return arr[ng : ng + NX, ng : ng + NY, ng : ng + NZ, :], arr
 
 
 def test_cylinder_mask_matches_geometry(blockamr_session):
     """The solid-cell count matches the analytic disc area (per z-layer)."""
     solver, ng = _make_cylinder_solver()
-    mask = np.array(solver._solid_masks[0][0])[ng:ng + NX, ng:ng + NY, ng:ng + NZ]
+    mask = np.array(solver._solid_masks[0][0])[ng : ng + NX, ng : ng + NY, ng : ng + NZ]
     dx, dy = float(LX / NX), float(LY / NY)
-    expected = np.pi * RADIUS ** 2 / (dx * dy) * NZ
+    expected = np.pi * RADIUS**2 / (dx * dy) * NZ
     # a cell-centre-in-disc mask staircases the boundary — at this coarse
     # resolution (radius ≈ 2.4 cells) it under-counts the smooth area by ~12%.
     assert mask.sum() == pytest.approx(expected, rel=0.2)
@@ -77,7 +79,7 @@ def test_cylinder_wake_and_noslip(blockamr_session):
 
     u, arr = _valid_u(solver, ng)
     ux = u[..., 0]
-    mask = np.array(solver._solid_masks[0][0])[ng:ng + NX, ng:ng + NY, ng:ng + NZ]
+    mask = np.array(solver._solid_masks[0][0])[ng : ng + NX, ng : ng + NY, ng : ng + NZ]
 
     # bounded & finite
     assert np.all(np.isfinite(arr))
@@ -89,10 +91,10 @@ def test_cylinder_wake_and_noslip(blockamr_session):
     # sane wake structure around the body
     ci, cj = int(CENTER[0] / LX * NX), int(CENTER[1] / LY * NY)
     rc = int(RADIUS / LX * NX)
-    u_wake = float(np.mean(ux[ci + rc + 2:ci + rc + 6, cj - 2:cj + 2, :]))
-    u_flank = float(np.mean(ux[ci - 2:ci + 2, cj + rc + 1:cj + rc + 3, :]))
-    u_stag = float(np.mean(ux[ci - rc - 4:ci - rc - 1, cj - 2:cj + 2, :]))
+    u_wake = float(np.mean(ux[ci + rc + 2 : ci + rc + 6, cj - 2 : cj + 2, :]))
+    u_flank = float(np.mean(ux[ci - 2 : ci + 2, cj + rc + 1 : cj + rc + 3, :]))
+    u_stag = float(np.mean(ux[ci - rc - 4 : ci - rc - 1, cj - 2 : cj + 2, :]))
 
-    assert u_wake < 0.6 * U0        # wake deficit behind the body
-    assert u_flank > 1.05 * U0      # accelerated over the flanks
-    assert u_stag < 0.9 * U0        # decelerated at the upstream stagnation
+    assert u_wake < 0.6 * U0  # wake deficit behind the body
+    assert u_flank > 1.05 * U0  # accelerated over the flanks
+    assert u_stag < 0.9 * U0  # decelerated at the upstream stagnation
