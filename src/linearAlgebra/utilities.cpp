@@ -101,42 +101,28 @@ Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
-    // for a 3x3 matrix with 7 nnz 4
-    // 0, 2, 5, 7  -> size = 4
-    auto length = Vector<localIdx> {exec, 3 * (in.size() - 1)};
-    fill(length, 0);
-    auto lengthV = length.view();
-
-    // compute the length of each row and stretch it out
-    // [0, 2, 5, 7] -> [2, 2, 2, ..., 2,2,2 ]
-    NeoN::parallelFor(
-        exec,
-        {0, in.size() - 1},
-        NEON_LAMBDA(const localIdx i) {
-            localIdx j = 3 * i;
-            const auto val = inV[i + 1] - inV[i];
-            lengthV[j + 0] = val;
-            lengthV[j + 1] = val;
-            lengthV[j + 2] = val;
-        },
-        "computeUnpackedRowOffs"
-    );
-
-    auto ret = Vector<localIdx> {exec, 3 * (in.size() - 1) + 1};
-    fill(ret, 0);
+    // for a 3x3 matrix with 7 nnz, input is [0, 2, 5, 7] (4 entries = nRows+1)
+    const localIdx nOldRows = static_cast<localIdx>(in.size() - 1);
+    auto ret = Vector<localIdx>(exec, 3 * nOldRows + 1);
     auto retV = ret.view();
 
-    // [2, 2, 2] -> [0, 2, 4, 6, 8]
-    NeoN::parallelScan(
+    // Closed-form expansion: for original row i with offset off and length len,
+    // the 3 expanded rows start at: 3*off, 3*off+len, 3*off+2*len.
+    // The sentinel (last element) is 3*inV[nOldRows].
+    // Example: [0,2,5,7] -> [0,2,4, 6,9,12, 15,17,19, 21]
+    NeoN::parallelFor(
         exec,
-        {1, length.size() + 1},
-        NEON_LAMBDA(const NeoN::localIdx i, NeoN::localIdx& update, const bool final) {
-            update += lengthV[i - 1];
-            if (final)
+        {0, nOldRows + 1},
+        NEON_LAMBDA(const localIdx i) {
+            retV[3 * i] = 3 * inV[i];
+            if (i < nOldRows)
             {
-                retV[i] = update;
+                const localIdx len = inV[i + 1] - inV[i];
+                retV[3 * i + 1] = 3 * inV[i] + len;
+                retV[3 * i + 2] = 3 * inV[i] + 2 * len;
             }
-        }
+        },
+        "computeUnpackedRowOffs"
     );
     return ret;
 }
