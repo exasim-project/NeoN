@@ -34,6 +34,10 @@ TEST_CASE("inletOutlet_volume")
         auto boundary =
             fvcc::VolumeBoundaryFactory<NeoN::scalar>::create("inletOutlet", mesh, dict, 0);
 
+        // fixesValue=true: GaussGreenGrad uses value() for snGrad, giving the correct
+        // Dirichlet gradient on inflow faces and zero gradient on outflow faces.
+        REQUIRE(boundary->attributes().fixesValue == true);
+
         // === inflow (phi < 0): Dirichlet inletValue ============================
         {
             auto field =
