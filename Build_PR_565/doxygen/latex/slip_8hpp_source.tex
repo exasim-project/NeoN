@@ -20,62 +20,50 @@
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00016}00016\ \{}
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00017}00017\ }
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00018}00018\ \textcolor{comment}{//\ Slip\ is\ a\ frictionless-\/wall\ boundary\ condition:\ scalar\ =>\ zero-\/gradient,\ vector\ =>\ tangential}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00019}00019\ \textcolor{comment}{//\ projection\ +\ normal\ damping.\ It\ shares\ its\ implementation\ with\ Symmetry\ via}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00019}00019\ \textcolor{comment}{//\ projection\ +\ deferred\ normal\ damping.\ It\ shares\ its\ implementation\ with\ Symmetry\ via}}
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00020}00020\ \textcolor{comment}{//\ detail::setSlipSymmetryValue;\ the\ two\ differ\ only\ in\ the\ registered\ name\ and\ in\ where\ they\ may\ be}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00021}00021\ \textcolor{comment}{//\ applied\ (slip\ on\ wall/patch\ types,\ symmetry\ on\ a\ symmetry-\/plane\ patch).\ The\ optional\ "{}implicit"{}}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00022}00022\ \textcolor{comment}{//\ key\ selects\ the\ normal-\/damping\ treatment.}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00023}00023\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00024}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{00024}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{Slip}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Slip<ValueType>>}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00025}00025\ \{}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Slip<ValueType>}}>;}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00027}00027\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00028}00028\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00029}00029\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00031}00031\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00032}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a5b9c744cad8f699a55a2bc5e947b9679}{00032}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{SlipType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{Slip<ValueType>}};}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00033}00033\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00034}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a64eb64ce584da2d42813e203c5f50e2a}{00034}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a64eb64ce584da2d42813e203c5f50e2a}{Slip}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00035}00035\ \ \ \ \ \ \ \ \ :\ Base(}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00036}00036\ \ \ \ \ \ \ \ \ \ \ \ \ mesh,}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \ \ \ \ dict,}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ patchID,}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ \{.assignable\ =\ \textcolor{keyword}{false},}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ .fixesValue\ =\ \textcolor{keyword}{false},}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ .transformImplicit\ =\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa1b62e12928cc3869c00b94b0359a31d}{detail::readTransformImplicit}}(dict)\}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ ),}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ mesh\_(mesh),\ implicit\_(\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_aa1b62e12928cc3869c00b94b0359a31d}{detail::readTransformImplicit}}(dict))}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00044}00044\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00021}00021\ \textcolor{comment}{//\ applied\ (slip\ on\ wall/patch\ types,\ symmetry\ on\ a\ symmetry-\/plane\ patch).}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00022}00022\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00023}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{00023}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{Slip}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Slip<ValueType>>}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Slip<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00027}00027\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00031}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a5b9c744cad8f699a55a2bc5e947b9679}{00031}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{SlipType}}\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip}{Slip<ValueType>}};}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00033}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a64eb64ce584da2d42813e203c5f50e2a}{00033}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a64eb64ce584da2d42813e203c5f50e2a}{Slip}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00034}00034\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{false},\ .fixesValue\ =\ \textcolor{keyword}{false}\}),\ mesh\_(mesh)}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00035}00035\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_af19c9f74ef6f7b86eadef45079ddd65d}{00037}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_af19c9f74ef6f7b86eadef45079ddd65d}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00038}00038\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a88d7f7d30a895f29f329bde606784613}{detail::setSlipSymmetryValue}}(domainVector,\ mesh\_,\ this-\/>range());}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00040}00040\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_adbd0766cedf9b997d3a96d887867427e}{00042}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_adbd0766cedf9b997d3a96d887867427e}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}slip"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a38eb399c23d8800a0bd1b6491800109f}{00044}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a38eb399c23d8800a0bd1b6491800109f}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_adbd0766cedf9b997d3a96d887867427e}{name}}();\ \}}
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00045}00045\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_af19c9f74ef6f7b86eadef45079ddd65d}{00046}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_af19c9f74ef6f7b86eadef45079ddd65d}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a7c7df88c2ea48bb3d49bebe516d3dfdc}{00046}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a7c7df88c2ea48bb3d49bebe516d3dfdc}{doc}}()}
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00047}00047\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4d8ed8bc4e9f796c4d3068c5a88f3abe}{detail::setSlipSymmetryValue}}(}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,\ mesh\_,\ this-\/>range(),\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_a4857f8d14e6706a3bdf5dfc5205bf685}{detail::normalDampingMode}}(implicit\_)}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00051}00051\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Slip\ wall\ (scalar:\ zero-\/gradient;\ vector:\ tangential\ projection\ +\ normal\ damping)."{}};}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00049}00049\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00051}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d30ea9fdfa60a78382a22a9ad8ff53}{00051}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d30ea9fdfa60a78382a22a9ad8ff53}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00052}00052\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_adbd0766cedf9b997d3a96d887867427e}{00053}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_adbd0766cedf9b997d3a96d887867427e}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}slip"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00054}00054\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00055}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a38eb399c23d8800a0bd1b6491800109f}{00055}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a38eb399c23d8800a0bd1b6491800109f}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_adbd0766cedf9b997d3a96d887867427e}{name}}();\ \}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00056}00056\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a7c7df88c2ea48bb3d49bebe516d3dfdc}{00057}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a7c7df88c2ea48bb3d49bebe516d3dfdc}{doc}}()}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00058}00058\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Slip\ wall\ (scalar:\ zero-\/gradient;\ vector:\ tangential\ projection\ +\ normal\ damping)."{}};}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00060}00060\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00061}00061\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d30ea9fdfa60a78382a22a9ad8ff53}{00062}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d30ea9fdfa60a78382a22a9ad8ff53}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d7bccadbcf9d441076666d700155ea}{00064}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d7bccadbcf9d441076666d700155ea}{clone}}()\ const\ final}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00065}00065\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Slip>(*\textcolor{keyword}{this});}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00067}00067\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00068}00068\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00069}00069\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00070}00070\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{keywordtype}{bool}\ implicit\_;}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00073}00073\ \};}
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00075}00075\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00053}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d7bccadbcf9d441076666d700155ea}{00053}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1Slip_a05d7bccadbcf9d441076666d700155ea}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00054}00054\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Slip>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00056}00056\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00058}00058\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00061}00061\ \};}
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{slip_8hpp_source_l00063}00063\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
 
 \end{DoxyCode}
