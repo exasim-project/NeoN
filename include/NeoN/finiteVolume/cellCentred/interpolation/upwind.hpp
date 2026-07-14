@@ -95,10 +95,7 @@ public:
         computeUpwindInterpolationWeights(faceFlux, src, weights);
     }
 
-    InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& /*flux*/) const override
-    {
-        return UpwindInlineKernel {};
-    }
+    InlineWeightKernel inlineWeightKernel() const override { return UpwindInlineKernel {}; }
 
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
     {

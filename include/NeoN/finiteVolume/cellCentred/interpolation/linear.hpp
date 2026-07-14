@@ -85,7 +85,7 @@ public:
     }
 
 
-    InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& /*flux*/) const override
+    InlineWeightKernel inlineWeightKernel() const override
     {
         const SurfaceField<scalar>& w = geometryScheme_->weights();
         return LinearInlineKernel {w.internalVector().view(), w.boundaryData().value().view()};

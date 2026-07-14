@@ -98,32 +98,80 @@ void computeDivExp(
 {
     const UnstructuredMesh& mesh = phi.mesh();
     const auto exec = phi.exec();
-    SurfaceField<ValueType> phif(
-        exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+
+    // Corrected schemes (e.g. linearUpwind) compute interpolate() = weight*phi + correction in one
+    // pass; fall back to allocating phif so correction() is included in the face value.
+    if (surfInterp.corrected())
+    {
+        SurfaceField<ValueType> phif(
+            exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+        );
+        surfInterp.interpolate(faceFlux, phi, phif);
+        phif.boundaryData().value() = phi.boundaryData().value();
+        computeDiv<ValueType>(
+            exec,
+            nInternalFaces,
+            nBoundaryFaces,
+            mesh.faceNeighbors().view(),
+            mesh.faceOwners().view(),
+            mesh.boundaryMesh().faceOwners().view(),
+            faceFlux.internalVector().view(),
+            faceFlux.boundaryData().value().view(),
+            phif.internalVector().view(),
+            phif.boundaryData().value().view(),
+            mesh.cellVolumes().view(),
+            divPhi.view(),
+            operatorScaling
+        );
+        return;
+    }
+
+    // Non-corrected schemes: fuse face-value computation into the divergence kernels,
+    // eliminating the temporary phif SurfaceField allocation.
+    const auto [fluxV, ownV, neiV] =
+        views(faceFlux.internalVector(), mesh.faceOwners(), mesh.faceNeighbors());
+    const auto [bFluxV, bFaceOwnersV] =
+        views(faceFlux.boundaryData().value(), mesh.boundaryMesh().faceOwners());
+    const auto phiV = phi.internalVector().view();
+    const auto bPhiV = phi.boundaryData().value().view();
+    const auto volV = mesh.cellVolumes().view();
+    auto resV = divPhi.view();
+
+    std::visit(
+        [&](auto&& kernel)
+        {
+            parallelFor(
+                exec,
+                {0, nInternalFaces},
+                NEON_LAMBDA(const localIdx i) {
+                    const auto w = kernel.weight(i, fluxV[i]);
+                    const ValueType phiF = w * phiV[ownV[i]] + (scalar(1) - w) * phiV[neiV[i]];
+                    const ValueType flux = fluxV[i] * phiF;
+                    Kokkos::atomic_add(&resV[ownV[i]], flux);
+                    Kokkos::atomic_sub(&resV[neiV[i]], flux);
+                },
+                "sumFluxesInternal"
+            );
+        },
+        surfInterp.inlineWeightKernel()
     );
-    // TODO: remove or implement
-    // fill(phif.internalVector(), NeoN::zero<ValueType>::value);
-    surfInterp.interpolate(faceFlux, phi, phif);
 
-    // TODO: currently we just copy the boundary values over
-    phif.boundaryData().value() = phi.boundaryData().value();
-
-    auto nInternalFaces = mesh.nInternalFaces();
-    auto nBoundaryFaces = mesh.nBoundaryFaces();
-    computeDiv<ValueType>(
+    parallelFor(
         exec,
-        nInternalFaces,
-        nBoundaryFaces,
-        mesh.faceNeighbors().view(),
-        mesh.faceOwners().view(),
-        mesh.boundaryMesh().faceOwners().view(),
-        faceFlux.internalVector().view(),
-        faceFlux.boundaryData().value().view(),
-        phif.internalVector().view(),
-        phif.boundaryData().value().view(),
-        mesh.cellVolumes().view(),
-        divPhi.view(),
-        operatorScaling
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            Kokkos::atomic_add(&resV[bFaceOwnersV[bfi]], bFluxV[bfi] * bPhiV[bfi]);
+        },
+        "sumFluxesBoundary"
+    );
+
+    parallelFor(
+        exec,
+        {0, static_cast<localIdx>(volV.size())},
+        NEON_LAMBDA(const localIdx celli) { resV[celli] *= operatorScaling[celli] / volV[celli]; },
+        "normalizeFluxes"
     );
 }
 
@@ -508,7 +556,7 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     const dsl::Coeff operatorScaling
 ) const
 {
-    const auto inlineKernel = surfaceInterpolation_.inlineWeightKernel(faceFlux);
+    const auto inlineKernel = surfaceInterpolation_.inlineWeightKernel();
     std::visit(
         [&](auto&& kernel)
         {

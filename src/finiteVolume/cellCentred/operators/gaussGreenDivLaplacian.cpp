@@ -319,7 +319,7 @@ void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*s
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
+    const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel();
     std::visit(
         [&](auto&& kernel)
         {
@@ -374,7 +374,7 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
 ) const
     requires(!std::is_same_v<ValueType, scalar>)
 {
-    const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
+    const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel();
     std::visit(
         [&](auto&& kernel)
         {

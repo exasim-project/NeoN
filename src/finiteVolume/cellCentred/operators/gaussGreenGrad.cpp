@@ -17,19 +17,16 @@ namespace NeoN::finiteVolume::cellCentred
 ** @param[in] in - Vector on which the gradient should be computed
 ** @param[in,out] out - Vector to hold the result
 */
+template<typename WeightKernel>
 void computeGrad(
     const VolumeField<scalar>& in,
-    const SurfaceInterpolation<scalar>& surfInterp,
+    const WeightKernel& wKernel,
     Vector<Vec3>& out,
     const dsl::Coeff operatorScaling
 )
 {
     const UnstructuredMesh& mesh = in.mesh();
     const auto exec = out.exec();
-    SurfaceField<scalar> phif(
-        exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
-    );
-    surfInterp.interpolate(in, phif);
 
     auto surfGradPhi = out.view();
 
@@ -40,54 +37,57 @@ void computeGrad(
         mesh.faceNormals(),
         mesh.cellVolumes()
     );
-    const auto surfPhif = phif.internalVector().view();
-    const auto surfPhifB = phif.boundaryData().value().view();
+    const auto phiV = in.internalVector().view();
+    const auto bPhiV = in.boundaryData().value().view();
 
-    auto nInternalFaces = mesh.nInternalFaces();
-    auto nBoundaryFaces = mesh.nBoundaryFaces();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
 
     // Green-Gauss gradient theorem: ∇φ_C = (1/V_C) * sum_f S_f * φ_f
     //
-    // S_f points from owner to neighbour by construction (valid for all internal faces).
-    //   owner cell:     S_f is the outward area vector  →  +S_f * φ_f  (add)
-    //   neighbour cell: S_f points inward to neighbour  → −S_f * φ_f  (subtract)
-    // TODO use NeoN::atomic_
+    // S_f points from owner to neighbour by construction.
+    //   owner cell:     +S_f * φ_f  (add)
+    //   neighbour cell: −S_f * φ_f  (subtract)
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Vec3 flux = faceNormals[i] * surfPhif[i];
-            Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);    // +S_f * φ_f
-            Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux); // −S_f * φ_f
+            const auto w = wKernel.weight(i, scalar(0));
+            const scalar phiF = w * phiV[faceOwners[i]] + (scalar(1) - w) * phiV[faceNeighbors[i]];
+            const Vec3 flux = faceNormals[i] * phiF;
+            Kokkos::atomic_add(&surfGradPhi[faceOwners[i]], flux);
+            Kokkos::atomic_sub(&surfGradPhi[faceNeighbors[i]], flux);
         },
         "computeGradInternal"
     );
 
-    // Boundary faces: only the owner cell is on this rank.
+    // Physical boundary: linear interpolation gives w_b * phi_bc at the face.
     const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
-            auto own = boundaryFaceOwners[bfi];
-            Vec3 valueOwn = bFaceNormals[bfi] * surfPhifB[bfi];
-            Kokkos::atomic_add(&surfGradPhi[own], valueOwn);
+            const auto own = boundaryFaceOwners[bfi];
+            const auto w = wKernel.boundaryWeight(bfi, scalar(0));
+            Kokkos::atomic_add(&surfGradPhi[own], bFaceNormals[bfi] * (w * bPhiV[bfi]));
         },
         "computeGradBoundary"
     );
 
-    auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
+    const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
     {
+        // Proc boundary: interpolate between local owner and ghost cell value.
         const auto bSf = mesh.boundaryMesh().faceNormals().view();
         parallelFor(
             exec,
             {0, nProcBoundaryFaces},
             NEON_LAMBDA(const localIdx procFacei) {
-                auto bcfacei = nBoundaryFaces + procFacei;
-                auto own = boundaryFaceOwners[bcfacei];
-                Vec3 flux = bSf[bcfacei] * surfPhifB[bcfacei];
-                Kokkos::atomic_add(&surfGradPhi[own], flux);
+                const auto bcfacei = nBoundaryFaces + procFacei;
+                const auto own = boundaryFaceOwners[bcfacei];
+                const auto w = wKernel.procBoundaryWeight(bcfacei, scalar(0));
+                const scalar phiF = w * phiV[own] + (scalar(1) - w) * bPhiV[bcfacei];
+                Kokkos::atomic_add(&surfGradPhi[own], bSf[bcfacei] * phiF);
             },
             "computeProcGradBoundary"
         );
@@ -203,7 +203,10 @@ void GaussGreenGrad::grad(
     const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
 ) const
 {
-    computeGrad(phi, surfaceInterpolation_, gradPhi, operatorScaling);
+    std::visit(
+        [&](auto&& kernel) { computeGrad(phi, kernel, gradPhi, operatorScaling); },
+        surfaceInterpolation_.inlineWeightKernel()
+    );
 };
 
 void GaussGreenGrad::grad(
@@ -211,8 +214,10 @@ void GaussGreenGrad::grad(
 ) const
 {
     fill(gradPhi.internalVector(), zero<Vec3>());
-
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    std::visit(
+        [&](auto&& kernel) { computeGrad(phi, kernel, gradPhi.internalVector(), operatorScaling); },
+        surfaceInterpolation_.inlineWeightKernel()
+    );
     computeBoundaryGrad(phi, gradPhi, operatorScaling);
 }
 
@@ -225,7 +230,10 @@ GaussGreenGrad::grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorSc
     auto gradBCs = createCalculatedProcBCs<VolumeBoundary<Vec3>>(phi.mesh());
     VolumeField<Vec3> gradPhi = VolumeField<Vec3>(phi.exec(), "gradPhi", phi.mesh(), gradBCs);
     fill(gradPhi.internalVector(), zero<Vec3>());
-    computeGrad(phi, surfaceInterpolation_, gradPhi.internalVector(), operatorScaling);
+    std::visit(
+        [&](auto&& kernel) { computeGrad(phi, kernel, gradPhi.internalVector(), operatorScaling); },
+        surfaceInterpolation_.inlineWeightKernel()
+    );
     computeBoundaryGrad(phi, gradPhi, operatorScaling);
     return gradPhi;
 }
@@ -244,18 +252,16 @@ void atomicSubTensor(Tensor* target, size_t row, size_t col, scalar value)
     Kokkos::atomic_sub(&(*target)(row, col), value);
 }
 
+template<typename WeightKernel>
 void computeGradTensor(
     const VolumeField<Vec3>& u,
-    const SurfaceInterpolation<Vec3>& surfInterpVec,
+    const WeightKernel& wKernel,
     Vector<Tensor>& gradU,
     const dsl::Coeff operatorScaling
 )
 {
     const UnstructuredMesh& mesh = u.mesh();
     const auto exec = gradU.exec();
-
-    SurfaceField<Vec3> uf(exec, "Uf", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh));
-    surfInterpVec.interpolate(u, uf);
 
     auto gT = gradU.view();
 
@@ -266,8 +272,8 @@ void computeGradTensor(
         mesh.cellVolumes(),
         mesh.boundaryMesh().faceOwners()
     );
-    const auto ufInt = uf.internalVector().view();
-    const auto ufBound = uf.boundaryData().value().view();
+    const auto uInt = u.internalVector().view();
+    const auto uBound = u.boundaryData().value().view();
 
     const localIdx nInt = mesh.nInternalFaces();
     const localIdx nBnd = mesh.nBoundaryFaces();
@@ -277,9 +283,10 @@ void computeGradTensor(
         {0, nInt},
         NEON_LAMBDA(const localIdx f) {
             const Vec3 sf = SfAll[f];
-            const Vec3 faceU = ufInt[f];
             const auto o = owner[f];
             const auto n = nei[f];
+            const auto w = wKernel.weight(f, scalar(0));
+            const Vec3 faceU = w * uInt[o] + (scalar(1) - w) * uInt[n];
             // gradU(row,col) += Sf[col] * U[row]  (Gauss-Green)
             for (size_t row = 0; row < 3; ++row)
             {
@@ -294,6 +301,7 @@ void computeGradTensor(
         "computeGradTensorInternal"
     );
 
+    // Physical boundary: linear interpolation gives w_b * u_bc at the face.
     const auto bFaceNormals = mesh.boundaryMesh().faceNormals().view();
     parallelFor(
         exec,
@@ -301,7 +309,8 @@ void computeGradTensor(
         NEON_LAMBDA(const localIdx bi) {
             const auto o = bFaceCells[bi];
             const Vec3 sf = bFaceNormals[bi];
-            const Vec3 faceU = ufBound[bi];
+            const auto w = wKernel.boundaryWeight(bi, scalar(0));
+            const Vec3 faceU = w * uBound[bi];
             for (size_t row = 0; row < 3; ++row)
             {
                 for (size_t col = 0; col < 3; ++col)
@@ -313,12 +322,9 @@ void computeGradTensor(
         "computeGradTensorBoundary"
     );
 
-    // Processor faces: add the proc-face flux to the owner cell's gradient, exactly as the scalar
-    // computeGradScalar does. This block was MISSING from the tensor path, so the cell gradient at
-    // every processor-adjacent cell omitted its proc-face contribution — corrupting the Vec3
-    // corrected/limited snGrad at proc-adjacent internal faces (the uncorrected scheme, which does
-    // not use the cell gradient, was unaffected). Proc faces are compressed: use the boundary
-    // mesh's own faceNormals indexed by nBoundaryFaces+procFacei, NOT the OF-full SfAll.
+    // Proc boundary: interpolate between local owner and ghost cell value.
+    // Proc faces are compressed: use the boundary mesh's faceNormals indexed by
+    // nBoundaryFaces+procFacei, NOT the OF-full SfAll.
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     if (nProcBoundaryFaces > 0)
     {
@@ -330,7 +336,8 @@ void computeGradTensor(
                 const auto bcfacei = nBnd + procFacei;
                 const auto o = bFaceCells[bcfacei];
                 const Vec3 sf = bSf[bcfacei];
-                const Vec3 faceU = ufBound[bcfacei];
+                const auto w = wKernel.procBoundaryWeight(bcfacei, scalar(0));
+                const Vec3 faceU = w * uInt[o] + (scalar(1) - w) * uBound[bcfacei];
                 for (size_t row = 0; row < 3; ++row)
                 {
                     for (size_t col = 0; col < 3; ++col)
@@ -417,7 +424,11 @@ void GaussGreenGrad::gradTensor(
 ) const
 {
     fill(gradU.internalVector(), zero<Tensor>());
-    computeGradTensor(u, surfaceInterpolationVec_, gradU.internalVector(), operatorScaling);
+    std::visit(
+        [&](auto&& kernel)
+        { computeGradTensor(u, kernel, gradU.internalVector(), operatorScaling); },
+        surfaceInterpolationVec_.inlineWeightKernel()
+    );
     computeBoundaryGradTensor(u, gradU);
 }
 
@@ -429,8 +440,11 @@ GaussGreenGrad::gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operator
     auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(u.mesh());
     VolumeField<Tensor> gradU(u.exec(), "gradU", u.mesh(), calcBC);
     fill(gradU.internalVector(), zero<Tensor>());
-
-    computeGradTensor(u, surfaceInterpolationVec_, gradU.internalVector(), operatorScaling);
+    std::visit(
+        [&](auto&& kernel)
+        { computeGradTensor(u, kernel, gradU.internalVector(), operatorScaling); },
+        surfaceInterpolationVec_.inlineWeightKernel()
+    );
     computeBoundaryGradTensor(u, gradU);
     return gradU;
 }
