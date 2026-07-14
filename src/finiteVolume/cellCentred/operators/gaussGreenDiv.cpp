@@ -87,6 +87,32 @@ void computeDiv(
     );
 }
 
+template<typename WeightKernel, typename ValueType>
+void computeDivExpFusedInternal(
+    const Executor& exec,
+    localIdx nInternalFaces,
+    const WeightKernel& kernel,
+    View<const scalar> fluxV,
+    View<const localIdx> ownV,
+    View<const localIdx> neiV,
+    View<const ValueType> phiV,
+    View<ValueType> resV
+)
+{
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx i) {
+            const auto w = kernel.weight(i, fluxV[i]);
+            const ValueType phiF = w * phiV[ownV[i]] + (scalar(1) - w) * phiV[neiV[i]];
+            const ValueType flux = fluxV[i] * phiF;
+            Kokkos::atomic_add(&resV[ownV[i]], flux);
+            Kokkos::atomic_sub(&resV[neiV[i]], flux);
+        },
+        "sumFluxesInternal"
+    );
+}
+
 template<typename ValueType>
 void computeDivExp(
     const SurfaceField<scalar>& faceFlux,
@@ -140,20 +166,8 @@ void computeDivExp(
     auto resV = divPhi.view();
 
     std::visit(
-        [&](auto&& kernel)
-        {
-            parallelFor(
-                exec,
-                {0, nInternalFaces},
-                NEON_LAMBDA(const localIdx i) {
-                    const auto w = kernel.weight(i, fluxV[i]);
-                    const ValueType phiF = w * phiV[ownV[i]] + (scalar(1) - w) * phiV[neiV[i]];
-                    const ValueType flux = fluxV[i] * phiF;
-                    Kokkos::atomic_add(&resV[ownV[i]], flux);
-                    Kokkos::atomic_sub(&resV[neiV[i]], flux);
-                },
-                "sumFluxesInternal"
-            );
+        [&](auto&& kernel) {
+            computeDivExpFusedInternal(exec, nInternalFaces, kernel, fluxV, ownV, neiV, phiV, resV);
         },
         surfInterp.inlineWeightKernel()
     );
