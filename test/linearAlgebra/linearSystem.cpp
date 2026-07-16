@@ -115,6 +115,36 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(linearSystem.getMeshIterator()->name() == "CellBased");
     }
 
+    // Regression: each boundary face must land on its own owner cell, not another one --
+    // CooSparsityPattern::view() briefly exposed row-range data here instead.
+    SECTION("removeBoundaryContributions applies each correction to its own owner cell " + execName)
+    {
+        auto nCells = 4;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar>(mesh);
+
+        REQUIRE(ls.boundaryMatrix().values().size() == 2);
+        Vector<scalar> boundaryValues(exec, {10.0, 20.0});
+        ls.boundaryMatrix().values() = boundaryValues;
+
+        auto bRowIdxsHost = ls.boundaryMatrix().sparsity()->rowIdxs().copyToHost();
+        auto owner0 = bRowIdxsHost.view()[0];
+        auto owner1 = bRowIdxsHost.view()[1];
+        REQUIRE(owner0 != owner1); // sanity: the two boundary faces belong to different cells
+
+        auto lsNoBnd = NeoN::la::removeBoundaryContributions(ls);
+        auto diagHost = lsNoBnd.matrix().diag().copyToHost();
+        auto diagView = diagHost.view();
+
+        for (localIdx i = 0; i < nCells; ++i)
+        {
+            scalar expected = 0.0;
+            if (i == owner0) expected += 10.0;
+            if (i == owner1) expected += 20.0;
+            REQUIRE(diagView[i] == expected);
+        }
+    }
+
 
     SECTION("view read/write " + execName)
     {

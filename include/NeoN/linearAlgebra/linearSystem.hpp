@@ -438,7 +438,8 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
  *
  * @note templated on the full LinearSystem parameter set so it also accepts the segregated
  * vector-solve form (scalar matrix, Vec3 rhs): the scalar boundary diagonal is reversed on the
- * scalar matrix while the rhs reversal uses the field (RHS) value type. **/
+ * scalar matrix while the rhs reversal uses the field (RHS) value type.
+ * @note BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). **/
 template<
     typename MatrixValueType,
     typename RHSValueType,
@@ -449,6 +450,7 @@ removeBoundaryContributions(
     const la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>&
         lsIn
 )
+    requires requires(const BoundaryMatrixType& bm) { bm.sparsity()->rowIdxs(); }
 {
     auto ls =
         la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>(lsIn);
@@ -459,12 +461,14 @@ removeBoundaryContributions(
     auto& bRhs = lsView.boundaryRhs;
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    // Per-face owner cell -- bMatrix.sparsity.rowOffs is CSR-style range data, not a cell index.
+    const auto bRowIdxs = ls.boundaryMatrix().sparsity()->rowIdxs().view();
 
     parallelFor(
         ls.exec(),
         {0, bMatrix.values.size()},
         NEON_LAMBDA(const localIdx facei) {
-            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+            const auto celli = bRowIdxs[facei];
             Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
             Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
         },
