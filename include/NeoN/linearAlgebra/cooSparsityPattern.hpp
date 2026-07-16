@@ -66,17 +66,24 @@ public:
 
     [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 
+    /*@brief true count of nonzero matrix entries (no padding in COO) */
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
+
+    /*@brief size of the backing storage, identical to nnz() since COO has no padding */
+    [[nodiscard]] localIdx storageSize() const { return colIdxs_.size(); };
 
     [[nodiscard]] Dimensions dimension() const { return dimensions_; };
 
+    using ViewType = SparsityView<IndexType>;
+
     /**
      * @brief Get a view representation of the matrix's data.
-     * @return MatrixView for easy access to matrix elements.
+     * @return MatrixView for easy access to matrix elements. Backed by rowOffs_,
+     * not rowIdxs_ -- entry()/findEntry() need row-range offsets.
      */
     [[nodiscard]] SparsityView<IndexType> view() const
     {
-        return SparsityView<IndexType>(colIdxs_.view(), rowIdxs_.view());
+        return SparsityView<IndexType>(colIdxs_.view(), rowOffs_.view());
     }
 
 private:
