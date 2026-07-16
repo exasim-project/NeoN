@@ -18,8 +18,8 @@ that finishes the forward-Euler step lives in :class:`~.backends.cpp_backend.Cpp
 
 def _bindings():
     # Lazy: keeps this module import-safe during package init (schemes import it
-    # at load time, before ``neon.blockamr`` has finished initialising).
-    import neon.blockamr as blockamr
+    # at load time, before ``blockamr`` has finished initialising).
+    import blockamr
 
     return blockamr
 

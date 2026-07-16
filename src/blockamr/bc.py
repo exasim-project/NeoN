@@ -8,7 +8,7 @@ Provides Dirichlet and Neumann ghost-cell filling for CellFields
 on domains with solid walls.
 """
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 class DirichletBC:

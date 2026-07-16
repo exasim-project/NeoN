@@ -26,7 +26,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-import neon.blockamr as blockamr
+import blockamr
 import bench_backends as bb
 
 # 2D sweep: vary cell count (n_cell) AND box size (max_size). max_size must

@@ -17,11 +17,11 @@ Also covers the mesh-owned IBM restructure (API doc §6, plan 04):
 import numpy as np
 import pytest
 
-import neon.blockamr as blockamr
-from neon.blockamr.bc import VectorBC, fixedValue, NeumannBC, slip
-from neon.blockamr.incompressible import build_incompressible, step
-from neon.blockamr.ibm import IBM, Cylinder, DirectForcing
-from neon.blockamr.mesh import AmrMesh, Mesh
+import blockamr
+from blockamr.bc import VectorBC, fixedValue, NeumannBC, slip
+from blockamr.incompressible import build_incompressible, step
+from blockamr.ibm import IBM, Cylinder, DirectForcing
+from blockamr.mesh import AmrMesh, Mesh
 
 U0 = 1.0
 D = 0.2

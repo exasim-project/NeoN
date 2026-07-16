@@ -7,7 +7,7 @@
 import numpy as np
 import pytest
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 def _make_mesh(n_cell=32, max_size=16):

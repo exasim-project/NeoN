@@ -14,14 +14,14 @@ import math
 import pytest
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.operators.div import Div
-from neon.blockamr.operators.interpolate import interpolate
-from neon.blockamr.dsl import exp, evaluate
-from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.field import CellField, FaceField
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.operators.div import Div
+from blockamr.operators.interpolate import interpolate
+from blockamr.dsl import exp, evaluate
+from blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
 
 PI = math.pi
 TWO_PI = 2.0 * PI

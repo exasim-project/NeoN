@@ -9,12 +9,12 @@ import math
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.dsl import exp, imp, solve
-from neon.blockamr.operators.interpolate import interpolate
-from neon.blockamr.operators.correct import correct
+import blockamr
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh
+from blockamr.dsl import exp, imp, solve
+from blockamr.operators.interpolate import interpolate
+from blockamr.operators.correct import correct
 
 
 def _make_mesh(N, max_size=None):

@@ -26,14 +26,14 @@ os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.dsl import exp, solve, imp
-from neon.blockamr.bc import VectorBC, fixedValue, noSlip
-from neon.blockamr.fillpatch import FillPatchWithBC
-from neon.blockamr.operators.interpolate import interpolate
-from neon.blockamr.operators.correct import correct
+import blockamr
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh
+from blockamr.dsl import exp, solve, imp
+from blockamr.bc import VectorBC, fixedValue, noSlip
+from blockamr.fillpatch import FillPatchWithBC
+from blockamr.operators.interpolate import interpolate
+from blockamr.operators.correct import correct
 
 
 def run(N_cells=64, Re=100, cfl=0.25, n_steps=5000, plot_interval=500, max_size=64, plotfile=True):

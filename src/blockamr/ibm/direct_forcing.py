@@ -10,7 +10,7 @@ from dataclasses import dataclass, field as _dc_field
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 @dataclass

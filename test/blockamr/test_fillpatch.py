@@ -4,7 +4,7 @@
 
 import numpy as np
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 def test_bcrec_periodic():

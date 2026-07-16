@@ -9,20 +9,20 @@ import math
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.dsl import exp, imp, solve
-from neon.blockamr.bc import (
+import blockamr
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh
+from blockamr.dsl import exp, imp, solve
+from blockamr.bc import (
     BoundaryCondition,
     DirichletBC,
     VectorBC,
     fixedValue,
     noSlip,
 )
-from neon.blockamr.fillpatch import FillPatchWithBC
-from neon.blockamr.operators.interpolate import interpolate
-from neon.blockamr.operators.correct import correct
+from blockamr.fillpatch import FillPatchWithBC
+from blockamr.operators.interpolate import interpolate
+from blockamr.operators.correct import correct
 
 
 # ---------------------------------------------------------------------------
@@ -368,7 +368,7 @@ def test_dsl_solver_lid_cavity_physical(blockamr_session):
     After 500 steps at Re=100, velocity should be bounded, non-zero,
     and show lid-driven flow structure.
     """
-    from neon.blockamr.incompressible import build_incompressible, step
+    from blockamr.incompressible import build_incompressible, step
 
     N = 16
     Re = 100

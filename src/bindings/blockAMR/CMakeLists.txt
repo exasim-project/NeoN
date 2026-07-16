@@ -51,24 +51,25 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     PROPERTIES LANGUAGE CUDA)
 endif()
 
-# Set RPATH so _blockamr.so can find libamrex at ../../lib/
-set_target_properties(_blockamr PROPERTIES INSTALL_RPATH "$ORIGIN/../../lib" BUILD_WITH_INSTALL_RPATH
-                                                                              FALSE)
+# Set RPATH so _blockamr.so can find libamrex at ../lib/ (blockamr is a
+# top-level package: site-packages/blockamr/_blockamr.so -> ../lib).
+set_target_properties(_blockamr PROPERTIES INSTALL_RPATH "$ORIGIN/../lib" BUILD_WITH_INSTALL_RPATH
+                                                                          FALSE)
 
 # Installation
 if(DEFINED SKBUILD)
-  install(TARGETS _blockamr LIBRARY DESTINATION neon/blockamr COMPONENT python)
+  install(TARGETS _blockamr LIBRARY DESTINATION blockamr COMPONENT python)
   # CMAKE_CURRENT_SOURCE_DIR (this dir = src/bindings/blockAMR) not
   # CMAKE_SOURCE_DIR: when NeoN is add_subdirectory()'d into neofoam,
   # CMAKE_SOURCE_DIR is the neofoam root and the blockamr .py sources are missed.
   install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../neon/blockamr/
-    DESTINATION neon/blockamr
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../blockamr/
+    DESTINATION blockamr
     COMPONENT python
     FILES_MATCHING
     PATTERN "*.py")
   # Install AMReX shared lib alongside the wheel
   install(TARGETS amrex_3d LIBRARY DESTINATION lib COMPONENT python)
 else()
-  install(TARGETS _blockamr LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon/blockamr)
+  install(TARGETS _blockamr LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/blockamr)
 endif()

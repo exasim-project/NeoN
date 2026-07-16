@@ -4,9 +4,9 @@
 
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh, Mesh
-from neon.blockamr.field import FaceField
+import blockamr
+from blockamr.mesh import AmrMesh, Mesh
+from blockamr.field import FaceField
 
 
 def _make_mesh(ncell=32, max_size=32):

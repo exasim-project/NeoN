@@ -5,7 +5,7 @@
 import os
 import shutil
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 def test_write_multilevel_plotfile(tmp_path):

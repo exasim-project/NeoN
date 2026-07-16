@@ -10,15 +10,15 @@ import equinox as eqx
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField
-from neon.blockamr.flattened_boxes import BucketContext, flattened_boxes_from_mf
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.operators.div import Div, build_face_fluxes
-from neon.blockamr.operators.laplacian import Laplacian
-from neon.blockamr.schemes.div_schemes import Upwind, VanLeer
-from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
-from neon.blockamr.cell_kernels import CellLaplacianKernel
+import blockamr
+from blockamr.field import CellField
+from blockamr.flattened_boxes import BucketContext, flattened_boxes_from_mf
+from blockamr.mesh import Mesh
+from blockamr.operators.div import Div, build_face_fluxes
+from blockamr.operators.laplacian import Laplacian
+from blockamr.schemes.div_schemes import Upwind, VanLeer
+from blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
+from blockamr.cell_kernels import CellLaplacianKernel
 
 
 def _make_mesh(n_cell=32, max_size=32):
@@ -71,7 +71,7 @@ def _make_bucket(cell_field, lev=0):
     dh = tuple(float(d) for d in cell_field.mesh.geom(lev).cell_size())
     n_boxes = len(meta)
     box_indices = tuple(range(n_boxes))
-    from neon.blockamr.flattened_boxes import _cell_tier
+    from blockamr.flattened_boxes import _cell_tier
 
     n_cells = (Nx - 2 * ng) * (Ny - 2 * ng) * (Nz - 2 * ng)
     return BucketContext(
@@ -178,7 +178,7 @@ class TestLaplacianSchemeBuildKernel:
 
 class TestEquationSubDoesNotMutate:
     def test_sub_preserves_original_coeff(self):
-        from neon.blockamr.dsl.equation import Equation
+        from blockamr.dsl.equation import Equation
 
         mesh, box, dm, geom = _make_mesh()
         phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")

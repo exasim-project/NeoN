@@ -7,9 +7,9 @@
 import jax
 import jax.numpy as jnp
 
-from neon.blockamr.flattened_boxes import FlattenedBoxes, BucketContext, build_buckets
-from neon.blockamr.cell_kernels import CellLaplacianKernel
-from neon.blockamr.bucket_dispatch import process_bucket
+from blockamr.flattened_boxes import FlattenedBoxes, BucketContext, build_buckets
+from blockamr.cell_kernels import CellLaplacianKernel
+from blockamr.bucket_dispatch import process_bucket
 
 
 # ---------------------------------------------------------------------------
@@ -31,7 +31,7 @@ def _make_quad_box(Nx, Ny, Nz, dx=1.0):
 def _make_bucket(cell_buf, offsets_list, Nx, Ny, Nz, ng, dh=(1.0, 1.0, 1.0),
                  n_pad=None):
     """Create a BucketContext for uniform-shape boxes."""
-    from neon.blockamr.flattened_boxes import _cell_tier
+    from blockamr.flattened_boxes import _cell_tier
     n = len(offsets_list)
     pad = n_pad or n
     dummy_off = offsets_list[0] if offsets_list else 0
@@ -96,7 +96,7 @@ def test_bucket_context_is_jax_pytree():
 # ---------------------------------------------------------------------------
 
 def test_process_bucket_laplacian():
-    from neon.blockamr.flattened_boxes import _cell_tier
+    from blockamr.flattened_boxes import _cell_tier
     Nx, Ny, Nz, ng = 6, 6, 4, 1
     n_pad = 4
     box_size = Nx * Ny * Nz
@@ -273,7 +273,7 @@ def test_cell_accessor_traced_dims():
     If JAX can't trace through the modular arithmetic (cell_idx % vNx with
     traced vNx), the entire approach is blocked.
     """
-    from neon.blockamr.cell_accessor import CellAccessor
+    from blockamr.cell_accessor import CellAccessor
 
     Nx, Ny, Nz, ng = 6, 6, 4, 1
     box = _make_quad_box(Nx, Ny, Nz)  # u = i^2 + j^2 + k^2
@@ -309,7 +309,7 @@ def test_cell_accessor_traced_dims():
 
 def test_cell_accessor_traced_no_recompile():
     """Calling with different Nx, Ny, Nz values does not recompile."""
-    from neon.blockamr.cell_accessor import CellAccessor
+    from blockamr.cell_accessor import CellAccessor
 
     ng = 1
 
@@ -343,7 +343,7 @@ def test_cell_accessor_traced_no_recompile():
 
 def test_cell_accessor_traced_vmap():
     """CellAccessor works inside vmap with traced Nx, Ny, Nz."""
-    from neon.blockamr.cell_accessor import CellAccessor
+    from blockamr.cell_accessor import CellAccessor
 
     Nx, Ny, Nz, ng = 6, 6, 4, 1
     n_cells = (Nx - 2*ng) * (Ny - 2*ng) * (Nz - 2*ng)

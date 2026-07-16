@@ -14,11 +14,11 @@ time-dependent velocity is captured correctly.
 
 import math
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import build_face_fluxes, update_face_fluxes
+import blockamr
+from blockamr.field import CellField
+from blockamr.mesh import Mesh
+from blockamr.dsl import exp, solve
+from blockamr.operators.div import build_face_fluxes, update_face_fluxes
 
 import numpy as np
 

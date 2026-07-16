@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: MIT
 
 import numpy as np
-import neon.blockamr as blockamr
-from neon.blockamr.bc import DirichletBC, NeumannBC, BoundaryCondition
-from neon.blockamr.field import CellField
-from neon.blockamr.fillpatch import FillPatchWithBC
-from neon.blockamr.mesh import Mesh
+import blockamr
+from blockamr.bc import DirichletBC, NeumannBC, BoundaryCondition
+from blockamr.field import CellField
+from blockamr.fillpatch import FillPatchWithBC
+from blockamr.mesh import Mesh
 
 
 def _make_nonperiodic_mesh(n=8, max_size=8):
@@ -138,7 +138,7 @@ def test_pressure_domain_bc_inlet_outlet(blockamr_session):
     LinOpBCType: velocity-Dirichlet face (inlet/wall) -> pressure Neumann,
     velocity-Neumann face (outflow) -> pressure Dirichlet, periodic -> Periodic.
     """
-    from neon.blockamr.bc import (
+    from blockamr.bc import (
         pressure_domain_bc, VectorBC, fixedValue, noSlip, NeumannBC,
     )
 
@@ -169,7 +169,7 @@ def test_pressure_domain_bc_inlet_outlet(blockamr_session):
 def test_pressure_domain_bc_all_walls_all_neumann(blockamr_session):
     """A fully-walled (lid-cavity-style) domain has no outflow, so every
     non-periodic pressure face is Neumann (the closed/singular case)."""
-    from neon.blockamr.bc import pressure_domain_bc, VectorBC, fixedValue, noSlip
+    from blockamr.bc import pressure_domain_bc, VectorBC, fixedValue, noSlip
 
     box = blockamr.Box([0, 0, 0], [7, 7, 7])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])

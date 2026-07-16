@@ -15,13 +15,13 @@ import jax
 import jax.numpy as jnp
 import pytest
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.operators.div import Div, update_face_fluxes
-from neon.blockamr.dsl import exp
-from neon.blockamr.dsl.solve import solve, evaluate
-from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.field import CellField, FaceField
+from blockamr.operators.div import Div, update_face_fluxes
+from blockamr.dsl import exp
+from blockamr.dsl.solve import solve, evaluate
+from blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
 
 
 # ---------------------------------------------------------------------------

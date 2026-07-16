@@ -12,11 +12,11 @@ wall, which drives every component to zero at the face.
 
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.bc import BoundaryCondition, NeumannBC, SlipBC, noSlip
-from neon.blockamr.field import CellField
-from neon.blockamr.fillpatch import FillPatchWithBC
-from neon.blockamr.mesh import Mesh
+import blockamr
+from blockamr.bc import BoundaryCondition, NeumannBC, SlipBC, noSlip
+from blockamr.field import CellField
+from blockamr.fillpatch import FillPatchWithBC
+from blockamr.mesh import Mesh
 
 N = 8
 NG = 1

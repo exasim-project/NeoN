@@ -7,13 +7,13 @@
 import numpy as np
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh, AmrMesh
-from neon.blockamr.field import CellField
-from neon.blockamr.incompressible import build_incompressible, max_velocity, regrid_fields, step
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.operators.interpolate import interpolate
-from neon.blockamr.schemes.div_schemes import VanLeer
+import blockamr
+from blockamr.mesh import Mesh, AmrMesh
+from blockamr.field import CellField
+from blockamr.incompressible import build_incompressible, max_velocity, regrid_fields, step
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.operators.interpolate import interpolate
+from blockamr.schemes.div_schemes import VanLeer
 
 
 def _shear_layer_ic(mf, geom, rho=30.0, delta=0.05):
@@ -319,9 +319,9 @@ def test_face_flux_divergence_bounded(blockamr_session):
 
 def test_momentum_solve_max_size_independence(blockamr_session):
     """Momentum solve with interpolated face velocity must not depend on max_size."""
-    from neon.blockamr.dsl.solve import solve
-    from neon.blockamr.dsl import exp
-    from neon.blockamr.field import FaceField
+    from blockamr.dsl.solve import solve
+    from blockamr.dsl import exp
+    from blockamr.field import FaceField
 
     N, Nz = 32, 4
 

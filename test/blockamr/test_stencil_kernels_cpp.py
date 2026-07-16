@@ -15,9 +15,9 @@ the jax backend is covered separately in slice 3.
 import numpy as np
 import pytest
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.field import CellField, FaceField
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.field import CellField, FaceField
 
 
 def _make_mesh(N):

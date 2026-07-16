@@ -7,17 +7,17 @@
 import jax
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.field import CellField
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.flattened_boxes import (
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.field import CellField
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.flattened_boxes import (
     FlattenedBoxes,
     flattened_boxes_from_mf,
     build_buckets,
 )
-from neon.blockamr.cell_kernels import CellLaplacianKernel
-from neon.blockamr.bucket_dispatch import process_bucket
+from blockamr.cell_kernels import CellLaplacianKernel
+from blockamr.bucket_dispatch import process_bucket
 
 
 def _make_periodic_mesh(N, Nz=None, max_size=None):
@@ -104,7 +104,7 @@ def test_bucket_dispatch_with_real_multifab_simple():
     meta = mf.fab_metadata()
 
     # Single box: check that CellAccessor reads the correct center value
-    from neon.blockamr.cell_accessor import CellAccessor
+    from blockamr.cell_accessor import CellAccessor
     Nx_g, Ny_g, Nz_g = meta[0][1], meta[0][2], meta[0][3]
 
     # cell_idx=0 → (ng, ng, ng) in grown box = valid cell (0,0,0) in global coords

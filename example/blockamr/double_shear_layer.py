@@ -35,18 +35,18 @@ os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = str(0.25)
 
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh, AmrMesh
-from neon.blockamr.field import CellField
-from neon.blockamr.incompressible import (
+import blockamr
+from blockamr.mesh import Mesh, AmrMesh
+from blockamr.field import CellField
+from blockamr.incompressible import (
     build_incompressible,
     max_velocity,
     regrid_fields,
     step,
     write_plotfile,
 )
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.schemes.div_schemes import VanLeer
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.schemes.div_schemes import VanLeer
 
 
 def init_double_shear_layer(mf, geom, rho=80.0, delta=0.05):
@@ -232,7 +232,7 @@ def run(
             )
             total_cells += lev_cells
 
-    from neon.blockamr.dsl.solve import BF
+    from blockamr.dsl.solve import BF
 
     print(f"Double shear layer: N={N_cells}, Re={Re}, CFL={cfl}, dt={dt:.6f}, nu={nu:.8f}")
     print(f"  rho={rho}, delta={delta}, max_level={max_level}, max_size={max_size}")

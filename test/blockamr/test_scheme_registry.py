@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: MIT
 
 import pytest
-from neon.blockamr.schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
-from neon.blockamr.schemes.div_schemes import Linear, QUICK, Upwind, VanLeer
-from neon.blockamr.schemes.grad_schemes import CentralDiffGrad
-from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
-from neon.blockamr.schemes.registry import lookup_scheme, resolve
+from blockamr.schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
+from blockamr.schemes.div_schemes import Linear, QUICK, Upwind, VanLeer
+from blockamr.schemes.grad_schemes import CentralDiffGrad
+from blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
+from blockamr.schemes.registry import lookup_scheme, resolve
 
 
 @pytest.mark.parametrize(

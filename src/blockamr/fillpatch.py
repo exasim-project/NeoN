@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 class FillPatchCellConservative:

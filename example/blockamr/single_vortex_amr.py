@@ -21,13 +21,13 @@ os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import AmrFaceFluxUpdater, Div
-from neon.blockamr.schemes.div_schemes import VanLeer
+import blockamr
+from blockamr.mesh import AmrMesh
+from blockamr.field import CellField, FaceField
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.dsl import exp, solve
+from blockamr.operators.div import AmrFaceFluxUpdater, Div
+from blockamr.schemes.div_schemes import VanLeer
 
 
 def vortex_velocity(x, y, z, t, period=2.0):

@@ -27,7 +27,7 @@ from typing import Any, Optional
 
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
+import blockamr
 from .bc import pressure_domain_bc
 from .dsl import exp, imp
 from .dsl.equation import Equation

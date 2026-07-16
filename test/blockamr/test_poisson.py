@@ -6,8 +6,8 @@
 
 import math
 import numpy as np
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
+import blockamr
+from blockamr.mesh import Mesh
 
 
 def _make_mesh(n, is_per=None):

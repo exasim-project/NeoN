@@ -9,7 +9,7 @@ on two identically-seeded CellFields — one with ``solution={"backend":"jax"}``
 one with ``{"backend":"cpp"}`` — for every div scheme × ncomp × mesh. The
 resulting fields must agree to ``atol=1e-12, rtol=1e-9``.
 
-Tolerance rationale: ``jax_enable_x64=True`` (``src/neon/blockamr/__init__.py``)
+Tolerance rationale: ``jax_enable_x64=True`` (``src/blockamr/__init__.py``)
 makes *both* backends float64, so the only difference is float64 summation
 order (composable accumulate-then-axpy vs the fused ``FusedEulerKernel``). The
 step size ``dt`` is a negative power of two so that ``dt_over_coeff`` is exactly
@@ -22,13 +22,13 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-import neon.blockamr as blockamr
-from neon.blockamr.dsl import exp, solve
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.mesh import AmrMesh, Mesh
-from neon.blockamr.operators.div import Div, update_face_fluxes
-from neon.blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
+import blockamr
+from blockamr.dsl import exp, solve
+from blockamr.field import CellField, FaceField
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.mesh import AmrMesh, Mesh
+from blockamr.operators.div import Div, update_face_fluxes
+from blockamr.schemes.div_schemes import QUICK, Linear, Upwind, VanLeer
 
 # dt = 2**-2 → dt_over_coeff exactly representable as float32 (see module docstring).
 DT = 0.25

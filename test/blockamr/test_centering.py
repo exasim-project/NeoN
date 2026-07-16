@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 def test_index_type_default_is_cell_centered():

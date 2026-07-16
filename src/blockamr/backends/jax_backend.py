@@ -9,7 +9,7 @@ import jax.numpy as jnp
 from jax.experimental import pallas as pl
 from jax.experimental.pallas import triton as plt
 
-import neon.blockamr as blockamr
+import blockamr
 import equinox as eqx
 from ..cell_kernels_3d import FusedEulerKernel, CombinedSource
 from ..flat_refs import FlatCellRef

@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
+import blockamr
 import numpy as np
-from neon.blockamr.field import Field
+from blockamr.field import Field
 
 
 def _make_periodic_setup(n_cell=64, max_size=32, ngrow=1):

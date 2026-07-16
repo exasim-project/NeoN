@@ -4,11 +4,11 @@
 
 import math
 
-import neon.blockamr as blockamr
+import blockamr
 import jax.numpy as jnp
-from neon.blockamr.field import CellField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.operators.source import Source
+from blockamr.field import CellField
+from blockamr.mesh import Mesh
+from blockamr.operators.source import Source
 
 
 def _make_mesh(n_cell=64, max_size=32):

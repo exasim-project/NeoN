@@ -4,7 +4,7 @@
 
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
+import blockamr
 from ..field import FaceField
 from ..flattened_boxes import FlattenedFaceBoxes
 from ..mesh import Mesh

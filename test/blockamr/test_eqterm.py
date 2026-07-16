@@ -2,14 +2,14 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
+import blockamr
 import numpy as np
 import pytest
-from neon.blockamr.field import CellField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.dsl import exp, imp, EqTerm, Equation
-from neon.blockamr.dsl.exp import CellDivergence
-from neon.blockamr.operators.div import build_face_fluxes
+from blockamr.field import CellField
+from blockamr.mesh import Mesh
+from blockamr.dsl import exp, imp, EqTerm, Equation
+from blockamr.dsl.exp import CellDivergence
+from blockamr.operators.div import build_face_fluxes
 
 
 def _make_mesh(n_cell=16, max_size=16):

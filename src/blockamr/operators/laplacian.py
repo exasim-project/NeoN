@@ -4,7 +4,7 @@
 
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
+import blockamr
 from ..schemes.laplacian_schemes import CentralDiffLaplacian
 from ..dsl.eqterm import EqTerm
 

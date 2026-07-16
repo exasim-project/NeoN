@@ -11,12 +11,12 @@ is crossed), forcing JAX to retrace every JIT-compiled function.
 
 import jax
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.dsl import exp, solve
-from neon.blockamr.operators.div import Div
-from neon.blockamr.schemes.div_schemes import Upwind
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.field import CellField, FaceField
+from blockamr.dsl import exp, solve
+from blockamr.operators.div import Div
+from blockamr.schemes.div_schemes import Upwind
 
 
 # ---------------------------------------------------------------------------

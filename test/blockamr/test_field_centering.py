@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.field import CellField, FaceField, NodalField
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.field import CellField, FaceField, NodalField
 
 
 def _make_mesh(n=64, max_size=32):

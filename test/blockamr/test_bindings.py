@@ -6,7 +6,7 @@ import math
 import os
 import shutil
 
-import neon.blockamr as blockamr
+import blockamr
 import jax.numpy as jnp
 import numpy as np
 

@@ -20,12 +20,12 @@ silent jax fallback.
 
 Dispatch mirrors the jax backend: each term's cpp kernel is owned by its
 **scheme** via ``build_cpp_kernel()`` (peer of ``build_spatial_kernel()``),
-returning a wrapper from :mod:`~neon.blockamr.cpp_kernels`. This backend just
+returning a wrapper from :mod:`~blockamr.cpp_kernels`. This backend just
 asks every op's scheme for its kernel and applies it — no per-term ``if/elif``,
 no scheme-name-to-binding table.
 """
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 class CppBackend:

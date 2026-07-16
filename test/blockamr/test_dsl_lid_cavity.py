@@ -5,10 +5,10 @@
 """Lid-driven cavity validation using the DSL solver against Ghia et al. (1982)."""
 
 import numpy as np
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.bc import VectorBC, fixedValue, noSlip
-from neon.blockamr.incompressible import build_incompressible, step
+import blockamr
+from blockamr.mesh import Mesh
+from blockamr.bc import VectorBC, fixedValue, noSlip
+from blockamr.incompressible import build_incompressible, step
 
 
 # Ghia et al. (1982), Table I — Re=100

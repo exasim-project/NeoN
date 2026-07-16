@@ -6,18 +6,18 @@ import math
 
 import pytest
 
-import neon.blockamr as blockamr
+import blockamr
 import jax
 import jax.numpy as jnp
 import numpy as np
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh, AmrMesh
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.operators.div import Div, build_face_fluxes, _fill_face_component
-from neon.blockamr.operators.div import update_face_fluxes
-from neon.blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
-from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
-from neon.blockamr.bucket_dispatch import process_bucket
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh, AmrMesh
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.operators.div import Div, build_face_fluxes, _fill_face_component
+from blockamr.operators.div import update_face_fluxes
+from blockamr.schemes.div_schemes import Upwind, Linear, VanLeer, QUICK
+from blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
+from blockamr.bucket_dispatch import process_bucket
 
 
 def _make_mesh(n_cell=64, max_size=32):
@@ -291,7 +291,7 @@ _CPP_DIV = {
 
 def _run_dsl_evaluate(phi, ff, scheme, geom):
     """Run DSL evaluate for div(ff, phi) and return the output MultiFab."""
-    from neon.blockamr.dsl.solve import evaluate
+    from blockamr.dsl.solve import evaluate
     div_op = Div(ff, phi, scheme=scheme)
     results = evaluate(div_op, t=0.0)
     return results
@@ -377,7 +377,7 @@ def test_div_analytical_multi_box():
     Analytical: div(U*phi) = 2π*cos(2πx)*sin(2πy)*sin(2πz)
     Upwind: first-order accurate, so check within O(dx).
     """
-    from neon.blockamr.dsl.solve import evaluate
+    from blockamr.dsl.solve import evaluate
 
     n_cell, max_size = 32, 8
     mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=max_size)
@@ -435,11 +435,11 @@ def test_euler_step_analytical_multi_box():
             = sin3d - dt * [2π*cos*sin*sin + nu*12π²*sin3d]  (Upwind approx)
     Check that the MultiFab values after parallel_for match.
     """
-    from neon.blockamr.dsl.solve import parallel_for
-    from neon.blockamr.operators.laplacian import Laplacian
-    from neon.blockamr.tiled_context import TiledContext
-    from neon.blockamr.cell_kernels_3d import FusedEulerKernel
-    from neon.blockamr.fillpatch import FillPatchCellConservative
+    from blockamr.dsl.solve import parallel_for
+    from blockamr.operators.laplacian import Laplacian
+    from blockamr.tiled_context import TiledContext
+    from blockamr.cell_kernels_3d import FusedEulerKernel
+    from blockamr.fillpatch import FillPatchCellConservative
 
     n_cell, max_size = 32, 8
     mesh, box, dm, geom = _make_mesh(n_cell=n_cell, max_size=max_size)
