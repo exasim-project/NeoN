@@ -7,6 +7,7 @@
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/ellSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 namespace NeoN::la
@@ -56,15 +57,15 @@ struct MatrixView
     KOKKOS_INLINE_FUNCTION
     ValueType& entry(const localIdx offset) const { return values[offset]; }
 
-    View<ValueType> values; //!< View to the values of the CSR matrix.
+    View<ValueType> values; //!< View to the non-zero values of the matrix.
     SparsityViewType sparsity;
 };
 
 /**
  * @class Matrix
- * @brief Sparse matrix class with compact storage by row (CSR) format.
+ * @brief Sparse matrix class, generic over its sparsity storage format (CSR, COO, ELL, ...).
  * @tparam ValueType The value type of the non-zero entries.
- * @tparam IndexType The index type of the rows and columns.
+ * @tparam SparsityType The sparsity pattern type backing this matrix, e.g. CsrSparsityPattern.
  */
 template<typename ValueType, typename SparsityType>
 class Matrix : public NeoN::SupportsCopyTo<Matrix<ValueType, SparsityType>>
@@ -73,8 +74,9 @@ class Matrix : public NeoN::SupportsCopyTo<Matrix<ValueType, SparsityType>>
     void validate()
     {
         NF_ASSERT(values_.exec() == sparsityPattern_->exec(), "Executors are not the same");
-        // TODO this is not necessarily true for matrix types with padding like ELL
-        NF_ASSERT(values_.size() == sparsityPattern_->nnz(), "Matrix values and columns mismatch");
+        NF_ASSERT(
+            values_.size() == sparsityPattern_->storageSize(), "Matrix values and columns mismatch"
+        );
     }
 
 public:
@@ -94,7 +96,8 @@ public:
     }
 
     /**
-     * @brief Constructor for Matrix.
+     * @brief Constructor for Matrix from a CSR/COO-shaped (colIdxs, rowOffs) pair.
+     * Not available for ELL -- use the two-argument constructor instead.
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
@@ -105,6 +108,11 @@ public:
         const Vector<typename SparsityType::SparsityIndexType>& rowOffs,
         Dimensions dimensions
     )
+        requires requires(
+                     Vector<typename SparsityType::SparsityIndexType> c,
+                     Vector<typename SparsityType::SparsityIndexType> r,
+                     Dimensions d
+                 ) { SparsityType(std::move(c), std::move(r), d); }
         : values_(values),
           sparsityPattern_(
               std::make_shared<const SparsityType>(Vector(colIdxs), Vector(rowOffs), dimensions)
@@ -117,7 +125,8 @@ public:
      * @brief Constructor for Matrix with a FaceToMatrixAddress.
      *
      * The sparsity pattern and the face-to-matrix address are passed as independent objects.
-     * Only available for matrices whose index type is localIdx.
+     * Only available for localIdx-indexed, rowOffs()-capable sparsity types -- FaceToMatrixAddress
+     * offsets are CSR row-local and don't apply to ELL.
      *
      * @param values The non-zero values of the matrix.
      * @param sparsity The sparsity pattern of the matrix.
@@ -128,7 +137,8 @@ public:
         std::shared_ptr<const SparsityType> sparsity,
         std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress
     )
-        requires std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
+        requires(std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
+                 && requires(const SparsityType& sp) { sp.rowOffs(); })
         : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
     {
         validate();
@@ -176,10 +186,12 @@ public:
     }
 
     /**
-     * @brief Get a reference to row offset vector.
+     * @brief Get a reference to row offset vector. Not available for ELL -- no
+     * contiguous row range to offset into.
      * @return Vector containing the row pointers.
      */
     [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& rowOffs() const
+        requires requires(const SparsityType& sp) { sp.rowOffs(); }
     {
         return sparsityPattern_->rowOffs();
     }
@@ -215,10 +227,9 @@ public:
      * @brief Get a view representation of the matrix's data.
      * @return MatrixView for easy access to matrix elements.
      */
-    [[nodiscard]] MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>
-    view()
+    [[nodiscard]] MatrixView<ValueType, typename SparsityType::ViewType> view()
     {
-        return MatrixView<ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
+        return MatrixView<ValueType, typename SparsityType::ViewType>(
             values_.view(), sparsityPattern_->view()
         );
     }
@@ -227,12 +238,9 @@ public:
      * @brief Get a const view representation of the matrix's data.
      * @return Const MatrixView for read-only access to matrix elements.
      */
-    [[nodiscard]] MatrixView<
-        const ValueType,
-        SparsityView<typename SparsityType::SparsityIndexType>>
-    view() const
+    [[nodiscard]] MatrixView<const ValueType, typename SparsityType::ViewType> view() const
     {
-        return MatrixView<const ValueType, SparsityView<typename SparsityType::SparsityIndexType>>(
+        return MatrixView<const ValueType, typename SparsityType::ViewType>(
             View<const ValueType>(values_.view()), sparsityPattern_->view()
         );
     }
@@ -245,7 +253,7 @@ public:
 
 private:
 
-    Vector<ValueType> values_; //!< The (non-zero) values of the CSR matrix.
+    Vector<ValueType> values_; //!< The (non-zero) values of the matrix.
 
     std::shared_ptr<const SparsityType> sparsityPattern_;
 
@@ -258,6 +266,9 @@ using CSRMatrix = Matrix<ValueType, la::CsrSparsityPattern<IndexType>>;
 
 template<typename ValueType, typename IndexType>
 using COOMatrix = Matrix<ValueType, la::CooSparsityPattern<IndexType>>;
+
+template<typename ValueType, typename IndexType>
+using ELLMatrix = Matrix<ValueType, la::EllSparsityPattern<IndexType>>;
 
 /** @brief extract the upper triangular of the matrix
  * @note this function is meant for testing purposes, it will recompute upper offsets

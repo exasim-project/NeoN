@@ -35,17 +35,29 @@ public:
     /* @brief create a copy of a given EllSparsityPattern */
     EllSparsityPattern(const EllSparsityPattern& sp);
 
+    /**
+     * @brief construct from a fully-built padded, column-major colIdx array.
+     * @param colIdx per-slot column indices, sorted ascending within each row's slots,
+     * with padding (EllSparsityView<IndexType>::invalidIndex()) trailing. Not verified.
+     * @param logicalNnz count of non-padding entries in colIdx. Caller-supplied and
+     * trusted, not recomputed from colIdx -- only checked against storage size.
+     */
     EllSparsityPattern(
         Vector<IndexType>&& colIdx,
         Dimensions dim,
         localIdx numStoredElementsPerRow,
-        localIdx stride
+        localIdx stride,
+        localIdx logicalNnz
     );
 
     [[nodiscard]] EllSparsityPattern copyToExecutor(Executor dstExec) const override
     {
         return EllSparsityPattern<IndexType>(
-            colIdxs_.copyToExecutor(dstExec), dimensions_, numStoredElementsPerRow_, stride_
+            colIdxs_.copyToExecutor(dstExec),
+            dimensions_,
+            numStoredElementsPerRow_,
+            stride_,
+            logicalNnz_
         );
     }
 
@@ -54,10 +66,9 @@ public:
     /*@brief getter for executor */
     const Executor& exec() const { return colIdxs_.exec(); }
 
-    /*@brief getter for colIdxs */
+    /*@brief const-only getter for colIdxs -- ELL patterns are immutable after construction
+     * so nnz() can't desync from the stored columns */
     [[nodiscard]] const Vector<IndexType>& colIdxs() const { return colIdxs_; };
-
-    [[nodiscard]] Vector<IndexType>& colIdxs() { return colIdxs_; };
 
     [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 
@@ -65,9 +76,12 @@ public:
      * @brief size of the (padded) storage backing this pattern, i.e. the size
      * `values_` of a `Matrix` built on top of this pattern must have.
      * @note unlike CSR, this includes padding entries and is therefore not the
-     * count of logical/non-zero matrix entries.
+     * count of logical/non-zero matrix entries -- see nnz().
      */
-    [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
+    [[nodiscard]] localIdx storageSize() const { return colIdxs_.size(); };
+
+    /*@brief true count of logical (non-padding) nonzero matrix entries */
+    [[nodiscard]] localIdx nnz() const { return logicalNnz_; };
 
     /*@brief number of column-index slots stored per row, including padding */
     [[nodiscard]] localIdx numStoredElementsPerRow() const { return numStoredElementsPerRow_; };
@@ -76,6 +90,8 @@ public:
     [[nodiscard]] localIdx stride() const { return stride_; };
 
     [[nodiscard]] Dimensions dimension() const { return dimensions_; };
+
+    using ViewType = EllSparsityView<IndexType>;
 
     /**
      * @brief Get a view representation of the matrix's data.
@@ -100,6 +116,8 @@ private:
     localIdx numStoredElementsPerRow_; //! width of the widest row, i.e. slots stored per row
 
     localIdx stride_; //! distance between slot s and slot s+1 of the same row
+
+    localIdx logicalNnz_; //! true count of non-padding nonzero entries, <= storageSize()
 };
 
 } // namespace NeoN::la
