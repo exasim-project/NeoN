@@ -3,6 +3,7 @@
 {\ttfamily \#include "{}Neo\+N/core/vector/vector.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/coo\+Sparsity\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/csr\+Sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/ell\+Sparsity\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/linear\+Algebra/face\+To\+Matrix\+Address.\+hpp"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
@@ -10,7 +11,7 @@
 struct \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Neo\+N\+::la\+::\+Matrix\+View$<$ Value\+Type, Sparsity\+View\+Type $>$}}
 \begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} view struct to allow easy read/write on all executors. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Neo\+N\+::la\+::\+Matrix$<$ Value\+Type, Sparsity\+Type $>$}}
-\begin{DoxyCompactList}\small\item\em Sparse matrix class with compact storage by row (CSR) format. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Sparse matrix class, generic over its sparsity storage format (CSR, COO, ELL, ...). \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
@@ -24,6 +25,8 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
 {\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\using \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{Neo\+N\+::la\+::\+CSRMatrix}} = \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$
 \item 
 {\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\using \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{Neo\+N\+::la\+::\+COOMatrix}} = \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern}{la\+::\+Coo\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$
+\item 
+{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\using \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{Neo\+N\+::la\+::\+ELLMatrix}} = \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{la\+::\+Ell\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}

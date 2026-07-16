@@ -95,6 +95,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8ef95591fb8a134c0006baff1c019f7d" id="r_a8ef95591fb8a134c0006baff1c019f7d"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a8ef95591fb8a134c0006baff1c019f7d">linearIndex</a> (const IndexType i, const IndexType slot) const</td></tr>
 <tr class="memdesc:a8ef95591fb8a134c0006baff1c019f7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flat storage offset of slot <code>slot</code> of row <code>i</code> (column-major layout).  <br /></td></tr>
 <tr class="separator:a8ef95591fb8a134c0006baff1c019f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14067f67899d32c5e12af0f66a2f17be" id="r_a14067f67899d32c5e12af0f66a2f17be"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a14067f67899d32c5e12af0f66a2f17be">findEntry</a> (const IndexType i, const IndexType j) const</td></tr>
+<tr class="memdesc:a14067f67899d32c5e12af0f66a2f17be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the storage offset of the matrix element at position (i,j).  <br /></td></tr>
+<tr class="separator:a14067f67899d32c5e12af0f66a2f17be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13940cecfefc3590d4b8360c395f920a" id="r_a13940cecfefc3590d4b8360c395f920a"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a13940cecfefc3590d4b8360c395f920a">entry</a> (const IndexType i, const IndexType j) const</td></tr>
 <tr class="memdesc:a13940cecfefc3590d4b8360c395f920a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the storage offset of the matrix element at position (i,j).  <br /></td></tr>
 <tr class="separator:a13940cecfefc3590d4b8360c395f920a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,7 +129,7 @@ struct NeoN::la::EllSparsityView&lt; IndexType &gt;</div><p><a class="el" href="
 </dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>ideally this should be immutable </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00078">78</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00100">100</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a80469c2f2f6cceef0b0d19150d8f0527" name="a80469c2f2f6cceef0b0d19150d8f0527"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80469c2f2f6cceef0b0d19150d8f0527">&#9670;&#160;</a></span>EllSparsityView()</h2>
@@ -170,7 +173,7 @@ template&lt;typename IndexType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00080">80</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00102">102</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -221,7 +224,58 @@ template&lt;typename IndexType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Flat offset into colIdxs/values if it exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00108">108</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00151">151</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a14067f67899d32c5e12af0f66a2f17be" name="a14067f67899d32c5e12af0f66a2f17be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14067f67899d32c5e12af0f66a2f17be">&#9670;&#160;</a></span>findEntry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">KOKKOS_INLINE_FUNCTION IndexType <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html">NeoN::la::EllSparsityView</a>&lt; IndexType &gt;::findEntry </td>
+          <td>(</td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"><em>j</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the storage offset of the matrix element at position (i,j). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>The row index. </td></tr>
+    <tr><td class="paramname">j</td><td>The column index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Flat offset into colIdxs/values if it exists, <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#ade7595799f2b0ed3da6d82fb98b1e243" title="Sentinel column index marking an unused (padding) slot.">invalidIndex()</a> otherwise. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>assumes each row's stored columns are sorted ascending with padding (<a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#ade7595799f2b0ed3da6d82fb98b1e243" title="Sentinel column index marking an unused (padding) slot.">invalidIndex()</a>) trailing; not verified. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00132">132</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -252,7 +306,7 @@ template&lt;typename IndexType &gt; </div>
 
 <p>Sentinel column index marking an unused (padding) slot. </p>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00090">90</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00112">112</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -294,7 +348,7 @@ template&lt;typename IndexType &gt; </div>
 
 <p>Flat storage offset of slot <code>slot</code> of row <code>i</code> (column-major layout). </p>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00096">96</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00118">118</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -313,7 +367,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00121">121</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00161">161</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -331,7 +385,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00122">122</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00162">162</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -349,7 +403,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00123">123</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00163">163</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>

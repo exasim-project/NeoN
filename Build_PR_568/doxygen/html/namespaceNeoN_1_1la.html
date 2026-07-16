@@ -118,7 +118,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classA.html">A</a> view linear into a linear system's data.  <a href="structNeoN_1_1la_1_1LinearSystemView.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Matrix.html">Matrix</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sparse matrix class with compact storage by row (CSR) format.  <a href="classNeoN_1_1la_1_1Matrix.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sparse matrix class, generic over its sparsity storage format (CSR, COO, ELL, ...).  <a href="classNeoN_1_1la_1_1Matrix.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1MatrixView.html">MatrixView</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classA.html">A</a> view struct to allow easy read/write on all executors.  <a href="structNeoN_1_1la_1_1MatrixView.html#details">More...</a><br /></td></tr>
@@ -149,6 +149,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a90174338eaeb88d2f0d55a3dfdb95add" id="r_a90174338eaeb88d2f0d55a3dfdb95add"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename IndexType &gt; </td></tr>
 <tr class="memitem:a90174338eaeb88d2f0d55a3dfdb95add"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a90174338eaeb88d2f0d55a3dfdb95add">COOMatrix</a> = <a class="el" href="classNeoN_1_1la_1_1Matrix.html">Matrix</a>&lt; ValueType, <a class="el" href="classNeoN_1_1la_1_1CooSparsityPattern.html">la::CooSparsityPattern</a>&lt; IndexType &gt; &gt;</td></tr>
 <tr class="separator:a90174338eaeb88d2f0d55a3dfdb95add"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7888e3c591147b90c956b478378cb752" id="r_a7888e3c591147b90c956b478378cb752"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename IndexType &gt; </td></tr>
+<tr class="memitem:a7888e3c591147b90c956b478378cb752"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">ELLMatrix</a> = <a class="el" href="classNeoN_1_1la_1_1Matrix.html">Matrix</a>&lt; ValueType, <a class="el" href="classNeoN_1_1la_1_1EllSparsityPattern.html">la::EllSparsityPattern</a>&lt; IndexType &gt; &gt;</td></tr>
+<tr class="separator:a7888e3c591147b90c956b478378cb752"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -233,7 +236,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00260">260</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00268">268</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -251,7 +254,25 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00257">257</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00265">265</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a7888e3c591147b90c956b478378cb752" name="a7888e3c591147b90c956b478378cb752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7888e3c591147b90c956b478378cb752">&#9670;&#160;</a></span>ELLMatrix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType , typename IndexType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">NeoN::la::ELLMatrix</a> = typedef <a class="el" href="classNeoN_1_1la_1_1Matrix.html">Matrix</a>&lt;ValueType, <a class="el" href="classNeoN_1_1la_1_1EllSparsityPattern.html">la::EllSparsityPattern</a>&lt;IndexType&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00271">271</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -439,7 +460,7 @@ template&lt;unsigned int I&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00309">309</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00320">320</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>

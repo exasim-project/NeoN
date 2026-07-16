@@ -28,7 +28,7 @@ class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}
 struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Linear\+System\+View}}
 \begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}
-\begin{DoxyCompactList}\small\item\em Sparse matrix class with compact storage by row (CSR) format. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Sparse matrix class, generic over its sparsity storage format (CSR, COO, ELL, ...). \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View}}
 \begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} view struct to allow easy read/write on all executors. \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}}
@@ -51,6 +51,8 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 {\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\using \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}} = \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1CsrSparsityPattern}{la\+::\+Csr\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$
 \item 
 {\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\using \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{COOMatrix}} = \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern}{la\+::\+Coo\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$
+\item 
+{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\using \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{ELLMatrix}} = \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{la\+::\+Ell\+Sparsity\+Pattern}}$<$ Index\+Type $>$ $>$
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
@@ -113,7 +115,7 @@ using \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{Ne
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00260}{260}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00268}{268}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}\label{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7} 
 \index{NeoN::la@{NeoN::la}!CSRMatrix@{CSRMatrix}}
@@ -124,7 +126,18 @@ using \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{Ne
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00257}{257}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00265}{265}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}\label{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752} 
+\index{NeoN::la@{NeoN::la}!ELLMatrix@{ELLMatrix}}
+\index{ELLMatrix@{ELLMatrix}!NeoN::la@{NeoN::la}}
+\doxysubsubsection{\texorpdfstring{ELLMatrix}{ELLMatrix}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type $>$ \\
+using \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{Neo\+N\+::la\+::\+ELLMatrix}} = typedef \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$Value\+Type, \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{la\+::\+Ell\+Sparsity\+Pattern}}$<$Index\+Type$>$ $>$}
+
+
+
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00271}{271}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 
 
@@ -192,7 +205,7 @@ auto Neo\+N\+::la\+::get\+Component (\begin{DoxyParamCaption}\item[{const \mbox{
 
 
 
-Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00309}{309}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
+Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00320}{320}} of file \mbox{\hyperlink{matrix_8hpp_source}{matrix.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_a81ea5bf6450cb2402acf9f981d5583ab}\label{namespaceNeoN_1_1la_a81ea5bf6450cb2402acf9f981d5583ab} 
 \index{NeoN::la@{NeoN::la}!negLUx@{negLUx}}

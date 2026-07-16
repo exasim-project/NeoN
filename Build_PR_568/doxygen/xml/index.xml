@@ -347,6 +347,7 @@
   </compound>
   <compound refid="classNeoN_1_1la_1_1CooSparsityPattern" kind="class"><name>NeoN::la::CooSparsityPattern</name>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1af510ff94ab03a293a7a926b695218cdc" kind="typedef"><name>SparsityIndexType</name></member>
+    <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1a5d63317ea570515beb7e9acb6606ff0a" kind="typedef"><name>ViewType</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1a78de669b7fb63da1c198311384fc67c2" kind="variable"><name>dimensions_</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1aea6412ed295e3502d817f424230cc337" kind="variable"><name>rowIdxs_</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1aa2b41194bac28c3fcdb9f4f6e95bc4c5" kind="variable"><name>colIdxs_</name></member>
@@ -365,6 +366,7 @@
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1a19183d43826dd6612ee3bb6825e5e504" kind="function"><name>rowOffs</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1ace998e5c6f0e6494153a357d163b3e07" kind="function"><name>rows</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1a6c42157178613597356289d00f3cff3c" kind="function"><name>nnz</name></member>
+    <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1a613ed8fd2fdd9ec1e28be5481ffde415" kind="function"><name>storageSize</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1acc130ea387bc85ab57ee013828c7f906" kind="function"><name>dimension</name></member>
     <member refid="classNeoN_1_1la_1_1CooSparsityPattern_1a1f48448b94b94ee29e9b0764f53f35db" kind="function"><name>view</name></member>
   </compound>
@@ -406,6 +408,7 @@
   </compound>
   <compound refid="classNeoN_1_1la_1_1CsrSparsityPattern" kind="class"><name>NeoN::la::CsrSparsityPattern</name>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1a3cfcdcafb9fa4cd99966b76d267e079b" kind="typedef"><name>SparsityIndexType</name></member>
+    <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1a2c1b04cceadedb62ae517a7718146c66" kind="typedef"><name>ViewType</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1a37a0b8a70022e4eb55c526ba4e3a900d" kind="variable"><name>dimensions_</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1ac8599c19a3836ddaba58cb3b258d1bd4" kind="variable"><name>rowOffs_</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1a7522ca09f557e728077bf8a27d6ea67b" kind="variable"><name>colIdxs_</name></member>
@@ -421,6 +424,7 @@
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1adee899b17e177a932d43eca69566dfdb" kind="function"><name>rowOffs</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1ab1306af17667af57eb0a8f06f037012d" kind="function"><name>rows</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1a8a148250dac2ba9d049bb56bedeeff9e" kind="function"><name>nnz</name></member>
+    <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1a73cbe4b95877db813330f341e378e7e5" kind="function"><name>storageSize</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1aa23624efa3185fa9c7710e5b31f159bb" kind="function"><name>dimension</name></member>
     <member refid="classNeoN_1_1la_1_1CsrSparsityPattern_1aec8f6e23f92cd68c774f114757d5997a" kind="function"><name>view</name></member>
   </compound>
@@ -558,19 +562,21 @@
   </compound>
   <compound refid="classNeoN_1_1la_1_1EllSparsityPattern" kind="class"><name>NeoN::la::EllSparsityPattern</name>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a35f3dc03fba87aaf94cddaf8afa7b0ff" kind="typedef"><name>SparsityIndexType</name></member>
+    <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a313069d07b823e1136eb5f9acb796041" kind="typedef"><name>ViewType</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1ab6c2cc2f83478de63b203ef143a9189b" kind="variable"><name>dimensions_</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1ae34820073f859af2fae635b53e0dd2e3" kind="variable"><name>colIdxs_</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1ad3d3bb336d615d5a86f57d8420e4472c" kind="variable"><name>numStoredElementsPerRow_</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a82e9aba152a562cf3272b34f24333ad0" kind="variable"><name>stride_</name></member>
+    <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a198a9f7626ed883a93a892c910a020f3" kind="variable"><name>logicalNnz_</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a42dfebb02f3ea8847a58de03d76ae717" kind="function"><name>validate</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1adf188a22b071e8183f548499de0e68f6" kind="function"><name>EllSparsityPattern</name></member>
-    <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a014d54a9f8db4aad2c7a4431a5fbcd17" kind="function"><name>EllSparsityPattern</name></member>
+    <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a765c671ecedc5a678a5b96c6344ee558" kind="function"><name>EllSparsityPattern</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a232d0c5115c549e6087077c4cac7eb27" kind="function"><name>copyToExecutor</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a00a9dcd83b95afc1869f0ab15f543721" kind="function"><name>~EllSparsityPattern</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a9f8fd88feda2e84fcb3859591ccde8f9" kind="function"><name>exec</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a8451850a11e5a57393acd0c6c5959162" kind="function"><name>colIdxs</name></member>
-    <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1ae6fdbb747498a94f5982e963a148e2a1" kind="function"><name>colIdxs</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a637f39faca6b2489cf4067e49439c0ef" kind="function"><name>rows</name></member>
+    <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1afbc022f8b9e7302a901bd748af781d6e" kind="function"><name>storageSize</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1af830c1f617bfa7fd91680a89e7c15c83" kind="function"><name>nnz</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a79352612b79ac543ef5552180ea3a7b0" kind="function"><name>numStoredElementsPerRow</name></member>
     <member refid="classNeoN_1_1la_1_1EllSparsityPattern_1a612112caa329c21077141cd9bef000c2" kind="function"><name>stride</name></member>
@@ -583,6 +589,7 @@
     <member refid="structNeoN_1_1la_1_1EllSparsityView_1a4465a04c7f1eabe14884d56606685042" kind="variable"><name>stride</name></member>
     <member refid="structNeoN_1_1la_1_1EllSparsityView_1a80469c2f2f6cceef0b0d19150d8f0527" kind="function"><name>EllSparsityView</name></member>
     <member refid="structNeoN_1_1la_1_1EllSparsityView_1a8ef95591fb8a134c0006baff1c019f7d" kind="function"><name>linearIndex</name></member>
+    <member refid="structNeoN_1_1la_1_1EllSparsityView_1a14067f67899d32c5e12af0f66a2f17be" kind="function"><name>findEntry</name></member>
     <member refid="structNeoN_1_1la_1_1EllSparsityView_1a13940cecfefc3590d4b8360c395f920a" kind="function"><name>entry</name></member>
     <member refid="structNeoN_1_1la_1_1EllSparsityView_1ade7595799f2b0ed3da6d82fb98b1e243" kind="function"><name>invalidIndex</name></member>
   </compound>
@@ -1136,8 +1143,8 @@
     <member refid="classNeoN_1_1la_1_1Matrix_1a00afe264464def72fec848ad7b08f421" kind="variable"><name>faceToMatrixAddress_</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a037b5bbe72f2453730fe4eec7d6e324b" kind="function"><name>validate</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1afd4c9eb00414752315c70340966e6bea" kind="function"><name>Matrix</name></member>
-    <member refid="classNeoN_1_1la_1_1Matrix_1a39def8d6a679b0ec449659ac2f9526f4" kind="function"><name>Matrix</name></member>
-    <member refid="classNeoN_1_1la_1_1Matrix_1a879df51229be4d38c405c21a95c1fd44" kind="function"><name>Matrix</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a6b2e924a3860b6fb4f3682143c829dec" kind="function"><name>Matrix</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a65ad75535917fdda1ba4782ee0ecf841" kind="function"><name>Matrix</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1af2fb7061f12d0beab7f04f5dc333cbc0" kind="function"><name>~Matrix</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a6538dd5994e85714d24a4b92ed65fc68" kind="function"><name>exec</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a2f977c611cd68ce6c09cebbeb33fdd78" kind="function"><name>nRows</name></member>
@@ -1145,13 +1152,13 @@
     <member refid="classNeoN_1_1la_1_1Matrix_1a2ce62bcdbef333ae01962e18af3c5930" kind="function"><name>reset</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1aa1d6d042ecac3ad3bb7e4df66fec5707" kind="function"><name>values</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a987054eb7aaf4e43fc94fe1429f6e7f5" kind="function"><name>colIdxs</name></member>
-    <member refid="classNeoN_1_1la_1_1Matrix_1a065a0778b84c27473a5115a7edd89e6a" kind="function"><name>rowOffs</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1af33c631e231a40bb2e15ad1ac1dd7de9" kind="function"><name>rowOffs</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a1ea80482bb87bb33883dc3ccaa586f80" kind="function"><name>values</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1ab27fc5d5e14d12efff17578b79dd3a31" kind="function"><name>copyToExecutor</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1aae45d61e9077a6ccf5870200b777ebc2" kind="function"><name>sparsity</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a02b801ebe205b3f8e6194eb6bdfaf806" kind="function"><name>faceToMatrixAddress</name></member>
-    <member refid="classNeoN_1_1la_1_1Matrix_1a920ce0888254151496f57a0a939b6074" kind="function"><name>view</name></member>
-    <member refid="classNeoN_1_1la_1_1Matrix_1a488a97b44869a29e6e0e901f8be3497f" kind="function"><name>view</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1a952d8fd13abb94d87556a257529cf636" kind="function"><name>view</name></member>
+    <member refid="classNeoN_1_1la_1_1Matrix_1acbd55eef774eab1b424890dc355d000d" kind="function"><name>view</name></member>
     <member refid="classNeoN_1_1la_1_1Matrix_1a979c3429572d3ca0afad7dc8acf90475" kind="function"><name>diag</name></member>
   </compound>
   <compound refid="structNeoN_1_1la_1_1MatrixView" kind="struct"><name>NeoN::la::MatrixView</name>
@@ -1455,7 +1462,9 @@
     <member refid="structNeoN_1_1la_1_1SparsityView_1a1cb5b4b48a9ed148cf8b403dac414c0e" kind="variable"><name>colIdxs</name></member>
     <member refid="structNeoN_1_1la_1_1SparsityView_1acfac377b626675a92f8556481c10021f" kind="variable"><name>rowOffs</name></member>
     <member refid="structNeoN_1_1la_1_1SparsityView_1a5c7e4102a1a1ffaab85ec36e6fec4075" kind="function"><name>SparsityView</name></member>
+    <member refid="structNeoN_1_1la_1_1SparsityView_1a21a0b63c58cf5433a0ce05b68cf3ec3c" kind="function"><name>findEntry</name></member>
     <member refid="structNeoN_1_1la_1_1SparsityView_1aaa42e43ddbb911c0586d0cacab40b35e" kind="function"><name>entry</name></member>
+    <member refid="structNeoN_1_1la_1_1SparsityView_1a06eb6a21cd06f88daecc251c498bccfa" kind="function"><name>invalidIndex</name></member>
   </compound>
   <compound refid="classNeoN_1_1dsl_1_1SpatialOperator" kind="class"><name>NeoN::dsl::SpatialOperator</name>
     <member refid="classNeoN_1_1dsl_1_1SpatialOperator_1aedfbc85da7dc707f61742b232952bdcc" kind="typedef"><name>VectorValueType</name></member>
@@ -2261,6 +2270,7 @@
   <compound refid="namespaceNeoN_1_1la" kind="namespace"><name>NeoN::la</name>
     <member refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kind="typedef"><name>CSRMatrix</name></member>
     <member refid="namespaceNeoN_1_1la_1a90174338eaeb88d2f0d55a3dfdb95add" kind="typedef"><name>COOMatrix</name></member>
+    <member refid="namespaceNeoN_1_1la_1a7888e3c591147b90c956b478378cb752" kind="typedef"><name>ELLMatrix</name></member>
     <member refid="namespaceNeoN_1_1la_1a39fea8c16999d544a15d6d9cb8cb3cd6" kind="function"><name>createSparsityPatternFaceToMatrixAddress</name></member>
     <member refid="namespaceNeoN_1_1la_1a04daaa5b354b0abc2e22487836cad4a7" kind="function"><name>createBoundarySparsityPattern</name></member>
     <member refid="namespaceNeoN_1_1la_1aa9fd5d1e4b81ca099097468430a2d32c" kind="function"><name>createOffDiagonalSparsityPattern</name></member>
