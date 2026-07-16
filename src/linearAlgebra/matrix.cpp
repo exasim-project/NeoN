@@ -15,20 +15,19 @@ Vector<ValueType> Matrix<ValueType, SparsityType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
     fill(diag, zero<ValueType>());
-    auto [diagV, rowOffsV, colIdxV, matrixV] =
-        views(diag, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_);
+    auto [diagV, matrixV] = views(diag, values_);
+    const auto sparsityV = sparsityPattern_->view();
 
+    // Lenient: a missing diagonal keeps the zero fill() above instead of aborting.
+    // Traversal lives in *SparsityView::findEntry(), not here.
     parallelFor(
         values_.exec(),
         {0, nRows()},
         NEON_LAMBDA(const localIdx rowi) {
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            const auto offset = sparsityV.findEntry(rowi, rowi);
+            if (offset != decltype(sparsityV)::invalidIndex())
             {
-                if (rowi == colIdxV[i])
-                {
-                    diagV[rowi] = matrixV[i];
-                    break;
-                }
+                diagV[rowi] = matrixV[offset];
             }
         },
         "copyDiag"
@@ -45,14 +44,30 @@ Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(
     {
         return *this;
     }
-    return {
-        values_.copyToExecutor(dstExec),
-        std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec)),
-        (faceToMatrixAddress_) ? std::make_shared<const FaceToMatrixAddress>(
-            this->faceToMatrixAddress_->copyToExecutor(dstExec)
-        )
-                               : nullptr
-    };
+    auto copiedValues = values_.copyToExecutor(dstExec);
+    auto copiedSparsity =
+        std::make_shared<const SparsityType>(sparsityPattern_->copyToExecutor(dstExec));
+
+    if constexpr (std::is_same_v<typename SparsityType::SparsityIndexType, localIdx> && requires(const SparsityType& sp) {
+                      sp.rowOffs();
+                  })
+    {
+        if (faceToMatrixAddress_)
+        {
+            return {
+                copiedValues,
+                copiedSparsity,
+                std::make_shared<const FaceToMatrixAddress>(
+                    faceToMatrixAddress_->copyToExecutor(dstExec)
+                )
+            };
+        }
+    }
+    // faceToMatrixAddress_ can only be set via the constrained 3-arg constructor above, so
+    // it's null here whenever that constraint isn't met. Assert it so a future change can't
+    // silently drop it.
+    NF_ASSERT(!faceToMatrixAddress_, "Face address requires localIdx sparsity");
+    return {copiedValues, copiedSparsity};
 }
 
 
@@ -348,5 +363,10 @@ void scaledInverseDiag(
 
 NN_DECLARE_MATRIX(scalar, localIdx);
 NN_DECLARE_MATRIX(Vec3, localIdx);
+
+// ELL instantiated standalone, not via NN_DECLARE_MATRIX: upper() is CSR-shaped and has
+// no ELL overload.
+template class Matrix<scalar, la::EllSparsityPattern<localIdx>>;
+template class Matrix<Vec3, la::EllSparsityPattern<localIdx>>;
 
 }
