@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Discriminator
 
 from ..cell_kernels import CellLaplacianKernel
 from ..cell_kernels_3d import Laplacian3D, VariableGammaLaplacian3D
+from ..cpp_kernels import CppLaplacianAcc
 
 
 class CentralDiffLaplacian(BaseModel):
@@ -46,6 +47,9 @@ class CentralDiffLaplacian(BaseModel):
             return VariableGammaLaplacian3D(
                 gamma=gamma, dh=dh, coeff=coeff)
         return Laplacian3D(dh=dh, coeff=coeff)
+
+    def build_cpp_kernel(self):
+        return CppLaplacianAcc()
 
 
 

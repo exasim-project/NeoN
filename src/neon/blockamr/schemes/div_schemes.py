@@ -16,6 +16,7 @@ from ..cell_kernels import (
 from ..cell_kernels_3d import (
     UpwindDiv3D, LinearDiv3D, VanLeerDiv3D, QUICKDiv3D,
 )
+from ..cpp_kernels import CppDivAcc
 
 
 class Upwind(BaseModel):
@@ -32,6 +33,9 @@ class Upwind(BaseModel):
 
     def build_spatial_kernel(self, face, dh, coeff=1.0):
         return UpwindDiv3D(face=face, dh=dh, coeff=coeff)
+
+    def build_cpp_kernel(self):
+        return CppDivAcc("div_upwind_acc")
 
 
 
@@ -52,6 +56,9 @@ class Linear(BaseModel):
     def build_spatial_kernel(self, face, dh, coeff=1.0):
         return LinearDiv3D(face=face, dh=dh, coeff=coeff)
 
+    def build_cpp_kernel(self):
+        return CppDivAcc("div_linear_acc")
+
 
 
 class VanLeer(BaseModel):
@@ -68,6 +75,9 @@ class VanLeer(BaseModel):
 
     def build_spatial_kernel(self, face, dh, coeff=1.0):
         return VanLeerDiv3D(face=face, dh=dh, coeff=coeff)
+
+    def build_cpp_kernel(self):
+        return CppDivAcc("div_vanleer_acc")
 
 
 
@@ -87,6 +97,9 @@ class QUICK(BaseModel):
 
     def build_spatial_kernel(self, face, dh, coeff=1.0):
         return QUICKDiv3D(face=face, dh=dh, coeff=coeff)
+
+    def build_cpp_kernel(self):
+        return CppDivAcc("div_quick_acc")
 
 
 
