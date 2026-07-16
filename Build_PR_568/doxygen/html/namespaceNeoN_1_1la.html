@@ -167,10 +167,11 @@ Functions</h2></td></tr>
 <tr class="memitem:aaae043565c645c4e3a2736f57d50edd5" id="r_aaae043565c645c4e3a2736f57d50edd5"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename RHSValueType  = ValueType, typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:aaae043565c645c4e3a2736f57d50edd5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aaae043565c645c4e3a2736f57d50edd5">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; strategy=std::make_shared&lt; <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">FaceBasedIterator</a> &gt;())</td></tr>
 <tr class="separator:aaae043565c645c4e3a2736f57d50edd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6dd3553a28cafb95c58985e40e6cb7c" id="r_aa6dd3553a28cafb95c58985e40e6cb7c"><td class="memTemplParams" colspan="2">template&lt;typename MatrixValueType , typename RHSValueType , typename SystemMatrixType , typename BoundaryMatrixType &gt; </td></tr>
-<tr class="memitem:aa6dd3553a28cafb95c58985e40e6cb7c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa6dd3553a28cafb95c58985e40e6cb7c">removeBoundaryContributions</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt; &amp;lsIn)</td></tr>
-<tr class="memdesc:aa6dd3553a28cafb95c58985e40e6cb7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div).  <br /></td></tr>
-<tr class="separator:aa6dd3553a28cafb95c58985e40e6cb7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f88d32474b696771e3791dcc1a7e8a8" id="r_a5f88d32474b696771e3791dcc1a7e8a8"><td class="memTemplParams" colspan="2">template&lt;typename MatrixValueType , typename RHSValueType , typename SystemMatrixType , typename BoundaryMatrixType &gt; <br />
+requires requires(const BoundaryMatrixType&amp; bm) { bm.sparsity()-&gt;rowIdxs(); }</td></tr>
+<tr class="memitem:a5f88d32474b696771e3791dcc1a7e8a8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#a5f88d32474b696771e3791dcc1a7e8a8">removeBoundaryContributions</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt; &amp;lsIn)</td></tr>
+<tr class="memdesc:a5f88d32474b696771e3791dcc1a7e8a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div).  <br /></td></tr>
+<tr class="separator:a5f88d32474b696771e3791dcc1a7e8a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf0e2e0fd0c0edb0caf3488bcc1ec63c" id="r_adf0e2e0fd0c0edb0caf3488bcc1ec63c"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename IndexType &gt; </td></tr>
 <tr class="memitem:adf0e2e0fd0c0edb0caf3488bcc1ec63c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#adf0e2e0fd0c0edb0caf3488bcc1ec63c">upper</a> (const <a class="el" href="namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7">CSRMatrix</a>&lt; ValueType, IndexType &gt; &amp;)</td></tr>
 <tr class="memdesc:adf0e2e0fd0c0edb0caf3488bcc1ec63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">extract the upper triangular of the matrix  <br /></td></tr>
@@ -547,13 +548,14 @@ template&lt;unsigned int I&gt; </div>
 
 </div>
 </div>
-<a id="aa6dd3553a28cafb95c58985e40e6cb7c" name="aa6dd3553a28cafb95c58985e40e6cb7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6dd3553a28cafb95c58985e40e6cb7c">&#9670;&#160;</a></span>removeBoundaryContributions()</h2>
+<a id="a5f88d32474b696771e3791dcc1a7e8a8" name="a5f88d32474b696771e3791dcc1a7e8a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f88d32474b696771e3791dcc1a7e8a8">&#9670;&#160;</a></span>removeBoundaryContributions()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename MatrixValueType , typename RHSValueType , typename SystemMatrixType , typename BoundaryMatrixType &gt; </div>
+template&lt;typename MatrixValueType , typename RHSValueType , typename SystemMatrixType , typename BoundaryMatrixType &gt; <br />
+requires requires(const BoundaryMatrixType&amp; bm) { bm.sparsity()-&gt;rowIdxs(); }</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -574,9 +576,11 @@ template&lt;typename MatrixValueType , typename RHSValueType , typename SystemMa
 </div><div class="memdoc">
 
 <p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
-<dl class="section note"><dt>Note</dt><dd>templated on the full <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html" title="A class representing a linear system of equations.">LinearSystem</a> parameter set so it also accepts the segregated vector-solve form (scalar matrix, <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> rhs): the scalar boundary diagonal is reversed on the scalar matrix while the rhs reversal uses the field (RHS) value type. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>templated on the full <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html" title="A class representing a linear system of equations.">LinearSystem</a> parameter set so it also accepts the segregated vector-solve form (scalar matrix, <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> rhs): the scalar boundary diagonal is reversed on the scalar matrix while the rhs reversal uses the field (RHS) value type. </dd>
+<dd>
+BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00408">408</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00409">409</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>

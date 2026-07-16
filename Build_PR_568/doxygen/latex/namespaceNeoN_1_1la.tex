@@ -65,7 +65,8 @@ struct \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}
 \item 
 {\footnotesize template$<$typename Value\+Type , typename RHSValue\+Type  = Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aaae043565c645c4e3a2736f57d50edd5}{create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$ strategy=std\+::make\+\_\+shared$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}} $>$())
 \item 
-{\footnotesize template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type , typename System\+Matrix\+Type , typename Boundary\+Matrix\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aa6dd3553a28cafb95c58985e40e6cb7c}{remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \&ls\+In)
+{\footnotesize template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type , typename System\+Matrix\+Type , typename Boundary\+Matrix\+Type $>$ \newline
+requires requires(const Boundary\+Matrix\+Type\& bm) \{ bm.\+sparsity()-\/$>$row\+Idxs(); \}}\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a5f88d32474b696771e3791dcc1a7e8a8}{remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \&ls\+In)
 \begin{DoxyCompactList}\small\item\em for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_adf0e2e0fd0c0edb0caf3488bcc1ec63c}{upper}} (const \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ \&)
 \begin{DoxyCompactList}\small\item\em extract the upper triangular of the matrix \end{DoxyCompactList}\item 
@@ -223,11 +224,12 @@ computes out = -\/(L+U) x
 \doxysubsubsection{\texorpdfstring{packVecValues()}{packVecValues()}}
 {\footnotesize\ttfamily void Neo\+N\+::la\+::pack\+Vec\+Values (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{in,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{out }\end{DoxyParamCaption})}
 
-\Hypertarget{namespaceNeoN_1_1la_aa6dd3553a28cafb95c58985e40e6cb7c}\label{namespaceNeoN_1_1la_aa6dd3553a28cafb95c58985e40e6cb7c} 
+\Hypertarget{namespaceNeoN_1_1la_a5f88d32474b696771e3791dcc1a7e8a8}\label{namespaceNeoN_1_1la_a5f88d32474b696771e3791dcc1a7e8a8} 
 \index{NeoN::la@{NeoN::la}!removeBoundaryContributions@{removeBoundaryContributions}}
 \index{removeBoundaryContributions@{removeBoundaryContributions}!NeoN::la@{NeoN::la}}
 \doxysubsubsection{\texorpdfstring{removeBoundaryContributions()}{removeBoundaryContributions()}}
-{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type , typename System\+Matrix\+Type , typename Boundary\+Matrix\+Type $>$ \\
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type , typename System\+Matrix\+Type , typename Boundary\+Matrix\+Type $>$ \newline
+requires requires(const Boundary\+Matrix\+Type\& bm) \{ bm.\+sparsity()-\/$>$row\+Idxs(); \}\\
 \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ Neo\+N\+::la\+::remove\+Boundary\+Contributions (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \&}]{ls\+In }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -236,10 +238,12 @@ for testing purposes, this function reverses boundary contributions previously a
 
 \begin{DoxyNote}{Note}
 templated on the full \doxylink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System} parameter set so it also accepts the segregated vector-\/solve form (scalar matrix, \doxylink{classNeoN_1_1Vec3}{Vec3} rhs)\+: the scalar boundary diagonal is reversed on the scalar matrix while the rhs reversal uses the field (RHS) value type. 
+
+Boundary\+Matrix\+Type must expose per-\/entry row indices through row\+Idxs() (currently COO). 
 \end{DoxyNote}
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00408}{408}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00409}{409}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_1_1la_ad42bf66d8c3f93ab08fd9044b9550510}\label{namespaceNeoN_1_1la_ad42bf66d8c3f93ab08fd9044b9550510} 
 \index{NeoN::la@{NeoN::la}!rowsToRowOffs@{rowsToRowOffs}}
