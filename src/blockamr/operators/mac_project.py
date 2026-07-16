@@ -13,7 +13,7 @@ implicit-solve cache on the pressure field).
 
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 class MacProjectCache:

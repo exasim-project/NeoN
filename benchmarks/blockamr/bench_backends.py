@@ -34,7 +34,7 @@ from typing import Literal
 # GPU memory split: jax and AMReX share one device, so their totals must stay
 # below 100%. Give jax a fixed 35% (preallocated) and let AMReX grow on demand
 # into the rest (arena init 0 → no up-front land-grab). Without this jax is
-# starved and OOMs. Set before importing jax / neon.blockamr.
+# starved and OOMs. Set before importing jax / blockamr.
 JAX_MEM_FRACTION = os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.35")
 os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
 
@@ -43,13 +43,13 @@ import numpy as np
 import pydantic
 import yaml
 
-import neon.blockamr as blockamr
-from neon.blockamr.dsl import exp
-from neon.blockamr.dsl.equation import Equation
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.operators.div import update_face_fluxes
-from neon.blockamr.schemes.registry import resolve
+import blockamr
+from blockamr.dsl import exp
+from blockamr.dsl.equation import Equation
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh
+from blockamr.operators.div import update_face_fluxes
+from blockamr.schemes.registry import resolve
 
 CASE = Path(__file__).parent / "cases" / "taylorGreen"
 NU = 0.01

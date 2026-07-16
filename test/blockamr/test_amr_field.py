@@ -4,10 +4,10 @@
 
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh
-from neon.blockamr.field import CellField
-from neon.blockamr.fillpatch import FillPatchCellConservative, FillPatchSingleLevel
+import blockamr
+from blockamr.mesh import AmrMesh
+from blockamr.field import CellField
+from blockamr.fillpatch import FillPatchCellConservative, FillPatchSingleLevel
 
 
 def _make_geom_and_info(ncell=32, max_level=0):

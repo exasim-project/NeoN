@@ -4,7 +4,7 @@
 
 """Interpolate cell-centred velocity to face-centred flux field."""
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 def interpolate(U_cell, face_field):

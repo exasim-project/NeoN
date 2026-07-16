@@ -13,10 +13,10 @@ Verifies that field data survives regrid via fill_patch:
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh
-from neon.blockamr.field import CellField
-from neon.blockamr.fillpatch import FillPatchCellConservative
+import blockamr
+from blockamr.mesh import AmrMesh
+from blockamr.field import CellField
+from blockamr.fillpatch import FillPatchCellConservative
 
 
 def _make_amr_mesh(N=32, Nz=4, max_level=1, max_size=16):

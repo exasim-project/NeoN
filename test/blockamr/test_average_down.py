@@ -4,9 +4,9 @@
 
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh
-from neon.blockamr.field import CellField
+import blockamr
+from blockamr.mesh import AmrMesh
+from blockamr.field import CellField
 
 
 def _tag_all(lev, tags, time, ngrow):

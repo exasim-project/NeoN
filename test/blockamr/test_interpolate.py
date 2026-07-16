@@ -7,10 +7,10 @@
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.operators.interpolate import interpolate
+import blockamr
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh
+from blockamr.operators.interpolate import interpolate
 
 
 def _make_mesh(N, max_size=None):

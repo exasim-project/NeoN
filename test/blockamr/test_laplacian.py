@@ -4,15 +4,15 @@
 
 import math
 
-import neon.blockamr as blockamr
+import blockamr
 import jax.numpy as jnp
 import numpy as np
-from neon.blockamr.field import CellField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.operators.laplacian import Laplacian
-from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
-from neon.blockamr.bucket_dispatch import process_bucket
-from neon.blockamr.cell_accessor import CellAccessor
+from blockamr.field import CellField
+from blockamr.mesh import Mesh
+from blockamr.operators.laplacian import Laplacian
+from blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
+from blockamr.bucket_dispatch import process_bucket
+from blockamr.cell_accessor import CellAccessor
 
 
 def _make_mesh(n_cell=64, max_size=32):

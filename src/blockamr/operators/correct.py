@@ -10,7 +10,7 @@ Usage:
 
 import jax.numpy as jnp
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 def correct(cell_field, expr):

@@ -209,7 +209,7 @@ def build_precomputed_offsets(fb, face_fb, ng, mf=None, fx_mf=None, fy_mf=None, 
 
     Returns PrecomputedOffsets.
     """
-    import neon.blockamr as blockamr
+    import blockamr
 
     # Box shape for strides (assume uniform — use first box)
     Nx_g0, Ny_g0, Nz_g0 = fb.shapes[0][:3]

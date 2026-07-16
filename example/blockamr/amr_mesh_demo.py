@@ -15,10 +15,10 @@ import argparse
 
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh
-from neon.blockamr.field import CellField
-from neon.blockamr.fillpatch import FillPatchCellConservative
+import blockamr
+from blockamr.mesh import AmrMesh
+from blockamr.field import CellField
+from blockamr.fillpatch import FillPatchCellConservative
 
 
 def gaussian(x, y, z, cx=0.5, cy=0.5, cz=0.5, sigma=0.1):

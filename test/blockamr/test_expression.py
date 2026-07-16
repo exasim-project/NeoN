@@ -4,13 +4,13 @@
 
 import math
 
-import neon.blockamr as blockamr
+import blockamr
 import numpy as np
-from neon.blockamr.field import CellField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.dsl import exp, solve, Equation
-from neon.blockamr.operators.div import build_face_fluxes
-from neon.blockamr.schemes.div_schemes import Linear
+from blockamr.field import CellField
+from blockamr.mesh import Mesh
+from blockamr.dsl import exp, solve, Equation
+from blockamr.operators.div import build_face_fluxes
+from blockamr.schemes.div_schemes import Linear
 
 
 def _make_mesh(n_cell=64, max_size=32):

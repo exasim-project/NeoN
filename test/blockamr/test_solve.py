@@ -8,12 +8,12 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh, AmrMesh
-from neon.blockamr.dsl import exp, imp, solve, Equation
-from neon.blockamr.operators.div import Div
-from neon.blockamr.schemes.div_schemes import Upwind
+import blockamr
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh, AmrMesh
+from blockamr.dsl import exp, imp, solve, Equation
+from blockamr.operators.div import Div
+from blockamr.schemes.div_schemes import Upwind
 
 
 def _tag_all(lev, tags, time, ngrow):

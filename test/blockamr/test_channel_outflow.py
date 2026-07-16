@@ -18,10 +18,10 @@ steady state.
 import numpy as np
 import pytest
 
-import neon.blockamr as blockamr
-from neon.blockamr.bc import VectorBC, fixedValue, NeumannBC
-from neon.blockamr.incompressible import build_incompressible, step
-from neon.blockamr.mesh import Mesh
+import blockamr
+from blockamr.bc import VectorBC, fixedValue, NeumannBC
+from blockamr.incompressible import build_incompressible, step
+from blockamr.mesh import Mesh
 
 U0 = 1.0
 NU = 0.01

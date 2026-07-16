@@ -7,12 +7,12 @@
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.mesh import Mesh
-from neon.blockamr.operators.div import Div, update_face_fluxes
-from neon.blockamr.schemes.div_schemes import Upwind
-from neon.blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
+import blockamr
+from blockamr.field import CellField, FaceField
+from blockamr.mesh import Mesh
+from blockamr.operators.div import Div, update_face_fluxes
+from blockamr.schemes.div_schemes import Upwind
+from blockamr.flattened_boxes import flattened_boxes_from_mf, build_buckets
 
 
 def _make_mesh(n_cell=16, max_size=16):
@@ -55,7 +55,7 @@ def test_div_build_kernel_lev0(blockamr_session):
 
 def test_div_build_kernel_returns_callable_result(blockamr_session):
     """Div kernel applied to uniform field returns near-zero divergence."""
-    from neon.blockamr.bucket_dispatch import process_bucket
+    from blockamr.bucket_dispatch import process_bucket
 
     mesh = _make_mesh()
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")

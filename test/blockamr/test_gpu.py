@@ -6,7 +6,7 @@
 
 import jax
 import numpy as np
-import neon.blockamr as blockamr
+import blockamr
 
 
 def _make_multifab(ngrow=0):
@@ -249,8 +249,8 @@ def test_set_get_executor():
 
 def test_cellfield_memory_param():
     """CellField should accept a memory parameter."""
-    from neon.blockamr.field import CellField
-    from neon.blockamr.mesh import Mesh
+    from blockamr.field import CellField
+    from blockamr.mesh import Mesh
 
     box = blockamr.Box([0, 0, 0], [31, 31, 31])
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])

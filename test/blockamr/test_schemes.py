@@ -10,13 +10,13 @@ import jax.numpy as jnp
 
 from pydantic import TypeAdapter
 
-from neon.blockamr.schemes.div_schemes import QUICK, DivScheme, Linear, Upwind, VanLeer
-from neon.blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
-from neon.blockamr.schemes.grad_schemes import CentralDiffGrad
-from neon.blockamr.schemes.ddt_schemes import DdtScheme, ForwardEuler, RungeKutta2, RungeKutta4
-from neon.blockamr.schemes.schemes_dict import SchemesDict
-from neon.blockamr.cell_accessor import CellAccessor, FaceAccessor
-from neon.blockamr.flattened_boxes import BucketContext
+from blockamr.schemes.div_schemes import QUICK, DivScheme, Linear, Upwind, VanLeer
+from blockamr.schemes.laplacian_schemes import CentralDiffLaplacian
+from blockamr.schemes.grad_schemes import CentralDiffGrad
+from blockamr.schemes.ddt_schemes import DdtScheme, ForwardEuler, RungeKutta2, RungeKutta4
+from blockamr.schemes.schemes_dict import SchemesDict
+from blockamr.cell_accessor import CellAccessor, FaceAccessor
+from blockamr.flattened_boxes import BucketContext
 
 
 def _make_flat_cell_buf(data_3d, ng):
@@ -196,10 +196,10 @@ def test_div_scheme_discriminator_roundtrip() -> None:
 
 def test_operators_have_build_kernel_method():
     """All spatial operators expose build_kernel."""
-    from neon.blockamr.operators.div import Div
-    from neon.blockamr.operators.grad import Grad
-    from neon.blockamr.operators.laplacian import Laplacian
-    from neon.blockamr.operators.source import Source
+    from blockamr.operators.div import Div
+    from blockamr.operators.grad import Grad
+    from blockamr.operators.laplacian import Laplacian
+    from blockamr.operators.source import Source
 
     assert hasattr(Div, "build_kernel")
     assert hasattr(Grad, "build_kernel")

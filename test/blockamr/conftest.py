@@ -8,7 +8,7 @@ os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
 
 import pytest
 
-import neon.blockamr as blockamr
+import blockamr
 
 
 @pytest.fixture(scope="session", autouse=True)

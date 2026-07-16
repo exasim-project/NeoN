@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import Mesh
+import blockamr
+from blockamr.mesh import Mesh
 
 
 def test_mesh_properties(blockamr_session):

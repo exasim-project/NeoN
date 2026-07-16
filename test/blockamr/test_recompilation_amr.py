@@ -12,13 +12,13 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-import neon.blockamr as blockamr
-from neon.blockamr.mesh import AmrMesh
-from neon.blockamr.field import CellField, FaceField
-from neon.blockamr.fillpatch import FillPatchCellConservative
-from neon.blockamr.operators.div import Div, update_face_fluxes
-from neon.blockamr.dsl import exp, solve
-from neon.blockamr.schemes.div_schemes import Upwind
+import blockamr
+from blockamr.mesh import AmrMesh
+from blockamr.field import CellField, FaceField
+from blockamr.fillpatch import FillPatchCellConservative
+from blockamr.operators.div import Div, update_face_fluxes
+from blockamr.dsl import exp, solve
+from blockamr.schemes.div_schemes import Upwind
 
 
 class CompileCounter:

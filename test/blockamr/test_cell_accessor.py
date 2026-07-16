@@ -7,8 +7,8 @@
 import jax
 import jax.numpy as jnp
 
-from neon.blockamr.cell_accessor import StencilAxis, CellAccessor, FaceAccessor
-from neon.blockamr.cell_kernels import (
+from blockamr.cell_accessor import StencilAxis, CellAccessor, FaceAccessor
+from blockamr.cell_kernels import (
     CellLaplacianKernel,
     CellUpwindDivKernel,
     CellVanLeerDivKernel,

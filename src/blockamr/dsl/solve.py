@@ -2,20 +2,20 @@
 #
 # SPDX-License-Identifier: MIT
 
-import neon.blockamr as blockamr
+import blockamr
 from .. import backends
 from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
 from ..schemes.registry import lookup_scheme
 
 # Backward-compat re-exports of the explicit machinery moved to
-# ``neon.blockamr.backends.jax_backend`` (removed in plan 06). ``BF`` is a
+# ``blockamr.backends.jax_backend`` (removed in plan 06). ``BF`` is a
 # mutable module global there — proxied live via ``__getattr__`` below so
 # callers reading ``dsl.solve.BF`` see ``set_tile_size`` updates.
 from ..backends.jax_backend import forward_euler, parallel_for, set_tile_size  # noqa: F401
 
 
 def __getattr__(name):
-    # PEP 562: keep ``from neon.blockamr.dsl.solve import BF`` live-tracking the
+    # PEP 562: keep ``from blockamr.dsl.solve import BF`` live-tracking the
     # single source of truth in jax_backend (a plain re-export would freeze a
     # copy that ``set_tile_size`` could not update).
     if name == "BF":
