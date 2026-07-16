@@ -12,6 +12,7 @@ import jax.numpy as jnp
 from jax import Array
 from pydantic import BaseModel, ConfigDict, Discriminator
 
+from ..cpp_kernels import CppGradAcc
 from .stencil import S_wide, interior
 
 
@@ -65,6 +66,9 @@ class CentralDiffGrad(BaseModel):
     def build_kernel(self, dh: Array, coeff: float = 1.0, ngrow: int = 0):
         ng = ngrow if ngrow > 0 else self.stencil_width
         return CentralDiffGradKernel(dh, coeff, ng)
+
+    def build_cpp_kernel(self):
+        return CppGradAcc()
 
 
 GradScheme = Annotated[

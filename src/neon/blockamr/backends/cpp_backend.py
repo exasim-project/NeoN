@@ -17,24 +17,15 @@ One kernel launch per term (correctness-first, not fused) — the fused
 path: a term/scheme without a C++ kernel (or a callable/variable Laplacian
 gamma) raises ``NotImplementedError`` naming the term and scheme, never a
 silent jax fallback.
+
+Dispatch mirrors the jax backend: each term's cpp kernel is owned by its
+**scheme** via ``build_cpp_kernel()`` (peer of ``build_spatial_kernel()``),
+returning a wrapper from :mod:`~neon.blockamr.cpp_kernels`. This backend just
+asks every op's scheme for its kernel and applies it — no per-term ``if/elif``,
+no scheme-name-to-binding table.
 """
 
 import neon.blockamr as blockamr
-
-_DIV_ACC = {
-    "Upwind": "div_upwind_acc",
-    "Linear": "div_linear_acc",
-    "VanLeer": "div_vanleer_acc",
-    "QUICK": "div_quick_acc",
-}
-
-
-def _scheme_type(sp_op):
-    """Resolved scheme identity for error messages / kernel lookup."""
-    scheme = getattr(sp_op, "scheme", None)
-    if scheme is None:
-        return "None"
-    return getattr(scheme, "type", type(scheme).__name__)
 
 
 class CppBackend:
@@ -43,12 +34,12 @@ class CppBackend:
     def euler_step(self, equation, cell_field, lev, t, dt):
         ddt_coeff = equation.temporal_ops[0].coeff
         src = self._scratch(cell_field, lev)
-        self._accumulate(equation.spatial_ops, cell_field, lev, t, src)
+        self._evaluate_spatial_terms(equation.spatial_ops, cell_field, lev, t, src)
         blockamr.euler_update(cell_field.mf[lev], src, dt / ddt_coeff, cell_field.ncomp)
 
     def evaluate(self, terms, cell_field, lev, t):
         src = self._scratch(cell_field, lev)
-        self._accumulate(terms, cell_field, lev, t, src)
+        self._evaluate_spatial_terms(terms, cell_field, lev, t, src)
         # src has ngrow=0 → copy_to_host returns the valid region per box.
         return [src.copy_to_host(mfi) for mfi in blockamr.MFIterator(src)]
 
@@ -84,40 +75,15 @@ class CppBackend:
         src.set_val(0.0)
         return src
 
-    def _accumulate(self, spatial_ops, cell_field, lev, t, src):
+    def _evaluate_spatial_terms(self, spatial_ops, cell_field, lev, t, src):
+        """Sum every spatial term into the scratch source: src = Σ coeff·op(phi)."""
         geom = cell_field.mesh.geom(lev)
-        phi = cell_field.mf[lev]
-        ncomp = cell_field.ncomp
         for sp_op in spatial_ops:
-            name = type(sp_op).__name__
-            coeff = sp_op.coeff
-            if name == "Div":
-                stype = _scheme_type(sp_op)
-                fn_name = _DIV_ACC.get(stype)
-                if fn_name is None:
-                    raise NotImplementedError(
-                        f"cpp backend: no kernel for term 'Div' with scheme {stype!r}"
-                    )
-                faces = sp_op.face_field[lev]
-                getattr(blockamr, fn_name)(
-                    src, phi, faces[0].mf, faces[1].mf, faces[2].mf, geom, coeff, ncomp
-                )
-            elif name == "Laplacian":
-                gamma = sp_op.gamma
-                if isinstance(gamma, (int, float)):
-                    blockamr.laplacian_acc(src, phi, geom, coeff * float(gamma), ncomp)
-                else:
-                    raise NotImplementedError(
-                        f"cpp backend: variable/callable gamma on term 'Laplacian' "
-                        f"(scheme {_scheme_type(sp_op)!r}) not supported (parity with jax)"
-                    )
-            elif name == "Grad":
-                blockamr.grad_acc(src, phi, geom, coeff)
-            elif name == "Source":
+            scheme = getattr(sp_op, "scheme", None)
+            build_cpp_kernel = getattr(scheme, "build_cpp_kernel", None)
+            if build_cpp_kernel is None:
                 raise NotImplementedError(
-                    "cpp backend: term 'Source' (spatially-varying coeff_func) not supported"
+                    f"cpp backend: no kernel for term {type(sp_op).__name__!r} "
+                    f"(scheme {getattr(scheme, 'type', None)!r})"
                 )
-            else:
-                raise NotImplementedError(
-                    f"cpp backend: no kernel for term {name!r} (scheme {_scheme_type(sp_op)!r})"
-                )
+            build_cpp_kernel().add_to(src, sp_op, cell_field, lev, geom)
