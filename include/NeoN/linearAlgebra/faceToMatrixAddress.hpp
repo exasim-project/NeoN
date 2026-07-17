@@ -69,10 +69,8 @@ struct FaceToMatrixView
     View<const localIdx> rowOffs;
 };
 
-/** @brief ELL counterpart to FaceToMatrixView: combines the same ownerOffset/neighbourOffset/
- * diagOffset "position within row" data (identical for any storage format, see
- * FaceToMatrixAddress) with ELL's column-major flat-offset formula (celli + stride*slot)
- * instead of CSR's compact one (rowOffs[celli]+slot).
+/** @brief ELL counterpart to FaceToMatrixView -- same ownerOffset/neighbourOffset/diagOffset
+ * data, ELL's stride formula instead of CSR's rowOffs one.
  */
 struct EllFaceToMatrixView
 {
@@ -178,9 +176,8 @@ public:
     [[nodiscard]] EllFaceToMatrixView view(localIdx stride) const;
 
     /**
-     * @brief Get a view representation of the matrix's data, format selected by overload
-     * resolution on the sparsity view's own type -- e.g. matrix.sparsity()->view() -- rather
-     * than a raw extracted value that could belong to an unrelated pattern.
+     * @brief Get a view representation of the matrix's data, format picked by overload
+     * resolution on the sparsity view's own type, e.g. matrix.sparsity()->view().
      * @return FaceToMatrixView for easy access to matrix elements.
      */
     [[nodiscard]] FaceToMatrixView view(const SparsityView<localIdx>& sparsity) const
@@ -189,7 +186,7 @@ public:
     }
 
     /**
-     * @brief Get an ELL view representation of the matrix's data, format selected by overload
+     * @brief Get an ELL view representation of the matrix's data, format picked by overload
      * resolution on the sparsity view's own type.
      * @return EllFaceToMatrixView for easy access to ELL-stored matrix elements.
      */
