@@ -28,6 +28,10 @@ DdtOperator<ValueType>::DdtOperator(
 template<typename ValueType>
 void DdtOperator<ValueType>::explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const
 {
+    if (scheme_ == DdtScheme::Steady)
+    {
+        return; // steadyState: zero temporal contribution
+    }
     const scalar dtInver = 1.0 / dt;
     const auto vol = this->getVector().mesh().cellVolumes().view();
     auto [sourceView, field, oldVector] =
@@ -136,6 +140,11 @@ template<typename ValueType>
 void DdtOperator<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt)
     const
 {
+    if (scheme_ == DdtScheme::Steady)
+    {
+        return; // steadyState: zero temporal contribution
+    }
+
     const int level = oldTimeLevel(this->field_);
 
     if (scheme_ == DdtScheme::BDF1)
@@ -255,6 +264,11 @@ void DdtOperator<ValueType>::implicitOperation(
     la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
 ) const
 {
+    if (scheme_ == DdtScheme::Steady)
+    {
+        return; // steadyState: zero temporal contribution
+    }
+
     const int level = oldTimeLevel(this->field_);
 
     if (scheme_ == DdtScheme::BDF1)
@@ -297,7 +311,7 @@ void DdtOperator<ValueType>::read(const Input& input)
         schemeName = ddtSchemes.get<std::string>(fieldKey);
     }
 
-    // TODO (later: steadyState, CrankNicolson, etc.)
+    // TODO (later: CrankNicolson, etc.)
     if (schemeName == "BDF1")
     {
         scheme_ = DdtScheme::BDF1;
@@ -309,9 +323,15 @@ void DdtOperator<ValueType>::read(const Input& input)
         scheme_ = DdtScheme::BDF2;
         return;
     }
+    if (schemeName == "steadyState")
+    {
+        scheme_ = DdtScheme::Steady;
+        return;
+    }
 
     NF_ERROR_EXIT(fmt::format(
-        fmt::runtime("Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2."),
+        fmt::runtime("Unknown ddt scheme '{}' for field '{}'. Supported schemes are: BDF1, BDF2, "
+                     "steadyState."),
         schemeName,
         this->field_.name
     ));
