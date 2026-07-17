@@ -276,7 +276,9 @@ void computeDivIntImp(
     const auto exec = phi.exec();
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-
+    // const auto [rows, diags ] = views(
+    //     ma.rowOffs(), ma.diagOffset()
+    // );
     const auto [fluxV, weightsV, ownV, neiV, surfFaceCells] = views(
         faceFlux.internalVector(),
         weights.internalVector(),
@@ -285,7 +287,9 @@ void computeDivIntImp(
         mesh.boundaryMesh().faceOwners()
     );
     auto values = ls.matrix().values().view();
-
+    std::cout << "numints: " << nInternalFaces << std::endl;
+    std::cout << values[460041232] << std::endl;
+    std::cout << "length of values: " << values.size() << std::endl;
     parallelFor(
         exec,
         {0, nInternalFaces},
@@ -309,15 +313,50 @@ void computeDivIntImp(
             auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<AssemblyType>();
 
             // triangular coefficients - neighbor -> lower, owner -> upper
-            values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
-            values[ma.upperIdx(ownRow, facei)] += neiFluxContrib * ownCoeff;
+            // values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
+            // values[ma.upperIdx(ownRow, facei)] += neiFluxContrib * ownCoeff;
 
+            // if (ma.lowerIdx(neiRow, facei) == 460041232 || 460041232 == ma.upperIdx(ownRow, facei) || ma.diagIdx(ownRow) == 460041232 || ma.diagIdx(neiRow) == 460041232){
+                // std::cout << ma.diagIdx(ownRow) << " = " << ma.rowOffs[ownRow] << " + " << ma.diagIdx(ownRow) - ma.rowOffs[ownRow] << std::endl;
+                // std::cout << ma.diagIdx(neiRow) << " = " << ma.rowOffs[neiRow] << " + " << ma.diagIdx(neiRow) - ma.rowOffs[neiRow] << std::endl;
+                // std::cout << "weight: "<< weightsV[facei] << std::endl;
+                // std::cout <<"ownfluxcontrib: " << ownFluxContrib << " = -" << fluxV[facei] << " * " << weightsV[facei] << " * " << std::endl;
+                // std::cout <<"neifluxcontrib: " << neiFluxContrib << " = " << fluxV[facei] << " * " << (1.0 - weightsV[facei]) << " * " << std::endl;
+                // std::cout << "owncoeff: " << ownCoeff << ", neicoeff: " <<neiCoeff << std::endl;
+                // std::cout << ma.diagIdx(ownRow) << " -= " << ownFluxContrib << std::endl;  
+                // std::cout << ma.diagIdx(neiRow) << " -= " << neiFluxContrib << std::endl;  
+            // }
             // diagonal contribution is negative sum of offdiagonal coefficients
-            Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownFluxContrib * ownCoeff);
+            // if (ma.lowerIdx(neiRow, facei) == 460041232){
+            //     std::cout << "facei: " << facei+1 << std::endl;
+
+            //     std::cout << "lowerIdx(neiRow, facei):" <<  ma.rowOffs[neiRow]<< ", " << ma.neighbourOffset[facei] << std::endl;
+            // }
+            // if (ma.upperIdx(ownRow, facei) == 460041232){
+            //     std::cout << "facei: " << facei+1 << std::endl;
+            //     std::cout << "upperIdx(ownRow, facei):" <<  ma.rowOffs[ownRow]<< ", " << ma.ownerOffset[facei] << std::endl;
+            // }
+            // if (ma.diagIdx(ownRow) == 460041232) {
+            //     std::cout << "facei: " << facei+1 << std::endl;
+            //     // std::cout << ma.diagIdx(ownRow) << " = " << ma.rowOffs[ownRow] << " + " << ma.diagIdx(ownRow) - ma.rowOffs[ownRow] << std::endl;
+            //     std::cout << "diagIdx(ownRow):" <<  ma.diagIdx(ownRow) << ", " <<  ma.rowOffs[ownRow] << std::endl;
+            // }
+            // Kokkos::atomic_sub(&values[ma.diagIdx(ownRow)], ownFluxContrib * ownCoeff);
             Kokkos::atomic_sub(&values[ma.diagIdx(neiRow)], neiFluxContrib * neiCoeff);
+            if (ma.diagIdx(neiRow) == 460041232) {
+                std::cout << "facei: " << facei+1 << std::endl;
+                std::cout <<"neifluxcontrib: " << neiFluxContrib << std::endl;
+                std::cout << "owner: " << ownRow << ", nei: " << neiRow << std::endl;
+                std::cout << "rowownstart: " << ma.rowOffs[ownRow] << ", rowneistart: " << ma.rowOffs[neiRow] << std::endl;
+                // std::cout << ma.diagIdx(ownRow) << " = " << ma.rowOffs[ownRow] << " + " << ma.diagIdx(ownRow) - ma.rowOffs[ownRow] << std::endl;
+                std::cout << "diagIdx(neiRow):" <<  ma.diagIdx(neiRow) << ", " <<  ma.rowOffs[neiRow] << std::endl;
+                // std::cout << "flux: " << -fluxV[facei] * weightsV[facei] << std::endl;
+                // std::cout << "flux2: " << +fluxV[facei] * (1.0 - weightsV[facei]) << std::endl;
+            }
         },
         "computeLocalGaussGreenDivCoefficients"
     );
+
 };
 
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
@@ -622,24 +661,24 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
 ) const
 {
     // TODO boundary weights should be separate so that we can start internal assembly
-    const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
-    {
-        // if (!cellIter->getCellBasedData())
-        // {
-        //     cellIter->setComputeCellBasedData(
-        //         phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-        //     );
-        // }
-        // computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
-        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-    }
-    else
-    {
-        // computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-        computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
-    }
+    // const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
+    // if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    // {
+    //     // if (!cellIter->getCellBasedData())
+    //     // {
+    //     //     cellIter->setComputeCellBasedData(
+    //     //         phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+    //     //     );
+    //     // }
+    //     // computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
+    //     computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+    //     computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+    // }
+    // else
+    // {
+    //     computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+    //     // computeGlobalFace(ls, faceFlux, phi, weights, operatorScaling);
+    // }
     // computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
     // computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
 

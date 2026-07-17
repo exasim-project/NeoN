@@ -369,7 +369,11 @@ void computeLaplacianIntImpl(
             // S_f points from owner to neighbour by construction.
             auto flux =
                 deltaCoeffs[facei] * gammaV[facei] * magFaceArea[facei] * one<AssemblyType>();
-
+            if (facei == 460041232){
+                std::cout << "nei: "<< neiCoeff << " own: " << ownCoeff << std::endl;
+                std::cout << "flux: "<< flux <<std::endl;
+                std::cout << deltaCoeffs[facei] << ", " << gammaV[facei] << ", " << magFaceArea[facei]<< std::endl;
+            }
             // triangular coefficients - neighbour -> lower, owner -> upper
             values[ma.lowerIdx(neiRow, facei)] += flux * neiCoeff;
             values[ma.upperIdx(ownRow, facei)] += flux * ownCoeff;
@@ -614,8 +618,8 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     }
     else
     {
-        // computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-        computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
+        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        // computeGlobalFace(ls, gamma, phi, coeff, faceNormalGradient_);
     }
     // computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
     // computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);

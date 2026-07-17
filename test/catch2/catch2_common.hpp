@@ -194,7 +194,18 @@ struct EqualsMatcher : Catch::Matchers::MatcherGenericBase
      *
      * @return Description of the expected values.
      */
-    std::string describe() const override { return "equals " + Catch::rangeToString(expected_); }
+    std::string describe() const override
+    {
+        if constexpr (hasCopyToHost<Expected>)
+        {
+            auto expectedHost = expected_.copyToHost();
+            return "equals " + Catch::rangeToString(expectedHost.view());
+        }
+        else
+        {
+            return "equals " + Catch::rangeToString(expected_);
+        }
+    }
 
 private:
 

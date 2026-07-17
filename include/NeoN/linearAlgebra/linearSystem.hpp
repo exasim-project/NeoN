@@ -17,6 +17,7 @@
 #endif
 
 #include <string>
+#include <iostream>
 #ifdef USE_JULIA
 #include <julia.h>
 #endif
@@ -380,16 +381,29 @@ private:
         const auto rhsView = rhsHost.view();
         auto ret = true;
         auto err = 0.0;
+        auto max = 0.0;
+        localIdx maxindex = 0;
         for (localIdx i = 0; i < lhsView.size(); ++i)
         {
-            err += abs(lhsView[i][0] - rhsView[i][0]);
-            if (abs(lhsView[i][0] - rhsView[i][0]) > tolerance)
+            const auto cur = abs(lhsView[i][0] - rhsView[i][0]);
+            
+            if (cur > max)
             {
-                // std::cout << "wrong: " <<i<< ": " << lhsView[i] << " ------  " << rhsView[i] << std::endl;
+                max = cur;
+                maxindex = i;
+            }
+            err += cur;
+            if (cur > tolerance)
+            {
+                // std::cout << "wrong: " <<i<< ": " << lhsView[i] << " ------  " << rhsView[i] <<
+                // std::endl;
                 ret = false;
                 // return false;
             }
         }
+        std::cout << "highest error: " << max << " at " << maxindex << std::endl;
+        std::cout << "neon: " << lhsView[maxindex] << ", julia: " << rhsView[maxindex] <<std::endl;
+
         std::cout << "total error: " << err << std::endl;
         std::cout << "total error per nnz: " << err / lhsView.size() << std::endl;
         return ret;
@@ -454,7 +468,8 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
 )
 {
     auto [sp, mi] =
-        createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(mesh
+        createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(
+            mesh
         );
     auto bSp =
         createBoundarySparsityPattern<typename BoundaryMatrixType::MatrixSparsityType>(mesh, *mi);
@@ -467,42 +482,42 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     Vector<IndexType> offDiagRowIdxs(exec, nProcFaces, 0);
 
 #ifdef NF_WITH_MPI_SUPPORT
-    auto commPattern = computeCommunicationPattern(mesh);
-    if (nProcFaces > 0)
-    {
-        const localIdx nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
-        const auto faceOwnersH = mesh.boundaryMesh().faceOwners().copyToHost();
-        const auto faceOwnersV = faceOwnersH.view();
-        Vector<IndexType> rowH(SerialExecutor {}, nProcFaces, 0);
-        Vector<IndexType> colH(SerialExecutor {}, nProcFaces, 0);
-        auto rowHV = rowH.view();
-        auto colHV = colH.view();
-        for (localIdx i = 0; i < nProcFaces; ++i)
-        {
-            // Store the local row index directly. The global offset used to be added here and
-            // subtracted again on the Ginkgo side; keeping the rows local avoids that round-trip.
-            // The column index stays global (it identifies a remote cell) and is consumed by
-            // Ginkgo's distributed index_map.
-            rowHV[i] = faceOwnersV[nBoundaryFaces + i];
-            colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
-        }
-        // offDiagRowSortPerm[j] = proc-face index whose row/col belongs at sorted position j.
-        // Already computed (and stored) in BoundaryMesh; reuse it here to avoid re-sorting.
-        const auto& offDiagRowSortPerm = mesh.boundaryMesh().getRowSortPerm();
-        {
-            std::vector<IndexType> sortedRow(static_cast<std::size_t>(nProcFaces));
-            std::vector<IndexType> sortedCol(static_cast<std::size_t>(nProcFaces));
-            for (localIdx j = 0; j < nProcFaces; ++j)
-            {
-                auto src = offDiagRowSortPerm[static_cast<std::size_t>(j)];
-                sortedRow[static_cast<std::size_t>(j)] = rowHV[src];
-                sortedCol[static_cast<std::size_t>(j)] = colHV[src];
-            }
-            offDiagRowIdxs = Vector<IndexType>(exec, std::move(sortedRow));
-            offDiagColIdxs = Vector<IndexType>(exec, std::move(sortedCol));
-        }
-        commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);
-    }
+    // auto commPattern = computeCommunicationPattern(mesh);
+    // if (nProcFaces > 0)
+    // {
+    //     const localIdx nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
+    //     const auto faceOwnersH = mesh.boundaryMesh().faceOwners().copyToHost();
+    //     const auto faceOwnersV = faceOwnersH.view();
+    //     Vector<IndexType> rowH(SerialExecutor {}, nProcFaces, 0);
+    //     Vector<IndexType> colH(SerialExecutor {}, nProcFaces, 0);
+    //     auto rowHV = rowH.view();
+    //     auto colHV = colH.view();
+    //     for (localIdx i = 0; i < nProcFaces; ++i)
+    //     {
+    //         // Store the local row index directly. The global offset used to be added here and
+    //         // subtracted again on the Ginkgo side; keeping the rows local avoids that round-trip.
+    //         // The column index stays global (it identifies a remote cell) and is consumed by
+    //         // Ginkgo's distributed index_map.
+    //         rowHV[i] = faceOwnersV[nBoundaryFaces + i];
+    //         colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
+    //     }
+    //     // offDiagRowSortPerm[j] = proc-face index whose row/col belongs at sorted position j.
+    //     // Already computed (and stored) in BoundaryMesh; reuse it here to avoid re-sorting.
+    //     const auto& offDiagRowSortPerm = mesh.boundaryMesh().getRowSortPerm();
+    //     {
+    //         std::vector<IndexType> sortedRow(static_cast<std::size_t>(nProcFaces));
+    //         std::vector<IndexType> sortedCol(static_cast<std::size_t>(nProcFaces));
+    //         for (localIdx j = 0; j < nProcFaces; ++j)
+    //         {
+    //             auto src = offDiagRowSortPerm[static_cast<std::size_t>(j)];
+    //             sortedRow[static_cast<std::size_t>(j)] = rowHV[src];
+    //             sortedCol[static_cast<std::size_t>(j)] = colHV[src];
+    //         }
+    //         offDiagRowIdxs = Vector<IndexType>(exec, std::move(sortedRow));
+    //         offDiagColIdxs = Vector<IndexType>(exec, std::move(sortedCol));
+    //     }
+    //     commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);
+    // }
 #endif
 
     auto offDiagSp = std::make_shared<const typename BoundaryMatrixType::MatrixSparsityType>(
@@ -519,7 +534,7 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     };
 
 #ifdef NF_WITH_MPI_SUPPORT
-    ls.commPattern() = std::move(commPattern);
+    // ls.commPattern() = std::move(commPattern);
 #endif
 
     return ls;

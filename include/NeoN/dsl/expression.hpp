@@ -334,7 +334,7 @@ public:
     ) const
     {
         assembleSpatialOperator(ls);         // add spatial operator
-        assembleTemporalOperator(ls, t, dt); // add temporal operators
+        // assembleTemporalOperator(ls, t, dt); // add temporal operators
 
         // FIXME REMOVE AFTER THESIS
         // Post-assembly functors apply on the same-type form via operator(); the segregated
