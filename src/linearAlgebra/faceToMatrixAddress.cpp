@@ -285,12 +285,10 @@ struct EllSparsityBuildResult
     localIdx stride;
 };
 
-/** @brief Native ELL counterpart to setSparsityPatternFaceToMatrixAddressSerial: same face
- * traversal and per-row slot assignment (own/neighbour/diag offsets are plain "position within
- * row" data, meaningful to any storage format), but scatters colIdx into ELL's padded,
- * column-major layout (celli + stride*slot) instead of CSR's compact layout
- * (rowOffs[celli]+slot). Row width isn't known until the count pass completes, so colIdx is
- * sized only after that, unlike the CSR path where total nnz is known up front. */
+/** @brief Native ELL counterpart to setSparsityPatternFaceToMatrixAddressSerial -- same face
+ * traversal and per-row slot assignment, scattered into ELL's padded column-major layout
+ * (celli + stride*slot) instead of CSR's compact one. colIdx is sized after the count pass,
+ * since row width isn't known up front. */
 EllSparsityBuildResult setSparsityPatternFaceToMatrixAddressSerialEll(
     const UnstructuredMesh& mesh,
     Array<uint8_t>& diagOffs,
