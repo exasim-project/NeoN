@@ -227,6 +227,26 @@ void registerDSL(nb::module_& m)
            const Dictionary& schemes,
            const Dictionary& solution) { return dsl::solve(exp, sol, t, dt, schemes, solution); }
     );
+
+    // Registered runtime-selection scheme names per operator factory, keyed by
+    // "<operator><value-type>". Regression hook for the force-instantiated operator
+    // registration above: an empty list means self-registration did not fire in _neon.
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    m.def(
+        "registered_operator_schemes",
+        []()
+        {
+            nb::dict schemes;
+            schemes["div<scalar>"] = fvcc::DivOperatorFactory<scalar>::entries();
+            schemes["div<Vector>"] = fvcc::DivOperatorFactory<Vec3>::entries();
+            schemes["div<Vector,scalar>"] = fvcc::DivOperatorFactory<Vec3, scalar>::entries();
+            schemes["laplacian<scalar>"] = fvcc::LaplacianOperatorFactory<scalar>::entries();
+            schemes["laplacian<Vector>"] = fvcc::LaplacianOperatorFactory<Vec3>::entries();
+            schemes["laplacian<Vector,scalar>"] =
+                fvcc::LaplacianOperatorFactory<Vec3, scalar>::entries();
+            return schemes;
+        }
+    );
 }
 
 } // namespace NeoN::bindings
