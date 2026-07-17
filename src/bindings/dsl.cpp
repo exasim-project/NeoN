@@ -23,6 +23,19 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
 
+// The operators above are `extern template`, so including the headers does not instantiate
+// them and their self-registration only fires in libNeoN. `_neon` is built `-fvisibility=hidden`
+// (private, empty factory table), so force the instantiations here to register the schemes.
+namespace NeoN::finiteVolume::cellCentred
+{
+template class GaussGreenDiv<scalar>;
+template class GaussGreenDiv<Vec3>;
+template class GaussGreenDiv<Vec3, scalar>;
+template class GaussGreenLaplacian<scalar>;
+template class GaussGreenLaplacian<Vec3>;
+template class GaussGreenLaplacian<Vec3, scalar>;
+} // namespace NeoN::finiteVolume::cellCentred
+
 namespace nb = nanobind;
 using namespace nb::literals;
 
@@ -135,7 +148,13 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
         .def(
             "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
         )
-        .def("size", &Expr::size);
+        .def("size", &Expr::size)
+        .def(
+            "read",
+            [](Expr& self, const Dictionary& schemes) { self.read(schemes); },
+            "schemes"_a,
+            "Resolve operator schemes from a Dictionary"
+        );
 }
 
 void registerDSL(nb::module_& m)
@@ -198,6 +217,26 @@ void registerDSL(nb::module_& m)
            scalar dt,
            const Dictionary& schemes,
            const Dictionary& solution) { return dsl::solve(exp, sol, t, dt, schemes, solution); }
+    );
+
+    // Registered runtime-selection scheme names per operator factory, keyed by
+    // "<operator><value-type>". Regression hook for the force-instantiated operator
+    // registration above: an empty list means self-registration did not fire in _neon.
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    m.def(
+        "registered_operator_schemes",
+        []()
+        {
+            nb::dict schemes;
+            schemes["div<scalar>"] = fvcc::DivOperatorFactory<scalar>::entries();
+            schemes["div<Vector>"] = fvcc::DivOperatorFactory<Vec3>::entries();
+            schemes["div<Vector,scalar>"] = fvcc::DivOperatorFactory<Vec3, scalar>::entries();
+            schemes["laplacian<scalar>"] = fvcc::LaplacianOperatorFactory<scalar>::entries();
+            schemes["laplacian<Vector>"] = fvcc::LaplacianOperatorFactory<Vec3>::entries();
+            schemes["laplacian<Vector,scalar>"] =
+                fvcc::LaplacianOperatorFactory<Vec3, scalar>::entries();
+            return schemes;
+        }
     );
 }
 
