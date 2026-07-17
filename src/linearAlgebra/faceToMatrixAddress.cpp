@@ -7,6 +7,7 @@
 #include "NeoN/linearAlgebra/utilities.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/ellSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
 #include <memory>
@@ -60,6 +61,13 @@ FaceToMatrixView FaceToMatrixAddress::view(View<const localIdx> rowOffsView) con
     return FaceToMatrixView {
         ownerOffset_.view(), neighbourOffset_.view(), diagOffset_.view(), rowOffsView
     };
+}
+
+EllFaceToMatrixView FaceToMatrixAddress::view(localIdx stride) const
+{
+    return EllFaceToMatrixView(
+        ownerOffset_.view(), neighbourOffset_.view(), diagOffset_.view(), stride
+    );
 }
 
 const NeoN::Array<uint8_t>& FaceToMatrixAddress::ownerOffset() const { return ownerOffset_; }
@@ -270,6 +278,122 @@ void setSparsityPatternFaceToMatrixAddressSerial(
     rowOffs = rowOffsH.copyToExecutor(exec);
 }
 
+struct EllSparsityBuildResult
+{
+    Vector<localIdx> colIdx; //! padded, column-major
+    localIdx numStoredElementsPerRow;
+    localIdx stride;
+};
+
+/** @brief Native ELL counterpart to setSparsityPatternFaceToMatrixAddressSerial: same face
+ * traversal and per-row slot assignment (own/neighbour/diag offsets are plain "position within
+ * row" data, meaningful to any storage format), but scatters colIdx into ELL's padded,
+ * column-major layout (celli + stride*slot) instead of CSR's compact layout
+ * (rowOffs[celli]+slot). Row width isn't known until the count pass completes, so colIdx is
+ * sized only after that, unlike the CSR path where total nnz is known up front. */
+EllSparsityBuildResult setSparsityPatternFaceToMatrixAddressSerialEll(
+    const UnstructuredMesh& mesh,
+    Array<uint8_t>& diagOffs,
+    Array<uint8_t>& ownOffs,
+    Array<uint8_t>& neiOffs
+)
+{
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto nCells = mesh.nCells();
+    const localIdx stride = nCells;
+
+    // start with one to include the diagonal
+    auto nFacesPerCellH = Vector<localIdx>(SerialExecutor {}, nCells, 1);
+    auto [neiOffsetH, ownOffsetH, diagOffsetH, faceOwnH, faceNeiH] =
+        copyToHosts(neiOffs, ownOffs, diagOffs, mesh.faceOwners(), mesh.faceNeighbors());
+
+    auto [nFacesPerCellHV, neiOffsetHV, ownOffsetHV, diagOffsetHV, faceOwnHV, faceNeiHV] =
+        views(nFacesPerCellH, neiOffsetH, ownOffsetH, diagOffsetH, faceOwnH, faceNeiH);
+
+    // accumulate number of non-zeros per row -- identical to the CSR count pass
+    parallelFor(
+        SerialExecutor {},
+        {0, nInternalFaces},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto own = faceOwnHV[facei];
+            auto nei = faceNeiHV[facei];
+
+            Kokkos::atomic_inc(&nFacesPerCellHV[own]);
+            Kokkos::atomic_inc(&nFacesPerCellHV[nei]);
+        },
+        "setSparsityPatternFaceToMatrixAddressSerialEll::accumulateNonZeros"
+    );
+
+    localIdx numStoredElementsPerRow = 0;
+    for (localIdx celli = 0; celli < nCells; ++celli)
+    {
+        numStoredElementsPerRow = std::max(numStoredElementsPerRow, nFacesPerCellHV[celli]);
+    }
+
+    auto colIdxH = Vector<localIdx>(
+        SerialExecutor {},
+        stride * numStoredElementsPerRow,
+        EllSparsityView<localIdx>::invalidIndex()
+    );
+    auto colIdxHV = colIdxH.view();
+    fill(nFacesPerCellH, 0); // reset, reused below as a per-row next-free-slot counter
+
+    // compute the lower triangular part of the matrix
+    parallelFor(
+        SerialExecutor {},
+        {0, nInternalFaces},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto nei = faceNeiHV[facei];
+            auto own = faceOwnHV[facei];
+
+            auto segIdxNei = Kokkos::atomic_fetch_add(&nFacesPerCellHV[nei], 1);
+            neiOffsetHV[facei] = static_cast<uint8_t>(segIdxNei);
+
+            // neighbour --> current cell: colIdx for row[neighbour] stores owner as a column
+            Kokkos::atomic_store(&colIdxHV[nei + stride * segIdxNei], own);
+        },
+        "setSparsityPatternFaceToMatrixAddressSerialEll::computeLowerTriangular"
+    );
+
+    map(
+        nFacesPerCellH,
+        KOKKOS_LAMBDA(const localIdx celli) {
+            auto nFaces = nFacesPerCellHV[celli];
+            // store number of lower entries as diagonal offset
+            diagOffsetHV[celli] = static_cast<uint8_t>(nFaces);
+            colIdxHV[celli + stride * nFaces] = celli;
+            return nFaces + 1;
+        }
+    );
+
+    // compute the upper triangular part of the matrix
+    parallelFor(
+        SerialExecutor {},
+        {0, nInternalFaces},
+        KOKKOS_LAMBDA(const localIdx facei) {
+            auto nei = faceNeiHV[facei];
+            auto own = faceOwnHV[facei];
+
+            auto segIdxOwn =
+                static_cast<uint8_t>(Kokkos::atomic_fetch_add(&nFacesPerCellHV[own], 1));
+            ownOffsetHV[facei] = segIdxOwn;
+
+            // owner --> current cell: colIdx for row[owner] stores neighbour as a column
+            Kokkos::atomic_store(&colIdxHV[own + stride * segIdxOwn], nei);
+        },
+        "setSparsityPatternFaceToMatrixAddressSerialEll::computeUpperTriangular"
+    );
+
+    // NOTE copy back to device
+    const auto exec = mesh.exec();
+    ownOffs = ownOffsetH.copyToExecutor(exec);
+    neiOffs = neiOffsetH.copyToExecutor(exec);
+    diagOffs = diagOffsetH.copyToExecutor(exec);
+    auto colIdx = colIdxH.copyToExecutor(exec);
+
+    return {std::move(colIdx), numStoredElementsPerRow, stride};
+}
+
 template<typename IndexType>
 void setProcBoundarySparsityPattern(
     const UnstructuredMesh& mesh,
@@ -361,6 +485,36 @@ createSparsityPatternFaceToMatrixAddress<CooSparsityPattern<localIdx>>(const Uns
 
     auto sp = std::make_shared<const CooSparsityPattern<localIdx>>(
         std::move(colIdx), std::move(cooRowIdx), Dimensions {nCells, nCells}
+    );
+    auto faceToMatrixAddress =
+        std::make_shared<const FaceToMatrixAddress>(ownOffs, neiOffs, diagOffs);
+    return {sp, faceToMatrixAddress};
+}
+
+// ELL specialization: builds the padded, column-major layout directly from the mesh (no CSR
+// intermediate) via setSparsityPatternFaceToMatrixAddressSerialEll.
+template<>
+std::pair<
+    std::shared_ptr<const EllSparsityPattern<localIdx>>,
+    std::shared_ptr<const FaceToMatrixAddress>>
+createSparsityPatternFaceToMatrixAddress<EllSparsityPattern<localIdx>>(const UnstructuredMesh& mesh)
+{
+    const auto exec = mesh.exec();
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nCells = mesh.nCells();
+    const localIdx nnz = nCells + 2 * nInternalFaces;
+    Array<uint8_t> diagOffs(exec, nCells, 0);
+    Array<uint8_t> ownOffs(exec, nInternalFaces, 0);
+    Array<uint8_t> neiOffs(exec, nInternalFaces, 0);
+
+    auto build = setSparsityPatternFaceToMatrixAddressSerialEll(mesh, diagOffs, ownOffs, neiOffs);
+
+    auto sp = std::make_shared<const EllSparsityPattern<localIdx>>(
+        std::move(build.colIdx),
+        Dimensions {nCells, nCells},
+        build.numStoredElementsPerRow,
+        build.stride,
+        nnz
     );
     auto faceToMatrixAddress =
         std::make_shared<const FaceToMatrixAddress>(ownOffs, neiOffs, diagOffs);
