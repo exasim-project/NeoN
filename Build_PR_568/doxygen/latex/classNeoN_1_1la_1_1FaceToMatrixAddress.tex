@@ -21,6 +21,12 @@ Inheritance diagram for NeoN\+::la\+::Face\+To\+Matrix\+Address\+:\begin{figure}
 \item 
 \mbox{\hyperlink{structNeoN_1_1la_1_1FaceToMatrixView}{Face\+To\+Matrix\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a0ac27cbf7827fbedf373276ea4e073ea}{view}} (\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ row\+Offs\+View) const
 \begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1EllFaceToMatrixView}{Ell\+Face\+To\+Matrix\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_af8b3838ada0decc47ca9394feca0105f}{view}} (\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} stride) const
+\begin{DoxyCompactList}\small\item\em Get an ELL view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1FaceToMatrixView}{Face\+To\+Matrix\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a0c8874cc007af375bdeee3c9fb22ad7c}{view}} (const \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&sparsity) const
+\begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data, format picked by overload resolution on the sparsity view\textquotesingle{}s own type, e.\+g. matrix.\+sparsity()-\/\texorpdfstring{$>$}{>}\doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress_a0ac27cbf7827fbedf373276ea4e073ea}{view()}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1EllFaceToMatrixView}{Ell\+Face\+To\+Matrix\+View}} \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_ab558ac99d4bf47cea6246e1aec8f6e2d}{view}} (const \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Ell\+Sparsity\+View}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&sparsity) const
+\begin{DoxyCompactList}\small\item\em Get an ELL view representation of the matrix\textquotesingle{}s data, format picked by overload resolution on the sparsity view\textquotesingle{}s own type. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ uint8\+\_\+t $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_aa4c3cad41cd1488a74093e20ada17bd2}{owner\+Offset}} () const
 \item 
 const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ uint8\+\_\+t $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress_a323a0e68aa9442dc4f238df016ee6cfc}{neighbour\+Offset}} () const
@@ -45,7 +51,7 @@ Face\+To\+Matrix\+Address \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_a256c1d99
 \doxysubsection{Detailed Description}
 
 
-Definition at line \mbox{\hyperlink{faceToMatrixAddress_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{faceToMatrixAddress_8hpp_source}{face\+To\+Matrix\+Address.\+hpp}}.
+Definition at line \mbox{\hyperlink{faceToMatrixAddress_8hpp_source_l00114}{114}} of file \mbox{\hyperlink{faceToMatrixAddress_8hpp_source}{face\+To\+Matrix\+Address.\+hpp}}.
 
 
 
@@ -115,10 +121,57 @@ Implements \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_ad54623a2d9533dc70f4d609
 \doxysubsubsection{\texorpdfstring{ownerOffset()}{ownerOffset()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily const \mbox{\hyperlink{classNeoN_1_1Array}{Array}}$<$ uint8\+\_\+t $>$ \& Neo\+N\+::la\+::\+Face\+To\+Matrix\+Address\+::owner\+Offset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
+\Hypertarget{classNeoN_1_1la_1_1FaceToMatrixAddress_ab558ac99d4bf47cea6246e1aec8f6e2d}\label{classNeoN_1_1la_1_1FaceToMatrixAddress_ab558ac99d4bf47cea6246e1aec8f6e2d} 
+\index{NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}!view@{view}}
+\index{view@{view}!NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1EllFaceToMatrixView}{Ell\+Face\+To\+Matrix\+View}} Neo\+N\+::la\+::\+Face\+To\+Matrix\+Address\+::view (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Ell\+Sparsity\+View}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{sparsity }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get an ELL view representation of the matrix\textquotesingle{}s data, format picked by overload resolution on the sparsity view\textquotesingle{}s own type. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{structNeoN_1_1la_1_1EllFaceToMatrixView}{Ell\+Face\+To\+Matrix\+View} for easy access to ELL-\/stored matrix elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{faceToMatrixAddress_8hpp_source_l00185}{185}} of file \mbox{\hyperlink{faceToMatrixAddress_8hpp_source}{face\+To\+Matrix\+Address.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1FaceToMatrixAddress_a0c8874cc007af375bdeee3c9fb22ad7c}\label{classNeoN_1_1la_1_1FaceToMatrixAddress_a0c8874cc007af375bdeee3c9fb22ad7c} 
+\index{NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}!view@{view}}
+\index{view@{view}!NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1FaceToMatrixView}{Face\+To\+Matrix\+View}} Neo\+N\+::la\+::\+Face\+To\+Matrix\+Address\+::view (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&}]{sparsity }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a view representation of the matrix\textquotesingle{}s data, format picked by overload resolution on the sparsity view\textquotesingle{}s own type, e.\+g. matrix.\+sparsity()-\/\texorpdfstring{$>$}{>}\doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress_a0ac27cbf7827fbedf373276ea4e073ea}{view()}. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{structNeoN_1_1la_1_1FaceToMatrixView}{Face\+To\+Matrix\+View} for easy access to matrix elements. 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{faceToMatrixAddress_8hpp_source_l00175}{175}} of file \mbox{\hyperlink{faceToMatrixAddress_8hpp_source}{face\+To\+Matrix\+Address.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1FaceToMatrixAddress_af8b3838ada0decc47ca9394feca0105f}\label{classNeoN_1_1la_1_1FaceToMatrixAddress_af8b3838ada0decc47ca9394feca0105f} 
+\index{NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}!view@{view}}
+\index{view@{view}!NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1EllFaceToMatrixView}{Ell\+Face\+To\+Matrix\+View}} Neo\+N\+::la\+::\+Face\+To\+Matrix\+Address\+::view (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}}]{stride }\end{DoxyParamCaption}) const}
+
+
+
+Get an ELL view representation of the matrix\textquotesingle{}s data. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{structNeoN_1_1la_1_1EllFaceToMatrixView}{Ell\+Face\+To\+Matrix\+View} for easy access to ELL-\/stored matrix elements. 
+\end{DoxyReturn}
 \Hypertarget{classNeoN_1_1la_1_1FaceToMatrixAddress_a0ac27cbf7827fbedf373276ea4e073ea}\label{classNeoN_1_1la_1_1FaceToMatrixAddress_a0ac27cbf7827fbedf373276ea4e073ea} 
 \index{NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}!view@{view}}
 \index{view@{view}!NeoN::la::FaceToMatrixAddress@{NeoN::la::FaceToMatrixAddress}}
-\doxysubsubsection{\texorpdfstring{view()}{view()}}
+\doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1FaceToMatrixView}{Face\+To\+Matrix\+View}} Neo\+N\+::la\+::\+Face\+To\+Matrix\+Address\+::view (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{row\+Offs\+View }\end{DoxyParamCaption}) const}
 
 

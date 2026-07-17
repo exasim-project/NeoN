@@ -7,6 +7,6 @@ var searchData=
   ['solvetime_4',['solveTime',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aacb3f3e80c3f7faa799baea6c87377b1',1,'NeoN::la::SolverStatsEntry']]],
   ['sparsity_5',['sparsity',['../structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac',1,'NeoN::la::MatrixView']]],
   ['start_5f_6',['start_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a704e4f166091d177d272ad0e55186531',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
-  ['stride_7',['stride',['../structNeoN_1_1la_1_1EllSparsityView.html#a4465a04c7f1eabe14884d56606685042',1,'NeoN::la::EllSparsityView']]],
+  ['stride_7',['stride',['../structNeoN_1_1la_1_1EllFaceToMatrixView.html#a1f4e2af86375311a97bd6721f1ad0da0',1,'NeoN::la::EllFaceToMatrixView::stride'],['../structNeoN_1_1la_1_1EllSparsityView.html#a4465a04c7f1eabe14884d56606685042',1,'NeoN::la::EllSparsityView::stride']]],
   ['subcycleindex_8',['subCycleIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#aced149d40cd18519ea643bee33680f3f',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]]
 ];

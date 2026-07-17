@@ -22,7 +22,7 @@ var searchData=
   ['updateprocboundaryownervalue_3c_20vec3_20_3e_19',['updateProcBoundaryOwnerValue&lt; Vec3 &gt;',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail.html#a242267c68134593d8f4f3dfcf2250609',1,'NeoN::finiteVolume::cellCentred::volumeBoundary::detail']]],
   ['updateweights_20',['updateweights',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BasicGeometryScheme.html#ae46444eb51c3c48da44fa1ae8e825c2c',1,'NeoN::finiteVolume::cellCentred::BasicGeometryScheme::updateWeights()'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometrySchemeFactory.html#a0d7e856c16557dda2540fb0e0b12d56d',1,'NeoN::finiteVolume::cellCentred::GeometrySchemeFactory::updateWeights()']]],
   ['upper_21',['upper',['../namespaceNeoN_1_1la.html#adf0e2e0fd0c0edb0caf3488bcc1ec63c',1,'NeoN::la']]],
-  ['upperidx_22',['upperIdx',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a181679a45381c34feaf055745c483c9d',1,'NeoN::la::FaceToMatrixView']]],
+  ['upperidx_22',['upperidx',['../structNeoN_1_1la_1_1EllFaceToMatrixView.html#a5b4baa131b06b9934984766c35e830e1',1,'NeoN::la::EllFaceToMatrixView::upperIdx()'],['../structNeoN_1_1la_1_1FaceToMatrixView.html#a181679a45381c34feaf055745c483c9d',1,'NeoN::la::FaceToMatrixView::upperIdx()']]],
   ['upwind_23',['upwind',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind.html',1,'NeoN::finiteVolume::cellCentred::Upwind&lt; ValueType &gt;'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1Upwind.html#a17762f667e28fbf0501c8e59e02e723e',1,'NeoN::finiteVolume::cellCentred::Upwind::Upwind()']]],
   ['upwind_2ehpp_24',['upwind.hpp',['../upwind_8hpp.html',1,'']]],
   ['utilities_2ehpp_25',['utilities.hpp',['../utilities_8hpp.html',1,'']]]
