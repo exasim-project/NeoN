@@ -71,6 +71,10 @@ option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
 # shared runtime has to be installed alongside _neon, and wheel repair tools (auditwheel, delocate,
 # delvewheel) vendor it under a mangled SONAME, which defeats the sharing it exists for.
 option(NeoN_NANOBIND_SHARED "Link the python bindings against a shared libnanobind" OFF)
+# Take nanobind from the active Python environment instead of fetching NeoN_NANOBIND_VERSION via
+# CPM. Useful together with NeoN_NANOBIND_SHARED: pybFoam builds against that same copy, so both
+# modules share one libnanobind ABI by construction rather than by a version pin.
+option(NeoN_EXTERNAL_NANOBIND "Use the nanobind from the active Python environment" OFF)
 option(NeoN_INSTALL_CMAKE_PACKAGE "Install CMake package config files and exported targets" ON)
 
 # Third party dependencies
