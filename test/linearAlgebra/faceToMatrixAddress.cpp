@@ -92,8 +92,8 @@ TEST_CASE("EllFaceToMatrixAddress")
 
     SECTION("has correct ownerOffset and neighbourOffset " + execName)
     {
-        // ownerOffset/neighbourOffset are "position within row" data, meaningful to any
-        // storage format -- same values the CSR builder produces for the same mesh.
+        // position-within-row data, format-independent -- same values the CSR builder
+        // produces for this mesh.
         REQUIRE_THAT(mi->ownerOffset(), Equals(std::vector<NeoN::localIdx> {1, 2, 2}, EqualInt()));
         REQUIRE_THAT(
             mi->neighbourOffset(), Equals(std::vector<NeoN::localIdx> {0, 0, 0}, EqualInt())
@@ -102,8 +102,7 @@ TEST_CASE("EllFaceToMatrixAddress")
 
     SECTION("EllFaceToMatrixView resolves the same flat offsets as the padded colIdx " + execName)
     {
-        // Prefer the sparsity-view-typed overload: format is picked by overload resolution,
-        // not a raw stride value that could belong to an unrelated pattern.
+        // sparsity-view-typed overload -- format picked by overload resolution.
         auto ellView = mi->view(sp->view());
 
         Vector<NeoN::localIdx> checkDiag(exec, nCells);
