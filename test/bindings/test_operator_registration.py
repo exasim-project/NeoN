@@ -106,3 +106,22 @@ def test_gauss_vector_operators_resolve(executor):
     # Without the explicit instantiation in _neon this raises
     # "Could not find constructor for Gauss".
     eqn.read(_make_schemes())
+
+
+# The schemes each operator factory is expected to have registered in ``_neon``.
+# Equality (below) makes this the source of truth: force-instantiate another scheme in
+# ``dsl.cpp`` and this must be updated in lockstep, so registration drift is caught.
+EXPECTED_SCHEMES = {
+    "div<scalar>": {"Gauss"},
+    "div<Vector>": {"Gauss"},
+    "div<Vector,scalar>": {"Gauss"},
+    "laplacian<scalar>": {"Gauss"},
+    "laplacian<Vector>": {"Gauss"},
+    "laplacian<Vector,scalar>": {"Gauss"},
+}
+
+
+def test_registered_operator_schemes_match_expected():
+    """Every operator factory has exactly its expected schemes registered in _neon."""
+    registered = {k: set(v) for k, v in neon.registered_operator_schemes().items()}
+    assert registered == EXPECTED_SCHEMES
