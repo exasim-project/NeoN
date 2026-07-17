@@ -8,99 +8,17 @@
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
 namespace NeoN::finiteVolume::cellCentred::volumeBoundary
 {
 
-namespace detail
-{
-
-// Primary declaration
-template<typename ValueType>
-void setSlipValue(
-    Field<ValueType>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
-);
-
-// --- Scalar specialization: zero-gradient ---
-template<>
-inline void setSlipValue<NeoN::scalar>(
-    Field<NeoN::scalar>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
-)
-{
-    const auto internalV = domainVector.internalVector().view();
-
-    auto [refGradV, valueV, valueFractionV, refValueV, boundaryFaceOwnersV] = views(
-        domainVector.boundaryData().refGrad(),
-        domainVector.boundaryData().value(),
-        domainVector.boundaryData().valueFraction(),
-        domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceOwners()
-    );
-
-    NeoN::parallelFor(
-        domainVector.exec(),
-        range,
-        NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = boundaryFaceOwnersV[i];
-            const auto v = internalV[owner];
-
-            refValueV[i] = v;
-            valueV[i] = v;
-            valueFractionV[i] = 0.0;
-            refGradV[i] = 0.0;
-        },
-        "setSlipValue(scalar)"
-    );
-}
-
-// --- Vec3 specialization: tangential projection (remove normal component) ---
-template<>
-inline void setSlipValue<NeoN::Vec3>(
-    Field<NeoN::Vec3>& domainVector,
-    const UnstructuredMesh& mesh,
-    std::pair<localIdx, localIdx> range
-)
-{
-    const auto internalV = domainVector.internalVector().view();
-
-    auto [refGradV, valueV, valueFractionV, refValueV, boundaryFaceOwnersV, faceUnitNormalsV] =
-        views(
-            domainVector.boundaryData().refGrad(),
-            domainVector.boundaryData().value(),
-            domainVector.boundaryData().valueFraction(),
-            domainVector.boundaryData().refValue(),
-            mesh.boundaryMesh().faceOwners(),
-            mesh.boundaryMesh().faceUnitNormals()
-        );
-
-    NeoN::parallelFor(
-        domainVector.exec(),
-        range,
-        NEON_LAMBDA(const localIdx i) {
-            const localIdx owner = boundaryFaceOwnersV[i];
-            const auto v = internalV[owner];
-            const auto n = faceUnitNormalsV[i];
-
-            const auto vtan = v - n * (v & n);
-
-            refValueV[i] = vtan;
-            valueV[i] = vtan;
-            valueFractionV[i] = 0.0;
-            refGradV[i] = NeoN::zero<NeoN::Vec3>();
-        },
-        "setSlipValue(Vec3)"
-    );
-}
-
-} // namespace detail
-
-
+// Slip is a frictionless-wall boundary condition: scalar => zero-gradient, vector => tangential
+// projection + deferred normal damping. It shares its implementation with Symmetry via
+// detail::setSlipSymmetryValue; the two differ only in the registered name and in where they may be
+// applied (slip on wall/patch types, symmetry on a symmetry-plane patch).
 template<typename ValueType>
 class Slip : public VolumeBoundaryFactory<ValueType>::template Register<Slip<ValueType>>
 {
@@ -118,7 +36,7 @@ public:
 
     virtual void correctBoundaryCondition(Field<ValueType>& domainVector) final
     {
-        detail::setSlipValue(domainVector, mesh_, this->range());
+        detail::setSlipSymmetryValue(domainVector, mesh_, this->range());
     }
 
     static std::string name() { return "slip"; }
@@ -127,7 +45,7 @@ public:
 
     static std::string doc()
     {
-        return "Slip wall (scalar: zero-gradient; vector: tangential projection).";
+        return "Slip wall (scalar: zero-gradient; vector: tangential projection + normal damping).";
     }
 
     static std::string schema() { return "none"; }

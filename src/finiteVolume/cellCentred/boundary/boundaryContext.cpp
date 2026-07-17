@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -21,6 +22,11 @@ void BoundaryContext::insert(std::string name, const VolumeField<Vec3>& f)
 void BoundaryContext::insert(std::string name, const VolumeField<Tensor>& f)
 {
     tensorFields_.emplace(std::move(name), &f);
+}
+
+void BoundaryContext::insert(std::string name, const SurfaceField<NeoN::scalar>& f)
+{
+    surfaceScalarFields_.emplace(std::move(name), &f);
 }
 
 const VolumeField<NeoN::scalar>& BoundaryContext::scalarFieldPtr(const std::string& name) const
@@ -51,6 +57,16 @@ bool BoundaryContext::hasVector(const std::string& name) const noexcept
 bool BoundaryContext::hasTensor(const std::string& name) const noexcept
 {
     return tensorFields_.count(name) > 0;
+}
+
+const SurfaceField<NeoN::scalar>& BoundaryContext::surfaceScalarField(const std::string& name) const
+{
+    return *surfaceScalarFields_.at(name);
+}
+
+bool BoundaryContext::hasSurfaceScalar(const std::string& name) const noexcept
+{
+    return surfaceScalarFields_.count(name) > 0;
 }
 
 } // namespace NeoN::finiteVolume::cellCentred

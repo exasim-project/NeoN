@@ -147,14 +147,12 @@ public:
     /**
      * @brief Move-assignment operator — transfers ownership of the data buffer.
      *
-     * Moves the data pointer, size, and executor from rhs without launching any GPU
-     * kernel (O(1) pointer swap).  The old buffer owned by *this is freed first.
+     * Swaps the data pointer and size from rhs in O(1) without launching any GPU
+     * kernel.  The old buffer owned by *this is freed first (after a fence if on GPU).
      * After the move, rhs is left in an empty (size=0, data=nullptr) state.
+     * The executor is unchanged — exec_ is const and cannot be moved.
      *
-     * @note Use this when assigning a temporary (e.g. the result of fromFoamField)
-     *       into an existing Vector to avoid the async GPU→GPU copy in the copy
-     *       operator=(const Vector&), which can race against the temporary's
-     *       destructor freeing the source buffer before the kernel completes.
+     * @warning Invalidates any existing View objects that point into *this.
      */
     Vector<ValueType>& operator=(Vector<ValueType>&& rhs) noexcept;
 
