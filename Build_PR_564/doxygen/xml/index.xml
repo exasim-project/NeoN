@@ -107,15 +107,19 @@
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a80dc098b1619e225f34420d47e88b77e" kind="variable"><name>scalarFields_</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1abbef0db1cda6bcccb7a0b75de653ef9e" kind="variable"><name>vectorFields_</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1adde991d37ba1f80c6a96cf0b36e0659c" kind="variable"><name>tensorFields_</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a0c07a57057c98d2ee5a42bed0f273812" kind="variable"><name>surfaceScalarFields_</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a7f1141ef9cf76772300c6d0ca2f36c7a" kind="function"><name>insert</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a2d896d54fbe65fb2316169bacdca4788" kind="function"><name>insert</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a1126f80e5252ff0a3fa88e56b6ed3fd3" kind="function"><name>insert</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a423866e6840240aadc1116b88eed6022" kind="function"><name>insert</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1aa60bb8ea0fd30ed3348a9633feb635fc" kind="function"><name>scalarFieldPtr</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1ac743739958fb927496fb5b2db9fafd81" kind="function"><name>vectorFieldPtr</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a9970e4a7ea4359f84592a0a847636570" kind="function"><name>tensorFieldPtr</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1ad51f90f76dd00db19adba771b75fba89" kind="function"><name>surfaceScalarField</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1ad0ac5f05bb32ed8842541fa7314bd85d" kind="function"><name>hasScalar</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a2a2d43faccc08fea3ceae00160ab436c" kind="function"><name>hasVector</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1a19e3e828bd6e8cef43ac924813317833" kind="function"><name>hasTensor</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext_1ad0d952bf6b13a5fa64b00169013d8e2d" kind="function"><name>hasSurfaceScalar</name></member>
   </compound>
   <compound refid="classNeoN_1_1BoundaryData" kind="class"><name>NeoN::BoundaryData</name>
     <member refid="classNeoN_1_1BoundaryData_1a0bb18ef49b7930439cb321518d5eb6af" kind="typedef"><name>BoundaryDataType</name></member>
@@ -772,6 +776,13 @@
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1ae7b06ed504499c470bb4b22e60c19e96" kind="function"><name>doc</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1FixedValue_1af89a1abef69d223e968f4ebcfa49d6b0" kind="function"><name>schema</name></member>
   </compound>
+  <compound refid="classNeoN_1_1dsl_1_1FixedValueConstraints" kind="class"><name>NeoN::dsl::FixedValueConstraints</name>
+    <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1aa435998de9192bcb9db94dc054249ded" kind="variable"><name>mask_</name></member>
+    <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1aae8e281814dabfd4855aaae1286e77f8" kind="variable"><name>values_</name></member>
+    <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1add2fd51a56391b5a0527df62daf1b0ae" kind="variable"><name>nCells_</name></member>
+    <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1aa0f467ac39675f57a4dfc63d05097f83" kind="function"><name>FixedValueConstraints</name></member>
+    <member refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1a756ecb34596254c9b253def7ef6c8d2d" kind="function"><name>operator()</name></member>
+  </compound>
   <compound refid="classNeoN_1_1timeIntegration_1_1ForwardEuler" kind="class"><name>NeoN::timeIntegration::ForwardEuler</name>
     <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1af623b11ec5336dc5ece3b5c276a34bd6" kind="typedef"><name>ValueType</name></member>
     <member refid="classNeoN_1_1timeIntegration_1_1ForwardEuler_1ab249bad67b89c5fb11aeef94de4267c0" kind="typedef"><name>Base</name></member>
@@ -925,6 +936,21 @@
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a3067c0516545619d0c7068bdd107da86" kind="function"><name>grad</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1ab48a77d3ce3b1d49a299bded320bbbcc" kind="function"><name>grad</name></member>
     <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory_1a1c1cb19fc919dbc0429ee91cf8f492cf" kind="function"><name>clone</name></member>
+  </compound>
+  <compound refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet" kind="class"><name>NeoN::finiteVolume::cellCentred::volumeBoundary::InletOutlet</name>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a6afc88a07bc255e8852a648ed730349d" kind="typedef"><name>Base</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ab4d847e8aa3c0f5d1b27aa3e0aad90ca" kind="typedef"><name>InletOutletType</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aa98fa0db97ddd6004e0dbc3e632faccb" kind="variable"><name>mesh_</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ab766eaa624dc403d808f00fcb296960d" kind="variable"><name>inletValue_</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aaa51a2606153efb85e4399c23571216b" kind="variable"><name>phiName_</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ae8f68f9076952d0c676ffd46ed986675" kind="function"><name>InletOutlet</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" kind="function"><name>correctBoundaryCondition</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ad58a28e673bda87cfb3499ddf6243f1d" kind="function"><name>correctBoundaryCondition</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a434731117bfef9c474222248b73298ac" kind="function"><name>getName</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1af97c19f4fd68b39691c8518b5e7efb61" kind="function"><name>clone</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" kind="function"><name>name</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aed1d34758231d533b17fb1f6222f4b21" kind="function"><name>doc</name></member>
+    <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a56a51244699633e1a2118e64071b452d" kind="function"><name>schema</name></member>
   </compound>
   <compound refid="classKokkosAllocactor" kind="class"><name>KokkosAllocactor</name>
   </compound>
@@ -1433,6 +1459,17 @@
     <member refid="classNeoN_1_1dsl_1_1SpatialOperator_1abbf112a2938a5fe153d451c9b68ec19a" kind="function"><name>read</name></member>
     <member refid="classNeoN_1_1dsl_1_1SpatialOperator_1a78ada1cf73d345d9df1a917d0ba3c76f" kind="function"><name>exec</name></member>
   </compound>
+  <compound refid="classNeoN_1_1timeIntegration_1_1SteadyState" kind="class"><name>NeoN::timeIntegration::SteadyState</name>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a8b23fe997c7211930c897c058a80fedd" kind="typedef"><name>ValueType</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a46744954fdc4e17c9a798afbd28d1ced" kind="typedef"><name>Base</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a03be522ab8c5ca9d0a341c136ab1e909" kind="function"><name>SteadyState</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1aeb7911388a644d2da9b360b876647136" kind="function"><name>solve</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1ab091ad7d0554b5b062af31cedcc914b3" kind="function"><name>clone</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a7e7a9562bde14c0bdd40c5742ce262e5" kind="function"><name>explicitIntegration</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1ab808bc958f97324d1847a10a95445c74" kind="function"><name>name</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a4b56cc5d75e3fe120db9631e863af5f7" kind="function"><name>doc</name></member>
+    <member refid="classNeoN_1_1timeIntegration_1_1SteadyState_1a6d65bd6923f73dbde24571dfa6385193" kind="function"><name>schema</name></member>
+  </compound>
   <compound refid="classNeoN_1_1SupportsCopyTo" kind="class"><name>NeoN::SupportsCopyTo</name>
     <member refid="classNeoN_1_1SupportsCopyTo_1a93a822c7f2d48dc0cfbbae226c8ab586" kind="function"><name>~SupportsCopyTo</name></member>
     <member refid="classNeoN_1_1SupportsCopyTo_1ad54623a2d9533dc70f4d609714209967" kind="function"><name>copyToExecutor</name></member>
@@ -1810,6 +1847,7 @@
     <member refid="classNeoN_1_1Vector_1adfb14f80df8f4b622452818d3ac5f52f" kind="function"><name>operator[]</name></member>
     <member refid="classNeoN_1_1Vector_1a79947b149106e8cae946231f179639fe" kind="function"><name>operator=</name></member>
     <member refid="classNeoN_1_1Vector_1ae8e2493ea02950235947c1c5e128e3c0" kind="function"><name>operator=</name></member>
+    <member refid="classNeoN_1_1Vector_1a5a9406cd5937caca19cbb5a340b3d640" kind="function"><name>operator=</name></member>
     <member refid="classNeoN_1_1Vector_1ab4d83cf671153e017e107f022d06d2a8" kind="function"><name>operator+=</name></member>
     <member refid="classNeoN_1_1Vector_1add2cd47adb8b276c03f1f41a1e36cae1" kind="function"><name>operator-=</name></member>
     <member refid="classNeoN_1_1Vector_1a3aea84baea4f7590d0ae483e3040f18e" kind="function"><name>operator*</name></member>
@@ -2137,6 +2175,7 @@
   <compound refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred" kind="namespace"><name>NeoN::finiteVolume::cellCentred</name>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" kind="enum"><name>DdtScheme</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a6adf97f83acf6453d4a6a4b1070f3754" kind="enumvalue"><name>None</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a9ede786e1e3175585aacb6d383a09aaf" kind="enumvalue"><name>Steady</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbec671208b40d67e1f5ae9ef82c3377" kind="enumvalue"><name>BDF1</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8abbee23d8755020956d188ee92325ce09" kind="enumvalue"><name>BDF2</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af1c5b27f52cfe871ebc69cf0c8d11626" kind="typedef"><name>CreateFunction</name></member>
@@ -2193,10 +2232,14 @@
   <compound refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary" kind="namespace"><name>NeoN::finiteVolume::cellCentred::volumeBoundary</name>
   </compound>
   <compound refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail" kind="namespace"><name>NeoN::finiteVolume::cellCentred::volumeBoundary::detail</name>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a88d7f7d30a895f29f329bde606784613" kind="function"><name>setSlipSymmetryValue</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a0a74486f6bc4ed55f4c7d854979a1314" kind="function"><name>setSlipSymmetryValue&lt; NeoN::scalar &gt;</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad0f9490dad8c47c684833fa21ee6b0c1" kind="function"><name>setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a2864d5431aa5578080a90ff1e791f389" kind="function"><name>extrapolateValue</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a1f8fd5dc16cc7ec9df36dc2e8ba4a88e" kind="function"><name>applyFixedFluxPressure</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a0d866de55405f02532dc5ab05c5d665b" kind="function"><name>setGradientValue</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a2ef18c0f426de4e5522a05bf1135e770" kind="function"><name>setFixedValue</name></member>
+    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ae0c1ed49ed36d3cf578eb4f4a4c071de" kind="function"><name>setInletOutletValue</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ab9447ba88a3a3f318691277b64d77c1e" kind="function"><name>setProcBoundaryCoefficients</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a0a401e2e06952f4f8fa8072a22833aad" kind="function"><name>updateProcBoundaryOwnerValue</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1af8ada0ea6ac3d9c6c69f23de9e421429" kind="function"><name>setProcBoundaryCoefficients&lt; scalar &gt;</name></member>
@@ -2205,12 +2248,6 @@
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ac7d30362519dd9c273ed6c59d790bf97" kind="function"><name>updateProcBoundaryOwnerValue&lt; scalar &gt;</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a242267c68134593d8f4f3dfcf2250609" kind="function"><name>updateProcBoundaryOwnerValue&lt; Vec3 &gt;</name></member>
     <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aa045f711ab2b0d938268eec507c09efd" kind="function"><name>updateProcBoundaryOwnerValue&lt; Tensor &gt;</name></member>
-    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a8ea5479a98aaa43a381b0079ba77484a" kind="function"><name>setSlipValue</name></member>
-    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a0b61fbfc25e6fd49ddc2d8878e34af03" kind="function"><name>setSlipValue&lt; NeoN::scalar &gt;</name></member>
-    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1abff32701bdbca7a36d062536b88781c0" kind="function"><name>setSlipValue&lt; NeoN::Vec3 &gt;</name></member>
-    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a441e4f821471c83004cfef5b1b757259" kind="function"><name>setSymmetryValue</name></member>
-    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a796f3a5b7d1ef50cf6147e53631e77bd" kind="function"><name>setSymmetryValue&lt; NeoN::scalar &gt;</name></member>
-    <member refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aec1cc4bb760073caeda2d2e0cf24cab7" kind="function"><name>setSymmetryValue&lt; NeoN::Vec3 &gt;</name></member>
   </compound>
   <compound refid="namespaceNeoN_1_1la" kind="namespace"><name>NeoN::la</name>
     <member refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kind="typedef"><name>CSRMatrix</name></member>
@@ -2416,23 +2453,15 @@
   </compound>
   <compound refid="boundaryPatchMixin_8hpp" kind="file"><name>boundaryPatchMixin.hpp</name>
   </compound>
-  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
-  </compound>
-  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
-  </compound>
   <compound refid="surface_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
   <compound refid="volume_2calculated_8hpp" kind="file"><name>calculated.hpp</name>
   </compound>
+  <compound refid="ddtFluxCorrBoundary_8hpp" kind="file"><name>ddtFluxCorrBoundary.hpp</name>
+  </compound>
   <compound refid="surface_2empty_8hpp" kind="file"><name>empty.hpp</name>
   </compound>
   <compound refid="volume_2empty_8hpp" kind="file"><name>empty.hpp</name>
-  </compound>
-  <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
-  </compound>
-  <compound refid="fixedFluxPressure_8hpp" kind="file"><name>fixedFluxPressure.hpp</name>
-  </compound>
-  <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
   </compound>
   <compound refid="surface_2fixedValue_8hpp" kind="file"><name>fixedValue.hpp</name>
   </compound>
@@ -2442,11 +2471,23 @@
   </compound>
   <compound refid="volume_2processor_8hpp" kind="file"><name>processor.hpp</name>
   </compound>
-  <compound refid="slip_8hpp" kind="file"><name>slip.hpp</name>
-  </compound>
   <compound refid="surface_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
   </compound>
   <compound refid="volume_2symmetry_8hpp" kind="file"><name>symmetry.hpp</name>
+  </compound>
+  <compound refid="surfaceBoundaryFactory_8hpp" kind="file"><name>surfaceBoundaryFactory.hpp</name>
+  </compound>
+  <compound refid="slipSymmetry_8hpp" kind="file"><name>slipSymmetry.hpp</name>
+  </compound>
+  <compound refid="extrapolated_8hpp" kind="file"><name>extrapolated.hpp</name>
+  </compound>
+  <compound refid="fixedFluxPressure_8hpp" kind="file"><name>fixedFluxPressure.hpp</name>
+  </compound>
+  <compound refid="fixedGradient_8hpp" kind="file"><name>fixedGradient.hpp</name>
+  </compound>
+  <compound refid="inletOutlet_8hpp" kind="file"><name>inletOutlet.hpp</name>
+  </compound>
+  <compound refid="slip_8hpp" kind="file"><name>slip.hpp</name>
   </compound>
   <compound refid="volumeBoundaryFactory_8hpp" kind="file"><name>volumeBoundaryFactory.hpp</name>
   </compound>
@@ -2549,6 +2590,8 @@
   </compound>
   <compound refid="rungeKutta_8hpp" kind="file"><name>rungeKutta.hpp</name>
   </compound>
+  <compound refid="steadyState_8hpp" kind="file"><name>steadyState.hpp</name>
+  </compound>
   <compound refid="sundials_8hpp" kind="file"><name>sundials.hpp</name>
   </compound>
   <compound refid="timeIntegration_8hpp" kind="file"><name>timeIntegration.hpp</name>
@@ -2564,6 +2607,8 @@
   <compound refid="dir_f2adf19220ecd655c45a5e32fe91c610" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/core</name>
   </compound>
   <compound refid="dir_3d2a1f17b474243ff3a8f3f29c966c08" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/core/database</name>
+  </compound>
+  <compound refid="dir_645cb9dceebc3fd713dda7787f95e153" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail</name>
   </compound>
   <compound refid="dir_a3805c08735fead6f28ad2348fcf6123" kind="dir"><name>/home/runner/work/NeoN/NeoN/include/NeoN/distributed</name>
   </compound>
