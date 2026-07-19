@@ -392,7 +392,7 @@ template&lt;typename ValueType , typename RHSValueType  = ValueType, typename Sy
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00319">319</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00324">324</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -581,9 +581,9 @@ requires requires(const BoundaryMatrixType&amp; bm) { bm.sparsity()-&gt;rowIdxs(
 <p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
 <dl class="section note"><dt>Note</dt><dd>templated on the full <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html" title="A class representing a linear system of equations.">LinearSystem</a> parameter set so it also accepts the segregated vector-solve form (scalar matrix, <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> rhs): the scalar boundary diagonal is reversed on the scalar matrix while the rhs reversal uses the field (RHS) value type. </dd>
 <dd>
-BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). Works with any SystemMatrixType whose sparsity has a matching <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html#a0ac27cbf7827fbedf373276ea4e073ea" title="Get a view representation of the matrix&#39;s data.">FaceToMatrixAddress::view()</a> overload (CSR, COO, ELL) &ndash; uses Matrix/Vector views directly, not <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ab2dac7658c5cf9c1107f62d2c6e21936">LinearSystem::view()</a>, which still hardcodes one shared view type for both matrices. </dd></dl>
+BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). Works with any SystemMatrixType whose sparsity has a matching <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html#a0ac27cbf7827fbedf373276ea4e073ea" title="Get a view representation of the matrix&#39;s data.">FaceToMatrixAddress::view()</a> overload (CSR, COO, ELL) &ndash; uses Matrix/Vector views directly rather than <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a667483815f80a7188bfff859372bd9b9">LinearSystem::view()</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00414">414</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00419">419</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>

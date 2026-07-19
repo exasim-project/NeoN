@@ -22,7 +22,7 @@ var searchData=
   ['_7ekokkosallocator_19',['~KokkosAllocator',['../classNeoN_1_1KokkosAllocator.html#ae40eaa8ecec1fd373202acb92fed4d7a',1,'NeoN::KokkosAllocator']]],
   ['_7elaplacianoperatorfactory_20',['~LaplacianOperatorFactory',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#abff0eedb9d54be748dfcb0f20b7abb54',1,'NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory']]],
   ['_7elinearsystem_21',['~LinearSystem',['../classNeoN_1_1la_1_1LinearSystem.html#a5a09a866841cf44dfb40f5f4567a7982',1,'NeoN::la::LinearSystem']]],
-  ['_7elinearsystemview_22',['~LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html#ac0f6f3ba2b57a37c85dc69f80f72ba15',1,'NeoN::la::LinearSystemView']]],
+  ['_7elinearsystemview_22',['~LinearSystemView',['../structNeoN_1_1la_1_1LinearSystemView.html#a9a709fa25b59075786d1a829123c76f6',1,'NeoN::la::LinearSystemView']]],
   ['_7elogger_23',['~Logger',['../classNeoN_1_1Logging_1_1Logger.html#ae2053e637c244a9a1825702e3e900c37',1,'NeoN::Logging::Logger']]],
   ['_7ematrix_24',['~Matrix',['../classNeoN_1_1la_1_1Matrix.html#af2fb7061f12d0beab7f04f5dc333cbc0',1,'NeoN::la::Matrix']]],
   ['_7ematrixview_25',['~MatrixView',['../structNeoN_1_1la_1_1MatrixView.html#a69c25474692c27f30ccef2b89c6cbbbb',1,'NeoN::la::MatrixView']]],
