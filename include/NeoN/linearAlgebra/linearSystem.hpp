@@ -29,27 +29,30 @@ namespace NeoN::la
  * @brief A view linear into a linear system's data.
  *
  * @tparam RHSValueType The value type of the rhs/solution vectors.
- * @tparam MatrixViewType The type representing the matrix view
+ * @tparam SystemMatrixViewType The type representing the system matrix view.
+ * @tparam BoundaryMatrixViewType The type representing the boundary matrix view. Independent
+ * of SystemMatrixViewType since the two matrices may use different sparsity formats (e.g. an
+ * ELL system matrix with a COO boundary matrix).
  */
-template<typename RHSValueType, typename MatrixViewType>
+template<typename RHSValueType, typename SystemMatrixViewType, typename BoundaryMatrixViewType>
 struct LinearSystemView
 {
     LinearSystemView() = default;
     ~LinearSystemView() = default;
 
     LinearSystemView(
-        MatrixViewType matrixView,
+        SystemMatrixViewType matrixView,
         View<RHSValueType> rhsView,
-        MatrixViewType boundaryMatrixView,
+        BoundaryMatrixViewType boundaryMatrixView,
         View<RHSValueType> boundaryRhsView
     )
         : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
           boundaryRhs(boundaryRhsView) {};
 
-    MatrixViewType matrix;
+    SystemMatrixViewType matrix;
     View<RHSValueType> rhs;
 
-    MatrixViewType boundaryMatrix;
+    BoundaryMatrixViewType boundaryMatrix;
     View<RHSValueType> boundaryRhs;
 };
 
@@ -100,7 +103,15 @@ class LinearSystem :
 
 public:
 
-    using LinearSystemIndexType = typename SystemMatrixType::MatrixSparsityType::SparsityIndexType;
+    using SystemMatrixViewType =
+        MatrixView<MatrixValueType, typename SystemMatrixType::MatrixSparsityType::ViewType>;
+    using BoundaryMatrixViewType =
+        MatrixView<MatrixValueType, typename BoundaryMatrixType::MatrixSparsityType::ViewType>;
+    using ConstSystemMatrixViewType =
+        MatrixView<const MatrixValueType, typename SystemMatrixType::MatrixSparsityType::ViewType>;
+    using ConstBoundaryMatrixViewType = MatrixView<
+        const MatrixValueType,
+        typename BoundaryMatrixType::MatrixSparsityType::ViewType>;
 
     LinearSystem(
         const SystemMatrixType& matrix,
@@ -244,23 +255,16 @@ public:
         if (diagCmpt_) fill(*diagCmpt_, zero<RHSValueType>());
     }
 
-    [[nodiscard]] LinearSystemView<
-        RHSValueType,
-        MatrixView<
-            MatrixValueType,
-            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
+    [[nodiscard]] LinearSystemView<RHSValueType, SystemMatrixViewType, BoundaryMatrixViewType>
     view() && = delete;
 
     [[nodiscard]] LinearSystemView<
-        RHSValueType,
-        MatrixView<
-            MatrixValueType,
-            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
+        const RHSValueType,
+        ConstSystemMatrixViewType,
+        ConstBoundaryMatrixViewType>
     view() const&& = delete;
 
-    [[nodiscard]] LinearSystemView<
-        RHSValueType,
-        MatrixView<MatrixValueType, SparsityView<LinearSystemIndexType>>>
+    [[nodiscard]] LinearSystemView<RHSValueType, SystemMatrixViewType, BoundaryMatrixViewType>
     view() &
     {
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
@@ -278,7 +282,8 @@ public:
 
     [[nodiscard]] LinearSystemView<
         const RHSValueType,
-        const MatrixView<MatrixValueType, SparsityView<const LinearSystemIndexType>>>
+        ConstSystemMatrixViewType,
+        ConstBoundaryMatrixViewType>
     view() const&
     {
         return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
@@ -443,8 +448,8 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
  * scalar matrix while the rhs reversal uses the field (RHS) value type.
  * @note BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO).
  * Works with any SystemMatrixType whose sparsity has a matching FaceToMatrixAddress::view()
- * overload (CSR, COO, ELL) -- uses Matrix/Vector views directly, not LinearSystem::view(),
- * which still hardcodes one shared view type for both matrices. **/
+ * overload (CSR, COO, ELL) -- uses Matrix/Vector views directly rather than LinearSystem::view().
+ **/
 template<
     typename MatrixValueType,
     typename RHSValueType,
