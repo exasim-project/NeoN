@@ -240,7 +240,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00268">268</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00284">284</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -258,7 +258,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00265">265</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00281">281</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -276,7 +276,7 @@ template&lt;typename ValueType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00271">271</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00287">287</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -464,7 +464,7 @@ template&lt;unsigned int I&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00320">320</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="matrix_8hpp_source.html#l00336">336</a> of file <a class="el" href="matrix_8hpp_source.html">matrix.hpp</a>.</p>
 
 </div>
 </div>
@@ -581,9 +581,9 @@ requires requires(const BoundaryMatrixType&amp; bm) { bm.sparsity()-&gt;rowIdxs(
 <p>for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.g., div). </p>
 <dl class="section note"><dt>Note</dt><dd>templated on the full <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html" title="A class representing a linear system of equations.">LinearSystem</a> parameter set so it also accepts the segregated vector-solve form (scalar matrix, <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> rhs): the scalar boundary diagonal is reversed on the scalar matrix while the rhs reversal uses the field (RHS) value type. </dd>
 <dd>
-BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). </dd></dl>
+BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). Works with any SystemMatrixType whose sparsity has a matching <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html#a0ac27cbf7827fbedf373276ea4e073ea" title="Get a view representation of the matrix&#39;s data.">FaceToMatrixAddress::view()</a> overload (CSR, COO, ELL) &ndash; uses Matrix/Vector views directly, not <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ab2dac7658c5cf9c1107f62d2c6e21936">LinearSystem::view()</a>, which still hardcodes one shared view type for both matrices. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00409">409</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00414">414</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
