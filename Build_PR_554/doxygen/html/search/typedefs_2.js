@@ -6,5 +6,6 @@ var searchData=
   ['cpumemspace_3',['CPUMemSpace',['../classNeoN_1_1KokkosAllocator.html#a901f9e55d858a8e420ca4a1730dfae67',1,'NeoN::KokkosAllocator']]],
   ['createfunction_4',['CreateFunction',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#af1c5b27f52cfe871ebc69cf0c8d11626',1,'NeoN::finiteVolume::cellCentred']]],
   ['creatorfunc_5',['CreatorFunc',['../classNeoN_1_1RuntimeSelectionFactory_3_01Base_00_01Parameters_3_01Args_8_8_8_01_4_01_4.html#a8b8a42bde5fa316b7aad2675f93eb3ed',1,'NeoN::RuntimeSelectionFactory&lt; Base, Parameters&lt; Args... &gt; &gt;']]],
-  ['csrmatrix_6',['CSRMatrix',['../namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7',1,'NeoN::la']]]
+  ['csr_6',['csr',['../classNeoN_1_1la_1_1ginkgo_1_1MergedPgm.html#a485d82bc33b99b245f7b14e9a3fa3e2e',1,'NeoN::la::ginkgo::MergedPgm']]],
+  ['csrmatrix_7',['CSRMatrix',['../namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7',1,'NeoN::la']]]
 ];

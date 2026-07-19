@@ -1,0 +1,635 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::la::ginkgo::MergedPgm</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">gko::EnableLinOp&lt; MergedPgm&lt; gko::default_precision, gko::int32 &gt; &gt;</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">gko::multigrid::EnableMultigridLevel&lt; gko::default_precision &gt;</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">gko::UpdateMatrixValue</basecompoundref>
+    <includes refid="mergedPgm_8hpp" local="no">mergedPgm.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type>typename ValueType</type>
+        <defval>gko::default_precision</defval>
+      </param>
+      <param>
+        <type>typename IndexType</type>
+        <defval>gko::int32</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a398778c4711b05dcdb19811e5d321de8" prot="public" static="no">
+        <type>ValueType</type>
+        <definition>using NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::value_type =  ValueType</definition>
+        <argsstring></argsstring>
+        <name>value_type</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::value_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="57" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a1ae65fa49d08fa8caf1f589f718753ed" prot="public" static="no">
+        <type>IndexType</type>
+        <definition>using NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::index_type =  IndexType</definition>
+        <argsstring></argsstring>
+        <name>index_type</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::index_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="58" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a485d82bc33b99b245f7b14e9a3fa3e2e" prot="public" static="no">
+        <type>gko::matrix::Csr&lt; ValueType, IndexType &gt;</type>
+        <definition>using NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::csr =  gko::matrix::Csr&lt;ValueType, IndexType&gt;</definition>
+        <argsstring></argsstring>
+        <name>csr</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::csr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="59" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a0c990feae69c88a08662946752668b8d" prot="public" static="no">
+        <type>gko::multigrid::Pgm&lt; ValueType, IndexType &gt;</type>
+        <definition>using NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::pgm =  gko::multigrid::Pgm&lt;ValueType, IndexType&gt;</definition>
+        <argsstring></argsstring>
+        <name>pgm</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::pgm</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="60" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a55976f70b427d2ecbc434d73e67982d1" prot="public" static="no">
+        <type>gko::matrix::RowGatherer&lt; IndexType &gt;</type>
+        <definition>using NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::row_gatherer =  gko::matrix::RowGatherer&lt;IndexType&gt;</definition>
+        <argsstring></argsstring>
+        <name>row_gatherer</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::row_gatherer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="61" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a64b101dd2f38ac647f784222a3c7c613" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class gko::EnableLinOp&lt; MergedPgm &gt;</definition>
+        <argsstring></argsstring>
+        <name>gko::EnableLinOp&lt; MergedPgm &gt;</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::EnableLinOp&lt; MergedPgm &gt;</qualifiedname>
+        <param>
+          <type>gko::EnableLinOp&lt; <ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="355" column="25" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="friend" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a8b5386153e7092050a7245c633eb8ce5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class gko::EnablePolymorphicObject&lt; MergedPgm, gko::LinOp &gt;</definition>
+        <argsstring></argsstring>
+        <name>gko::EnablePolymorphicObject&lt; MergedPgm, gko::LinOp &gt;</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::EnablePolymorphicObject&lt; MergedPgm, gko::LinOp &gt;</qualifiedname>
+        <param>
+          <type>gko::EnablePolymorphicObject&lt; <ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref>, gko::LinOp &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="355" column="25" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a4867085e9aae2510f0e32516096c44aa" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt;const gko::LinOp&gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::system_matrix_</definition>
+        <argsstring></argsstring>
+        <name>system_matrix_</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::system_matrix_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="335" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="335" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac68b24f5479d563d67bf3466c82f2c73" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt;const gko::LinOp&gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::prolong_</definition>
+        <argsstring></argsstring>
+        <name>prolong_</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::prolong_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="338" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="338" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a401fa3229f9aecc3beaca5176176a46a" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; const gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt;const gko::LinOp&gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::restrict_</definition>
+        <argsstring></argsstring>
+        <name>restrict_</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::restrict_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="339" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="339" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ae91e274e4eef4553c51632569e001d23" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; gko::LinOp &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;gko::LinOp&gt; &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::levels_</definition>
+        <argsstring></argsstring>
+        <name>levels_</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::levels_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="343" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="343" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a2dc3d15e79c5b0470693986e114f12d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt; const gko::LinOp &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::get_system_matrix</definition>
+        <argsstring>() const</argsstring>
+        <name>get_system_matrix</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::get_system_matrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="69" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a5f924df26ae649d6b8ff019f441f9d5a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::GKO_CREATE_FACTORY_PARAMETERS</definition>
+        <argsstring>(parameters, Factory)</argsstring>
+        <name>GKO_CREATE_FACTORY_PARAMETERS</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::GKO_CREATE_FACTORY_PARAMETERS</qualifiedname>
+        <param>
+          <type>parameters</type>
+        </param>
+        <param>
+          <type><ref refid="classFactory" kindref="compound">Factory</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>Number of Pgm coarsening steps merged into one level (OpenFOAM <computeroutput>mergeLevels</computeroutput>).</para>
+<para>Forwarded to each inner Pgm (see gko::multigrid::Pgm).</para>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="71" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="71" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1adb880f5a1dc85513794d68b51db6f268" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::GKO_ENABLE_LIN_OP_FACTORY</definition>
+        <argsstring>(MergedPgm, parameters, Factory)</argsstring>
+        <name>GKO_ENABLE_LIN_OP_FACTORY</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::GKO_ENABLE_LIN_OP_FACTORY</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm" kindref="compound">MergedPgm</ref></type>
+        </param>
+        <param>
+          <type>parameters</type>
+        </param>
+        <param>
+          <type><ref refid="classFactory" kindref="compound">Factory</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="81" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ab23af32eae6c4d2aefcb854d88bfe23f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::GKO_ENABLE_BUILD_METHOD</definition>
+        <argsstring>(Factory)</argsstring>
+        <name>GKO_ENABLE_BUILD_METHOD</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::GKO_ENABLE_BUILD_METHOD</qualifiedname>
+        <param>
+          <type><ref refid="classFactory" kindref="compound">Factory</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="82" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1afe621e5c57aae2919d4a0443ea541eab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::update_matrix_value</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::LinOp &gt; new_matrix) override</argsstring>
+        <name>update_matrix_value</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::update_matrix_value</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; const gko::LinOp &gt;</type>
+          <declname>new_matrix</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="84" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="84" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a19cb3e14ec4680b51bb9b159d6a5a365" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::apply_impl</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x) const override</argsstring>
+        <name>apply_impl</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::apply_impl</qualifiedname>
+        <param>
+          <type>const gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="112" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="112" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1af1efb91f3155217da21fec7328f7d8da" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::apply_impl</definition>
+        <argsstring>(const gko::LinOp *alpha, const gko::LinOp *b, const gko::LinOp *beta, gko::LinOp *x) const override</argsstring>
+        <name>apply_impl</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::apply_impl</qualifiedname>
+        <param>
+          <type>const gko::LinOp *</type>
+          <declname>alpha</declname>
+        </param>
+        <param>
+          <type>const gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const gko::LinOp *</type>
+          <declname>beta</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="116" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="116" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a452c78e1fae9d24f107f5268487234b7" prot="protected" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::MergedPgm</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec)</argsstring>
+        <name>MergedPgm</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::MergedPgm</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; const gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="123" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="123" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a62427c6fc52f46e186ab1fc4fbb8e0a1" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::MergedPgm</definition>
+        <argsstring>(const Factory *factory, gko::LinOpGenerateComponents components)</argsstring>
+        <name>MergedPgm</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::MergedPgm</qualifiedname>
+        <param>
+          <type>const <ref refid="classFactory" kindref="compound">Factory</ref> *</type>
+          <declname>factory</declname>
+        </param>
+        <param>
+          <type>gko::LinOpGenerateComponents</type>
+          <declname>components</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="127" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="127" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a6c828b2bad6d6c2d6c093bc86f40ab5e" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::generateLocal</definition>
+        <argsstring>()</argsstring>
+        <name>generateLocal</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::generateLocal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="149" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="149" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac9df5453aea89a1dbc17847780963f7f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::generateDistributed</definition>
+        <argsstring>()</argsstring>
+        <name>generateDistributed</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::generateDistributed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="230" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="230" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a2b4e92de24890b279a561cb2485c187d" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::is_distributed</definition>
+        <argsstring>(const std::shared_ptr&lt; const gko::LinOp &gt; &amp;op)</argsstring>
+        <name>is_distributed</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::is_distributed</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; const gko::LinOp &gt; &amp;</type>
+          <declname>op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="235" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="235" bodyend="244"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1aa25a186c967417db498809881b2ab9d3" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::composeAgg</definition>
+        <argsstring>(std::vector&lt; IndexType &gt; &amp;mergedAgg, const gko::array&lt; IndexType &gt; &amp;aggThis, gko::size_type fineRows, unsigned i)</argsstring>
+        <name>composeAgg</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::composeAgg</qualifiedname>
+        <param>
+          <type>std::vector&lt; IndexType &gt; &amp;</type>
+          <declname>mergedAgg</declname>
+        </param>
+        <param>
+          <type>const gko::array&lt; IndexType &gt; &amp;</type>
+          <declname>aggThis</declname>
+        </param>
+        <param>
+          <type>gko::size_type</type>
+          <declname>fineRows</declname>
+        </param>
+        <param>
+          <type>unsigned</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="259" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="259" bodyend="277"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a03fc32a23e2aa38bd78830613e5d995b" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const <ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a485d82bc33b99b245f7b14e9a3fa3e2e" kindref="member">csr</ref> &gt;</type>
+        <definition>static std::shared_ptr&lt; const csr &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::as_csr</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::LinOp &gt; op)</argsstring>
+        <name>as_csr</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::as_csr</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; const gko::LinOp &gt;</type>
+          <declname>op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="279" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="279" bodyend="286"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a182d820fa970ea2600ca49f95c188ab5" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; typename pgm::Factory &gt;</type>
+        <definition>std::unique_ptr&lt; typename pgm::Factory &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::makePgm</definition>
+        <argsstring>() const</argsstring>
+        <name>makePgm</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::makePgm</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="246" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="246" bodyend="254"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a3372db25b20ca7b0d81a482c5169cc6b" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>gko::array&lt; IndexType &gt;</type>
+        <definition>gko::array&lt; IndexType &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::agg_from_rowgatherer</definition>
+        <argsstring>(const gko::LinOp *rgOp) const</argsstring>
+        <name>agg_from_rowgatherer</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::agg_from_rowgatherer</qualifiedname>
+        <param>
+          <type>const gko::LinOp *</type>
+          <declname>rgOp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="290" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="290" bodyend="299"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a569439a251b8c2d765be73e53a87e9b3" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>gko::array&lt; IndexType &gt;</type>
+        <definition>gko::array&lt; IndexType &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::gather_agg</definition>
+        <argsstring>(const gko::multigrid::MultigridLevel *level) const</argsstring>
+        <name>gather_agg</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::gather_agg</qualifiedname>
+        <param>
+          <type>const gko::multigrid::MultigridLevel *</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="302" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="302" bodyend="305"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a0c155caefa261b40c5f664a18289a3e2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a485d82bc33b99b245f7b14e9a3fa3e2e" kindref="member">csr</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; csr &gt; NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;::make_injection</definition>
+        <argsstring>(const std::vector&lt; IndexType &gt; &amp;mergedAgg, gko::size_type fineRows, gko::size_type coarseRows) const</argsstring>
+        <name>make_injection</name>
+        <qualifiedname>NeoN::la::ginkgo::MergedPgm::make_injection</qualifiedname>
+        <param>
+          <type>const std::vector&lt; IndexType &gt; &amp;</type>
+          <declname>mergedAgg</declname>
+        </param>
+        <param>
+          <type>gko::size_type</type>
+          <declname>fineRows</declname>
+        </param>
+        <param>
+          <type>gko::size_type</type>
+          <declname>coarseRows</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="311" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="311" bodyend="332"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><computeroutput>mergeLevels</computeroutput>-style coarsening: Pgm run <computeroutput>merge_levels</computeroutput> times, prolongations composed BY INDEX into one merged multigrid level. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>merge_levels == 1 reproduces plain Pgm (single coarsening step). merge_levels == k builds a level that jumps k Pgm steps at once; the coarsest grid is unchanged, only the number of intermediate levels drops (~depth/k).</para>
+<para>Two paths, selected at generate() time by the runtime type of the fine operator:<itemizedlist>
+<listitem><para><bold>local</bold> (localized/Schwarz MG, each rank owns a plain Csr): compose the per-level RowGatherer injections into a single injection Csr; the last inner Pgm&apos;s coarse op is A_merged.</para>
+</listitem><listitem><para><bold>distributed</bold> (global MG, fine op is a gko::experimental::distributed::Matrix): the distributed Pgm prolong/restrict are block-diagonal across ranks (empty off-diagonal block; only the coarse op carries cross-rank coupling <ndash/> see Ginkgo pgm.cpp distributed_setup). So the composition is rank-local: compose each prolong&apos;s DIAG-block RowGatherer exactly as in the local path, then re-wrap the merged local injection as a block-diagonal distributed::Matrix. A_merged is the last inner Pgm&apos;s distributed coarse op (already carries the correct off-diagonal coupling + coarse index map), used directly. </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;</label>
+        <link refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>gko::EnableLinOp&lt; MergedPgm&lt; gko::default_precision , gko::int32  &gt; &gt;</label>
+      </node>
+      <node id="4">
+        <label>gko::UpdateMatrixValue</label>
+      </node>
+      <node id="3">
+        <label>gko::multigrid::EnableMultigridLevel&lt; gko::default_precision  &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::la::ginkgo::MergedPgm&lt; ValueType, IndexType &gt;</label>
+        <link refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>gko::EnableLinOp&lt; MergedPgm&lt; gko::default_precision , gko::int32  &gt; &gt;</label>
+      </node>
+      <node id="4">
+        <label>gko::UpdateMatrixValue</label>
+      </node>
+      <node id="3">
+        <label>gko::multigrid::EnableMultigridLevel&lt; gko::default_precision  &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" line="47" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" bodystart="51" bodyend="344"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a3372db25b20ca7b0d81a482c5169cc6b" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>agg_from_rowgatherer</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a19cb3e14ec4680b51bb9b159d6a5a365" prot="protected" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>apply_impl</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1af1efb91f3155217da21fec7328f7d8da" prot="protected" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>apply_impl</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a03fc32a23e2aa38bd78830613e5d995b" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>as_csr</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1aa25a186c967417db498809881b2ab9d3" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>composeAgg</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a485d82bc33b99b245f7b14e9a3fa3e2e" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>csr</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a569439a251b8c2d765be73e53a87e9b3" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>gather_agg</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac9df5453aea89a1dbc17847780963f7f" prot="protected" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>generateDistributed</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a6c828b2bad6d6c2d6c093bc86f40ab5e" prot="protected" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>generateLocal</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a2dc3d15e79c5b0470693986e114f12d3" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>get_system_matrix</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a64b101dd2f38ac647f784222a3c7c613" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>gko::EnableLinOp&lt; MergedPgm &gt;</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a8b5386153e7092050a7245c633eb8ce5" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>gko::EnablePolymorphicObject&lt; MergedPgm, gko::LinOp &gt;</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a5f924df26ae649d6b8ff019f441f9d5a" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>GKO_CREATE_FACTORY_PARAMETERS</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ab23af32eae6c4d2aefcb854d88bfe23f" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>GKO_ENABLE_BUILD_METHOD</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1adb880f5a1dc85513794d68b51db6f268" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>GKO_ENABLE_LIN_OP_FACTORY</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a1ae65fa49d08fa8caf1f589f718753ed" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>index_type</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a2b4e92de24890b279a561cb2485c187d" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>is_distributed</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ae91e274e4eef4553c51632569e001d23" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>levels_</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a0c155caefa261b40c5f664a18289a3e2" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>make_injection</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a182d820fa970ea2600ca49f95c188ab5" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>makePgm</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a452c78e1fae9d24f107f5268487234b7" prot="protected" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>MergedPgm</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a62427c6fc52f46e186ab1fc4fbb8e0a1" prot="protected" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>MergedPgm</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a0c990feae69c88a08662946752668b8d" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>pgm</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1ac68b24f5479d563d67bf3466c82f2c73" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>prolong_</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a401fa3229f9aecc3beaca5176176a46a" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>restrict_</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a55976f70b427d2ecbc434d73e67982d1" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>row_gatherer</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a4867085e9aae2510f0e32516096c44aa" prot="private" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>system_matrix_</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1afe621e5c57aae2919d4a0443ea541eab" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>update_matrix_value</name></member>
+      <member refid="classNeoN_1_1la_1_1ginkgo_1_1MergedPgm_1a398778c4711b05dcdb19811e5d321de8" prot="public" virt="non-virtual"><scope>NeoN::la::ginkgo::MergedPgm</scope><name>value_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

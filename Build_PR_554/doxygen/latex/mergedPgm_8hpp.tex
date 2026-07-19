@@ -1,0 +1,31 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/linear\+Algebra/ginkgo/merged\+Pgm.hpp File Reference}
+\hypertarget{mergedPgm_8hpp}{}\label{mergedPgm_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo/mergedPgm.hpp}}
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$numeric$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$ginkgo/ginkgo.\+hpp$>$}\newline
+{\ttfamily \#include $<$ginkgo/core/multigrid/pgm.\+hpp$>$}\newline
+{\ttfamily \#include $<$ginkgo/core/multigrid/multigrid\+\_\+level.\+hpp$>$}\newline
+{\ttfamily \#include $<$ginkgo/core/matrix/csr.\+hpp$>$}\newline
+{\ttfamily \#include $<$ginkgo/core/matrix/row\+\_\+gatherer.\+hpp$>$}\newline
+{\ttfamily \#include $<$ginkgo/core/solver/multigrid.\+hpp$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Neo\+N\+::la\+::ginkgo\+::\+Merged\+Pgm$<$ Value\+Type, Index\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em {\ttfamily merge\+Levels}-\/style coarsening\+: Pgm run {\ttfamily merge\+\_\+levels} times, prolongations composed BY INDEX into one merged multigrid level. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1la_1_1ginkgo}{Neo\+N\+::la\+::ginkgo}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Value\+Type  = gko\+::default\+\_\+precision, typename Index\+Type  = gko\+::int32$>$ }\\std\+::shared\+\_\+ptr$<$ typename \mbox{\hyperlink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Merged\+Pgm}}$<$ Value\+Type, Index\+Type $>$\mbox{\hyperlink{classFactory}{\+::\+Factory}} $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_1_1ginkgo_afad371afc3d24ac030272d333a20f4a1}{Neo\+N\+::la\+::ginkgo\+::make\+Merged\+Pgm\+Factory}} (std\+::shared\+\_\+ptr$<$ const gko\+::\+Executor $>$ exec, unsigned merge\+Levels, bool deterministic=true)
+\begin{DoxyCompactList}\small\item\em Build a named \doxylink{classNeoN_1_1la_1_1ginkgo_1_1MergedPgm}{Merged\+Pgm} factory for the config registry (mirrors the L1-\/criterion registration in the Ginkgo\+Solver ctor). Reference it from a config\+File\textquotesingle{}s {\ttfamily mg\+\_\+level}, e.\+g. {\ttfamily "{}mg\+\_\+level"{}\+: \mbox{[}"{}neon\+::pgm\+Merge2"{}\mbox{]}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
