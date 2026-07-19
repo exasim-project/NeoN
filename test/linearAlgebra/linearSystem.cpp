@@ -255,6 +255,51 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         }
     }
 
+    // LinearSystemView used to hardcode one MatrixViewType for both matrices, which only ever
+    // got exercised with CSR/COO (same ViewType either way). ELL system + COO boundary forces
+    // the two view types to actually differ, proving the split works for both the mutable and
+    // const view() overloads.
+    SECTION("view() carries independent ELL system / COO boundary view types " + execName)
+    {
+        using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+        auto nCells = 4;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+
+        auto lsView = ls.view();
+        parallelFor(
+            exec,
+            {0, 1},
+            NEON_LAMBDA(const localIdx) {
+                lsView.matrix.entry(0, 0) = 4.0;
+                lsView.boundaryMatrix.values[0] = 10.0;
+                lsView.rhs[0] = 20.0;
+            }
+        );
+
+        auto diagHost = ls.matrix().diag().copyToHost();
+        auto bValuesHost = ls.boundaryMatrix().values().copyToHost();
+        auto rhsHost = ls.rhs().copyToHost();
+        REQUIRE(diagHost.view()[0] == 4.0);
+        REQUIRE(bValuesHost.view()[0] == 10.0);
+        REQUIRE(rhsHost.view()[0] == 20.0);
+
+        const auto& constLs = ls;
+        auto constLsView = constLs.view();
+        REQUIRE(constLsView.matrix.values.size() == ls.matrix().values().size());
+        REQUIRE(constLsView.boundaryMatrix.values.size() == ls.boundaryMatrix().values().size());
+
+        // Read through the const view itself (not a host copy) to catch return-type
+        // mismatches -- go via copyToHost() rather than indexing constLsView directly since
+        // exec() may be a GPU executor.
+        auto hostLs = ls.copyToHost();
+        const auto& constHostLs = hostLs;
+        auto constHostLsView = constHostLs.view();
+        REQUIRE(constHostLsView.matrix.entry(0, 0) == 4.0);
+        REQUIRE(constHostLsView.boundaryMatrix.values[0] == 10.0);
+        REQUIRE(constHostLsView.rhs[0] == 20.0);
+    }
 
     SECTION("view read/write " + execName)
     {
