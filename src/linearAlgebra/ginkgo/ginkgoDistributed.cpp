@@ -170,7 +170,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             KOKKOS_LAMBDA(const localIdx i) { cachedValsPtr[i] = bValV[i]; },
             "updateNonLocalValues"
         );
-        fence(bmtx.exec());
+        // [fence-audit] removed redundant fence: this build kernel and the subsequent
+        // dist_mtx::create / Ginkgo solve share the Kokkos stream (ginkgo.cpp:200) -> ordered.
         return gko::share(dist_mtx::create(
             exec, comm, *imapCache, std::const_pointer_cast<gko::LinOp>(localMtx), nonLocalMtxCache
         ));
@@ -250,7 +251,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             },
             "buildNonLocalCOO"
         );
-        fence(bmtx.exec());
+        // [fence-audit] removed redundant fence: buildNonLocalCOO -> Coo/dist_mtx::create, same stream.
     }
 
     nonLocalMtxCache =
