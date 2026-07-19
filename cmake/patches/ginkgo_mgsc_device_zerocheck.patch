@@ -1,0 +1,66 @@
+diff --git a/core/solver/multigrid.cpp b/core/solver/multigrid.cpp
+index b23eb81e1..e4273433a 100644
+--- a/core/solver/multigrid.cpp
++++ b/core/solver/multigrid.cpp
+@@ -5,6 +5,7 @@
+ #include "ginkgo/core/solver/multigrid.hpp"
+ 
+ #include <complex>
++#include <limits>
+ #include <string>
+ 
+ #include <ginkgo/core/base/exception.hpp>
+@@ -634,6 +635,25 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+     bool do_scale =
+         multigrid->get_parameters().scale_correction && level < total_level - 1;
+ 
++    // [NeoN patch] device-side guarded Rayleigh reciprocal: sf = num / (denom + eps), computed
++    // entirely on-device to avoid the per-correction-point copy_val_to_host(denom) D2H sync (that
++    // guard fires a synchronizing device->host copy at every level every V-cycle -- ~90/solve on the
++    // occDrivAer pressure solve, a leading cost when the solve is synchronization-bound). Safe because
++    // num = delta.b and denom = delta.A.delta are BOTH exactly zero iff delta = 0, so at delta=0
++    // sf = 0/eps = 0 (the correction reduces to smoother(b) -- benign, and does not occur after a
++    // pre-smoother sweep on nonzero b); eps = smallest positive normal is negligible vs any nonzero
++    // denom. Replaces the old `if (copy_val_to_host(denom) != 0) { inv_scale(...); <body> }`.
++    auto safe_inv_scale = [&](matrix::Dense<value_type>* alpha_d,
++                              matrix::Dense<value_type>* denom_d) {
++        using real_type = gko::remove_complex<value_type>;
++        auto exec_l = multigrid->get_executor();
++        auto eps = matrix::Dense<value_type>::create(
++            exec_l, dim<2>{1, alpha_d->get_size()[1]});
++        eps->fill(value_type{std::numeric_limits<real_type>::min()});
++        denom_d->add_scaled(one, eps.get());  // denom += eps (device, no sync)
++        alpha_d->inv_scale(denom_d);           // sf = num / (denom + eps)
++    };
++
+     bool use_pre = has_property(mode, cycle_mode::first_of_cycle) ||
+                    mid_case == multigrid::mid_smooth_type::both ||
+                    mid_case == multigrid::mid_smooth_type::pre_smoother;
+@@ -673,10 +693,9 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+         matrix->apply(x, acf);  // acf = A * δ_pre
+         as<VectorType>(x)->compute_dot(b, level_storage.get_mutable_op(8));
+         as<VectorType>(x)->compute_dot(acf, level_storage.get_mutable_op(9));
+-        if (exec->copy_val_to_host(denom_dense->get_const_values()) !=
+-            zero<value_type>()) {
+-            alpha_dense->inv_scale(denom_dense);  // sf = (δ·b)/(δ·Aδ)
+-
++        // [NeoN patch] device-side guarded reciprocal (no copy_val_to_host D2H sync).
++        safe_inv_scale(alpha_dense, denom_dense);
++        {
+             // r temporarily holds r_scaled = b − sf * Aδ
+             as<VectorType>(acf)->scale(alpha_dense);  // acf = sf * Aδ
+             r->copy_from(b);
+@@ -755,10 +774,9 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+         matrix->apply(acf, dp);  // dp = A * δ_c
+         as<VectorType>(acf)->compute_dot(r, level_storage.get_mutable_op(8));
+         as<VectorType>(acf)->compute_dot(dp, level_storage.get_mutable_op(9));
+-        if (exec->copy_val_to_host(denom_dense->get_const_values()) !=
+-            zero<value_type>()) {
+-            alpha_dense->inv_scale(denom_dense);  // sf = (δ_c·r)/(δ_c·Aδ_c)
+-
++        // [NeoN patch] device-side guarded reciprocal (no copy_val_to_host D2H sync).
++        safe_inv_scale(alpha_dense, denom_dense);
++        {
+             // r temporarily holds r_scaled = r − sf * Aδ_c
+             as<VectorType>(dp)->scale(alpha_dense);      // dp = sf * Aδ_c
+             as<VectorType>(r)->add_scaled(neg_one, dp);  // r = r − sf*Aδ_c
