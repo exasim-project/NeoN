@@ -418,7 +418,9 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     );
 
     LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
-        SystemMatrixType(Vector<ValueType>(sp->exec(), sp->nnz(), zero<ValueType>()), sp, mi),
+        SystemMatrixType(
+            Vector<ValueType>(sp->exec(), sp->storageSize(), zero<ValueType>()), sp, mi
+        ),
         Vector<RHSValueType>(sp->exec(), sp->rows(), zero<RHSValueType>()),
         BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
         BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
@@ -439,7 +441,10 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
  * @note templated on the full LinearSystem parameter set so it also accepts the segregated
  * vector-solve form (scalar matrix, Vec3 rhs): the scalar boundary diagonal is reversed on the
  * scalar matrix while the rhs reversal uses the field (RHS) value type.
- * @note BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). **/
+ * @note BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO).
+ * Works with any SystemMatrixType whose sparsity has a matching FaceToMatrixAddress::view()
+ * overload (CSR, COO, ELL) -- uses Matrix/Vector views directly, not LinearSystem::view(),
+ * which still hardcodes one shared view type for both matrices. **/
 template<
     typename MatrixValueType,
     typename RHSValueType,
@@ -454,22 +459,22 @@ removeBoundaryContributions(
 {
     auto ls =
         la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>(lsIn);
-    auto lsView = ls.view();
-    auto& matrix = lsView.matrix;
-    auto& rhs = lsView.rhs;
-    auto& bMatrix = lsView.boundaryMatrix;
-    auto& bRhs = lsView.boundaryRhs;
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    auto matrixValues = ls.matrix().values().view();
+    auto rhs = ls.rhs().view();
+    const auto bMatrixValues = ls.boundaryMatrix().values().view();
+    const auto bRhs = ls.boundaryRhs().view();
+
+    const auto ma = ls.matrix().faceToMatrixView();
     // Per-face owner cell -- bMatrix.sparsity.rowOffs is CSR-style range data, not a cell index.
     const auto bRowIdxs = ls.boundaryMatrix().sparsity()->rowIdxs().view();
 
     parallelFor(
         ls.exec(),
-        {0, bMatrix.values.size()},
+        {0, bMatrixValues.size()},
         NEON_LAMBDA(const localIdx facei) {
             const auto celli = bRowIdxs[facei];
-            Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
+            Kokkos::atomic_add(&matrixValues[ma.diagIdx(celli)], bMatrixValues[facei]);
             Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
         },
         "removeBoundaryContributions"
