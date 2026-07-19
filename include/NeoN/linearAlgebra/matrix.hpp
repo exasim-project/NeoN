@@ -125,8 +125,8 @@ public:
      * @brief Constructor for Matrix with a FaceToMatrixAddress.
      *
      * The sparsity pattern and the face-to-matrix address are passed as independent objects.
-     * Only available for localIdx-indexed, rowOffs()-capable sparsity types -- FaceToMatrixAddress
-     * offsets are CSR row-local and don't apply to ELL.
+     * Only available when a FaceToMatrixAddress::view() overload matches this sparsity type's
+     * own view.
      *
      * @param values The non-zero values of the matrix.
      * @param sparsity The sparsity pattern of the matrix.
@@ -137,8 +137,9 @@ public:
         std::shared_ptr<const SparsityType> sparsity,
         std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress
     )
-        requires(std::is_same_v<typename SparsityType::SparsityIndexType, localIdx>
-                 && requires(const SparsityType& sp) { sp.rowOffs(); })
+        requires requires(const FaceToMatrixAddress& address, const SparsityType& sp) {
+            address.view(sp.view());
+        }
         : values_(values), sparsityPattern_(sparsity), faceToMatrixAddress_(faceToMatrixAddress)
     {
         validate();
@@ -221,6 +222,21 @@ public:
     [[nodiscard]] std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
     {
         return faceToMatrixAddress_;
+    }
+
+    /**
+     * @brief Get a face-to-matrix view matching this matrix's sparsity format, picked by
+     * overload resolution on sparsityPattern_->view()'s type (FaceToMatrixView for CSR/COO,
+     * EllFaceToMatrixView for ELL).
+     * @return The format-appropriate face-to-matrix view.
+     */
+    [[nodiscard]] auto faceToMatrixView() const
+        requires requires(const FaceToMatrixAddress& address, const SparsityType& sp) {
+            address.view(sp.view());
+        }
+    {
+        NF_ASSERT(faceToMatrixAddress_, "Matrix has no face addressing");
+        return faceToMatrixAddress_->view(sparsityPattern_->view());
     }
 
     /**

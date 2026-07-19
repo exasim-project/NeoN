@@ -48,8 +48,8 @@ Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(
     auto copiedSparsity =
         std::make_shared<const SparsityType>(sparsityPattern_->copyToExecutor(dstExec));
 
-    if constexpr (std::is_same_v<typename SparsityType::SparsityIndexType, localIdx> && requires(const SparsityType& sp) {
-                      sp.rowOffs();
+    if constexpr (requires(const FaceToMatrixAddress& address, const SparsityType& sp) {
+                      address.view(sp.view());
                   })
     {
         if (faceToMatrixAddress_)
@@ -66,7 +66,7 @@ Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(
     // faceToMatrixAddress_ can only be set via the constrained 3-arg constructor above, so
     // it's null here whenever that constraint isn't met. Assert it so a future change can't
     // silently drop it.
-    NF_ASSERT(!faceToMatrixAddress_, "Face address requires localIdx sparsity");
+    NF_ASSERT(!faceToMatrixAddress_, "Face address requires a supported sparsity format");
     return {copiedValues, copiedSparsity};
 }
 

@@ -15,15 +15,15 @@
 namespace NeoN
 {
 
-// Freezes ELL's exclusion from the FaceToMatrixAddress constructor -- CSR row-local
-// offsets don't apply to ELL's column-major storage.
+// EllFaceToMatrixView now gives ELL its own addressing formula -- ELLMatrix can retain a
+// FaceToMatrixAddress like CSR/COO.
 static_assert(
-    !std::is_constructible_v<
+    std::is_constructible_v<
         la::ELLMatrix<scalar, localIdx>,
         Vector<scalar>,
         std::shared_ptr<const la::EllSparsityPattern<localIdx>>,
         std::shared_ptr<const la::FaceToMatrixAddress>>,
-    "ELLMatrix must not be constructible with a FaceToMatrixAddress"
+    "ELLMatrix must be constructible with a FaceToMatrixAddress"
 );
 
 TEST_CASE("EllSparsityPattern")
