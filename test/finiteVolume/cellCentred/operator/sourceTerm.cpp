@@ -68,6 +68,69 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
     }
 }
 
+// Same Sp assembly, run through the templated implicitOperation() directly against both a CSR
+// and an ELL system (bypassing the CSR-only dsl::SpatialOperator interface) -- proves the
+// operator body itself is format-generic, independent of the DSL generalization that's still
+// pending.
+TEMPLATE_TEST_CASE("SourceTerm matches for CSR and ELL", "[template]", NeoN::scalar, NeoN::Vec3)
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<TestType, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<TestType, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto coeffBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> coeff(exec, "coeff", mesh, coeffBCs);
+    fill(coeff.internalVector(), 2.0);
+    fill(coeff.boundaryData().value(), 0.0);
+    coeff.correctBoundaryConditions();
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+    fvcc::VolumeField<TestType> phi(exec, "sf", mesh, volumeBCs);
+    fill(phi.internalVector(), 10 * one<TestType>());
+    fill(phi.boundaryData().value(), zero<TestType>());
+    phi.correctBoundaryConditions();
+
+    SECTION("diag() matches " + execName)
+    {
+        fvcc::SourceTerm<TestType> sTerm(Operator::Type::Implicit, coeff, phi);
+
+        auto csrLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, CSRMatrix>(mesh);
+        auto ellLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, ELLMatrix>(mesh);
+
+        sTerm.template implicitOperation<CSRMatrix>(csrLs);
+        sTerm.template implicitOperation<ELLMatrix>(ellLs);
+
+        REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag()));
+
+        // ELL's sparsity here is the full mesh-connectivity stencil (diag + neighbours), not
+        // diag-only, so it has both real off-diagonal slots and padding. Sp only ever writes
+        // ma.diagIdx(): check every other slot -- padding included -- stayed exactly zero.
+        auto hostLs = ellLs.copyToExecutor(SerialExecutor());
+        auto ma = hostLs.matrix().faceToMatrixView();
+        auto valuesHostV = hostLs.matrix().values().view();
+
+        std::vector<localIdx> diagOffsets(static_cast<std::size_t>(nCells));
+        for (localIdx celli = 0; celli < nCells; ++celli)
+        {
+            diagOffsets[static_cast<std::size_t>(celli)] = ma.diagIdx(celli);
+        }
+
+        for (localIdx i = 0; i < valuesHostV.size(); ++i)
+        {
+            bool isDiagSlot =
+                std::find(diagOffsets.begin(), diagOffsets.end(), i) != diagOffsets.end();
+            if (!isDiagSlot)
+            {
+                REQUIRE(valuesHostV[i] == zero<TestType>());
+            }
+        }
+    }
+}
+
 TEMPLATE_TEST_CASE("SourceTerm Su constructor", "[template]", NeoN::scalar, NeoN::Vec3)
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
