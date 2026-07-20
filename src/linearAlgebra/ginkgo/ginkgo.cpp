@@ -655,8 +655,9 @@ SolverStatsEntry GinkgoSolver::withL1Report(
     return entry;
 }
 
-SolverStats GinkgoSolver::solve(
-    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+template<typename SystemMatrixType>
+SolverStats GinkgoSolver::solveImpl(
+    const LinearSystem<scalar, scalar, SystemMatrixType>& sys, Vector<scalar>& x
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
@@ -670,6 +671,13 @@ SolverStats GinkgoSolver::solve(
     const auto b = gkoVecView(gkoExec_, sys.rhs().data(), sys.rhs().size());
     const auto xView = gkoVecView(gkoExec_, x.data(), x.size());
     return {withL1Report(entry, gkoMtx.get(), b.get(), xView.get())};
+}
+
+SolverStats GinkgoSolver::solve(
+    const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
+{
+    return solveImpl<CSRMatrix<scalar, localIdx>>(sys, x);
 }
 
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
@@ -940,6 +948,16 @@ createGkoMtx<COOMatrix<scalar, localIdx>>(const COOMatrix<scalar, localIdx>&);
 
 template std::shared_ptr<const gko::LinOp>
 createGkoMtx<ELLMatrix<scalar, localIdx>>(const ELLMatrix<scalar, localIdx>&);
+
+template SolverStats GinkgoSolver::solveImpl<CSRMatrix<
+    scalar,
+    localIdx>>(const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>&, Vector<scalar>&)
+    const;
+
+template SolverStats GinkgoSolver::solveImpl<ELLMatrix<
+    scalar,
+    localIdx>>(const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>&, Vector<scalar>&)
+    const;
 
 }
 
