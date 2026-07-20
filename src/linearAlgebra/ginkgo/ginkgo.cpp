@@ -295,6 +295,42 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const COOMatrix<scal
     ));
 }
 
+/* @brief create a ginkgo ell matrix by creating views into Ell<scalar> avoiding copies.
+ * NeoN's ELL padding sentinel (EllSparsityView::invalidIndex()) matches
+ * gko::invalid_index<IndexType>() and the column-major i + stride*slot layout matches
+ * Ell::linearize_index(), so colIdxs/values are handed to Ginkgo exactly as stored. The
+ * returned LinOp holds non-owning views into mtx -- mtx must outlive it. */
+template<typename IndexType>
+std::shared_ptr<const gko::LinOp>
+createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const ELLMatrix<scalar, IndexType>& mtx)
+{
+    // gko::invalid_index<IndexType>() (what EllSparsityView::invalidIndex() now matches) is only
+    // defined for signed types; fail here with a NeoN-specific message rather than inside Ginkgo's
+    // own static_assert. localIdx is unsigned when built with NeoN_US_IDX.
+    static_assert(std::is_signed_v<IndexType>, "Ginkgo ELL requires a signed index type");
+
+    const auto [coeffsV, sparsityV] = mtx.view();
+
+    auto vals = gko::array<scalar>::const_view(
+        exec, static_cast<gko::size_type>(coeffsV.size()), coeffsV.data()
+    );
+    auto col = gko::array<IndexType>::const_view(
+        exec, static_cast<gko::size_type>(sparsityV.colIdxs.size()), sparsityV.colIdxs.data()
+    );
+
+    auto nrows = static_cast<gko::size_type>(mtx.nRows());
+    auto numStoredElementsPerRow = static_cast<gko::size_type>(sparsityV.numStoredElementsPerRow);
+    auto stride = static_cast<gko::size_type>(sparsityV.stride);
+    return gko::share(gko::matrix::Ell<scalar, IndexType>::create_const(
+        exec,
+        gko::dim<2> {nrows, nrows},
+        std::move(vals),
+        std::move(col),
+        numStoredElementsPerRow,
+        stride
+    ));
+}
+
 template<typename IndexType>
 std::shared_ptr<const gko::LinOp>
 createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<Vec3, IndexType>& mtx)
@@ -717,6 +753,9 @@ createGkoMtx<CSRMatrix<scalar, localIdx>>(const CSRMatrix<scalar, localIdx>&);
 
 template std::shared_ptr<const gko::LinOp>
 createGkoMtx<COOMatrix<scalar, localIdx>>(const COOMatrix<scalar, localIdx>&);
+
+template std::shared_ptr<const gko::LinOp>
+createGkoMtx<ELLMatrix<scalar, localIdx>>(const ELLMatrix<scalar, localIdx>&);
 
 }
 

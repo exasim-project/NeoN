@@ -20,6 +20,9 @@ using NeoN::la::CsrSparsityPattern;
 using NeoN::la::CooSparsityPattern;
 using NeoN::la::CSRMatrix;
 using NeoN::la::COOMatrix;
+using NeoN::la::ELLMatrix;
+using NeoN::la::EllSparsityPattern;
+using NeoN::la::EllSparsityView;
 using NeoN::la::Solver;
 using NeoN::la::Dimensions;
 
@@ -163,6 +166,56 @@ TEST_CASE("MatrixConversion - Ginkgo")
     {
         auto cooMatrix = COOMatrix<scalar, localIdx>(values, colIdx, rowIdx, {4, 4});
         auto gkoCooMtx = NeoN::la::ginkgo::createGkoMtx(cooMatrix);
+    }
+
+    // Same logical 4x4 matrix as the CSR/COO sections above (row0:{0:1,1:2},
+    // row1:{0:3,1:4,2:5}, row2:{1:6,2:7,3:8}, row3:{2:9,3:10}), stored ELL-style: widest
+    // rows (1 and 2) need 3 slots, stride = nRows = 4, column-major with padding trailing.
+    SECTION("ELLMatrix " + execName)
+    {
+        const auto INV = EllSparsityView<localIdx>::invalidIndex();
+        auto ellValues =
+            Vector<scalar>(exec, {1.0, 3.0, 6.0, 9.0, 2.0, 4.0, 7.0, 10.0, 0.0, 5.0, 8.0, 0.0});
+        auto ellColIdx = Vector<localIdx>(exec, {0, 0, 1, 2, 1, 1, 2, 3, INV, 2, 3, INV});
+        auto ellSp = std::make_shared<const EllSparsityPattern<localIdx>>(
+            std::move(ellColIdx), Dimensions {4, 4}, 3, 4, 10
+        );
+        auto ellMatrix = ELLMatrix<scalar, localIdx>(ellValues, ellSp);
+
+        auto gkoEllMtx = NeoN::la::ginkgo::createGkoMtx(ellMatrix);
+        auto gkoEll =
+            std::dynamic_pointer_cast<const gko::matrix::Ell<scalar, localIdx>>(gkoEllMtx);
+        REQUIRE(gkoEll != nullptr);
+
+        // Zero-copy: Ginkgo's arrays must alias NeoN's own memory, not a copy of it.
+        REQUIRE(gkoEll->get_const_values() == ellMatrix.values().view().data());
+        REQUIRE(gkoEll->get_const_col_idxs() == ellMatrix.sparsity()->colIdxs().view().data());
+        REQUIRE(
+            gkoEll->get_num_stored_elements_per_row()
+            == static_cast<gko::size_type>(ellMatrix.sparsity()->numStoredElementsPerRow())
+        );
+        REQUIRE(
+            gkoEll->get_stride() == static_cast<gko::size_type>(ellMatrix.sparsity()->stride())
+        );
+
+        // Correctness: apply() against the same logical matrix as the CSR section above
+        // must give the same result.
+        auto csrMatrix = CSRMatrix<scalar, localIdx>(values, colIdx, rowPtr, {4, 4});
+        auto gkoCsrMtx = NeoN::la::ginkgo::createGkoMtx(csrMatrix);
+
+        auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+        Vector<scalar> xVec(exec, {1.0, 1.0, 1.0, 1.0});
+        Vector<scalar> yCsr(exec, 4, 0.0);
+        Vector<scalar> yEll(exec, 4, 0.0);
+
+        auto xDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, xVec.view().data(), 4);
+        auto yCsrDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, yCsr.view().data(), 4);
+        auto yEllDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, yEll.view().data(), 4);
+
+        gkoCsrMtx->apply(xDense, yCsrDense);
+        gkoEllMtx->apply(xDense, yEllDense);
+
+        REQUIRE_THAT(yEll, Equals(yCsr, Approx {1e-10}));
     }
 }
 
