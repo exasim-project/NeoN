@@ -291,10 +291,7 @@ SolverStatsEntry solve_impl_dist(
             )
             / 1000.0;
         return {
-            static_cast<NeoN::size_t>(l1Res.numIter),
-            l1Res.initResNorm,
-            l1Res.finalResNorm,
-            duration
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
         };
     }
 
@@ -333,7 +330,7 @@ SolverStatsEntry solve_impl_dist(
         )
         / 1000.0;
 
-    return {static_cast<NeoN::size_t>(numIter), initResNorm, finalResNorm, duration};
+    return {static_cast<size_t>(numIter), initResNorm, finalResNorm, duration};
 }
 
 SolverStats solve_impl_dist(
@@ -380,7 +377,7 @@ SolverStats solve_impl_dist(
             for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
             {
                 stats.entries.push_back(
-                    {static_cast<NeoN::size_t>(l1Res.numIter),
+                    {static_cast<size_t>(l1Res.numIter),
                      l1Res.perColInitNorms[i],
                      l1Res.perColFinalNorms[i],
                      duration}
@@ -389,10 +386,7 @@ SolverStats solve_impl_dist(
             return stats;
         }
         return {
-            static_cast<NeoN::size_t>(l1Res.numIter),
-            l1Res.initResNorm,
-            l1Res.finalResNorm,
-            duration
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
         };
     }
 
@@ -437,7 +431,7 @@ SolverStats solve_impl_dist(
     SolverStats stats;
     for (int i = 0; i < 3; ++i)
         stats.entries.push_back(
-            {static_cast<NeoN::size_t>(numIter), initNorms[i], finalNorms[i], duration}
+            {static_cast<size_t>(numIter), initNorms[i], finalNorms[i], duration}
         );
     return stats;
 }
