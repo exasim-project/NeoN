@@ -106,10 +106,15 @@ struct EllSparsityView
           stride(strideIn) {};
 
     /**
-     * @brief Sentinel column index marking an unused (padding) slot.
+     * @brief Sentinel column index marking an unused (padding) slot. For a signed IndexType
+     * this matches gko::invalid_index<IndexType>() (-1) -- Ginkgo's own ELL kernels skip padding
+     * by checking a slot's column index against exactly this value, so this is what lets colIdxs
+     * be handed to gko::matrix::Ell::create_const() unmodified. localIdx is signed unless built
+     * with NeoN_US_IDX; for an unsigned IndexType this is still a valid NeoN-internal sentinel
+     * (all bits set) but Ginkgo itself rejects unsigned index types outright.
      */
     KOKKOS_INLINE_FUNCTION
-    static constexpr IndexType invalidIndex() { return std::numeric_limits<IndexType>::max(); }
+    static constexpr IndexType invalidIndex() { return static_cast<IndexType>(-1); }
 
     /**
      * @brief Flat storage offset of slot `slot` of row `i` (column-major layout).
