@@ -509,6 +509,13 @@ SolverStats GinkgoSolver::solve(
     return solveImpl<CSRMatrix<scalar, localIdx>>(sys, x);
 }
 
+SolverStats GinkgoSolver::solve(
+    const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+) const
+{
+    return solveImpl<ELLMatrix<scalar, localIdx>>(sys, x);
+}
+
 /* @brief create a ginkgo csr matrix by unpacking and copying the Csr<Vec3> input */
 template<typename IndexType>
 std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(

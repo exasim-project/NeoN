@@ -315,13 +315,15 @@ public:
     ) const final;
 
     // Format-generic scalar solve body (defined in ginkgo.cpp, explicitly instantiated for
-    // CSRMatrix and ELLMatrix). The scalar solve() override above forwards to this; virtual
-    // functions can't themselves be templates, and this is not itself reachable through
-    // SolverFactory/Solver -- those stay CSR-only until the DSL's own format selection is
-    // generalized, same scoping as computeLaplacianIntImpl and SourceTerm::implicitOperation.
+    // CSRMatrix and ELLMatrix). Both scalar solve() overrides below forward to this; virtual
+    // functions can't themselves be templates.
     template<typename SystemMatrixType>
     SolverStats
     solveImpl(const LinearSystem<scalar, scalar, SystemMatrixType>& sys, Vector<scalar>& x) const;
+
+    virtual SolverStats solve(
+        const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
+    ) const final;
 
     virtual SolverStats solve(
         const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
