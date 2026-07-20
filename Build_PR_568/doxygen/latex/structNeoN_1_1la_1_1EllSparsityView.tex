@@ -24,7 +24,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1
 \begin{DoxyCompactItemize}
 \item 
 static KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION constexpr Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index}} ()
-\begin{DoxyCompactList}\small\item\em Sentinel column index marking an unused (padding) slot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Sentinel column index marking an unused (padding) slot. For a signed Index\+Type this matches gko\+::invalid\+\_\+index$<$\+Index\+Type$>$() (-\/1) -- Ginkgo\textquotesingle{}s own ELL kernels skip padding by checking a slot\textquotesingle{}s column index against exactly this value, so this is what lets col\+Idxs be handed to gko\+::matrix\+::\+Ell\+::create\+\_\+const() unmodified. local\+Idx is signed unless built with Neo\+N\+\_\+\+US\+\_\+\+IDX; for an unsigned Index\+Type this is still a valid Neo\+N-\/internal sentinel (all bits set) but Ginkgo itself rejects unsigned index types outright. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -94,7 +94,7 @@ Flat offset into col\+Idxs/values if it exists.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00151}{151}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be}\label{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!findEntry@{findEntry}}
@@ -122,7 +122,7 @@ assumes each row\textquotesingle{}s stored columns are sorted ascending with pad
 \end{DoxyNote}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00137}{137}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}\label{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!invalidIndex@{invalidIndex}}
@@ -133,11 +133,11 @@ static KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION constexpr Index\+Type \mbox{\hyperli
 
 
 
-Sentinel column index marking an unused (padding) slot. 
+Sentinel column index marking an unused (padding) slot. For a signed Index\+Type this matches gko\+::invalid\+\_\+index$<$\+Index\+Type$>$() (-\/1) -- Ginkgo\textquotesingle{}s own ELL kernels skip padding by checking a slot\textquotesingle{}s column index against exactly this value, so this is what lets col\+Idxs be handed to gko\+::matrix\+::\+Ell\+::create\+\_\+const() unmodified. local\+Idx is signed unless built with Neo\+N\+\_\+\+US\+\_\+\+IDX; for an unsigned Index\+Type this is still a valid Neo\+N-\/internal sentinel (all bits set) but Ginkgo itself rejects unsigned index types outright. 
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00112}{112}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d}\label{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!linearIndex@{linearIndex}}
@@ -152,7 +152,7 @@ Flat storage offset of slot {\ttfamily slot} of row {\ttfamily i} (column-\/majo
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00123}{123}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -166,7 +166,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00118}{118}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00161}{161}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_afcc48e17c8a7706a69a0962d492363bd}\label{structNeoN_1_1la_1_1EllSparsityView_afcc48e17c8a7706a69a0962d492363bd} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!numStoredElementsPerRow@{numStoredElementsPerRow}}
@@ -177,7 +177,7 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eabe14884d56606685042}\label{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eabe14884d56606685042} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!stride@{stride}}
@@ -188,7 +188,7 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
