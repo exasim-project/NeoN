@@ -60,8 +60,8 @@ concept HasImplicitOperatorELL = requires(T const t) {
 };
 
 template<typename T>
-concept IsSpatialOperator =
-    HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>;
+concept IsSpatialOperator = HasExplicitOperator<T> || HasImplicitOperator<T>
+                         || HasImplicitOperatorScalarMtx<T> || HasImplicitOperatorELL<T>;
 
 /* @class SpatialOperator
  * @brief A class to represent an operator in NeoNs dsl
