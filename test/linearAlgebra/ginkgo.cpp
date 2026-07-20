@@ -26,6 +26,28 @@ using NeoN::la::EllSparsityView;
 using NeoN::la::Solver;
 using NeoN::la::Dimensions;
 
+template<typename LinearSystemType>
+void assembleDiagDominant1D(LinearSystemType& ls)
+{
+    const auto nFaces = ls.matrix().nRows() - 1;
+    auto ma = ls.matrix().faceToMatrixView();
+    auto matrixV = ls.matrix().values().view();
+    parallelFor(
+        ls.exec(),
+        {0, nFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const localIdx own = facei;
+            const localIdx nei = facei + 1;
+            matrixV[ma.upperIdx(own, facei)] = -1.0;
+            matrixV[ma.lowerIdx(nei, facei)] = -1.0;
+            Kokkos::atomic_add(&matrixV[ma.diagIdx(own)], 2.0);
+            Kokkos::atomic_add(&matrixV[ma.diagIdx(nei)], 2.0);
+        },
+        "assembleDiagDominant"
+    );
+    fill(ls.rhs(), 1.0);
+}
+
 TEST_CASE("Dictionary Parsing - Ginkgo")
 {
     SECTION("String")
@@ -229,7 +251,6 @@ TEST_CASE("Solve - Ginkgo ELL vs CSR")
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     const localIdx nCells = 10;
-    const localIdx nFaces = nCells - 1;
     auto mesh = create1DUniformMesh(exec, nCells);
 
     auto csrLs =
@@ -239,27 +260,8 @@ TEST_CASE("Solve - Ginkgo ELL vs CSR")
 
     // Diagonally dominant 1D stencil: each face adds 2.0 to each endpoint's diagonal and a
     // single -1.0 off-diagonal, so diag always dominates the row's off-diagonal sum.
-    auto assemble = [&](auto& ls)
-    {
-        auto ma = ls.matrix().faceToMatrixView();
-        auto matrixV = ls.matrix().values().view();
-        parallelFor(
-            exec,
-            {0, nFaces},
-            NEON_LAMBDA(const localIdx facei) {
-                const localIdx own = facei;
-                const localIdx nei = facei + 1;
-                matrixV[ma.upperIdx(own, facei)] = -1.0;
-                matrixV[ma.lowerIdx(nei, facei)] = -1.0;
-                Kokkos::atomic_add(&matrixV[ma.diagIdx(own)], 2.0);
-                Kokkos::atomic_add(&matrixV[ma.diagIdx(nei)], 2.0);
-            },
-            "assembleDiagDominant"
-        );
-        fill(ls.rhs(), 1.0);
-    };
-    assemble(csrLs);
-    assemble(ellLs);
+    assembleDiagDominant1D(csrLs);
+    assembleDiagDominant1D(ellLs);
 
     Dictionary solverDict {
         {{"solver", std::string {"Ginkgo"}},
@@ -319,7 +321,6 @@ TEST_CASE("Solve through SolverFactory/Solver - Ginkgo ELL vs CSR")
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     const localIdx nCells = 10;
-    const localIdx nFaces = nCells - 1;
     auto mesh = create1DUniformMesh(exec, nCells);
 
     auto csrLs =
@@ -327,27 +328,8 @@ TEST_CASE("Solve through SolverFactory/Solver - Ginkgo ELL vs CSR")
     auto ellLs =
         NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>(mesh);
 
-    auto assemble = [&](auto& ls)
-    {
-        auto ma = ls.matrix().faceToMatrixView();
-        auto matrixV = ls.matrix().values().view();
-        parallelFor(
-            exec,
-            {0, nFaces},
-            NEON_LAMBDA(const localIdx facei) {
-                const localIdx own = facei;
-                const localIdx nei = facei + 1;
-                matrixV[ma.upperIdx(own, facei)] = -1.0;
-                matrixV[ma.lowerIdx(nei, facei)] = -1.0;
-                Kokkos::atomic_add(&matrixV[ma.diagIdx(own)], 2.0);
-                Kokkos::atomic_add(&matrixV[ma.diagIdx(nei)], 2.0);
-            },
-            "assembleDiagDominant"
-        );
-        fill(ls.rhs(), 1.0);
-    };
-    assemble(csrLs);
-    assemble(ellLs);
+    assembleDiagDominant1D(csrLs);
+    assembleDiagDominant1D(ellLs);
 
     Dictionary solverDict {
         {{"solver", std::string {"Ginkgo"}},
