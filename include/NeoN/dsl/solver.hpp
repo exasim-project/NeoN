@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <concepts>
+#include <optional>
 
 #include "NeoN/fields/field.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
