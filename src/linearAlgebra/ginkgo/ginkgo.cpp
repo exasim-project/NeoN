@@ -7,6 +7,7 @@
 #include <array>
 #include <mutex>
 #include <sstream>
+#include <stdexcept>
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
@@ -70,10 +71,16 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         {
             auto token = std::any_cast<TokenList>(fn);
             std::stringstream s;
-            for (size_t i = 0; i < token.size() - 1; i++)
+            if (token.empty())
             {
-                s << token.next<std::string>() << "/";
+                throw std::runtime_error("configFile token list is empty");
             }
+
+            for (size_t i = 0; i + 1 < token.size(); ++i)
+            {
+                s << token.next<std::string>() << '/';
+            }
+
             s << token.next<std::string>();
             fn_str = s.str();
         }
