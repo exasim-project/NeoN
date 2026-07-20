@@ -5,7 +5,6 @@
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 
-#include <limits>
 #include <type_traits>
 
 #include "catch2_common.hpp"
@@ -47,7 +46,7 @@ TEST_CASE("EllSparsityPattern")
     //   slot 1: [1, 1, 2, 3]
     //   slot 2: [INV, 2, 3, INV]
     // clang-format on
-    const auto INV = std::numeric_limits<localIdx>::max();
+    const auto INV = la::EllSparsityView<localIdx>::invalidIndex();
     const localIdx nRows = 4;
     const localIdx numStoredElementsPerRow = 3;
     const localIdx stride = nRows;
@@ -155,7 +154,7 @@ TEST_CASE("ELLMatrix")
     const localIdx numStoredElementsPerRow = 3;
     const localIdx stride = nRows;
     const localIdx logicalNnz = 10;
-    const auto INV = std::numeric_limits<localIdx>::max();
+    const auto INV = la::EllSparsityView<localIdx>::invalidIndex();
 
     Vector<localIdx> colIdx(exec, std::vector<localIdx> {0, 0, 1, 2, 1, 1, 2, 3, INV, 2, 3, INV});
     auto sp = std::make_shared<const EllSparsityType>(
