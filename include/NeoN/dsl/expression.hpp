@@ -346,8 +346,11 @@ public:
     }
 
     /** @brief compute matrix coefficients based on all spatial operators */
-    template<typename AssemblyType = ValueType>
-    void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType>& ls) const
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
+    void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls
+    ) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -376,9 +379,12 @@ public:
     }
 
     /*@brief subtract explicit source terms from the linear system rhs, scaled by cell volumes */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assembleExplicitSource(
-        la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls,
+        const UnstructuredMesh& mesh
     ) const
     {
         auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
@@ -395,16 +401,18 @@ public:
      * @param ps post-assembly functors applied to the system after assembly
      * @return the assembled linear system
      */
-    template<typename AssemblyType = ValueType>
-    la::LinearSystem<AssemblyType, ValueType> assemble(
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
+    la::LinearSystem<AssemblyType, ValueType, SystemMatrixType> assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        auto ls = la::createEmptyLinearSystem<AssemblyType, ValueType>(mesh);
-        assemble<AssemblyType>(t, dt, ls, mesh, ps);
+        auto ls = la::createEmptyLinearSystem<AssemblyType, ValueType, SystemMatrixType>(mesh);
+        assemble<AssemblyType, SystemMatrixType>(t, dt, ls, mesh, ps);
         return ls;
     }
 
@@ -412,16 +420,18 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<AssemblyType, ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls,
         const UnstructuredMesh& mesh,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assemble<AssemblyType>(t, dt, ls, ps);
+        assemble<AssemblyType, SystemMatrixType>(t, dt, ls, ps);
         assembleExplicitSource(ls, mesh);
     }
 
@@ -429,32 +439,53 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<AssemblyType, ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assembleSpatialOperator(ls);         // add spatial operator
-        assembleTemporalOperator(ls, t, dt); // add temporal operators
+        assembleSpatialOperator(ls); // add spatial operator -- format-generic; throws for
+                                     // operators that don't support this SystemMatrixType yet
 
-        // Post-assembly functors apply on the same-type form via operator(); the segregated
-        // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
-        if constexpr (std::is_same_v<AssemblyType, ValueType>)
+        // TemporalOperator and PostAssemblyBase are still CSR-only (fixed CSRMatrix parameter
+        // types), unlike SpatialOperator above -- not generalized in this step, so skip them
+        // (asserting nothing was silently dropped) for any other SystemMatrixType instead of
+        // failing to compile.
+        if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
         {
-            for (const auto* p : ps)
+            assembleTemporalOperator(ls, t, dt); // add temporal operators
+
+            // Post-assembly functors apply on the same-type form via operator(); the segregated
+            // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
+            if constexpr (std::is_same_v<AssemblyType, ValueType>)
             {
-                (*p)(ls);
+                for (const auto* p : ps)
+                {
+                    (*p)(ls);
+                }
+            }
+            else if constexpr (std::is_same_v<AssemblyType, scalar>)
+            {
+                for (const auto* p : ps)
+                {
+                    p->applyScalarMatrix(ls);
+                }
             }
         }
-        else if constexpr (std::is_same_v<AssemblyType, scalar>)
+        else
         {
-            for (const auto* p : ps)
-            {
-                p->applyScalarMatrix(ls);
-            }
+            NF_ASSERT(
+                temporalOperators_.empty(),
+                "Temporal operators are not supported for this SystemMatrixType yet"
+            );
+            NF_ASSERT(
+                ps.empty(), "Post-assembly functors are not supported for this SystemMatrixType yet"
+            );
         }
     }
 

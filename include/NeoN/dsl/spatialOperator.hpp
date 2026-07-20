@@ -46,6 +46,19 @@ concept HasImplicitOperatorScalarMtx = requires(T const t) {
     } -> std::same_as<void>;
 };
 
+/* @brief Concept satisfied when T can assemble into a native ELL-backed LinearSystem
+ *        (scalar matrix, scalar rhs). Matches SourceTerm::implicitOperation<SystemMatrixType>'s
+ *        existing template shape directly -- SourceTerm needs no changes to satisfy this.
+ */
+template<typename T>
+concept HasImplicitOperatorELL = requires(T const t) {
+    {
+        t.implicitOperation(
+            std::declval<la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&>()
+        )
+    } -> std::same_as<void>;
+};
+
 template<typename T>
 concept IsSpatialOperator =
     HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>;
@@ -98,6 +111,18 @@ public:
         model_->implicitOperationScalarMtx(ls);
     }
 
+    /* @brief Implicit assembly into a native ELL-backed (scalar matrix, scalar rhs) linear
+     *        system. A fixed, concrete parameter type distinct from both overloads above
+     *        (different SystemMatrixType), so this coexists without ambiguity regardless of
+     *        ValueType -- only operators that actually support ELL (see HasImplicitOperatorELL)
+     *        do anything here; others throw via implicitOperationELL's default below.
+     */
+    void implicitOperation(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls
+    ) const
+    {
+        model_->implicitOperationELL(ls);
+    }
+
     /* returns the fundamental type of an operator, ie explicit, implicit */
     Operator::Type getType() const { return model_->getType(); }
 
@@ -134,6 +159,14 @@ private:
          *        Concrete operators that don't support this form leave it as a no-op.
          */
         virtual void implicitOperationScalarMtx(la::LinearSystem<scalar, ValueType>& ls) const = 0;
+
+        /* @brief Implicit assembly into a native ELL-backed (scalar matrix, scalar rhs)
+         *        linear system. Concrete operators that don't support ELL yet throw
+         *        (see OperatorModel's implementation), same as implicitOperationScalarMtx.
+         */
+        virtual void
+        implicitOperationELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls
+        ) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
         virtual void read(const Input& input) = 0;
@@ -202,6 +235,20 @@ private:
                     "Operator '" << getName()
                                  << "' does not support scalar-matrix (segregated) assembly."
                 );
+            }
+        }
+
+        virtual void
+        implicitOperationELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls
+        ) const override
+        {
+            if constexpr (HasImplicitOperatorELL<ConcreteOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls);
+            }
+            else
+            {
+                NF_ERROR_EXIT("Operator '" << getName() << "' does not support ELL assembly.");
             }
         }
 
