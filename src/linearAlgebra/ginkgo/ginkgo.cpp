@@ -70,7 +70,7 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         {
             auto token = std::any_cast<TokenList>(fn);
             std::stringstream s;
-            for (NeoN::size_t i = 0; i < token.size() - 1; i++)
+            for (size_t i = 0; i < token.size() - 1; i++)
             {
                 s << token.next<std::string>() << "/";
             }
@@ -604,8 +604,7 @@ SolverStats GinkgoSolver::solve(
                         )
                                                 .count())
                       / 1000.0;
-        stats.entries.push_back(
-            {static_cast<NeoN::size_t>(numIter), initResNorm, finalResNorm, duration}
+        stats.entries.push_back({static_cast<size_t>(numIter), initResNorm, finalResNorm, duration}
         );
     }
     return stats;
