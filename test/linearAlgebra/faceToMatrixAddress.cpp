@@ -5,8 +5,6 @@
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 
-#include <limits>
-
 #include "catch2_common.hpp"
 
 #include "NeoN/NeoN.hpp"
@@ -54,7 +52,7 @@ TEST_CASE("EllFaceToMatrixAddress")
     auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
         NeoN::la::EllSparsityPattern<NeoN::localIdx>>(mesh);
 
-    const auto INV = std::numeric_limits<NeoN::localIdx>::max();
+    const auto INV = NeoN::la::EllSparsityView<NeoN::localIdx>::invalidIndex();
 
     SECTION("Can construct native ELL sparsity pattern " + execName)
     {
