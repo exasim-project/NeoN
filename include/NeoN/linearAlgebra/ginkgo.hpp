@@ -102,8 +102,8 @@ struct L1ResidualControl
 {
     scalar tolerance;        //!< absolute tolerance on the scaled L1 residual
     scalar relTol;           //!< relative tolerance (vs. initial residual); 0 disables
-    localIdx maxIter;        //!< maximum iteration count
-    localIdx minIter;        //!< minimum iteration count before tolerances are tested
+    gko::size_type maxIter;  //!< maximum iteration count
+    gko::size_type minIter;  //!< minimum iteration count before tolerances are tested
     localIdx checkFrequency; //!< evaluate the (expensive) true residual every N iterations; <=1 =
                              //!< every iteration
 };
@@ -111,9 +111,9 @@ struct L1ResidualControl
 /** @brief Result of a solve governed by the L1-scaled residual stopping criterion. */
 struct L1ResidualResult
 {
-    localIdx numIter;    //!< iterations performed
-    scalar initResNorm;  //!< combined scaled L1 initial residual (sum of columns)
-    scalar finalResNorm; //!< combined scaled L1 final residual (sum of columns)
+    gko::size_type numIter; //!< iterations performed
+    scalar initResNorm;     //!< combined scaled L1 initial residual (sum of columns)
+    scalar finalResNorm;    //!< combined scaled L1 final residual (sum of columns)
     // Per-column scaled residuals; populated only for multi-RHS (Vec3) solves (size == ncols).
     std::vector<scalar> perColInitNorms;
     std::vector<scalar> perColFinalNorms;

@@ -164,9 +164,9 @@ public:
 
         scalar GKO_FACTORY_PARAMETER_SCALAR(relative_tolerance, 0.0);
 
-        localIdx GKO_FACTORY_PARAMETER_SCALAR(min_iter, 0);
+        gko::size_type GKO_FACTORY_PARAMETER_SCALAR(min_iter, 0);
 
-        localIdx GKO_FACTORY_PARAMETER_SCALAR(max_iter, 1000);
+        gko::size_type GKO_FACTORY_PARAMETER_SCALAR(max_iter, 1000);
 
         localIdx GKO_FACTORY_PARAMETER_SCALAR(check_frequency, 1);
 
@@ -178,7 +178,7 @@ public:
 
         std::add_pointer<scalar>::type GKO_FACTORY_PARAMETER_SCALAR(final_residual, NULL);
 
-        std::add_pointer<localIdx>::type GKO_FACTORY_PARAMETER_SCALAR(num_iters, NULL);
+        std::add_pointer<gko::size_type>::type GKO_FACTORY_PARAMETER_SCALAR(num_iters, NULL);
 
         // Per-column scaled residual output for multi-RHS (Vec3) solves.
         // When non-null, filled with one entry per column (size == ncols).
@@ -226,7 +226,7 @@ protected:
             return false;
         }
         const auto* solution = gko::as<VecType>(updater.solution_);
-        const auto numIter = static_cast<localIdx>(updater.num_iterations_);
+        const auto numIter = updater.num_iterations_;
 
         // Skip the residual-norm evaluation on iterations where the criterion cannot stop
         // anyway: before min_iter the tolerances are not tested, and between check_frequency-
@@ -373,7 +373,7 @@ L1ResidualResult attachL1StopAndSolve(
 {
     scalar initResNorm = 0.0;
     scalar finalResNorm = 0.0;
-    localIdx numIter = 0;
+    gko::size_type numIter = 0;
     std::vector<scalar> perColInit, perColFinal;
 
     const bool multiRhs = b->get_size()[1] > 1;

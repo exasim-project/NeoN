@@ -91,7 +91,7 @@ la::SolverStats iterativeSolveImpl(
  * @param p - A chainable functor that performs manipulations on the assembled system
  */
 template<typename VectorType, typename IndexType>
-la::SolverStats solve(
+std::optional<la::SolverStats> solve(
     Expression<typename VectorType::ElementType, IndexType>& exp,
     VectorType& solution,
     scalar t,
@@ -114,7 +114,8 @@ la::SolverStats solve(
     {
         // integrate equations in time
         integrator.solve(exp, solution, t, dt);
-        return {{.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0}};
+        // return {{.numIter = -1, .initResNorm = 0, .finalResNorm = 0, .solveTime = 0}};
+        return std::nullopt; // no linear solve was performed, so no stats to return
     }
     else
     {

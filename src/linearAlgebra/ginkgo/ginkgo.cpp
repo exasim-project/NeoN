@@ -349,7 +349,9 @@ SolverStatsEntry solve_impl(
                 std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
             )
             / 1000.0;
-        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+        return {
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+        };
     }
 
     // copy of rhs to compute the initial residual inline
@@ -370,7 +372,7 @@ SolverStatsEntry solve_impl(
     solver->apply(b, x);
 
     scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
-    auto numIter = label(logger->get_num_iterations());
+    auto numIter = static_cast<size_t>(logger->get_num_iterations());
     exec->synchronize();
 
     auto endEval = std::chrono::steady_clock::now();
@@ -426,7 +428,7 @@ SolverStats solve_impl(
     mtx->apply(one, x, neg_one, resFinal);
     auto finalNorms = colNorms(resFinal);
 
-    auto numIter = label(logger->get_num_iterations());
+    auto numIter = static_cast<size_t>(logger->get_num_iterations());
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -549,7 +551,10 @@ SolverStats GinkgoSolver::solve(
         SolverStats stats;
         for (int i = 0; i < 3; ++i)
             stats.entries.push_back(
-                {l1Res.numIter, l1Res.perColInitNorms[i], l1Res.perColFinalNorms[i], duration}
+                {static_cast<size_t>(l1Res.numIter),
+                 l1Res.perColInitNorms[i],
+                 l1Res.perColFinalNorms[i],
+                 duration}
             );
         return stats;
     }
@@ -592,14 +597,16 @@ SolverStats GinkgoSolver::solve(
         solver->apply(b_col, x_col);
 
         scalar finalResNorm = retrieve(gko::as<vec>(logger->get_residual_norm()));
-        auto numIter = label(logger->get_num_iterations());
+        gko::size_type numIter = logger->get_num_iterations();
         gkoExec_->synchronize();
         auto duration = static_cast<scalar>(std::chrono::duration_cast<std::chrono::microseconds>(
                                                 std::chrono::steady_clock::now() - t0
                         )
                                                 .count())
                       / 1000.0;
-        stats.entries.push_back({numIter, initResNorm, finalResNorm, duration});
+        stats.entries.push_back(
+            {static_cast<NeoN::size_t>(numIter), initResNorm, finalResNorm, duration}
+        );
     }
     return stats;
 }

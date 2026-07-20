@@ -13,7 +13,7 @@ namespace NeoN::la
 
 struct SolverStatsEntry
 {
-    int numIter;
+    size_t numIter;
     scalar initResNorm;
     scalar finalResNorm;
     scalar solveTime;
@@ -26,7 +26,7 @@ struct SolverStats
 
     SolverStats() : entries() {}
 
-    SolverStats(int numIter, scalar initResNorm, scalar finalResNorm, scalar solveTime)
+    SolverStats(size_t numIter, scalar initResNorm, scalar finalResNorm, scalar solveTime)
         : entries({SolverStatsEntry {numIter, initResNorm, finalResNorm, solveTime}})
     {}
 
