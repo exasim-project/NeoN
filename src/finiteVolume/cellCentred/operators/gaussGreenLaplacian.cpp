@@ -327,9 +327,9 @@ void computeLaplacianNonOrthCorrImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
 void computeLaplacianIntImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
@@ -338,7 +338,6 @@ void computeLaplacianIntImpl(
 {
     const UnstructuredMesh& mesh = phi.mesh();
     const auto exec = phi.exec();
-    const auto matIt = ls.faceToMatrixAddress();
     const auto [ownV, neiV, boundaryFaceOwners] =
         views(mesh.faceOwners(), mesh.faceNeighbors(), mesh.boundaryMesh().faceOwners());
 
@@ -348,7 +347,7 @@ void computeLaplacianIntImpl(
 
     auto values = ls.matrix().values().view();
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto nInternalFaces = mesh.nInternalFaces();
     parallelFor(
@@ -525,5 +524,47 @@ template void computeLaplacianNonOrthCorrImpl<
 template void computeLaplacianNonOrthCorrImpl<
     Vec3,
     scalar>(la::LinearSystem<scalar, Vec3>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+
+template void computeLaplacianIntImpl<
+    scalar,
+    scalar,
+    la::CSRMatrix<
+        scalar,
+        localIdx>>(la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<scalar>&, dsl::Coeff, const FaceNormalGradient<scalar>&);
+template void computeLaplacianIntImpl<
+    Vec3,
+    Vec3,
+    la::CSRMatrix<
+        Vec3,
+        localIdx>>(la::LinearSystem<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+template void computeLaplacianIntImpl<
+    Vec3,
+    scalar,
+    la::CSRMatrix<
+        scalar,
+        localIdx>>(la::LinearSystem<scalar, Vec3, la::CSRMatrix<scalar, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+// ELL instantiations, proving the same assembly kernel works for a non-CSR SystemMatrixType --
+// exercised directly by test/finiteVolume/cellCentred/operator/laplacianOperator.cpp, bypassing
+// the still-CSR-only virtual laplacian() member.
+template void computeLaplacianIntImpl<
+    scalar,
+    scalar,
+    la::ELLMatrix<
+        scalar,
+        localIdx>>(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<scalar>&, dsl::Coeff, const FaceNormalGradient<scalar>&);
+template void computeLaplacianIntImpl<
+    Vec3,
+    Vec3,
+    la::ELLMatrix<
+        Vec3,
+        localIdx>>(la::LinearSystem<Vec3, Vec3, la::ELLMatrix<Vec3, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+// Segregated vector-solve form (scalar matrix, Vec3 rhs) -- matches the CSR instantiation above
+// and GaussGreenLaplacian<Vec3, scalar>, both already used for e.g. momentum assembly.
+template void computeLaplacianIntImpl<
+    Vec3,
+    scalar,
+    la::ELLMatrix<
+        scalar,
+        localIdx>>(la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
 
 };
