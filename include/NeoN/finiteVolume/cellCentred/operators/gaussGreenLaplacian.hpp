@@ -27,6 +27,20 @@ void computeLaplacianNonOrthCorrImpl(
     const FaceNormalGradient<FieldValueType>& faceNormalGradient
 );
 
+// Internal-face Laplacian assembly kernel (defined in gaussGreenLaplacian.cpp) -- the only piece
+// of Laplacian assembly that touches upperIdx()/lowerIdx() as well as diagIdx(). Declared here,
+// like computeLaplacianNonOrthCorrImpl above, so it can be instantiated for a SystemMatrixType
+// other than the CSR default (e.g. ELL), independent of the still-CSR-only virtual laplacian()
+// member below.
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
+void computeLaplacianIntImpl(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff,
+    const FaceNormalGradient<FieldValueType>& faceNormalGradient
+);
+
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class GaussGreenLaplacian :
     public LaplacianOperatorFactory<FieldValueType, AssemblyType>::template Register<
