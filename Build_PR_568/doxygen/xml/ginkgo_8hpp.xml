@@ -222,59 +222,68 @@
 <codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>scalar,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;scalar&gt;&amp;<sp/>x</highlight></codeline>
 <codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="246"><highlight class="normal"></highlight></codeline>
-<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/><ref refid="namespaceNeoN_1_1dsl_1abab926565f9bac963ac87c73de1805e3" kindref="member">solve</ref>(</highlight></codeline>
-<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;Vec3,<sp/>Vec3,<sp/>CSRMatrix&lt;Vec3,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
-<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="250"><highlight class="normal"></highlight></codeline>
-<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/><ref refid="namespaceNeoN_1_1dsl_1abab926565f9bac963ac87c73de1805e3" kindref="member">solve</ref>(</highlight></codeline>
-<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>Vec3,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;,<sp/>COOMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;</highlight></codeline>
-<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sys,</highlight></codeline>
-<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
-<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="256"><highlight class="normal"></highlight></codeline>
-<codeline lineno="257"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/>solveDist(</highlight></codeline>
-<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>scalar,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;scalar&gt;&amp;<sp/>x</highlight></codeline>
-<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"></highlight></codeline>
-<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/>solveDist(</highlight></codeline>
-<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;Vec3,<sp/>Vec3,<sp/>CSRMatrix&lt;Vec3,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Format-generic<sp/>scalar<sp/>solve<sp/>body<sp/>(defined<sp/>in<sp/>ginkgo.cpp,<sp/>explicitly<sp/>instantiated<sp/>for</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>CSRMatrix<sp/>and<sp/>ELLMatrix).<sp/>The<sp/>scalar<sp/>solve()<sp/>override<sp/>above<sp/>forwards<sp/>to<sp/>this;<sp/>virtual</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>functions<sp/>can&apos;t<sp/>themselves<sp/>be<sp/>templates,<sp/>and<sp/>this<sp/>is<sp/>not<sp/>itself<sp/>reachable<sp/>through</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>SolverFactory/Solver<sp/>--<sp/>those<sp/>stay<sp/>CSR-only<sp/>until<sp/>the<sp/>DSL&apos;s<sp/>own<sp/>format<sp/>selection<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>generalized,<sp/>same<sp/>scoping<sp/>as<sp/>computeLaplacianIntImpl<sp/>and<sp/>SourceTerm::implicitOperation.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>SystemMatrixType&gt;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/>SolverStats</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/>solveImpl(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>scalar,<sp/>SystemMatrixType&gt;&amp;<sp/>sys,<sp/>Vector&lt;scalar&gt;&amp;<sp/>x)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/><ref refid="namespaceNeoN_1_1dsl_1abab926565f9bac963ac87c73de1805e3" kindref="member">solve</ref>(</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;Vec3,<sp/>Vec3,<sp/>CSRMatrix&lt;Vec3,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/><ref refid="namespaceNeoN_1_1dsl_1abab926565f9bac963ac87c73de1805e3" kindref="member">solve</ref>(</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>Vec3,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;,<sp/>COOMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sys,</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
 <codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="265"><highlight class="normal"></highlight></codeline>
-<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/>solveDist(</highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>Vec3,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;,<sp/>COOMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sys,</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
-<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="271"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="272"><highlight class="normal"></highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>why<sp/>use<sp/>a<sp/>smart<sp/>pointer<sp/>here?</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/>clone()<sp/>const<sp/>final</highlight></codeline>
-<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;Not<sp/>implemented&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
-<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="279"><highlight class="normal"></highlight></codeline>
-<codeline lineno="280"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/>solveDist(</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>scalar,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;scalar&gt;&amp;<sp/>x</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/>solveDist(</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;Vec3,<sp/>Vec3,<sp/>CSRMatrix&lt;Vec3,<sp/>localIdx&gt;&gt;&amp;<sp/>sys,<sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"></highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>SolverStats<sp/>solveDist(</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LinearSystem&lt;scalar,<sp/>Vec3,<sp/>CSRMatrix&lt;scalar,<sp/>localIdx&gt;,<sp/>COOMatrix&lt;scalar,<sp/>localIdx&gt;&gt;&amp;</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sys,</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Vector&lt;Vec3&gt;&amp;<sp/>x</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="281"><highlight class="normal"></highlight></codeline>
-<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>gkoExec_;</highlight></codeline>
-<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>coupled_;<sp/></highlight><highlight class="comment">//<sp/>whether<sp/>to<sp/>solve<sp/>LinearSystem&lt;Vec3&gt;<sp/>as<sp/>one<sp/>or<sp/>three<sp/>systems</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>L1-scaled<sp/>residual<sp/>stopping<sp/>controls;<sp/>set<sp/>only<sp/>when<sp/>&quot;l1ScaledResidual&quot;<sp/>is<sp/>enabled</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;L1ResidualControl&gt;<sp/>l1Control_;</highlight></codeline>
-<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/>gko::config::pnode<sp/>config_;</highlight></codeline>
-<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOpFactory&gt;<sp/>factory_;</highlight></codeline>
-<codeline lineno="288"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Both<sp/>caches<sp/>are<sp/>null<sp/>until<sp/>the<sp/>first<sp/>solve;<sp/>after<sp/>that<sp/>topology<sp/>is<sp/>fixed.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;gko::experimental::distributed::index_map&lt;label,<sp/>gko::int64&gt;&gt;</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cachedImap_;</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;gko::matrix::Coo&lt;scalar,<sp/>localIdx&gt;&gt;<sp/>cachedNonLocalMtx_;</highlight></codeline>
-<codeline lineno="293"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="294"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"></highlight></codeline>
-<codeline lineno="296"><highlight class="normal"></highlight></codeline>
-<codeline lineno="297"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="298"><highlight class="normal"></highlight></codeline>
-<codeline lineno="299"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO<sp/>why<sp/>use<sp/>a<sp/>smart<sp/>pointer<sp/>here?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;SolverFactory&gt;<sp/>clone()<sp/>const<sp/>final</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="error_8hpp_1a8b8fc4329e5e6dfc3731ca28605a8a49" kindref="member">NF_ERROR_EXIT</ref>(</highlight><highlight class="stringliteral">&quot;Not<sp/>implemented&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>gkoExec_;</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>coupled_;<sp/></highlight><highlight class="comment">//<sp/>whether<sp/>to<sp/>solve<sp/>LinearSystem&lt;Vec3&gt;<sp/>as<sp/>one<sp/>or<sp/>three<sp/>systems</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>L1-scaled<sp/>residual<sp/>stopping<sp/>controls;<sp/>set<sp/>only<sp/>when<sp/>&quot;l1ScaledResidual&quot;<sp/>is<sp/>enabled</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;L1ResidualControl&gt;<sp/>l1Control_;</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/>gko::config::pnode<sp/>config_;</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::LinOpFactory&gt;<sp/>factory_;</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>NF_WITH_MPI_SUPPORT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Both<sp/>caches<sp/>are<sp/>null<sp/>until<sp/>the<sp/>first<sp/>solve;<sp/>after<sp/>that<sp/>topology<sp/>is<sp/>fixed.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;gko::experimental::distributed::index_map&lt;label,<sp/>gko::int64&gt;&gt;</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cachedImap_;</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">mutable</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;gko::matrix::Coo&lt;scalar,<sp/>localIdx&gt;&gt;<sp/>cachedNonLocalMtx_;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="303"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"></highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/ginkgo.hpp"/>
   </compounddef>
