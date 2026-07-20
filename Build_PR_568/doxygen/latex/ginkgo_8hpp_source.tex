@@ -218,66 +218,68 @@
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00245}00245\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00246}00246\ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00247}00247\ \ \ \ \ \textcolor{comment}{//\ Format-\/generic\ scalar\ solve\ body\ (defined\ in\ ginkgo.cpp,\ explicitly\ instantiated\ for}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00248}00248\ \ \ \ \ \textcolor{comment}{//\ CSRMatrix\ and\ ELLMatrix).\ The\ scalar\ solve()\ override\ above\ forwards\ to\ this;\ virtual}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00249}00249\ \ \ \ \ \textcolor{comment}{//\ functions\ can't\ themselves\ be\ templates,\ and\ this\ is\ not\ itself\ reachable\ through}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00250}00250\ \ \ \ \ \textcolor{comment}{//\ SolverFactory/Solver\ -\/-\/\ those\ stay\ CSR-\/only\ until\ the\ DSL's\ own\ format\ selection\ is}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00251}00251\ \ \ \ \ \textcolor{comment}{//\ generalized,\ same\ scoping\ as\ computeLaplacianIntImpl\ and\ SourceTerm::implicitOperation.}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00252}00252\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SystemMatrixType>}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00253}00253\ \ \ \ \ SolverStats}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00254}00254\ \ \ \ \ solveImpl(\textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ SystemMatrixType>\&\ sys,\ Vector<scalar>\&\ x)\ \textcolor{keyword}{const};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00255}00255\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00256}00256\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00257}00257\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<Vec3,\ Vec3,\ CSRMatrix<Vec3,\ localIdx>>\&\ sys,\ Vector<Vec3>\&\ x}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00258}00258\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00259}00259\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00260}00260\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00261}00261\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ Vec3,\ CSRMatrix<scalar,\ localIdx>,\ COOMatrix<scalar,\ localIdx>>\&}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ sys,}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00263}00263\ \ \ \ \ \ \ \ \ Vector<Vec3>\&\ x}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00264}00264\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00265}00265\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00266}00266\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00267}00267\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ solveDist(}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00268}00268\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ CSRMatrix<scalar,\ localIdx>>\&\ sys,\ Vector<scalar>\&\ x}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00269}00269\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00270}00270\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00271}00271\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ solveDist(}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00272}00272\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<Vec3,\ Vec3,\ CSRMatrix<Vec3,\ localIdx>>\&\ sys,\ Vector<Vec3>\&\ x}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00273}00273\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00274}00274\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00275}00275\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ solveDist(}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00276}00276\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ Vec3,\ CSRMatrix<scalar,\ localIdx>,\ COOMatrix<scalar,\ localIdx>>\&}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ sys,}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00278}00278\ \ \ \ \ \ \ \ \ Vector<Vec3>\&\ x}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00279}00279\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00280}00280\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00281}00281\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00282}00282\ \ \ \ \ \textcolor{comment}{//\ TODO\ why\ use\ a\ smart\ pointer\ here?}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00283}00283\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<SolverFactory>\ clone()\ const\ final}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00284}00284\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00285}00285\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00286}00286\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00287}00287\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00288}00288\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00289}00289\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00248}00248\ \ \ \ \ \textcolor{comment}{//\ CSRMatrix\ and\ ELLMatrix).\ Both\ scalar\ solve()\ overrides\ below\ forward\ to\ this;\ virtual}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00249}00249\ \ \ \ \ \textcolor{comment}{//\ functions\ can't\ themselves\ be\ templates.}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00250}00250\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SystemMatrixType>}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00251}00251\ \ \ \ \ SolverStats}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00252}00252\ \ \ \ \ solveImpl(\textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ SystemMatrixType>\&\ sys,\ Vector<scalar>\&\ x)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00253}00253\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00254}00254\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00255}00255\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ ELLMatrix<scalar,\ localIdx>>\&\ sys,\ Vector<scalar>\&\ x}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00256}00256\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00257}00257\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00258}00258\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00259}00259\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<Vec3,\ Vec3,\ CSRMatrix<Vec3,\ localIdx>>\&\ sys,\ Vector<Vec3>\&\ x}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00260}00260\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00261}00261\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00262}00262\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ Vec3,\ CSRMatrix<scalar,\ localIdx>,\ COOMatrix<scalar,\ localIdx>>\&}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ sys,}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00265}00265\ \ \ \ \ \ \ \ \ Vector<Vec3>\&\ x}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00266}00266\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00267}00267\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00268}00268\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00269}00269\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ solveDist(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00270}00270\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ CSRMatrix<scalar,\ localIdx>>\&\ sys,\ Vector<scalar>\&\ x}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00271}00271\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00272}00272\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00273}00273\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ solveDist(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00274}00274\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<Vec3,\ Vec3,\ CSRMatrix<Vec3,\ localIdx>>\&\ sys,\ Vector<Vec3>\&\ x}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00275}00275\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00276}00276\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00277}00277\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ solveDist(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00278}00278\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ Vec3,\ CSRMatrix<scalar,\ localIdx>,\ COOMatrix<scalar,\ localIdx>>\&}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ sys,}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00280}00280\ \ \ \ \ \ \ \ \ Vector<Vec3>\&\ x}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00281}00281\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00282}00282\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00283}00283\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00284}00284\ \ \ \ \ \textcolor{comment}{//\ TODO\ why\ use\ a\ smart\ pointer\ here?}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00285}00285\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<SolverFactory>\ clone()\ const\ final}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00286}00286\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00287}00287\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00288}00288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00289}00289\ \ \ \ \ \}}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00290}00290\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00291}00291\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ gkoExec\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00292}00292\ \ \ \ \ \textcolor{keywordtype}{bool}\ coupled\_;\ \textcolor{comment}{//\ whether\ to\ solve\ LinearSystem<Vec3>\ as\ one\ or\ three\ systems}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00293}00293\ \ \ \ \ \textcolor{comment}{//\ L1-\/scaled\ residual\ stopping\ controls;\ set\ only\ when\ "{}l1ScaledResidual"{}\ is\ enabled}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00294}00294\ \ \ \ \ std::optional<L1ResidualControl>\ l1Control\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00295}00295\ \ \ \ \ gko::config::pnode\ config\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00296}00296\ \ \ \ \ std::shared\_ptr<const\ gko::LinOpFactory>\ factory\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00297}00297\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00298}00298\ \ \ \ \ \textcolor{comment}{//\ Both\ caches\ are\ null\ until\ the\ first\ solve;\ after\ that\ topology\ is\ fixed.}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00299}00299\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::experimental::distributed::index\_map<label,\ gko::int64>>}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00300}00300\ \ \ \ \ \ \ \ \ cachedImap\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00301}00301\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::matrix::Coo<scalar,\ localIdx>>\ cachedNonLocalMtx\_;}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00302}00302\ \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00303}00303\ \};}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00304}00304\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00305}00305\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00306}00306\ \}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00291}00291\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00292}00292\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00293}00293\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ gkoExec\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00294}00294\ \ \ \ \ \textcolor{keywordtype}{bool}\ coupled\_;\ \textcolor{comment}{//\ whether\ to\ solve\ LinearSystem<Vec3>\ as\ one\ or\ three\ systems}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00295}00295\ \ \ \ \ \textcolor{comment}{//\ L1-\/scaled\ residual\ stopping\ controls;\ set\ only\ when\ "{}l1ScaledResidual"{}\ is\ enabled}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00296}00296\ \ \ \ \ std::optional<L1ResidualControl>\ l1Control\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00297}00297\ \ \ \ \ gko::config::pnode\ config\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00298}00298\ \ \ \ \ std::shared\_ptr<const\ gko::LinOpFactory>\ factory\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00299}00299\ \textcolor{preprocessor}{\#ifdef\ NF\_WITH\_MPI\_SUPPORT}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00300}00300\ \ \ \ \ \textcolor{comment}{//\ Both\ caches\ are\ null\ until\ the\ first\ solve;\ after\ that\ topology\ is\ fixed.}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00301}00301\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::experimental::distributed::index\_map<label,\ gko::int64>>}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00302}00302\ \ \ \ \ \ \ \ \ cachedImap\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00303}00303\ \ \ \ \ \textcolor{keyword}{mutable}\ std::shared\_ptr<gko::matrix::Coo<scalar,\ localIdx>>\ cachedNonLocalMtx\_;}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00304}00304\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00305}00305\ \};}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00306}00306\ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00307}00307\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00308}00308\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00308}00308\ \}}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00309}00309\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00310}00310\ \textcolor{preprocessor}{\#endif}}
 
 \end{DoxyCode}

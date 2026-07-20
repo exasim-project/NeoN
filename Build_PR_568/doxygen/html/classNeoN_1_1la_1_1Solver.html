@@ -100,10 +100,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aacc975aedc898e15f4c7f02e768d9868" id="r_aacc975aedc898e15f4c7f02e768d9868"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1SolverStats.html">SolverStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Solver.html#aacc975aedc898e15f4c7f02e768d9868">solve</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a>, <a class="el" href="namespaceNeoN_1_1la.html#a4064571a77faf7ba5e54a0982ed318b7">CSRMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt;, <a class="el" href="namespaceNeoN_1_1la.html#a90174338eaeb88d2f0d55a3dfdb95add">COOMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;ls, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="classNeoN_1_1Vec3.html">Vec3</a> &gt; &amp;field) const</td></tr>
 <tr class="memdesc:aacc975aedc898e15f4c7f02e768d9868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve a system with a scalar matrix and <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> right-hand side (segregated vector solve). Dispatches to the distributed backend when the linear system carries a non-empty communication pattern, otherwise solves locally.  <br /></td></tr>
 <tr class="separator:aacc975aedc898e15f4c7f02e768d9868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a246de73775362d8b672945266b643958" id="r_a246de73775362d8b672945266b643958"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1SolverStats.html">SolverStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Solver.html#a246de73775362d8b672945266b643958">solve</a> (const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;ls, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;field) const</td></tr>
+<tr class="memdesc:a246de73775362d8b672945266b643958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve a system with a native ELL system matrix. Rank-local only &ndash; reject rather than silently solving just the local block if the system actually carries a distributed communication pattern (createEmptyLinearSystem populates commPattern() regardless of SystemMatrixType, so an ELL system can have one too).  <br /></td></tr>
+<tr class="separator:a246de73775362d8b672945266b643958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00099">99</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00107">107</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a22eeb9da95ff4acfe583c774d31d7544" name="a22eeb9da95ff4acfe583c774d31d7544"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a22eeb9da95ff4acfe583c774d31d7544">&#9670;&#160;</a></span>Solver() <span class="overload">[1/4]</span></h2>
@@ -129,7 +132,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00104">104</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00112">112</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -157,7 +160,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00107">107</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00115">115</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -195,7 +198,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00110">110</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00118">118</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -233,13 +236,13 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00113">113</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00121">121</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="af6abf94b085b7f3ca0219efca0fc9120" name="af6abf94b085b7f3ca0219efca0fc9120"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af6abf94b085b7f3ca0219efca0fc9120">&#9670;&#160;</a></span>solve() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af6abf94b085b7f3ca0219efca0fc9120">&#9670;&#160;</a></span>solve() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -272,12 +275,52 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00116">116</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00124">124</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a246de73775362d8b672945266b643958" name="a246de73775362d8b672945266b643958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a246de73775362d8b672945266b643958">&#9670;&#160;</a></span>solve() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1SolverStats.html">SolverStats</a> NeoN::la::Solver::solve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>field</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Solve a system with a native ELL system matrix. Rank-local only &ndash; reject rather than silently solving just the local block if the system actually carries a distributed communication pattern (createEmptyLinearSystem populates commPattern() regardless of SystemMatrixType, so an ELL system can have one too). </p>
+
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00162">162</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
 <a id="aacc975aedc898e15f4c7f02e768d9868" name="aacc975aedc898e15f4c7f02e768d9868"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aacc975aedc898e15f4c7f02e768d9868">&#9670;&#160;</a></span>solve() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc975aedc898e15f4c7f02e768d9868">&#9670;&#160;</a></span>solve() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -312,12 +355,12 @@ Public Member Functions</h2></td></tr>
 
 <p>Solve a system with a scalar matrix and <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> right-hand side (segregated vector solve). Dispatches to the distributed backend when the linear system carries a non-empty communication pattern, otherwise solves locally. </p>
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00138">138</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00146">146</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
 <a id="adc96eea5228242037d0c3dd87d08ca5a" name="adc96eea5228242037d0c3dd87d08ca5a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc96eea5228242037d0c3dd87d08ca5a">&#9670;&#160;</a></span>solve() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adc96eea5228242037d0c3dd87d08ca5a">&#9670;&#160;</a></span>solve() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -350,7 +393,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00127">127</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearAlgebra_2solver_8hpp_source.html#l00135">135</a> of file <a class="el" href="linearAlgebra_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
