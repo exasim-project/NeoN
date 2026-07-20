@@ -219,6 +219,97 @@ TEST_CASE("MatrixConversion - Ginkgo")
     }
 }
 
+// End-to-end: a native NeoN ELL system, wrapped zero-copy by Ginkgo, solves to the same
+// solution and residual as the equivalent CSR system. Constructs GinkgoSolver directly and
+// calls solveImpl<SystemMatrixType> on it -- SolverFactory/Solver stay CSR-only until the
+// DSL's own format selection is generalized, same scoping as every other ELL proof so far.
+TEST_CASE("Solve - Ginkgo ELL vs CSR")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    const localIdx nFaces = nCells - 1;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto csrLs =
+        NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>(mesh);
+    auto ellLs =
+        NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>(mesh);
+
+    // Diagonally dominant 1D stencil: each face adds 2.0 to each endpoint's diagonal and a
+    // single -1.0 off-diagonal, so diag always dominates the row's off-diagonal sum.
+    auto assemble = [&](auto& ls)
+    {
+        auto ma = ls.matrix().faceToMatrixView();
+        auto matrixV = ls.matrix().values().view();
+        parallelFor(
+            exec,
+            {0, nFaces},
+            NEON_LAMBDA(const localIdx facei) {
+                const localIdx own = facei;
+                const localIdx nei = facei + 1;
+                matrixV[ma.upperIdx(own, facei)] = -1.0;
+                matrixV[ma.lowerIdx(nei, facei)] = -1.0;
+                Kokkos::atomic_add(&matrixV[ma.diagIdx(own)], 2.0);
+                Kokkos::atomic_add(&matrixV[ma.diagIdx(nei)], 2.0);
+            },
+            "assembleDiagDominant"
+        );
+        fill(ls.rhs(), 1.0);
+    };
+    assemble(csrLs);
+    assemble(ellLs);
+
+    Dictionary solverDict {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-12}}}}}
+    };
+    NeoN::la::ginkgo::GinkgoSolver ginkgoSolver(exec, solverDict);
+
+    Vector<scalar> xCsr(exec, nCells, 0.0);
+    Vector<scalar> xEll(exec, nCells, 0.0);
+    auto csrStats = ginkgoSolver.solveImpl<CSRMatrix<scalar, localIdx>>(csrLs, xCsr);
+    auto ellStats = ginkgoSolver.solveImpl<ELLMatrix<scalar, localIdx>>(ellLs, xEll);
+
+    // Both must report an actual, non-trivial solve -- catches e.g. a solver that returns
+    // immediately without iterating but still leaves some (wrong) value in x.
+    REQUIRE(csrStats.entries.size() == 1);
+    REQUIRE(ellStats.entries.size() == 1);
+    REQUIRE(csrStats.entries[0].numIter > 0);
+    REQUIRE(ellStats.entries[0].numIter > 0);
+
+    REQUIRE_THAT(xEll, Equals(xCsr, Approx {1e-8}));
+
+    // True residual ||b - Ax|| for each -- computeResidual() itself is CSR-only (reads
+    // sparsity.rowOffs directly, which EllSparsityView doesn't have), so this reuses the
+    // already-proven generic createGkoMtx()/apply() path instead of extending that helper.
+    auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+    auto residualNorm = [&](auto& ls, auto& x)
+    {
+        auto gkoMtx = NeoN::la::ginkgo::createGkoMtx(ls.matrix());
+        Vector<scalar> ax(exec, nCells, 0.0);
+        auto xDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, x.view().data(), nCells);
+        auto axDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, ax.view().data(), nCells);
+        gkoMtx->apply(xDense, axDense);
+
+        auto rhsHost = ls.rhs().copyToHost();
+        auto rhsHostV = rhsHost.view();
+        auto axHost = ax.copyToHost();
+        auto axHostV = axHost.view();
+        scalar residNormSq = 0.0;
+        for (localIdx i = 0; i < nCells; ++i)
+        {
+            const scalar r = rhsHostV[i] - axHostV[i];
+            residNormSq += r * r;
+        }
+        return std::sqrt(residNormSq);
+    };
+
+    REQUIRE(residualNorm(csrLs, xCsr) < 1e-6);
+    REQUIRE(residualNorm(ellLs, xEll) < 1e-6);
+}
+
 TEST_CASE("MatrixAssembly - Ginkgo")
 {
     auto [execName, exec] = GENERATE(allAvailableExecutor());
