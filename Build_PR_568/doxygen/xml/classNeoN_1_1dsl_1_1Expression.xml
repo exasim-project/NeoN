@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="562" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="562" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="593" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="593" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1dsl_1_1Expression_1a4a1cac2438a041c2777efc5184865039" prot="private" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="classNeoN_1_1dsl_1_1TemporalOperator" kindref="compound">TemporalOperator</ref>&lt; ValueType &gt; &gt;</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="564" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="564" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="595" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="595" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classNeoN_1_1dsl_1_1Expression_1a1861ae6c119b0bee2e4bf1e841fa839f" prot="private" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator</ref>&lt; ValueType &gt; &gt;</type>
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="566" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="566" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="597" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="597" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -243,20 +243,24 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="322" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="322" bodyend="332"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a3d3ba0bae3c8ce92571654672b8f0643" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a9fdc565512ef1c3cc06296a9d7a2f42c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename AssemblyType</type>
             <defval>ValueType</defval>
           </param>
+          <param>
+            <type>typename SystemMatrixType</type>
+            <defval><ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">la::CSRMatrix</ref>&lt;AssemblyType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>&gt;</defval>
+          </param>
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::dsl::Expression&lt; ValueType, IndexType &gt;::assembleSpatialOperator</definition>
-        <argsstring>(la::LinearSystem&lt; AssemblyType, ValueType &gt; &amp;ls) const</argsstring>
+        <argsstring>(la::LinearSystem&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;ls) const</argsstring>
         <name>assembleSpatialOperator</name>
         <qualifiedname>NeoN::dsl::Expression::assembleSpatialOperator</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;</type>
           <declname>ls</declname>
         </param>
         <briefdescription>
@@ -266,7 +270,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="336" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="336" bodyend="345"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="338" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="338" bodyend="348"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a19c5b3bde0710af1ecea02547a4a265a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -299,22 +303,26 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="351" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="351" bodyend="362"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="354" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="354" bodyend="365"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1ac20bad1fee059292bdfb9d13249cb3e2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1aff111ccd3a68046631ddc222d5d44f59" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename AssemblyType</type>
             <defval>ValueType</defval>
           </param>
+          <param>
+            <type>typename SystemMatrixType</type>
+            <defval><ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">la::CSRMatrix</ref>&lt;AssemblyType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>&gt;</defval>
+          </param>
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::dsl::Expression&lt; ValueType, IndexType &gt;::assembleExplicitSource</definition>
-        <argsstring>(la::LinearSystem&lt; AssemblyType, ValueType &gt; &amp;ls, const UnstructuredMesh &amp;mesh) const</argsstring>
+        <argsstring>(la::LinearSystem&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;ls, const UnstructuredMesh &amp;mesh) const</argsstring>
         <name>assembleExplicitSource</name>
         <qualifiedname>NeoN::dsl::Expression::assembleExplicitSource</qualifiedname>
         <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;</type>
           <declname>ls</declname>
         </param>
         <param>
@@ -327,17 +335,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="366" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="366" bodyend="377"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="371" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="371" bodyend="383"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a0ed991acbdf2218578b600d4bf29a730" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1aa20c9e4d9a939277e5c52af3a6475c9d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename AssemblyType</type>
             <defval>ValueType</defval>
           </param>
+          <param>
+            <type>typename SystemMatrixType</type>
+            <defval><ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">la::CSRMatrix</ref>&lt;AssemblyType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>&gt;</defval>
+          </param>
         </templateparamlist>
-        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType &gt;</type>
-        <definition>la::LinearSystem&lt; AssemblyType, ValueType &gt; NeoN::dsl::Expression&lt; ValueType, IndexType &gt;::assemble</definition>
+        <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType, SystemMatrixType &gt;</type>
+        <definition>la::LinearSystem&lt; AssemblyType, ValueType, SystemMatrixType &gt; NeoN::dsl::Expression&lt; ValueType, IndexType &gt;::assemble</definition>
         <argsstring>(const UnstructuredMesh &amp;mesh, scalar t, scalar dt, std::vector&lt; const PostAssemblyBase&lt; ValueType, IndexType &gt; * &gt; ps={}) const</argsstring>
         <name>assemble</name>
         <qualifiedname>NeoN::dsl::Expression::assemble</qualifiedname>
@@ -377,18 +389,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="385" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="385" bodyend="395"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="393" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="393" bodyend="403"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a636b568cd8ad711b890aee997fdc705b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a87d7ce6ecff8b6e8108961bf1159e9c1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename AssemblyType</type>
             <defval>ValueType</defval>
           </param>
+          <param>
+            <type>typename SystemMatrixType</type>
+            <defval><ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">la::CSRMatrix</ref>&lt;AssemblyType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>&gt;</defval>
+          </param>
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::dsl::Expression&lt; ValueType, IndexType &gt;::assemble</definition>
-        <argsstring>(scalar t, scalar dt, la::LinearSystem&lt; AssemblyType, ValueType &gt; &amp;ls, const UnstructuredMesh &amp;mesh, std::vector&lt; const PostAssemblyBase&lt; ValueType, IndexType &gt; * &gt; ps={}) const</argsstring>
+        <argsstring>(scalar t, scalar dt, la::LinearSystem&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;ls, const UnstructuredMesh &amp;mesh, std::vector&lt; const PostAssemblyBase&lt; ValueType, IndexType &gt; * &gt; ps={}) const</argsstring>
         <name>assemble</name>
         <qualifiedname>NeoN::dsl::Expression::assemble</qualifiedname>
         <param>
@@ -400,7 +416,7 @@
           <declname>dt</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;</type>
           <declname>ls</declname>
         </param>
         <param>
@@ -429,18 +445,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="402" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="402" bodyend="412"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="412" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="412" bodyend="422"/>
       </memberdef>
-      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a05f4dca129ca4be2d41d590015fd461c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a42914cc0fa849d2530117e16f6bb54e4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename AssemblyType</type>
             <defval>ValueType</defval>
           </param>
+          <param>
+            <type>typename SystemMatrixType</type>
+            <defval><ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">la::CSRMatrix</ref>&lt;AssemblyType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>&gt;</defval>
+          </param>
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::dsl::Expression&lt; ValueType, IndexType &gt;::assemble</definition>
-        <argsstring>(scalar t, scalar dt, la::LinearSystem&lt; AssemblyType, ValueType &gt; &amp;ls, std::vector&lt; const PostAssemblyBase&lt; ValueType, IndexType &gt; * &gt; ps={}) const</argsstring>
+        <argsstring>(scalar t, scalar dt, la::LinearSystem&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;ls, std::vector&lt; const PostAssemblyBase&lt; ValueType, IndexType &gt; * &gt; ps={}) const</argsstring>
         <name>assemble</name>
         <qualifiedname>NeoN::dsl::Expression::assemble</qualifiedname>
         <param>
@@ -452,7 +472,7 @@
           <declname>dt</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType &gt; &amp;</type>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;</type>
           <declname>ls</declname>
         </param>
         <param>
@@ -466,7 +486,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="419" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="419" bodyend="445"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="431" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="431" bodyend="476"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1ad1afa5ea6175ae657a09042c54070d15" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -484,7 +504,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="447" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="447" bodyend="447"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="478" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="478" bodyend="478"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a5016d348636ab0980a9f5f893039003d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -502,7 +522,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="449" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="449" bodyend="452"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="480" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="480" bodyend="483"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a9a143429a09e20bd417d8832dbcb273d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -520,7 +540,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="454" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="454" bodyend="464"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="485" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="485" bodyend="495"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a270a19070e2129d7b1eb986a47c4b99c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -549,7 +569,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="468" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="468" bodyend="482"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="499" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="499" bodyend="513"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a92424d6e14a1aa5f25db658407a136c3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -575,7 +595,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="486" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="486" bodyend="490"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="517" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="517" bodyend="521"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a6d4a66afe4f1413cf78441755d504bc8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -604,7 +624,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="494" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="494" bodyend="514"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="525" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="525" bodyend="545"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a3a3ab329f3ad1ecd16e066b82b1cf3f9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -630,7 +650,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="518" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="518" bodyend="535"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="549" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="549" bodyend="566"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a5e3402b57df5f53a701631136b9b66dd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref></type>
@@ -644,7 +664,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="538" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="538" bodyend="541"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="569" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="569" bodyend="572"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a2d9ffd529b27456e188643bade8ebb43" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const std::vector&lt; <ref refid="classNeoN_1_1dsl_1_1TemporalOperator" kindref="compound">TemporalOperator</ref>&lt; ValueType &gt; &gt; &amp;</type>
@@ -658,7 +678,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="544" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="544" bodyend="547"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="575" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="575" bodyend="578"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1ae0858624a15c595fd931a3c272ec8146" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const std::vector&lt; <ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator</ref>&lt; ValueType &gt; &gt; &amp;</type>
@@ -672,7 +692,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="549" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="549" bodyend="552"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="580" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="580" bodyend="583"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a0fcb308788446fe43bbe635d1e79c6fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classNeoN_1_1dsl_1_1TemporalOperator" kindref="compound">TemporalOperator</ref>&lt; ValueType &gt; &gt; &amp;</type>
@@ -686,7 +706,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="554" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="554" bodyend="554"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="585" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="585" bodyend="585"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1a24d45a85bfdacc088988ceccca263529" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classNeoN_1_1dsl_1_1SpatialOperator" kindref="compound">SpatialOperator</ref>&lt; ValueType &gt; &gt; &amp;</type>
@@ -700,7 +720,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="556" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="556" bodyend="556"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="587" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="587" bodyend="587"/>
       </memberdef>
       <memberdef kind="function" id="classNeoN_1_1dsl_1_1Expression_1ad7581ac19b360ac79225710d2a38005a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">Executor</ref> &amp;</type>
@@ -714,23 +734,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="558" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="558" bodyend="558"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="589" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="589" bodyend="589"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="251" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="252" bodyend="567"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="251" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="252" bodyend="598"/>
     <listofallmembers>
       <member refid="classNeoN_1_1dsl_1_1Expression_1a9a143429a09e20bd417d8832dbcb273d" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>addExpression</name></member>
       <member refid="classNeoN_1_1dsl_1_1Expression_1ad1afa5ea6175ae657a09042c54070d15" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>addOperator</name></member>
       <member refid="classNeoN_1_1dsl_1_1Expression_1a5016d348636ab0980a9f5f893039003d" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>addOperator</name></member>
-      <member refid="classNeoN_1_1dsl_1_1Expression_1a0ed991acbdf2218578b600d4bf29a730" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assemble</name></member>
-      <member refid="classNeoN_1_1dsl_1_1Expression_1a636b568cd8ad711b890aee997fdc705b" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assemble</name></member>
-      <member refid="classNeoN_1_1dsl_1_1Expression_1a05f4dca129ca4be2d41d590015fd461c" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assemble</name></member>
-      <member refid="classNeoN_1_1dsl_1_1Expression_1ac20bad1fee059292bdfb9d13249cb3e2" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assembleExplicitSource</name></member>
-      <member refid="classNeoN_1_1dsl_1_1Expression_1a3d3ba0bae3c8ce92571654672b8f0643" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assembleSpatialOperator</name></member>
+      <member refid="classNeoN_1_1dsl_1_1Expression_1aa20c9e4d9a939277e5c52af3a6475c9d" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assemble</name></member>
+      <member refid="classNeoN_1_1dsl_1_1Expression_1a87d7ce6ecff8b6e8108961bf1159e9c1" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assemble</name></member>
+      <member refid="classNeoN_1_1dsl_1_1Expression_1a42914cc0fa849d2530117e16f6bb54e4" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assemble</name></member>
+      <member refid="classNeoN_1_1dsl_1_1Expression_1aff111ccd3a68046631ddc222d5d44f59" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assembleExplicitSource</name></member>
+      <member refid="classNeoN_1_1dsl_1_1Expression_1a9fdc565512ef1c3cc06296a9d7a2f42c" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assembleSpatialOperator</name></member>
       <member refid="classNeoN_1_1dsl_1_1Expression_1a19c5b3bde0710af1ecea02547a4a265a" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>assembleTemporalOperator</name></member>
       <member refid="classNeoN_1_1dsl_1_1Expression_1a3a3ab329f3ad1ecd16e066b82b1cf3f9" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>dropOperator</name></member>
       <member refid="classNeoN_1_1dsl_1_1Expression_1ad7581ac19b360ac79225710d2a38005a" prot="public" virt="non-virtual"><scope>NeoN::dsl::Expression</scope><name>exec</name></member>
