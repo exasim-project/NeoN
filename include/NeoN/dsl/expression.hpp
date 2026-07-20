@@ -364,9 +364,11 @@ public:
     /** @brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assembleTemporalOperator(
-        la::LinearSystem<AssemblyType, ValueType>& ls, scalar t, scalar dt
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls, scalar t, scalar dt
     ) const
     {
         for (auto& op : temporalOperators_)
@@ -449,17 +451,18 @@ public:
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assembleSpatialOperator(ls); // add spatial operator -- format-generic; throws for
-                                     // operators that don't support this SystemMatrixType yet
+        assembleSpatialOperator(ls);         // add spatial operator -- format-generic; throws
+                                             // for operators that don't support this
+                                             // SystemMatrixType yet
+        assembleTemporalOperator(ls, t, dt); // add temporal operators -- format-generic, same as
+                                             // above (see HasTemporalImplicitOperatorELL)
 
-        // TemporalOperator and PostAssemblyBase are still CSR-only (fixed CSRMatrix parameter
-        // types), unlike SpatialOperator above -- not generalized in this step, so skip them
+        // PostAssemblyBase is still CSR-only (fixed CSRMatrix parameter types), unlike
+        // SpatialOperator/TemporalOperator above -- not generalized in this step, so skip it
         // (asserting nothing was silently dropped) for any other SystemMatrixType instead of
         // failing to compile.
         if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
         {
-            assembleTemporalOperator(ls, t, dt); // add temporal operators
-
             // Post-assembly functors apply on the same-type form via operator(); the segregated
             // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
             if constexpr (std::is_same_v<AssemblyType, ValueType>)
@@ -479,10 +482,6 @@ public:
         }
         else
         {
-            NF_ASSERT(
-                temporalOperators_.empty(),
-                "Temporal operators are not supported for this SystemMatrixType yet"
-            );
             NF_ASSERT(
                 ps.empty(), "Post-assembly functors are not supported for this SystemMatrixType yet"
             );

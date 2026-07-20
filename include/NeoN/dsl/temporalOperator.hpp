@@ -57,9 +57,25 @@ concept HasTemporalImplicitOperatorScalarMtx = requires(T t) {
     } -> std::same_as<void>;
 };
 
+/* @brief Concept satisfied when T can assemble its temporal contribution into a native
+ *        ELL-backed LinearSystem (scalar matrix, scalar rhs). Matches
+ *        DdtOperator::implicitOperation<SystemMatrixType>'s template shape directly.
+ */
 template<typename T>
-concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>
-                           || HasTemporalImplicitOperatorScalarMtx<T>;
+concept HasTemporalImplicitOperatorELL = requires(T t) {
+    {
+        t.implicitOperation(
+            std::declval<la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&>(),
+            std::declval<NeoN::scalar>(),
+            std::declval<NeoN::scalar>()
+        )
+    } -> std::same_as<void>;
+};
+
+template<typename T>
+concept HasTemporalOperator =
+    HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>
+    || HasTemporalImplicitOperatorScalarMtx<T> || HasTemporalImplicitOperatorELL<T>;
 
 /* @class TemporalOperator
  * @brief A class to represent a TemporalOperator in NeoNs DSL
@@ -115,6 +131,17 @@ public:
         model_->implicitOperationScalarMtx(ls, t, dt);
     }
 
+    /* @brief Implicit temporal assembly into a native ELL-backed (scalar matrix, scalar rhs)
+     *        linear system. A fixed, concrete parameter type distinct from both overloads
+     *        above, so this coexists without ambiguity regardless of ValueType.
+     */
+    void implicitOperation(
+        la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls, scalar t, scalar dt
+    ) const
+    {
+        model_->implicitOperationELL(ls, t, dt);
+    }
+
     /* returns the fundamental type of an operator, ie explicit, implicit */
     Operator::Type getType() const { return model_->getType(); }
 
@@ -152,6 +179,17 @@ private:
          */
         virtual void implicitOperationScalarMtx(
             la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
+        ) = 0;
+
+        /* @brief Temporal assembly into a native ELL-backed (scalar matrix, scalar rhs)
+         *        linear system. Concrete operators that don't support ELL yet throw
+         *        (see TemporalOperatorModel's implementation), same as
+         *        implicitOperationScalarMtx.
+         */
+        virtual void implicitOperationELL(
+            la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls,
+            scalar t,
+            scalar dt
         ) = 0;
 
         /* @brief Given an input this function reads required properties */
@@ -229,6 +267,24 @@ private:
                     "Temporal operator '" << getName()
                                           << "' does not support scalar-matrix (segregated) "
                                              "assembly."
+                );
+            }
+        }
+
+        virtual void implicitOperationELL(
+            la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls,
+            scalar t,
+            scalar dt
+        ) override
+        {
+            if constexpr (HasTemporalImplicitOperatorELL<ConcreteTemporalOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls, t, dt);
+            }
+            else
+            {
+                NF_ERROR_EXIT(
+                    "Temporal operator '" << getName() << "' does not support ELL assembly."
                 );
             }
         }
