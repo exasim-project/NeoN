@@ -75,6 +75,18 @@ public:
         const dsl::Coeff operatorScaling
     ) = 0;
 
+    // Default-throwing, not pure virtual, so LaplacianOperatorFactory strategies other than
+    // GaussGreenLaplacian don't need changes -- mirrors DivOperatorFactory::div(ELL...).
+    virtual void laplacian(
+        la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+        const SurfaceField<scalar>& gamma,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff operatorScaling
+    )
+    {
+        NF_THROW("laplacian(ELL matrix) not implemented for this LaplacianOperator strategy");
+    }
+
     // Pure virtual function for cloning
     virtual std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>>
     clone() const = 0;
@@ -157,6 +169,18 @@ public:
     }
 
     void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType>& ls) const
+    {
+        NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        sameTypeStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
+    }
+
+    // Format-generic overload, mirroring DivOperator::implicitOperation<SystemMatrixType> -- the
+    // non-template overload above still wins for the CSR default, so existing DSL callers are
+    // unaffected; ELL callers deduce SystemMatrixType from the ls argument.
+    template<typename SystemMatrixType>
+    void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType, SystemMatrixType>& ls
+    ) const
     {
         NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

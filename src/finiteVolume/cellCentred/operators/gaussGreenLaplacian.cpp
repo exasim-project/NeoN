@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <type_traits>
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 #include "NeoN/helpers/exceptions.hpp"
@@ -83,9 +85,12 @@ void computeLaplacianExp(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<
+    typename FieldValueType,
+    typename AssemblyType = FieldValueType,
+    typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
 void computeLaplacianProcBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
@@ -98,7 +103,7 @@ void computeLaplacianProcBoundImpl(
     const auto nBoundaryFaces = mesh.nBoundaryFaces();
     const auto nProcBoundaryFaces = mesh.nProcBoundaryFaces();
     if (nProcBoundaryFaces == 0) return;
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto [bGammaV, bDeltaCoeffs, boundaryFaceOwner] = views(
         gamma.boundaryData().value(),
@@ -135,9 +140,12 @@ void computeLaplacianProcBoundImpl(
 }
 
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<
+    typename FieldValueType,
+    typename AssemblyType = FieldValueType,
+    typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
 void computeLaplacianBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<FieldValueType>& phi,
     const dsl::Coeff operatorScaling,
@@ -153,7 +161,7 @@ void computeLaplacianBoundImpl(
     const auto bGammaV = gamma.boundaryData().value().view();
     const auto bDeltaCoeffs = faceNormalGradient.deltaCoeffs().boundaryData().value().view();
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     auto values = ls.matrix().values().view();
 
@@ -251,9 +259,9 @@ void computeLaplacianBoundImpl(
     }
 }
 
-template<typename FieldValueType, typename AssemblyType>
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
 void computeLaplacianNonOrthCorrImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& gamma,
     const VolumeField<FieldValueType>& phi,
     const dsl::Coeff coeff,
@@ -486,6 +494,52 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
 }
 
 template<typename FieldValueType, typename AssemblyType>
+template<typename SystemMatrixType>
+void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacianImpl(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff
+)
+{
+    // Cell-based assembly is CellBasedIterator-driven and CSR-hardcoded
+    // (computeLaplacianIntCellBasedImpl takes a fixed LinearSystem<AssemblyType, FieldValueType>&);
+    // ELL always takes the face-based path below.
+    if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
+    {
+        if (auto* cellIter =
+                dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+        {
+            if (!cellIter->getCellBasedData())
+            {
+                cellIter->setComputeCellBasedData(
+                    phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                );
+            }
+            computeLaplacianIntCellBasedImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        }
+        else
+        {
+            computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+        }
+    }
+    else
+    {
+        // A CellBasedIterator here would otherwise be silently ignored (face-based assembly
+        // below is used regardless) -- reject rather than assemble something other than what
+        // was requested.
+        NF_ASSERT(
+            dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) == nullptr,
+            "Cell-based iteration is not implemented for ELL assembly"
+        );
+        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    }
+    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+}
+
+template<typename FieldValueType, typename AssemblyType>
 void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& gamma,
@@ -493,23 +547,18 @@ void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
     const dsl::Coeff coeff
 )
 {
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
-    {
-        if (!cellIter->getCellBasedData())
-        {
-            cellIter->setComputeCellBasedData(
-                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-            );
-        }
-        computeLaplacianIntCellBasedImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    }
-    else
-    {
-        computeLaplacianIntImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    }
-    computeLaplacianBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    computeLaplacianNonOrthCorrImpl(ls, gamma, phi, coeff, faceNormalGradient_);
-    computeLaplacianProcBoundImpl(ls, gamma, phi, coeff, faceNormalGradient_);
+    laplacianImpl(ls, gamma, phi, coeff);
+}
+
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenLaplacian<FieldValueType, AssemblyType>::laplacian(
+    la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+    const SurfaceField<scalar>& gamma,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff coeff
+)
+{
+    laplacianImpl(ls, gamma, phi, coeff);
 }
 
 
