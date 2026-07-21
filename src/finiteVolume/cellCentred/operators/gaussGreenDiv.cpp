@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <type_traits>
+
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
@@ -127,9 +129,12 @@ void computeDivExp(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<
+    typename FieldValueType,
+    typename AssemblyType = FieldValueType,
+    typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
 void computeDivProcBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
     const SurfaceField<scalar>& weights,
@@ -154,7 +159,7 @@ void computeDivProcBoundImpl(
     auto bndDiagValues = ls.boundaryMatrix().values().view();
 
     auto values = ls.matrix().values().view();
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
     const auto rowOrderV = mesh.boundaryMesh().getRowOrderWriteIndex().view();
 
     parallelFor(
@@ -189,9 +194,12 @@ void computeDivProcBoundImpl(
 }
 
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<
+    typename FieldValueType,
+    typename AssemblyType = FieldValueType,
+    typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
 void computeDivBoundImpl(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
     const SurfaceField<scalar>& weights,
@@ -201,7 +209,7 @@ void computeDivBoundImpl(
     const auto exec = phi.exec();
     const auto& mesh = phi.mesh();
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto [ownV, deltaCoeffs] =
         views(mesh.boundaryMesh().faceOwners(), mesh.boundaryMesh().deltaCoeffs());
@@ -436,9 +444,9 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
 ** Physical boundary correction is zero (uncorrected patches); processor faces are cut internal
 ** faces and DO contribute via the proc slots filled by correction().
 */
-template<typename FieldValueType, typename AssemblyType>
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
 void addDivCorrectionToRhs(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const SurfaceField<FieldValueType>& correction,
     const dsl::Coeff operatorScaling
@@ -503,8 +511,9 @@ void addDivCorrectionToRhs(
 }
 
 template<typename FieldValueType, typename AssemblyType>
-void GaussGreenDiv<FieldValueType, AssemblyType>::div(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+template<typename SystemMatrixType>
+void GaussGreenDiv<FieldValueType, AssemblyType>::divImpl(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
     const dsl::Coeff operatorScaling
@@ -512,18 +521,36 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
 {
     // TODO boundary weights should be separate so that we can start internal assembly
     const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+    // Cell-based assembly is CellBasedIterator-driven and CSR-hardcoded (computeDivIntCellBasedImp
+    // takes a fixed LinearSystem<AssemblyType, FieldValueType>&); ELL always takes the face-based
+    // path below.
+    if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
     {
-        if (!cellIter->getCellBasedData())
+        if (auto* cellIter =
+                dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
         {
-            cellIter->setComputeCellBasedData(
-                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-            );
+            if (!cellIter->getCellBasedData())
+            {
+                cellIter->setComputeCellBasedData(
+                    phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                );
+            }
+            computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
         }
-        computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
+        else
+        {
+            computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
+        }
     }
     else
     {
+        // A CellBasedIterator here would otherwise be silently ignored (face-based assembly
+        // below is used regardless) -- reject rather than assemble something other than what
+        // was requested.
+        NF_ASSERT(
+            dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) == nullptr,
+            "Cell-based iteration is not implemented for ELL assembly"
+        );
         computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
     }
     computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
@@ -542,6 +569,28 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
         surfaceInterpolation_.correction(faceFlux, phi, correction);
         addDivCorrectionToRhs(ls, faceFlux, correction, operatorScaling);
     }
+}
+
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenDiv<FieldValueType, AssemblyType>::div(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff operatorScaling
+) const
+{
+    divImpl(ls, faceFlux, phi, operatorScaling);
+}
+
+template<typename FieldValueType, typename AssemblyType>
+void GaussGreenDiv<FieldValueType, AssemblyType>::div(
+    la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<FieldValueType>& phi,
+    const dsl::Coeff operatorScaling
+) const
+{
+    divImpl(ls, faceFlux, phi, operatorScaling);
 }
 
 template class GaussGreenDiv<scalar>;
