@@ -58,6 +58,17 @@ public:
         const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
+    // Default-throwing, not pure virtual, so DivOperatorFactory strategies other than
+    // GaussGreenDiv don't need changes -- mirrors SolverFactory::solve(ELL...).
+    virtual void
+    div(la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff operatorScaling) const
+    {
+        NF_THROW("div(ELL matrix) not implemented for this DivOperator strategy");
+    }
+
     virtual void
     div(Vector<FieldValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
@@ -148,6 +159,18 @@ public:
     }
 
     void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType>& ls) const
+    {
+        NF_ASSERT(sameTypeStrategy_, "DivOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        sameTypeStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
+    }
+
+    // Format-generic overload, mirroring SourceTerm::implicitOperation<SystemMatrixType> -- the
+    // non-template overload above still wins for the CSR default, so existing DSL callers are
+    // unaffected; ELL callers deduce SystemMatrixType from the ls argument.
+    template<typename SystemMatrixType>
+    void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType, SystemMatrixType>& ls
+    ) const
     {
         NF_ASSERT(sameTypeStrategy_, "DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
