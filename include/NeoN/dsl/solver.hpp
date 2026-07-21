@@ -50,9 +50,9 @@ la::SolverStats iterativeSolveImpl(
     auto expTmp = optExp.explicitOperation(solution.mesh().nCells());
     auto [vol, expSource, rhs] = views(solution.mesh().cellVolumes(), expTmp, ls.rhs());
     parallelFor(
-        solution.exec(),
-        {0, rhs.size()},
-        NEON_LAMBDA(const localIdx i) { rhs[i] -= expSource[i] * vol[i]; }
+        solution.exec(), {0, rhs.size()}, NEON_LAMBDA(const localIdx i) {
+            rhs[i] -= expSource[i] * vol[i];
+        }
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
@@ -63,7 +63,10 @@ la::SolverStats iterativeSolveImpl(
     return solver.solve(ls, solution.internalVector());
 }
 
-template<typename VectorType, typename IndexType>
+template<
+    typename VectorType,
+    typename IndexType,
+    typename SystemMatrixType = la::CSRMatrix<typename VectorType::ElementType, localIdx>>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
@@ -73,7 +76,9 @@ la::SolverStats iterativeSolveImpl(
     std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
-    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
+    auto ls = exp.template assemble<typename VectorType::ElementType, SystemMatrixType>(
+        solution.mesh(), t, dt, ps
+    );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
@@ -91,7 +96,10 @@ la::SolverStats iterativeSolveImpl(
  * @param fvSolution - Dictionary containing linear solver properties
  * @param p - A chainable functor that performs manipulations on the assembled system
  */
-template<typename VectorType, typename IndexType>
+template<
+    typename VectorType,
+    typename IndexType,
+    typename SystemMatrixType = la::CSRMatrix<typename VectorType::ElementType, localIdx>>
 std::optional<la::SolverStats> solve(
     Expression<typename VectorType::ElementType, IndexType>& exp,
     VectorType& solution,
@@ -119,7 +127,9 @@ std::optional<la::SolverStats> solve(
     }
     else
     {
-        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p);
+        return detail::iterativeSolveImpl<VectorType, IndexType, SystemMatrixType>(
+            exp, solution, t, dt, fvSolution, p
+        );
     }
 }
 
