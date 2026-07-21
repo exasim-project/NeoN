@@ -6,7 +6,7 @@ var searchData=
   ['neighbouroffset_3',['neighbouroffset',['../structNeoN_1_1la_1_1FaceToMatrixView.html#ae3737684bb67f8bb28c5d2bc5732ac6b',1,'NeoN::la::FaceToMatrixView::neighbourOffset'],['../structNeoN_1_1la_1_1EllFaceToMatrixView.html#a400792d2ddffb9e5879e38c3b6e4764a',1,'NeoN::la::EllFaceToMatrixView::neighbourOffset']]],
   ['nl_4',['NL',['../time_8hpp.html#a6c2bdfd6f25ccadb92fcff4173b7fec2',1,'time.hpp']]],
   ['normals_5',['normals',['../structNeoN_1_1detail_1_1FaceData.html#a725af2dde576e866edb25454a4d9d441',1,'NeoN::detail::FaceData']]],
-  ['numiter_6',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
+  ['numiter_6',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#a3f5a2b6addcb2a66e3db567419f450f6',1,'NeoN::la::SolverStatsEntry']]],
   ['numstoredelementsperrow_7',['numStoredElementsPerRow',['../structNeoN_1_1la_1_1EllSparsityView.html#afcc48e17c8a7706a69a0962d492363bd',1,'NeoN::la::EllSparsityView']]],
   ['nx_8',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
   ['ny_9',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],

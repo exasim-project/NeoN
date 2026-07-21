@@ -97,16 +97,16 @@
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00102}00102\ \{}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00103}00103\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ tolerance;\ \ \ \ \ \ \ \ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00104}00104\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ relTol;\ \ \ \ \ \ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00105}00105\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ maxIter;\ \ \ \ \ \ \ \ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00106}00106\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ minIter;\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00105}00105\ \ \ \ \ gko::size\_type\ maxIter;\ \ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00106}00106\ \ \ \ \ gko::size\_type\ minIter;\ \ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00107}00107\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ checkFrequency;\ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00109}00109\ \};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00110}00110\ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00112}00112\ \textcolor{keyword}{struct\ }L1ResidualResult}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00113}00113\ \{}
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00114}00114\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ numIter;\ \ \ \ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00115}00115\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ initResNorm;\ \ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00116}00116\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ finalResNorm;\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00114}00114\ \ \ \ \ gko::size\_type\ numIter;\ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00115}00115\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ initResNorm;\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00116}00116\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ finalResNorm;\ \ \ \ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{comment}{//\ Per-\/column\ scaled\ residuals;\ populated\ only\ for\ multi-\/RHS\ (Vec3)\ solves\ (size\ ==\ ncols).}}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00118}00118\ \ \ \ \ std::vector<scalar>\ perColInitNorms;}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00119}00119\ \ \ \ \ std::vector<scalar>\ perColFinalNorms;}
@@ -213,7 +213,7 @@
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00240}00240\ }
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00241}00241\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ schema()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00242}00242\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00243}00243\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00243}00243\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ae82a72e4ff7e775f25af51e0e8d7099b}{solve}}(}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00244}00244\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ CSRMatrix<scalar,\ localIdx>>\&\ sys,\ Vector<scalar>\&\ x}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00245}00245\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00246}00246\ }
@@ -224,15 +224,15 @@
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00251}00251\ \ \ \ \ SolverStats}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00252}00252\ \ \ \ \ solveImpl(\textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ SystemMatrixType>\&\ sys,\ Vector<scalar>\&\ x)\ \textcolor{keyword}{const};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00253}00253\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00254}00254\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00254}00254\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ae82a72e4ff7e775f25af51e0e8d7099b}{solve}}(}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00255}00255\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ scalar,\ ELLMatrix<scalar,\ localIdx>>\&\ sys,\ Vector<scalar>\&\ x}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00256}00256\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00257}00257\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00258}00258\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00258}00258\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ae82a72e4ff7e775f25af51e0e8d7099b}{solve}}(}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00259}00259\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<Vec3,\ Vec3,\ CSRMatrix<Vec3,\ localIdx>>\&\ sys,\ Vector<Vec3>\&\ x}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00260}00260\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{final};}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00261}00261\ }
-\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00262}00262\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{solve}}(}
+\DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00262}00262\ \ \ \ \ \textcolor{keyword}{virtual}\ SolverStats\ \mbox{\hyperlink{namespaceNeoN_1_1dsl_ae82a72e4ff7e775f25af51e0e8d7099b}{solve}}(}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ LinearSystem<scalar,\ Vec3,\ CSRMatrix<scalar,\ localIdx>,\ COOMatrix<scalar,\ localIdx>>\&}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ sys,}
 \DoxyCodeLine{\Hypertarget{ginkgo_8hpp_source_l00265}00265\ \ \ \ \ \ \ \ \ Vector<Vec3>\&\ x}

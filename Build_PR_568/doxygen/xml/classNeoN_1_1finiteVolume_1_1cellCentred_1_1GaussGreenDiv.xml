@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="83" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" bodystart="83" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="91" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" bodystart="91" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -232,6 +232,36 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="71" column="5"/>
       </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a8a055e2a03ee8412db4f494e709dde9e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void NeoN::finiteVolume::cellCentred::GaussGreenDiv&lt; FieldValueType, AssemblyType &gt;::div</definition>
+        <argsstring>(la::LinearSystem&lt; AssemblyType, FieldValueType, la::ELLMatrix&lt; AssemblyType, localIdx &gt; &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; FieldValueType &gt; &amp;phi, const dsl::Coeff operatorScaling) const override</argsstring>
+        <name>div</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenDiv::div</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, FieldValueType, <ref refid="namespaceNeoN_1_1la_1a7888e3c591147b90c956b478378cb752" kindref="member">la::ELLMatrix</ref>&lt; AssemblyType, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>faceFlux</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
+          <declname>phi</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
+          <declname>operatorScaling</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="79" column="5"/>
+      </memberdef>
       <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a2728c823f8bd18aea70fcd41fa301a80" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory" kindref="compound">DivOperatorFactory</ref>&lt; FieldValueType, AssemblyType &gt; &gt;</type>
         <definition>std::unique_ptr&lt; DivOperatorFactory&lt; FieldValueType, AssemblyType &gt; &gt; NeoN::finiteVolume::cellCentred::GaussGreenDiv&lt; FieldValueType, AssemblyType &gt;::clone</definition>
@@ -244,7 +274,44 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="76" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" bodystart="76" bodyend="79"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="84" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" bodystart="84" bodyend="87"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1ac1c24f8e16fa6f7ff461d6d51c3c688f" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SystemMatrixType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::GaussGreenDiv&lt; FieldValueType, AssemblyType &gt;::divImpl</definition>
+        <argsstring>(la::LinearSystem&lt; AssemblyType, FieldValueType, SystemMatrixType &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const VolumeField&lt; FieldValueType &gt; &amp;phi, const dsl::Coeff operatorScaling) const</argsstring>
+        <name>divImpl</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::GaussGreenDiv::divImpl</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, FieldValueType, SystemMatrixType &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>faceFlux</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; FieldValueType &gt; &amp;</type>
+          <declname>phi</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
+          <declname>operatorScaling</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="97" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -273,7 +340,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="35" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" bodystart="38" bodyend="84"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" line="35" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" bodystart="38" bodyend="103"/>
     <listofallmembers>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1af42c5daa3fe9279b1f952c411be17ca6" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>Base</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a2728c823f8bd18aea70fcd41fa301a80" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>clone</name></member>
@@ -281,6 +348,8 @@
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1aa1c203f75beaf0e634de7994c6be3357" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>div</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a56b538654fbcd656a7cd96891da79d5d" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>div</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1af576074771a0ebc21bc895712d6b99c2" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>div</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a8a055e2a03ee8412db4f494e709dde9e" prot="public" virt="virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>div</name></member>
+      <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1ac1c24f8e16fa6f7ff461d6d51c3c688f" prot="private" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>divImpl</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a5755c0216c7a8f33261862714b779fe5" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>doc</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1aad3d142dceec536a50ede1a7cca66714" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>GaussGreenDiv</name></member>
       <member refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv_1a73e4b55ba5bd64bd06ac573ab4232490" prot="public" virt="non-virtual"><scope>NeoN::finiteVolume::cellCentred::GaussGreenDiv</scope><name>name</name></member>
