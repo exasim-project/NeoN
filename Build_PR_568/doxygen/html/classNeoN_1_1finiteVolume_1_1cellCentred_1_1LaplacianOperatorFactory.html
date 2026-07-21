@@ -108,6 +108,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6533b8afad56922e659caf520f79d596"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34b076cfe36a26f0c0116cbf30e9a1ed" id="r_a34b076cfe36a26f0c0116cbf30e9a1ed"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#a34b076cfe36a26f0c0116cbf30e9a1ed">laplacian</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; AssemblyType, FieldValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; FieldValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)=0</td></tr>
 <tr class="separator:a34b076cfe36a26f0c0116cbf30e9a1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ac7d567119f8c36c58c1194ead193b" id="r_a74ac7d567119f8c36c58c1194ead193b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#a74ac7d567119f8c36c58c1194ead193b">laplacian</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; AssemblyType, FieldValueType, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; AssemblyType, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; FieldValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling)</td></tr>
+<tr class="separator:a74ac7d567119f8c36c58c1194ead193b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1465e80f2a38ec72d22cfcbb19f6b115" id="r_a1465e80f2a38ec72d22cfcbb19f6b115"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html">LaplacianOperatorFactory</a>&lt; FieldValueType, AssemblyType &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html#a1465e80f2a38ec72d22cfcbb19f6b115">clone</a> () const =0</td></tr>
 <tr class="separator:a1465e80f2a38ec72d22cfcbb19f6b115"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -274,7 +276,7 @@ template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt
 </div>
 </div>
 <a id="a5d2ab3adb0e560851f2877cc56007173" name="a5d2ab3adb0e560851f2877cc56007173"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d2ab3adb0e560851f2877cc56007173">&#9670;&#160;</a></span>laplacian() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d2ab3adb0e560851f2877cc56007173">&#9670;&#160;</a></span>laplacian() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -318,7 +320,7 @@ template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt
 </div>
 </div>
 <a id="a34b076cfe36a26f0c0116cbf30e9a1ed" name="a34b076cfe36a26f0c0116cbf30e9a1ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a34b076cfe36a26f0c0116cbf30e9a1ed">&#9670;&#160;</a></span>laplacian() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a34b076cfe36a26f0c0116cbf30e9a1ed">&#9670;&#160;</a></span>laplacian() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -367,8 +369,60 @@ template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt
 
 </div>
 </div>
+<a id="a74ac7d567119f8c36c58c1194ead193b" name="a74ac7d567119f8c36c58c1194ead193b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74ac7d567119f8c36c58c1194ead193b">&#9670;&#160;</a></span>laplacian() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1LaplacianOperatorFactory.html">NeoN::finiteVolume::cellCentred::LaplacianOperatorFactory</a>&lt; FieldValueType, AssemblyType &gt;::laplacian </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; AssemblyType, FieldValueType, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; AssemblyType, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; FieldValueType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>phi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a>&#160;</td>
+          <td class="paramname"><em>operatorScaling</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="laplacianOperator_8hpp_source.html#l00080">80</a> of file <a class="el" href="laplacianOperator_8hpp_source.html">laplacianOperator.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a6533b8afad56922e659caf520f79d596" name="a6533b8afad56922e659caf520f79d596"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6533b8afad56922e659caf520f79d596">&#9670;&#160;</a></span>laplacian() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6533b8afad56922e659caf520f79d596">&#9670;&#160;</a></span>laplacian() <span class="overload">[4/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -418,7 +472,7 @@ template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt
 </div>
 </div>
 <a id="aa219ae34f6f2dd9217e93a5e27ba9526" name="aa219ae34f6f2dd9217e93a5e27ba9526"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa219ae34f6f2dd9217e93a5e27ba9526">&#9670;&#160;</a></span>laplacian() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa219ae34f6f2dd9217e93a5e27ba9526">&#9670;&#160;</a></span>laplacian() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -519,7 +573,7 @@ template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacianOperator_8hpp_source.html#l00084">84</a> of file <a class="el" href="laplacianOperator_8hpp_source.html">laplacianOperator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacianOperator_8hpp_source.html#l00096">96</a> of file <a class="el" href="laplacianOperator_8hpp_source.html">laplacianOperator.hpp</a>.</p>
 
 </div>
 </div>
@@ -545,7 +599,7 @@ template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacianOperator_8hpp_source.html#l00086">86</a> of file <a class="el" href="laplacianOperator_8hpp_source.html">laplacianOperator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacianOperator_8hpp_source.html#l00098">98</a> of file <a class="el" href="laplacianOperator_8hpp_source.html">laplacianOperator.hpp</a>.</p>
 
 </div>
 </div>
