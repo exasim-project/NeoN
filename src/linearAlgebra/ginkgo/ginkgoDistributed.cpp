@@ -290,7 +290,9 @@ SolverStatsEntry solve_impl_dist(
                 std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
             )
             / 1000.0;
-        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+        return {
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+        };
     }
 
     // copy of rhs to compute the initial residual (res is modified in-place by apply)
@@ -319,7 +321,7 @@ SolverStatsEntry solve_impl_dist(
     gko::as<dist_vec>(resFinal)->compute_norm2(finalNormVec);
     scalar finalResNorm = retrieve(finalNormVec);
 
-    auto numIter = label(logger->get_num_iterations());
+    gko::size_type numIter = logger->get_num_iterations();
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -328,7 +330,7 @@ SolverStatsEntry solve_impl_dist(
         )
         / 1000.0;
 
-    return {numIter, initResNorm, finalResNorm, duration};
+    return {static_cast<size_t>(numIter), initResNorm, finalResNorm, duration};
 }
 
 SolverStats solve_impl_dist(
@@ -375,7 +377,7 @@ SolverStats solve_impl_dist(
             for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
             {
                 stats.entries.push_back(
-                    {static_cast<label>(l1Res.numIter),
+                    {static_cast<size_t>(l1Res.numIter),
                      l1Res.perColInitNorms[i],
                      l1Res.perColFinalNorms[i],
                      duration}
@@ -383,7 +385,9 @@ SolverStats solve_impl_dist(
             }
             return stats;
         }
-        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+        return {
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+        };
     }
 
     auto rhsCopy = Vector<Vec3>(rhs);
@@ -415,7 +419,7 @@ SolverStats solve_impl_dist(
     mtx->apply(one, x, neg_one, res);
     auto finalNorms = colNorms(res);
 
-    auto numIter = label(logger->get_num_iterations());
+    gko::size_type numIter = logger->get_num_iterations();
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -426,7 +430,9 @@ SolverStats solve_impl_dist(
 
     SolverStats stats;
     for (int i = 0; i < 3; ++i)
-        stats.entries.push_back({numIter, initNorms[i], finalNorms[i], duration});
+        stats.entries.push_back(
+            {static_cast<size_t>(numIter), initNorms[i], finalNorms[i], duration}
+        );
     return stats;
 }
 
