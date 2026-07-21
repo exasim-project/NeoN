@@ -14,6 +14,20 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+// Internal-face divergence assembly kernel (defined in gaussGreenDiv.cpp) -- the only piece of
+// div assembly that touches upperIdx()/lowerIdx() as well as diagIdx(). Declared here, like
+// computeLaplacianIntImpl in gaussGreenLaplacian.hpp, so it can be instantiated for a
+// SystemMatrixType other than the CSR default (e.g. ELL), independent of the still-CSR-only
+// virtual GaussGreenDiv::div() member below.
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
+void computeDivIntImp(
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const VolumeField<FieldValueType>& phi,
+    const SurfaceField<scalar>& weights,
+    const dsl::Coeff coeff
+);
+
 /* @brief
  *
  */
