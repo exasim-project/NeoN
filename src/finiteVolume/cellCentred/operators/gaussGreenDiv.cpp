@@ -258,9 +258,9 @@ void computeDivBoundImpl(
 }
 
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
 void computeDivIntImp(
-    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
     const SurfaceField<scalar>& weights,
@@ -271,7 +271,7 @@ void computeDivIntImp(
     const auto nInternalFaces = mesh.nInternalFaces();
     const auto exec = phi.exec();
 
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto ma = ls.matrix().faceToMatrixView();
 
     const auto [fluxV, weightsV, ownV, neiV, surfFaceCells] = views(
         faceFlux.internalVector(),
@@ -564,6 +564,52 @@ template void addDivCorrectionToRhs(
     la::LinearSystem<scalar, Vec3>&,
     const SurfaceField<scalar>&,
     const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+
+template void computeDivIntImp<scalar, scalar, la::CSRMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const VolumeField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void computeDivIntImp<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>(
+    la::LinearSystem<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void computeDivIntImp<Vec3, scalar, la::CSRMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, Vec3, la::CSRMatrix<scalar, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+// ELL instantiations, proving the same assembly kernel works for a non-CSR SystemMatrixType --
+// exercised directly by test/finiteVolume/cellCentred/operator/gaussGreenDiv.cpp, bypassing the
+// still-CSR-only virtual GaussGreenDiv::div() member.
+template void computeDivIntImp<scalar, scalar, la::ELLMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const VolumeField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void computeDivIntImp<Vec3, Vec3, la::ELLMatrix<Vec3, localIdx>>(
+    la::LinearSystem<Vec3, Vec3, la::ELLMatrix<Vec3, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void computeDivIntImp<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
     const dsl::Coeff
 );
 
