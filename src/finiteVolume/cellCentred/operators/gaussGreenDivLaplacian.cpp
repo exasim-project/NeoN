@@ -444,14 +444,27 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
         NF_ERROR_EXIT("only dictionary input supported");
     }
     laplTokens.remove(0);
+
+    // An OpenFOAM div scheme may carry a leading `bounded` prefix (the boundedness term
+    // Sp(fvc::div(phi), psi)); strip it before the mandatory `Gauss` keyword. This operator does
+    // not add the bounding source (matching the separate GaussGreenDiv path) -- the prefix only
+    // selects it.
+    if (divTokens.size() > 0 && divTokens.get<std::string>(0) == "bounded")
+    {
+        divTokens.remove(0);
+    }
     divTokens.remove(0);
 
+    // Accept the cell-limited vector variant `linearUpwindV` alongside `linearUpwind`; both map to
+    // the linearUpwind interpolation (SurfaceInterpolation registers "linearUpwindV" for the
+    // CellLimited case).
     const auto divScheme = divTokens.get<std::string>(0);
-    if (divScheme != "upwind" && divScheme != "linearUpwind")
+    if (divScheme != "upwind" && divScheme != "linearUpwind" && divScheme != "linearUpwindV")
     {
         NF_ERROR_EXIT(
-            "GaussGreenDivLaplacian only supports 'Gauss upwind' or 'Gauss linearUpwind' for "
-            "divSchemes, got: Gauss "
+            "GaussGreenDivLaplacian only supports 'Gauss upwind', 'Gauss linearUpwind' or "
+            "'Gauss linearUpwindV' (optionally with a leading 'bounded') for divSchemes, got: "
+            "Gauss "
             << divScheme
         );
     }
