@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // ginkgo.solverSetup sub-region
+
 #include "NeoN/core/parallelAlgorithms.hpp"
 
 
@@ -478,8 +480,126 @@ namespace
 // update_matrix_value) is periodically rebuilt from scratch as the matrix values drift across the
 // steady iteration; 0 disables the periodic rebuild (update in place forever). `solveCount` tracks
 // the number of solves served by the current cached solver and is reset on every (re)generate.
-std::shared_ptr<gko::LinOp> cacheOrUpdateSolver(
+gko::UpdateMatrixValue* findUpdatable(gko::LinOp* solver)
+{
+    // The solver itself is updatable: Multigrid as the top-level solver.
+    if (auto* upd = dynamic_cast<gko::UpdateMatrixValue*>(solver))
+    {
+        return upd;
+    }
+    // Krylov solver wrapping an updatable preconditioner: Cg/Fcg + Multigrid, or
+    // Cg + Schwarz{Multigrid(local)} (the Schwarz UpdateMatrixValue patch forwards to the
+    // per-rank Multigrid).
+    if (auto* prec = dynamic_cast<gko::Preconditionable*>(solver))
+    {
+        if (auto p = prec->get_preconditioner())
+        {
+            if (auto* upd = dynamic_cast<gko::UpdateMatrixValue*>(const_cast<gko::LinOp*>(p.get())))
+            {
+                return upd;
+            }
+        }
+    }
+    // Ir wrapping an updatable inner SOLVER: scale-corrected MG, Ir(scale_correction){Multigrid}.
+    // The Multigrid is Ir's inner solver (get_solver), not its preconditioner; the outer Ir's own
+    // system matrix tracks the re-assembled values zero-copy, so refreshing the inner Multigrid
+    // (Galerkin coarse ops) completes the reuse.
+    if (auto* ir = dynamic_cast<gko::solver::Ir<scalar>*>(solver))
+    {
+        if (auto s = ir->get_solver())
+        {
+            if (auto* upd = dynamic_cast<gko::UpdateMatrixValue*>(const_cast<gko::LinOp*>(s.get())))
+            {
+                return upd;
+            }
+        }
+    }
+    return nullptr;
+}
+
+// What cacheOrUpdateSolver did this solve, for the p-cache diagnostic.
+enum class CacheAction
+{
+    UpdateInPlace,        // Strategy 1b: refreshed the cached solver's values, no rebuild
+    Rebuild,              // generated a fresh solver from scratch (first solve / forced rebuild)
+    RebuildReuseWorkspace // Strategy 3: regenerated but reused the stashed scratch Workspace
+};
+
+// Handle returned by cacheOrUpdateSolver: the solver to apply, plus -- for the Strategy 3
+// workspace-reuse (regenerate) path -- ownership of that solver so its temporary-storage Workspace
+// can be reclaimed into the GinkgoSolver's cachedWorkspace_ slot once the solve completes. For the
+// Strategy 1b cached path it merely aliases the long-lived cached solver and reclaims nothing.
+//
+// solver() hands a NON-OWNING alias (no-op deleter) to the solve API so this lease keeps sole
+// ownership of a regenerated solver and can still extract its Workspace afterwards. The lease must
+// therefore outlive the solve call; it reclaims the Workspace in its destructor.
+class SolverLease
+{
+public:
+
+    // Strategy 1b path: alias a cached / in-place-updated solver. No workspace reclaim.
+    SolverLease(std::shared_ptr<gko::LinOp> cached, CacheAction action)
+        : solver_(std::move(cached)), action_(action)
+    {}
+
+    // Strategy 3 path: own a freshly generated solver and, on destruction, extract its Workspace
+    // back into *wsSlot for the next generate() to reuse. `wsSlot` is a GinkgoSolver member and
+    // outlives the lease.
+    SolverLease(
+        std::unique_ptr<gko::LinOp> owned,
+        std::unique_ptr<gko::solver::Workspace>* wsSlot,
+        CacheAction action
+    )
+        : owned_(std::move(owned)), wsSlot_(wsSlot), action_(action)
+    {
+        solver_ = std::shared_ptr<gko::LinOp>(owned_.get(), [](gko::LinOp*) {});
+    }
+
+    SolverLease(SolverLease&&) = default;
+    SolverLease& operator=(SolverLease&&) = default;
+    SolverLease(const SolverLease&) = delete;
+    SolverLease& operator=(const SolverLease&) = delete;
+
+    ~SolverLease()
+    {
+        // wsSlot_ is null for an owned solver whose Workspace must NOT be reused (updatable configs
+        // regenerated with caching off -- see cacheOrUpdateSolver): just let owned_ free normally.
+        if (owned_ && wsSlot_)
+        {
+            // Reclaim the scratch Workspace for the next solve. Defensive: a solver that is not
+            // workspace-aware throws gko::InvalidStateError -- swallow it (a destructor must not
+            // throw) and drop the slot so the next solve seeds a fresh workspace.
+            try
+            {
+                *wsSlot_ = gko::solver::invalidate_and_extract_workspace(std::move(owned_));
+            }
+            catch (...)
+            {
+                wsSlot_->reset();
+            }
+        }
+    }
+
+    const std::shared_ptr<gko::LinOp>& solver() const { return solver_; }
+    CacheAction action() const { return action_; }
+
+private:
+
+    std::unique_ptr<gko::LinOp> owned_;
+    std::unique_ptr<gko::solver::Workspace>* wsSlot_ = nullptr;
+    std::shared_ptr<gko::LinOp> solver_;
+    CacheAction action_;
+};
+
+// Provide a Ginkgo solver for this solve, reusing work across solves. Strategy 1b (updatable
+// configs -- Multigrid): cache + update_matrix_value in place. Strategy 3 (non-updatable Krylov --
+// PBiCGStab/Cg + Jacobi/ILU): regenerate every solve but reclaim the Krylov scratch Workspace via
+// the SolverLease dtor and feed it into the next generate(matrix, ws), amortizing scratch alloc.
+// An UPDATABLE config regenerated with caching off must NOT reuse its Workspace (Multigrid coarse
+// sizes are value-dependent -> stale reuse aborts the V-cycle with DimensionMismatch).
+SolverLease cacheOrUpdateSolver(
     std::shared_ptr<gko::LinOp>& cachedSolver,
+    std::unique_ptr<gko::solver::Workspace>& cachedWorkspace,
     std::array<gko::size_type, 3>& cachedStructure,
     localIdx& solveCount,
     bool cacheEnabled,
@@ -489,41 +609,71 @@ std::shared_ptr<gko::LinOp> cacheOrUpdateSolver(
     const std::array<gko::size_type, 3>& structure
 )
 {
-    if (!cacheEnabled)
-    {
-        return gko::share(factory->generate(gkoMtx));
-    }
+    // Solver setup (generate / update_matrix_value / workspace reuse) runs on every solve and is
+    // NOT part of the reported "Solve time". Profiled to expose this unreported solve-path cost.
+    Kokkos::Profiling::ScopedRegion region_("ginkgo.solverSetup");
 
-    auto updateInPlace = [&gkoMtx](const std::shared_ptr<gko::LinOp>& solver) -> bool
+    // Generate a fresh solver, reusing the stashed scratch Workspace when one is available
+    // (Strategy 3). The first generate has no workspace yet and uses the solver's own eagerly
+    // constructed one, which the SolverLease then extracts to seed cachedWorkspace for reuse.
+    bool reusedWorkspace = false;
+    auto generateReusing = [&]() -> std::unique_ptr<gko::LinOp>
     {
-        if (auto upd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(solver))
+        if (cachedWorkspace)
         {
-            upd->update_matrix_value(gkoMtx);
-            return true;
+            reusedWorkspace = true;
+            return factory->generate(gkoMtx, std::move(cachedWorkspace));
         }
-        if (auto prec = std::dynamic_pointer_cast<gko::Preconditionable>(solver))
-        {
-            auto inner = std::const_pointer_cast<gko::LinOp>(prec->get_preconditioner());
-            if (auto innerUpd = std::dynamic_pointer_cast<gko::UpdateMatrixValue>(inner))
-            {
-                innerUpd->update_matrix_value(gkoMtx);
-                return true;
-            }
-        }
-        return false;
+        return factory->generate(gkoMtx);
     };
 
-    const bool periodicRebuild = rebuildInterval > 0 && solveCount >= rebuildInterval;
-    if (cachedSolver && cachedStructure == structure && !periodicRebuild
-        && updateInPlace(cachedSolver))
+    // Strategy 1b fast path: refresh the cached solver in place when it is updatable and the matrix
+    // structure is unchanged and a periodic rebuild is not due.
+    if (cacheEnabled)
     {
-        ++solveCount;
-        return cachedSolver;
+        const bool periodicRebuild = rebuildInterval > 0 && solveCount >= rebuildInterval;
+        if (cachedSolver && cachedStructure == structure && !periodicRebuild)
+        {
+            if (auto* upd = findUpdatable(cachedSolver.get()))
+            {
+                upd->update_matrix_value(gkoMtx);
+                ++solveCount;
+                return SolverLease(cachedSolver, CacheAction::UpdateInPlace);
+            }
+        }
     }
-    cachedSolver = gko::share(factory->generate(gkoMtx));
+
+    // (Re)generate. Decide the tier from the fresh solver's updatability.
+    auto fresh = generateReusing();
     cachedStructure = structure;
     solveCount = 1;
-    return cachedSolver;
+    const CacheAction rebuildAction =
+        reusedWorkspace ? CacheAction::RebuildReuseWorkspace : CacheAction::Rebuild;
+
+    const bool updatable = findUpdatable(fresh.get()) != nullptr;
+
+    if (cacheEnabled && updatable)
+    {
+        // Strategy 1b: updatable -> cache the solver and reuse it via update_matrix_value next
+        // solve. Its Workspace stays inside the cached solver; cachedWorkspace remains empty.
+        cachedSolver = gko::share(std::move(fresh));
+        return SolverLease(cachedSolver, rebuildAction);
+    }
+
+    cachedSolver = nullptr;
+    if (updatable)
+    {
+        // Updatable config with caching DISABLED (cacheSolver=false): the solver is regenerated
+        // from scratch every solve, and its scratch Workspace must NOT be reused (Multigrid coarse
+        // vector sizes track the value-dependent Pgm aggregation, which shifts between solves -> a
+        // stale Workspace aborts mid-V-cycle with gko::DimensionMismatch). Own the solver for this
+        // solve and let its Workspace be freed (wsSlot = nullptr => no reclaim).
+        return SolverLease(std::move(fresh), nullptr, rebuildAction);
+    }
+
+    // Strategy 3: genuinely non-updatable (fixed-layout Krylov, e.g. PBiCGStab/Cg + Jacobi/ILU) ->
+    // the Workspace layout is value-independent across solves, so reclaim it for the next generate.
+    return SolverLease(std::move(fresh), &cachedWorkspace, rebuildAction);
 }
 
 // Structural key for the solver cache: re-assembling values keeps these fixed (steady SIMPLE), a
@@ -774,8 +924,9 @@ SolverStats GinkgoSolver::solveDist(
         cachedNonLocalMtx_,
         localMatrixFormat_
     );
-    auto solver = cacheOrUpdateSolver(
+    auto lease = cacheOrUpdateSolver(
         cachedSolver_[0],
+        cachedWorkspace_[0],
         cachedSolverStructure_[0],
         cachedSolveCount_[0],
         cacheSolver_,
@@ -785,7 +936,7 @@ SolverStats GinkgoSolver::solveDist(
         solverStructureKey(sys)
     );
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
+    return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, lease.solver(), l1Control)};
 }
 
 SolverStats GinkgoSolver::solveDist(
@@ -966,8 +1117,9 @@ SolverStats GinkgoSolver::solveDist(
     // Coupled fallback (no implicit transform BC): one block solve over the Vec3 rhs / scalar
     // matrix. Cache on slot [0] -- the segregated path is not taken for this system, so slots
     // [1..2] stay free.
-    auto solver = cacheOrUpdateSolver(
+    auto lease = cacheOrUpdateSolver(
         cachedSolver_[0],
+        cachedWorkspace_[0],
         cachedSolverStructure_[0],
         cachedSolveCount_[0],
         cacheSolver_,
@@ -976,7 +1128,7 @@ SolverStats GinkgoSolver::solveDist(
         gkoMtx,
         solverStructureKey(sys)
     );
-    return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
+    return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, lease.solver(), l1Control);
 }
 
 template std::
