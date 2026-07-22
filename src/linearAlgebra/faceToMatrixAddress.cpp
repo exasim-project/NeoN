@@ -53,9 +53,9 @@ FaceToMatrixAddress FaceToMatrixAddress::copyToExecutor(Executor dstExec) const
 
 FaceToMatrixView FaceToMatrixAddress::view(View<const localIdx> rowOffsView) const
 {
-    return FaceToMatrixView(
+    return FaceToMatrixView {
         ownerOffset_.view(), neighbourOffset_.view(), diagOffset_.view(), rowOffsView
-    );
+    };
 }
 
 const NeoN::Array<uint8_t>& FaceToMatrixAddress::ownerOffset() const { return ownerOffset_; }
