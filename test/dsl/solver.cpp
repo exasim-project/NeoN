@@ -89,12 +89,14 @@ TEST_CASE("dsl::solve assembles and solves a complete PDE via ELL, matches CSR")
         exprEll, phiEll, 0.0, 1.0, fvSchemes, fvSolution
     );
 
-    REQUIRE_FALSE(csrStats.entries.empty());
-    REQUIRE_FALSE(ellStats.entries.empty());
-    REQUIRE(csrStats.entries.front().numIter > 0);
-    REQUIRE(ellStats.entries.front().numIter > 0);
-    REQUIRE(csrStats.entries.front().finalResNorm <= csrStats.entries.front().initResNorm);
-    REQUIRE(ellStats.entries.front().finalResNorm <= ellStats.entries.front().initResNorm);
+    REQUIRE(csrStats.has_value());
+    REQUIRE(ellStats.has_value());
+    REQUIRE_FALSE(csrStats->entries.empty());
+    REQUIRE_FALSE(ellStats->entries.empty());
+    REQUIRE(csrStats->entries.front().numIter > 0);
+    REQUIRE(ellStats->entries.front().numIter > 0);
+    REQUIRE(csrStats->entries.front().finalResNorm <= csrStats->entries.front().initResNorm);
+    REQUIRE(ellStats->entries.front().finalResNorm <= ellStats->entries.front().initResNorm);
 
     REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
 }
@@ -159,12 +161,14 @@ TEST_CASE("dsl::solve with SetReference solves a singular Laplacian via ELL, mat
         exprEll, phiEll, 0.0, 1.0, fvSchemes, fvSolution, {&setRef}
     );
 
-    REQUIRE_FALSE(csrStats.entries.empty());
-    REQUIRE_FALSE(ellStats.entries.empty());
-    REQUIRE(csrStats.entries.front().numIter > 0);
-    REQUIRE(ellStats.entries.front().numIter > 0);
-    REQUIRE(csrStats.entries.front().finalResNorm <= csrStats.entries.front().initResNorm);
-    REQUIRE(ellStats.entries.front().finalResNorm <= ellStats.entries.front().initResNorm);
+    REQUIRE(csrStats.has_value());
+    REQUIRE(ellStats.has_value());
+    REQUIRE_FALSE(csrStats->entries.empty());
+    REQUIRE_FALSE(ellStats->entries.empty());
+    REQUIRE(csrStats->entries.front().numIter > 0);
+    REQUIRE(ellStats->entries.front().numIter > 0);
+    REQUIRE(csrStats->entries.front().finalResNorm <= csrStats->entries.front().initResNorm);
+    REQUIRE(ellStats->entries.front().finalResNorm <= ellStats->entries.front().initResNorm);
 
     REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
 
@@ -254,10 +258,12 @@ TEST_CASE("dsl::solve with FixedValueConstraints solves via ELL, matches CSR")
         exprEll, phiEll, 0.0, 1.0, fvSchemes, fvSolution, {&constraint}
     );
 
-    REQUIRE_FALSE(csrStats.entries.empty());
-    REQUIRE_FALSE(ellStats.entries.empty());
-    REQUIRE(csrStats.entries.front().numIter > 0);
-    REQUIRE(ellStats.entries.front().numIter > 0);
+    REQUIRE(csrStats.has_value());
+    REQUIRE(ellStats.has_value());
+    REQUIRE_FALSE(csrStats->entries.empty());
+    REQUIRE_FALSE(ellStats->entries.empty());
+    REQUIRE(csrStats->entries.front().numIter > 0);
+    REQUIRE(ellStats->entries.front().numIter > 0);
 
     REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
 
