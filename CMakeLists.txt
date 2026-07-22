@@ -47,7 +47,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 if(WIN32)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+    # /bigobj: heavily-templated TUs (Catch2 test files assembling CSR/ELL LinearSystem combinations
+    # across several ValueTypes) exceed MSVC's default COFF section limit (C1128) well before
+    # GCC/Clang hit any equivalent limit.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /bigobj")
   endif()
 endif()
 
