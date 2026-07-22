@@ -51,6 +51,12 @@ private:
 
     std::shared_ptr<SurfaceInterpolation<ValueType>> divSurfaceInterpolation_;
     std::shared_ptr<FaceNormalGradient<ValueType>> faceNormalGradient_;
+
+    // True when the div scheme carried a leading `bounded` prefix. The fused kernel then also emits
+    // the bounded-convection Sp diagonal term (applyBoundedDivDiagonal), matching the un-fused
+    // BoundedDiv path -- without it the momentum matrix loses its boundedness stabilisation and the
+    // solve diverges.
+    bool bounded_ = false;
 };
 
 // Required on MSVC: without extern template, each TU (DLL and EXE) gets its own

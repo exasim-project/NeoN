@@ -9,6 +9,7 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDivLaplacian.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp"
 #include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -391,6 +392,12 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<Value
         divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
         addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
     }
+
+    // Bounded-convection Sp diagonal term for a `bounded` div scheme (same as BoundedDiv::div).
+    if (bounded_)
+    {
+        applyBoundedDivDiagonal(ls, flux_, this->getVector().mesh(), coeffA_);
+    }
 }
 
 template<typename ValueType>
@@ -467,6 +474,12 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
         divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
         addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
     }
+
+    // Bounded-convection Sp diagonal term for a `bounded` div scheme (same as BoundedDiv::div).
+    if (bounded_)
+    {
+        applyBoundedDivDiagonal(ls, flux_, this->getVector().mesh(), coeffA_);
+    }
 }
 
 template<typename ValueType>
@@ -488,6 +501,17 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
         NF_ERROR_EXIT("only dictionary input supported");
     }
     laplTokens.remove(0);
+
+    // An OpenFOAM div scheme may carry a leading `bounded` prefix (the boundedness term
+    // Sp(fvc::div(phi), psi)); strip it before the mandatory `Gauss` keyword and record it so
+    // implicitOperation emits the same bounding diagonal term as the un-fused BoundedDiv wrapper.
+    // Always re-derived (not just set on match) so a second read() with a different scheme can't
+    // leave a stale true from an earlier call.
+    bounded_ = divTokens.size() > 0 && divTokens.get<std::string>(0) == "bounded";
+    if (bounded_)
+    {
+        divTokens.remove(0);
+    }
     divTokens.remove(0);
 
     const auto divScheme = divTokens.get<std::string>(0);
