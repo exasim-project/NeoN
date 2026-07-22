@@ -180,9 +180,9 @@ Functions</h2></td></tr>
 <tr class="memitem:abfe3b3aa51c3aad886d76e67b7e358d3"><td class="memTemplItemLeft" align="right" valign="top">ExpressionType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#abfe3b3aa51c3aad886d76e67b7e358d3">optimize</a> (const ExpressionType &amp;in, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classNeoN_1_1dsl_1_1Optimizer.html">Optimizer</a>&lt; ExpressionType &gt; &gt; &gt; &amp;opts)</td></tr>
 <tr class="memdesc:abfe3b3aa51c3aad886d76e67b7e358d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a caller-supplied optimizer pipeline to an expression.  <br /></td></tr>
 <tr class="separator:abfe3b3aa51c3aad886d76e67b7e358d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae82a72e4ff7e775f25af51e0e8d7099b" id="r_ae82a72e4ff7e775f25af51e0e8d7099b"><td class="memTemplParams" colspan="2">template&lt;typename VectorType , typename IndexType &gt; </td></tr>
-<tr class="memitem:ae82a72e4ff7e775f25af51e0e8d7099b"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#ae82a72e4ff7e775f25af51e0e8d7099b">solve</a> (<a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename VectorType::ElementType, IndexType &gt; &amp;exp, VectorType &amp;solution, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> t, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSchemes, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSolution, std::vector&lt; const <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html">PostAssemblyBase</a>&lt; typename VectorType::ElementType, IndexType &gt; * &gt; p={})</td></tr>
-<tr class="separator:ae82a72e4ff7e775f25af51e0e8d7099b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1e125f06b47db316e60e50a597f2525" id="r_ab1e125f06b47db316e60e50a597f2525"><td class="memTemplParams" colspan="2">template&lt;typename VectorType , typename IndexType , typename SystemMatrixType  = la::CSRMatrix&lt;typename VectorType::ElementType, localIdx&gt;&gt; </td></tr>
+<tr class="memitem:ab1e125f06b47db316e60e50a597f2525"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#ab1e125f06b47db316e60e50a597f2525">solve</a> (<a class="el" href="classNeoN_1_1dsl_1_1Expression.html">Expression</a>&lt; typename VectorType::ElementType, IndexType &gt; &amp;exp, VectorType &amp;solution, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> t, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> dt, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSchemes, const <a class="el" href="classNeoN_1_1Dictionary.html">Dictionary</a> &amp;fvSolution, std::vector&lt; const <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html">PostAssemblyBase</a>&lt; typename VectorType::ElementType, IndexType &gt; * &gt; p={})</td></tr>
+<tr class="separator:ab1e125f06b47db316e60e50a597f2525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8c4bbbd2314b97f5b320603d3944bd5" id="r_aa8c4bbbd2314b97f5b320603d3944bd5"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1dsl.html#aa8c4bbbd2314b97f5b320603d3944bd5">copySign</a> (const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> <a class="el" href="namespaceNeoN.html#a5a92d3d1550bcfb32325f9f4112a5626">mag</a>, const <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> s)</td></tr>
 <tr class="memdesc:aa8c4bbbd2314b97f5b320603d3944bd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns |mag| carrying the sign of s (scalar overload).  <br /></td></tr>
 <tr class="separator:aa8c4bbbd2314b97f5b320603d3944bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -267,7 +267,7 @@ template&lt;typename VectorType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00299">299</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00309">309</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -305,7 +305,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00210">210</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00220">220</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -337,7 +337,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Componentwise sign-copy (scalar overload). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00137">137</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00147">147</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -369,7 +369,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Componentwise sign-copy (<a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> overload — all 3 components). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00143">143</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00153">153</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -391,7 +391,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Componentwise magnitude (scalar overload). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00149">149</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00159">159</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -413,7 +413,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Componentwise magnitude (<a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> overload — keeps all 3 components, does NOT collapse to the L2 norm that the global mag(Vec3) returns). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00153">153</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00163">163</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -445,7 +445,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Componentwise max (scalar overload). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00159">159</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00169">169</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -477,7 +477,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Componentwise max (<a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a> overload — per component). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00165">165</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00175">175</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -509,7 +509,7 @@ template&lt;typename VectorType , typename MatrixValueType , typename RHSValueTy
 
 <p>Returns |mag| carrying the sign of s (scalar overload). </p>
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00131">131</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00141">141</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -531,7 +531,7 @@ template&lt;typename VectorType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00332">332</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00342">342</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>
@@ -801,7 +801,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00627">627</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00680">680</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -841,7 +841,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00601">601</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00654">654</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -881,7 +881,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00609">609</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00662">662</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -921,7 +921,7 @@ template&lt;typename leftOperator , typename rightOperator &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00617">617</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00670">670</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -961,7 +961,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00644">644</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00697">697</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -1001,7 +1001,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00652">652</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00705">705</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -1041,7 +1041,7 @@ template&lt;typename leftOperator , typename rightOperator &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00660">660</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00713">713</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -1132,13 +1132,13 @@ template&lt;typename ExpressionType &gt; </div>
 
 </div>
 </div>
-<a id="ae82a72e4ff7e775f25af51e0e8d7099b" name="ae82a72e4ff7e775f25af51e0e8d7099b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae82a72e4ff7e775f25af51e0e8d7099b">&#9670;&#160;</a></span>solve()</h2>
+<a id="ab1e125f06b47db316e60e50a597f2525" name="ab1e125f06b47db316e60e50a597f2525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1e125f06b47db316e60e50a597f2525">&#9670;&#160;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename VectorType , typename IndexType &gt; </div>
+template&lt;typename VectorType , typename IndexType , typename SystemMatrixType  = la::CSRMatrix&lt;typename VectorType::ElementType, localIdx&gt;&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::optional&lt; <a class="el" href="structNeoN_1_1la_1_1SolverStats.html">la::SolverStats</a> &gt; NeoN::dsl::solve </td>
@@ -1190,7 +1190,7 @@ template&lt;typename VectorType , typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00095">95</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dsl_2solver_8hpp_source.html#l00103">103</a> of file <a class="el" href="dsl_2solver_8hpp_source.html">solver.hpp</a>.</p>
 
 </div>
 </div>

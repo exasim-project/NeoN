@@ -5,7 +5,7 @@
 \item 
 {\footnotesize template$<$typename Vector\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae90a6e47f89931541f21ef22ce8c86b5}{iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&ls, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\})
 \item 
-{\footnotesize template$<$typename Vector\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_aa5c1f7a5cd6aa007933aed142fba87fb}{iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\})
+{\footnotesize template$<$typename Vector\+Type , typename Index\+Type , typename System\+Matrix\+Type  = la\+::\+CSRMatrix$<$typename Vector\+Type\+::\+Element\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_a4297e507e549858c6422824301d7ea9a}{iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\})
 \end{DoxyCompactItemize}
 
 
@@ -21,14 +21,14 @@
 
 Definition at line \mbox{\hyperlink{dsl_2solver_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{dsl_2solver_8hpp_source}{solver.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_1_1dsl_1_1detail_aa5c1f7a5cd6aa007933aed142fba87fb}\label{namespaceNeoN_1_1dsl_1_1detail_aa5c1f7a5cd6aa007933aed142fba87fb} 
+\Hypertarget{namespaceNeoN_1_1dsl_1_1detail_a4297e507e549858c6422824301d7ea9a}\label{namespaceNeoN_1_1dsl_1_1detail_a4297e507e549858c6422824301d7ea9a} 
 \index{NeoN::dsl::detail@{NeoN::dsl::detail}!iterativeSolveImpl@{iterativeSolveImpl}}
 \index{iterativeSolveImpl@{iterativeSolveImpl}!NeoN::dsl::detail@{NeoN::dsl::detail}}
 \doxysubsubsection{\texorpdfstring{iterativeSolveImpl()}{iterativeSolveImpl()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename Vector\+Type , typename Index\+Type $>$ \\
+{\footnotesize\ttfamily template$<$typename Vector\+Type , typename Index\+Type , typename System\+Matrix\+Type  = la\+::\+CSRMatrix$<$typename Vector\+Type\+::\+Element\+Type, local\+Idx$>$$>$ \\
 \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} Neo\+N\+::dsl\+::detail\+::iterative\+Solve\+Impl (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&}]{exp,  }\item[{Vector\+Type \&}]{solution,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{t,  }\item[{\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}}]{dt,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&}]{fv\+Solution,  }\item[{std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$}]{ps = {\ttfamily \{\}} }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{dsl_2solver_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{dsl_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{dsl_2solver_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{dsl_2solver_8hpp_source}{solver.\+hpp}}.
 

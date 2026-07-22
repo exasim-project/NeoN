@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="166" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="166" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="192" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="192" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structNeoN_1_1la_1_1EllSparsityView_1afcc48e17c8a7706a69a0962d492363bd" prot="public" static="no" mutable="no">
         <type>IndexType</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="167" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="167" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="193" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="193" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structNeoN_1_1la_1_1EllSparsityView_1a4465a04c7f1eabe14884d56606685042" prot="public" static="no" mutable="no">
         <type>IndexType</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="168" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="168" bodyend="-1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="194" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="194" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="102" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="102" bodyend="106"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="119" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="119" bodyend="123"/>
       </memberdef>
       <memberdef kind="function" id="structNeoN_1_1la_1_1EllSparsityView_1a8ef95591fb8a134c0006baff1c019f7d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION IndexType</type>
@@ -100,7 +100,25 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="123" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="123" bodyend="126"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="140" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="140" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="structNeoN_1_1la_1_1EllSparsityView_1a8a87ee61bf6949aed3fef57dd4a81592" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>KOKKOS_INLINE_FUNCTION IndexType</type>
+        <definition>KOKKOS_INLINE_FUNCTION IndexType NeoN::la::EllSparsityView&lt; IndexType &gt;::rowSize</definition>
+        <argsstring>(const IndexType) const</argsstring>
+        <name>rowSize</name>
+        <qualifiedname>NeoN::la::EllSparsityView::rowSize</qualifiedname>
+        <param>
+          <type>const IndexType</type>
+        </param>
+        <briefdescription>
+<para>Number of stored slots in row i, i.e. the padded row width <ndash/> the same for every row. Unlike <ref refid="structNeoN_1_1la_1_1SparsityView_1a815612658566a9d601c4bc3492b45edb" kindref="member">SparsityView::rowSize()</ref> (CSR, no padding), callers walking a row via this must still check colIdxs[linearIndex(i,slot)] against <ref refid="structNeoN_1_1la_1_1EllSparsityView_1ade7595799f2b0ed3da6d82fb98b1e243" kindref="member">invalidIndex()</ref> and stop there, since a row&apos;s real entry count can be less than this. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="152" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="152" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="structNeoN_1_1la_1_1EllSparsityView_1a14067f67899d32c5e12af0f66a2f17be" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION IndexType</type>
@@ -145,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="137" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="137" bodyend="147"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="163" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="163" bodyend="173"/>
       </memberdef>
       <memberdef kind="function" id="structNeoN_1_1la_1_1EllSparsityView_1a13940cecfefc3590d4b8360c395f920a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>KOKKOS_INLINE_FUNCTION IndexType</type>
@@ -188,7 +206,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="156" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="156" bodyend="164"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="182" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="182" bodyend="190"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -205,7 +223,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="117" column="32" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="117" bodyend="117"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="134" column="32" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="134" bodyend="134"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -243,7 +261,7 @@
         <label>std::span&lt; const IndexType &gt;</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="100" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="101" bodyend="169"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" line="117" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/sparsityView.hpp" bodystart="118" bodyend="195"/>
     <listofallmembers>
       <member refid="structNeoN_1_1la_1_1EllSparsityView_1af1d1bc185b01efb5bc041096c860f454" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>colIdxs</name></member>
       <member refid="structNeoN_1_1la_1_1EllSparsityView_1a80469c2f2f6cceef0b0d19150d8f0527" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>EllSparsityView</name></member>
@@ -252,6 +270,7 @@
       <member refid="structNeoN_1_1la_1_1EllSparsityView_1ade7595799f2b0ed3da6d82fb98b1e243" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>invalidIndex</name></member>
       <member refid="structNeoN_1_1la_1_1EllSparsityView_1a8ef95591fb8a134c0006baff1c019f7d" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>linearIndex</name></member>
       <member refid="structNeoN_1_1la_1_1EllSparsityView_1afcc48e17c8a7706a69a0962d492363bd" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>numStoredElementsPerRow</name></member>
+      <member refid="structNeoN_1_1la_1_1EllSparsityView_1a8a87ee61bf6949aed3fef57dd4a81592" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>rowSize</name></member>
       <member refid="structNeoN_1_1la_1_1EllSparsityView_1a4465a04c7f1eabe14884d56606685042" prot="public" virt="non-virtual"><scope>NeoN::la::EllSparsityView</scope><name>stride</name></member>
     </listofallmembers>
   </compounddef>

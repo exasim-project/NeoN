@@ -95,6 +95,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8ef95591fb8a134c0006baff1c019f7d" id="r_a8ef95591fb8a134c0006baff1c019f7d"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a8ef95591fb8a134c0006baff1c019f7d">linearIndex</a> (const IndexType i, const IndexType slot) const</td></tr>
 <tr class="memdesc:a8ef95591fb8a134c0006baff1c019f7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flat storage offset of slot <code>slot</code> of row <code>i</code> (column-major layout).  <br /></td></tr>
 <tr class="separator:a8ef95591fb8a134c0006baff1c019f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a87ee61bf6949aed3fef57dd4a81592" id="r_a8a87ee61bf6949aed3fef57dd4a81592"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a8a87ee61bf6949aed3fef57dd4a81592">rowSize</a> (const IndexType) const</td></tr>
+<tr class="memdesc:a8a87ee61bf6949aed3fef57dd4a81592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of stored slots in row i, i.e. the padded row width &ndash; the same for every row. Unlike <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a815612658566a9d601c4bc3492b45edb" title="Number of stored slots in row i. CSR has no padding, so every slot is a real (logical,...">SparsityView::rowSize()</a> (CSR, no padding), callers walking a row via this must still check colIdxs[linearIndex(i,slot)] against <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#ade7595799f2b0ed3da6d82fb98b1e243" title="Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::inva...">invalidIndex()</a> and stop there, since a row's real entry count can be less than this.  <br /></td></tr>
+<tr class="separator:a8a87ee61bf6949aed3fef57dd4a81592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14067f67899d32c5e12af0f66a2f17be" id="r_a14067f67899d32c5e12af0f66a2f17be"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a14067f67899d32c5e12af0f66a2f17be">findEntry</a> (const IndexType i, const IndexType j) const</td></tr>
 <tr class="memdesc:a14067f67899d32c5e12af0f66a2f17be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the storage offset of the matrix element at position (i,j).  <br /></td></tr>
 <tr class="separator:a14067f67899d32c5e12af0f66a2f17be"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,7 +132,7 @@ struct NeoN::la::EllSparsityView&lt; IndexType &gt;</div><p><a class="el" href="
 </dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>ideally this should be immutable </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00100">100</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00117">117</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a80469c2f2f6cceef0b0d19150d8f0527" name="a80469c2f2f6cceef0b0d19150d8f0527"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80469c2f2f6cceef0b0d19150d8f0527">&#9670;&#160;</a></span>EllSparsityView()</h2>
@@ -173,7 +176,7 @@ template&lt;typename IndexType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00102">102</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00119">119</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -224,7 +227,7 @@ template&lt;typename IndexType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Flat offset into colIdxs/values if it exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00156">156</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00182">182</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -275,7 +278,7 @@ template&lt;typename IndexType &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>Flat offset into colIdxs/values if it exists, <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#ade7595799f2b0ed3da6d82fb98b1e243" title="Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::inva...">invalidIndex()</a> otherwise. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>assumes each row's stored columns are sorted ascending with padding (<a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#ade7595799f2b0ed3da6d82fb98b1e243" title="Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::inva...">invalidIndex()</a>) trailing; not verified. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00137">137</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00163">163</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -306,7 +309,7 @@ template&lt;typename IndexType &gt; </div>
 
 <p>Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::invalid_index&lt;IndexType&gt;() (-1) &ndash; Ginkgo's own ELL kernels skip padding by checking a slot's column index against exactly this value, so this is what lets colIdxs be handed to gko::matrix::Ell::create_const() unmodified. localIdx is signed unless built with NeoN_US_IDX; for an unsigned IndexType this is still a valid NeoN-internal sentinel (all bits set) but Ginkgo itself rejects unsigned index types outright. </p>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00117">117</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00134">134</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -348,7 +351,39 @@ template&lt;typename IndexType &gt; </div>
 
 <p>Flat storage offset of slot <code>slot</code> of row <code>i</code> (column-major layout). </p>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00123">123</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00140">140</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a8a87ee61bf6949aed3fef57dd4a81592" name="a8a87ee61bf6949aed3fef57dd4a81592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a87ee61bf6949aed3fef57dd4a81592">&#9670;&#160;</a></span>rowSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">KOKKOS_INLINE_FUNCTION IndexType <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html">NeoN::la::EllSparsityView</a>&lt; IndexType &gt;::rowSize </td>
+          <td>(</td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of stored slots in row i, i.e. the padded row width &ndash; the same for every row. Unlike <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a815612658566a9d601c4bc3492b45edb" title="Number of stored slots in row i. CSR has no padding, so every slot is a real (logical,...">SparsityView::rowSize()</a> (CSR, no padding), callers walking a row via this must still check colIdxs[linearIndex(i,slot)] against <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#ade7595799f2b0ed3da6d82fb98b1e243" title="Sentinel column index marking an unused (padding) slot. For a signed IndexType this matches gko::inva...">invalidIndex()</a> and stop there, since a row's real entry count can be less than this. </p>
+
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00152">152</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -367,7 +402,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00166">166</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00192">192</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -385,7 +420,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00167">167</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00193">193</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -403,7 +438,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00168">168</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00194">194</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>

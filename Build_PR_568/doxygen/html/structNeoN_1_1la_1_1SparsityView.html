@@ -95,6 +95,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a21a0b63c58cf5433a0ce05b68cf3ec3c" id="r_a21a0b63c58cf5433a0ce05b68cf3ec3c"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a21a0b63c58cf5433a0ce05b68cf3ec3c">findEntry</a> (const IndexType i, const IndexType j) const</td></tr>
 <tr class="memdesc:a21a0b63c58cf5433a0ce05b68cf3ec3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the storage offset of the matrix element at position (i,j).  <br /></td></tr>
 <tr class="separator:a21a0b63c58cf5433a0ce05b68cf3ec3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815612658566a9d601c4bc3492b45edb" id="r_a815612658566a9d601c4bc3492b45edb"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a815612658566a9d601c4bc3492b45edb">rowSize</a> (const IndexType i) const</td></tr>
+<tr class="memdesc:a815612658566a9d601c4bc3492b45edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of stored slots in row i. CSR has no padding, so every slot is a real (logical, non-zero) entry &ndash; unlike <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a8a87ee61bf6949aed3fef57dd4a81592" title="Number of stored slots in row i, i.e. the padded row width – the same for every row....">EllSparsityView::rowSize()</a>, callers never need to check colIdxs against <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a06eb6a21cd06f88daecc251c498bccfa" title="Sentinel storage offset returned by findEntry() when (i,j) is not stored.">invalidIndex()</a> when walking a CSR row this way.  <br /></td></tr>
+<tr class="separator:a815612658566a9d601c4bc3492b45edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572bb015a8688894099c489e5bb083d0" id="r_a572bb015a8688894099c489e5bb083d0"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a572bb015a8688894099c489e5bb083d0">linearIndex</a> (const IndexType i, const IndexType slot) const</td></tr>
+<tr class="memdesc:a572bb015a8688894099c489e5bb083d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flat storage offset of slot <code>slot</code> of row <code>i</code>.  <br /></td></tr>
+<tr class="separator:a572bb015a8688894099c489e5bb083d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa42e43ddbb911c0586d0cacab40b35e" id="r_aaa42e43ddbb911c0586d0cacab40b35e"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html#aaa42e43ddbb911c0586d0cacab40b35e">entry</a> (const IndexType i, const IndexType j) const</td></tr>
 <tr class="memdesc:aaa42e43ddbb911c0586d0cacab40b35e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a reference to the matrix element at position (i,j).  <br /></td></tr>
 <tr class="separator:aaa42e43ddbb911c0586d0cacab40b35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,7 +218,7 @@ template&lt;typename IndexType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Reference to the matrix element if it exists. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00073">73</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00090">90</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -298,6 +304,80 @@ template&lt;typename IndexType &gt; </div>
 
 </div>
 </div>
+<a id="a572bb015a8688894099c489e5bb083d0" name="a572bb015a8688894099c489e5bb083d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572bb015a8688894099c489e5bb083d0">&#9670;&#160;</a></span>linearIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">KOKKOS_INLINE_FUNCTION IndexType <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">NeoN::la::SparsityView</a>&lt; IndexType &gt;::linearIndex </td>
+          <td>(</td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"><em>slot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flat storage offset of slot <code>slot</code> of row <code>i</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00078">78</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a815612658566a9d601c4bc3492b45edb" name="a815612658566a9d601c4bc3492b45edb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815612658566a9d601c4bc3492b45edb">&#9670;&#160;</a></span>rowSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">KOKKOS_INLINE_FUNCTION IndexType <a class="el" href="structNeoN_1_1la_1_1SparsityView.html">NeoN::la::SparsityView</a>&lt; IndexType &gt;::rowSize </td>
+          <td>(</td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of stored slots in row i. CSR has no padding, so every slot is a real (logical, non-zero) entry &ndash; unlike <a class="el" href="structNeoN_1_1la_1_1EllSparsityView.html#a8a87ee61bf6949aed3fef57dd4a81592" title="Number of stored slots in row i, i.e. the padded row width – the same for every row....">EllSparsityView::rowSize()</a>, callers never need to check colIdxs against <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a06eb6a21cd06f88daecc251c498bccfa" title="Sentinel storage offset returned by findEntry() when (i,j) is not stored.">invalidIndex()</a> when walking a CSR row this way. </p>
+
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00072">72</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a1cb5b4b48a9ed148cf8b403dac414c0e" name="a1cb5b4b48a9ed148cf8b403dac414c0e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1cb5b4b48a9ed148cf8b403dac414c0e">&#9670;&#160;</a></span>colIdxs</h2>
@@ -313,7 +393,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00083">83</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00100">100</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -331,7 +411,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00084">84</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00101">101</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>

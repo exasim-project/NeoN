@@ -16,6 +16,8 @@
 \item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d}{linear\+Index}} (const Index\+Type i, const Index\+Type slot) const
 \begin{DoxyCompactList}\small\item\em Flat storage offset of slot {\ttfamily slot} of row {\ttfamily i} (column-\/major layout). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a8a87ee61bf6949aed3fef57dd4a81592}{row\+Size}} (const Index\+Type) const
+\begin{DoxyCompactList}\small\item\em Number of stored slots in row i, i.\+e. the padded row width -- the same for every row. Unlike \doxylink{structNeoN_1_1la_1_1SparsityView_a815612658566a9d601c4bc3492b45edb}{Sparsity\+View\+::row\+Size()} (CSR, no padding), callers walking a row via this must still check col\+Idxs\mbox{[}linear\+Index(i,slot)\mbox{]} against \doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()} and stop there, since a row\textquotesingle{}s real entry count can be less than this. \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be}{find\+Entry}} (const Index\+Type i, const Index\+Type j) const
 \begin{DoxyCompactList}\small\item\em Retrieve the storage offset of the matrix element at position (i,j). \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a13940cecfefc3590d4b8360c395f920a}{entry}} (const Index\+Type i, const Index\+Type j) const
@@ -52,7 +54,7 @@ Column indices are stored column-\/major across the padded row slots, i.\+e. slo
 \item[\mbox{\hyperlink{todo__todo000002}{Todo}}]ideally this should be immutable \end{DoxyRefDesc}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00100}{100}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -66,7 +68,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00100}{100}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -94,7 +96,7 @@ Flat offset into col\+Idxs/values if it exists.
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00182}{182}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be}\label{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!findEntry@{findEntry}}
@@ -122,7 +124,7 @@ assumes each row\textquotesingle{}s stored columns are sorted ascending with pad
 \end{DoxyNote}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00137}{137}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}\label{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!invalidIndex@{invalidIndex}}
@@ -137,7 +139,7 @@ Sentinel column index marking an unused (padding) slot. For a signed Index\+Type
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00134}{134}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d}\label{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!linearIndex@{linearIndex}}
@@ -152,7 +154,22 @@ Flat storage offset of slot {\ttfamily slot} of row {\ttfamily i} (column-\/majo
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00123}{123}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00140}{140}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a8a87ee61bf6949aed3fef57dd4a81592}\label{structNeoN_1_1la_1_1EllSparsityView_a8a87ee61bf6949aed3fef57dd4a81592} 
+\index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!rowSize@{rowSize}}
+\index{rowSize@{rowSize}!NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{rowSize()}{rowSize()}}
+{\footnotesize\ttfamily template$<$typename Index\+Type $>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+::\+Ell\+Sparsity\+View}}$<$ Index\+Type $>$\+::row\+Size (\begin{DoxyParamCaption}\item[{const Index\+Type}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Number of stored slots in row i, i.\+e. the padded row width -- the same for every row. Unlike \doxylink{structNeoN_1_1la_1_1SparsityView_a815612658566a9d601c4bc3492b45edb}{Sparsity\+View\+::row\+Size()} (CSR, no padding), callers walking a row via this must still check col\+Idxs\mbox{[}linear\+Index(i,slot)\mbox{]} against \doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()} and stop there, since a row\textquotesingle{}s real entry count can be less than this. 
+
+
+
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00152}{152}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -166,7 +183,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00123}{123}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00192}{192}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_afcc48e17c8a7706a69a0962d492363bd}\label{structNeoN_1_1la_1_1EllSparsityView_afcc48e17c8a7706a69a0962d492363bd} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!numStoredElementsPerRow@{numStoredElementsPerRow}}
@@ -177,7 +194,7 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00193}{193}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eabe14884d56606685042}\label{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eabe14884d56606685042} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!stride@{stride}}
@@ -188,7 +205,7 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00194}{194}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 

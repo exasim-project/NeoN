@@ -63,6 +63,26 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="43" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="43" bodyend="47"/>
       </memberdef>
+      <memberdef kind="function" id="structNeoN_1_1dsl_1_1PostAssemblyBase_1a755d25d9790c4ebdf641e127da89b1db" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;::applyELL</definition>
+        <argsstring>(la::LinearSystem&lt; scalar, scalar, la::ELLMatrix&lt; scalar, IndexType &gt; &gt; &amp;) const</argsstring>
+        <name>applyELL</name>
+        <qualifiedname>NeoN::dsl::PostAssemblyBase::applyELL</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1dsl_1_1SetReference_1a037a657a647c74ac3c18ec6a1a90df66">applyELL</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1dsl_1_1FixedValueConstraints_1aa08991f7928462ccda9f01e23cbf4b6b">applyELL</reimplementedby>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1_1la_1a7888e3c591147b90c956b478378cb752" kindref="member">la::ELLMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, IndexType &gt; &gt; &amp;</type>
+        </param>
+        <briefdescription>
+<para>Apply to the ELL same-type form. Default throws rather than silently doing nothing <ndash/> <ref refid="classNeoN_1_1dsl_1_1Expression_1aa20c9e4d9a939277e5c52af3a6475c9d" kindref="member">Expression::assemble</ref> dispatches every functor in ps through this unconditionally once AssemblyType == ValueType == scalar, so a functor that hasn&apos;t implemented ELL support (e.g. <ref refid="classNeoN_1_1dsl_1_1FixedValueConstraints" kindref="compound">FixedValueConstraints</ref>, still CSR-only) must fail loudly instead of quietly not applying its constraint. Functors that support ELL override this. Fixed to VectorType=scalar, matching the scalar-only ELL scope established for SpatialOperator/TemporalOperator&apos;s own ELL dispatch (HasImplicitOperatorELL): for VectorType != scalar this signature can never be reached, since <ref refid="classNeoN_1_1dsl_1_1Expression_1aa20c9e4d9a939277e5c52af3a6475c9d" kindref="member">Expression::assemble</ref> only ever calls it when AssemblyType == ValueType == scalar. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="58" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="58" bodyend="61"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -86,8 +106,9 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="32" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="33" bodyend="48"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="32" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="33" bodyend="62"/>
     <listofallmembers>
+      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a755d25d9790c4ebdf641e127da89b1db" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>applyELL</name></member>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1af0170570aa68740698ac111b485cc18c" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>applyScalarMatrix</name></member>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a145f21d894b17fd1287b3cde7f7f051c" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>operator()</name></member>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6ee1fd861a37f190bf64b4525f1ffbaa" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>~PostAssemblyBase</name></member>

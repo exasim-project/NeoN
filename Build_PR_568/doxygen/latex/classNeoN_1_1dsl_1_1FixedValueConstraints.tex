@@ -21,7 +21,9 @@ Inheritance diagram for NeoN\+::dsl\+::Fixed\+Value\+Constraints\texorpdfstring{
 \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints_aa0f467ac39675f57a4dfc63d05097f83}{Fixed\+Value\+Constraints}} (\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ mask, \mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Value\+Type $>$ values, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} n\+Cells)
 \item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Value\+Type, Index\+Type $>$ $>$ \&ls) const override
-\end{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints_aa08991f7928462ccda9f01e23cbf4b6b}{apply\+ELL}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&ls) const override
+\begin{DoxyCompactList}\small\item\em ELL same-\/type form. Always well-\/typed (unlike \doxylink{classNeoN_1_1dsl_1_1SetReference}{Set\+Reference}\textquotesingle{}s)\+: the class-\/level static\+\_\+assert above already restricts Value\+Type to scalar unconditionally. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Neo\+N\+::dsl\+::\+Post\+Assembly\+Base$<$ Vector\+Type, Index\+Type $>$}}}
 \begin{DoxyCompactItemize}
 \item 
@@ -46,7 +48,7 @@ Restricted to scalar Value\+Type\+: the segregated vector-\/solve path dispatche
 
 mask\mbox{[}cell\mbox{]} != 0 marks a constrained cell; value\mbox{[}cell\mbox{]} holds its target. Both views are sized n\+Cells and must outlive the functor. 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00175}{175}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -60,11 +62,30 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00163}{163}} of file
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00173}{173}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00185}{185}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
 \doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_aa08991f7928462ccda9f01e23cbf4b6b}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_aa08991f7928462ccda9f01e23cbf4b6b} 
+\index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!applyELL@{applyELL}}
+\index{applyELL@{applyELL}!NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{applyELL()}{applyELL()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+::\+Fixed\+Value\+Constraints}}$<$ Value\+Type, Index\+Type $>$\+::apply\+ELL (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+ELL same-\/type form. Always well-\/typed (unlike \doxylink{classNeoN_1_1dsl_1_1SetReference}{Set\+Reference}\textquotesingle{}s)\+: the class-\/level static\+\_\+assert above already restricts Value\+Type to scalar unconditionally. 
+
+
+
+Reimplemented from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a755d25d9790c4ebdf641e127da89b1db}{Neo\+N\+::dsl\+::\+Post\+Assembly\+Base$<$ Vector\+Type, Index\+Type $>$}}.
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00197}{197}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
 \Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d} 
 \index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!operator()@{operator()}}
 \index{operator()@{operator()}!NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}}
@@ -74,7 +95,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00189}{189}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
