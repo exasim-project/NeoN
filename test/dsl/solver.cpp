@@ -98,6 +98,104 @@ TEST_CASE("dsl::solve assembles and solves a complete PDE via ELL, matches CSR")
 
     REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
 }
+
+// SetReference's ELL route (PostAssemblyBase::applyELL), exercised through dsl::solve() itself.
+// A pure-diffusion equation under calculated (extrapolated, zero-gradient-like) boundaries has no
+// Dirichlet contribution anywhere, so the matrix is singular (the classic constant null space) --
+// SetReference::applyELL is what makes this solvable at all, not just a nicety.
+TEST_CASE("dsl::solve with SetReference solves a singular Laplacian via ELL, matches CSR")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phiCsr(exec, "phi", mesh, volumeBCs);
+    fvcc::VolumeField<scalar> phiEll(exec, "phi", mesh, volumeBCs);
+    // Rows sum to zero (pure Laplacian, no source, no Dirichlet contribution from calculated
+    // BCs), so once SetReference pins the diagonal, the exact solution is always the uniform
+    // field equal to refValue (1.0 below) -- starting from that same uniform value would give CG
+    // zero initial residual and 0 iterations, proving nothing. Start from 0 instead.
+    fill(phiCsr.internalVector(), 0.0);
+    fill(phiEll.internalVector(), 0.0);
+    phiCsr.correctBoundaryConditions();
+    phiEll.correctBoundaryConditions();
+
+    Dictionary lapSchemes;
+    lapSchemes.insert(
+        "laplacian(gamma,phi)",
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")})
+    );
+    Dictionary timeIntegrationDict;
+    timeIntegrationDict.insert("type", std::string("backwardEuler"));
+    Dictionary fvSchemes;
+    fvSchemes.insert("laplacianSchemes", lapSchemes);
+    fvSchemes.insert("timeIntegration", timeIntegrationDict);
+
+    Dictionary fvSolution {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 500}, {"relative_residual_norm", 1e-10}}}}}
+    };
+
+    dsl::SetReference<scalar, localIdx> setRef(0, 1.0);
+
+    dsl::Expression<scalar> exprCsr(dsl::imp::laplacian(gamma, phiCsr));
+    dsl::Expression<scalar> exprEll(dsl::imp::laplacian(gamma, phiEll));
+
+    using VolumeFieldScalar = fvcc::VolumeField<scalar>;
+    auto csrStats = dsl::solve<VolumeFieldScalar, localIdx, CSRMatrix>(
+        exprCsr, phiCsr, 0.0, 1.0, fvSchemes, fvSolution, {&setRef}
+    );
+    auto ellStats = dsl::solve<VolumeFieldScalar, localIdx, ELLMatrix>(
+        exprEll, phiEll, 0.0, 1.0, fvSchemes, fvSolution, {&setRef}
+    );
+
+    REQUIRE_FALSE(csrStats.entries.empty());
+    REQUIRE_FALSE(ellStats.entries.empty());
+    REQUIRE(csrStats.entries.front().numIter > 0);
+    REQUIRE(ellStats.entries.front().numIter > 0);
+    REQUIRE(csrStats.entries.front().finalResNorm <= csrStats.entries.front().initResNorm);
+    REQUIRE(ellStats.entries.front().finalResNorm <= ellStats.entries.front().initResNorm);
+
+    REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
+
+    // CSR and ELL could agree on the same wrong answer -- check against the known exact solution
+    // too (see the comment above: rows sum to zero and rhs is zero everywhere except the
+    // SetReference-pinned cell, so the unique solution is the uniform field equal to refValue).
+    Vector<scalar> expected(exec, mesh.nCells(), 1.0);
+    REQUIRE_THAT(phiCsr.internalVector(), Equals(expected, Approx {1e-6}));
+    REQUIRE_THAT(phiEll.internalVector(), Equals(expected, Approx {1e-6}));
+}
 #endif
+
+// No solver involved (pure assembly), so this runs regardless of NF_WITH_GINKGO.
+// FixedValueConstraints has no applyELL() override; PostAssemblyBase's default now throws instead
+// of silently doing nothing, so an unsupported functor passed to ELL assembly must fail loudly
+// rather than quietly not applying its constraint.
+TEST_CASE("Unimplemented ELL post-assembly functor throws rather than being silently dropped")
+{
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 2, 2);
+    auto nCells = mesh.nCells();
+
+    Vector<scalar> mask(exec, nCells, 0.0);
+    Vector<scalar> pinVals(exec, nCells, 0.0);
+    dsl::FixedValueConstraints<scalar> unimplemented(mask.view(), pinVals.view(), nCells);
+
+    dsl::Expression<scalar> expr(exec);
+    REQUIRE_THROWS(expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0, {&unimplemented}));
+}
 
 } // namespace NeoN
