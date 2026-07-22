@@ -11,7 +11,9 @@
 #include "NeoN/core/error.hpp"
 
 #include <array>
+#include <cstdlib>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -251,7 +253,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
             },
             "buildNonLocalCOO"
         );
-        // [fence-audit] removed redundant fence: buildNonLocalCOO -> Coo/dist_mtx::create, same stream.
+        // [fence-audit] removed redundant fence: buildNonLocalCOO -> Coo/dist_mtx::create, same
+        // stream.
     }
 
     nonLocalMtxCache =
@@ -537,6 +540,124 @@ std::array<gko::size_type, 3> solverStructureKey(const SystemType& sys)
 
 } // namespace
 
+// ---------------------------------------------------------------------------
+// PROTOTYPE (direction #1): fused slip/symmetry momentum operator.
+//
+// For the implicit slip/symmetry BC the three velocity components share ONE
+// scalar CSR matrix but carry a per-component diagonal correction
+// diagC[cell][c] (= gamma*|S|*Delta*|n_c|, nonzero only on slip/symmetry
+// boundary cells). The legacy path (solveImplicitTransformComponentDist)
+// solves the three columns segregated -> three distributed solves -> three
+// halo exchanges per Krylov iteration.
+//
+// This LinOp instead exposes
+//     (A_fused * X)[:,c] = A_shared * X[:,c] - diagC[:,c] .* X[:,c]
+// as a SINGLE operator over the 3-column distributed multivector, so one
+// multi-RHS solve does ONE fused halo exchange for all three components --
+// restoring the efficient path the non-slip case already uses (see the coupled
+// fallback at the bottom of solveDist).
+//
+// The diagonal shift is zero-copy: diagCmpt stores Vec3 per cell as contiguous
+// [cell][0..2], i.e. the same [cell*3+c] layout as the distributed Vector's
+// local block, so diagCmpt->data() is reinterpreted as the per-entry shift with
+// no allocation or copy. A_shared (the plain distributed matrix) is reused
+// as-is for the SpMV; only the local diagonal contribution is corrected, which
+// is a purely rank-local (comm-free) axpy.
+class FusedDiagShiftMatrix : public gko::EnableLinOp<FusedDiagShiftMatrix>
+{
+    friend class gko::EnablePolymorphicObject<FusedDiagShiftMatrix, gko::LinOp>;
+
+public:
+
+    using dist_vec = gko::experimental::distributed::Vector<scalar>;
+
+    static std::shared_ptr<FusedDiagShiftMatrix> create(
+        std::shared_ptr<const gko::Executor> gkoExec,
+        Executor nfExec,
+        std::shared_ptr<const gko::LinOp> baseMtx, // plain distributed A_shared (multi-RHS capable)
+        const scalar* shift,                       // [nLocalRows*3], layout [cell*3+c], zero-copy
+        localIdx nLocalRows
+    )
+    {
+        return std::shared_ptr<FusedDiagShiftMatrix>(new FusedDiagShiftMatrix(
+            std::move(gkoExec), nfExec, std::move(baseMtx), shift, nLocalRows
+        ));
+    }
+
+    // x[:,c] -= s * diagC[:,c] .* b[:,c] over the local block (diagonal -> no comm).
+    // The distributed Vector's local storage is dense-packed row-major [row*cols + col];
+    // the momentum solve always carries cols == 3, matching the diagC [cell*3+c] layout.
+    // NOTE: must be public -- nvcc forbids an extended __device__ lambda inside a
+    // private/protected member function.
+    void applyShift(const gko::LinOp* b, gko::LinOp* x, scalar s) const
+    {
+        const auto* bl = gko::as<const dist_vec>(b)->get_const_local_values();
+        auto* xl = gko::as<dist_vec>(x)->get_local_values();
+        const auto* lv = gko::as<dist_vec>(x)->get_local_vector();
+        const auto cols = static_cast<localIdx>(lv->get_size()[1]);
+        const auto rows = static_cast<localIdx>(lv->get_size()[0]);
+        const localIdx n = rows * cols;
+        const scalar* shift = shift_;
+        parallelFor(
+            nfExec_,
+            {0, n},
+            KOKKOS_LAMBDA(const localIdx i) {
+                const localIdx row = i / cols;
+                const localIdx col = i - row * cols;
+                xl[i] -= s * shift[row * 3 + col] * bl[i];
+            },
+            "fusedDiagShiftApply"
+        );
+    }
+
+protected:
+
+    // x = A_fused * b  (one fused halo exchange in baseMtx_->apply)
+    void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
+    {
+        baseMtx_->apply(b, x);
+        applyShift(b, x, scalar(1.0));
+    }
+
+    // x = beta*x + alpha * A_fused * b
+    void apply_impl(
+        const gko::LinOp* alpha, const gko::LinOp* b, const gko::LinOp* beta, gko::LinOp* x
+    ) const override
+    {
+        baseMtx_->apply(alpha, b, beta, x);
+        const scalar a = gkoExec_->copy_val_to_host(
+            gko::as<const gko::matrix::Dense<scalar>>(alpha)->get_const_values()
+        );
+        applyShift(b, x, a);
+    }
+
+private:
+
+    // never used (no clone()/copy in this path); present only to satisfy the
+    // EnablePolymorphicObject default-construction requirement.
+    explicit FusedDiagShiftMatrix(std::shared_ptr<const gko::Executor> gkoExec)
+        : gko::EnableLinOp<FusedDiagShiftMatrix>(gkoExec), gkoExec_(std::move(gkoExec))
+    {}
+
+    FusedDiagShiftMatrix(
+        std::shared_ptr<const gko::Executor> gkoExec,
+        Executor nfExec,
+        std::shared_ptr<const gko::LinOp> baseMtx,
+        const scalar* shift,
+        localIdx nLocalRows
+    )
+        : gko::EnableLinOp<FusedDiagShiftMatrix>(gkoExec, baseMtx->get_size()),
+          gkoExec_(std::move(gkoExec)), nfExec_(nfExec), baseMtx_(std::move(baseMtx)),
+          shift_(shift), nLocalRows_(nLocalRows)
+    {}
+
+    std::shared_ptr<const gko::Executor> gkoExec_;
+    Executor nfExec_ {SerialExecutor {}};
+    std::shared_ptr<const gko::LinOp> baseMtx_;
+    const scalar* shift_ = nullptr;
+    localIdx nLocalRows_ = 0;
+};
+
 template<unsigned int I>
 void solveComponentDist(
     auto& sys,
@@ -736,6 +857,56 @@ SolverStats GinkgoSolver::solveDist(
     // time.
     if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
     {
+        // PROTOTYPE (direction #1): fuse the three components into a single multi-RHS solve with a
+        // per-column diagonal shift (FusedDiagShiftMatrix above), so one solve does ONE fused halo
+        // exchange instead of three. Gated on NEON_FUSED_SLIP_SOLVE (default ON; set to 0 to fall
+        // back to the legacy segregated path) and on the L1 stop being active -- the L1 criterion
+        // overrides the solver's own stopping factory and measures the true fused residual (it is
+        // built with_matrix(fusedOp)), so the hand-built Bicgstab below needs no faithful criteria.
+        static const bool fusedSlip = []
+        {
+            const char* e = std::getenv("NEON_FUSED_SLIP_SOLVE");
+            return !(e != nullptr && std::string(e) == "0");
+        }();
+        if (fusedSlip && l1Control != nullptr)
+        {
+            gkoExec_->synchronize();
+
+            // Zero-copy per-entry diagonal shift: diagCmpt's Vec3 storage [cell][0..2] is
+            // contiguous, matching the distributed multivector's local [cell*3+c] layout. The sign
+            // matches the legacy path's atomic_sub(diagC): A_fused = A_shared - diag(diagC) per
+            // column.
+            const scalar* shift = reinterpret_cast<const scalar*>(sys.diagCmpt()->data());
+            const localIdx nrows = sys.rhs().size();
+            auto fusedOp = FusedDiagShiftMatrix::create(gkoExec_, exec_, gkoMtx, shift, nrows);
+
+            // Borrow the config's preconditioner (Schwarz{Jacobi} for the distributed diagonal
+            // preconditioner) by generating a reference solver on the PLAIN distributed matrix --
+            // Schwarz needs a real distributed::Matrix (get_local_matrix) that fusedOp is not. The
+            // preconditioner approximates A_shared, ignoring the boundary-only diagC shift; that
+            // only affects convergence rate, not correctness (the fused operator carries the exact
+            // system).
+            std::shared_ptr<const gko::LinOp> precond;
+            if (auto p = std::dynamic_pointer_cast<const gko::Preconditionable>(
+                    gko::share(factory_->generate(gkoMtx))
+                ))
+            {
+                precond = p->get_preconditioner();
+            }
+
+            // Single fused multi-RHS solve. solve_impl_dist handles the 3-column dist_vec,
+            // per-column L1 norms and stats; passing fusedOp as the residual operator keeps
+            // everything exact.
+            auto solver =
+                gko::share(gko::solver::Bicgstab<scalar>::build()
+                               .with_generated_preconditioner(precond)
+                               .with_criteria(gko::stop::Iteration::build().with_max_iters(10000u))
+                               .on(gkoExec_)
+                               ->generate(fusedOp));
+
+            return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, fusedOp, solver, l1Control);
+        }
+
         auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
         const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
         auto diagC = sys.diagCmpt()->view();

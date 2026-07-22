@@ -275,13 +275,7 @@ void BoundedDiv<FieldValueType, AssemblyType>::div(
 ) const
 {
     inner_->div(ls, faceFlux, phi, operatorScaling);
-    applyBoundedDiagInternal<FieldValueType, AssemblyType>(
-        ls, faceFlux, this->mesh_, operatorScaling
-    );
-    applyBoundedDiagBoundary<FieldValueType, AssemblyType>(
-        ls, faceFlux, this->mesh_, operatorScaling
-    );
-    applyBoundedDiagProcBoundary<FieldValueType, AssemblyType>(
+    applyBoundedDivDiagonal<FieldValueType, AssemblyType>(
         ls, faceFlux, this->mesh_, operatorScaling
     );
 }
@@ -312,8 +306,40 @@ BoundedDiv<FieldValueType, AssemblyType>::clone() const
     );
 }
 
+template<typename FieldValueType, typename AssemblyType>
+void applyBoundedDivDiagonal(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const UnstructuredMesh& mesh,
+    const dsl::Coeff scaling
+)
+{
+    applyBoundedDiagInternal<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+    applyBoundedDiagBoundary<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+    applyBoundedDiagProcBoundary<FieldValueType, AssemblyType>(ls, faceFlux, mesh, scaling);
+}
+
 template class BoundedDiv<scalar>;
 template class BoundedDiv<Vec3>;
 template class BoundedDiv<Vec3, scalar>;
+
+template void applyBoundedDivDiagonal<scalar, scalar>(
+    la::LinearSystem<scalar, scalar>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+template void applyBoundedDivDiagonal<Vec3, Vec3>(
+    la::LinearSystem<Vec3, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
+template void applyBoundedDivDiagonal<Vec3, scalar>(
+    la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const UnstructuredMesh&,
+    const dsl::Coeff
+);
 
 } // namespace NeoN::finiteVolume::cellCentred

@@ -93,6 +93,20 @@ private:
     std::unique_ptr<DivOperatorFactory<FieldValueType, AssemblyType>> inner_;
 };
 
+// Applies the bounded-convection Sp diagonal correction
+//   A[i,i] -= (Σ_f φ_f over cell i) * scaling[i]
+// over internal, physical-boundary and processor-boundary faces to an already-assembled linear
+// system. Factored out of BoundedDiv::div so the fused GaussGreenDivLaplacian can emit the SAME
+// bounding term when its div scheme carries a leading `bounded` (a single definition also keeps the
+// device kernel names unique across TUs).
+template<typename FieldValueType, typename AssemblyType = FieldValueType>
+void applyBoundedDivDiagonal(
+    la::LinearSystem<AssemblyType, FieldValueType>& ls,
+    const SurfaceField<scalar>& faceFlux,
+    const UnstructuredMesh& mesh,
+    const dsl::Coeff scaling
+);
+
 extern template class BoundedDiv<scalar>;
 extern template class BoundedDiv<Vec3>;
 extern template class BoundedDiv<Vec3, scalar>;
