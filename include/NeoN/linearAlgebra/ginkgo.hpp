@@ -46,7 +46,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
+    const std::string& localMatrixFormat = "Csr"
 );
 #endif // NF_WITH_MPI_SUPPORT
 
