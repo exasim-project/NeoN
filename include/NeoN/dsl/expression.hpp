@@ -113,14 +113,12 @@ public:
         }
     }
 
-private:
-
-    localIdx refCell_;
-    ValueType refValue_;
-
     // Shared by operator()/applyScalarMatrix/applyELL above, matching the same
     // format-generic-orchestrator pattern used for GaussGreenDiv/GaussGreenLaplacian/
-    // GaussGreenDivLaplacian's own CSR/ELL entry points.
+    // GaussGreenDivLaplacian's own CSR/ELL entry points. Public (not private): nvcc rejects an
+    // extended __host__ __device__ lambda (the parallelFor below) whose enclosing function has
+    // private or protected access within its class -- not an access-control choice, a compiler
+    // requirement. Not intended for use outside this class.
     template<typename AssemblyType, typename SystemMatrixType>
     void applyImpl(la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls) const
     {
@@ -149,6 +147,11 @@ private:
             "SetReference"
         );
     }
+
+private:
+
+    localIdx refCell_;
+    ValueType refValue_;
 };
 
 
@@ -211,11 +214,12 @@ public:
         applyImpl(ls);
     }
 
-private:
-
     // Shared by operator()/applyELL above. Unlike SetReference (single diagonal slot),
     // this walks every stored entry in a row, so it goes through SparsityView/EllSparsityView's
     // common rowSize()/linearIndex() rather than a single faceToMatrixView()-style address.
+    // Public (not private): nvcc rejects an extended __host__ __device__ lambda (the parallelFor
+    // below) whose enclosing function has private or protected access within its class -- not an
+    // access-control choice, a compiler requirement. Not intended for use outside this class.
     template<typename SystemMatrixType>
     void applyImpl(la::LinearSystem<ValueType, ValueType, SystemMatrixType>& ls) const
     {
@@ -287,6 +291,8 @@ private:
             );
         }
     }
+
+private:
 
     View<const scalar> mask_;
     View<const ValueType> values_;
