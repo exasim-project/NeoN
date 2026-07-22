@@ -76,7 +76,7 @@ var searchData=
   ['nprocboundarypatches_73',['nProcBoundaryPatches',['../classNeoN_1_1BoundaryMesh.html#a7fe54ce18d4a48815cc277e728fbe2f1',1,'NeoN::BoundaryMesh']]],
   ['nrows_74',['nRows',['../classNeoN_1_1la_1_1Matrix.html#a2f977c611cd68ce6c09cebbeb33fdd78',1,'NeoN::la::Matrix']]],
   ['ntotalfaces_75',['nTotalFaces',['../classNeoN_1_1UnstructuredMesh.html#ae862466f7a61edc2e01199c40bf74a3b',1,'NeoN::UnstructuredMesh']]],
-  ['numiter_76',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
+  ['numiter_76',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#a3f5a2b6addcb2a66e3db567419f450f6',1,'NeoN::la::SolverStatsEntry']]],
   ['numsegments_77',['numSegments',['../classNeoN_1_1SegmentedVector.html#ab1d369f26e798fbf72e160f876b41158',1,'NeoN::SegmentedVector']]],
   ['nx_78',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
   ['ny_79',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],

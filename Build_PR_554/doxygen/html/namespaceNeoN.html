@@ -81,6 +81,9 @@ $(function() {
   <div class="headertitle"><div class="title">NeoN Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Integer types used throughout <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>.  
+<a href="namespaceNeoN.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -155,7 +158,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1KokkosAllocator.html">KokkosAllocator</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1NeoNException.html">NeoNException</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom exception class for <a class="el" href="namespaceNeoN.html">NeoN</a>.  <a href="classNeoN_1_1NeoNException.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom exception class for <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>.  <a href="classNeoN_1_1NeoNException.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1NoWaitAccess.html">NoWaitAccess</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Passkey granting non-draining access to <a class="el" href="classNeoN_1_1BoundaryData.html" title="Represents the boundary fields for a computational domain.">BoundaryData</a>'s value storage.  <a href="structNeoN_1_1NoWaitAccess.html#details">More...</a><br /></td></tr>
@@ -198,7 +201,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1UmpirePoolAllocator.html">UmpirePoolAllocator</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an unstructured mesh in <a class="el" href="namespaceNeoN.html">NeoN</a>.  <a href="classNeoN_1_1UnstructuredMesh.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an unstructured mesh in <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>.  <a href="classNeoN_1_1UnstructuredMesh.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1Vec3.html">Vec3</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classA.html">A</a> class for the representation of a 3D <a class="el" href="classNeoN_1_1Vec3.html" title="A class for the representation of a 3D Vec3.">Vec3</a>.  <a href="classNeoN_1_1Vec3.html#details">More...</a><br /></td></tr>
@@ -550,7 +553,17 @@ Variables</h2></td></tr>
 <tr class="memitem:aa2d88a1b21583ca5c103bd0c416947d0" id="r_aa2d88a1b21583ca5c103bd0c416947d0"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html#aa2d88a1b21583ca5c103bd0c416947d0">ROOTVSMALL</a> = 1e-18</td></tr>
 <tr class="separator:aa2d88a1b21583ca5c103bd0c416947d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Integer types used throughout <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>. </p>
+<p>The following type aliases distinguish between different kinds of integer values:</p>
+<ul>
+<li><code>label</code> identifies mesh entities (e.g. cell number and face number)</li>
+<li><code>localIdx</code> indexes data that is local to a process or execution space, such as arrays, views, and local graph structures.</li>
+<li><code>globalIdx</code> identifies globally unique entities in distributed-memory computations.</li>
+<li><code>size_t</code> represents sizes and counts (e.g. container sizes, iteration counts, and memory sizes) and should not be used to identify mesh entities.</li>
+</ul>
+<p>The widths of <code>label</code>, <code>localIdx</code>, and <code>globalIdx</code> depend on the compile-time configuration (<code>NeoN_DP_LABEL</code> and <code>NeoN_US_IDX</code>). </p>
+</div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="ad21f9c627e11e11f4e33dd1717971ce6" name="ad21f9c627e11e11f4e33dd1717971ce6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad21f9c627e11e11f4e33dd1717971ce6">&#9670;&#160;</a></span>DefaultAllocator</h2>
 
@@ -620,7 +633,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00033">33</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00051">51</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>
@@ -652,7 +665,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00026">26</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00044">44</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>
@@ -684,7 +697,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00032">32</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00050">50</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>
@@ -716,7 +729,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00039">39</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00057">57</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>
@@ -764,7 +777,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00038">38</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00056">56</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>
@@ -2086,7 +2099,7 @@ template&lt;&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00043">43</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00061">61</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>
@@ -3718,7 +3731,7 @@ template&lt;&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00049">49</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="label_8hpp_source.html#l00067">67</a> of file <a class="el" href="label_8hpp_source.html">label.hpp</a>.</p>
 
 </div>
 </div>

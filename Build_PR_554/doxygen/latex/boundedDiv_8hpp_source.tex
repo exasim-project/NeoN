@@ -97,10 +97,24 @@
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00093}00093\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ AssemblyType>>\ inner\_;}
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00094}00094\ \};}
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00096}00096\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<scalar>}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00097}00097\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3>}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00098}00098\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3,\ scalar>}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00099}00099\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00100}00100\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00096}00096\ \textcolor{comment}{//\ Applies\ the\ bounded-\/convection\ Sp\ diagonal\ correction}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00097}00097\ \textcolor{comment}{//\ \ \ A[i,i]\ -\/=\ (Σ\_f\ φ\_f\ over\ cell\ i)\ *\ scaling[i]}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00098}00098\ \textcolor{comment}{//\ over\ internal,\ physical-\/boundary\ and\ processor-\/boundary\ faces\ to\ an\ already-\/assembled\ linear}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00099}00099\ \textcolor{comment}{//\ system.\ Factored\ out\ of\ BoundedDiv::div\ so\ the\ fused\ GaussGreenDivLaplacian\ can\ emit\ the\ SAME}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00100}00100\ \textcolor{comment}{//\ bounding\ term\ when\ its\ div\ scheme\ carries\ a\ leading\ \`{}bounded`\ (a\ single\ definition\ also\ keeps\ the}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00101}00101\ \textcolor{comment}{//\ device\ kernel\ names\ unique\ across\ TUs).}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00102}00102\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ FieldValueType,\ \textcolor{keyword}{typename}\ AssemblyType\ =\ FieldValueType>}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00103}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a874efa37685f89531c6d737b118fddf7}{00103}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a874efa37685f89531c6d737b118fddf7}{applyBoundedDivDiagonal}}(}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00104}00104\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<AssemblyType,\ FieldValueType>}}\&\ ls,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ scaling}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00108}00108\ );}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00110}00110\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<scalar>}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00111}00111\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00112}00112\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3,\ scalar>}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00114}00114\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
 
 \end{DoxyCode}
