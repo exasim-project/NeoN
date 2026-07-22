@@ -11,6 +11,8 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 
+#include <Kokkos_Profiling_ScopedRegion.hpp> // linearUpwind correction phase regions (no-op w/o a tool)
+
 namespace NeoN::finiteVolume::cellCentred
 {
 
@@ -163,6 +165,39 @@ void applyLinearUpwind(
     }
 }
 
+namespace
+{
+// Mesh-cached cell-limited gradient operator for the linearUpwindV deferred correction. The
+// operator is a function of the MESH only -- the GaussGreenGrad factory build, the GeometryScheme,
+// and the cell-to-face stencil (CellToFaceStencil::computeInternalStencil) -- yet constructing it
+// inside the per-assemble correction rebuilt all of that on every timestep, which the profiler
+// attributed as luw.gradOpCtor (~90% of the momentum-assembly cost). Cache it in the per-mesh
+// stencil DB, exactly like GeometryScheme::readOrCreate, so it is built once and reused for every
+// linearUpwindV correction on that mesh across all timesteps. The fixed scheme tokens (Gauss
+// linear, k=1) are the linearUpwindV reconstruction; the operator only reads mesh geometry, so one
+// instance serves any Vec3 field on the mesh.
+std::shared_ptr<CellLimitedGrad>
+linearUpwindLimitedGrad(const Executor& exec, const UnstructuredMesh& mesh)
+{
+    auto& db = mesh.stencilDB();
+    const std::string key = "linearUpwindV::CellLimitedGrad";
+    if (!db.contains(key))
+    {
+        db.insert(
+            key,
+            std::make_shared<CellLimitedGrad>(
+                exec,
+                mesh,
+                NeoN::TokenList(
+                    {std::string("Gauss"), std::string("linear"), static_cast<scalar>(1)}
+                )
+            )
+        );
+    }
+    return db.get<std::shared_ptr<CellLimitedGrad>>(key);
+}
+} // namespace
+
 template<typename ValueType>
 void computeLinearUpwind(
     const VolumeField<ValueType>& src,
@@ -197,20 +232,34 @@ void computeLinearUpwind(
         // unlimited Gauss-Green gradient.
         if (cellLimitedGradient)
         {
+            // linearUpwindV deferred correction -- the dominant momentum-assembly cost
+            // (divlap.deferredCorr). Phase regions to attribute it: allocating + zeroing the Tensor
+            // gradient field, CONSTRUCTING the CellLimitedGrad operator (done every call --
+            // rebuilds its geometry/stencil), computing the cell-limited gradient, and applying the
+            // face correction.
+            Kokkos::Profiling::pushRegion("luw.gradAlloc");
             auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(mesh);
             VolumeField<GradType> gradPhi(exec, "gradULimited", mesh, calcBC);
             fill(gradPhi.internalVector(), zero<GradType>());
-            CellLimitedGrad limitedGrad(
-                exec,
-                mesh,
-                NeoN::TokenList(
-                    {std::string("Gauss"), std::string("linear"), static_cast<scalar>(1)}
-                )
-            );
-            limitedGrad.gradTensor(src, gradPhi, dsl::Coeff {});
-            applyLinearUpwind<ValueType, GradType>(
-                src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
-            );
+            Kokkos::Profiling::popRegion();
+
+            // Reuse the mesh-cached operator instead of rebuilding it every assemble (the former
+            // luw.gradOpCtor hot spot). First call on a mesh builds + caches it; the rest are a DB
+            // lookup.
+            Kokkos::Profiling::pushRegion("luw.gradOpCtor");
+            auto limitedGrad = linearUpwindLimitedGrad(exec, mesh);
+            Kokkos::Profiling::popRegion();
+
+            {
+                Kokkos::Profiling::ScopedRegion region_("luw.gradCompute");
+                limitedGrad->gradTensor(src, gradPhi, dsl::Coeff {});
+            }
+            {
+                Kokkos::Profiling::ScopedRegion region_("luw.applyCorr");
+                applyLinearUpwind<ValueType, GradType>(
+                    src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
+                );
+            }
         }
         else
         {
@@ -253,11 +302,23 @@ void computeLinearUpwindCorrection(
     );
 }
 
-#define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                                                                                              \
-    template void computeLinearUpwindInterpolation<                                                                                                                              \
-        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&, const bool); \
-    template void computeLinearUpwindCorrection<                                                                                                                                 \
-        TYPENAME>(const VolumeField<TYPENAME>&, const SurfaceField<scalar>&, const SurfaceField<Vec3>&, const SurfaceField<Vec3>&, SurfaceField<TYPENAME>&, const bool)
+#define NF_DECLARE_COMPUTE_IMP_LINUPW_INT(TYPENAME)                                                \
+    template void computeLinearUpwindInterpolation<TYPENAME>(                                      \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const SurfaceField<Vec3>&,                                                                 \
+        const SurfaceField<Vec3>&,                                                                 \
+        SurfaceField<TYPENAME>&,                                                                   \
+        const bool                                                                                 \
+    );                                                                                             \
+    template void computeLinearUpwindCorrection<TYPENAME>(                                         \
+        const VolumeField<TYPENAME>&,                                                              \
+        const SurfaceField<scalar>&,                                                               \
+        const SurfaceField<Vec3>&,                                                                 \
+        const SurfaceField<Vec3>&,                                                                 \
+        SurfaceField<TYPENAME>&,                                                                   \
+        const bool                                                                                 \
+    )
 
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(scalar);
 NF_DECLARE_COMPUTE_IMP_LINUPW_INT(Vec3);
