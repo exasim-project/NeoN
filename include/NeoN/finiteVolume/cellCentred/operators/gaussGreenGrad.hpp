@@ -37,14 +37,19 @@ public:
      * @param operatorScaling [in] - scales operator by a coefficient
      * @param ls [in,out] - assemble gradient operator into the given linear system
      */
-    virtual void
-    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3>&) const override
-    {
-        NF_ERROR_EXIT("Not implemented");
-    };
+    virtual void grad(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, la::LinearSystem<Vec3>& ls
+    ) const override;
 
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
+    ) const override;
+
+    virtual void grad(
+        const VolumeField<scalar>& phi,
+        const dsl::Coeff operatorScaling,
+        Vector<Vec3>& gradPhi,
+        std::shared_ptr<la::MeshIteratorContext> iterCtx
     ) const override;
 
     /* @brief compute grad
@@ -57,6 +62,18 @@ public:
         const VolumeField<scalar>& phi,
         VolumeField<Vec3>& gradPhi,
         const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const;
+
+    /* @brief cell-based variant of grad: accumulates internal-face contributions per cell
+     *        (no atomics on internal faces) then scatters boundary faces.
+     *        Produces the same result as grad() but with a different loop structure.
+     *
+     * @param phi [in] - field for which the gradient is computed
+     * @param operatorScaling [in] - scales operator by a coefficient
+     * @param gradPhi [out] - resulting internal gradient vector
+     */
+    void gradCellBased(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
     ) const;
 
     /* @brief compute explicit gradient operator and return result
