@@ -200,9 +200,27 @@ public:
     void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
     ) const override
     {
+        applyImpl(ls);
+    }
+
+    /** @brief ELL same-type form. Always well-typed (unlike SetReference's): the class-level
+     *         static_assert above already restricts ValueType to scalar unconditionally. */
+    void applyELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, IndexType>>& ls
+    ) const override
+    {
+        applyImpl(ls);
+    }
+
+private:
+
+    // Shared by operator()/applyELL above. Unlike SetReference (single diagonal slot),
+    // this walks every stored entry in a row, so it goes through SparsityView/EllSparsityView's
+    // common rowSize()/linearIndex() rather than a single faceToMatrixView()-style address.
+    template<typename SystemMatrixType>
+    void applyImpl(la::LinearSystem<ValueType, ValueType, SystemMatrixType>& ls) const
+    {
         auto lsView = ls.view();
-        const auto rowOffs = ls.matrix().sparsity()->rowOffs().view();
-        const auto colIdxs = ls.matrix().sparsity()->colIdxs().view();
+        const auto sparsity = ls.matrix().sparsity()->view();
         auto matrixValues = lsView.matrix.values;
         auto rhs = lsView.rhs;
         auto mask = mask_;
@@ -217,9 +235,14 @@ public:
             NEON_LAMBDA(const localIdx row) {
                 const bool rowPinned = mask[row] != scalar(0);
                 ValueType diagVal = zero<ValueType>();
-                for (auto o = rowOffs[row]; o < rowOffs[row + 1]; ++o)
+                const auto rowSize = sparsity.rowSize(row);
+                for (localIdx slot = 0; slot < rowSize; ++slot)
                 {
-                    const auto col = colIdxs[o];
+                    const auto o = sparsity.linearIndex(row, slot);
+                    const auto col = sparsity.colIdxs[o];
+                    // ELL padding, trailing within the row -- CSR's rowSize() never includes
+                    // padding, so this never triggers for CSR.
+                    if (col == decltype(sparsity)::invalidIndex()) break;
                     if (col == row)
                     {
                         diagVal = matrixValues[o];
@@ -264,8 +287,6 @@ public:
             );
         }
     }
-
-private:
 
     View<const scalar> mask_;
     View<const ValueType> values_;

@@ -50,8 +50,8 @@ struct SparsityView
     KOKKOS_INLINE_FUNCTION
     IndexType findEntry(const IndexType i, const IndexType j) const
     {
-        const IndexType rowSize = rowOffs[i + 1] - rowOffs[i];
-        for (std::remove_const_t<IndexType> ic = 0; ic < rowSize; ++ic)
+        const IndexType nStored = rowSize(i);
+        for (std::remove_const_t<IndexType> ic = 0; ic < nStored; ++ic)
         {
             const IndexType localCol = rowOffs[i] + ic;
             if (colIdxs[localCol] == j)
@@ -61,6 +61,23 @@ struct SparsityView
             if (colIdxs[localCol] > j) break;
         }
         return invalidIndex();
+    }
+
+    /**
+     * @brief Number of stored slots in row i. CSR has no padding, so every slot is a real
+     * (logical, non-zero) entry -- unlike EllSparsityView::rowSize(), callers never need to
+     * check colIdxs against invalidIndex() when walking a CSR row this way.
+     */
+    KOKKOS_INLINE_FUNCTION
+    IndexType rowSize(const IndexType i) const { return rowOffs[i + 1] - rowOffs[i]; }
+
+    /**
+     * @brief Flat storage offset of slot `slot` of row `i`.
+     */
+    KOKKOS_INLINE_FUNCTION
+    IndexType linearIndex(const IndexType i, const IndexType slot) const
+    {
+        return rowOffs[i] + slot;
     }
 
     /**
@@ -124,6 +141,15 @@ struct EllSparsityView
     {
         return i + stride * slot;
     }
+
+    /**
+     * @brief Number of stored slots in row i, i.e. the padded row width -- the same for every
+     * row. Unlike SparsityView::rowSize() (CSR, no padding), callers walking a row via this must
+     * still check colIdxs[linearIndex(i,slot)] against invalidIndex() and stop there, since a
+     * row's real entry count can be less than this.
+     */
+    KOKKOS_INLINE_FUNCTION
+    IndexType rowSize(const IndexType) const { return numStoredElementsPerRow; }
 
     /**
      * @brief Retrieve the storage offset of the matrix element at position (i,j).

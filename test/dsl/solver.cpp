@@ -175,12 +175,286 @@ TEST_CASE("dsl::solve with SetReference solves a singular Laplacian via ELL, mat
     REQUIRE_THAT(phiCsr.internalVector(), Equals(expected, Approx {1e-6}));
     REQUIRE_THAT(phiEll.internalVector(), Equals(expected, Approx {1e-6}));
 }
+
+// dsl::solve() with two cells pinned to two different prescribed values -- the two pins already
+// make the system well-posed on their own (no need for the singular-Neumann setup above), so this
+// uses a randomized phi and just checks the constrained cells land exactly on their prescribed
+// values in the final solution, on both formats.
+TEST_CASE("dsl::solve with FixedValueConstraints solves via ELL, matches CSR")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phiCsr(exec, "phi", mesh, volumeBCs);
+    fvcc::VolumeField<scalar> phiEll(exec, "phi", mesh, volumeBCs);
+    fill(phiCsr.internalVector(), 0.0);
+    fill(phiEll.internalVector(), 0.0);
+    phiCsr.correctBoundaryConditions();
+    phiEll.correctBoundaryConditions();
+
+    Dictionary lapSchemes;
+    lapSchemes.insert(
+        "laplacian(gamma,phi)",
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")})
+    );
+    Dictionary timeIntegrationDict;
+    timeIntegrationDict.insert("type", std::string("backwardEuler"));
+    Dictionary fvSchemes;
+    fvSchemes.insert("laplacianSchemes", lapSchemes);
+    fvSchemes.insert("timeIntegration", timeIntegrationDict);
+
+    Dictionary fvSolution {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 500}, {"relative_residual_norm", 1e-10}}}}}
+    };
+
+    Vector<scalar> mask(exec, nCells, 0.0);
+    Vector<scalar> values(exec, nCells, 0.0);
+    auto maskV = mask.view();
+    auto valuesV = values.view();
+    parallelFor(
+        exec,
+        {0, 1},
+        NEON_LAMBDA(const localIdx) {
+            maskV[0] = 1.0;
+            valuesV[0] = 3.0;
+        }
+    );
+    parallelFor(
+        exec,
+        {nCells - 1, nCells},
+        NEON_LAMBDA(const localIdx i) {
+            maskV[i] = 1.0;
+            valuesV[i] = -2.0;
+        }
+    );
+
+    dsl::FixedValueConstraints<scalar> constraint(mask.view(), values.view(), nCells);
+
+    dsl::Expression<scalar> exprCsr(dsl::imp::laplacian(gamma, phiCsr));
+    dsl::Expression<scalar> exprEll(dsl::imp::laplacian(gamma, phiEll));
+
+    using VolumeFieldScalar = fvcc::VolumeField<scalar>;
+    auto csrStats = dsl::solve<VolumeFieldScalar, localIdx, CSRMatrix>(
+        exprCsr, phiCsr, 0.0, 1.0, fvSchemes, fvSolution, {&constraint}
+    );
+    auto ellStats = dsl::solve<VolumeFieldScalar, localIdx, ELLMatrix>(
+        exprEll, phiEll, 0.0, 1.0, fvSchemes, fvSolution, {&constraint}
+    );
+
+    REQUIRE_FALSE(csrStats.entries.empty());
+    REQUIRE_FALSE(ellStats.entries.empty());
+    REQUIRE(csrStats.entries.front().numIter > 0);
+    REQUIRE(ellStats.entries.front().numIter > 0);
+
+    REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
+
+    auto phiCsrHost = phiCsr.internalVector().copyToHost();
+    auto phiEllHost = phiEll.internalVector().copyToHost();
+    REQUIRE(phiCsrHost.view()[0] == Catch::Approx(3.0).margin(1e-6));
+    REQUIRE(phiCsrHost.view()[nCells - 1] == Catch::Approx(-2.0).margin(1e-6));
+    REQUIRE(phiEllHost.view()[0] == Catch::Approx(3.0).margin(1e-6));
+    REQUIRE(phiEllHost.view()[nCells - 1] == Catch::Approx(-2.0).margin(1e-6));
+}
 #endif
 
+// Direct CSR-vs-ELL comparison of FixedValueConstraints itself (no solver, so this runs
+// regardless of NF_WITH_GINKGO): two cells pinned to two different values on a real assembled
+// Laplacian, checking every logical matrix entry, rhs, and ELL padding, plus the two properties
+// FixedValueConstraints's own CSR-only unit test (test/dsl/constraints.cpp) already proves for
+// CSR -- pinned-row off-diagonals zeroed and pinned rhs == diagonal * prescribed value -- also
+// hold on ELL.
+TEST_CASE("FixedValueConstraints matches for CSR and ELL")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto gammaV = gamma.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            gammaV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+        }
+    );
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Input faceNormalGradientInput = TokenList({std::string("uncorrected")});
+    fvcc::FaceNormalGradient<scalar> faceNormalGradient(exec, mesh, faceNormalGradientInput);
+
+    auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix>(mesh);
+    auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+    fvcc::computeLaplacianIntImpl(csrLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+    fvcc::computeLaplacianIntImpl(ellLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+
+    Vector<scalar> mask(exec, nCells, 0.0);
+    Vector<scalar> values(exec, nCells, 0.0);
+    auto maskV = mask.view();
+    auto valuesV = values.view();
+    parallelFor(
+        exec,
+        {0, 1},
+        NEON_LAMBDA(const localIdx) {
+            maskV[0] = 1.0;
+            valuesV[0] = 3.0;
+        }
+    );
+    parallelFor(
+        exec,
+        {nCells - 1, nCells},
+        NEON_LAMBDA(const localIdx i) {
+            maskV[i] = 1.0;
+            valuesV[i] = -2.0;
+        }
+    );
+
+    // Snapshot pre-constraint entries at the two pinned columns, across every row, to explicitly
+    // verify column-cut absorption below -- not just that CSR and ELL happen to agree afterward,
+    // which the full logical-entry comparison further down already proves indirectly.
+    auto preHost = csrLs.copyToExecutor(SerialExecutor());
+    auto preSparsity = preHost.matrix().sparsity()->view();
+    auto preMatView = preHost.matrix().view();
+    auto preRhsV = preHost.rhs().view();
+    std::vector<scalar> preColEntry0(nCells, 0.0);
+    std::vector<scalar> preColEntryLast(nCells, 0.0);
+    std::vector<scalar> expectedRhs(nCells, 0.0);
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        expectedRhs[row] = preRhsV[row];
+        if (preSparsity.findEntry(row, 0) != decltype(preSparsity)::invalidIndex())
+        {
+            preColEntry0[row] = preMatView.entry(row, 0);
+        }
+        if (preSparsity.findEntry(row, nCells - 1) != decltype(preSparsity)::invalidIndex())
+        {
+            preColEntryLast[row] = preMatView.entry(row, nCells - 1);
+        }
+    }
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        if (row == 0 || row == nCells - 1) continue; // pinned rows verified separately below
+        expectedRhs[row] -= preColEntry0[row] * scalar(3.0);
+        expectedRhs[row] -= preColEntryLast[row] * scalar(-2.0);
+    }
+
+    dsl::FixedValueConstraints<scalar> constraint(mask.view(), values.view(), nCells);
+    constraint(csrLs);
+    constraint.applyELL(ellLs);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == zero<scalar>());
+        }
+    }
+
+    // Pinned rows: off-diagonals zero, rhs == diagonal * prescribed value (same properties
+    // constraints.cpp's hand-built CSR test proves, checked here on ELL too).
+    auto ellMatValuesV = ellLsHost.matrix().values().view();
+    auto ellRhsV = ellLsHost.rhs().view();
+    auto ellSparsity = ellLsHost.matrix().sparsity()->view();
+    for (localIdx pinnedRow : {localIdx {0}, nCells - 1})
+    {
+        const auto diagIdx = ellSparsity.findEntry(pinnedRow, pinnedRow);
+        const auto diagVal = ellMatValuesV[diagIdx];
+        const auto expectedVal = (pinnedRow == 0) ? scalar(3.0) : scalar(-2.0);
+        REQUIRE(ellRhsV[pinnedRow] == Catch::Approx(diagVal * expectedVal));
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (col == pinnedRow) continue;
+            const auto idx = ellSparsity.findEntry(pinnedRow, col);
+            if (idx != decltype(ellSparsity)::invalidIndex())
+            {
+                REQUIRE(ellMatValuesV[idx] == Catch::Approx(0.0).margin(1e-12));
+            }
+        }
+    }
+
+    // Column-cut: every other row's entries in the two pinned columns must be zeroed, and its
+    // rhs must have absorbed exactly that dropped coupling (computed from the pre-constraint
+    // snapshot above), on ELL specifically -- not just inferred from CSR/ELL agreeing.
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        if (row == 0 || row == nCells - 1) continue;
+        REQUIRE(ellRhsV[row] == Catch::Approx(expectedRhs[row]).margin(1e-8));
+        for (localIdx pinnedCol : {localIdx {0}, nCells - 1})
+        {
+            const auto idx = ellSparsity.findEntry(row, pinnedCol);
+            if (idx != decltype(ellSparsity)::invalidIndex())
+            {
+                REQUIRE(ellMatValuesV[idx] == Catch::Approx(0.0).margin(1e-12));
+            }
+        }
+    }
+}
+
+// A minimal PostAssemblyBase subclass that deliberately does not override applyELL(), standing in
+// for "some functor whose author hasn't added ELL support yet". FixedValueConstraints no longer
+// serves this purpose now that it implements applyELL() itself.
+struct UnimplementedEllFunctor : public dsl::PostAssemblyBase<scalar, localIdx>
+{
+    void operator()(NeoN::la::LinearSystem<scalar, scalar, NeoN::la::CSRMatrix<scalar, localIdx>>&)
+        const override
+    {}
+};
+
 // No solver involved (pure assembly), so this runs regardless of NF_WITH_GINKGO.
-// FixedValueConstraints has no applyELL() override; PostAssemblyBase's default now throws instead
-// of silently doing nothing, so an unsupported functor passed to ELL assembly must fail loudly
-// rather than quietly not applying its constraint.
+// PostAssemblyBase's default applyELL() throws instead of silently doing nothing, so a functor
+// that hasn't implemented ELL support must fail loudly rather than quietly not applying itself.
 TEST_CASE("Unimplemented ELL post-assembly functor throws rather than being silently dropped")
 {
     using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
@@ -188,11 +462,8 @@ TEST_CASE("Unimplemented ELL post-assembly functor throws rather than being sile
     auto [execName, exec] = GENERATE(allAvailableExecutor());
 
     auto mesh = create2DUniformMesh(exec, 2, 2);
-    auto nCells = mesh.nCells();
 
-    Vector<scalar> mask(exec, nCells, 0.0);
-    Vector<scalar> pinVals(exec, nCells, 0.0);
-    dsl::FixedValueConstraints<scalar> unimplemented(mask.view(), pinVals.view(), nCells);
+    UnimplementedEllFunctor unimplemented;
 
     dsl::Expression<scalar> expr(exec);
     REQUIRE_THROWS(expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0, {&unimplemented}));
