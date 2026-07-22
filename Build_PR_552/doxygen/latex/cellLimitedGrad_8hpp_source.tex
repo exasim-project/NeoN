@@ -40,79 +40,95 @@
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00036}00036\ \textcolor{comment}{\ *\ the\ unlimited\ base\ gradient),\ k\ =\ 1\ is\ the\ strongest,\ most\ stable\ limiting,}}
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00037}00037\ \textcolor{comment}{\ *\ and\ intermediate\ values\ widen\ the\ admissible\ bounds\ accordingly.}}
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00038}00038\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00039}00039\ \textcolor{comment}{\ *\ Both\ the\ scalar\ gradient\ (grad\ of\ a\ scalar\ field\ -\/>\ Vec3)\ and\ the\ tensor}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00040}00040\ \textcolor{comment}{\ *\ gradient\ (grad\ of\ a\ vector\ field\ -\/>\ Tensor,\ e.g.\ grad(U))\ are\ limited.\ For\ the}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00041}00041\ \textcolor{comment}{\ *\ tensor\ case\ the\ limiter\ is\ per-\/component\ (three\ independent\ minmod\ limiters,}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00042}00042\ \textcolor{comment}{\ *\ one\ per\ field\ component),\ matching\ the\ standard\ cell-\/limited\ vector\ gradient.}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00043}00043\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00044}00044\ \textcolor{comment}{\ *\ GPU-\/first:\ the\ tensor\ limiter\ uses\ a\ cell-\/based\ gather\ over\ each\ cell's}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00045}00045\ \textcolor{comment}{\ *\ internal-\/face\ stencil\ (atomic-\/free,\ coalesced\ writes)\ for\ the\ bulk\ of\ the\ work;}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00046}00046\ \textcolor{comment}{\ *\ only\ the\ small\ physical/processor\ boundary-\/face\ set\ uses\ an\ atomic\ scatter.}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00047}00047\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00048}00048\ \textcolor{comment}{\ *\ v1\ assembles\ the\ explicit\ gradient\ on\ cell-\/centred\ fields;\ the\ implicit}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00049}00049\ \textcolor{comment}{\ *\ (LinearSystem)\ path\ is\ not\ provided.\ CPU-\/serial\ is\ validated\ in\ v1.}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00050}00050\ \textcolor{comment}{\ */}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00051}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad}{00051}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad}{CellLimitedGrad}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory}{GradOperatorFactory}}<Vec3>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<CellLimitedGrad>}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00052}00052\ \{}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory}{GradOperatorFactory<Vec3>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<CellLimitedGrad>}};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00054}00054\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ Limiter\ strength\ used\ when\ no\ coefficient\ is\ supplied\ (strongest\ limiting).}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ DEFAULT\_COEFF\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1);}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00058}00058\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00059}00059\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00060}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a252db2d94cb239051d759d3df6a000be}{00060}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a252db2d94cb239051d759d3df6a000be}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}cellLimited"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00061}00061\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00062}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_ab6d5469dd27e4f0f3b49c93a1cb3ff4e}{00062}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_ab6d5469dd27e4f0f3b49c93a1cb3ff4e}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Cell\ limited\ gradient\ (minmod\ slope\ limiter)"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00039}00039\ \textcolor{comment}{\ *\ Scheme\ specification\ (Dictionary):\ the\ base\ scheme\ cannot\ be\ looked\ up\ under}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00040}00040\ \textcolor{comment}{\ *\ the\ same\ "{}GradOperator"{}\ key\ used\ to\ select\ "{}cellLimited"{}\ (that\ would\ recurse),}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00041}00041\ \textcolor{comment}{\ *\ so\ it\ is\ nested\ under\ a\ separate\ "{}baseGradOperator"{}\ sub-\/dictionary:}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00042}00042\ \textcolor{comment}{\ *\ \ \ \{\ GradOperator:\ cellLimited,\ baseGradOperator:\ \{\ GradOperator:\ Gauss\ \},\ cellLimitedCoeff:\ 1\ \}}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00043}00043\ \textcolor{comment}{\ *\ "{}cellLimitedCoeff"{}\ defaults\ to\ DEFAULT\_COEFF\ (1)\ when\ omitted.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00044}00044\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00045}00045\ \textcolor{comment}{\ *\ Both\ the\ scalar\ gradient\ (grad\ of\ a\ scalar\ field\ -\/>\ Vec3)\ and\ the\ tensor}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00046}00046\ \textcolor{comment}{\ *\ gradient\ (grad\ of\ a\ vector\ field\ -\/>\ Tensor,\ e.g.\ grad(U))\ are\ limited.\ For\ the}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00047}00047\ \textcolor{comment}{\ *\ tensor\ case\ the\ limiter\ is\ per-\/component\ (three\ independent\ minmod\ limiters,}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00048}00048\ \textcolor{comment}{\ *\ one\ per\ field\ component),\ matching\ the\ standard\ cell-\/limited\ vector\ gradient.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00049}00049\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00050}00050\ \textcolor{comment}{\ *\ GPU-\/first:\ the\ tensor\ limiter\ uses\ a\ cell-\/based\ gather\ over\ each\ cell's}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00051}00051\ \textcolor{comment}{\ *\ internal-\/face\ stencil\ (atomic-\/free,\ coalesced\ writes)\ for\ the\ bulk\ of\ the\ work;}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00052}00052\ \textcolor{comment}{\ *\ only\ the\ small\ physical/processor\ boundary-\/face\ set\ uses\ an\ atomic\ scatter.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00053}00053\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00054}00054\ \textcolor{comment}{\ *\ v1\ assembles\ the\ explicit\ gradient\ on\ cell-\/centred\ fields;\ the\ implicit}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00055}00055\ \textcolor{comment}{\ *\ (LinearSystem)\ path\ is\ not\ provided.\ CPU-\/serial\ is\ validated\ in\ v1.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00056}00056\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad}{00057}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad}{CellLimitedGrad}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory}{GradOperatorFactory}}<Vec3>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<CellLimitedGrad>}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GradOperatorFactory}{GradOperatorFactory<Vec3>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<CellLimitedGrad>}};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{comment}{//\ Limiter\ strength\ used\ when\ no\ coefficient\ is\ supplied\ (strongest\ limiting).}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ DEFAULT\_COEFF\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1);}
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a7bb10d2864a91eefa97cd91a9f3f07e6}{00064}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a7bb10d2864a91eefa97cd91a9f3f07e6}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00064}00064\ \textcolor{keyword}{public}:}
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a9acd490c149ea25bf6b331e6f05ea125}{00066}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a9acd490c149ea25bf6b331e6f05ea125}{CellLimitedGrad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a252db2d94cb239051d759d3df6a000be}{00066}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a252db2d94cb239051d759d3df6a000be}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}cellLimited"{}};\ \}}
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{comment}{/*\ @brief\ implicit\ gradient\ assembly\ —\ not\ supported\ for\ the\ cell-\/limited\ scheme\ */}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a27d7a4ae46b4cb897f4c4f18434c3c2d}{00070}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a27d7a4ae46b4cb897f4c4f18434c3c2d}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<Vec3>}}\&)\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00071}00071\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00073}00073\ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{comment}{/*\ @brief\ explicit\ limited\ gradient\ assembled\ into\ the\ supplied\ vector\ */}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a73843026ee03407aa42be2eb8ceae7ec}{00076}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a73843026ee03407aa42be2eb8ceae7ec}{grad}}(}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ gradPhi}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00078}00078\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00079}00079\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{comment}{/*\ @brief\ explicit\ limited\ gradient\ returned\ as\ a\ new\ VolumeField\ */}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a707598205fb2c761b8ddae94c420e2cd}{00081}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a707598205fb2c761b8ddae94c420e2cd}{grad}}(}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ \{\}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00083}00083\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{override};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{comment}{/*\ @brief\ slope-\/limited\ tensor\ gradient\ of\ a\ vector\ field\ (e.g.\ grad(U))\ */}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00086}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a5c7881c667afd7b0ff2c60da6a988559}{00086}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a5c7881c667afd7b0ff2c60da6a988559}{gradTensor}}(}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ u,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Tensor>}}\&\ gradU,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00088}00088\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00089}00089\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a86d9cf4e97f09ca27676ae2063a5e673}{00090}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<GradOperatorFactory<Vec3>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a86d9cf4e97f09ca27676ae2063a5e673}{clone}}()\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00091}00091\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00094}00094\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00068}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_ab6d5469dd27e4f0f3b49c93a1cb3ff4e}{00068}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_ab6d5469dd27e4f0f3b49c93a1cb3ff4e}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Cell\ limited\ gradient\ (minmod\ slope\ limiter)"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a7bb10d2864a91eefa97cd91a9f3f07e6}{00070}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a7bb10d2864a91eefa97cd91a9f3f07e6}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00072}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a9acd490c149ea25bf6b331e6f05ea125}{00072}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a9acd490c149ea25bf6b331e6f05ea125}{CellLimitedGrad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{comment}{/*\ @brief\ implicit\ gradient\ assembly\ —\ not\ supported\ for\ the\ cell-\/limited\ scheme\ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00076}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a27d7a4ae46b4cb897f4c4f18434c3c2d}{00076}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a27d7a4ae46b4cb897f4c4f18434c3c2d}{grad}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}},\ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<Vec3>}}\&)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00077}00077\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00079}00079\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{comment}{/*\ @brief\ explicit\ limited\ gradient\ assembled\ into\ the\ supplied\ vector\ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00082}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a73843026ee03407aa42be2eb8ceae7ec}{00082}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a73843026ee03407aa42be2eb8ceae7ec}{grad}}(}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling,\ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector<Vec3>}}\&\ gradPhi}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00084}00084\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{comment}{/*\ @brief\ explicit\ limited\ gradient\ returned\ as\ a\ new\ VolumeField\ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00087}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a707598205fb2c761b8ddae94c420e2cd}{00087}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a707598205fb2c761b8ddae94c420e2cd}{grad}}(}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ phi,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling\ =\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ \{\}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00089}00089\ \ \ \ \ )\ \textcolor{keyword}{const}\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{comment}{/*\ @brief\ slope-\/limited\ tensor\ gradient\ of\ a\ vector\ field\ (e.g.\ grad(U))\ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00092}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a5c7881c667afd7b0ff2c60da6a988559}{00092}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a5c7881c667afd7b0ff2c60da6a988559}{gradTensor}}(}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\&\ u,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Tensor>}}\&\ gradU,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00094}00094\ \ \ \ \ )\ \textcolor{keyword}{const\ override};}
 \DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00096}00096\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00097}00097\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00098}00098\ \ \ \ \ \textcolor{comment}{/*\ @brief\ read\ the\ limiter\ coefficient\ k\ from\ the\ scheme\ Input\ */}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ readCoeff(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00100}00100\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{comment}{//\ Declared\ before\ coeff\_\ so\ the\ base\ scheme\ consumes\ its\ tokens\ from\ the}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ shared\ Input\ cursor\ before\ readCoeff\ reads\ the\ trailing\ coefficient.}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00103}00103\ \ \ \ \ std::unique\_ptr<GradOperatorFactory<Vec3>>\ baseGradScheme\_;}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00104}00104\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ coeff\_;}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ Supplies\ the\ cached\ internal-\/face\ cell-\/to-\/face\ displacement\ vectors;\ the\ raw}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{comment}{//\ mesh\ centres\ are\ freed\ once\ the\ geometry\ scheme\ is\ built.}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00107}00107\ \ \ \ \ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{comment}{//\ Per-\/cell\ internal-\/face\ stencil\ for\ the\ atomic-\/free\ cell-\/based\ tensor\ gather.}}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00109}00109\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector<localIdx,\ localIdx>}}\ cellInternalFaces\_;}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00110}00110\ \};}
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00111}00111\ }
-\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00112}00112\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00096}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a86d9cf4e97f09ca27676ae2063a5e673}{00096}}\ \ \ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<GradOperatorFactory<Vec3>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad_a86d9cf4e97f09ca27676ae2063a5e673}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00097}00097\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}Not\ implemented"{}});}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00100}00100\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00102}00102\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{comment}{/*\ @brief\ read\ the\ limiter\ coefficient\ k\ from\ the\ scheme\ Input\ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ readCoeff(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{comment}{/*\ @brief\ construct\ the\ wrapped\ base\ gradient\ scheme\ from\ the\ scheme\ Input}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00108}00108\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00109}00109\ \textcolor{comment}{\ \ \ \ \ *\ For\ TokenList\ input\ the\ base\ scheme\ reads\ its\ own\ tokens\ directly\ off\ the}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00110}00110\ \textcolor{comment}{\ \ \ \ \ *\ shared\ cursor.\ For\ Dictionary\ input\ the\ same\ key\ ("{}GradOperator"{})\ that}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00111}00111\ \textcolor{comment}{\ \ \ \ \ *\ selected\ "{}cellLimited"{}\ cannot\ be\ reused,\ so\ the\ base\ scheme\ is\ looked\ up}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00112}00112\ \textcolor{comment}{\ \ \ \ \ *\ under\ a\ separate\ "{}baseGradOperator"{}\ sub-\/dictionary\ instead.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00113}00113\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<GradOperatorFactory<Vec3>>}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00115}00115\ \ \ \ \ readBaseGradScheme(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{comment}{//\ Declared\ before\ coeff\_\ so\ the\ base\ scheme\ consumes\ its\ tokens\ from\ the}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ shared\ Input\ cursor\ before\ readCoeff\ reads\ the\ trailing\ coefficient.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00119}00119\ \ \ \ \ std::unique\_ptr<GradOperatorFactory<Vec3>>\ baseGradScheme\_;}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00120}00120\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ coeff\_;}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{comment}{//\ Supplies\ the\ cached\ internal-\/face\ cell-\/to-\/face\ displacement\ vectors;\ the\ raw}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{comment}{//\ mesh\ centres\ are\ freed\ once\ the\ geometry\ scheme\ is\ built.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00123}00123\ \ \ \ \ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00124}00124\ \ \ \ \ \textcolor{comment}{//\ Per-\/cell\ internal-\/face\ stencil\ for\ the\ atomic-\/free\ cell-\/based\ tensor\ gather.}}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00125}00125\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1SegmentedVector}{SegmentedVector<localIdx,\ localIdx>}}\ cellInternalFaces\_;}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00126}00126\ \};}
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{cellLimitedGrad_8hpp_source_l00128}00128\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
 
 \end{DoxyCode}
