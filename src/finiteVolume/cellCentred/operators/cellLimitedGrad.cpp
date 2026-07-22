@@ -228,7 +228,7 @@ void computeCellLimitedGrad(
 CellLimitedGrad::CellLimitedGrad(
     const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs
 )
-    : Base(exec, mesh), baseGradScheme_(GradOperatorFactory<Vec3>::create(exec, mesh, inputs)),
+    : Base(exec, mesh), baseGradScheme_(readBaseGradScheme(exec, mesh, inputs)),
       coeff_(readCoeff(inputs)), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
       cellInternalFaces_(CellToFaceStencil(mesh).computeInternalStencil())
 {
@@ -239,6 +239,31 @@ CellLimitedGrad::CellLimitedGrad(
             + std::to_string(coeff_)
         );
     }
+}
+
+std::unique_ptr<GradOperatorFactory<Vec3>> CellLimitedGrad::readBaseGradScheme(
+    const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs
+)
+{
+    if (std::holds_alternative<Dictionary>(inputs))
+    {
+        const auto& dict = std::get<Dictionary>(inputs);
+        if (!dict.isDict("baseGradOperator"))
+        {
+            NF_THROW(std::string(
+                "cellLimited gradient (Dictionary input) requires a 'baseGradOperator' "
+                "sub-dictionary specifying the wrapped base scheme, e.g. "
+                "{ GradOperator: cellLimited, baseGradOperator: { GradOperator: Gauss }, "
+                "cellLimitedCoeff: 1 }"
+            ));
+        }
+        Input baseInputs = dict.subDict("baseGradOperator");
+        return GradOperatorFactory<Vec3>::create(exec, mesh, baseInputs);
+    }
+
+    // TokenList form: the factory has already consumed "cellLimited" off the shared
+    // cursor, so the base scheme reads its own tokens (e.g. "Gauss") directly.
+    return GradOperatorFactory<Vec3>::create(exec, mesh, inputs);
 }
 
 scalar CellLimitedGrad::readCoeff(const Input& inputs)

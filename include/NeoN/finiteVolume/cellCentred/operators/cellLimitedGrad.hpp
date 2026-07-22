@@ -36,6 +36,12 @@ namespace NeoN::finiteVolume::cellCentred
  * the unlimited base gradient), k = 1 is the strongest, most stable limiting,
  * and intermediate values widen the admissible bounds accordingly.
  *
+ * Scheme specification (Dictionary): the base scheme cannot be looked up under
+ * the same "GradOperator" key used to select "cellLimited" (that would recurse),
+ * so it is nested under a separate "baseGradOperator" sub-dictionary:
+ *   { GradOperator: cellLimited, baseGradOperator: { GradOperator: Gauss }, cellLimitedCoeff: 1 }
+ * "cellLimitedCoeff" defaults to DEFAULT_COEFF (1) when omitted.
+ *
  * Both the scalar gradient (grad of a scalar field -> Vec3) and the tensor
  * gradient (grad of a vector field -> Tensor, e.g. grad(U)) are limited. For the
  * tensor case the limiter is per-component (three independent minmod limiters,
@@ -97,6 +103,16 @@ private:
 
     /* @brief read the limiter coefficient k from the scheme Input */
     static scalar readCoeff(const Input& inputs);
+
+    /* @brief construct the wrapped base gradient scheme from the scheme Input
+     *
+     * For TokenList input the base scheme reads its own tokens directly off the
+     * shared cursor. For Dictionary input the same key ("GradOperator") that
+     * selected "cellLimited" cannot be reused, so the base scheme is looked up
+     * under a separate "baseGradOperator" sub-dictionary instead.
+     */
+    static std::unique_ptr<GradOperatorFactory<Vec3>>
+    readBaseGradScheme(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs);
 
     // Declared before coeff_ so the base scheme consumes its tokens from the
     // shared Input cursor before readCoeff reads the trailing coefficient.

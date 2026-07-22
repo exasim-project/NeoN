@@ -164,6 +164,44 @@ TEST_CASE("cellLimited gradient")
             REQUIRE(hLimV[i][0] == Catch::Approx(hBaseV[i][0]).margin(1e-12));
         }
     }
+
+    SECTION(
+        "Dictionary input with baseGradOperator builds and matches TokenList result on " + execName
+    )
+    {
+        // Dictionary form cannot reuse the "GradOperator" key to select the base
+        // scheme (that key already selects "cellLimited" and would recurse), so
+        // the base scheme is nested under "baseGradOperator".
+        auto phi = linearField();
+
+        Dictionary baseDict {{std::string("GradOperator"), std::string("Gauss")}};
+        Dictionary dict {
+            {std::string("GradOperator"), std::string("cellLimited")},
+            {std::string("baseGradOperator"), baseDict},
+            {std::string("cellLimitedCoeff"), scalar(1)}
+        };
+        Input input = dict;
+        auto op = fvcc::GradOperatorFactory<Vec3>::create(exec, mesh, input);
+        auto gLim = op->grad(phi, dsl::Coeff {});
+        auto gTokens = makeLimited(phi, scalar(1));
+
+        auto hLim = gLim.internalVector().copyToHost();
+        auto hTokens = gTokens.internalVector().copyToHost();
+        auto hLimV = hLim.view();
+        auto hTokensV = hTokens.view();
+
+        for (localIdx i = 1; i < nCells - 1; ++i)
+        {
+            REQUIRE(hLimV[i][0] == Catch::Approx(hTokensV[i][0]).margin(1e-12));
+        }
+    }
+
+    SECTION("Dictionary input without baseGradOperator throws instead of recursing on " + execName)
+    {
+        Dictionary dict {{std::string("GradOperator"), std::string("cellLimited")}};
+        Input input = dict;
+        REQUIRE_THROWS(fvcc::GradOperatorFactory<Vec3>::create(exec, mesh, input));
+    }
 }
 
 // Tensor path: grad(U) where U is a vector field. On the 1D mesh the only non-zero
