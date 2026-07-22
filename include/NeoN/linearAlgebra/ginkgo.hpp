@@ -12,6 +12,7 @@
 #include <string>
 
 #include <ginkgo/ginkgo.hpp>
+#include <ginkgo/core/solver/workspace.hpp> // gko::solver::Workspace (Strategy 3 reuse)
 #include <ginkgo/extensions/kokkos.hpp>
 #include <ginkgo/extensions/config/json_config.hpp>
 
@@ -464,6 +465,13 @@ private:
     mutable std::array<std::shared_ptr<gko::LinOp>, 3> cachedSolver_;
     mutable std::array<std::array<gko::size_type, 3>, 3> cachedSolverStructure_ {};
     mutable std::array<localIdx, 3> cachedSolveCount_ {};
+    // Strategy 3 (workspace reuse for NON-updatable solvers, e.g. PBiCGStab/Cg + Jacobi/ILU): the
+    // solver is regenerated every solve, but its Krylov scratch Workspace is extracted after each
+    // solve and fed into the next generate(matrix, ws), amortizing the scratch allocation. Per
+    // cache slot, null until seeded; stays empty for updatable (1b-cached) configs whose workspace
+    // lives inside cachedSolver_. mutable because solve() is const. (Restored 2026-07-22: lost in a
+    // rebase, was the occDrivAre 0.79->2.6 s/step regression.)
+    mutable std::array<std::unique_ptr<gko::solver::Workspace>, 3> cachedWorkspace_;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
