@@ -78,10 +78,11 @@ Vector<ValueType>::Vector(Vector<ValueType>&& rhs) noexcept
 template<typename ValueType>
 Vector<ValueType>::~Vector()
 {
-    // Fence before freeing: any in-flight GPU kernel (fill, setContainer, parallelFor) that
-    // captured a View of data_ must complete before the memory is returned to the allocator.
-    // Without this, async kernels dispatched on *this race with the destructor.
-    fence(exec_);
+    // [fence-audit] No fence before free: all kernels touching data_ and the allocator free run on
+    // the same Kokkos execution-space stream, so the free is already ordered after any in-flight
+    // kernel on *this. A device-wide fence here serialized every temporary-Vector destruction (the
+    // assembly spawns hundreds/step), which was the occDrivAer 0.79->2.6 s/step regression (lost the
+    // champion's fence removal in a rebase). Same rationale as dsl/solver.hpp's fence audit.
     // Guard against nullptr: move-constructed-from Vectors have data_==nullptr.
     // kokkos_free(nullptr) is implementation-defined (may throw); skip the call.
     if (data_ != nullptr)
@@ -140,8 +141,7 @@ Vector<ValueType>& Vector<ValueType>::operator=(Vector<ValueType>&& rhs) noexcep
     if (this != &rhs)
     {
         NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
-        // Fence before freeing data_: same reasoning as the destructor.
-        fence(exec_);
+        // [fence-audit] no fence before free: stream-ordered, same reasoning as the destructor.
         if (data_ != nullptr)
         {
             std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
@@ -219,7 +219,7 @@ void Vector<ValueType>::resize(const localIdx size)
     void* ptr = nullptr;
     if (!empty())
     {
-        fence(exec_); // same as destructor: pending kernels on data_ must finish before realloc
+        // [fence-audit] no fence before realloc: stream-ordered, same reasoning as the destructor.
         std::visit(
             [this, &ptr, size](const auto& exec)
             { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
