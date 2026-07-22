@@ -107,6 +107,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a037a657a647c74ac3c18ec6a1a90df66" id="r_a037a657a647c74ac3c18ec6a1a90df66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1dsl_1_1SetReference.html#a037a657a647c74ac3c18ec6a1a90df66">applyELL</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;ls) const override</td></tr>
 <tr class="memdesc:a037a657a647c74ac3c18ec6a1a90df66"><td class="mdescLeft">&#160;</td><td class="mdescRight">ELL same-type form. Only meaningful for ValueType == scalar (the scope <a class="el" href="classNeoN_1_1dsl_1_1Expression.html#aa20c9e4d9a939277e5c52af3a6475c9d" title="construct a linear system and force assembly including explicit source terms">Expression::assemble</a> ever calls this in); a no-op otherwise, discarded at compile time so this still compiles for e.g. SetReference&lt;Vec3&gt;.  <br /></td></tr>
 <tr class="separator:a037a657a647c74ac3c18ec6a1a90df66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3cd7c4fae3fdba894dbec7a66a5b94a" id="r_ae3cd7c4fae3fdba894dbec7a66a5b94a"><td class="memTemplParams" colspan="2">template&lt;typename AssemblyType , typename SystemMatrixType &gt; </td></tr>
+<tr class="memitem:ae3cd7c4fae3fdba894dbec7a66a5b94a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classNeoN_1_1dsl_1_1SetReference.html#ae3cd7c4fae3fdba894dbec7a66a5b94a">applyImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;ls) const</td></tr>
+<tr class="separator:ae3cd7c4fae3fdba894dbec7a66a5b94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html">NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;</a></td></tr>
 <tr class="memitem:a6ee1fd861a37f190bf64b4525f1ffbaa inherit pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase" id="r_a6ee1fd861a37f190bf64b4525f1ffbaa"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#a6ee1fd861a37f190bf64b4525f1ffbaa">~PostAssemblyBase</a> ()=default</td></tr>
 <tr class="separator:a6ee1fd861a37f190bf64b4525f1ffbaa inherit pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +199,38 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 <p>Reimplemented from <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#a755d25d9790c4ebdf641e127da89b1db">NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00107">107</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ae3cd7c4fae3fdba894dbec7a66a5b94a" name="ae3cd7c4fae3fdba894dbec7a66a5b94a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3cd7c4fae3fdba894dbec7a66a5b94a">&#9670;&#160;</a></span>applyImpl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
+<div class="memtemplate">
+template&lt;typename AssemblyType , typename SystemMatrixType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classNeoN_1_1dsl_1_1SetReference.html">NeoN::dsl::SetReference</a>&lt; ValueType, IndexType &gt;::applyImpl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; AssemblyType, ValueType, SystemMatrixType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00123">123</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>

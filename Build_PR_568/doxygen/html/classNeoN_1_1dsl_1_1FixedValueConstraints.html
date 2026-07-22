@@ -104,6 +104,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa08991f7928462ccda9f01e23cbf4b6b" id="r_aa08991f7928462ccda9f01e23cbf4b6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1dsl_1_1FixedValueConstraints.html#aa08991f7928462ccda9f01e23cbf4b6b">applyELL</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;ls) const override</td></tr>
 <tr class="memdesc:aa08991f7928462ccda9f01e23cbf4b6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">ELL same-type form. Always well-typed (unlike <a class="el" href="classNeoN_1_1dsl_1_1SetReference.html" title="Post-assembly functor that pins one cell&#39;s value to a reference, removing the constant null space tha...">SetReference</a>'s): the class-level static_assert above already restricts ValueType to scalar unconditionally.  <br /></td></tr>
 <tr class="separator:aa08991f7928462ccda9f01e23cbf4b6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa0544b86f8d7b8648f6ecb3bc48b92d" id="r_afa0544b86f8d7b8648f6ecb3bc48b92d"><td class="memTemplParams" colspan="2">template&lt;typename SystemMatrixType &gt; </td></tr>
+<tr class="memitem:afa0544b86f8d7b8648f6ecb3bc48b92d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classNeoN_1_1dsl_1_1FixedValueConstraints.html#afa0544b86f8d7b8648f6ecb3bc48b92d">applyImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType, ValueType, SystemMatrixType &gt; &amp;ls) const</td></tr>
+<tr class="separator:afa0544b86f8d7b8648f6ecb3bc48b92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html">NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;</a></td></tr>
 <tr class="memitem:a6ee1fd861a37f190bf64b4525f1ffbaa inherit pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase" id="r_a6ee1fd861a37f190bf64b4525f1ffbaa"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#a6ee1fd861a37f190bf64b4525f1ffbaa">~PostAssemblyBase</a> ()=default</td></tr>
 <tr class="separator:a6ee1fd861a37f190bf64b4525f1ffbaa inherit pub_methods_structNeoN_1_1dsl_1_1PostAssemblyBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -121,7 +124,7 @@ class NeoN::dsl::FixedValueConstraints&lt; ValueType, IndexType &gt;</div><p>Pos
 <p>Restricted to scalar ValueType: the segregated vector-solve path dispatches through <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#af0170570aa68740698ac111b485cc18c" title="Apply to the segregated scalar-matrix / VectorType-rhs form (a scalar coefficient matrix with a Vecto...">applyScalarMatrix()</a>, which this class does not implement.</p>
 <p>mask[cell] != 0 marks a constrained cell; value[cell] holds its target. Both views are sized nCells and must outlive the functor. </p>
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00175">175</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00178">178</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa0f467ac39675f57a4dfc63d05097f83" name="aa0f467ac39675f57a4dfc63d05097f83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0f467ac39675f57a4dfc63d05097f83">&#9670;&#160;</a></span>FixedValueConstraints()</h2>
@@ -165,7 +168,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00185">185</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00188">188</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -200,7 +203,39 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 
 <p>Reimplemented from <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#a755d25d9790c4ebdf641e127da89b1db">NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00197">197</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00200">200</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+
+</div>
+</div>
+<a id="afa0544b86f8d7b8648f6ecb3bc48b92d" name="afa0544b86f8d7b8648f6ecb3bc48b92d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa0544b86f8d7b8648f6ecb3bc48b92d">&#9670;&#160;</a></span>applyImpl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
+<div class="memtemplate">
+template&lt;typename SystemMatrixType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classNeoN_1_1dsl_1_1FixedValueConstraints.html">NeoN::dsl::FixedValueConstraints</a>&lt; ValueType, IndexType &gt;::applyImpl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType, ValueType, SystemMatrixType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ls</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00213">213</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
@@ -230,7 +265,7 @@ template&lt;typename ValueType , typename IndexType  = localIdx&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00189">189</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00192">192</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>
