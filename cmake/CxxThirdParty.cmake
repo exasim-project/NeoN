@@ -238,7 +238,12 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  # When building a wheel (SKBUILD), always fetch Ginkgo from source via CPM so it is bundled with
+  # the package instead of linking against a system install. In particular, a previously installed
+  # wheel puts a Ginkgo config into the venv's site-packages, which find_package would then pick up.
+  if(NOT DEFINED SKBUILD)
+    find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  endif()
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()

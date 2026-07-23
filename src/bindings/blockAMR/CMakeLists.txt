@@ -28,6 +28,15 @@ nanobind_add_module(
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
+# The real ginkgo_solve.cpp only compiles against Ginkgo; without it a stub raising RuntimeError is
+# built instead, so module.cpp stays unconditional.
+if(NeoN_WITH_GINKGO)
+  target_sources(_blockamr PRIVATE ginkgo_solve.cpp)
+  target_link_libraries(_blockamr PRIVATE Ginkgo::ginkgo)
+else()
+  target_sources(_blockamr PRIVATE ginkgo_solve_stub.cpp)
+endif()
+
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   setup_target_for_cuda_compilation(_blockamr)
@@ -49,19 +58,24 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     stencil_kernels.cpp
     tile_layout.cpp
     PROPERTIES LANGUAGE CUDA)
+  if(NeoN_WITH_GINKGO)
+    set_source_files_properties(ginkgo_solve.cpp PROPERTIES LANGUAGE CUDA)
+  else()
+    set_source_files_properties(ginkgo_solve_stub.cpp PROPERTIES LANGUAGE CUDA)
+  endif()
 endif()
 
-# Set RPATH so _blockamr.so can find libamrex at ../lib/ (blockamr is a
-# top-level package: site-packages/blockamr/_blockamr.so -> ../lib).
+# Set RPATH so _blockamr.so can find libamrex at ../lib/ (blockamr is a top-level package:
+# site-packages/blockamr/_blockamr.so -> ../lib).
 set_target_properties(_blockamr PROPERTIES INSTALL_RPATH "$ORIGIN/../lib" BUILD_WITH_INSTALL_RPATH
                                                                           FALSE)
 
 # Installation
 if(DEFINED SKBUILD)
   install(TARGETS _blockamr LIBRARY DESTINATION blockamr COMPONENT python)
-  # CMAKE_CURRENT_SOURCE_DIR (this dir = src/bindings/blockAMR) not
-  # CMAKE_SOURCE_DIR: when NeoN is add_subdirectory()'d into neofoam,
-  # CMAKE_SOURCE_DIR is the neofoam root and the blockamr .py sources are missed.
+  # CMAKE_CURRENT_SOURCE_DIR (this dir = src/bindings/blockAMR) not CMAKE_SOURCE_DIR: when NeoN is
+  # add_subdirectory()'d into neofoam, CMAKE_SOURCE_DIR is the neofoam root and the blockamr .py
+  # sources are missed.
   install(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../blockamr/
     DESTINATION blockamr
@@ -70,6 +84,19 @@ if(DEFINED SKBUILD)
     PATTERN "*.py")
   # Install AMReX shared lib alongside the wheel
   install(TARGETS amrex_3d LIBRARY DESTINATION lib COMPONENT python)
+  # Install Ginkgo shared libs alongside the wheel (under SKBUILD Ginkgo is always the CPM build —
+  # see cmake/CxxThirdParty.cmake)
+  if(NeoN_WITH_GINKGO)
+    install(
+      TARGETS ginkgo
+              ginkgo_device
+              ginkgo_omp
+              ginkgo_cuda
+              ginkgo_hip
+              ginkgo_dpcpp
+              ginkgo_reference
+      LIBRARY DESTINATION lib COMPONENT python)
+  endif()
 else()
   install(TARGETS _blockamr LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/blockamr)
 endif()
