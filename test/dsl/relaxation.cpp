@@ -694,3 +694,151 @@ TEMPLATE_TEST_CASE(
         assertUnchanged(-0.5); // alpha < 0 guard
     }
 }
+
+// ---------------------------------------------------------------------------
+// CSR-vs-ELL parity for applyMatrixRelaxation, on a real assembled Laplacian -- unlike the
+// TEMPLATE_TEST_CASE above (whose job is proving CSR's own relaxation math on a hand-built
+// synthetic matrix), this one's job is proving the format-generic rewrite of the row-sum kernel
+// (SparsityView/EllSparsityView rowSize()/linearIndex(), replacing the old raw rowOffs()/colIdxs()
+// walk that never compiled for ELL) produces identical results on both formats. Nonuniform gamma
+// so off-diagonal magnitudes differ per cell, keeping the dominance-clamp path meaningful.
+// ---------------------------------------------------------------------------
+TEST_CASE("applyMatrixRelaxation matches for CSR and ELL")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = NeoN::create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto gammaV = gamma.internalVector().view();
+    NeoN::parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            gammaV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+        }
+    );
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    NeoN::Input faceNormalGradientInput = NeoN::TokenList({std::string("uncorrected")});
+    fvcc::FaceNormalGradient<scalar> faceNormalGradient(exec, mesh, faceNormalGradientInput);
+
+    auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix>(mesh);
+    auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+    fvcc::computeLaplacianIntImpl(csrLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+    fvcc::computeLaplacianIntImpl(ellLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+
+    // Nonzero rhs so a regressed guard touching rhs is caught.
+    fill(csrLs.rhs(), 1.0);
+    fill(ellLs.rhs(), 1.0);
+
+    dsl::applyMatrixRelaxation(csrLs, phi, 0.5);
+    dsl::applyMatrixRelaxation(ellLs, phi, 0.5);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+
+    // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+    // different physical layouts (CSR compact vs ELL padded column-major).
+    auto csrLsHost = csrLs.copyToExecutor(NeoN::SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(NeoN::SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(
+        Vector<scalar>(NeoN::SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10})
+    );
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == NeoN::zero<scalar>());
+        }
+    }
+}
+
+// alpha == 1 / alpha <= 0 bitwise no-op, on ELL specifically. The existing TEMPLATE_TEST_CASE
+// above proves this for CSR; the guard is the very first thing the function does, before any
+// format-specific addressing, but the row-walk rewrite touched every line after it, so this
+// confirms directly on ELL rather than by inference from CSR.
+TEST_CASE("applyMatrixRelaxation alpha==1/alpha<=0 is a bitwise no-op on ELL")
+{
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = NeoN::create2DUniformMesh(exec, 4, 4);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    NeoN::Input faceNormalGradientInput = NeoN::TokenList({std::string("uncorrected")});
+    fvcc::FaceNormalGradient<scalar> faceNormalGradient(exec, mesh, faceNormalGradientInput);
+
+    auto buildEllSystem = [&]()
+    {
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+        fvcc::computeLaplacianIntImpl(ls, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+        fill(ls.rhs(), 1.0);
+        return ls;
+    };
+
+    for (scalar alpha : {1.0, 0.0, -0.5})
+    {
+        auto ls = buildEllSystem();
+        auto lsRef = buildEllSystem();
+        dsl::applyMatrixRelaxation(ls, phi, alpha);
+        INFO("alpha=" << alpha);
+
+        auto values = ls.matrix().values().copyToHost();
+        auto refValues = lsRef.matrix().values().copyToHost();
+        auto rhs = ls.rhs().copyToHost();
+        auto refRhs = lsRef.rhs().copyToHost();
+
+        for (localIdx i = 0; i < values.size(); ++i)
+        {
+            REQUIRE(values.view()[i] == refValues.view()[i]);
+        }
+        for (localIdx i = 0; i < rhs.size(); ++i)
+        {
+            REQUIRE(rhs.view()[i] == refRhs.view()[i]);
+        }
+    }
+}

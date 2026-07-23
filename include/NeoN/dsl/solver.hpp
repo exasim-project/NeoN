@@ -181,7 +181,7 @@ KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
 
 /* @brief Apply equation (matrix) under-relaxation to an assembled LinearSystem.
  *
- * NeoN bakes boundary contributions permanently into the CSR diagonal at assembly time,
+ * NeoN bakes boundary contributions permanently into the system-matrix diagonal at assembly time,
  * so the augmented diagonal `D_aug = matrix.values[diagIdx(cell)]` already contains the
  * boundary diagonal. This kernel relaxes the augmented diagonal DIRECTLY. Per cell:
  *
@@ -235,8 +235,8 @@ void applyMatrixRelaxation(
     auto lsView = ls.view();
     auto& matrix = lsView.matrix;
     auto& rhs = lsView.rhs;
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-    const auto [rowOffs, colIdxs] = views(ls.matrix().rowOffs(), ls.matrix().colIdxs());
+    const auto ma = ls.matrix().faceToMatrixView();
+    const auto sparsity = ls.matrix().sparsity()->view();
     const auto field = solution.internalVector().view();
 
     const localIdx nCells = field.size();
@@ -258,11 +258,19 @@ void applyMatrixRelaxation(
         ls.exec(),
         {0, nCells},
         NEON_LAMBDA(const localIdx celli) {
-            // Off-diagonal magnitude sum — cell-based CSR row gather, NO atomics (perf lever).
+            // Off-diagonal magnitude sum — cell-based row gather via the common
+            // SparsityView/EllSparsityView rowSize()/linearIndex() interface, NO atomics (perf
+            // lever).
             auto sumOff = zero<MatrixValueType>();
-            for (localIdx idx = rowOffs[celli]; idx < rowOffs[celli + 1]; ++idx)
+            const auto rowSize = sparsity.rowSize(celli);
+            for (localIdx slot = 0; slot < rowSize; ++slot)
             {
-                if (colIdxs[idx] != celli)
+                const auto idx = sparsity.linearIndex(celli, slot);
+                const auto col = sparsity.colIdxs[idx];
+                // ELL padding, trailing within the row -- CSR's rowSize() never includes
+                // padding, so this never triggers for CSR.
+                if (col == decltype(sparsity)::invalidIndex()) break;
+                if (col != celli)
                 {
                     sumOff = sumOff + componentMag(matrix.values[idx]);
                 }
