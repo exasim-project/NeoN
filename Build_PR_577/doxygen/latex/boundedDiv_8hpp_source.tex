@@ -19,102 +19,93 @@
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00016}00016\ \{}
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00017}00017\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00018}00018\ \textcolor{comment}{//\ Mirrors\ OpenFOAM's\ Foam::fv::boundedConvectionScheme}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00019}00019\ \textcolor{comment}{//\ (src/finiteVolume/finiteVolume/convectionSchemes/boundedConvectionScheme/}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00020}00020\ \textcolor{comment}{//\ \ boundedConvectionScheme.C):}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00021}00021\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00022}00022\ \textcolor{comment}{//\ \ \ fvmDiv(F,\ ψ)\ =\ base.fvmDiv(F,\ ψ)\ -\/\ fvm::Sp(fvc::surfaceIntegrate(F),\ ψ)}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00023}00023\ \textcolor{comment}{//\ \ \ fvcDiv(F,\ ψ)\ =\ base.fvcDiv(F,\ ψ)\ -\/\ fvc::surfaceIntegrate(F)\ *\ ψ}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00024}00024\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00025}00025\ \textcolor{comment}{//\ The\ correction\ vanishes\ when\ ∇·F\ =\ 0\ (continuity\ satisfied),\ and\ otherwise}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00026}00026\ \textcolor{comment}{//\ adds\ an\ Sp-\/style\ implicit\ source\ proportional\ to\ the\ local\ continuity\ error.}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00027}00027\ \textcolor{comment}{//\ On\ positive\ scalars\ (k,\ ω,\ …)\ this\ enforces\ an\ M-\/matrix-\/like\ sign\ pattern\ so}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00028}00028\ \textcolor{comment}{//\ numerical\ noise\ in\ the\ face\ flux\ can't\ drive\ ψ\ negative\ cell-\/to-\/cell.}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00029}00029\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00030}00030\ \textcolor{comment}{//\ Reads\ as\ \`{}bounded\ <innerScheme...>`,\ e.g.\ \`{}bounded\ Gauss\ upwind`.\ The}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00031}00031\ \textcolor{comment}{//\ constructor\ consumes\ nothing\ extra\ of\ its\ own\ —\ the\ leading\ "{}bounded"{}\ was}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00032}00032\ \textcolor{comment}{//\ already\ consumed\ by\ DivOperatorFactory::create()\ —\ and\ forwards\ the}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00033}00033\ \textcolor{comment}{//\ remaining\ tokens\ to\ a\ recursive\ create()\ to\ build\ the\ inner\ scheme.}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00034}00034\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ FieldValueType,\ \textcolor{keyword}{typename}\ AssemblyType\ =\ FieldValueType>}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00035}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{00035}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv}}\ :}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{DivOperatorFactory}}<FieldValueType,\ AssemblyType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ BoundedDiv<FieldValueType,\ AssemblyType>>}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00038}00038\ \{}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{DivOperatorFactory<FieldValueType,\ AssemblyType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<FieldValueType,\ AssemblyType>}}>;}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00041}00041\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00042}00042\ \textcolor{keyword}{public}:}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00043}00043\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ada093b178c833d41c079aa02eba57d6b}{00044}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ada093b178c833d41c079aa02eba57d6b}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}bounded"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00045}00045\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00046}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8137719eda4f0922655fd159826a5cbe}{00046}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8137719eda4f0922655fd159826a5cbe}{doc}}()}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00047}00047\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Bounded\ convection\ scheme\ wrapper.\ Reads\ \`{}bounded\ <inner>`\ "{}}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}and\ adds\ -\/fvm::Sp(surfaceIntegrate(faceFlux),\ psi)\ to\ the\ inner\ "{}}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}scheme's\ discretisation\ so\ continuity-\/error\ noise\ can't\ push\ "{}}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}ψ\ negative\ cell-\/to-\/cell."{}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00052}00052\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00053}00053\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00054}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a9db768e3c967b79dccb13f2c62ff617c}{00054}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a9db768e3c967b79dccb13f2c62ff617c}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a7b1848ff0f9d74820b5f331a4f5e8927}{00056}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a7b1848ff0f9d74820b5f331a4f5e8927}{BoundedDiv}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00057}00057\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keywordtype}{void}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a2c8612a5ca155aaa49094889fcd0b287}{00059}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a2c8612a5ca155aaa49094889fcd0b287}{div}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ divPhi,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00063}00063\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{keywordtype}{void}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ac4fb4e21b8f66f35e2483d79dd230f94}{00065}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ac4fb4e21b8f66f35e2483d79dd230f94}{div}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<FieldValueType>}}\&\ divPhi,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00069}00069\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keywordtype}{void}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a6732fb7083c4136332a7ec4d47438d74}{00071}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a6732fb7083c4136332a7ec4d47438d74}{div}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<AssemblyType,\ FieldValueType>}}\&\ ls,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00018}00018\ \textcolor{comment}{/*\ @brief\ Bounded\ convection\ div\ scheme\ wrapper.}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00019}00019\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ Mirrors\ OpenFOAM's\ Foam::fv::boundedConvectionScheme:\ wraps\ an\ inner\ div}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ scheme\ and\ adds\ an\ Sp-\/style\ correction\ proportional\ to\ the\ local}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ continuity\ error,\ -\/fvc::surfaceIntegrate(faceFlux)\ *\ psi\ (explicit)\ or}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ -\/fvm::Sp(fvc::surfaceIntegrate(faceFlux),\ psi)\ (implicit).}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00024}00024\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00025}00025\ \textcolor{comment}{\ *\ Reads\ as\ \`{}bounded\ <innerScheme...>`,\ e.g.\ \`{}bounded\ Gauss\ upwind`.}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00026}00026\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00027}00027\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ FieldValueType,\ \textcolor{keyword}{typename}\ AssemblyType\ =\ FieldValueType>}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00028}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{00028}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv}}\ :}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{DivOperatorFactory}}<FieldValueType,\ AssemblyType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00030}00030\ \ \ \ \ \ \ \ \ BoundedDiv<FieldValueType,\ AssemblyType>>}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00031}00031\ \{}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{DivOperatorFactory<FieldValueType,\ AssemblyType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00033}00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<FieldValueType,\ AssemblyType>}}>;}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00035}00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ada093b178c833d41c079aa02eba57d6b}{00037}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ada093b178c833d41c079aa02eba57d6b}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}bounded"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00039}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8137719eda4f0922655fd159826a5cbe}{00039}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8137719eda4f0922655fd159826a5cbe}{doc}}()}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00040}00040\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Bounded\ convection\ scheme\ wrapper.\ Reads\ \`{}bounded\ <inner>`\ "{}}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}and\ adds\ -\/fvm::Sp(surfaceIntegrate(faceFlux),\ psi)\ to\ the\ inner\ "{}}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}scheme's\ discretisation\ so\ continuity-\/error\ noise\ can't\ push\ "{}}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}ψ\ negative\ cell-\/to-\/cell."{}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00045}00045\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a9db768e3c967b79dccb13f2c62ff617c}{00047}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a9db768e3c967b79dccb13f2c62ff617c}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00049}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a7b1848ff0f9d74820b5f331a4f5e8927}{00049}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a7b1848ff0f9d74820b5f331a4f5e8927}{BoundedDiv}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ inputs);}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a2c8612a5ca155aaa49094889fcd0b287}{00052}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a2c8612a5ca155aaa49094889fcd0b287}{div}}(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ divPhi,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00058}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ac4fb4e21b8f66f35e2483d79dd230f94}{00058}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_ac4fb4e21b8f66f35e2483d79dd230f94}{div}}(\mbox{\hyperlink{classNeoN_1_1Vector}{Vector<FieldValueType>}}\&\ divPhi,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a6732fb7083c4136332a7ec4d47438d74}{00064}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a6732fb7083c4136332a7ec4d47438d74}{div}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<AssemblyType,\ FieldValueType>}}\&\ ls,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00069}00069\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00070}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8c29013cf3d32e58db8bb6aeac0c3a87}{00070}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8c29013cf3d32e58db8bb6aeac0c3a87}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00074}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a3ac4434f3247dec9931202ab20235b62}{00074}}\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ AssemblyType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a3ac4434f3247dec9931202ab20235b62}{clone}}()\ \textcolor{keyword}{const\ override};}
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00075}00075\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00076}00076\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00077}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8c29013cf3d32e58db8bb6aeac0c3a87}{00077}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a8c29013cf3d32e58db8bb6aeac0c3a87}{div}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<FieldValueType>}}\&\ phi,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ operatorScaling)\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00080}00080\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00081}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a3ac4434f3247dec9931202ab20235b62}{00081}}\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ AssemblyType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv_a3ac4434f3247dec9931202ab20235b62}{clone}}()\ \textcolor{keyword}{const\ override};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00082}00082\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00083}00083\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00076}00076\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{comment}{/*\ @brief\ Wraps\ an\ already-\/built\ inner\ div\ scheme,\ used\ by\ clone().\ */}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00079}00079\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv}}(}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ std::unique\_ptr<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{DivOperatorFactory<FieldValueType,\ AssemblyType>}}>\ inner}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00083}00083\ \ \ \ \ );}
 \DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00084}00084\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{comment}{//\ Used\ by\ clone():\ wraps\ an\ already-\/built\ inner\ factory\ without}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ re-\/parsing\ tokens.\ Public-\/via-\/friend\ so\ clone()\ can\ reach\ it.}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00087}00087\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv}}(}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ std::unique\_ptr<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory}{DivOperatorFactory<FieldValueType,\ AssemblyType>}}>\ inner}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00091}00091\ \ \ \ \ );}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00092}00092\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00093}00093\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ AssemblyType>>\ inner\_;}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00094}00094\ \};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00095}00095\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00096}00096\ \textcolor{comment}{//\ Applies\ the\ bounded-\/convection\ Sp\ diagonal\ correction}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00097}00097\ \textcolor{comment}{//\ \ \ A[i,i]\ -\/=\ (Σ\_f\ φ\_f\ over\ cell\ i)\ *\ scaling[i]}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00098}00098\ \textcolor{comment}{//\ over\ internal,\ physical-\/boundary\ and\ processor-\/boundary\ faces\ to\ an\ already-\/assembled\ linear}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00099}00099\ \textcolor{comment}{//\ system.\ Factored\ out\ of\ BoundedDiv::div\ so\ the\ fused\ GaussGreenDivLaplacian\ can\ emit\ the\ SAME}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00100}00100\ \textcolor{comment}{//\ bounding\ term\ when\ its\ div\ scheme\ carries\ a\ leading\ \`{}bounded`\ (a\ single\ definition\ also\ keeps\ the}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00101}00101\ \textcolor{comment}{//\ device\ kernel\ names\ unique\ across\ TUs).}}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00102}00102\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ FieldValueType,\ \textcolor{keyword}{typename}\ AssemblyType\ =\ FieldValueType>}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00103}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a874efa37685f89531c6d737b118fddf7}{00103}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a874efa37685f89531c6d737b118fddf7}{applyBoundedDivDiagonal}}(}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00104}00104\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<AssemblyType,\ FieldValueType>}}\&\ ls,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ scaling}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00108}00108\ );}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00109}00109\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00110}00110\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<scalar>}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00111}00111\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3>}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00112}00112\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3,\ scalar>}};}
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00113}00113\ }
-\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00114}00114\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00085}00085\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ AssemblyType>>\ inner\_;}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00086}00086\ \};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00088}00088\ \textcolor{comment}{/*\ @brief\ Applies\ the\ bounded-\/convection\ Sp\ diagonal\ correction,}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00089}00089\ \textcolor{comment}{\ *\ A[i,i]\ -\/=\ (sum\ of\ faceFlux\ over\ cell\ i)\ *\ scaling[i],\ over\ internal,}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00090}00090\ \textcolor{comment}{\ *\ physical-\/boundary\ and\ processor-\/boundary\ faces\ to\ an\ already-\/assembled}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00091}00091\ \textcolor{comment}{\ *\ linear\ system.}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00092}00092\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00093}00093\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ FieldValueType,\ \textcolor{keyword}{typename}\ AssemblyType\ =\ FieldValueType>}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00094}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a874efa37685f89531c6d737b118fddf7}{00094}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a874efa37685f89531c6d737b118fddf7}{applyBoundedDivDiagonal}}(}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00095}00095\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<AssemblyType,\ FieldValueType>}}\&\ ls,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00096}00096\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ faceFlux,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00098}00098\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl::Coeff}}\ scaling}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00099}00099\ );}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00101}00101\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<scalar>}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00102}00102\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00103}00103\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv}{BoundedDiv<Vec3,\ scalar>}};}
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{boundedDiv_8hpp_source_l00105}00105\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
 
 \end{DoxyCode}
