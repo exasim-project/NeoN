@@ -48,6 +48,8 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
     std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
+    std::shared_ptr<const gko::LinOp>& distMtxCache,
+    const scalar*& localValPtrCache,
     const std::string& localMatrixFormat = "Csr"
 );
 #endif // NF_WITH_MPI_SUPPORT
@@ -477,6 +479,14 @@ private:
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
         cachedImap_;
     mutable std::shared_ptr<gko::matrix::Coo<scalar, localIdx>> cachedNonLocalMtx_;
+    // Cached distributed-matrix wrapper for the scalar solve path, with the local CSR value-buffer
+    // pointer it was built for. On a steady-state solve (topology fixed, NeoN re-assembles the local
+    // block in place so its value pointer is unchanged), createGkoMtxDist returns cachedDistMtx_
+    // directly instead of re-wrapping the local CSR -- which would otherwise re-run Ginkgo's Csr
+    // load-balancing (srow) analysis every solve (~72 ms on the 16M-row local block). Restored
+    // 2026-07-23 (dropped in a rebase). null / nullptr until the first solve.
+    mutable std::shared_ptr<const gko::LinOp> cachedDistMtx_;
+    mutable const scalar* cachedLocalValPtr_ = nullptr;
 #endif
 };
 
