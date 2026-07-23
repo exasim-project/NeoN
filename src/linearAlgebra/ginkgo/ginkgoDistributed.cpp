@@ -1036,11 +1036,13 @@ SolverStats GinkgoSolver::solveDist(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
-    // Fused/segregated Vec3 path: NOT wired to the distributed-matrix cache -- the implicit
-    // transform-BC branch below mutates the rank-local diagonal in place per solve, so a cached
-    // wrapper would carry stale/accumulated shifts. Pass non-persistent locals (rebuild per solve).
-    std::shared_ptr<const gko::LinOp> uncachedDistMtx;
-    const scalar* uncachedLocalValPtr = nullptr;
+    // Wired to the distributed-matrix cache. Safe for all three sub-paths below: the wrapper is a
+    // non-owning VIEW over the rank-local value buffer, so it always reflects the live values -- it
+    // cannot carry stale data. The implicit-transform branch shifts the diagonal in place per
+    // component but RESTORES it immediately after each component solve (apply/restore pair below),
+    // and the buffer is re-assembled in place each step, so the cached wrapper's value pointer stays
+    // valid; the pointer guard in createGkoMtxDist rebuilds if it ever changes. The fused-slip
+    // branch applies its shift through FusedDiagShiftMatrix (operator-level, no buffer mutation).
     auto gkoMtx = createGkoMtxDist(
         gkoExec_,
         comm,
@@ -1049,8 +1051,8 @@ SolverStats GinkgoSolver::solveDist(
         commPattern,
         cachedImap_,
         cachedNonLocalMtx_,
-        uncachedDistMtx,
-        uncachedLocalValPtr,
+        cachedDistMtx_,
+        cachedLocalValPtr_,
         localMatrixFormat_
     );
 
