@@ -15,7 +15,7 @@
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
-#include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtScheme.hpp"
 
 namespace NeoN::dsl
 {
