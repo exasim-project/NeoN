@@ -560,6 +560,99 @@ TEST_CASE("Expression assembles laplacian into ELL via LaplacianOperator, matche
     }
 }
 
+// Segregated vector-solve form (scalar matrix, Vec3 rhs) through the full DSL -- unlike
+// "computeLaplacianIntImpl matches for CSR and ELL, segregated vector-solve form" above (which
+// calls the kernel directly), this goes through dsl::imp::laplacian -> Expression<Vec3> ->
+// SpatialOperator's segregated-ELL dispatch (HasImplicitOperatorScalarMtxELL /
+// implicitOperationScalarMtxELL) -> LaplacianOperator's segregated implicitOperation<
+// SystemMatrixType> entry point. The underlying kernel and GaussGreenLaplacian<Vec3, scalar>'s
+// ELL override already existed (proven by the kernel-level test above); this proves the DSL can
+// actually reach them.
+TEST_CASE("Expression assembles laplacian into ELL via LaplacianOperator, matches CSR, segregated")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto gammaV = gamma.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            gammaV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+        }
+    );
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Dictionary lapSchemes;
+    lapSchemes.insert(
+        "laplacian(gamma,phi)",
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")})
+    );
+    Dictionary fvSchemes;
+    fvSchemes.insert("laplacianSchemes", lapSchemes);
+
+    dsl::Expression<Vec3> expr(dsl::imp::laplacian(gamma, phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+    REQUIRE_THAT(
+        csrLs.boundaryMatrix().values(), Equals(ellLs.boundaryMatrix().values(), Approx {1e-10})
+    );
+    REQUIRE_THAT(csrLs.boundaryRhs(), Equals(ellLs.boundaryRhs(), Approx {1e-10}));
+
+    // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+    // different physical layouts (CSR compact vs ELL padded column-major).
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == zero<scalar>());
+        }
+    }
+}
+
 // Corrected-scheme coverage for the ELL vertical slice above, on a genuinely non-orthogonal mesh
 // (the sheared-cube technique from basicGeometryScheme.cpp: C.y += s*C.x introduces
 // non-orthogonality on x-normal faces while leaving nonOrthDeltaCoeffs at 1/h). The shear must
