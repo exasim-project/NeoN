@@ -67,9 +67,7 @@ void registerLinOp(nb::module_& m)
         // Ghost-fill interpolation order at domain boundaries (default 3 =
         // quadratic; 2 = linear, matching a reflect-odd Dirichlet fill).
         .def(
-            "set_max_order",
-            [](MLLinOp& lp, int o) { lp.setMaxOrder(o); },
-            nb::arg("o")
+            "set_max_order", [](MLLinOp& lp, int o) { lp.setMaxOrder(o); }, nb::arg("o")
         );
 
     // Helper: convert Python array of LinOpBCType to AMReX Array
@@ -94,8 +92,7 @@ void registerLinOp(nb::module_& m)
                const Geometry& geom,
                const BoxArray& ba,
                const DistributionMapping& dm,
-               const LPInfo& info)
-            { new (self) MLPoisson({geom}, {ba}, {dm}, info); },
+               const LPInfo& info) { new (self) MLPoisson({geom}, {ba}, {dm}, info); },
             nb::arg("geom"),
             nb::arg("ba"),
             nb::arg("dm"),
@@ -117,8 +114,7 @@ void registerLinOp(nb::module_& m)
                const Geometry& geom,
                const BoxArray& ba,
                const DistributionMapping& dm,
-               const LPInfo& info)
-            { new (self) MLABecLap({geom}, {ba}, {dm}, info); },
+               const LPInfo& info) { new (self) MLABecLap({geom}, {ba}, {dm}, info); },
             nb::arg("geom"),
             nb::arg("ba"),
             nb::arg("dm"),
@@ -129,7 +125,9 @@ void registerLinOp(nb::module_& m)
         .def(
             "__init__",
             [](MLABecLap* self,
-               nb::list geoms_py, nb::list bas_py, nb::list dms_py,
+               nb::list geoms_py,
+               nb::list bas_py,
+               nb::list dms_py,
                const LPInfo& info)
             {
                 auto n = nb::len(geoms_py);
@@ -175,8 +173,7 @@ void registerLinOp(nb::module_& m)
             "set_b_coeffs",
             [](MLABecLap& lp, int lev, const MultiFab& bx, const MultiFab& by, const MultiFab& bz)
             {
-                Array<MultiFab const*, AMREX_SPACEDIM> beta = {
-                    AMREX_D_DECL(&bx, &by, &bz)};
+                Array<MultiFab const*, AMREX_SPACEDIM> beta = {AMREX_D_DECL(&bx, &by, &bz)};
                 lp.setBCoeffs(lev, beta);
             },
             nb::arg("lev"),
@@ -208,7 +205,9 @@ void registerLinOp(nb::module_& m)
         .def(
             "__init__",
             [](MLNodeLaplacian* self,
-               nb::list geoms_py, nb::list bas_py, nb::list dms_py,
+               nb::list geoms_py,
+               nb::list bas_py,
+               nb::list dms_py,
                const LPInfo& info,
                Real const_sigma)
             {
@@ -237,8 +236,7 @@ void registerLinOp(nb::module_& m)
         .def("set_domain_bc", setDomainBC, nb::arg("lo_bc"), nb::arg("hi_bc"))
         .def(
             "set_sigma",
-            [](MLNodeLaplacian& lp, int lev, const MultiFab& sigma)
-            { lp.setSigma(lev, sigma); },
+            [](MLNodeLaplacian& lp, int lev, const MultiFab& sigma) { lp.setSigma(lev, sigma); },
             nb::arg("lev"),
             nb::arg("sigma")
         )
@@ -287,15 +285,22 @@ void registerLinOp(nb::module_& m)
             {
                 BottomSolver bs;
                 if (s == "cg") bs = BottomSolver::cg;
-                else if (s == "bicgstab") bs = BottomSolver::bicgstab;
-                else if (s == "smoother") bs = BottomSolver::smoother;
-                else if (s == "cgbicg") bs = BottomSolver::cgbicg;
-                else if (s == "bicgcg") bs = BottomSolver::bicgcg;
-                else if (s == "default") bs = BottomSolver::Default;
-                else throw std::runtime_error("unknown bottom solver: " + s);
+                else if (s == "bicgstab")
+                    bs = BottomSolver::bicgstab;
+                else if (s == "smoother")
+                    bs = BottomSolver::smoother;
+                else if (s == "cgbicg")
+                    bs = BottomSolver::cgbicg;
+                else if (s == "bicgcg")
+                    bs = BottomSolver::bicgcg;
+                else if (s == "default")
+                    bs = BottomSolver::Default;
+                else
+                    throw std::runtime_error("unknown bottom solver: " + s);
                 mlmg.setBottomSolver(bs);
             },
-            nb::arg("solver"))
+            nb::arg("solver")
+        )
         .def(
             "solve",
             [](MLMG& mlmg, MultiFab& sol, const MultiFab& rhs, double rtol, double atol)
@@ -335,7 +340,10 @@ void registerLinOp(nb::module_& m)
             [](MLMG& mlmg)
             {
                 int total = 0;
-                for (int k : mlmg.getNumCGIters()) { total += k; }
+                for (int k : mlmg.getNumCGIters())
+                {
+                    total += k;
+                }
                 return total;
             }
         )
@@ -352,10 +360,7 @@ void registerLinOp(nb::module_& m)
         )
         .def(
             "get_fluxes",
-            [](MLMG& mlmg, MultiFab& fluxes)
-            {
-                mlmg.getFluxes({&fluxes});
-            },
+            [](MLMG& mlmg, MultiFab& fluxes) { mlmg.getFluxes({&fluxes}); },
             nb::arg("fluxes")
         )
         .def(
