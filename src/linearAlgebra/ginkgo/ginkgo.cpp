@@ -45,6 +45,18 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("localMatrixFormat");
     }
 
+    // 'cacheSolver' / 'preconditionerRebuildInterval' steer NeoN's solver/preconditioner reuse
+    // (read directly in the GinkgoSolver ctor); they are not Ginkgo config keys, so strip them
+    // before the config reaches gko::config::parse (which rejects unknown keys).
+    for (const auto& key :
+         {std::string("cacheSolver"), std::string("preconditionerRebuildInterval")})
+    {
+        if (dict.contains(key))
+        {
+            dict.remove(key);
+        }
+    }
+
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
     // residual reporting; it is not a Ginkgo config key.
     if (dict.contains("reportName"))

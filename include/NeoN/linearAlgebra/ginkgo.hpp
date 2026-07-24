@@ -187,6 +187,22 @@ L1ResidualResult solveWithL1StopDist(
  * boolean token arrives as a word). Tolerances and the iteration cap are read from the
  * "criteria" sub-dict (absolute_residual_norm / initial_residual_norm / iteration).
  */
+// A boolean switch read from an OpenFOAM dictionary is tokenized as a word and stored as a
+// std::string (or, for a numeric form, an int), not a bool -- reading it directly as bool throws
+// bad_any_cast. Accept any of the representations the dict parser may produce.
+inline bool readSwitch(const Dictionary& cfg, const std::string& key, bool defaultValue)
+{
+    if (!cfg.contains(key)) return defaultValue;
+    if (cfg.isType<bool>(key)) return cfg.get<bool>(key);
+    if (cfg.isType<int>(key)) return cfg.get<int>(key) != 0;
+    if (cfg.isType<std::string>(key))
+    {
+        const std::string v = cfg.get<std::string>(key);
+        return (v == "true" || v == "yes" || v == "on" || v == "1");
+    }
+    return defaultValue;
+}
+
 inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& cfg)
 {
     const std::string flag = "l1ScaledResidual";
@@ -286,10 +302,11 @@ class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
-        : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
+        : Base(exec), gkoExec_(getGkoExecutor(exec)),
+          coupled_(readSwitch(solverConfig, "coupled", false)),
           l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
           localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr"))),
-          cacheSolver_(solverConfig.get("cacheSolver", false)),
+          cacheSolver_(readSwitch(solverConfig, "cacheSolver", false)),
           preconditionerRebuildInterval_(
               static_cast<localIdx>(solverConfig.get("preconditionerRebuildInterval", 0))
           )
@@ -311,9 +328,10 @@ public:
         // Register NeoN's MergedPgm coarseners (mergeLevels-style: merge k Pgm steps into one level
         // via SpGEMM-composed prolongations). A configFile's `mg_level` can then name them, e.g.
         // "mg_level": ["neon::pgmMerge2"]. Named-registry pattern, same as the L1 criterion above.
-        // pgmMerge1 = merge_levels 1 = plain Pgm (single coarsening step), but via the SAME MergedPgm
-        // code path as 2/3 -- so the cache (update_matrix_value) and distributed branches behave
-        // identically across the merge-levels sweep, unlike swapping in native gko multigrid::Pgm.
+        // pgmMerge1 = merge_levels 1 = plain Pgm (single coarsening step), but via the SAME
+        // MergedPgm code path as 2/3 -- so the cache (update_matrix_value) and distributed branches
+        // behave identically across the merge-levels sweep, unlike swapping in native gko
+        // multigrid::Pgm.
         reg.emplace("neon::pgmMerge1", makeMergedPgmFactory<scalar>(gkoExec_, 1));
         reg.emplace("neon::pgmMerge2", makeMergedPgmFactory<scalar>(gkoExec_, 2));
         reg.emplace("neon::pgmMerge3", makeMergedPgmFactory<scalar>(gkoExec_, 3));
