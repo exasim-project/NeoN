@@ -293,25 +293,32 @@ template<typename ValueType, typename IndexType>
 [[nodiscard]] Vector<ValueType> upper(const CSRMatrix<ValueType, IndexType>&);
 
 /** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
- * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
- * entries are identical
+ * @note this function is a specialized function for Vec3 matrices assuming all diagonal
+ * entries are identical. Format-generic over SparsityType (CSR or ELL); linear-scans each row
+ * for the diagonal since no FaceToMatrixAddress is available here.
  */
+template<typename SparsityType>
 [[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const Vector<scalar>&);
+scaledInverseDiag(const Matrix<Vec3, SparsityType>& mtx, const Vector<scalar>& a);
 
+template<typename SparsityType>
 void scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a, Vector<scalar>& out
+    const Matrix<Vec3, SparsityType>& mtx, const Vector<scalar>& a, Vector<scalar>& out
 );
 
-/** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1
- * @note this function is a specialized function for CSR<Vec3> matrices assuming all diagonal
- * entries are identical
+/** @brief computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1, using a
+ * FaceToMatrixAddress for O(1) diagonal lookup instead of a linear scan.
+ * @note this function is a specialized function for Vec3 matrices assuming all diagonal
+ * entries are identical. Format-generic over SparsityType (CSR or ELL).
  */
-[[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<Vec3, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
+template<typename SparsityType>
+[[nodiscard]] Vector<scalar> scaledInverseDiag(
+    const Matrix<Vec3, SparsityType>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
+);
 
+template<typename SparsityType>
 void scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Matrix<Vec3, SparsityType>& mtx,
     const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
@@ -319,13 +326,17 @@ void scaledInverseDiag(
 
 /** @brief scalar-matrix variant of scaledInverseDiag for the segregated vector-solve form
  * @note used when a vector field is assembled into a scalar coefficient matrix; the scalar
- * diagonal is shared across all field components, so no per-component selection is needed
+ * diagonal is shared across all field components, so no per-component selection is needed.
+ * Format-generic over SparsityType (CSR or ELL).
  */
-[[nodiscard]] Vector<scalar>
-scaledInverseDiag(const CSRMatrix<scalar, localIdx>&, const FaceToMatrixAddress& mi, const Vector<scalar>&);
+template<typename SparsityType>
+[[nodiscard]] Vector<scalar> scaledInverseDiag(
+    const Matrix<scalar, SparsityType>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
+);
 
+template<typename SparsityType>
 void scaledInverseDiag(
-    const CSRMatrix<scalar, localIdx>& mtx,
+    const Matrix<scalar, SparsityType>& mtx,
     const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
@@ -354,10 +365,13 @@ void negLUx(
 
 /** @brief computes out = -(L+U) x
  *
- * @notes explicitly sets out values to zero
+ * @notes explicitly sets out values to zero. Format-generic over SparsityType (CSR or ELL); no
+ * FaceToMatrixAddress is taken here, since the diagonal is identified while walking each row
+ * anyway (needed to skip it from the off-diagonal sum).
  */
+template<typename SparsityType>
 void scaledInvDiagNegLUx(
-    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Matrix<Vec3, SparsityType>& mtx,
     const Vector<Vec3>& a,
     const Vector<Vec3>& b,
     const Vector<scalar>& vol,
@@ -369,12 +383,13 @@ void scaledInvDiagNegLUx(
  *
  * Mirrors the Vec3-matrix overload but for a scalar coefficient matrix assembled from a
  * vector field (segregated vector-solve form). The scalar diagonal/off-diagonal entries
- * scale all three rhs components equally.
+ * scale all three rhs components equally. Format-generic over SparsityType (CSR or ELL).
  *
  * @notes explicitly sets out values to zero
  */
+template<typename SparsityType>
 void scaledInvDiagNegLUx(
-    const CSRMatrix<scalar, localIdx>& mtx,
+    const Matrix<scalar, SparsityType>& mtx,
     const Vector<Vec3>& a,
     const Vector<Vec3>& b,
     const Vector<scalar>& vol,
