@@ -5,6 +5,8 @@
 #pragma once
 
 
+#include <optional>
+
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/executor/executor.hpp"
@@ -77,21 +79,38 @@ public:
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s() const;
 
     // Vector from the owner cell centre to the face centre (Cf - C_own), one per internal face.
-    // Cached here because the underlying cell/face centres are freed by reset(); schemes that need
-    // a cell-to-face offset (e.g. linearUpwind's gradient correction) read it from this object.
+    // Computed lazily on first access (or via ensureFaceDeltas()); only schemes that need a
+    // cell-to-face offset (e.g. linearUpwind's gradient correction) ever trigger the allocation,
+    // so a run that never selects such a scheme pays nothing.
     const SurfaceField<Vec3>& faceDeltaOwner() const;
 
     // Vector from the neighbour cell centre to the face centre (Cf - C_nei), one per internal face.
     const SurfaceField<Vec3>& faceDeltaNeighbour() const;
 
+    // Opt-in trigger for the faceDelta* fields. Computes them from the mesh centres (which the
+    // scheme keeps resident until this runs), then releases those centres via
+    // releaseSourceGeometry(). Consumers that need faceDelta* (linearUpwind) call this in their
+    // constructor; because the centres are not freed as a side effect of reading a cached field,
+    // the call is valid at any point in the scheme's lifetime, independent of construction order
+    // relative to other schemes. Idempotent; const so it is reachable through the shared
+    // (read-only) GeometryScheme handle. No-op cost after the first call is a single bool check.
+    void ensureFaceDeltas() const;
+
     void update();
 
-    // Frees the mesh's per-cell/face centre arrays after update() to save device memory;
-    // they are not needed once the geometry-scheme fields are cached.
+    // Frees the mesh's per-point/cell/face centre arrays to save device memory (~3 GB at 18M
+    // cells). Auto-invoked exactly once at the tail of ensureFaceDeltas() — right after the
+    // faceDelta* opt-in has consumed the centres, the single point where freeing is provably safe.
+    // It is deliberately NOT triggered by the field accessors: doing so used to free the centres
+    // before a late linearUpwind opt-in (constructed after another scheme on the same cached
+    // GeometryScheme had read a field) could compute the faceDelta*. Runs that never opt in (no
+    // linearUpwind) never call ensureFaceDeltas(), so they keep the centres resident. May also be
+    // called explicitly by a caller certain no further opt-in will occur. Idempotent via
+    // sourceGeometryReleased_.
     // TODO: check if we can remove the temporary fields from the unstructured mesh
     // altogether: compute the geometry-scheme data explicitly first and pass it as an
     // argument, instead of freeing mesh members after the fact.
-    void reset() const;
+    void releaseSourceGeometry() const;
 
     std::string name() const;
 
@@ -107,8 +126,16 @@ private:
     SurfaceField<scalar> weights_;
     SurfaceField<scalar> nonOrthDeltaCoeffs_;
     SurfaceField<Vec3> nonOrthCorrectionVec3s_;
-    SurfaceField<Vec3> faceDeltaOwner_;
-    SurfaceField<Vec3> faceDeltaNeighbour_;
+
+    // Lazily allocated and filled: empty until a consumer opts in via ensureFaceDeltas() (or first
+    // reads them). A run that never selects linearUpwind leaves these nullopt, saving
+    // 2 * nInternalFaces * sizeof(Vec3) of device memory (~2.6 GB on an 18M-cell mesh). mutable so
+    // the const accessors / ensureFaceDeltas() can populate them through the shared handle.
+    mutable std::optional<SurfaceField<Vec3>> faceDeltaOwner_;
+    mutable std::optional<SurfaceField<Vec3>> faceDeltaNeighbour_;
+    mutable bool faceDeltasComputed_ = false;
+    // Guards the one-shot release of the mesh centre arrays (see releaseSourceGeometry()).
+    mutable bool sourceGeometryReleased_ = false;
 };
 
 } // namespace NeoN

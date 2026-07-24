@@ -15,8 +15,9 @@ namespace NeoN::finiteVolume::cellCentred
 GeometrySchemeFactory::GeometrySchemeFactory() {}
 
 // Cache the per-internal-face vector from each adjacent cell centre to the face centre
-// (Cf - C_own and Cf - C_nei). These are derived from the mesh cell/face centres, which
-// reset() frees right after the geometry scheme is built, so they must be computed here.
+// (Cf - C_own and Cf - C_nei). These are derived from the mesh cell/face centres;
+// ensureFaceDeltas() calls this on the first opt-in and then releases those centres
+// (releaseSourceGeometry()).
 namespace
 {
 void computeFaceDeltaVectors(
@@ -65,19 +66,7 @@ GeometryScheme::GeometryScheme(
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s
 )
     : exec_(exec), mesh_(weights.mesh()), kernel_(std::move(kernel)), weights_(weights),
-      nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs), nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s),
-      faceDeltaOwner_(
-          weights.exec(),
-          "faceDeltaOwner",
-          weights.mesh(),
-          createCalculatedBCs<SurfaceBoundary<Vec3>>(weights.mesh())
-      ),
-      faceDeltaNeighbour_(
-          weights.exec(),
-          "faceDeltaNeighbour",
-          weights.mesh(),
-          createCalculatedBCs<SurfaceBoundary<Vec3>>(weights.mesh())
-      )
+      nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs), nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
 {
     if (kernel_ == nullptr)
     {
@@ -103,12 +92,6 @@ GeometryScheme::GeometryScheme(
           "nonOrthCorrectionVec3s",
           mesh,
           createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
-      ),
-      faceDeltaOwner_(
-          mesh.exec(), "faceDeltaOwner", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
-      ),
-      faceDeltaNeighbour_(
-          mesh.exec(), "faceDeltaNeighbour", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
       )
 {
     if (kernel_ == nullptr)
@@ -133,12 +116,6 @@ GeometryScheme::GeometryScheme(const UnstructuredMesh& mesh)
           "nonOrthCorrectionVec3s",
           mesh,
           createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
-      ),
-      faceDeltaOwner_(
-          mesh.exec(), "faceDeltaOwner", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
-      ),
-      faceDeltaNeighbour_(
-          mesh.exec(), "faceDeltaNeighbour", mesh, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh)
       )
 {
     if (kernel_ == nullptr)
@@ -165,23 +142,71 @@ void GeometryScheme::update()
             },
             exec_
         );
-        computeFaceDeltaVectors(exec_, mesh_, faceDeltaOwner_, faceDeltaNeighbour_);
-        reset();
+        // faceDeltaOwner_/faceDeltaNeighbour_ are NOT computed here: they are only needed by
+        // schemes that opt in (linearUpwind), so they are built lazily in ensureFaceDeltas(). The
+        // mesh centres are likewise NOT freed here so a later opt-in can still read them;
+        // ensureFaceDeltas() releases them (releaseSourceGeometry()) once it has built the
+        // faceDelta* from them.
     }
 }
 
-void GeometryScheme::reset() const
+void GeometryScheme::ensureFaceDeltas() const
 {
-    // Free the per-point/cell/face geometry on the device once the geometry scheme has consumed
-    // it. weights / nonOrthDeltaCoeffs / corrVec are now cached in this object, so the
-    // points/cellCentres/faceCentres arrays are no longer needed for subsequent computations and
-    // freeing them saves device memory on large meshes (revisit for moving/rotating meshes, which
-    // would repopulate all three). points() is read only during construction/partitioning, never
-    // after this point. The const_cast is safe while the underlying mesh object is non-const,
-    // which holds for all current construction paths.
+    if (!faceDeltasComputed_)
+    {
+        if (mesh_.faceCenters().size() == 0)
+        {
+            NF_ERROR_EXIT(
+                "GeometryScheme: face-to-cell delta vectors requested after the source mesh "
+                "geometry was released. A scheme that needs them (e.g. linearUpwind) must be "
+                "constructed before the first read of a cached geometry field."
+            );
+        }
+        faceDeltaOwner_.emplace(
+            exec_, "faceDeltaOwner", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        faceDeltaNeighbour_.emplace(
+            exec_, "faceDeltaNeighbour", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        computeFaceDeltaVectors(exec_, mesh_, *faceDeltaOwner_, *faceDeltaNeighbour_);
+        faceDeltasComputed_ = true;
+
+        // The faceDelta* fields now hold everything this scheme derives from the mesh centres, and
+        // ensureFaceDeltas() is the last NeoN consumer of those centres, so reclaim them here. This
+        // is the only point where freeing is provably safe: it runs strictly AFTER the (possibly
+        // late) faceDelta* opt-in has consumed the centres, never before — which is exactly the
+        // ordering that broke when the field accessors used to free them (see
+        // releaseSourceGeometry).
+        releaseSourceGeometry();
+    }
+}
+
+void GeometryScheme::releaseSourceGeometry() const
+{
+    // Free the per-point/cell/face geometry on the device once it is no longer needed. weights /
+    // nonOrthDeltaCoeffs / corrVec (and, if opted in, faceDelta*) are cached in this object, so the
+    // points/cellCentres/faceCentres arrays are not needed for subsequent computations and freeing
+    // them saves device memory on large meshes (~3 GB at 18M cells; revisit for moving/rotating
+    // meshes, which would repopulate all three). One-shot (idempotent via sourceGeometryReleased_).
+    // Auto-invoked exactly once at the tail of ensureFaceDeltas(), i.e. right after the faceDelta*
+    // opt-in has consumed the centres — the single point where freeing is provably safe. It is NOT
+    // invoked by the field accessors: doing so used to free the centres before a late linearUpwind
+    // opt-in (constructed after another scheme on the same cached GeometryScheme had read a field)
+    // could compute the faceDelta*, leaving ensureFaceDeltas() to abort. Runs that never opt into
+    // faceDelta* (no linearUpwind) never call ensureFaceDeltas(), so they keep the centres
+    // resident; they already avoid the larger faceDelta* allocation, and no other safe auto-trigger
+    // exists for them. May also be called explicitly by a caller certain no further opt-in will
+    // occur. points() is read only during construction/partitioning, never after this point. The
+    // const_cast is safe while the underlying mesh object is non-const, which holds for all current
+    // construction paths.
+    if (sourceGeometryReleased_)
+    {
+        return;
+    }
     const_cast<UnstructuredMesh&>(mesh_).points().resize(0);
     const_cast<UnstructuredMesh&>(mesh_).faceCenters().resize(0);
     const_cast<UnstructuredMesh&>(mesh_).cellCenters().resize(0);
+    sourceGeometryReleased_ = true;
 }
 
 
@@ -197,8 +222,16 @@ const SurfaceField<Vec3>& GeometryScheme::nonOrthCorrectionVec3s() const
     return nonOrthCorrectionVec3s_;
 }
 
-const SurfaceField<Vec3>& GeometryScheme::faceDeltaOwner() const { return faceDeltaOwner_; }
+const SurfaceField<Vec3>& GeometryScheme::faceDeltaOwner() const
+{
+    ensureFaceDeltas();
+    return *faceDeltaOwner_;
+}
 
-const SurfaceField<Vec3>& GeometryScheme::faceDeltaNeighbour() const { return faceDeltaNeighbour_; }
+const SurfaceField<Vec3>& GeometryScheme::faceDeltaNeighbour() const
+{
+    ensureFaceDeltas();
+    return *faceDeltaNeighbour_;
+}
 
 } // namespace NeoN
