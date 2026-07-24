@@ -7,6 +7,7 @@
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -611,6 +612,25 @@ template void addDivCorrectionToRhs(
 );
 template void addDivCorrectionToRhs(
     la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+// ELL forms, called from the ELL path of the fused div-laplacian operator in another TU
+template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+template void addDivCorrectionToRhs(
+    la::LinearSystem<Vec3, Vec3, la::ELLMatrix<Vec3, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
     const SurfaceField<scalar>&,
     const SurfaceField<Vec3>&,
     const dsl::Coeff

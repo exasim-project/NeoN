@@ -7,6 +7,7 @@
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp"
 #include "NeoN/helpers/exceptions.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -575,6 +576,25 @@ template void computeLaplacianNonOrthCorrImpl<
 template void computeLaplacianNonOrthCorrImpl<
     Vec3,
     scalar>(la::LinearSystem<scalar, Vec3>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+// ELL forms, called from the ELL path of the fused div-laplacian operator in another TU
+template void computeLaplacianNonOrthCorrImpl<
+    scalar,
+    scalar,
+    la::ELLMatrix<
+        scalar,
+        localIdx>>(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<scalar>&, dsl::Coeff, const FaceNormalGradient<scalar>&);
+template void computeLaplacianNonOrthCorrImpl<
+    Vec3,
+    Vec3,
+    la::ELLMatrix<
+        Vec3,
+        localIdx>>(la::LinearSystem<Vec3, Vec3, la::ELLMatrix<Vec3, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
+template void computeLaplacianNonOrthCorrImpl<
+    Vec3,
+    scalar,
+    la::ELLMatrix<
+        scalar,
+        localIdx>>(la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&, const SurfaceField<scalar>&, const VolumeField<Vec3>&, dsl::Coeff, const FaceNormalGradient<Vec3>&);
 
 template void computeLaplacianIntImpl<
     scalar,

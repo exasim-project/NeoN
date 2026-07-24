@@ -181,9 +181,8 @@ public:
      *        (segregated vector-solve form). Only present when FieldValueType != scalar;
      *        for scalar fields the same-type overload above already covers this signature.
      */
-    template<typename F = FieldValueType>
-        requires(!std::is_same_v<F, scalar>)
     void implicitOperation(la::LinearSystem<scalar, FieldValueType>& ls) const
+        requires(!std::is_same_v<FieldValueType, scalar>)
     {
         NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

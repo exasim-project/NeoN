@@ -9,7 +9,6 @@
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/divOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
-#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
@@ -138,6 +137,24 @@ extern template void addDivCorrectionToRhs(
 );
 extern template void addDivCorrectionToRhs(
     la::LinearSystem<scalar, Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+extern template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const dsl::Coeff
+);
+extern template void addDivCorrectionToRhs(
+    la::LinearSystem<Vec3, Vec3, la::ELLMatrix<Vec3, localIdx>>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<Vec3>&,
+    const dsl::Coeff
+);
+extern template void addDivCorrectionToRhs(
+    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
     const SurfaceField<scalar>&,
     const SurfaceField<Vec3>&,
     const dsl::Coeff
