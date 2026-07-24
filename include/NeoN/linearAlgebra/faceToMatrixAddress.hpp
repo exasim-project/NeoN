@@ -15,6 +15,14 @@ namespace NeoN::la
 
 struct FaceToMatrixView
 {
+    FaceToMatrixView(
+        View<const uint8_t> ownerOffsetView,
+        View<const uint8_t> neighbourOffsetView,
+        View<const uint8_t> diagOffsetView,
+        View<const localIdx> rowOffsView
+    )
+        : ownerOffset(ownerOffsetView), neighbourOffset(neighbourOffsetView),
+          diagOffset(diagOffsetView), rowOffs(rowOffsView) {};
 
     // TODO check performance
     /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
