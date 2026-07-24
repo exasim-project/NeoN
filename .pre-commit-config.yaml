@@ -5,6 +5,10 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+        # .patch files carry upstream diffs verbatim; a blank context line in a
+        # unified diff is a single trailing space, which is semantically required,
+        # not accidental whitespace to strip.
+        exclude: '\.patch$'
       - id: pretty-format-json
         args: [--autofix, --no-sort-keys]
   - repo: https://github.com/pre-commit/mirrors-clang-format
@@ -25,6 +29,9 @@ repos:
     rev: v1.23.1
     hooks:
       - id: typos
+        # Don't "fix" spelling inside upstream diff context/added lines -- that would
+        # desync the patch from the source it's meant to apply against.
+        exclude: '\.patch$'
   - repo: local
     hooks:
       # The official reuse hook only supports calling lint, so we need our own hook
