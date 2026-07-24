@@ -19,4 +19,27 @@ void registerGinkgoSolve(nb::module_& m)
         "ginkgo_solve",
         [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
     );
+    m.def(
+        "ginkgo_solve_face_coeffs",
+        [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
+    );
+
+    struct FaceCoeffSolverStub
+    {
+    };
+    struct FaceCoeffCsrSolverStub
+    {
+    };
+    nb::class_<FaceCoeffSolverStub>(m, "FaceCoeffSolver")
+        .def(
+            "__init__",
+            [](FaceCoeffSolverStub*, nb::args, nb::kwargs)
+            { throw std::runtime_error("built without Ginkgo"); }
+        );
+    nb::class_<FaceCoeffCsrSolverStub>(m, "FaceCoeffCsrSolver")
+        .def(
+            "__init__",
+            [](FaceCoeffCsrSolverStub*, nb::args, nb::kwargs)
+            { throw std::runtime_error("built without Ginkgo"); }
+        );
 }

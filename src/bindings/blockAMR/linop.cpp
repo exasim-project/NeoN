@@ -292,6 +292,18 @@ void registerLinOp(nb::module_& m)
         .def("get_init_residual", &MLMG::getInitResidual)
         .def("get_final_residual", &MLMG::getFinalResidual)
         .def("get_num_iters", &MLMG::getNumIters)
+        // Total bottom-solver (CG/BiCGStab) iterations summed over all outer
+        // MLMG cycles. With coarsening disabled this is the real fine-grid
+        // Krylov iteration count (get_num_iters returns only the outer cycles).
+        .def(
+            "get_num_cg_iters",
+            [](MLMG& mlmg)
+            {
+                int total = 0;
+                for (int k : mlmg.getNumCGIters()) { total += k; }
+                return total;
+            }
+        )
         .def(
             "get_grad_solution",
             [](MLMG& mlmg, MultiFab& gx, MultiFab& gy, MultiFab& gz)

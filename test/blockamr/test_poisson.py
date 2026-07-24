@@ -52,6 +52,9 @@ def test_mlpoisson_trivial(blockamr_session):
 
     sol = blockamr.MultiFab(ba, dm, 1, 1)
     rhs = blockamr.MultiFab(ba, dm, 1, 0)
+    # MultiFabs are not zero-initialized — recycled arena memory is arbitrary.
+    sol.set_val(0.0)
+    rhs.set_val(0.0)
 
     mlmg = blockamr.MLMG(lp)
     mlmg.set_verbose(0)

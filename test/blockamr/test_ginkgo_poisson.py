@@ -110,3 +110,59 @@ def test_ginkgo_poisson_matches_mlmg(blockamr_session):
 
     # Second-order scheme on 32 cells: error ~ (pi*dx)^2 ≈ 0.01
     assert max_err < 0.02, f"Max error {max_err} exceeds tolerance"
+
+
+def test_ginkgo_poisson_explicit_sign(blockamr_session):
+    """ginkgo_solve(sign=-1.0) converges identically to the default — default sign is -1.0."""
+    if not hasattr(blockamr, "ginkgo_solve"):
+        pytest.skip("blockamr.ginkgo_solve binding not available")
+
+    N = 16
+    _, geom, ba, dm = _make_mesh(N, is_per=[0, 0, 0])
+
+    lp = blockamr.MLPoisson(geom, ba, dm)
+    lp.set_domain_bc(
+        [blockamr.LinOpBCType.Dirichlet] * 3,
+        [blockamr.LinOpBCType.Dirichlet] * 3,
+    )
+    lp.set_level_bc(0, None)
+
+    # Same manufactured RHS as the main test
+    pi = math.pi
+    dx = geom.cell_size()
+    rhs = blockamr.MultiFab(ba, dm, 1, 0)
+    for mfi in blockamr.MFIterator(rhs):
+        arr = rhs.copy_to_host(mfi)
+        lo = mfi.valid_box().small_end()
+        nx, ny, nz = arr.shape[:3]
+        x = (lo[0] + np.arange(nx) + 0.5) * dx[0]
+        y = (lo[1] + np.arange(ny) + 0.5) * dx[1]
+        z = (lo[2] + np.arange(nz) + 0.5) * dx[2]
+        xg, yg, zg = np.meshgrid(x, y, z, indexing="ij")
+        arr[:, :, :, 0] = (
+            -12.0 * pi**2 * np.sin(2 * pi * xg) * np.sin(2 * pi * yg) * np.sin(2 * pi * zg)
+        )
+        rhs.copy_from(mfi, arr)
+
+    sol_default = blockamr.MultiFab(ba, dm, 1, 1)
+    sol_default.set_val(0.0)
+    sol_signed = blockamr.MultiFab(ba, dm, 1, 1)
+    sol_signed.set_val(0.0)
+    try:
+        stats_default = blockamr.ginkgo_solve(lp, sol_default, rhs, max_iter=2000, rtol=1e-10)
+        stats_signed = blockamr.ginkgo_solve(
+            lp, sol_signed, rhs, max_iter=2000, rtol=1e-10, sign=-1.0
+        )
+    except RuntimeError as exc:
+        if "without Ginkgo" in str(exc):
+            pytest.skip("blockamr built without Ginkgo")
+        raise
+
+    assert stats_default["res_norm"] < 1e-4
+    assert stats_signed["res_norm"] < 1e-4
+
+    # Explicit sign=-1.0 must reproduce the default solve (max-norm over all cells)
+    default_boxes = [sol_default.copy_to_host(mfi) for mfi in blockamr.MFIterator(sol_default)]
+    signed_boxes = [sol_signed.copy_to_host(mfi) for mfi in blockamr.MFIterator(sol_signed)]
+    max_diff = max(float(np.max(np.abs(d - s))) for d, s in zip(default_boxes, signed_boxes))
+    assert max_diff < 1e-8, f"Max |sol_default - sol_signed| = {max_diff} exceeds 1e-8"

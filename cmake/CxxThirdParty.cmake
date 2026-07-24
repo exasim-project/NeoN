@@ -248,9 +248,19 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # FORCE under SKBUILD: CPM_USE_LOCAL_PACKAGES would otherwise route through CPM's own
+    # find_package, which the previously installed wheel's Ginkgo config in site-packages satisfies
+    # — leaving only imported targets, so install(TARGETS ginkgo ...) fails.
+    if(DEFINED SKBUILD)
+      set(GINKGO_CPM_FORCE YES)
+    else()
+      set(GINKGO_CPM_FORCE NO)
+    endif()
     cpmaddpackage(
       NAME
       Ginkgo
+      FORCE
+      ${GINKGO_CPM_FORCE}
       VERSION
       ${NeoN_GINKGO_VERSION}
       GITHUB_REPOSITORY
