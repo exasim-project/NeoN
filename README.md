@@ -90,15 +90,28 @@ The package version in `pyproject.toml` is the source of truth. CMake reads that
 version during configuration, and the generated `neon.__version__` uses the same
 value.
 
-GitHub Actions uses cibuildwheel to build wheels after pushes, nightly schedules,
-manual dispatches, and release tags. Stable releases use tags named like
-`v0.1.0`. Nightly builds use development versions like
-`0.1.1.dev202605270217123`.
+GitHub Actions uses cibuildwheel to build wheels for release tags and explicitly
+requested manual builds. Stable releases use tags named like `v0.1.0`. Manual
+non-tag builds use development versions like `0.1.1.dev202605270217123`. The
+wheel workflow does not currently run for ordinary branch pushes, pull requests,
+or on a nightly schedule.
 
-CPU wheels use the plain package version and are published to PyPI only for
-stable `v*.*.*` tags. CUDA wheels use local version suffixes such as
-`0.1.0+cuda128` and `0.1.0+cuda130`; these are uploaded to the GitHub Release
-for stable tags and are also available as workflow artifacts.
+CPU wheels are built for:
+
+* Linux x86-64
+* Linux ARM64
+* Windows AMD64
+* macOS Apple Silicon
+* macOS Intel
+
+The CPU matrix covers CPython 3.9 through 3.13. CPU wheels use the plain package
+version and are published to PyPI only for stable `v*.*.*` tags.
+
+CUDA wheels are currently limited to CUDA 12.8 on Linux x86-64 with CPython
+3.12. They use a local version suffix such as `0.1.0+cuda128`, are uploaded as
+workflow artifacts, and are attached to the GitHub Release for stable tags.
+GitHub-hosted runners do not provide a GPU, so the CUDA wheel build does not run
+runtime tests against the resulting wheel.
 
 ## Integration with other CFD Frameworks
 
