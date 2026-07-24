@@ -83,6 +83,24 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="58" column="18" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="58" bodyend="61"/>
       </memberdef>
+      <memberdef kind="function" id="structNeoN_1_1dsl_1_1PostAssemblyBase_1af663e80cdab6f23ce36363617e7c3755" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void NeoN::dsl::PostAssemblyBase&lt; VectorType, IndexType &gt;::applyScalarMatrixELL</definition>
+        <argsstring>(la::LinearSystem&lt; scalar, VectorType, la::ELLMatrix&lt; scalar, IndexType &gt; &gt; &amp;) const</argsstring>
+        <name>applyScalarMatrixELL</name>
+        <qualifiedname>NeoN::dsl::PostAssemblyBase::applyScalarMatrixELL</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, VectorType, <ref refid="namespaceNeoN_1_1la_1a7888e3c591147b90c956b478378cb752" kindref="member">la::ELLMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, IndexType &gt; &gt; &amp;</type>
+        </param>
+        <briefdescription>
+<para>Apply to the segregated scalar-matrix / VectorType-rhs ELL form. Same default-throwing rationale as applyELL above <ndash/> <ref refid="classNeoN_1_1dsl_1_1Expression_1aa20c9e4d9a939277e5c52af3a6475c9d" kindref="member">Expression::assemble</ref> dispatches every functor through this unconditionally once AssemblyType == scalar and VectorType != scalar with an ELL SystemMatrixType. Functors that support the segregated ELL form override this. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="69" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="69" bodyend="73"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -106,10 +124,11 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="32" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="33" bodyend="62"/>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" line="32" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/dsl/expression.hpp" bodystart="33" bodyend="74"/>
     <listofallmembers>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a755d25d9790c4ebdf641e127da89b1db" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>applyELL</name></member>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1af0170570aa68740698ac111b485cc18c" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>applyScalarMatrix</name></member>
+      <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1af663e80cdab6f23ce36363617e7c3755" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>applyScalarMatrixELL</name></member>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a145f21d894b17fd1287b3cde7f7f051c" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>operator()</name></member>
       <member refid="structNeoN_1_1dsl_1_1PostAssemblyBase_1a6ee1fd861a37f190bf64b4525f1ffbaa" prot="public" virt="virtual"><scope>NeoN::dsl::PostAssemblyBase</scope><name>~PostAssemblyBase</name></member>
     </listofallmembers>

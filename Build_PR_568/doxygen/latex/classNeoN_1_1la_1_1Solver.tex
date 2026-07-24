@@ -22,13 +22,15 @@
 \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aacc975aedc898e15f4c7f02e768d9868}{solve}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&ls, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&field) const
 \begin{DoxyCompactList}\small\item\em Solve a system with a scalar matrix and \doxylink{classNeoN_1_1Vec3}{Vec3} right-\/hand side (segregated vector solve). Dispatches to the distributed backend when the linear system carries a non-\/empty communication pattern, otherwise solves locally. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_a246de73775362d8b672945266b643958}{solve}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&ls, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&field) const
-\begin{DoxyCompactList}\small\item\em Solve a system with a native ELL system matrix. Rank-\/local only -- reject rather than silently solving just the local block if the system actually carries a distributed communication pattern (create\+Empty\+Linear\+System populates comm\+Pattern() regardless of System\+Matrix\+Type, so an ELL system can have one too). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Solve a system with a native ELL system matrix. Rank-\/local only -- reject rather than silently solving just the local block if the system actually carries a distributed communication pattern (create\+Empty\+Linear\+System populates comm\+Pattern() regardless of System\+Matrix\+Type, so an ELL system can have one too). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} \mbox{\hyperlink{classNeoN_1_1la_1_1Solver_aeb61ad45b64cea6cb581eefdcfaf6cde}{solve}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&ls, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&field) const
+\begin{DoxyCompactList}\small\item\em Segregated counterpart of the ELL overload above (scalar matrix, \doxylink{classNeoN_1_1Vec3}{Vec3} rhs). Same rank-\/local-\/only rejection rationale. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00114}{114}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 
 
@@ -41,7 +43,7 @@ Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00107}{10
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00112}{112}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_ab933fc36828c686c03f024bd7e14024d}\label{classNeoN_1_1la_1_1Solver_ab933fc36828c686c03f024bd7e14024d} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!Solver@{Solver}}
@@ -51,7 +53,7 @@ Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00112}{11
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00115}{115}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_a290350dcd90d29ca8e76c4f3bffb9a37}\label{classNeoN_1_1la_1_1Solver_a290350dcd90d29ca8e76c4f3bffb9a37} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!Solver@{Solver}}
@@ -61,7 +63,7 @@ Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00115}{11
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00125}{125}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_a89adc0dc1b0e9c6cfc89ba50493a0db2}\label{classNeoN_1_1la_1_1Solver_a89adc0dc1b0e9c6cfc89ba50493a0db2} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!Solver@{Solver}}
@@ -71,7 +73,7 @@ Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00118}{11
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00121}{121}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00128}{128}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 
 
@@ -79,17 +81,17 @@ Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00121}{12
 \Hypertarget{classNeoN_1_1la_1_1Solver_af6abf94b085b7f3ca0219efca0fc9120}\label{classNeoN_1_1la_1_1Solver_af6abf94b085b7f3ca0219efca0fc9120} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!solve@{solve}}
 \index{solve@{solve}!NeoN::la::Solver@{NeoN::la::Solver}}
-\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} Neo\+N\+::la\+::\+Solver\+::solve (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{ls,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{field }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00124}{124}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00131}{131}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_a246de73775362d8b672945266b643958}\label{classNeoN_1_1la_1_1Solver_a246de73775362d8b672945266b643958} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!solve@{solve}}
 \index{solve@{solve}!NeoN::la::Solver@{NeoN::la::Solver}}
-\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} Neo\+N\+::la\+::\+Solver\+::solve (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{ls,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&}]{field }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -98,12 +100,12 @@ Solve a system with a native ELL system matrix. Rank-\/local only -- reject rath
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00169}{169}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_aacc975aedc898e15f4c7f02e768d9868}\label{classNeoN_1_1la_1_1Solver_aacc975aedc898e15f4c7f02e768d9868} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!solve@{solve}}
 \index{solve@{solve}!NeoN::la::Solver@{NeoN::la::Solver}}
-\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} Neo\+N\+::la\+::\+Solver\+::solve (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{ls,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{field }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
@@ -112,17 +114,31 @@ Solve a system with a scalar matrix and \doxylink{classNeoN_1_1Vec3}{Vec3} right
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00146}{146}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00153}{153}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1Solver_aeb61ad45b64cea6cb581eefdcfaf6cde}\label{classNeoN_1_1la_1_1Solver_aeb61ad45b64cea6cb581eefdcfaf6cde} 
+\index{NeoN::la::Solver@{NeoN::la::Solver}!solve@{solve}}
+\index{solve@{solve}!NeoN::la::Solver@{NeoN::la::Solver}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} Neo\+N\+::la\+::\+Solver\+::solve (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{ls,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{field }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Segregated counterpart of the ELL overload above (scalar matrix, \doxylink{classNeoN_1_1Vec3}{Vec3} rhs). Same rank-\/local-\/only rejection rationale. 
+
+
+
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00184}{184}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1Solver_adc96eea5228242037d0c3dd87d08ca5a}\label{classNeoN_1_1la_1_1Solver_adc96eea5228242037d0c3dd87d08ca5a} 
 \index{NeoN::la::Solver@{NeoN::la::Solver}!solve@{solve}}
 \index{solve@{solve}!NeoN::la::Solver@{NeoN::la::Solver}}
-\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
 {\footnotesize\ttfamily \mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{Solver\+Stats}} Neo\+N\+::la\+::\+Solver\+::solve (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{CSRMatrix}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ $>$ \&}]{ls,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&}]{field }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source_l00142}{142}} of file \mbox{\hyperlink{linearAlgebra_2solver_8hpp_source}{solver.\+hpp}}.
 
 
 

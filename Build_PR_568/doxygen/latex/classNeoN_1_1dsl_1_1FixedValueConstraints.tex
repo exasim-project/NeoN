@@ -34,7 +34,9 @@ virtual \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6ee1fd861a37f190
 virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a145f21d894b17fd1287b3cde7f7f051c}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vector\+Type, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Vector\+Type, Index\+Type $>$ $>$ \&) const
 \item 
 virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af0170570aa68740698ac111b485cc18c}{apply\+Scalar\+Matrix}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{la\+::\+COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&) const
-\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs form (a scalar coefficient matrix with a Vector\+Type right-\/hand side). Default no-\/op; functors that support the segregated form override this. \doxylink{classA}{A} distinct name (rather than an operator() overload) avoids colliding with the same-\/type signature when Vector\+Type == scalar. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs form (a scalar coefficient matrix with a Vector\+Type right-\/hand side). Default no-\/op; functors that support the segregated form override this. \doxylink{classA}{A} distinct name (rather than an operator() overload) avoids colliding with the same-\/type signature when Vector\+Type == scalar. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af663e80cdab6f23ce36363617e7c3755}{apply\+Scalar\+Matrix\+ELL}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&) const
+\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs ELL form. Same default-\/throwing rationale as apply\+ELL above -- \doxylink{classNeoN_1_1dsl_1_1Expression_aa20c9e4d9a939277e5c52af3a6475c9d}{Expression\+::assemble} dispatches every functor through this unconditionally once Assembly\+Type == scalar and Vector\+Type != scalar with an ELL System\+Matrix\+Type. Functors that support the segregated ELL form override this. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -50,7 +52,7 @@ Restricted to scalar Value\+Type\+: the segregated vector-\/solve path dispatche
 
 mask\mbox{[}cell\mbox{]} != 0 marks a constrained cell; value\mbox{[}cell\mbox{]} holds its target. Both views are sized n\+Cells and must outlive the functor. 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00178}{178}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00200}{200}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -64,7 +66,7 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00178}{178}} of file
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00188}{188}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00210}{210}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -86,7 +88,7 @@ Reimplemented from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a755d2
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00200}{200}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00222}{222}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_afa0544b86f8d7b8648f6ecb3bc48b92d}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_afa0544b86f8d7b8648f6ecb3bc48b92d} 
 \index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!applyImpl@{applyImpl}}
@@ -98,7 +100,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00213}{213}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00235}{235}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d} 
 \index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!operator()@{operator()}}
@@ -109,7 +111,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00192}{192}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00214}{214}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 

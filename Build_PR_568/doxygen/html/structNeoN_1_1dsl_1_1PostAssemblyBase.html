@@ -105,6 +105,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a755d25d9790c4ebdf641e127da89b1db" id="r_a755d25d9790c4ebdf641e127da89b1db"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#a755d25d9790c4ebdf641e127da89b1db">applyELL</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;) const</td></tr>
 <tr class="memdesc:a755d25d9790c4ebdf641e127da89b1db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply to the ELL same-type form. Default throws rather than silently doing nothing &ndash; <a class="el" href="classNeoN_1_1dsl_1_1Expression.html#aa20c9e4d9a939277e5c52af3a6475c9d" title="construct a linear system and force assembly including explicit source terms">Expression::assemble</a> dispatches every functor in ps through this unconditionally once AssemblyType == ValueType == scalar, so a functor that hasn't implemented ELL support (e.g. <a class="el" href="classNeoN_1_1dsl_1_1FixedValueConstraints.html" title="Post-assembly functor that pins a set of cells to prescribed values.">FixedValueConstraints</a>, still CSR-only) must fail loudly instead of quietly not applying its constraint. Functors that support ELL override this. Fixed to VectorType=scalar, matching the scalar-only ELL scope established for SpatialOperator/TemporalOperator's own ELL dispatch (HasImplicitOperatorELL): for VectorType != scalar this signature can never be reached, since <a class="el" href="classNeoN_1_1dsl_1_1Expression.html#aa20c9e4d9a939277e5c52af3a6475c9d" title="construct a linear system and force assembly including explicit source terms">Expression::assemble</a> only ever calls it when AssemblyType == ValueType == scalar.  <br /></td></tr>
 <tr class="separator:a755d25d9790c4ebdf641e127da89b1db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af663e80cdab6f23ce36363617e7c3755" id="r_af663e80cdab6f23ce36363617e7c3755"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html#af663e80cdab6f23ce36363617e7c3755">applyScalarMatrixELL</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, VectorType, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;) const</td></tr>
+<tr class="memdesc:af663e80cdab6f23ce36363617e7c3755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply to the segregated scalar-matrix / VectorType-rhs ELL form. Same default-throwing rationale as applyELL above &ndash; <a class="el" href="classNeoN_1_1dsl_1_1Expression.html#aa20c9e4d9a939277e5c52af3a6475c9d" title="construct a linear system and force assembly including explicit source terms">Expression::assemble</a> dispatches every functor through this unconditionally once AssemblyType == scalar and VectorType != scalar with an ELL SystemMatrixType. Functors that support the segregated ELL form override this.  <br /></td></tr>
+<tr class="separator:af663e80cdab6f23ce36363617e7c3755"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename VectorType, typename IndexType&gt;<br />
@@ -202,6 +205,38 @@ template&lt;typename VectorType , typename IndexType &gt; </div>
 <p>Apply to the segregated scalar-matrix / VectorType-rhs form (a scalar coefficient matrix with a VectorType right-hand side). Default no-op; functors that support the segregated form override this. <a class="el" href="classA.html">A</a> distinct name (rather than an operator() overload) avoids colliding with the same-type signature when VectorType == scalar. </p>
 
 <p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00043">43</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
+
+</div>
+</div>
+<a id="af663e80cdab6f23ce36363617e7c3755" name="af663e80cdab6f23ce36363617e7c3755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af663e80cdab6f23ce36363617e7c3755">&#9670;&#160;</a></span>applyScalarMatrixELL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename VectorType , typename IndexType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="structNeoN_1_1dsl_1_1PostAssemblyBase.html">NeoN::dsl::PostAssemblyBase</a>&lt; VectorType, IndexType &gt;::applyScalarMatrixELL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, VectorType, <a class="el" href="namespaceNeoN_1_1la.html#a7888e3c591147b90c956b478378cb752">la::ELLMatrix</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a>, IndexType &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply to the segregated scalar-matrix / VectorType-rhs ELL form. Same default-throwing rationale as applyELL above &ndash; <a class="el" href="classNeoN_1_1dsl_1_1Expression.html#aa20c9e4d9a939277e5c52af3a6475c9d" title="construct a linear system and force assembly including explicit source terms">Expression::assemble</a> dispatches every functor through this unconditionally once AssemblyType == scalar and VectorType != scalar with an ELL SystemMatrixType. Functors that support the segregated ELL form override this. </p>
+
+<p class="definition">Definition at line <a class="el" href="expression_8hpp_source.html#l00069">69</a> of file <a class="el" href="expression_8hpp_source.html">expression.hpp</a>.</p>
 
 </div>
 </div>

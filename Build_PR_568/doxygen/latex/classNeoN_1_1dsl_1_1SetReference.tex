@@ -26,6 +26,8 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_ac61b265d1c0bac9f2cf032fe
 \begin{DoxyCompactList}\small\item\em Segregated scalar-\/matrix / Value\+Type-\/rhs form. The scalar diagonal scales the Value\+Type reference value (scalar \texorpdfstring{$\ast$}{*} \doxylink{classNeoN_1_1Vec3}{Vec3} broadcasts), so the same pin applies to every component of the right-\/hand side. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_a037a657a647c74ac3c18ec6a1a90df66}{apply\+ELL}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&ls) const override
 \begin{DoxyCompactList}\small\item\em ELL same-\/type form. Only meaningful for Value\+Type == scalar (the scope \doxylink{classNeoN_1_1dsl_1_1Expression_aa20c9e4d9a939277e5c52af3a6475c9d}{Expression\+::assemble} ever calls this in); a no-\/op otherwise, discarded at compile time so this still compiles for e.\+g. Set\+Reference$<$\+Vec3$>$. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_a4d31c3c445cf10db6b3bb0e19ede68c2}{apply\+Scalar\+Matrix\+ELL}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&ls) const override
+\begin{DoxyCompactList}\small\item\em Segregated scalar-\/matrix / Value\+Type-\/rhs ELL form. apply\+Impl is already generic over System\+Matrix\+Type, so this is purely new dispatch plumbing, same as Div\+Operator/\+Laplacian\+Operator\textquotesingle{}s own segregated-\/\+ELL entry points. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename Assembly\+Type , typename System\+Matrix\+Type $>$ }\\void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference_ae3cd7c4fae3fdba894dbec7a66a5b94a}{apply\+Impl}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Value\+Type, System\+Matrix\+Type $>$ \&ls) const
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Neo\+N\+::dsl\+::\+Post\+Assembly\+Base$<$ Vector\+Type, Index\+Type $>$}}}
@@ -36,7 +38,9 @@ virtual \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a6ee1fd861a37f190
 virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a145f21d894b17fd1287b3cde7f7f051c}{operator()}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Vector\+Type, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ Vector\+Type, Index\+Type $>$ $>$ \&) const
 \item 
 virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af0170570aa68740698ac111b485cc18c}{apply\+Scalar\+Matrix}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a4064571a77faf7ba5e54a0982ed318b7}{la\+::\+CSRMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$, \mbox{\hyperlink{namespaceNeoN_1_1la_a90174338eaeb88d2f0d55a3dfdb95add}{la\+::\+COOMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&) const
-\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs form (a scalar coefficient matrix with a Vector\+Type right-\/hand side). Default no-\/op; functors that support the segregated form override this. \doxylink{classA}{A} distinct name (rather than an operator() overload) avoids colliding with the same-\/type signature when Vector\+Type == scalar. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs form (a scalar coefficient matrix with a Vector\+Type right-\/hand side). Default no-\/op; functors that support the segregated form override this. \doxylink{classA}{A} distinct name (rather than an operator() overload) avoids colliding with the same-\/type signature when Vector\+Type == scalar. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af663e80cdab6f23ce36363617e7c3755}{apply\+Scalar\+Matrix\+ELL}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Vector\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&) const
+\begin{DoxyCompactList}\small\item\em Apply to the segregated scalar-\/matrix / Vector\+Type-\/rhs ELL form. Same default-\/throwing rationale as apply\+ELL above -- \doxylink{classNeoN_1_1dsl_1_1Expression_aa20c9e4d9a939277e5c52af3a6475c9d}{Expression\+::assemble} dispatches every functor through this unconditionally once Assembly\+Type == scalar and Vector\+Type != scalar with an ELL System\+Matrix\+Type. Functors that support the segregated ELL form override this. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -48,7 +52,7 @@ Modifies the assembled linear system in-\/place\+: \doxylink{classA}{A}\mbox{[}r
 
 For distributed systems only the rank that owns the reference cell (assumed to be rank 0 for local cell index 0) applies the modification; all other ranks skip it. For non-\/distributed systems every rank applies it independently (each holds a full copy). @\+TODO allow to set a ref\+Point instead of a ref\+Cell, make the ref\+Cell a global cell\+ID 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00080}{80}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00092}{92}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -62,7 +66,7 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00080}{80}} of file 
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00096}{96}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -84,7 +88,7 @@ Reimplemented from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a755d2
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SetReference_ae3cd7c4fae3fdba894dbec7a66a5b94a}\label{classNeoN_1_1dsl_1_1SetReference_ae3cd7c4fae3fdba894dbec7a66a5b94a} 
 \index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!applyImpl@{applyImpl}}
@@ -96,7 +100,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00123}{123}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00145}{145}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SetReference_ac61b265d1c0bac9f2cf032fe458deb87}\label{classNeoN_1_1dsl_1_1SetReference_ac61b265d1c0bac9f2cf032fe458deb87} 
 \index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!applyScalarMatrix@{applyScalarMatrix}}
@@ -111,7 +115,22 @@ Segregated scalar-\/matrix / Value\+Type-\/rhs form. The scalar diagonal scales 
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00095}{95}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00107}{107}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1dsl_1_1SetReference_a4d31c3c445cf10db6b3bb0e19ede68c2}\label{classNeoN_1_1dsl_1_1SetReference_a4d31c3c445cf10db6b3bb0e19ede68c2} 
+\index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!applyScalarMatrixELL@{applyScalarMatrixELL}}
+\index{applyScalarMatrixELL@{applyScalarMatrixELL}!NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}}
+\doxysubsubsection{\texorpdfstring{applyScalarMatrixELL()}{applyScalarMatrixELL()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , typename Index\+Type  = local\+Idx$>$ \\
+void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+Reference}}$<$ Value\+Type, Index\+Type $>$\+::apply\+Scalar\+Matrix\+ELL (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Value\+Type, \mbox{\hyperlink{namespaceNeoN_1_1la_a7888e3c591147b90c956b478378cb752}{la\+::\+ELLMatrix}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, Index\+Type $>$ $>$ \&}]{ls }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+Segregated scalar-\/matrix / Value\+Type-\/rhs ELL form. apply\+Impl is already generic over System\+Matrix\+Type, so this is purely new dispatch plumbing, same as Div\+Operator/\+Laplacian\+Operator\textquotesingle{}s own segregated-\/\+ELL entry points. 
+
+
+
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1SetReference_adf614e31467b07f814f48c54ade4ee18}\label{classNeoN_1_1dsl_1_1SetReference_adf614e31467b07f814f48c54ade4ee18} 
 \index{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$@{NeoN::dsl::SetReference$<$ ValueType, IndexType $>$}!operator()@{operator()}}
@@ -122,7 +141,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1SetReference}{Neo\+N\+::dsl\+::\+Set\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00086}{86}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00098}{98}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
