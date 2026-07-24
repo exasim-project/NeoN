@@ -278,38 +278,50 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="293" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="293" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a5f10a5012c985982b6ab270fdc14f98b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ae937933db73f919cce6d8616d64b88f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
         <definition>Vector&lt; scalar &gt; NeoN::la::scaledInverseDiag</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;, const Vector&lt; scalar &gt; &amp;)</argsstring>
+        <argsstring>(const Matrix&lt; Vec3, SparsityType &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;a)</argsstring>
         <name>scaledInverseDiag</name>
         <qualifiedname>NeoN::la::scaledInverseDiag</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, SparsityType &gt; &amp;</type>
+          <declname>mtx</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>a</declname>
         </param>
         <briefdescription>
 <para>computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1 </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="note"><para>this function is a specialized function for CSR&lt;Vec3&gt; matrices assuming all diagonal entries are identical </para>
+<para><simplesect kind="note"><para>this function is a specialized function for <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> matrices assuming all diagonal entries are identical. Format-generic over SparsityType (CSR or ELL); linear-scans each row for the diagonal since no <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> is available here. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="300" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="300" declcolumn="1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="302" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="302" declcolumn="1"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1adb9cd225a8925a20dc28f935ce424d96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a7b45bdd32de0c16018c9a98bdec76d0b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void NeoN::la::scaledInverseDiag</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;a, Vector&lt; scalar &gt; &amp;out)</argsstring>
+        <argsstring>(const Matrix&lt; Vec3, SparsityType &gt; &amp;mtx, const Vector&lt; scalar &gt; &amp;a, Vector&lt; scalar &gt; &amp;out)</argsstring>
         <name>scaledInverseDiag</name>
         <qualifiedname>NeoN::la::scaledInverseDiag</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, SparsityType &gt; &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -326,16 +338,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="302" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="302" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="305" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="305" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a96a9cd52040cb112efb1687ad2e26514" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ad4679f56cad423d05b06cc4053e42244" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
         <definition>Vector&lt; scalar &gt; NeoN::la::scaledInverseDiag</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;)</argsstring>
+        <argsstring>(const Matrix&lt; Vec3, SparsityType &gt; &amp;mtx, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;a)</argsstring>
         <name>scaledInverseDiag</name>
         <qualifiedname>NeoN::la::scaledInverseDiag</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, SparsityType &gt; &amp;</type>
+          <declname>mtx</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> &amp;</type>
@@ -343,27 +361,33 @@
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>a</declname>
         </param>
         <briefdescription>
-<para>computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1 </para>
+<para>computes the inverted diagonal of a matrix and scales it by a, ie. a*D^-1, using a <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> for O(1) diagonal lookup instead of a linear scan. </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="note"><para>this function is a specialized function for CSR&lt;Vec3&gt; matrices assuming all diagonal entries are identical </para>
+<para><simplesect kind="note"><para>this function is a specialized function for <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> matrices assuming all diagonal entries are identical. Format-generic over SparsityType (CSR or ELL). </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="311" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="311" declcolumn="1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="315" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="315" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a18fdc1f906d7d295e059b13757ae1b4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a121d538fee35b968e7ca74406dfa0846" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void NeoN::la::scaledInverseDiag</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;a, Vector&lt; scalar &gt; &amp;out)</argsstring>
+        <argsstring>(const Matrix&lt; Vec3, SparsityType &gt; &amp;mtx, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;a, Vector&lt; scalar &gt; &amp;out)</argsstring>
         <name>scaledInverseDiag</name>
         <qualifiedname>NeoN::la::scaledInverseDiag</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, SparsityType &gt; &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -384,16 +408,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="313" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="313" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="320" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="320" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a7920f178e0850221a8379f40b6fc0be7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a8c074b657584b861c87af280b1d5aa28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt;</type>
         <definition>Vector&lt; scalar &gt; NeoN::la::scaledInverseDiag</definition>
-        <argsstring>(const CSRMatrix&lt; scalar, localIdx &gt; &amp;, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;)</argsstring>
+        <argsstring>(const Matrix&lt; scalar, SparsityType &gt; &amp;mtx, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;a)</argsstring>
         <name>scaledInverseDiag</name>
         <qualifiedname>NeoN::la::scaledInverseDiag</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, SparsityType &gt; &amp;</type>
+          <declname>mtx</declname>
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> &amp;</type>
@@ -401,27 +431,33 @@
         </param>
         <param>
           <type>const <ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>a</declname>
         </param>
         <briefdescription>
 <para>scalar-matrix variant of scaledInverseDiag for the segregated vector-solve form </para>
         </briefdescription>
         <detaileddescription>
-<para><simplesect kind="note"><para>used when a vector field is assembled into a scalar coefficient matrix; the scalar diagonal is shared across all field components, so no per-component selection is needed </para>
+<para><simplesect kind="note"><para>used when a vector field is assembled into a scalar coefficient matrix; the scalar diagonal is shared across all field components, so no per-component selection is needed. Format-generic over SparsityType (CSR or ELL). </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="325" column="1" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="325" declcolumn="1"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="333" column="9" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="333" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1ab62d54c2f534e3008b116c95526b8e2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1ac10bbdf46cecaf4970bf100c2b0da6ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void NeoN::la::scaledInverseDiag</definition>
-        <argsstring>(const CSRMatrix&lt; scalar, localIdx &gt; &amp;mtx, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;a, Vector&lt; scalar &gt; &amp;out)</argsstring>
+        <argsstring>(const Matrix&lt; scalar, SparsityType &gt; &amp;mtx, const FaceToMatrixAddress &amp;mi, const Vector&lt; scalar &gt; &amp;a, Vector&lt; scalar &gt; &amp;out)</argsstring>
         <name>scaledInverseDiag</name>
         <qualifiedname>NeoN::la::scaledInverseDiag</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, SparsityType &gt; &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -442,7 +478,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="327" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="327" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="338" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="338" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a52a50e55f8c3581196746319dd5275f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -467,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="336" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="336" bodyend="340"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="347" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" bodystart="347" bodyend="351"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1a81ea5bf6450cb2402acf9f981d5583ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -507,16 +543,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="346" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="346" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="357" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="357" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a6369807c83d198788433759422ed1fd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a746a31832544cff3c56deb943c5418c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void NeoN::la::scaledInvDiagNegLUx</definition>
-        <argsstring>(const CSRMatrix&lt; Vec3, localIdx &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;vol, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
+        <argsstring>(const Matrix&lt; Vec3, SparsityType &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;vol, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
         <name>scaledInvDiagNegLUx</name>
         <qualifiedname>NeoN::la::scaledInvDiagNegLUx</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref>, SparsityType &gt; &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -543,20 +584,25 @@
 <para>computes out = -(L+U) x </para>
         </briefdescription>
         <detaileddescription>
-<para>@notes explicitly sets out values to zero </para>
+<para>@notes explicitly sets out values to zero. Format-generic over SparsityType (CSR or ELL); no <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> is taken here, since the diagonal is identified while walking each row anyway (needed to skip it from the off-diagonal sum). </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="359" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="359" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="373" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="373" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1la_1a6e9946d5093c2d0847c1c5d38cbb358a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1la_1a2ab2fc7e511b0911df0d090c4a00c696" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename SparsityType</type>
+          </param>
+        </templateparamlist>
         <type>void</type>
         <definition>void NeoN::la::scaledInvDiagNegLUx</definition>
-        <argsstring>(const CSRMatrix&lt; scalar, localIdx &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;vol, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
+        <argsstring>(const Matrix&lt; scalar, SparsityType &gt; &amp;mtx, const Vector&lt; Vec3 &gt; &amp;a, const Vector&lt; Vec3 &gt; &amp;b, const Vector&lt; scalar &gt; &amp;vol, Vector&lt; scalar &gt; &amp;rAU, Vector&lt; Vec3 &gt; &amp;out)</argsstring>
         <name>scaledInvDiagNegLUx</name>
         <qualifiedname>NeoN::la::scaledInvDiagNegLUx</qualifiedname>
         <param>
-          <type>const <ref refid="namespaceNeoN_1_1la_1a4064571a77faf7ba5e54a0982ed318b7" kindref="member">CSRMatrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt; &amp;</type>
+          <type>const <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref>, SparsityType &gt; &amp;</type>
           <declname>mtx</declname>
         </param>
         <param>
@@ -583,12 +629,12 @@
 <para>scalar-matrix / Vec3-rhs variant of scaledInvDiagNegLUx </para>
         </briefdescription>
         <detaileddescription>
-<para>Mirrors the Vec3-matrix overload but for a scalar coefficient matrix assembled from a vector field (segregated vector-solve form). The scalar diagonal/off-diagonal entries scale all three rhs components equally.</para>
+<para>Mirrors the Vec3-matrix overload but for a scalar coefficient matrix assembled from a vector field (segregated vector-solve form). The scalar diagonal/off-diagonal entries scale all three rhs components equally. Format-generic over SparsityType (CSR or ELL).</para>
 <para>@notes explicitly sets out values to zero </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="376" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="376" declcolumn="6"/>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" line="391" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/matrix.hpp" declline="391" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1la_1ad6d454dd6fb2e31259a6349219c08629" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref>&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
