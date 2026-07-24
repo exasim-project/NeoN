@@ -18,6 +18,17 @@ several ways, all on the GPU, and times the solve:
                    (OpenFOAM-style alpha + face coefficients) and solver are
                    built ONCE, so each timed solve is only pack -> apply ->
                    unpack. The mat-vec recomputes entries from the face fields.
+* ``mf-pmg``     — the same persistent matrix-free CG preconditioned by ONE
+                   MLMG V-cycle per iteration (``precond_mlmg``, an MLMG built
+                   once on the equivalent MLABecLaplacian — part of setup): the
+                   Krylov iteration count then stays ~flat in N like ``mlmg``,
+                   while the outer operator stays matrix-free.
+* ``mf-gmg``     — the same persistent matrix-free CG preconditioned by the
+                   NATIVE geometric-multigrid V-cycle (``precond="gmg"``): the
+                   level hierarchy is built once from the face coefficients with
+                   AMReX primitives only — no MLLinOp/MLMG anywhere — so each
+                   preconditioner apply is a plain V-cycle with none of MLMG's
+                   per-solve residual bookkeeping.
 * ``csr``        — persistent ``FaceCoeffCsrSolver`` CG: the SAME matrix assembled
                    into a Ginkgo CSR. Unpreconditioned, so ``mf`` vs ``csr`` is a
                    clean apples-to-apples measure of matrix-free (recompute) vs
@@ -61,9 +72,14 @@ import numpy as np
 
 import blockamr
 
-METHODS = ("mlmg", "mlmg-nomg", "ginkgo", "mf", "csr")
+METHODS = ("mlmg", "mlmg-nomg", "ginkgo", "mf", "mf-pmg", "mf-gmg", "csr")
 # Persistent solvers built once and reused (per-solve = pack/apply/unpack only).
-PERSISTENT = {"mf": "FaceCoeffSolver", "csr": "FaceCoeffCsrSolver"}
+PERSISTENT = {
+    "mf": "FaceCoeffSolver",
+    "mf-pmg": "FaceCoeffSolver",
+    "mf-gmg": "FaceCoeffSolver",
+    "csr": "FaceCoeffCsrSolver",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -153,6 +169,19 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
     """Build a persistent solver ONCE. It keeps the coefficient fields alive."""
     alpha, fx, fy, fz = build_face_coeffs(geom, ba, dm, max_size)
     cls = getattr(blockamr, PERSISTENT[method])
+    kwargs = {}
+    if method == "mf-pmg":
+        # MLMG preconditioner on the equivalent assembled operator: one V-cycle
+        # per Krylov iteration. Built here, so it counts as setup; the solver's
+        # keep_alive ties its lifetime to the returned object.
+        mlmg = blockamr.MLMG(make_abec(geom, ba, dm, max_size))
+        mlmg.set_verbose(0)
+        kwargs = {"precond_mlmg": mlmg, "precond_cycles": 1}
+    elif method == "mf-gmg":
+        # Native matrix-free geometric multigrid: the whole hierarchy is built
+        # inside the solver constructor (setup-timed), from the face
+        # coefficients alone — no MLMG object involved.
+        kwargs = {"precond": "gmg", "precond_cycles": 1}
     return cls(
         alpha=alpha,
         ux=fx,
@@ -166,6 +195,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         solver="cg",
         max_iter=max_iter,
         rtol=rtol,
+        **kwargs,
     )
 
 

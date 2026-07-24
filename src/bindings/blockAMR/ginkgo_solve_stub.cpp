@@ -20,6 +20,10 @@ void registerGinkgoSolve(nb::module_& m)
         [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
     );
     m.def(
+        "ginkgo_solve_composite",
+        [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
+    );
+    m.def(
         "ginkgo_solve_face_coeffs",
         [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
     );

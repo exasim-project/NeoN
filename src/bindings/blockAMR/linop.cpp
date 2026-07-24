@@ -63,7 +63,14 @@ void registerLinOp(nb::module_& m)
         );
 
     // --- Base class (opaque, needed for MLMG to accept derived types) ---
-    nb::class_<MLLinOp>(m, "MLLinOp");
+    nb::class_<MLLinOp>(m, "MLLinOp")
+        // Ghost-fill interpolation order at domain boundaries (default 3 =
+        // quadratic; 2 = linear, matching a reflect-odd Dirichlet fill).
+        .def(
+            "set_max_order",
+            [](MLLinOp& lp, int o) { lp.setMaxOrder(o); },
+            nb::arg("o")
+        );
 
     // Helper: convert Python array of LinOpBCType to AMReX Array
     auto setDomainBC = [](MLLinOp& lp,
@@ -115,6 +122,34 @@ void registerLinOp(nb::module_& m)
             nb::arg("geom"),
             nb::arg("ba"),
             nb::arg("dm"),
+            nb::arg("info") = LPInfo()
+        )
+        // Multi-level (composite AMR) constructor: one geom/ba/dm per level,
+        // coarsest first (mirrors the MLNodeLaplacian list overload).
+        .def(
+            "__init__",
+            [](MLABecLap* self,
+               nb::list geoms_py, nb::list bas_py, nb::list dms_py,
+               const LPInfo& info)
+            {
+                auto n = nb::len(geoms_py);
+                Vector<Geometry> geoms;
+                Vector<BoxArray> bas;
+                Vector<DistributionMapping> dms;
+                geoms.reserve(n);
+                bas.reserve(n);
+                dms.reserve(n);
+                for (size_t i = 0; i < n; ++i)
+                {
+                    geoms.push_back(nb::cast<Geometry>(geoms_py[i]));
+                    bas.push_back(nb::cast<BoxArray>(bas_py[i]));
+                    dms.push_back(nb::cast<DistributionMapping>(dms_py[i]));
+                }
+                new (self) MLABecLap(geoms, bas, dms, info);
+            },
+            nb::arg("geoms"),
+            nb::arg("bas"),
+            nb::arg("dms"),
             nb::arg("info") = LPInfo()
         )
         .def("set_domain_bc", setDomainBC, nb::arg("lo_bc"), nb::arg("hi_bc"))
