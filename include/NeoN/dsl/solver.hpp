@@ -72,17 +72,27 @@ la::SolverStats iterativeSolveImpl(
     VectorType& solution,
     scalar t,
     scalar dt,
+    const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
     std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
+    // Fuse first, same as the other iterativeSolveImpl overload above -- without this, e.g. a
+    // div+laplacian expression assembled through this (SystemMatrixType-explicit) path never
+    // collapses into GaussGreenDivLaplacian, silently losing the fusion this optimizer exists
+    // for. optExp holds new operator objects (the fused ones), so it needs its own read() --
+    // exp's own read() (already done by solve() below, for the explicit-integration branch)
+    // doesn't carry over to them.
+    auto optExp = optimize(exp);
+    optExp.read(fvSchemes);
+
     // Derived from SystemMatrixType, not VectorType::ElementType: for a segregated form (e.g.
     // ELLMatrix<scalar,...> with a Vec3 solution) the matrix's own value type is scalar, not
     // the field's -- using ElementType directly would assemble<Vec3, ELLMatrix<scalar,...>>,
     // a mismatched AssemblyType/SystemMatrixType pair. Same result as before for the CSR-default
     // case, since CSRMatrix<ElementType,...>::MatrixValueType == ElementType.
     using AssemblyType = typename SystemMatrixType::MatrixValueType;
-    auto ls = exp.template assemble<AssemblyType, SystemMatrixType>(solution.mesh(), t, dt, ps);
+    auto ls = optExp.template assemble<AssemblyType, SystemMatrixType>(solution.mesh(), t, dt, ps);
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
@@ -118,21 +128,23 @@ std::optional<la::SolverStats> solve(
     {
         NF_ERROR_EXIT("No temporal or implicit terms to solve.");
     }
-    exp.read(fvSchemes);
     auto integrator = timeIntegration::TimeIntegration<VectorType>(
         fvSchemes.subDict("timeIntegration"), fvSolution
     );
 
     if (exp.temporalOperators().size() > 0 && integrator.explicitIntegration())
     {
-        // integrate equations in time
+        // integrate equations in time -- read() belongs here now, not above unconditionally:
+        // the implicit branch below reads its own optimize()d copy instead (see
+        // iterativeSolveImpl), so reading exp itself here would be redundant, dead work.
+        exp.read(fvSchemes);
         integrator.solve(exp, solution, t, dt);
         return std::nullopt; // no linear solve was performed, so no stats to return
     }
     else
     {
         return detail::iterativeSolveImpl<VectorType, IndexType, SystemMatrixType>(
-            exp, solution, t, dt, fvSolution, p
+            exp, solution, t, dt, fvSchemes, fvSolution, p
         );
     }
 }

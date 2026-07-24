@@ -136,9 +136,9 @@ TEMPLATE_TEST_CASE("SourceTerm matches for CSR and ELL", "[template]", NeoN::sca
 // point) assembles into an ELL system via Expression::assemble<AssemblyType, SystemMatrixType>()
 // and solves through the same la::Solver interface production code holds -- not by calling
 // SourceTerm::implicitOperation() or GinkgoSolver::solveImpl() directly, unlike every other ELL
-// test so far. dsl::solve()/detail::iterativeSolveImpl stay untouched and CSR-only for now, so
-// this calls Expression::assemble() and Solver::solve() directly rather than going through
-// dsl::solve() itself.
+// test so far. dsl::solve() itself now supports ELL too (see test/dsl/solver.cpp); this test
+// predates that and calls Expression::assemble() and Solver::solve() directly, which is still a
+// meaningful vertical slice on its own.
 TEST_CASE("Expression assembles ELL and solves through Solver, matches CSR")
 {
     using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
