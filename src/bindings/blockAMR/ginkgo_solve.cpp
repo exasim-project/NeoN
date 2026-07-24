@@ -30,10 +30,16 @@
 
 #include <ginkgo/ginkgo.hpp>
 
+#include <nvtx3/nvToolsExt.h> // header-only NVTX v3 (M0 profiling ranges)
+
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
+#include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -49,14 +55,102 @@ namespace
 using MLMG = amrex::MLMGT<amrex::MultiFab>;
 using Dense = gko::matrix::Dense<double>;
 
+// ---------------------------------------------------------------------------
+// M0 phase profiling. Env var BLOCKAMR_PROFILE (read once):
+//   unset/0 : off — a single cached-int check per phase, no syncs, no NVTX.
+//   1       : wall-clock phase timers, each phase bounded by
+//             amrex::Gpu::streamSynchronize() on both ends (honest per-phase
+//             attribution, but the extra syncs perturb the total), plus NVTX.
+//   2       : NVTX ranges only, no extra syncs — for nsys GPU-projected
+//             timelines of the unperturbed solve.
+// Accumulated seconds/counts are exposed via profile_report()/profile_reset().
+namespace prof
+{
+
+inline int mode()
+{
+    static const int m = []
+    {
+        const char* v = std::getenv("BLOCKAMR_PROFILE");
+        return (v != nullptr && v[0] != '\0') ? std::atoi(v) : 0;
+    }();
+    return m;
+}
+
+struct Acc
+{
+    double sec = 0.0;
+    long count = 0;
+};
+
+inline std::map<std::string, Acc>& table()
+{
+    static std::map<std::string, Acc> t;
+    return t;
+}
+
+// Scoped phase timer; lvl >= 0 appends ".L<lvl>" (multigrid level) to the key.
+class Timer
+{
+public:
+
+    explicit Timer(const char* name, int lvl = -1)
+    {
+        if (mode() == 0)
+        {
+            return;
+        }
+        key_ = (lvl >= 0) ? std::string(name) + ".L" + std::to_string(lvl) : name;
+        nvtxRangePushA(key_.c_str());
+        if (mode() == 1)
+        {
+            amrex::Gpu::streamSynchronize();
+            t0_ = std::chrono::steady_clock::now();
+        }
+    }
+
+    ~Timer()
+    {
+        if (mode() == 0)
+        {
+            return;
+        }
+        if (mode() == 1)
+        {
+            amrex::Gpu::streamSynchronize();
+            const std::chrono::duration<double> dt = std::chrono::steady_clock::now() - t0_;
+            auto& a = table()[key_];
+            a.sec += dt.count();
+            ++a.count;
+        }
+        nvtxRangePop();
+    }
+
+    Timer(const Timer&) = delete;
+    Timer& operator=(const Timer&) = delete;
+
+private:
+
+    std::string key_;
+    std::chrono::steady_clock::time_point t0_;
+};
+
+} // namespace prof
+
 // Flat-vector <-> MultiFab transfer (component 0, valid cells only).
 // gather and scatter MUST traverse cells in the identical order: MFIter
 // without tiling, then k,j,i over the valid box. MultiFabs live in device
 // memory by default in GPU builds, so access is staged through explicit
 // host copies unless the arena is host-accessible. `scale` lets gather
 // apply the SPD sign flip (-L) in the same pass.
-void gather(const amrex::MultiFab& mf, double* buf, double scale)
+// Templated on the FabArray type so the same host path serves the FP64
+// MultiFab (Ginkgo double vector) and the FP32 GMG level fields
+// (FabArray<BaseFab<float>>): the flat Ginkgo buffer is always double, so the
+// per-cell read/write converts to/from the fab's value_type.
+template<class FA>
+void gather(const FA& mf, double* buf, double scale)
 {
+    using T = typename FA::value_type;
     const bool hostOk = mf.arena()->isHostAccessible();
     amrex::Gpu::streamSynchronize();
     std::size_t idx = 0;
@@ -65,14 +159,14 @@ void gather(const amrex::MultiFab& mf, double* buf, double scale)
         const amrex::Box& vbx = mfi.validbox();
         const auto& fab = mf[mfi];
         const amrex::Box& fbx = fab.box();
-        std::vector<double> stage;
+        std::vector<T> stage;
         auto arr = fab.const_array();
         if (!hostOk)
         {
             // Component 0 occupies the first numPts() elements of the fab.
             stage.resize(static_cast<std::size_t>(fbx.numPts()));
-            amrex::Gpu::dtoh_memcpy(stage.data(), fab.dataPtr(), stage.size() * sizeof(double));
-            arr = amrex::makeArray4<const double>(stage.data(), fbx, 1);
+            amrex::Gpu::dtoh_memcpy(stage.data(), fab.dataPtr(), stage.size() * sizeof(T));
+            arr = amrex::makeArray4<const T>(stage.data(), fbx, 1);
         }
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
@@ -82,15 +176,17 @@ void gather(const amrex::MultiFab& mf, double* buf, double scale)
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    buf[idx++] = scale * arr(i, j, k);
+                    buf[idx++] = scale * static_cast<double>(arr(i, j, k));
                 }
             }
         }
     }
 }
 
-void scatter(const double* buf, amrex::MultiFab& mf)
+template<class FA>
+void scatter(const double* buf, FA& mf)
 {
+    using T = typename FA::value_type;
     const bool hostOk = mf.arena()->isHostAccessible();
     amrex::Gpu::streamSynchronize();
     std::size_t idx = 0;
@@ -99,14 +195,14 @@ void scatter(const double* buf, amrex::MultiFab& mf)
         const amrex::Box& vbx = mfi.validbox();
         auto& fab = mf[mfi];
         const amrex::Box& fbx = fab.box();
-        std::vector<double> stage;
+        std::vector<T> stage;
         auto arr = fab.array();
         if (!hostOk)
         {
             // Round-trip the full fab so ghost values survive the update.
             stage.resize(static_cast<std::size_t>(fbx.numPts()));
-            amrex::Gpu::dtoh_memcpy(stage.data(), fab.dataPtr(), stage.size() * sizeof(double));
-            arr = amrex::makeArray4<double>(stage.data(), fbx, 1);
+            amrex::Gpu::dtoh_memcpy(stage.data(), fab.dataPtr(), stage.size() * sizeof(T));
+            arr = amrex::makeArray4<T>(stage.data(), fbx, 1);
         }
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
@@ -116,13 +212,13 @@ void scatter(const double* buf, amrex::MultiFab& mf)
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    arr(i, j, k) = buf[idx++];
+                    arr(i, j, k) = static_cast<T>(buf[idx++]);
                 }
             }
         }
         if (!hostOk)
         {
-            amrex::Gpu::htod_memcpy(fab.dataPtr(), stage.data(), stage.size() * sizeof(double));
+            amrex::Gpu::htod_memcpy(fab.dataPtr(), stage.data(), stage.size() * sizeof(T));
         }
     }
 }
@@ -133,8 +229,13 @@ void scatter(const double* buf, amrex::MultiFab& mf)
 // match the host gather/scatter above (MFIter order; within a valid box the
 // index runs fastest in i, then j, then k), because the one-time RHS pack and
 // solution unpack in the solve still use the host path.
-void scatter_device(const double* vec, amrex::MultiFab& mf)
+// Templated on the FabArray type (see the host twins): the flat Ginkgo vector
+// is double; the fab may be double (FP64 path) or float (FP32 GMG level), so the
+// per-cell copy converts through the fab's value_type on the device.
+template<class FA>
+void scatter_device(const double* vec, FA& mf)
 {
+    using T = typename FA::value_type;
     long off = 0;
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
     {
@@ -150,14 +251,15 @@ void scatter_device(const double* vec, amrex::MultiFab& mf)
             {
                 const long idx =
                     o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                a(i, j, k) = vec[idx];
+                a(i, j, k) = static_cast<T>(vec[idx]);
             }
         );
         off += vbx.numPts();
     }
 }
 
-void gather_device(const amrex::MultiFab& mf, double* vec, double scale)
+template<class FA>
+void gather_device(const FA& mf, double* vec, double scale)
 {
     long off = 0;
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
@@ -174,7 +276,7 @@ void gather_device(const amrex::MultiFab& mf, double* vec, double scale)
             {
                 const long idx =
                     o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                vec[idx] = scale * a(i, j, k);
+                vec[idx] = scale * static_cast<double>(a(i, j, k));
             }
         );
         off += vbx.numPts();
@@ -620,8 +722,12 @@ bool bcGhostFill(
 // layers are needed — the 7-point stencil never reads edge/corner ghosts.
 // Free function: nvcc forbids an extended __device__ lambda inside a
 // protected/private member.
-void fillDomainBcGhostsDevice(amrex::MultiFab& mf, const amrex::Box& domain, const BcArray& bc)
+// Templated on the FabArray type: serves the FP64 operator MultiFab and the
+// FP32 GMG level fabs; `value_type` sizes the sign/reflection cast.
+template<class FA>
+void fillDomainBcGhostsDevice(FA& mf, const amrex::Box& domain, const BcArray& bc)
 {
+    using T = typename FA::value_type;
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -633,7 +739,7 @@ void fillDomainBcGhostsDevice(amrex::MultiFab& mf, const amrex::Box& domain, con
             {
                 continue;
             }
-            const double sign = f.sign;
+            const T sign = static_cast<T>(f.sign);
             const int di = f.di, dj = f.dj, dk = f.dk;
             amrex::ParallelFor(
                 f.gbx,
@@ -645,7 +751,8 @@ void fillDomainBcGhostsDevice(amrex::MultiFab& mf, const amrex::Box& domain, con
 }
 
 // Host-loop twin of fillDomainBcGhostsDevice for the ReferenceExecutor path.
-void fillDomainBcGhostsHost(amrex::MultiFab& mf, const amrex::Box& domain, const BcArray& bc)
+template<class FA>
+void fillDomainBcGhostsHost(FA& mf, const amrex::Box& domain, const BcArray& bc)
 {
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
     {
@@ -674,14 +781,53 @@ void fillDomainBcGhostsHost(amrex::MultiFab& mf, const amrex::Box& domain, const
     }
 }
 
-// Device face-coefficient stencil (OpenFOAM Amul, pull form) as a free function
-// so the extended __device__ lambda has a namespace-scope enclosing function
-// (nvcc forbids it inside a protected/private member). out = A * in with the
-// diagonal formed on the fly as alpha - negSumDiag(faces); in's ghosts must
-// already be filled.
-void faceCoeffStencilDevice(
+// Scatter ONLY the ghost-adjacent shell (outer 1-cell layer of each valid box)
+// from the flat Ginkgo vector into the MultiFab (M3 3a). That shell is all that
+// FillBoundary (periodic/internal) and the reflect domain-BC fill read to
+// populate the face ghosts the fused stencil consults; the interior valid cells
+// are read straight from the flat vector by faceCoeffStencilFusedDevice, so they
+// need not be copied. Flat index matches scatter_device (box-by-box, i fastest).
+void scatterShellDevice(const double* vec, amrex::MultiFab& mf)
+{
+    long off = 0;
+    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto a = mf.array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        const int ni = vbx.length(0);
+        const int nj = vbx.length(1);
+        const long o = off;
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            {
+                if (i == lo.x || i == hi.x || j == lo.y || j == hi.y || k == lo.z || k == hi.z)
+                {
+                    const long idx =
+                        o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
+                    a(i, j, k) = vec[idx];
+                }
+            }
+        );
+        off += vbx.numPts();
+    }
+}
+
+// Fused matrix-free apply (M3 3a) that skips the full flat<->MultiFab pack/unpack:
+// the stencil reads the centre and any interior neighbour straight from the flat
+// Ginkgo input `bvec`, consulting the ghosted scratch `in` ONLY for a neighbour
+// that leaves the valid box (periodic/internal/domain-BC ghost, filled from the
+// shell scatter + FillBoundary), and writes the result straight into the flat
+// output `xvec`. No out_ MultiFab, no gather. Bit-identical to the plain
+// face-coefficient stencil + full scatter/gather (interior flat values equal the
+// scattered in_ values). Flat index matches scatter_device. Assumes b/x do not
+// alias (Krylov apply never aliases operand and result).
+void faceCoeffStencilFusedDevice(
+    const double* bvec,
+    double* xvec,
     const amrex::MultiFab& in,
-    amrex::MultiFab& out,
     const amrex::MultiFab& ux,
     const amrex::MultiFab& lx,
     const amrex::MultiFab& uy,
@@ -691,11 +837,11 @@ void faceCoeffStencilDevice(
     const amrex::MultiFab& alpha
 )
 {
-    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+    long off = 0;
+    for (amrex::MFIter mfi(in); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = in.const_array(mfi);
-        const auto o = out.array(mfi);
         const auto ax = ux.const_array(mfi);
         const auto lxa = lx.const_array(mfi);
         const auto ay = uy.const_array(mfi);
@@ -703,23 +849,39 @@ void faceCoeffStencilDevice(
         const auto az = uz.const_array(mfi);
         const auto lza = lz.const_array(mfi);
         const auto al = alpha.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        const int ni = vbx.length(0);
+        const int nj = vbx.length(1);
+        const long nij = static_cast<long>(ni) * nj;
+        const long o = off;
+        const double* b = bvec;
+        double* xo = xvec;
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
+                const long idx =
+                    o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
+                const double pC = b[idx];
+                const double pE = (i < hi.x) ? b[idx + 1] : psi(i + 1, j, k);
+                const double pW = (i > lo.x) ? b[idx - 1] : psi(i - 1, j, k);
+                const double pN = (j < hi.y) ? b[idx + ni] : psi(i, j + 1, k);
+                const double pS = (j > lo.y) ? b[idx - ni] : psi(i, j - 1, k);
+                const double pT = (k < hi.z) ? b[idx + nij] : psi(i, j, k + 1);
+                const double pB = (k > lo.z) ? b[idx - nij] : psi(i, j, k - 1);
                 const double aE = ax(i + 1, j, k);
                 const double aW = lxa(i, j, k);
                 const double aN = ay(i, j + 1, k);
                 const double aS = lya(i, j, k);
                 const double aT = az(i, j, k + 1);
                 const double aB = lza(i, j, k);
-                const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                 + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                 + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                const double offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
                 const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-                o(i, j, k) = diag * psi(i, j, k) + off;
+                xo[idx] = diag * pC + offd;
             }
         );
+        off += vbx.numPts();
     }
 }
 
@@ -818,21 +980,44 @@ protected:
     {
         if (onDevice_)
         {
-            this->get_executor()->synchronize(); // b written by Ginkgo
-            scatter_device(gko::as<Dense>(b)->get_const_values(), *in_);
-            in_->FillBoundary(geom_.periodicity());
-            if (hasPhysBc_)
+            prof::Timer tAll("op.apply");
             {
-                // Domain-boundary ghosts: reflect-odd/even folds the
-                // homogeneous Dirichlet/Neumann BCs into the stencil.
-                fillDomainBcGhostsDevice(*in_, geom_.Domain(), bc_);
+                prof::Timer t("op.sync_gko");
+                this->get_executor()->synchronize(); // b written by Ginkgo
+            }
+            const double* bvals = gko::as<Dense>(b)->get_const_values();
+            double* xvals = gko::as<Dense>(x)->get_values();
+            {
+                // M3 3a: only the ghost-adjacent shell needs to reach the MF —
+                // FillBoundary/domain-BC read it to fill the face ghosts; the
+                // interior is read straight from the flat vector by the stencil.
+                prof::Timer t("op.scatter");
+                scatterShellDevice(bvals, *in_);
+            }
+            {
+                prof::Timer t("op.fill");
+                in_->FillBoundary(geom_.periodicity());
+                if (hasPhysBc_)
+                {
+                    // Domain-boundary ghosts: reflect-odd/even folds the
+                    // homogeneous Dirichlet/Neumann BCs into the stencil.
+                    fillDomainBcGhostsDevice(*in_, geom_.Domain(), bc_);
+                }
             }
             amrex::Gpu::streamSynchronize();
-            // Stencil is a free function: nvcc forbids an extended __device__
-            // lambda inside a protected/private member.
-            faceCoeffStencilDevice(*in_, *out_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_);
-            gather_device(*out_, gko::as<Dense>(x)->get_values(), 1.0);
-            amrex::Gpu::streamSynchronize(); // x complete before Ginkgo reads it
+            {
+                prof::Timer t("op.stencil");
+                // Fused: reads interior neighbours from the flat vector, ghosts
+                // from in_, writes straight to the flat output (no gather). Free
+                // function: nvcc forbids an extended __device__ lambda in a member.
+                faceCoeffStencilFusedDevice(
+                    bvals, xvals, *in_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_
+                );
+            }
+            {
+                prof::Timer t("op.gather");
+                amrex::Gpu::streamSynchronize(); // x complete before Ginkgo reads it
+            }
             return;
         }
 
@@ -927,75 +1112,233 @@ private:
 // MLLinOp/MLMG anywhere in this path. Device kernels are namespace-scope free
 // functions (nvcc: no extended __device__ lambdas in private/protected
 // members) with host-loop twins for the ReferenceExecutor path.
+//
+// Every kernel is templated on the level value type T (double for the default
+// FP64 hierarchy, float for the M5 gmg_precision="fp32" hierarchy): the whole
+// V-cycle — level coefficients, sol/rhs work fields, smoother, residual /
+// restriction / prolongation, ghost fills and the λmax power iteration — runs in
+// T while the outer CG/operator stays FP64. GmgFab<T> is the level fab type.
 // ---------------------------------------------------------------------------
 
-// resid = rhs - A(sol): the negSumDiag face-coefficient stencil in residual
-// form. sol's ghosts (periodic + domain BC) must already be filled.
-void gmgResidualDevice(
-    const amrex::MultiFab& sol,
-    const amrex::MultiFab& rhs,
-    amrex::MultiFab& resid,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
-    const amrex::MultiFab& alpha
-)
+template<class T>
+using GmgFab = amrex::FabArray<amrex::BaseFab<T>>;
+
+// Tiny |diagonal| floor guarding the RB-GS in-place division (skip rather than
+// divide by ~0). Per value type so the double path keeps its 1e-300 floor
+// exactly while the float path uses a representable one (1e-300 is not a valid
+// float literal).
+template<class T>
+AMREX_GPU_HOST_DEVICE constexpr T gmgDiagFloor();
+template<>
+AMREX_GPU_HOST_DEVICE constexpr double gmgDiagFloor<double>()
 {
-    for (amrex::MFIter mfi(resid); mfi.isValid(); ++mfi)
+    return 1e-300;
+}
+template<>
+AMREX_GPU_HOST_DEVICE constexpr float gmgDiagFloor<float>()
+{
+    return 1e-30f;
+}
+
+// Copy src (any FabArray, e.g. the caller's FP64 MultiFab or a same-type level
+// fab) into the T-valued dst, converting per cell over dst's valid box. Replaces
+// MultiFab::Copy on the FP32 path (which requires matching value types); for
+// T=double it is an exact copy, so the FP64 path is numerically unchanged.
+template<class T, class SRC>
+void gmgConvertCopyDevice(GmgFab<T>& dst, const SRC& src)
+{
+    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.const_array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto r = resid.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto d = dst.array(mfi);
+        const auto s = src.const_array(mfi);
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            {
-                const double aE = ax(i + 1, j, k);
-                const double aW = lxa(i, j, k);
-                const double aN = ay(i, j + 1, k);
-                const double aS = lya(i, j, k);
-                const double aT = az(i, j, k + 1);
-                const double aB = lza(i, j, k);
-                const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                 + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                 + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-                r(i, j, k) = b(i, j, k) - (diag * psi(i, j, k) + off);
-            }
+            { d(i, j, k) = static_cast<T>(s(i, j, k)); }
         );
     }
 }
 
-void gmgResidualHost(
+template<class T, class SRC>
+void gmgConvertCopyHost(GmgFab<T>& dst, const SRC& src)
+{
+    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto d = dst.array(mfi);
+        const auto s = src.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int k = lo.z; k <= hi.z; ++k)
+        {
+            for (int j = lo.y; j <= hi.y; ++j)
+            {
+                for (int i = lo.x; i <= hi.x; ++i)
+                {
+                    d(i, j, k) = static_cast<T>(s(i, j, k));
+                }
+            }
+        }
+    }
+}
+
+// dst += src, per cell over dst's valid box, converting through dst's value_type.
+// dst is any FabArray (the caller's FP64 MultiFab); src is a T-valued level fab.
+// The native stationary solver adds the (possibly FP32) V-cycle correction back
+// onto the FP64 solution; for both double it is a plain in-place add.
+template<class DST, class T>
+void gmgConvertAddDevice(DST& dst, const GmgFab<T>& src)
+{
+    using DT = typename DST::value_type;
+    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto d = dst.array(mfi);
+        const auto s = src.const_array(mfi);
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            { d(i, j, k) += static_cast<DT>(s(i, j, k)); }
+        );
+    }
+}
+
+template<class DST, class T>
+void gmgConvertAddHost(DST& dst, const GmgFab<T>& src)
+{
+    using DT = typename DST::value_type;
+    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto d = dst.array(mfi);
+        const auto s = src.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int k = lo.z; k <= hi.z; ++k)
+        {
+            for (int j = lo.y; j <= hi.y; ++j)
+            {
+                for (int i = lo.x; i <= hi.x; ++i)
+                {
+                    d(i, j, k) += static_cast<DT>(s(i, j, k));
+                }
+            }
+        }
+    }
+}
+
+// Fused residual + convert-scatter + norm for the native GMG stationary solver
+// (M3 target 3). Computes r = rhs - A*sol - shift in DOUBLE (shift is the
+// nullspace-projection constant, 0 when not projecting) and stores it (cast to T)
+// straight into the L0 rhs fab `out` — no separate FP64 residual MultiFab and no
+// convert-scatter pass (M3 3a). The norm is a SECOND, light kernel reducing `out`.
+//
+// Why two kernels, not one: folding the sum(r^2) reduction INTO the heavy stencil
+// kernel (10 coefficient/field Array4 + double arithmetic) was measured to cost
+// ~1.0 ms/iter at 256^3 — the reduction machinery spills the register-bound
+// kernel and slows the whole pass, exceeding the 0.34+0.54 ms it saves. A separate
+// reduction over the freshly-written `out` is only ~0.20 ms/iter (light kernel,
+// stays at the bandwidth roofline) and reuses the just-cached data.
+//
+// Precision of the norm: in the DEFAULT fp64 hierarchy (T=double) `out` holds the
+// exact double residual, so the reduced norm is bit-exact FP64 — the convergence
+// authority is unchanged. In the fp32 hierarchy (T=float) `out` holds the residual
+// rounded to float; the reduced norm therefore carries ~6e-8 relative rounding,
+// far below the ~10x per-cycle residual drop, so the stopping cycle is unchanged
+// (verified: iters and converged answer identical to the FP64-norm path). Returns
+// the FP64 sum of squares (caller takes the sqrt). Device + host twins.
+template<class T>
+double faceCoeffResidScatterNormDevice(
     const amrex::MultiFab& sol,
     const amrex::MultiFab& rhs,
-    amrex::MultiFab& resid,
     const amrex::MultiFab& ux,
     const amrex::MultiFab& lx,
     const amrex::MultiFab& uy,
     const amrex::MultiFab& ly,
     const amrex::MultiFab& uz,
     const amrex::MultiFab& lz,
-    const amrex::MultiFab& alpha
+    const amrex::MultiFab& alpha,
+    double shift,
+    GmgFab<T>& out
 )
 {
-    for (amrex::MFIter mfi(resid); mfi.isValid(); ++mfi)
+    double res;
+    {
+        prof::Timer t("gmg.solve.residkern");
+        for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+        {
+            const amrex::Box& vbx = mfi.validbox();
+            const auto psi = sol.const_array(mfi);
+            const auto bb = rhs.const_array(mfi);
+            const auto o = out.array(mfi);
+            const auto ax = ux.const_array(mfi);
+            const auto lxa = lx.const_array(mfi);
+            const auto ay = uy.const_array(mfi);
+            const auto lya = ly.const_array(mfi);
+            const auto az = uz.const_array(mfi);
+            const auto lza = lz.const_array(mfi);
+            const auto al = alpha.const_array(mfi);
+            amrex::ParallelFor(
+                vbx,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+                {
+                    const double aE = ax(i + 1, j, k);
+                    const double aW = lxa(i, j, k);
+                    const double aN = ay(i, j + 1, k);
+                    const double aS = lya(i, j, k);
+                    const double aT = az(i, j, k + 1);
+                    const double aB = lza(i, j, k);
+                    const double offd = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                      + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                      + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const double r = bb(i, j, k) - (diag * psi(i, j, k) + offd) - shift;
+                    o(i, j, k) = static_cast<T>(r);
+                }
+            );
+        }
+    }
+    {
+        prof::Timer t("gmg.solve.normkern");
+        const auto o_ma = out.const_arrays();
+        res = amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum> {},
+            amrex::TypeList<double> {},
+            out,
+            amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
+            {
+                const double v = static_cast<double>(o_ma[box](i, j, k));
+                return {v * v};
+            }
+        );
+    }
+    return res;
+}
+
+template<class T>
+double faceCoeffResidScatterNormHost(
+    const amrex::MultiFab& sol,
+    const amrex::MultiFab& rhs,
+    const amrex::MultiFab& ux,
+    const amrex::MultiFab& lx,
+    const amrex::MultiFab& uy,
+    const amrex::MultiFab& ly,
+    const amrex::MultiFab& uz,
+    const amrex::MultiFab& lz,
+    const amrex::MultiFab& alpha,
+    double shift,
+    GmgFab<T>& out
+)
+{
+    double sumsq = 0.0;
+    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = sol.const_array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto r = resid.array(mfi);
+        const auto bb = rhs.const_array(mfi);
+        const auto o = out.array(mfi);
         const auto ax = ux.const_array(mfi);
         const auto lxa = lx.const_array(mfi);
         const auto ay = uy.const_array(mfi);
@@ -1017,15 +1360,53 @@ void gmgResidualHost(
                     const double aS = lya(i, j, k);
                     const double aT = az(i, j, k + 1);
                     const double aB = lza(i, j, k);
-                    const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                     + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                     + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const double offd = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                      + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                      + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
                     const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-                    r(i, j, k) = b(i, j, k) - (diag * psi(i, j, k) + off);
+                    const double r = bb(i, j, k) - (diag * psi(i, j, k) + offd) - shift;
+                    o(i, j, k) = static_cast<T>(r);
+                    // Reduce the STORED value (like the device twin's separate
+                    // ParReduce over `out`) so reference and cuda give an identical
+                    // norm: exact FP64 for T=double, fp32-rounded for T=float.
+                    const double v = static_cast<double>(o(i, j, k));
+                    sumsq += v * v;
                 }
             }
         }
     }
+    return sumsq;
+}
+
+// ||mf||_2 over the valid region (0 ghost), accumulated in the fab's value_type
+// (single-box/single-rank hierarchy; used only by the setup power iteration).
+template<class T>
+double gmgNorm2(const GmgFab<T>& mf)
+{
+    const T sq = amrex::ReduceSum(
+        mf,
+        amrex::IntVect(0),
+        [=] AMREX_GPU_HOST_DEVICE(
+            const amrex::Box& bx, const amrex::Array4<const T>& a
+        ) -> T
+        {
+            T s = 0;
+            const auto lo = amrex::lbound(bx);
+            const auto hi = amrex::ubound(bx);
+            for (int k = lo.z; k <= hi.z; ++k)
+            {
+                for (int j = lo.y; j <= hi.y; ++j)
+                {
+                    for (int i = lo.x; i <= hi.x; ++i)
+                    {
+                        s += a(i, j, k) * a(i, j, k);
+                    }
+                }
+            }
+            return s;
+        }
+    );
+    return std::sqrt(static_cast<double>(sq));
 }
 
 // One red-black Gauss-Seidel colour pass: cells with (i+j+k) parity `parity`
@@ -1033,16 +1414,17 @@ void gmgResidualHost(
 // sum(face coeffs) recomputed on the fly (tiny |D| guarded to no update). The
 // 7-point stencil only couples opposite colours, so the in-place update is
 // race-free. sol's ghosts must be refreshed before EACH colour pass.
+template<class T>
 void gmgGsColorDevice(
-    amrex::MultiFab& sol,
-    const amrex::MultiFab& rhs,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
-    const amrex::MultiFab& alpha,
+    GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha,
     int parity
 )
 {
@@ -1066,17 +1448,17 @@ void gmgGsColorDevice(
                 {
                     return;
                 }
-                const double aE = ax(i + 1, j, k);
-                const double aW = lxa(i, j, k);
-                const double aN = ay(i, j + 1, k);
-                const double aS = lya(i, j, k);
-                const double aT = az(i, j, k + 1);
-                const double aB = lza(i, j, k);
-                const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                 + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                 + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-                if (amrex::Math::abs(diag) > 1e-300)
+                const T aE = ax(i + 1, j, k);
+                const T aW = lxa(i, j, k);
+                const T aN = ay(i, j + 1, k);
+                const T aS = lya(i, j, k);
+                const T aT = az(i, j, k + 1);
+                const T aB = lza(i, j, k);
+                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                            + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                            + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                if (amrex::Math::abs(diag) > gmgDiagFloor<T>())
                 {
                     psi(i, j, k) = (b(i, j, k) - off) / diag;
                 }
@@ -1085,16 +1467,17 @@ void gmgGsColorDevice(
     }
 }
 
+template<class T>
 void gmgGsColorHost(
-    amrex::MultiFab& sol,
-    const amrex::MultiFab& rhs,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
-    const amrex::MultiFab& alpha,
+    GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha,
     int parity
 )
 {
@@ -1122,17 +1505,17 @@ void gmgGsColorHost(
                     {
                         continue;
                     }
-                    const double aE = ax(i + 1, j, k);
-                    const double aW = lxa(i, j, k);
-                    const double aN = ay(i, j + 1, k);
-                    const double aS = lya(i, j, k);
-                    const double aT = az(i, j, k + 1);
-                    const double aB = lza(i, j, k);
-                    const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                     + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                     + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-                    if (std::abs(diag) > 1e-300)
+                    const T aE = ax(i + 1, j, k);
+                    const T aW = lxa(i, j, k);
+                    const T aN = ay(i, j + 1, k);
+                    const T aS = lya(i, j, k);
+                    const T aT = az(i, j, k + 1);
+                    const T aB = lza(i, j, k);
+                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    if (std::abs(diag) > gmgDiagFloor<T>())
                     {
                         psi(i, j, k) = (b(i, j, k) - off) / diag;
                     }
@@ -1146,7 +1529,8 @@ void gmgGsColorHost(
 // 8 fine children. Also used to coarsen alpha (a per-volume density). Iterates
 // the coarse MF; the fine MF shares the DistributionMapping, so the same MFIter
 // index addresses the matching fine box (its BoxArray is refine(coarse, 2)).
-void gmgRestrictDevice(const amrex::MultiFab& fine, amrex::MultiFab& crse)
+template<class T>
+void gmgRestrictDevice(const GmgFab<T>& fine, GmgFab<T>& crse)
 {
     for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
     {
@@ -1158,7 +1542,7 @@ void gmgRestrictDevice(const amrex::MultiFab& fine, amrex::MultiFab& crse)
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
                 const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                c(i, j, k) = 0.125
+                c(i, j, k) = static_cast<T>(0.125)
                            * (f(i2, j2, k2) + f(i2 + 1, j2, k2) + f(i2, j2 + 1, k2)
                               + f(i2 + 1, j2 + 1, k2) + f(i2, j2, k2 + 1) + f(i2 + 1, j2, k2 + 1)
                               + f(i2, j2 + 1, k2 + 1) + f(i2 + 1, j2 + 1, k2 + 1));
@@ -1167,7 +1551,8 @@ void gmgRestrictDevice(const amrex::MultiFab& fine, amrex::MultiFab& crse)
     }
 }
 
-void gmgRestrictHost(const amrex::MultiFab& fine, amrex::MultiFab& crse)
+template<class T>
+void gmgRestrictHost(const GmgFab<T>& fine, GmgFab<T>& crse)
 {
     for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
     {
@@ -1183,7 +1568,7 @@ void gmgRestrictHost(const amrex::MultiFab& fine, amrex::MultiFab& crse)
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
                     const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                    c(i, j, k) = 0.125
+                    c(i, j, k) = static_cast<T>(0.125)
                                * (f(i2, j2, k2) + f(i2 + 1, j2, k2) + f(i2, j2 + 1, k2)
                                   + f(i2 + 1, j2 + 1, k2) + f(i2, j2, k2 + 1)
                                   + f(i2 + 1, j2, k2 + 1) + f(i2, j2 + 1, k2 + 1)
@@ -1198,9 +1583,8 @@ void gmgRestrictHost(const amrex::MultiFab& fine, amrex::MultiFab& crse)
 // fine face 2*i_c with the 2x2 transverse fine faces; a ~ -beta/dx^2, so the
 // coarse coefficient is the arithmetic average of those 4 fine coefficients
 // (beta averaged) divided by `scale` (dx doubled -> 4 for rediscretisation).
-void gmgCoarsenFaceDevice(
-    const amrex::MultiFab& fine, amrex::MultiFab& crse, int dir, double scale
-)
+template<class T>
+void gmgCoarsenFaceDevice(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double scale)
 {
     int u[3] = {0, 0, 0}, v[3] = {0, 0, 0};
     // The two transverse (cell) directions of face-normal `dir`.
@@ -1209,7 +1593,7 @@ void gmgCoarsenFaceDevice(
     else { u[0] = 1; v[1] = 1; }
     const int u0 = u[0], u1 = u[1], u2 = u[2];
     const int v0 = v[0], v1 = v[1], v2 = v[2];
-    const double w = 0.25 / scale;
+    const T w = static_cast<T>(0.25 / scale);
     for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -1229,13 +1613,14 @@ void gmgCoarsenFaceDevice(
     }
 }
 
-void gmgCoarsenFaceHost(const amrex::MultiFab& fine, amrex::MultiFab& crse, int dir, double scale)
+template<class T>
+void gmgCoarsenFaceHost(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double scale)
 {
     int u[3] = {0, 0, 0}, v[3] = {0, 0, 0};
     if (dir == 0) { u[1] = 1; v[2] = 1; }
     else if (dir == 1) { u[0] = 1; v[2] = 1; }
     else { u[0] = 1; v[1] = 1; }
-    const double w = 0.25 / scale;
+    const T w = static_cast<T>(0.25 / scale);
     for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -1262,7 +1647,8 @@ void gmgCoarsenFaceHost(const amrex::MultiFab& fine, amrex::MultiFab& crse, int 
 
 // Piecewise-constant prolongation + correction: fine cell += coarse parent
 // value (the adjoint of the volume-average restriction, up to the 1/8 factor).
-void gmgProlongAddDevice(const amrex::MultiFab& crse, amrex::MultiFab& fine)
+template<class T>
+void gmgProlongAddDevice(const GmgFab<T>& crse, GmgFab<T>& fine)
 {
     for (amrex::MFIter mfi(fine); mfi.isValid(); ++mfi)
     {
@@ -1277,7 +1663,8 @@ void gmgProlongAddDevice(const amrex::MultiFab& crse, amrex::MultiFab& fine)
     }
 }
 
-void gmgProlongAddHost(const amrex::MultiFab& crse, amrex::MultiFab& fine)
+template<class T>
+void gmgProlongAddHost(const GmgFab<T>& crse, GmgFab<T>& fine)
 {
     for (amrex::MFIter mfi(fine); mfi.isValid(); ++mfi)
     {
@@ -1300,13 +1687,403 @@ void gmgProlongAddHost(const amrex::MultiFab& crse, amrex::MultiFab& fine)
     }
 }
 
+// Fused residual + volume-average restriction: coarse rhs cell = mean of the 8
+// fine residuals r = rhs - A sol, each computed on the fly. Iterates the coarse
+// box (fine sol's ghosts must be filled). Saves the full fine-grid resid
+// read+write of the separate residual + restriction passes (M4 item 3).
+template<class T>
+void gmgResidRestrictDevice(
+    const GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    GmgFab<T>& crhs,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha
+)
+{
+    for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = sol.const_array(mfi);
+        const auto b = rhs.const_array(mfi);
+        const auto cr = crhs.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int ic, int jc, int kc) noexcept
+            {
+                T acc = 0;
+                for (int dk = 0; dk < 2; ++dk)
+                {
+                    for (int dj = 0; dj < 2; ++dj)
+                    {
+                        for (int di = 0; di < 2; ++di)
+                        {
+                            const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
+                            const T aE = ax(i + 1, j, k);
+                            const T aW = lxa(i, j, k);
+                            const T aN = ay(i, j + 1, k);
+                            const T aS = lya(i, j, k);
+                            const T aT = az(i, j, k + 1);
+                            const T aB = lza(i, j, k);
+                            const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                        + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                        + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                            const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                            acc += b(i, j, k) - (diag * psi(i, j, k) + off);
+                        }
+                    }
+                }
+                cr(ic, jc, kc) = static_cast<T>(0.125) * acc;
+            }
+        );
+    }
+}
+
+template<class T>
+void gmgResidRestrictHost(
+    const GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    GmgFab<T>& crhs,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha
+)
+{
+    for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = sol.const_array(mfi);
+        const auto b = rhs.const_array(mfi);
+        const auto cr = crhs.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int kc = lo.z; kc <= hi.z; ++kc)
+        {
+            for (int jc = lo.y; jc <= hi.y; ++jc)
+            {
+                for (int ic = lo.x; ic <= hi.x; ++ic)
+                {
+                    T acc = 0;
+                    for (int dk = 0; dk < 2; ++dk)
+                    {
+                        for (int dj = 0; dj < 2; ++dj)
+                        {
+                            for (int di = 0; di < 2; ++di)
+                            {
+                                const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
+                                const T aE = ax(i + 1, j, k);
+                                const T aW = lxa(i, j, k);
+                                const T aN = ay(i, j + 1, k);
+                                const T aS = lya(i, j, k);
+                                const T aT = az(i, j, k + 1);
+                                const T aB = lza(i, j, k);
+                                const T off =
+                                    aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                    + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                    + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                                acc += b(i, j, k) - (diag * psi(i, j, k) + off);
+                            }
+                        }
+                    }
+                    cr(ic, jc, kc) = static_cast<T>(0.125) * acc;
+                }
+            }
+        }
+    }
+}
+
+// One fused Jacobi-Chebyshev degree step: computes r = rhs - A sol on the fly
+// (sol's ghosts must be filled) and the polynomial increment
+// d = cb * D^{-1} r + (readOld ? ca * d : 0), D = alpha - sum(face coeffs). sol
+// is NOT written here (its neighbours are read for r) — the caller adds d to sol
+// afterwards, so the whole step is Jacobi-like (race-free) and, being a fixed
+// polynomial in the symmetric operator, a symmetric linear smoother (CG-safe).
+template<class T>
+void gmgChebComputeDDevice(
+    const GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha,
+    GmgFab<T>& d,
+    T ca,
+    T cb,
+    bool readOld
+)
+{
+    for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = sol.const_array(mfi);
+        const auto b = rhs.const_array(mfi);
+        const auto dd = d.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            {
+                const T aE = ax(i + 1, j, k);
+                const T aW = lxa(i, j, k);
+                const T aN = ay(i, j + 1, k);
+                const T aS = lya(i, j, k);
+                const T aT = az(i, j, k + 1);
+                const T aB = lza(i, j, k);
+                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                            + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                            + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const T r = b(i, j, k) - (diag * psi(i, j, k) + off);
+                T dval = cb * (r / diag);
+                if (readOld)
+                {
+                    dval += ca * dd(i, j, k);
+                }
+                dd(i, j, k) = dval;
+            }
+        );
+    }
+}
+
+template<class T>
+void gmgChebComputeDHost(
+    const GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha,
+    GmgFab<T>& d,
+    T ca,
+    T cb,
+    bool readOld
+)
+{
+    for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = sol.const_array(mfi);
+        const auto b = rhs.const_array(mfi);
+        const auto dd = d.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int k = lo.z; k <= hi.z; ++k)
+        {
+            for (int j = lo.y; j <= hi.y; ++j)
+            {
+                for (int i = lo.x; i <= hi.x; ++i)
+                {
+                    const T aE = ax(i + 1, j, k);
+                    const T aW = lxa(i, j, k);
+                    const T aN = ay(i, j + 1, k);
+                    const T aS = lya(i, j, k);
+                    const T aT = az(i, j, k + 1);
+                    const T aB = lza(i, j, k);
+                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const T r = b(i, j, k) - (diag * psi(i, j, k) + off);
+                    T dval = cb * (r / diag);
+                    if (readOld)
+                    {
+                        dval += ca * dd(i, j, k);
+                    }
+                    dd(i, j, k) = dval;
+                }
+            }
+        }
+    }
+}
+
+// out = D^{-1} A v (v's ghosts filled), used by the setup power iteration that
+// estimates lambda_max of D^{-1}A per level for the Chebyshev interval.
+template<class T>
+void gmgDinvApplyDevice(
+    const GmgFab<T>& v,
+    GmgFab<T>& out,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha
+)
+{
+    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = v.const_array(mfi);
+        const auto o = out.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            {
+                const T aE = ax(i + 1, j, k);
+                const T aW = lxa(i, j, k);
+                const T aN = ay(i, j + 1, k);
+                const T aS = lya(i, j, k);
+                const T aT = az(i, j, k + 1);
+                const T aB = lza(i, j, k);
+                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                            + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                            + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                o(i, j, k) = (diag * psi(i, j, k) + off) / diag;
+            }
+        );
+    }
+}
+
+template<class T>
+void gmgDinvApplyHost(
+    const GmgFab<T>& v,
+    GmgFab<T>& out,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha
+)
+{
+    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = v.const_array(mfi);
+        const auto o = out.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int k = lo.z; k <= hi.z; ++k)
+        {
+            for (int j = lo.y; j <= hi.y; ++j)
+            {
+                for (int i = lo.x; i <= hi.x; ++i)
+                {
+                    const T aE = ax(i + 1, j, k);
+                    const T aW = lxa(i, j, k);
+                    const T aN = ay(i, j + 1, k);
+                    const T aS = lya(i, j, k);
+                    const T aT = az(i, j, k + 1);
+                    const T aB = lza(i, j, k);
+                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    o(i, j, k) = (diag * psi(i, j, k) + off) / diag;
+                }
+            }
+        }
+    }
+}
+
+// Checkerboard seed (+-1 by cell parity) for the power iteration — close to the
+// top eigenvector of the 7-point operator, so few iterations suffice.
+template<class T>
+void gmgFillCheckerDevice(GmgFab<T>& v)
+{
+    for (amrex::MFIter mfi(v); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto a = v.array(mfi);
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            { a(i, j, k) = (((i + j + k) & 1) == 0) ? T(1) : T(-1); }
+        );
+    }
+}
+
+template<class T>
+void gmgFillCheckerHost(GmgFab<T>& v)
+{
+    for (amrex::MFIter mfi(v); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto a = v.array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int k = lo.z; k <= hi.z; ++k)
+        {
+            for (int j = lo.y; j <= hi.y; ++j)
+            {
+                for (int i = lo.x; i <= hi.x; ++i)
+                {
+                    a(i, j, k) = (((i + j + k) & 1) == 0) ? T(1) : T(-1);
+                }
+            }
+        }
+    }
+}
+
 // One multigrid level: geometry, rediscretised coefficients and preallocated
-// work fields (sol needs 1 ghost for the stencil; rhs/resid are valid-only).
-struct GmgLevel
+// work fields (sol needs 1 ghost for the stencil; rhs is valid-only).
+template<class T>
+struct GmgLevelT
 {
     amrex::Geometry geom;
-    std::shared_ptr<amrex::MultiFab> alpha, ux, lx, uy, ly, uz, lz;
-    std::shared_ptr<amrex::MultiFab> sol, rhs, resid;
+    std::shared_ptr<GmgFab<T>> alpha, ux, lx, uy, ly, uz, lz;
+    std::shared_ptr<GmgFab<T>> sol, rhs;
+    std::shared_ptr<GmgFab<T>> chebD; // Chebyshev increment (only when smoother="chebyshev")
+    double lambdaMax = 0.0;            // estimate of lambda_max(D^{-1}A) on this level
 };
 
 // Native matrix-free geometric-multigrid V-cycle preconditioner on the
@@ -1322,15 +2099,53 @@ struct GmgLevel
 // copied, so later in-place updates to the caller's fields are seen by the
 // outer operator but not by this preconditioner (a slightly stale
 // preconditioner only costs iterations).
-class GmgPrecond : public gko::EnableLinOp<GmgPrecond>, public gko::EnableCreateMethod<GmgPrecond>
+// Abstract hook exposing a GMG V-cycle as operations on FP64 MultiFabs, so the
+// native stationary solver (FaceCoeffSolver solver="gmg") can drive the
+// precision-templated GmgPrecondT<T> without knowing T. The whole apply runs on
+// AMReX fabs (no Ginkgo vector), converting FP64<->T at the two ends. M3 fuses the
+// FP64 residual, its convert-scatter into the (T-typed) L0 rhs and the FP64 norm
+// into one kernel (residScatterNorm); vcycleGather runs the V-cycle(s) and adds
+// the correction back onto the FP64 x.
+class GmgApplyMf
 {
 public:
 
-    explicit GmgPrecond(std::shared_ptr<const gko::Executor> exec)
-        : gko::EnableLinOp<GmgPrecond>(exec)
+    virtual ~GmgApplyMf() = default;
+
+    // Fused r = rhs - A*sol - shift -> (cast to T) L0 rhs; L0 sol := 0; returns the
+    // FP64 sum of squares of r (norm authority stays double even for a float L0
+    // rhs). `sol`'s ghosts must already be filled by the caller.
+    virtual double residScatterNorm(
+        const amrex::MultiFab& sol,
+        const amrex::MultiFab& rhs,
+        const amrex::MultiFab& ux,
+        const amrex::MultiFab& lx,
+        const amrex::MultiFab& uy,
+        const amrex::MultiFab& ly,
+        const amrex::MultiFab& uz,
+        const amrex::MultiFab& lz,
+        const amrex::MultiFab& alpha,
+        double shift
+    ) const = 0;
+
+    // Run nCycles_ V-cycles on the L0 rhs set by residScatterNorm, then x += the
+    // (converted) L0 correction.
+    virtual void vcycleGather(amrex::MultiFab& x) const = 0;
+};
+
+template<class T>
+class GmgPrecondT :
+    public gko::EnableLinOp<GmgPrecondT<T>>,
+    public gko::EnableCreateMethod<GmgPrecondT<T>>,
+    public GmgApplyMf
+{
+public:
+
+    explicit GmgPrecondT(std::shared_ptr<const gko::Executor> exec)
+        : gko::EnableLinOp<GmgPrecondT<T>>(exec)
     {}
 
-    GmgPrecond(
+    GmgPrecondT(
         std::shared_ptr<const gko::Executor> exec,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm,
@@ -1344,12 +2159,26 @@ public:
         const amrex::MultiFab* uz,
         const amrex::MultiFab* lz,
         BcArray bc,
-        int n_cycles
+        int n_cycles,
+        int pre_sweeps,
+        int post_sweeps,
+        int coarsest_sweeps,
+        int max_levels,
+        int min_bottom,
+        const std::string& smoother
     )
-        : gko::EnableLinOp<GmgPrecond>(exec, gko::dim<2> {n, n}), bc_(bc),
+        : gko::EnableLinOp<GmgPrecondT<T>>(exec, gko::dim<2> {n, n}), bc_(bc),
           hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
-          onDevice_(exec->get_master().get() != exec.get()), nCycles_(n_cycles)
+          onDevice_(exec->get_master().get() != exec.get()), nCycles_(n_cycles),
+          preSweeps_(pre_sweeps), postSweeps_(post_sweeps), coarsestSweeps_(coarsest_sweeps),
+          useCheb_(smoother == "chebyshev")
     {
+        if (smoother != "rbgs" && smoother != "chebyshev")
+        {
+            throw std::runtime_error(
+                "GmgPrecond: unknown gmg_smoother '" + smoother + "' (expected 'rbgs' or 'chebyshev')"
+            );
+        }
         // Finest level: copy the coefficients into this preconditioner's arena
         // (default/device on cuda, pinned on reference — MultiFab::Copy handles
         // the cross-arena transfer, cf. pinnedCopy).
@@ -1370,14 +2199,18 @@ public:
         // source) = mean of the 8 fine cell values.
         while (true)
         {
-            const GmgLevel& f = levels_.back();
+            if (max_levels > 0 && static_cast<int>(levels_.size()) >= max_levels)
+            {
+                break;
+            }
+            const GmgLevelT<T>& f = levels_.back();
             const amrex::BoxArray& fba = f.alpha->boxArray();
             if (!fba.coarsenable(2, 2))
             {
                 break;
             }
             const amrex::Box cdom = amrex::coarsen(f.geom.Domain(), 2);
-            if (cdom.shortside() < 4)
+            if (cdom.shortside() < min_bottom)
             {
                 break;
             }
@@ -1390,8 +2223,8 @@ public:
                 {f.geom.isPeriodic(0), f.geom.isPeriodic(1), f.geom.isPeriodic(2)}
             );
             levels_.push_back(makeLevel(cba, dm, cgeom));
-            GmgLevel& c = levels_.back();
-            const GmgLevel& fl = levels_[levels_.size() - 2];
+            GmgLevelT<T>& c = levels_.back();
+            const GmgLevelT<T>& fl = levels_[levels_.size() - 2];
             if (onDevice_)
             {
                 gmgRestrictDevice(*fl.alpha, *c.alpha);
@@ -1414,6 +2247,89 @@ public:
             }
         }
         amrex::Gpu::streamSynchronize();
+
+        // Chebyshev setup: per level allocate the polynomial increment field and
+        // estimate lambda_max(D^{-1}A) via ~15 power iterations (setup-time cost).
+        if (useCheb_)
+        {
+            for (auto& L : levels_)
+            {
+                L.chebD = makeMf(L.alpha->boxArray(), L.alpha->DistributionMap(), 0);
+            }
+            for (std::size_t l = 0; l < levels_.size(); ++l)
+            {
+                levels_[l].lambdaMax = estimateLambdaMax(l);
+            }
+            amrex::Gpu::streamSynchronize();
+        }
+    }
+
+    // Native stationary-solver hooks (M1 + M3). residScatterNorm forms the FP64
+    // residual and, in the SAME kernel, casts it into the T-typed L0 rhs and
+    // reduces its FP64 norm — no separate FP64 residual MultiFab, norm pass, or
+    // convert-scatter. vcycleGather then runs the V-cycle(s) and adds the T-typed
+    // correction back onto the FP64 x. Runs entirely on AMReX fabs (no Ginkgo
+    // vector); conversions are identities when T==double.
+    double residScatterNorm(
+        const amrex::MultiFab& sol,
+        const amrex::MultiFab& rhs,
+        const amrex::MultiFab& ux,
+        const amrex::MultiFab& lx,
+        const amrex::MultiFab& uy,
+        const amrex::MultiFab& ly,
+        const amrex::MultiFab& uz,
+        const amrex::MultiFab& lz,
+        const amrex::MultiFab& alpha,
+        double shift
+    ) const override
+    {
+        const GmgLevelT<T>& L0 = levels_.front();
+        double sumsq;
+        if (onDevice_)
+        {
+            sumsq = faceCoeffResidScatterNormDevice<T>(
+                sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs
+            );
+            L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
+        }
+        else
+        {
+            sumsq = faceCoeffResidScatterNormHost<T>(
+                sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs
+            );
+            L0.sol->setVal(T(0));
+            amrex::Gpu::streamSynchronize();
+        }
+        return sumsq;
+    }
+
+    void vcycleGather(amrex::MultiFab& x) const override
+    {
+        const GmgLevelT<T>& L0 = levels_.front();
+        if (onDevice_)
+        {
+            {
+                prof::Timer t("gmg.vcycle");
+                for (int c = 0; c < nCycles_; ++c)
+                {
+                    vcycle(0);
+                }
+            }
+            {
+                prof::Timer t("gmg.solve.gather");
+                gmgConvertAddDevice(x, *L0.sol); // x += (double) L0 correction
+                amrex::Gpu::streamSynchronize();
+            }
+        }
+        else
+        {
+            for (int c = 0; c < nCycles_; ++c)
+            {
+                vcycle(0);
+            }
+            gmgConvertAddHost(x, *L0.sol);
+            amrex::Gpu::streamSynchronize();
+        }
     }
 
 protected:
@@ -1421,18 +2337,31 @@ protected:
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
     {
         auto exec = this->get_executor();
-        const GmgLevel& L0 = levels_.front();
+        const GmgLevelT<T>& L0 = levels_.front();
         if (onDevice_)
         {
-            exec->synchronize(); // b written by Ginkgo
-            scatter_device(gko::as<Dense>(b)->get_const_values(), *L0.rhs);
-            L0.sol->setVal(0.0); // z0 = 0: apply M^{-1}, not a warm-started solve
-            for (int c = 0; c < nCycles_; ++c)
+            prof::Timer tAll("gmg.apply");
             {
-                vcycle(0);
+                prof::Timer t("gmg.sync_gko");
+                exec->synchronize(); // b written by Ginkgo
             }
-            gather_device(*L0.sol, gko::as<Dense>(x)->get_values(), 1.0);
-            amrex::Gpu::streamSynchronize(); // x complete before Ginkgo reads it
+            {
+                prof::Timer t("gmg.scatter");
+                scatter_device(gko::as<Dense>(b)->get_const_values(), *L0.rhs);
+                L0.sol->setVal(0.0); // z0 = 0: apply M^{-1}, not a warm-started solve
+            }
+            {
+                prof::Timer t("gmg.vcycle");
+                for (int c = 0; c < nCycles_; ++c)
+                {
+                    vcycle(0);
+                }
+            }
+            {
+                prof::Timer t("gmg.gather");
+                gather_device(*L0.sol, gko::as<Dense>(x)->get_values(), 1.0);
+                amrex::Gpu::streamSynchronize(); // x complete before Ginkgo reads it
+            }
         }
         else
         {
@@ -1464,29 +2393,33 @@ protected:
 
 private:
 
-    static constexpr int kPreSweeps = 2;  // == kPostSweeps (adjoint order) keeps
-    static constexpr int kPostSweeps = 2; // the cycle symmetric for CG
-    static constexpr int kCoarsestSweeps = 8; // 4 forward + 4 reversed (self-adjoint)
+    // Chebyshev smooths modes with eigenvalue in [lambdaMax / kChebEigRatio,
+    // lambdaMax]; the lower modes are left to the coarse grid. alpha ~= 4-8 is
+    // the usual band; 6 minimised the CG count here (degree-2 -> 11 iters at
+    // N=32/64 vs rbgs 9, a sweep over {2,3,4,6,8,15,30} at setup).
+    static constexpr double kChebEigRatio = 6.0;
+    static constexpr double kChebSafety = 1.05; // inflate the lambda_max estimate
+    static constexpr int kPowerIters = 15;      // power iterations for lambda_max
 
-    std::shared_ptr<amrex::MultiFab> makeMf(
+    std::shared_ptr<GmgFab<T>> makeMf(
         const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, int ng
     ) const
     {
         auto mf = onDevice_
-                    ? std::make_shared<amrex::MultiFab>(ba, dm, 1, ng)
-                    : std::make_shared<amrex::MultiFab>(
+                    ? std::make_shared<GmgFab<T>>(ba, dm, 1, ng)
+                    : std::make_shared<GmgFab<T>>(
                           ba, dm, 1, ng, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
                       );
-        mf->setVal(0.0);
+        mf->setVal(T(0));
         return mf;
     }
 
-    GmgLevel makeLevel(
+    GmgLevelT<T> makeLevel(
         const amrex::BoxArray& ba, const amrex::DistributionMapping& dm,
         const amrex::Geometry& geom
     ) const
     {
-        GmgLevel L;
+        GmgLevelT<T> L;
         L.geom = geom;
         L.alpha = makeMf(ba, dm, 0);
         const auto fba = [&ba](int d)
@@ -1499,20 +2432,32 @@ private:
         L.lz = makeMf(fba(2), dm, 0);
         L.sol = makeMf(ba, dm, 1);
         L.rhs = makeMf(ba, dm, 0);
-        L.resid = makeMf(ba, dm, 0);
         return L;
     }
 
-    static void copyCoeff(amrex::MultiFab& dst, const amrex::MultiFab& src)
+    // Copy the caller's FP64 coefficient MultiFab into a level fab, converting
+    // to T. On the reference path the source may live in device memory, so it is
+    // staged through a pinned FP64 copy before the host conversion loop.
+    void copyCoeff(GmgFab<T>& dst, const amrex::MultiFab& src) const
     {
-        amrex::MultiFab::Copy(dst, src, 0, 0, 1, 0);
+        if (onDevice_)
+        {
+            gmgConvertCopyDevice(dst, src);
+        }
+        else
+        {
+            auto tmp = pinnedCopy(src);
+            amrex::Gpu::streamSynchronize();
+            gmgConvertCopyHost(dst, *tmp);
+        }
     }
 
     // Fill sol's ghost layer: periodic/internal via FillBoundary, then the
     // homogeneous Dirichlet/Neumann reflection on domain faces (the gap-2 BC
     // fills coarsen cleanly, so the same bc spec applies on every level).
-    void fillGhosts(const GmgLevel& L) const
+    void fillGhosts(const GmgLevelT<T>& L, int lvl) const
     {
+        prof::Timer t("gmg.fill", lvl);
         L.sol->FillBoundary(L.geom.periodicity());
         if (!onDevice_)
         {
@@ -1531,36 +2476,37 @@ private:
         }
     }
 
-    void residual(const GmgLevel& L) const // resid = rhs - A sol (ghosts filled)
+    // Dispatch to the configured smoother. `reversed` is only meaningful for
+    // red-black Gauss-Seidel (post-smoother runs the colours in reversed order,
+    // the adjoint of the forward sweep); Chebyshev is symmetric by construction
+    // so it ignores it. `sweeps` is the RB-GS sweep count / the Chebyshev degree.
+    void smooth(std::size_t l, int sweeps, bool reversed) const
     {
-        if (onDevice_)
+        if (useCheb_)
         {
-            gmgResidualDevice(
-                *L.sol, *L.rhs, *L.resid, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
-            );
+            chebyshevSmooth(l, sweeps);
         }
         else
         {
-            gmgResidualHost(
-                *L.sol, *L.rhs, *L.resid, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
-            );
+            rbgsSmooth(l, sweeps, reversed);
         }
     }
 
     // Red-black Gauss-Seidel sweeps; `reversed` flips the colour order
     // (black-red), which is the adjoint of the forward sweep — used for the
     // post-smoother so the whole V-cycle is symmetric.
-    void smooth(std::size_t l, int sweeps, bool reversed) const
+    void rbgsSmooth(std::size_t l, int sweeps, bool reversed) const
     {
-        const GmgLevel& L = levels_[l];
+        const GmgLevelT<T>& L = levels_[l];
         for (int s = 0; s < sweeps; ++s)
         {
             for (int c = 0; c < 2; ++c)
             {
                 const int parity = (reversed ? 1 + c : c) & 1;
-                fillGhosts(L); // the other colour changed — refresh ghosts
+                fillGhosts(L, static_cast<int>(l)); // the other colour changed — refresh ghosts
                 if (onDevice_)
                 {
+                    prof::Timer t("gmg.gs", static_cast<int>(l));
                     gmgGsColorDevice(
                         *L.sol, *L.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha, parity
                     );
@@ -1575,53 +2521,181 @@ private:
         }
     }
 
+    // Jacobi-preconditioned Chebyshev smoother of degree `degree`: one full-cell
+    // fused residual+increment kernel per degree (plain-stencil bandwidth, no
+    // colour split, one ghost fill per degree). A fixed polynomial in the
+    // symmetric operator -> symmetric linear smoother, CG-safe by construction.
+    void chebyshevSmooth(std::size_t l, int degree) const
+    {
+        if (degree <= 0)
+        {
+            return;
+        }
+        const GmgLevelT<T>& L = levels_[l];
+        const double b = L.lambdaMax;
+        const double a = b / kChebEigRatio;
+        const double theta = 0.5 * (b + a);
+        const double delta = 0.5 * (b - a);
+        const double sigma = theta / delta;
+        double rho = 1.0 / sigma;
+        for (int m = 0; m < degree; ++m)
+        {
+            fillGhosts(L, static_cast<int>(l));
+            double ca = 0.0;
+            double cb = 0.0;
+            bool readOld = false;
+            if (m == 0)
+            {
+                cb = 1.0 / theta; // d = (1/theta) D^{-1} r
+            }
+            else
+            {
+                const double rhoNew = 1.0 / (2.0 * sigma - rho);
+                ca = rho * rhoNew;         // d = ca * d + cb * D^{-1} r
+                cb = 2.0 * rhoNew / delta;
+                readOld = true;
+                rho = rhoNew;
+            }
+            if (onDevice_)
+            {
+                prof::Timer t("gmg.cheb", static_cast<int>(l));
+                gmgChebComputeDDevice(
+                    *L.sol, *L.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha, *L.chebD,
+                    static_cast<T>(ca), static_cast<T>(cb), readOld
+                );
+            }
+            else
+            {
+                gmgChebComputeDHost(
+                    *L.sol, *L.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha, *L.chebD,
+                    static_cast<T>(ca), static_cast<T>(cb), readOld
+                );
+                amrex::Gpu::streamSynchronize();
+            }
+            GmgFab<T>::Saxpy(*L.sol, T(1), *L.chebD, 0, 0, 1, amrex::IntVect(0)); // sol += d
+            if (!onDevice_)
+            {
+                amrex::Gpu::streamSynchronize();
+            }
+        }
+    }
+
+    // lambda_max(D^{-1}A) on level l via power iteration on a checkerboard seed
+    // (near the top eigenvector). Returns the estimate inflated by kChebSafety
+    // so the Chebyshev interval upper bound is not undershot.
+    double estimateLambdaMax(std::size_t l) const
+    {
+        const GmgLevelT<T>& L = levels_[l];
+        GmgFab<T>& v = *L.sol;    // scratch (1 ghost)
+        GmgFab<T>& w = *L.chebD;  // scratch (0 ghost)
+        if (onDevice_)
+        {
+            gmgFillCheckerDevice(v);
+        }
+        else
+        {
+            gmgFillCheckerHost(v);
+            amrex::Gpu::streamSynchronize();
+        }
+        double norm = gmgNorm2(v);
+        v.mult(static_cast<T>(1.0 / norm), 0, 1, 0);
+        double lambda = 0.0;
+        for (int it = 0; it < kPowerIters; ++it)
+        {
+            fillGhosts(L, static_cast<int>(l));
+            if (onDevice_)
+            {
+                gmgDinvApplyDevice(v, w, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha);
+            }
+            else
+            {
+                gmgDinvApplyHost(v, w, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha);
+                amrex::Gpu::streamSynchronize();
+            }
+            lambda = gmgNorm2(w); // v is unit-norm -> ||D^{-1}A v|| ~ lambda_max
+            if (lambda <= 0.0)
+            {
+                break;
+            }
+            if (onDevice_)
+            {
+                gmgConvertCopyDevice(v, w); // v <- w
+            }
+            else
+            {
+                gmgConvertCopyHost(v, w);
+                amrex::Gpu::streamSynchronize();
+            }
+            v.mult(static_cast<T>(1.0 / lambda), 0, 1, 0);
+        }
+        v.setVal(T(0)); // leave sol clean for the V-cycle
+        amrex::Gpu::streamSynchronize();
+        return lambda * kChebSafety;
+    }
+
     // One V-cycle correcting levels_[l].sol in place (warm start allowed, so
     // repeated cycles at l = 0 compose correctly).
     void vcycle(std::size_t l) const
     {
-        const GmgLevel& L = levels_[l];
+        const GmgLevelT<T>& L = levels_[l];
         if (l + 1 == levels_.size())
         {
             // Tiny grid: smoothing is cheap; forward + reversed halves keep
-            // the coarsest "solve" self-adjoint.
-            smooth(l, kCoarsestSweeps / 2, false);
-            smooth(l, kCoarsestSweeps / 2, true);
+            // the coarsest "solve" self-adjoint (RB-GS; Chebyshev is symmetric
+            // regardless, so the two halves just compose into a degree-2*n poly).
+            smooth(l, coarsestSweeps_ / 2, false);
+            smooth(l, coarsestSweeps_ / 2, true);
             return;
         }
-        smooth(l, kPreSweeps, false);
-        fillGhosts(L);
-        residual(L);
-        const GmgLevel& C = levels_[l + 1];
-        if (onDevice_)
+        smooth(l, preSweeps_, false);
+        fillGhosts(L, static_cast<int>(l));
+        const GmgLevelT<T>& C = levels_[l + 1];
+        // Fused residual + restriction: coarse rhs = avg(rhs - A sol) computed on
+        // the fly, saving the separate fine-grid residual read+write (M4 item 3).
         {
-            gmgRestrictDevice(*L.resid, *C.rhs);
+            prof::Timer t("gmg.residrestrict", static_cast<int>(l));
+            if (onDevice_)
+            {
+                gmgResidRestrictDevice(
+                    *L.sol, *L.rhs, *C.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
+                );
+            }
+            else
+            {
+                gmgResidRestrictHost(
+                    *L.sol, *L.rhs, *C.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
+                );
+            }
+            C.sol->setVal(0.0);
         }
-        else
-        {
-            gmgRestrictHost(*L.resid, *C.rhs);
-        }
-        C.sol->setVal(0.0);
         if (!onDevice_)
         {
             amrex::Gpu::streamSynchronize(); // setVal before host loops
         }
         vcycle(l + 1);
-        if (onDevice_)
         {
-            gmgProlongAddDevice(*C.sol, *L.sol);
+            prof::Timer t("gmg.prolong", static_cast<int>(l));
+            if (onDevice_)
+            {
+                gmgProlongAddDevice(*C.sol, *L.sol);
+            }
+            else
+            {
+                gmgProlongAddHost(*C.sol, *L.sol);
+            }
         }
-        else
-        {
-            gmgProlongAddHost(*C.sol, *L.sol);
-        }
-        smooth(l, kPostSweeps, true);
+        smooth(l, postSweeps_, true);
     }
 
     BcArray bc_ {};
     bool hasPhysBc_ = false;
     bool onDevice_ = false;
     int nCycles_ = 1;
-    std::vector<GmgLevel> levels_;
+    int preSweeps_ = 2;
+    int postSweeps_ = 2;
+    int coarsestSweeps_ = 8;
+    bool useCheb_ = false;
+    std::vector<GmgLevelT<T>> levels_;
 };
 
 // One long-lived CudaExecutor per process (see the note in ginkgo_solve): a
@@ -1762,6 +2836,22 @@ std::shared_ptr<gko::LinOp> buildKrylov(
         }
         return params.on(exec)->generate(op);
     }
+    if (solver == "ir")
+    {
+        // Iterative refinement x <- x + relax * S(b - A x), where S is the
+        // already-generated inner solver `precond` (the GMG V-cycle LinOp). With
+        // relaxation_factor 1.0 this is plain Richardson driven by the V-cycle,
+        // Ginkgo's idiomatic counterpart of the native solver="gmg" loop.
+        // default_initial_guess defaults to `provided`, so the incoming x seeds
+        // the iteration (the persistent-solver warm-start contract).
+        auto params = gko::solver::Ir<double>::build().with_criteria(criteria);
+        params.with_relaxation_factor(1.0);
+        if (precond)
+        {
+            params.with_generated_solver(precond);
+        }
+        return params.on(exec)->generate(op);
+    }
     throw std::runtime_error("ginkgo: unknown solver '" + solver + "'");
 }
 
@@ -1881,19 +2971,22 @@ public:
 
     virtual ~PersistentSolver() = default;
 
-    nb::dict solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
+    virtual nb::dict solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
     {
         resLogger_->clear(); // per-call history
-        if (onDevice_)
         {
-            gather_device(rhs, b_->get_values(), 1.0);
-            gather_device(sol, x_->get_values(), 1.0);
-            amrex::Gpu::streamSynchronize();
-        }
-        else
-        {
-            gather(rhs, b_->get_values(), 1.0);
-            gather(sol, x_->get_values(), 1.0);
+            prof::Timer t("solve.pack");
+            if (onDevice_)
+            {
+                gather_device(rhs, b_->get_values(), 1.0);
+                gather_device(sol, x_->get_values(), 1.0);
+                amrex::Gpu::streamSynchronize();
+            }
+            else
+            {
+                gather(rhs, b_->get_values(), 1.0);
+                gather(sol, x_->get_values(), 1.0);
+            }
         }
 
         if (projectNullspace_)
@@ -1905,7 +2998,10 @@ public:
             subtractMean(x_.get());
         }
 
-        solver_->apply(b_, x_);
+        {
+            prof::Timer t("solve.krylov");
+            solver_->apply(b_, x_);
+        }
 
         if (projectNullspace_)
         {
@@ -1914,18 +3010,22 @@ public:
             subtractMean(x_.get());
         }
 
-        if (onDevice_)
         {
-            exec_->synchronize();
-            scatter_device(x_->get_const_values(), sol);
-            amrex::Gpu::streamSynchronize();
-        }
-        else
-        {
-            scatter(x_->get_const_values(), sol);
+            prof::Timer t("solve.unpack");
+            if (onDevice_)
+            {
+                exec_->synchronize();
+                scatter_device(x_->get_const_values(), sol);
+                amrex::Gpu::streamSynchronize();
+            }
+            else
+            {
+                scatter(x_->get_const_values(), sol);
+            }
         }
 
         // Final 2-norm residual ||b - A x|| for reporting.
+        prof::Timer tRep("solve.report");
         auto res = b_->clone();
         auto one = gko::initialize<Dense>({1.0}, exec_);
         auto negOne = gko::initialize<Dense>({-1.0}, exec_);
@@ -1949,11 +3049,17 @@ public:
 
 protected:
 
-    PersistentSolver(std::shared_ptr<const gko::Executor> exec, gko::size_type n)
+    // allocDense=false skips the n-sized Ginkgo work vectors b_/x_ — the native
+    // stationary solver (solver="gmg") drives the V-cycle on MultiFabs and never
+    // touches them (a real memory saving at large N: 2 * n doubles).
+    PersistentSolver(std::shared_ptr<const gko::Executor> exec, gko::size_type n, bool allocDense = true)
         : exec_(std::move(exec)), onDevice_(exec_->get_master().get() != exec_.get()), n_(n)
     {
-        b_ = Dense::create(exec_, gko::dim<2> {n_, 1});
-        x_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+        if (allocDense)
+        {
+            b_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+            x_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+        }
     }
 
     // Subclass calls this once its operator is built.
@@ -2031,13 +3137,111 @@ public:
         MLMG* precond_mlmg,
         int precond_cycles,
         const std::vector<std::string>& bc,
-        const std::string& precond
+        const std::string& precond,
+        int gmg_pre_sweeps,
+        int gmg_post_sweeps,
+        int gmg_coarsest_sweeps,
+        int gmg_max_levels,
+        int gmg_min_bottom,
+        const std::string& gmg_smoother,
+        const std::string& gmg_precision
     )
         : PersistentSolver(
-              makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts())
+              makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts()),
+              solver != "gmg"
           )
     {
+        // CG-safety: the V-cycle is a symmetric (SPD) preconditioner only when
+        // the post-smoother is the adjoint of the pre-smoother, which requires
+        // equal pre/post counts. With asymmetric counts CG's assumption breaks;
+        // warn but allow (usable as a stationary/flexible-CG smoother). The native
+        // stationary solver (solver="gmg") is NOT CG, so asymmetric sweeps there
+        // are legitimate and never warn (this guard requires solver=="cg").
+        if (precond == "gmg" && solver == "cg" && gmg_pre_sweeps != gmg_post_sweeps)
+        {
+            std::cerr << "FaceCoeffSolver: warning — gmg_pre_sweeps ("
+                      << gmg_pre_sweeps << ") != gmg_post_sweeps (" << gmg_post_sweeps
+                      << ") makes the V-cycle non-symmetric; CG may stall or diverge. "
+                         "Use equal counts for a CG-safe preconditioner.\n";
+        }
         const BcArray bcArr = parseBc(bc, geom, "FaceCoeffSolver");
+
+        // solver="gmg": native stationary geometric-multigrid solver
+        // (x <- x + V(b - A x) until tolerance). The GMG V-cycle IS the solver,
+        // so `precond` is ignored; the hierarchy is built directly and the whole
+        // iteration runs on AMReX fabs (see gmgSolve). No Ginkgo Krylov object.
+        if (solver == "gmg")
+        {
+            if (precond_mlmg != nullptr)
+            {
+                throw std::runtime_error(
+                    "FaceCoeffSolver: solver='gmg' cannot be combined with precond_mlmg"
+                );
+            }
+            gmgStationary_ = true;
+            if (onDevice_)
+            {
+                // Device residual kernel reads the caller's device coefficients
+                // directly (in-place updates are seen, like FaceCoeffOp).
+                alpha_ = alpha;
+                ux_ = ux;
+                lx_ = lx;
+                uy_ = uy;
+                ly_ = ly;
+                uz_ = uz;
+                lz_ = lz;
+            }
+            else
+            {
+                // Host residual loops can't read device memory: stage the
+                // coefficients to pinned once (solve-constant, cf. FaceCoeffOp).
+                ownedCoeff_ = {
+                    pinnedCopy(*alpha),
+                    pinnedCopy(*ux),
+                    pinnedCopy(*lx),
+                    pinnedCopy(*uy),
+                    pinnedCopy(*ly),
+                    pinnedCopy(*uz),
+                    pinnedCopy(*lz)
+                };
+                alpha_ = ownedCoeff_[0].get();
+                ux_ = ownedCoeff_[1].get();
+                lx_ = ownedCoeff_[2].get();
+                uy_ = ownedCoeff_[3].get();
+                ly_ = ownedCoeff_[4].get();
+                uz_ = ownedCoeff_[5].get();
+                lz_ = ownedCoeff_[6].get();
+            }
+            geom_ = geom;
+            bcArr_ = bcArr;
+            hasPhysBc_ = std::any_of(bcArr.begin(), bcArr.end(), [](int b) { return b != 0; });
+            maxIter_ = max_iter;
+            rtol_ = rtol;
+            atol_ = atol;
+            projectNull_ = project_nullspace;
+            gmgOwner_ = buildGmgHierarchy(
+                alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, precond_cycles, gmg_pre_sweeps,
+                gmg_post_sweeps, gmg_coarsest_sweeps, gmg_max_levels, gmg_min_bottom, gmg_smoother,
+                gmg_precision
+            );
+            const amrex::BoxArray& ba = alpha->boxArray();
+            const amrex::DistributionMapping& dm = alpha->DistributionMap();
+            if (onDevice_)
+            {
+                xWork_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 1);
+            }
+            else
+            {
+                xWork_ = std::make_shared<amrex::MultiFab>(
+                    ba, dm, 1, 1, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
+                );
+                rhsPinned_ = std::make_shared<amrex::MultiFab>(
+                    ba, dm, 1, 0, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
+                );
+            }
+            return;
+        }
+
         auto op = gko::share(FaceCoeffOp::create(
             exec_,
             alpha->boxArray(),
@@ -2053,6 +3257,31 @@ public:
             lz,
             bcArr
         ));
+
+        // solver="ir": Ginkgo iterative refinement (gko::solver::Ir<double>) whose
+        // system matrix is the FaceCoeffOp above and whose inner solver is the
+        // generated GMG V-cycle LinOp (with_generated_solver, relaxation 1.0). Like
+        // solver="gmg" it implies the GMG hierarchy and ignores `precond`; unlike it
+        // the loop runs through Ginkgo (Dense pack/unpack + Convergence logger kept),
+        // so the measured overhead across the LinOp boundaries vs the native gmg loop
+        // is part of the deliverable — this variant does NOT fuse across it.
+        if (solver == "ir")
+        {
+            if (precond_mlmg != nullptr)
+            {
+                throw std::runtime_error(
+                    "FaceCoeffSolver: solver='ir' cannot be combined with precond_mlmg"
+                );
+            }
+            auto inner = buildGmgHierarchy(
+                alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, precond_cycles, gmg_pre_sweeps,
+                gmg_post_sweeps, gmg_coarsest_sweeps, gmg_max_levels, gmg_min_bottom, gmg_smoother,
+                gmg_precision
+            );
+            build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(inner));
+            return;
+        }
+
         std::shared_ptr<const gko::LinOp> pc;
         if (precond == "gmg")
         {
@@ -2062,22 +3291,11 @@ public:
                     "FaceCoeffSolver: precond='gmg' cannot be combined with precond_mlmg"
                 );
             }
-            pc = gko::share(GmgPrecond::create(
-                exec_,
-                alpha->boxArray(),
-                alpha->DistributionMap(),
-                geom,
-                n_,
-                alpha,
-                ux,
-                lx,
-                uy,
-                ly,
-                uz,
-                lz,
-                bcArr,
-                precond_cycles
-            ));
+            pc = buildGmgHierarchy(
+                alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, precond_cycles, gmg_pre_sweeps,
+                gmg_post_sweeps, gmg_coarsest_sweeps, gmg_max_levels, gmg_min_bottom, gmg_smoother,
+                gmg_precision
+            );
         }
         else if (precond == "mlmg" || precond == "none")
         {
@@ -2107,6 +3325,197 @@ public:
         }
         build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc));
     }
+
+    // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
+    // every other solver keeps the base Krylov path. Dispatch here so the binding
+    // (which calls S::solve on the concrete type) picks the right loop.
+    nb::dict solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) override
+    {
+        if (gmgStationary_)
+        {
+            return gmgSolve(rhs, sol);
+        }
+        return PersistentSolver::solve(rhs, sol);
+    }
+
+private:
+
+    // Build the precision-templated V-cycle hierarchy (fp64 default — byte-for-
+    // byte the historical behaviour; fp32 halves the bandwidth-bound V-cycle
+    // bytes, outer residual stays fp64). Also records the GmgApplyMf* so the
+    // stationary solver can drive the V-cycle on fabs without knowing the type.
+    std::shared_ptr<const gko::LinOp> buildGmgHierarchy(
+        const amrex::MultiFab* alpha,
+        const amrex::MultiFab* ux,
+        const amrex::MultiFab* lx,
+        const amrex::MultiFab* uy,
+        const amrex::MultiFab* ly,
+        const amrex::MultiFab* uz,
+        const amrex::MultiFab* lz,
+        const amrex::Geometry& geom,
+        const BcArray& bcArr,
+        int precond_cycles,
+        int gmg_pre_sweeps,
+        int gmg_post_sweeps,
+        int gmg_coarsest_sweeps,
+        int gmg_max_levels,
+        int gmg_min_bottom,
+        const std::string& gmg_smoother,
+        const std::string& gmg_precision
+    )
+    {
+        if (gmg_precision != "fp64" && gmg_precision != "fp32")
+        {
+            throw std::runtime_error(
+                "FaceCoeffSolver: unknown gmg_precision '" + gmg_precision
+                + "' (expected 'fp64' or 'fp32')"
+            );
+        }
+        auto makeGmg = [&](auto tag) -> std::shared_ptr<const gko::LinOp>
+        {
+            using T = decltype(tag);
+            auto p = GmgPrecondT<T>::create(
+                exec_, alpha->boxArray(), alpha->DistributionMap(), geom, n_, alpha, ux, lx, uy, ly,
+                uz, lz, bcArr, precond_cycles, gmg_pre_sweeps, gmg_post_sweeps, gmg_coarsest_sweeps,
+                gmg_max_levels, gmg_min_bottom, gmg_smoother
+            );
+            gmgMf_ = p.get(); // GmgPrecondT<T>* -> const GmgApplyMf* (kept alive by the return)
+            return gko::share(std::move(p));
+        };
+        return (gmg_precision == "fp32") ? makeGmg(float {}) : makeGmg(double {});
+    }
+
+    // Fill xWork_'s ghost layer for the FP64 residual: periodic/internal via
+    // FillBoundary, then homogeneous domain BCs via ghost reflection — the same
+    // fill FaceCoeffOp does, so the residual uses the identical operator A.
+    void fillGmgGhosts(amrex::MultiFab& mf) const
+    {
+        mf.FillBoundary(geom_.periodicity());
+        if (!onDevice_)
+        {
+            amrex::Gpu::streamSynchronize();
+        }
+        if (hasPhysBc_)
+        {
+            if (onDevice_)
+            {
+                fillDomainBcGhostsDevice(mf, geom_.Domain(), bcArr_);
+            }
+            else
+            {
+                fillDomainBcGhostsHost(mf, geom_.Domain(), bcArr_);
+            }
+        }
+    }
+
+    // mf -= mean(mf) over the valid region (constant-nullspace projection for
+    // singular systems; uniform cells so the volume mean is the arithmetic mean).
+    void subtractMeanMf(amrex::MultiFab& mf) const
+    {
+        const double mean = mf.sum(0) / static_cast<double>(n_);
+        mf.plus(-mean, 0, 1);
+    }
+
+    // Native stationary V-cycle solve: x <- x + V(b - A x), warm-started from the
+    // incoming sol, until ||r|| <= max(rtol*||b||, atol) or max_iter cycles. Runs
+    // entirely on AMReX fabs — no Ginkgo Krylov object, no per-iteration
+    // flat-vector pack/unpack, no per-iteration Ginkgo<->AMReX crossings.
+    nb::dict gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
+    {
+        // Warm start: x0 = incoming sol (do NOT zero — persistent-solver contract).
+        amrex::MultiFab::Copy(*xWork_, sol, 0, 0, 1, 0);
+
+        // Host residual loops can't read the device rhs: stage it to pinned once
+        // per solve (it is constant across the cycle loop). Device path reads rhs
+        // directly.
+        const amrex::MultiFab* rhsUse = &rhs;
+        if (!onDevice_)
+        {
+            amrex::MultiFab::Copy(*rhsPinned_, rhs, 0, 0, 1, 0);
+            amrex::Gpu::streamSynchronize();
+            rhsUse = rhsPinned_.get();
+        }
+
+        const double bNorm = rhs.norm2(0);
+        const double stopTol = std::max(rtol_ * bNorm, atol_);
+        const double rhsMean = projectNull_ ? rhs.sum(0) / static_cast<double>(n_) : 0.0;
+        if (projectNull_)
+        {
+            subtractMeanMf(*xWork_);
+        }
+
+        std::vector<double> history;
+        // M3: one fused kernel forms the FP64 residual r = rhs - A x - rhsMean,
+        // casts it into the (fp32/fp64) L0 rhs, and reduces ||r|| in double — no
+        // separate FP64 residual MultiFab, norm pass, or convert-scatter. The
+        // nullspace shift (rhsMean) folds into the same kernel, so the projected
+        // path takes the fused route too (it only adds subtractMeanMf on x).
+        auto computeResid = [&]() -> double
+        {
+            prof::Timer t("gmg.solve.resid");
+            fillGmgGhosts(*xWork_);
+            const double sumsq = gmgMf_->residScatterNorm(
+                *xWork_, *rhsUse, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_, rhsMean
+            );
+            const double rn = std::sqrt(sumsq);
+            history.push_back(rn);
+            return rn;
+        };
+
+        double rnorm = computeResid();
+        bool converged = rnorm <= stopTol;
+        int cycles = 0;
+        while (!converged && cycles < maxIter_)
+        {
+            {
+                prof::Timer t("gmg.solve.vcycle");
+                gmgMf_->vcycleGather(*xWork_); // x += V(r); the residual is already in L0 rhs
+            }
+            if (projectNull_)
+            {
+                subtractMeanMf(*xWork_);
+            }
+            ++cycles;
+            rnorm = computeResid();
+            converged = rnorm <= stopTol;
+        }
+
+        amrex::MultiFab::Copy(sol, *xWork_, 0, 0, 1, 0);
+
+        nb::dict d;
+        d["num_iters"] = static_cast<std::int64_t>(cycles);
+        d["res_norm"] = rnorm;
+        d["converged"] = converged;
+        nb::list hist;
+        for (double v : history)
+        {
+            hist.append(v);
+        }
+        d["res_history"] = hist;
+        return d;
+    }
+
+    // Native stationary GMG solver state (only populated when solver="gmg").
+    bool gmgStationary_ = false;
+    const amrex::MultiFab* alpha_ = nullptr;
+    const amrex::MultiFab* ux_ = nullptr;
+    const amrex::MultiFab* lx_ = nullptr;
+    const amrex::MultiFab* uy_ = nullptr;
+    const amrex::MultiFab* ly_ = nullptr;
+    const amrex::MultiFab* uz_ = nullptr;
+    const amrex::MultiFab* lz_ = nullptr;
+    amrex::Geometry geom_ {};
+    BcArray bcArr_ {};
+    bool hasPhysBc_ = false;
+    int maxIter_ = 0;
+    double rtol_ = 0.0;
+    double atol_ = 0.0;
+    bool projectNull_ = false;
+    std::shared_ptr<const gko::LinOp> gmgOwner_; // keeps the V-cycle hierarchy alive
+    const GmgApplyMf* gmgMf_ = nullptr;          // typed V-cycle hook into gmgOwner_
+    std::shared_ptr<amrex::MultiFab> xWork_;     // FP64 iterate (1 ghost)
+    std::shared_ptr<amrex::MultiFab> rhsPinned_; // pinned rhs stage (reference path)
+    std::vector<std::shared_ptr<amrex::MultiFab>> ownedCoeff_; // pinned coeffs (reference path)
 };
 
 // Assembled-CSR persistent solver: same matrix, stored explicitly. Its per-
@@ -2134,7 +3543,14 @@ public:
         MLMG* precond_mlmg,
         int precond_cycles,
         const std::vector<std::string>& bc,
-        const std::string& precond
+        const std::string& precond,
+        int /*gmg_pre_sweeps*/,
+        int /*gmg_post_sweeps*/,
+        int /*gmg_coarsest_sweeps*/,
+        int /*gmg_max_levels*/,
+        int /*gmg_min_bottom*/,
+        const std::string& /*gmg_smoother*/,
+        const std::string& /*gmg_precision*/
     )
         : PersistentSolver(
               makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts())
@@ -2206,11 +3622,20 @@ void bindPersistent(nb::module_& m, const char* name)
                MLMG* precond_mlmg,
                int precond_cycles,
                const std::vector<std::string>& bc,
-               const std::string& precond)
+               const std::string& precond,
+               int gmg_pre_sweeps,
+               int gmg_post_sweeps,
+               int gmg_coarsest_sweeps,
+               int gmg_max_levels,
+               int gmg_min_bottom,
+               const std::string& gmg_smoother,
+               const std::string& gmg_precision)
             {
                 new (self) S(
                     executor, geom, &alpha, &ux, &lx, &uy, &ly, &uz, &lz, solver, max_iter, rtol,
-                    atol, project_nullspace, precond_mlmg, precond_cycles, bc, precond
+                    atol, project_nullspace, precond_mlmg, precond_cycles, bc, precond,
+                    gmg_pre_sweeps, gmg_post_sweeps, gmg_coarsest_sweeps, gmg_max_levels,
+                    gmg_min_bottom, gmg_smoother, gmg_precision
                 );
             },
             nb::arg("alpha"),
@@ -2222,6 +3647,21 @@ void bindPersistent(nb::module_& m, const char* name)
             nb::arg("lz"),
             nb::arg("geom"),
             nb::arg("executor") = "cuda",
+            // Krylov solvers "cg" | "bicgstab" | "gmres", OR "gmg" (matrix-free
+            // solver only): the NATIVE stationary geometric-multigrid solver
+            // x <- x + V(b - A x) run to tolerance (Richardson iteration, like
+            // MLMG) — no Ginkgo Krylov object, the whole loop on AMReX fabs.
+            // solver="gmg" builds the V-cycle hierarchy directly and IGNORES the
+            // `precond` argument (the V-cycle IS the solver). A standalone
+            // V-cycle needs the coarsest grid solved accurately, so raise
+            // gmg_coarsest_sweeps (~100 for rbgs, ~160 for chebyshev) — the
+            // CG-tuned default of 8 gives a weak, slowly-converging iteration.
+            // solver="ir" is the Ginkgo-idiomatic twin of "gmg": a
+            // gko::solver::Ir<double> (iterative refinement, relaxation 1.0) whose
+            // system matrix is the matrix-free FaceCoeffOp and whose inner solver is
+            // the generated GMG V-cycle LinOp. Same GMG semantics (builds the
+            // hierarchy, ignores `precond`, needs the accurate coarsest solve) but
+            // driven through Ginkgo's Dense pack/unpack + Convergence logger.
             nb::arg("solver") = "bicgstab",
             nb::arg("max_iter") = 1000,
             nb::arg("rtol") = 1e-10,
@@ -2239,6 +3679,28 @@ void bindPersistent(nb::module_& m, const char* name)
             // matrix-free geometric multigrid on the face coefficients —
             // matrix-free solver only, no MLMG involved).
             nb::arg("precond") = "none",
+            // Native-GMG (precond="gmg") V-cycle knobs. Defaults reproduce the
+            // previous fixed behaviour. gmg_pre_sweeps/gmg_post_sweeps: RB-GS
+            // sweep count / Chebyshev degree per pre-/post-smooth (keep them
+            // equal for a CG-safe symmetric V-cycle). gmg_coarsest_sweeps:
+            // smoothing on the bottom level. gmg_max_levels: 0 = auto/unlimited
+            // coarsening; else cap the hierarchy depth. gmg_min_bottom: stop
+            // coarsening before the domain shortside drops below this.
+            // gmg_smoother: "rbgs" (red-black Gauss-Seidel) or "chebyshev"
+            // (Jacobi-preconditioned polynomial, plain-stencil bandwidth).
+            nb::arg("gmg_pre_sweeps") = 2,
+            nb::arg("gmg_post_sweeps") = 2,
+            nb::arg("gmg_coarsest_sweeps") = 8,
+            nb::arg("gmg_max_levels") = 0,
+            nb::arg("gmg_min_bottom") = 4,
+            nb::arg("gmg_smoother") = "rbgs",
+            // Native-GMG hierarchy precision: "fp64" (default; byte-for-byte the
+            // previous behaviour) or "fp32" — the whole V-cycle (level
+            // coefficients, work fields, smoother, restriction/prolongation,
+            // ghost fills) runs in single precision while the outer CG/operator
+            // stays double, halving the bandwidth-bound V-cycle traffic.
+            // Matrix-free solver only.
+            nb::arg("gmg_precision") = "fp64",
             nb::keep_alive<1, 2>(),
             nb::keep_alive<1, 3>(),
             nb::keep_alive<1, 4>(),
@@ -2810,4 +4272,25 @@ void registerGinkgoSolve(nb::module_& m)
     // over an explicit sparse matrix can be measured.
     bindPersistent<FaceCoeffSolver>(m, "FaceCoeffSolver");
     bindPersistent<FaceCoeffCsrSolver>(m, "FaceCoeffCsrSolver");
+
+    // M0 profiling accessors (see namespace prof). Empty unless the process
+    // runs with BLOCKAMR_PROFILE=1.
+    m.def(
+        "profile_report",
+        []()
+        {
+            nb::dict d;
+            for (const auto& [key, acc] : prof::table())
+            {
+                d[key.c_str()] = nb::make_tuple(acc.sec, acc.count);
+            }
+            return d;
+        },
+        "Accumulated {phase: (seconds, count)} timers (BLOCKAMR_PROFILE=1)."
+    );
+    m.def(
+        "profile_reset",
+        []() { prof::table().clear(); },
+        "Clear the BLOCKAMR_PROFILE=1 phase-timer accumulators."
+    );
 }

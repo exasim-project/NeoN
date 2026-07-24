@@ -46,4 +46,7 @@ void registerGinkgoSolve(nb::module_& m)
             [](FaceCoeffCsrSolverStub*, nb::args, nb::kwargs)
             { throw std::runtime_error("built without Ginkgo"); }
         );
+
+    m.def("profile_report", []() -> nb::dict { return nb::dict(); });
+    m.def("profile_reset", []() {});
 }

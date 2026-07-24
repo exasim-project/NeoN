@@ -29,6 +29,20 @@ several ways, all on the GPU, and times the solve:
                    AMReX primitives only — no MLLinOp/MLMG anywhere — so each
                    preconditioner apply is a plain V-cycle with none of MLMG's
                    per-solve residual bookkeeping.
+* ``gmg``        — the NATIVE geometric-multigrid V-cycle run as a STANDALONE
+                   stationary solver (``solver="gmg"``): x <- x + V(b - A x)
+                   until tolerance, a Richardson iteration exactly like MLMG,
+                   with NONE of CG's per-iteration wrapper cost (dots/axpys,
+                   separate outer mat-vec, Ginkgo<->AMReX pack/unpack). The whole
+                   loop runs on AMReX MultiFabs; Ginkgo is not in the loop (M1).
+* ``gmg-ir``     — the SAME native V-cycle driven by Ginkgo's iterative refinement
+                   (``solver="ir"``, ``gko::solver::Ir``, relaxation 1.0): the
+                   system matrix is the matrix-free ``FaceCoeffOp`` and the inner
+                   solver is the generated GMG V-cycle LinOp. Mathematically the
+                   same Richardson iteration as ``gmg`` but run THROUGH Ginkgo
+                   (Dense pack/unpack + per-iteration LinOp-boundary crossings), so
+                   ``gmg`` vs ``gmg-ir`` isolates the cost of the Ginkgo-idiomatic
+                   loop over the fully-native one.
 * ``csr``        — persistent ``FaceCoeffCsrSolver`` CG: the SAME matrix assembled
                    into a Ginkgo CSR. Unpreconditioned, so ``mf`` vs ``csr`` is a
                    clean apples-to-apples measure of matrix-free (recompute) vs
@@ -72,12 +86,20 @@ import numpy as np
 
 import blockamr
 
-METHODS = ("mlmg", "mlmg-nomg", "ginkgo", "mf", "mf-pmg", "mf-gmg", "csr")
+METHODS = ("mlmg", "mlmg-nomg", "ginkgo", "mf", "mf-pmg", "mf-gmg", "gmg", "gmg-ir", "csr")
+# Smoother for the native-GMG preconditioner (mf-gmg); "rbgs" reproduces the
+# historical default, "chebyshev" is the M4 polynomial smoother. Set from --gmg-smoother.
+GMG_SMOOTHER = "rbgs"
+# V-cycle hierarchy precision for mf-gmg; "fp64" reproduces the historical
+# default, "fp32" is the M5 single-precision V-cycle. Set from --gmg-precision.
+GMG_PRECISION = "fp64"
 # Persistent solvers built once and reused (per-solve = pack/apply/unpack only).
 PERSISTENT = {
     "mf": "FaceCoeffSolver",
     "mf-pmg": "FaceCoeffSolver",
     "mf-gmg": "FaceCoeffSolver",
+    "gmg": "FaceCoeffSolver",
+    "gmg-ir": "FaceCoeffSolver",
     "csr": "FaceCoeffCsrSolver",
 }
 
@@ -181,7 +203,27 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         # Native matrix-free geometric multigrid: the whole hierarchy is built
         # inside the solver constructor (setup-timed), from the face
         # coefficients alone — no MLMG object involved.
-        kwargs = {"precond": "gmg", "precond_cycles": 1}
+        kwargs = {
+            "precond": "gmg",
+            "precond_cycles": 1,
+            "gmg_smoother": GMG_SMOOTHER,
+            "gmg_precision": GMG_PRECISION,
+        }
+    elif method in ("gmg", "gmg-ir"):
+        # Native stationary GMG solver (solver="gmg") or its Ginkgo iterative-
+        # refinement twin (solver="ir"): both are x <- x + V(b - A x), a Richardson
+        # iteration on the same V-cycle. "gmg" runs the loop natively on AMReX
+        # MultiFabs (no Ginkgo in the loop, M1); "ir" runs it through Ginkgo's Ir
+        # (Dense pack/unpack + LinOp-boundary crossings). Both need the same
+        # accurate coarsest-grid solve, so coarsest sweeps are raised identically
+        # (the bottom is <=4^3, so this is cheap at scale).
+        kwargs = {
+            "precond_cycles": 1,
+            "gmg_smoother": GMG_SMOOTHER,
+            "gmg_precision": GMG_PRECISION,
+            "gmg_coarsest_sweeps": 160 if GMG_SMOOTHER == "chebyshev" else 100,
+        }
+    solver = {"gmg": "gmg", "gmg-ir": "ir"}.get(method, "cg")
     return cls(
         alpha=alpha,
         ux=fx,
@@ -192,7 +234,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         lz=fz,
         geom=geom,
         executor="cuda",
-        solver="cg",
+        solver=solver,
         max_iter=max_iter,
         rtol=rtol,
         **kwargs,
@@ -337,7 +379,22 @@ def main():
     ap.add_argument("--atol", type=float, default=0.0)
     ap.add_argument("--max-iter", type=int, default=20000)
     ap.add_argument("--csv", default="bench_solvers.csv", help="output CSV path")
+    ap.add_argument(
+        "--gmg-smoother",
+        default="rbgs",
+        choices=("rbgs", "chebyshev"),
+        help="smoother for the mf-gmg native-GMG preconditioner (default rbgs)",
+    )
+    ap.add_argument(
+        "--gmg-precision",
+        default="fp64",
+        choices=("fp64", "fp32"),
+        help="V-cycle precision for the mf-gmg native-GMG preconditioner (default fp64)",
+    )
     args = ap.parse_args()
+    global GMG_SMOOTHER, GMG_PRECISION
+    GMG_SMOOTHER = args.gmg_smoother
+    GMG_PRECISION = args.gmg_precision
 
     header = [
         "n_cell",
