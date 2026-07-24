@@ -13,18 +13,11 @@
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtScheme.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
-
-enum class DdtScheme
-{
-    None,
-    SteadyState,
-    BDF1,
-    BDF2
-};
 
 template<typename ValueType>
 class DdtOperator : public dsl::OperatorMixin<VolumeField<ValueType>>

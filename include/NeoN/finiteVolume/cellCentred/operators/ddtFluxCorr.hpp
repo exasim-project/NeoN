@@ -10,6 +10,7 @@
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/surface/ddtFluxCorrBoundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtScheme.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {

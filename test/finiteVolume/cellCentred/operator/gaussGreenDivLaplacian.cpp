@@ -446,8 +446,8 @@ TEST_CASE("Expression assembles fused GaussGreenDivLaplacian into ELL, matches C
 
 // Segregated vector-solve form (scalar matrix, Vec3 rhs) of the fused vertical slice above --
 // mirrors "Expression assembles fused GaussGreenDivLaplacian into ELL, matches CSR" but with a
-// Vec3 phi, going through the same DivLapOptimizer fusion and the new segregated-ELL
-// implicitOperation<SystemMatrixType> entry point added to GaussGreenDivLaplacian.
+// Vec3 phi, going through the same DivLapOptimizer fusion and GaussGreenDivLaplacian's concrete
+// ELL overload (LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>).
 TEST_CASE("Expression assembles fused GaussGreenDivLaplacian into ELL, matches CSR, segregated")
 {
     using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;

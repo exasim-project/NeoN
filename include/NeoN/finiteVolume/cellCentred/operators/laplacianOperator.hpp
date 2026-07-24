@@ -190,9 +190,8 @@ public:
     /* @brief Implicit assembly into a scalar-matrix / FieldValueType-rhs linear system
      *        (segregated vector-solve form). Only present when FieldValueType != scalar.
      */
-    template<typename F = FieldValueType>
-        requires(!std::is_same_v<F, scalar>)
     void implicitOperation(la::LinearSystem<scalar, FieldValueType>& ls) const
+        requires(!std::is_same_v<FieldValueType, scalar>)
     {
         NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

@@ -15,6 +15,13 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
+// Fused div+laplacian internal-face, boundary, and proc-boundary assembly kernels. Internal
+// linkage: every public GaussGreenDivLaplacian::implicitOperation overload is now a concrete,
+// non-template member defined below in this same TU, so implicitOperationImpl -- their one
+// shared caller -- and these kernels are never reached from outside gaussGreenDivLaplacian.cpp.
+namespace
+{
+
 template<typename FieldValueType, typename AssemblyType, typename SystemMatrixType>
 void computeDivLaplacianIntImpl(
     la::LinearSystem<AssemblyType, FieldValueType, SystemMatrixType>& ls,
@@ -301,6 +308,8 @@ void computeDivLaplacianProcBoundImpl(
     );
 }
 
+} // namespace
+
 template<typename ValueType>
 GaussGreenDivLaplacian<ValueType>::GaussGreenDivLaplacian(
     const Executor& exec, Dictionary divConfig, Dictionary lapConfig
@@ -321,6 +330,128 @@ template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*source*/) const
 {}
 
+// Shared by all three implicitOperation overloads below -- the assembly sequence (internal
+// faces, non-orthogonal correction, physical/proc boundaries, deferred div correction) has one
+// source of truth instead of being duplicated per format. No longer needs to be header-inline:
+// every caller (the three implicitOperation overloads) is defined in this same TU, so same-TU
+// implicit instantiation covers whatever AssemblyType/SystemMatrixType combination each one
+// needs, matching GaussGreenDiv::divImpl<SystemMatrixType>'s existing pattern. Cell-based
+// assembly stays CSR-only; a CellBasedIterator on a non-CSR system is rejected rather than
+// silently falling back to face-based assembly.
+template<typename ValueType>
+template<typename AssemblyType, typename SystemMatrixType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperationImpl(
+    la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls
+) const
+{
+    if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
+    {
+        if (auto* cellIter =
+                dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+        {
+            if (!cellIter->getCellBasedData())
+            {
+                cellIter->setComputeCellBasedData(
+                    this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                );
+            }
+            computeDivLaplacianIntCellBasedImpl(
+                ls,
+                this->getVector(),
+                flux_,
+                gamma_,
+                *divSurfaceInterpolation_,
+                *faceNormalGradient_,
+                coeffA_,
+                coeffB_
+            );
+        }
+        else
+        {
+            computeDivLaplacianIntImpl(
+                ls,
+                this->getVector(),
+                flux_,
+                gamma_,
+                *divSurfaceInterpolation_,
+                *faceNormalGradient_,
+                coeffA_,
+                coeffB_
+            );
+        }
+    }
+    else
+    {
+        NF_ASSERT(
+            dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()) == nullptr,
+            "Cell-based iteration is not implemented for ELL assembly"
+        );
+        computeDivLaplacianIntImpl(
+            ls,
+            this->getVector(),
+            flux_,
+            gamma_,
+            *divSurfaceInterpolation_,
+            *faceNormalGradient_,
+            coeffA_,
+            coeffB_
+        );
+    }
+    computeLaplacianNonOrthCorrImpl(ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_);
+    computeDivLaplacianBoundImpl(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
+    computeDivLaplacianProcBoundImpl(
+        ls,
+        this->getVector(),
+        flux_,
+        gamma_,
+        *divSurfaceInterpolation_,
+        *faceNormalGradient_,
+        coeffA_,
+        coeffB_
+    );
+
+    // Deferred correction for a corrected div scheme (e.g. linearUpwind): the fused matrix
+    // uses upwind div weights, the gradient correction is added explicitly to the rhs.
+    if (divSurfaceInterpolation_->corrected())
+    {
+        const auto& mesh = this->getVector().mesh();
+        SurfaceField<ValueType> correction(
+            this->getVector().exec(),
+            "divCorrection",
+            mesh,
+            createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+        );
+        divSurfaceInterpolation_->correction(flux_, this->getVector(), correction);
+        addDivCorrectionToRhs(ls, flux_, correction, coeffA_);
+    }
+
+    // Bounded-convection Sp diagonal term for a `bounded` div scheme (same as BoundedDiv::div).
+    // applyBoundedDivDiagonal is CSR-only (no SystemMatrixType parameter of its own); reject
+    // rather than silently skip the stabilisation term for ELL.
+    if (bounded_)
+    {
+        if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
+        {
+            applyBoundedDivDiagonal(ls, flux_, this->getVector().mesh(), coeffA_);
+        }
+        else
+        {
+            NF_ASSERT(
+                false, "bounded div scheme is not yet implemented for ELL GaussGreenDivLaplacian"
+            );
+        }
+    }
+}
+
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
@@ -331,6 +462,14 @@ template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scalar, ValueType>& ls
 ) const
     requires(!std::is_same_v<ValueType, scalar>)
+{
+    implicitOperationImpl(ls);
+}
+
+template<typename ValueType>
+void GaussGreenDivLaplacian<ValueType>::implicitOperation(
+    la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls
+) const
 {
     implicitOperationImpl(ls);
 }
@@ -397,165 +536,5 @@ Dictionary GaussGreenDivLaplacian<ValueType>::getConfig() const
 
 template class GaussGreenDivLaplacian<scalar>;
 template class GaussGreenDivLaplacian<Vec3>;
-
-// CSR instantiations, matching the class instantiations above (scalar/scalar, Vec3/Vec3,
-// segregated Vec3/scalar) -- these functions are no longer static/file-local since the
-// header-inline ELL implicitOperation() overload calls them from other TUs.
-template void computeDivLaplacianIntImpl<scalar, scalar, la::CSRMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&,
-    const VolumeField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<scalar>&,
-    const FaceNormalGradient<scalar>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianIntImpl<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>(
-    la::LinearSystem<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianIntImpl<Vec3, scalar, la::CSRMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, Vec3, la::CSRMatrix<scalar, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-// ELL instantiation, proving the fused kernel works for a non-CSR SystemMatrixType -- scalar
-// only, matching the scalar-only ELL scope already established for SourceTerm, DdtOperator,
-// DivOperator and LaplacianOperator.
-template void computeDivLaplacianIntImpl<scalar, scalar, la::ELLMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&,
-    const VolumeField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<scalar>&,
-    const FaceNormalGradient<scalar>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-// Segregated ELL counterpart, matching the segregated CSR instantiation above.
-template void computeDivLaplacianIntImpl<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-
-template void computeDivLaplacianBoundImpl<scalar, scalar, la::CSRMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&,
-    const VolumeField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<scalar>&,
-    const FaceNormalGradient<scalar>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianBoundImpl<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>(
-    la::LinearSystem<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianBoundImpl<Vec3, scalar, la::CSRMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, Vec3, la::CSRMatrix<scalar, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianBoundImpl<scalar, scalar, la::ELLMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&,
-    const VolumeField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<scalar>&,
-    const FaceNormalGradient<scalar>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianBoundImpl<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-
-template void computeDivLaplacianProcBoundImpl<scalar, scalar, la::CSRMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&,
-    const VolumeField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<scalar>&,
-    const FaceNormalGradient<scalar>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianProcBoundImpl<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>(
-    la::LinearSystem<Vec3, Vec3, la::CSRMatrix<Vec3, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianProcBoundImpl<Vec3, scalar, la::CSRMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, Vec3, la::CSRMatrix<scalar, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianProcBoundImpl<scalar, scalar, la::ELLMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&,
-    const VolumeField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<scalar>&,
-    const FaceNormalGradient<scalar>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
-template void computeDivLaplacianProcBoundImpl<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
-    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
-    const VolumeField<Vec3>&,
-    const SurfaceField<scalar>&,
-    const SurfaceField<scalar>&,
-    const SurfaceInterpolation<Vec3>&,
-    const FaceNormalGradient<Vec3>&,
-    const dsl::Coeff,
-    const dsl::Coeff
-);
 
 } // namespace NeoN::finiteVolume::cellCentred
