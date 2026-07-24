@@ -46,7 +46,7 @@ TEST_CASE("EllSparsityPattern")
     //   slot 1: [1, 1, 2, 3]
     //   slot 2: [INV, 2, 3, INV]
     // clang-format on
-    const auto INV = la::EllSparsityView<localIdx>::invalidIndex();
+    const auto inv = la::EllSparsityView<localIdx>::invalidIndex();
     const localIdx nRows = 4;
     const localIdx numStoredElementsPerRow = 3;
     const localIdx stride = nRows;
@@ -61,10 +61,10 @@ TEST_CASE("EllSparsityPattern")
         1,
         2,
         3, // slot 1
-        INV,
+        inv,
         2,
         3,
-        INV // slot 2
+        inv // slot 2
     };
 
     Vector<localIdx> colIdx(exec, colIdxExp);
@@ -154,9 +154,9 @@ TEST_CASE("ELLMatrix")
     const localIdx numStoredElementsPerRow = 3;
     const localIdx stride = nRows;
     const localIdx logicalNnz = 10;
-    const auto INV = la::EllSparsityView<localIdx>::invalidIndex();
+    const auto inv = la::EllSparsityView<localIdx>::invalidIndex();
 
-    Vector<localIdx> colIdx(exec, std::vector<localIdx> {0, 0, 1, 2, 1, 1, 2, 3, INV, 2, 3, INV});
+    Vector<localIdx> colIdx(exec, std::vector<localIdx> {0, 0, 1, 2, 1, 1, 2, 3, inv, 2, 3, inv});
     auto sp = std::make_shared<const EllSparsityType>(
         std::move(colIdx),
         la::Dimensions {nRows, nRows},
@@ -246,7 +246,7 @@ TEST_CASE("ELLMatrix")
         const localIdx smallNRows = 3;
         const localIdx smallWidth = 2;
         const localIdx smallStride = smallNRows;
-        Vector<localIdx> smallColIdx(exec, std::vector<localIdx> {0, 1, 1, INV, 2, INV});
+        Vector<localIdx> smallColIdx(exec, std::vector<localIdx> {0, 1, 1, inv, 2, inv});
         auto smallSp = std::make_shared<const EllSparsityType>(
             std::move(smallColIdx),
             la::Dimensions {smallNRows, smallNRows},

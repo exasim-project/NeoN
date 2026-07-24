@@ -48,10 +48,11 @@ TEST_CASE("dsl::solve assembles and solves a complete PDE via ELL, matches CSR")
     phiCsr.correctBoundaryConditions();
     phiEll.correctBoundaryConditions();
 
+    // linear is not supported by the fused div-laplacian operator, so it also checks that the
+    // default dsl::solve path does not fuse the operators
+    const std::string divScheme = GENERATE(std::string("upwind"), std::string("linear"));
     Dictionary divSchemes;
-    divSchemes.insert(
-        "div(faceFlux,phi)", TokenList({std::string("Gauss"), std::string("upwind")})
-    );
+    divSchemes.insert("div(faceFlux,phi)", TokenList({std::string("Gauss"), divScheme}));
     Dictionary lapSchemes;
     lapSchemes.insert(
         "laplacian(gamma,phi)",
@@ -68,9 +69,10 @@ TEST_CASE("dsl::solve assembles and solves a complete PDE via ELL, matches CSR")
     fvSchemes.insert("laplacianSchemes", lapSchemes);
     fvSchemes.insert("timeIntegration", timeIntegrationDict);
 
+    // the matrix is not symmetric with the div term
     Dictionary fvSolution {
         {{"solver", std::string {"Ginkgo"}},
-         {"type", "solver::Cg"},
+         {"type", "solver::Gmres"},
          {"criteria", Dictionary {{{"iteration", 500}, {"relative_residual_norm", 1e-10}}}}}
     };
 

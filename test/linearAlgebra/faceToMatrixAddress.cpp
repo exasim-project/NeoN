@@ -52,7 +52,7 @@ TEST_CASE("EllFaceToMatrixAddress")
     auto [sp, mi] = NeoN::la::createSparsityPatternFaceToMatrixAddress<
         NeoN::la::EllSparsityPattern<NeoN::localIdx>>(mesh);
 
-    const auto INV = NeoN::la::EllSparsityView<NeoN::localIdx>::invalidIndex();
+    const auto inv = NeoN::la::EllSparsityView<NeoN::localIdx>::invalidIndex();
 
     SECTION("Can construct native ELL sparsity pattern " + execName)
     {
@@ -74,10 +74,10 @@ TEST_CASE("EllFaceToMatrixAddress")
             1,
             2,
             3, // slot 1
-            INV,
+            inv,
             2,
             3,
-            INV // slot 2
+            inv // slot 2
         };
         REQUIRE_THAT(sp->colIdxs(), Equals(colIdxExp, EqualInt()));
     }
