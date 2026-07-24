@@ -124,18 +124,100 @@ public:
         );
     }
 
+    // Segregated counterpart of bdf1Kernel above -- same structure, but the diagonal coefficient
+    // is a scalar shared across every rhs component instead of a ValueType. Header-inline and
+    // SystemMatrixType-generic for the same reason as bdf1Kernel.
+    template<typename SystemMatrixType>
+    void bdf1KernelScalarMtx(
+        la::LinearSystem<scalar, ValueType, SystemMatrixType>& ls, scalar, scalar dt
+    ) const
+    {
+        const auto vol = this->getVector().mesh().cellVolumes().view();
+        const auto operatorScaling = this->getCoefficient();
+        const auto oldVector = oldTime(this->field_).internalVector().view();
+        auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
+        const auto ma = ls.matrix().faceToMatrixView();
+
+        const scalar a0a1 = 1.0 / dt;
+
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += commonCoef * a0a1;
+                rhs[celli] += commonCoef * a0a1 * oldVector[celli];
+            },
+            "ddtOperator::implicitOperationScalarMtx<BDF1>"
+        );
+    }
+
+    template<typename SystemMatrixType>
+    void bdf2KernelScalarMtx(
+        la::LinearSystem<scalar, ValueType, SystemMatrixType>& ls, scalar, scalar dt
+    ) const
+    {
+        const auto vol = this->getVector().mesh().cellVolumes().view();
+        const auto operatorScaling = this->getCoefficient();
+        auto& old = oldTime(this->field_);
+        auto& oldOld = oldTime(old);
+        const auto [oldVector, oldOldVector] = views(old.internalVector(), oldOld.internalVector());
+        auto [rhs, values] = views(ls.rhs(), ls.matrix().values());
+        const auto ma = ls.matrix().faceToMatrixView();
+
+        const scalar a0 = 1.5 / dt;
+        const scalar a1 = 2.0 / dt;
+        const scalar a2 = -0.5 / dt;
+
+        parallelFor(
+            ls.exec(),
+            {0, oldVector.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += commonCoef * a0;
+                rhs[celli] +=
+                    commonCoef * a1 * oldVector[celli] + commonCoef * a2 * oldOldVector[celli];
+            },
+            "ddtOperator::implicitOperationScalarMtx<BDF2>"
+        );
+    }
+
     /* @brief Implicit temporal assembly into a scalar-matrix / ValueType-rhs linear system
      *        (segregated vector-solve form). Only present when ValueType != scalar; for scalar
      *        fields the same-type overload above already covers LinearSystem<scalar, scalar>.
-     *        The scalar diagonal entry scales every rhs component equally.
+     *        The scalar diagonal entry scales every rhs component equally. Format-generic over
+     *        SystemMatrixType (CSR or ELL) and header-inline, same reasoning as
+     *        implicitOperation<SystemMatrixType> above. Guarded on ValueType (the class's own
+     *        parameter, not a separate member-template one), so unlike the old declare-in-header
+     *        /define-in-cpp version, SystemMatrixType is the only substitutable parameter and is
+     *        always deduced from ls -- no risk of an explicit template argument silently picking
+     *        an unrelated, never-defined specialization.
      */
-    template<typename F = ValueType>
-        requires(!std::is_same_v<F, scalar>)
-    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls, scalar, scalar dt) const;
+    template<typename SystemMatrixType>
+        requires(!std::is_same_v<ValueType, scalar>)
+    void implicitOperation(
+        la::LinearSystem<scalar, ValueType, SystemMatrixType>& ls, scalar t, scalar dt
+    ) const
+    {
+        if (scheme_ == DdtScheme::SteadyState)
+        {
+            return;
+        }
+        const int level = oldTimeLevel(this->field_);
 
-    void bdf1KernelScalarMtx(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const;
-
-    void bdf2KernelScalarMtx(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const;
+        if (scheme_ == DdtScheme::BDF1)
+        {
+            bdf1KernelScalarMtx(ls, t, dt);
+        }
+        else if (level < 2)
+        {
+            bdf1KernelScalarMtx(ls, t, dt); // startup step
+        }
+        else
+        {
+            bdf2KernelScalarMtx(ls, t, dt);
+        }
+    }
 
     DdtScheme scheme() const noexcept { return scheme_; }
 

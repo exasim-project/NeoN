@@ -335,6 +335,18 @@ public:
         Vector<Vec3>& x
     ) const final;
 
+    // Format-generic segregated (scalar matrix, Vec3 rhs) solve body (defined in ginkgo.cpp,
+    // explicitly instantiated for CSRMatrix and ELLMatrix). Both segregated solve() overrides
+    // below forward to this, same reasoning as solveImpl above.
+    template<typename SystemMatrixType>
+    SolverStats solveSegregatedImpl(
+        const LinearSystem<scalar, Vec3, SystemMatrixType>& sys, Vector<Vec3>& x
+    ) const;
+
+    virtual SolverStats solve(
+        const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& sys, Vector<Vec3>& x
+    ) const final;
+
 #ifdef NF_WITH_MPI_SUPPORT
     virtual SolverStats solveDist(
         const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x

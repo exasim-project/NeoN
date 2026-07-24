@@ -198,11 +198,6 @@ TEMPLATE_TEST_CASE("DdtOperator matches for CSR and ELL", "[template]", NeoN::sc
         auto csrLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, CSRMatrix>(mesh);
         auto ellLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, ELLMatrix>(mesh);
 
-        // Deduced, not explicit: an explicit <CSRMatrix>/<ELLMatrix> argument here would also
-        // satisfy the pre-existing segregated-form overload's `requires(!is_same_v<F, scalar>)`
-        // (F only appears in that requires clause, not the parameter list, so it isn't tied to
-        // ValueType under explicit substitution) and silently call an unrelated, never-defined
-        // specialization instead.
         ddtOp.implicitOperation(csrLs, 1.0, 0.5);
         ddtOp.implicitOperation(ellLs, 1.0, 0.5);
 
@@ -277,6 +272,122 @@ TEST_CASE("Expression assembles ddt into ELL via TemporalOperator")
     fvSchemes.insert("ddtSchemes", ddtSchemes);
 
     dsl::Expression<scalar> expr(dsl::imp::ddt(phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 1.0, 0.5);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 1.0, 0.5);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag()));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs()));
+}
+
+// Segregated vector-solve form (scalar matrix, Vec3 rhs) of "DdtOperator matches for CSR and
+// ELL" above -- DdtOperator::implicitOperation<SystemMatrixType> called directly, bypassing
+// TemporalOperator's type erasure.
+TEST_CASE("DdtOperator matches for CSR and ELL, segregated")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::Database db;
+    auto mesh = createSingleCellMesh(exec);
+
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "testVectorCollection");
+
+    fvcc::VolumeField<Vec3>& phi = fieldCollection.registerVector<fvcc::VolumeField<Vec3>>(
+        CreateVector<Vec3> {.name = "phi", .mesh = mesh, .timeIndex = 1}
+    );
+
+    fill(phi.internalVector(), 10 * one<Vec3>());
+    fill(phi.boundaryData().value(), zero<Vec3>());
+    phi.correctBoundaryConditions();
+    fill(oldTime(phi).internalVector(), -1.0 * one<Vec3>());
+
+    SECTION("diag() and rhs() match " + execName)
+    {
+        fvcc::DdtOperator<Vec3> ddtOp(Operator::Type::Implicit, phi);
+
+        auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, CSRMatrix>(mesh);
+        auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, ELLMatrix>(mesh);
+
+        ddtOp.implicitOperation(csrLs, 1.0, 0.5);
+        ddtOp.implicitOperation(ellLs, 1.0, 0.5);
+
+        REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag()));
+        REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs()));
+    }
+
+    SECTION("diag() and rhs() match, BDF2 " + execName)
+    {
+        NeoN::Dictionary fvSchemes;
+        NeoN::Dictionary ddtSchemes;
+        ddtSchemes.insert("ddt(phi)", std::string("BDF2"));
+        fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+        fvcc::DdtOperator<Vec3> ddtOp(Operator::Type::Implicit, phi);
+        ddtOp.read(fvSchemes);
+
+        const scalar dt = 0.5;
+
+        // Step 1: startup (Euler) -- level < 2, both formats fall back to bdf1KernelScalarMtx.
+        {
+            auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, CSRMatrix>(mesh);
+            auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, ELLMatrix>(mesh);
+            ddtOp.implicitOperation(csrLs, 1.0, dt);
+            ddtOp.implicitOperation(ellLs, 1.0, dt);
+            REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag()));
+            REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs()));
+        }
+        // Step 2: true BDF2, once a second old-time level exists.
+        {
+            fill(oldTime(oldTime(phi)).internalVector(), -2.0 * one<Vec3>());
+
+            auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, CSRMatrix>(mesh);
+            auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, ELLMatrix>(mesh);
+            ddtOp.implicitOperation(csrLs, 1.5, dt);
+            ddtOp.implicitOperation(ellLs, 1.5, dt);
+            REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag()));
+            REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs()));
+        }
+    }
+}
+
+// Full vertical slice for the segregated form: dsl::imp::ddt() with a Vec3 field goes through
+// TemporalOperator's segregated-ELL dispatch (HasTemporalImplicitOperatorScalarMtxELL /
+// implicitOperationScalarMtxELL) via Expression<Vec3>::assemble<scalar, ELLMatrix<scalar,
+// localIdx>>() -- the gap that used to break compilation for every Vec3 expression assembling
+// into ELL, not just ddt-containing ones (see temporalOperator.hpp).
+TEST_CASE("Expression assembles ddt into ELL via TemporalOperator, segregated")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    NeoN::Database db;
+    auto mesh = createSingleCellMesh(exec);
+
+    fvcc::VectorCollection& fieldCollection =
+        fvcc::VectorCollection::instance(db, "testVectorCollection");
+
+    fvcc::VolumeField<Vec3>& phi = fieldCollection.registerVector<fvcc::VolumeField<Vec3>>(
+        CreateVector<Vec3> {.name = "phi", .mesh = mesh, .timeIndex = 1}
+    );
+
+    fill(phi.internalVector(), 10 * one<Vec3>());
+    fill(phi.boundaryData().value(), zero<Vec3>());
+    phi.correctBoundaryConditions();
+    fill(oldTime(phi).internalVector(), -1.0 * one<Vec3>());
+
+    NeoN::Dictionary fvSchemes;
+    NeoN::Dictionary ddtSchemes;
+    ddtSchemes.insert("ddt(phi)", std::string("BDF1"));
+    fvSchemes.insert("ddtSchemes", ddtSchemes);
+
+    dsl::Expression<Vec3> expr(dsl::imp::ddt(phi));
     expr.read(fvSchemes);
 
     auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 1.0, 0.5);

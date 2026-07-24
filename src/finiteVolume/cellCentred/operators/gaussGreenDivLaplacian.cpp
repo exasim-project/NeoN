@@ -444,6 +444,17 @@ template void computeDivLaplacianIntImpl<scalar, scalar, la::ELLMatrix<scalar, l
     const dsl::Coeff,
     const dsl::Coeff
 );
+// Segregated ELL counterpart, matching the segregated CSR instantiation above.
+template void computeDivLaplacianIntImpl<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const SurfaceInterpolation<Vec3>&,
+    const FaceNormalGradient<Vec3>&,
+    const dsl::Coeff,
+    const dsl::Coeff
+);
 
 template void computeDivLaplacianBoundImpl<scalar, scalar, la::CSRMatrix<scalar, localIdx>>(
     la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&,
@@ -485,6 +496,16 @@ template void computeDivLaplacianBoundImpl<scalar, scalar, la::ELLMatrix<scalar,
     const dsl::Coeff,
     const dsl::Coeff
 );
+template void computeDivLaplacianBoundImpl<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const SurfaceInterpolation<Vec3>&,
+    const FaceNormalGradient<Vec3>&,
+    const dsl::Coeff,
+    const dsl::Coeff
+);
 
 template void computeDivLaplacianProcBoundImpl<scalar, scalar, la::CSRMatrix<scalar, localIdx>>(
     la::LinearSystem<scalar, scalar, la::CSRMatrix<scalar, localIdx>>&,
@@ -523,6 +544,16 @@ template void computeDivLaplacianProcBoundImpl<scalar, scalar, la::ELLMatrix<sca
     const SurfaceField<scalar>&,
     const SurfaceInterpolation<scalar>&,
     const FaceNormalGradient<scalar>&,
+    const dsl::Coeff,
+    const dsl::Coeff
+);
+template void computeDivLaplacianProcBoundImpl<Vec3, scalar, la::ELLMatrix<scalar, localIdx>>(
+    la::LinearSystem<scalar, Vec3, la::ELLMatrix<scalar, localIdx>>&,
+    const VolumeField<Vec3>&,
+    const SurfaceField<scalar>&,
+    const SurfaceField<scalar>&,
+    const SurfaceInterpolation<Vec3>&,
+    const FaceNormalGradient<Vec3>&,
     const dsl::Coeff,
     const dsl::Coeff
 );

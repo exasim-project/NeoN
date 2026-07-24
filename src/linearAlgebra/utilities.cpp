@@ -162,14 +162,16 @@ void computeResidual(
         resV.exec(),
         {0, resV.size()},
         NEON_LAMBDA(const localIdx rowi) {
-            auto rowStart = sparsity.rowOffs[rowi];
-            auto rowEnd = sparsity.rowOffs[rowi + 1];
             // ValueType sum: scalar coeffs * Vec3 x broadcasts to each component for
             // the segregated vector-solve form (scalar matrix, Vec3 rhs)
             ValueType sum = zero<ValueType>();
-            for (localIdx coli = rowStart; coli < rowEnd; coli++)
+            const auto rowSize = sparsity.rowSize(rowi);
+            for (localIdx slot = 0; slot < rowSize; ++slot)
             {
-                sum += coeffs[coli] * x[sparsity.colIdxs[coli]];
+                const auto idx = sparsity.linearIndex(rowi, slot);
+                const auto col = sparsity.colIdxs[idx];
+                if (col == decltype(sparsity)::invalidIndex()) break; // ELL padding
+                sum += coeffs[idx] * x[col];
             }
             res[rowi] = sum - b[rowi];
         },
@@ -184,6 +186,14 @@ template void computeResidual<
 template void computeResidual<
     CSRMatrix<scalar, localIdx>,
     Vec3>(const CSRMatrix<scalar, localIdx>&, const Vector<Vec3>&, const Vector<Vec3>&, Vector<Vec3>&);
+
+template void computeResidual<
+    ELLMatrix<scalar, localIdx>,
+    scalar>(const ELLMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
+
+template void computeResidual<
+    ELLMatrix<scalar, localIdx>,
+    Vec3>(const ELLMatrix<scalar, localIdx>&, const Vector<Vec3>&, const Vector<Vec3>&, Vector<Vec3>&);
 
 template<typename IndexType>
 Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows)

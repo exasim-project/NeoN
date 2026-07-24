@@ -72,10 +72,32 @@ concept HasTemporalImplicitOperatorELL = requires(T t) {
     } -> std::same_as<void>;
 };
 
+/* @brief Concept satisfied when T can assemble its temporal contribution into a native
+ *        ELL-backed LinearSystem in the segregated vector-solve form (scalar matrix,
+ *        T::VectorValueType rhs). Only meaningful when VectorValueType != scalar -- for scalar T
+ *        this collides with HasTemporalImplicitOperatorELL (same declval type), which is why the
+ *        dispatch below only ever calls this branch when ValueType != scalar (mirrors
+ *        HasTemporalImplicitOperatorScalarMtx's CSR counterpart).
+ */
+template<typename T>
+concept HasTemporalImplicitOperatorScalarMtxELL = requires(T t) {
+    {
+        t.implicitOperation(
+            std::declval<la::LinearSystem<
+                scalar,
+                typename T::VectorValueType,
+                la::ELLMatrix<scalar, localIdx>>&>(),
+            std::declval<NeoN::scalar>(),
+            std::declval<NeoN::scalar>()
+        )
+    } -> std::same_as<void>;
+};
+
 template<typename T>
 concept HasTemporalOperator =
     HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>
-    || HasTemporalImplicitOperatorScalarMtx<T> || HasTemporalImplicitOperatorELL<T>;
+    || HasTemporalImplicitOperatorScalarMtx<T> || HasTemporalImplicitOperatorELL<T>
+    || HasTemporalImplicitOperatorScalarMtxELL<T>;
 
 /* @class TemporalOperator
  * @brief A class to represent a TemporalOperator in NeoNs DSL
@@ -124,9 +146,8 @@ public:
      *        (segregated vector-solve form). Disabled when ValueType == scalar to avoid
      *        colliding with the same-type overload above.
      */
-    template<typename U = ValueType>
-        requires(!std::is_same_v<U, scalar>)
     void implicitOperation(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const
+        requires(!std::is_same_v<ValueType, scalar>)
     {
         model_->implicitOperationScalarMtx(ls, t, dt);
     }
@@ -140,6 +161,20 @@ public:
     ) const
     {
         model_->implicitOperationELL(ls, t, dt);
+    }
+
+    /* @brief Implicit temporal assembly into a native ELL-backed LinearSystem in the segregated
+     *        vector-solve form (scalar matrix, ValueType rhs). Disabled when ValueType == scalar
+     *        to avoid colliding with the same-type ELL overload above (identical declval type).
+     */
+    void implicitOperation(
+        la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls,
+        scalar t,
+        scalar dt
+    ) const
+        requires(!std::is_same_v<ValueType, scalar>)
+    {
+        model_->implicitOperationScalarMtxELL(ls, t, dt);
     }
 
     /* returns the fundamental type of an operator, ie explicit, implicit */
@@ -188,6 +223,17 @@ private:
          */
         virtual void implicitOperationELL(
             la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls,
+            scalar t,
+            scalar dt
+        ) = 0;
+
+        /* @brief Temporal assembly into a native ELL-backed LinearSystem, segregated
+         *        vector-solve form (scalar matrix, ValueType rhs). Concrete operators that
+         *        don't support this yet throw, same as implicitOperationELL /
+         *        implicitOperationScalarMtx.
+         */
+        virtual void implicitOperationScalarMtxELL(
+            la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls,
             scalar t,
             scalar dt
         ) = 0;
@@ -285,6 +331,26 @@ private:
             {
                 NF_ERROR_EXIT(
                     "Temporal operator '" << getName() << "' does not support ELL assembly."
+                );
+            }
+        }
+
+        virtual void implicitOperationScalarMtxELL(
+            la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls,
+            scalar t,
+            scalar dt
+        ) override
+        {
+            if constexpr (HasTemporalImplicitOperatorScalarMtxELL<ConcreteTemporalOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls, t, dt);
+            }
+            else
+            {
+                NF_ERROR_EXIT(
+                    "Temporal operator '" << getName()
+                                          << "' does not support scalar-matrix (segregated) "
+                                             "ELL assembly."
                 );
             }
         }

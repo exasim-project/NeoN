@@ -76,9 +76,13 @@ la::SolverStats iterativeSolveImpl(
     std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
-    auto ls = exp.template assemble<typename VectorType::ElementType, SystemMatrixType>(
-        solution.mesh(), t, dt, ps
-    );
+    // Derived from SystemMatrixType, not VectorType::ElementType: for a segregated form (e.g.
+    // ELLMatrix<scalar,...> with a Vec3 solution) the matrix's own value type is scalar, not
+    // the field's -- using ElementType directly would assemble<Vec3, ELLMatrix<scalar,...>>,
+    // a mismatched AssemblyType/SystemMatrixType pair. Same result as before for the CSR-default
+    // case, since CSRMatrix<ElementType,...>::MatrixValueType == ElementType.
+    using AssemblyType = typename SystemMatrixType::MatrixValueType;
+    auto ls = exp.template assemble<AssemblyType, SystemMatrixType>(solution.mesh(), t, dt, ps);
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());

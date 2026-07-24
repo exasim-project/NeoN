@@ -643,9 +643,9 @@ void solveImplicitTransformComponent(
     gkoExec->synchronize();
 }
 
-SolverStats GinkgoSolver::solve(
-    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
-    Vector<Vec3>& x
+template<typename SystemMatrixType>
+SolverStats GinkgoSolver::solveSegregatedImpl(
+    const LinearSystem<scalar, Vec3, SystemMatrixType>& sys, Vector<Vec3>& x
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
@@ -662,25 +662,38 @@ SolverStats GinkgoSolver::solve(
     // subtracted from the shared scalar diagonal in place — no matrix copy — and restored after;
     // createGkoMtx only views the matrix, so the edits are seen at generate()/apply() time, and the
     // const_cast is safe because the storage is owned mutably by the caller.
-    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    // CSR-only: sys.matrix().rowOffs() has no ELL equivalent, and nothing currently populates
+    // diagCmpt() for an ELL-typed system (GaussGreenLaplacian's implicit-transform assembly is
+    // same-type/CSR only) -- reject rather than silently skip the correction if that changes.
+    if constexpr (std::is_same_v<SystemMatrixType, CSRMatrix<scalar, localIdx>>)
     {
-        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
-        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
-        auto diagC = sys.diagCmpt()->view();
-        const localIdx nrows = sys.rhs().size();
-        gkoExec_->synchronize();
+        if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+        {
+            auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+            const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+            auto diagC = sys.diagCmpt()->view();
+            const localIdx nrows = sys.rhs().size();
+            gkoExec_->synchronize();
 
-        SolverStats stats;
-        solveImplicitTransformComponent<0>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            SolverStats stats;
+            solveImplicitTransformComponent<0>(
+                sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            );
+            solveImplicitTransformComponent<1>(
+                sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            );
+            solveImplicitTransformComponent<2>(
+                sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+            );
+            return stats;
+        }
+    }
+    else
+    {
+        NF_ASSERT(
+            !sys.diagCmpt() || sys.diagCmpt()->size() == 0,
+            "Implicit transform-BC (diagCmpt) segregated solve is not yet implemented for ELL"
         );
-        solveImplicitTransformComponent<1>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
-        );
-        solveImplicitTransformComponent<2>(
-            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
-        );
-        return stats;
     }
     if (l1Control)
     {
@@ -763,6 +776,21 @@ SolverStats GinkgoSolver::solve(
     return stats;
 }
 
+SolverStats GinkgoSolver::solve(
+    const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
+    Vector<Vec3>& x
+) const
+{
+    return solveSegregatedImpl<CSRMatrix<scalar, localIdx>>(sys, x);
+}
+
+SolverStats GinkgoSolver::solve(
+    const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>& sys, Vector<Vec3>& x
+) const
+{
+    return solveSegregatedImpl<ELLMatrix<scalar, localIdx>>(sys, x);
+}
+
 template std::shared_ptr<const gko::LinOp>
 createGkoMtx<CSRMatrix<scalar, localIdx>>(const CSRMatrix<scalar, localIdx>&);
 
@@ -781,6 +809,14 @@ template SolverStats GinkgoSolver::solveImpl<ELLMatrix<
     scalar,
     localIdx>>(const LinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>&, Vector<scalar>&)
     const;
+
+template SolverStats GinkgoSolver::solveSegregatedImpl<CSRMatrix<
+    scalar,
+    localIdx>>(const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>>&, Vector<Vec3>&) const;
+
+template SolverStats GinkgoSolver::solveSegregatedImpl<ELLMatrix<
+    scalar,
+    localIdx>>(const LinearSystem<scalar, Vec3, ELLMatrix<scalar, localIdx>>&, Vector<Vec3>&) const;
 
 }
 

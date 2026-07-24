@@ -110,6 +110,17 @@ public:
         implicitOperationImpl(ls);
     }
 
+    // Format-generic segregated counterpart of the ELL overload above -- same header-inline
+    // reasoning applies. implicitOperationImpl already handles AssemblyType != ValueType (the
+    // non-template segregated CSR overload above already goes through it), so this is purely new
+    // DSL-entry-point plumbing.
+    template<typename SystemMatrixType>
+        requires(!std::is_same_v<ValueType, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, ValueType, SystemMatrixType>& ls) const
+    {
+        implicitOperationImpl(ls);
+    }
+
     void read(const Input& input);
 
     std::string getName() const;

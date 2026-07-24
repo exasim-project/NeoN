@@ -59,6 +59,18 @@ struct PostAssemblyBase
     {
         NF_THROW("ELL post-assembly is not implemented for this functor");
     }
+
+    /** @brief Apply to the segregated scalar-matrix / VectorType-rhs ELL form. Same
+     *         default-throwing rationale as applyELL above -- Expression::assemble dispatches
+     *         every functor through this unconditionally once AssemblyType == scalar and
+     *         VectorType != scalar with an ELL SystemMatrixType. Functors that support the
+     *         segregated ELL form override this. */
+    virtual void
+    applyScalarMatrixELL(la::LinearSystem<scalar, VectorType, la::ELLMatrix<scalar, IndexType>>&)
+        const
+    {
+        NF_THROW("Segregated ELL post-assembly is not implemented for this functor");
+    }
 };
 
 /**
@@ -113,7 +125,17 @@ public:
         }
     }
 
-    // Shared by operator()/applyScalarMatrix/applyELL above, matching the same
+    /** @brief Segregated scalar-matrix / ValueType-rhs ELL form. applyImpl is already generic
+     *         over SystemMatrixType, so this is purely new dispatch plumbing, same as
+     *         DivOperator/LaplacianOperator's own segregated-ELL entry points. */
+    void
+    applyScalarMatrixELL(la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, IndexType>>& ls
+    ) const override
+    {
+        applyImpl(ls);
+    }
+
+    // Shared by operator()/applyScalarMatrix/applyELL/applyScalarMatrixELL above, matching the same
     // format-generic-orchestrator pattern used for GaussGreenDiv/GaussGreenLaplacian/
     // GaussGreenDivLaplacian's own CSR/ELL entry points. Public (not private): nvcc rejects an
     // extended __host__ __device__ lambda (the parallelFor below) whose enclosing function has
@@ -517,11 +539,9 @@ public:
         }
         else if constexpr (std::is_same_v<SystemMatrixType, la::ELLMatrix<AssemblyType, localIdx>>)
         {
-            // ELL post-assembly dispatches to applyELL, whose fixed signature only matches when
-            // AssemblyType == ValueType == scalar (the scalar-only ELL scope established
-            // elsewhere in the DSL) -- assert nothing was silently dropped for any other
-            // AssemblyType/ValueType combination (e.g. Vec3, segregated) instead of failing to
-            // compile or applying nothing.
+            // Same same-type/segregated split as the CSR branch above: applyELL for the
+            // AssemblyType == ValueType == scalar form, applyScalarMatrixELL for the segregated
+            // (scalar matrix, ValueType rhs) form.
             if constexpr (std::is_same_v<AssemblyType, ValueType> && std::is_same_v<AssemblyType, scalar>)
             {
                 for (const auto* p : ps)
@@ -529,11 +549,20 @@ public:
                     p->applyELL(ls);
                 }
             }
+            else if constexpr (std::is_same_v<AssemblyType, scalar>)
+            {
+                for (const auto* p : ps)
+                {
+                    p->applyScalarMatrixELL(ls);
+                }
+            }
             else
             {
+                // Vec3 same-type ELL (AssemblyType == ValueType == Vec3): not a combination
+                // PostAssemblyBase has a route for -- assert nothing was silently dropped.
                 NF_ASSERT(
                     ps.empty(),
-                    "Post-assembly functors are not supported for Vec3 or segregated ELL yet"
+                    "Post-assembly functors are not supported for Vec3 same-type ELL yet"
                 );
             }
         }
