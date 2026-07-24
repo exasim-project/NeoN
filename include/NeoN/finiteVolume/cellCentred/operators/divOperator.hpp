@@ -190,6 +190,22 @@ public:
         scalarMtxStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
+    // Format-generic counterpart of the segregated overload above -- the non-template overload
+    // still wins for the CSR default, so existing DSL callers are unaffected; ELL callers deduce
+    // SystemMatrixType from the ls argument. GaussGreenDiv<FieldValueType, scalar>'s ELL div()
+    // override already exists (added generically to the class template, not per-instantiation)
+    // and computeDivIntImp/computeDivBoundImpl/computeDivProcBoundImpl are already explicitly
+    // instantiated for the {FieldValueType, scalar, ELLMatrix<scalar,localIdx>} combination, so
+    // this is purely new DSL-entry-point plumbing, not new kernel work.
+    template<typename SystemMatrixType>
+        requires(!std::is_same_v<FieldValueType, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, FieldValueType, SystemMatrixType>& ls) const
+    {
+        NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix DivOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        scalarMtxStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
+    }
+
     void read(const Input& input)
     {
         const UnstructuredMesh& mesh = this->getVector().mesh();

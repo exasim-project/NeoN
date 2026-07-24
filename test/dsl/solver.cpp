@@ -180,6 +180,88 @@ TEST_CASE("dsl::solve with SetReference solves a singular Laplacian via ELL, mat
     REQUIRE_THAT(phiEll.internalVector(), Equals(expected, Approx {1e-6}));
 }
 
+// Segregated vector-solve form (scalar matrix, Vec3 rhs) of the two dsl::solve() tests above --
+// the momentum-equation shape (div + laplacian, scalar-matrix assembly). Exercises, together, all
+// of this pass's segregated-ELL solve() plumbing: dsl::solve()'s AssemblyType derivation (was
+// hardcoded to VectorType::ElementType, i.e. Vec3, which mismatches an ELL matrix's own scalar
+// value type), GinkgoSolver::solveSegregatedImpl<ELLMatrix>, and SetReference's new
+// applyScalarMatrixELL override -- SetReference<Vec3> is exactly the PostAssemblyBase gap noted
+// for the segregated-ELL case, and pinning is what makes this singular Laplacian solvable at all.
+TEST_CASE(
+    "dsl::solve assembles, pins, and solves a singular Laplacian via ELL, matches CSR, segregated"
+)
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 1.0);
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phiCsr(exec, "phi", mesh, volumeBCs);
+    fvcc::VolumeField<Vec3> phiEll(exec, "phi", mesh, volumeBCs);
+    // Same rationale as the scalar singular-Laplacian test above: start away from the expected
+    // uniform solution so CG actually does work (a zero initial residual proves nothing).
+    fill(phiCsr.internalVector(), zero<Vec3>());
+    fill(phiEll.internalVector(), zero<Vec3>());
+    phiCsr.correctBoundaryConditions();
+    phiEll.correctBoundaryConditions();
+
+    Dictionary lapSchemes;
+    lapSchemes.insert(
+        "laplacian(gamma,phi)",
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")})
+    );
+    Dictionary timeIntegrationDict;
+    timeIntegrationDict.insert("type", std::string("backwardEuler"));
+    Dictionary fvSchemes;
+    fvSchemes.insert("laplacianSchemes", lapSchemes);
+    fvSchemes.insert("timeIntegration", timeIntegrationDict);
+
+    Dictionary fvSolution {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 500}, {"relative_residual_norm", 1e-10}}}}}
+    };
+
+    const Vec3 refValue {1.0, 2.0, 3.0};
+    dsl::SetReference<Vec3, localIdx> setRef(0, refValue);
+
+    dsl::Expression<Vec3> exprCsr(dsl::imp::laplacian(gamma, phiCsr));
+    dsl::Expression<Vec3> exprEll(dsl::imp::laplacian(gamma, phiEll));
+
+    using VolumeFieldVec3 = fvcc::VolumeField<Vec3>;
+    auto csrStats = dsl::solve<VolumeFieldVec3, localIdx, CSRMatrix>(
+        exprCsr, phiCsr, 0.0, 1.0, fvSchemes, fvSolution, {&setRef}
+    );
+    auto ellStats = dsl::solve<VolumeFieldVec3, localIdx, ELLMatrix>(
+        exprEll, phiEll, 0.0, 1.0, fvSchemes, fvSolution, {&setRef}
+    );
+
+    REQUIRE(csrStats.has_value());
+    REQUIRE(ellStats.has_value());
+    REQUIRE_FALSE(csrStats->entries.empty());
+    REQUIRE_FALSE(ellStats->entries.empty());
+    REQUIRE(csrStats->entries.front().numIter > 0);
+    REQUIRE(ellStats->entries.front().numIter > 0);
+    REQUIRE(csrStats->entries.front().finalResNorm <= csrStats->entries.front().initResNorm);
+    REQUIRE(ellStats->entries.front().finalResNorm <= ellStats->entries.front().initResNorm);
+
+    REQUIRE_THAT(phiCsr.internalVector(), Equals(phiEll.internalVector(), Approx {1e-6}));
+
+    // Same closed-form check as the scalar test: rows sum to zero and rhs is zero everywhere
+    // except the pinned cell, so the unique solution is the uniform field equal to refValue.
+    Vector<Vec3> expected(exec, mesh.nCells(), refValue);
+    REQUIRE_THAT(phiCsr.internalVector(), Equals(expected, Approx {1e-6}));
+    REQUIRE_THAT(phiEll.internalVector(), Equals(expected, Approx {1e-6}));
+}
+
 // dsl::solve() with two cells pinned to two different prescribed values -- the two pins already
 // make the system well-posed on their own (no need for the singular-Neumann setup above), so this
 // uses a randomized phi and just checks the constrained cells land exactly on their prescribed
