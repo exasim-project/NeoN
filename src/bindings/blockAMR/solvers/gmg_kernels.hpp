@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "bf16.hpp"
 #include "profiling.hpp"
 
 namespace blockamr::solvers
@@ -29,6 +30,13 @@ namespace blockamr::solvers
 // V-cycle — level coefficients, sol/rhs work fields, smoother, residual /
 // restriction / prolongation, ghost fills and the λmax power iteration — runs in
 // T while the outer CG/operator stays FP64. GmgFab<T> is the level fab type.
+//
+// T is what a level is STORED in, which for the bf16 hierarchy is not what the
+// arithmetic happens in: solvers::GmgComputeT<T> (bf16.hpp) is the compute type,
+// = T for double and float and float for Bf16. Kernels that mix a stored value
+// with a literal weight spell the weight GmgComputeT<T> so a bf16 level does not
+// round it to 3 digits; kernels reached only by the FP64/FP32 paths are written
+// in T throughout, which is the same thing for those two.
 // ---------------------------------------------------------------------------
 
 template<class T>
@@ -474,7 +482,7 @@ void gmgRestrictDevice(const GmgFab<T>& fine, GmgFab<T>& crse)
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
                 const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                c(i, j, k) = static_cast<T>(0.125)
+                c(i, j, k) = static_cast<GmgComputeT<T>>(0.125)
                            * (f(i2, j2, k2) + f(i2 + 1, j2, k2) + f(i2, j2 + 1, k2)
                               + f(i2 + 1, j2 + 1, k2) + f(i2, j2, k2 + 1) + f(i2 + 1, j2, k2 + 1)
                               + f(i2, j2 + 1, k2 + 1) + f(i2 + 1, j2 + 1, k2 + 1));
@@ -501,7 +509,7 @@ void gmgRestrictHost(const GmgFab<T>& fine, GmgFab<T>& crse)
                 {
                     const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
                     c(i, j, k) =
-                        static_cast<T>(0.125)
+                        static_cast<GmgComputeT<T>>(0.125)
                         * (f(i2, j2, k2) + f(i2 + 1, j2, k2) + f(i2, j2 + 1, k2)
                            + f(i2 + 1, j2 + 1, k2) + f(i2, j2, k2 + 1) + f(i2 + 1, j2, k2 + 1)
                            + f(i2, j2 + 1, k2 + 1) + f(i2 + 1, j2 + 1, k2 + 1));
@@ -537,7 +545,7 @@ void gmgCoarsenFaceDevice(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, doubl
     }
     const int u0 = u[0], u1 = u[1], u2 = u[2];
     const int v0 = v[0], v1 = v[1], v2 = v[2];
-    const T w = static_cast<T>(0.25 / scale);
+    const GmgComputeT<T> w = static_cast<GmgComputeT<T>>(0.25 / scale);
     for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -576,7 +584,7 @@ void gmgCoarsenFaceHost(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double 
         u[0] = 1;
         v[1] = 1;
     }
-    const T w = static_cast<T>(0.25 / scale);
+    const GmgComputeT<T> w = static_cast<GmgComputeT<T>>(0.25 / scale);
     for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();

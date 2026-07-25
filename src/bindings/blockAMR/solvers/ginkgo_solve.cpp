@@ -179,12 +179,22 @@ void bindPersistent(nb::module_& m, const char* name)
             nb::arg("gmg_max_levels") = 0,
             nb::arg("gmg_min_bottom") = 4,
             nb::arg("gmg_smoother") = "rbgs",
-            // Native-GMG hierarchy precision: "fp64" (default; byte-for-byte the
-            // previous behaviour) or "fp32" — the whole V-cycle (level
+            // GMG hierarchy precision: "fp64" (default; byte-for-byte the
+            // previous behaviour), "fp32" or "bf16" — the whole V-cycle (level
             // coefficients, work fields, smoother, restriction/prolongation,
-            // ghost fills) runs in single precision while the outer CG/operator
-            // stays double, halving the bandwidth-bound V-cycle traffic.
-            // Matrix-free solver only.
+            // ghost fills) is STORED in that type while the outer CG/operator
+            // stays double, which is what shrinks the bandwidth-bound V-cycle
+            // traffic: half at fp32, a quarter at bf16.
+            //
+            // "bf16" needs precond="gmg_kokkos" (the shipped GmgPrecondT
+            // hierarchy is fp64/fp32); its arithmetic still happens in fp32,
+            // only the stored values are 16-bit. It buys 1.36x on the V-cycle
+            // and loses it, at every size measured, to the iteration count:
+            // the restricted residual carries psi's ~0.4% storage error times
+            // ||A|| ~ 6/dx^2, so the cycle weakens as n^2. 11 -> 25 CG
+            // iterations at 64^3, 12 -> 273 at 256^3. A measured negative
+            // result, wired up and kept as one: see bf16.hpp. Matrix-free
+            // solver only.
             nb::arg("gmg_precision") = "fp64",
             // RB-SOR relaxation factor for gmg_smoother="rbgs":
             //   sol <- sol + gmg_omega * (gs - sol)

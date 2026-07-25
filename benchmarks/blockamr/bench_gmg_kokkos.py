@@ -64,6 +64,22 @@ the one above it:
                         boxes stay coarsenable long after 2^3 boxes stop being, so
                         the hierarchy goes further. This row's r1/r0 legitimately
                         differs -- it is a different (better-coarsened) V-cycle.
+    +bf16+share+l0      ... and the same hierarchy stored in bfloat16, computed in
+                        fp32 throughout (bf16 arithmetic would cancel the residual to
+                        exactly zero -- see solvers/bf16.hpp). The bytes arrive: 1.36x
+                        over the fp32 row. Read the r1/r0 column before believing it.
+                        This is the one row that is a materially WEAKER
+                        preconditioner, and weaker with resolution: storing psi at
+                        ~0.4% perturbs it by d, and the restricted residual carries
+                        that perturbation multiplied by ||A|| ~ 6/dx^2, which grows
+                        as n^2. 1.05x weaker at 16^3, 1.26x at 64^3, 1.87x at 128^3,
+                        3.2x at 256^3. In CG iterations (bench_solvers.py
+                        --gmg-precision bf16) that is 11 -> 25 at 64^3 and 12 -> 273
+                        at 256^3, so the solve is 1.9x to 17x SLOWER than fp32 and
+                        there is no crossover. Kept as a measured negative result,
+                        not an option to reach for. IEEE fp16 is not offered: 1/dx^2 is
+                        65536 at 256^3 and overflows it, where bf16 keeps fp32's
+                        exponent.
 
 ``FillBoundary``, ``setVal`` and the agglomeration ``ParallelCopy`` stay AMReX up to
 and including ``kokkos_fused``, so those rows pay two host syncs per colour where
@@ -91,22 +107,24 @@ import numpy as np
 
 import blockamr
 
-# (label, backend, agglomerate, pin_depth, fp32, share, l0). pin_depth truncates the
-# hierarchy to the baseline's level count, which is what makes a row comparable to the
-# baseline rather than merely faster at a different job. l0 is the level-0 box size:
+# (label, backend, agglomerate, pin_depth, precision, share, l0). pin_depth truncates
+# the hierarchy to the baseline's level count, which is what makes a row comparable to
+# the baseline rather than merely faster at a different job. l0 is the level-0 box size:
 # 0 keeps the caller's boxes, "domain" puts the whole grid in one box.
 CONFIGS = [
-    ("amrex", "amrex", False, True, False, False, 0),
-    ("kokkos", "kokkos", False, True, False, False, 0),
-    ("kokkos_fused", "kokkos_fused", False, True, False, False, 0),
-    ("kokkos_opt", "kokkos_opt", False, True, False, False, 0),
-    ("kokkos_opt+agg", "kokkos_opt", True, True, False, False, 0),
-    ("kokkos_opt+share", "kokkos_opt", True, True, False, True, 0),
-    ("kokkos_opt+share+l0", "kokkos_opt", True, True, False, True, "domain"),
-    ("kokkos_opt+fp32", "kokkos_opt", True, True, True, False, 0),
-    ("kokkos_opt+fp32+share", "kokkos_opt", True, True, True, True, 0),
-    ("+fp32+share+l0", "kokkos_opt", True, True, True, True, "domain"),
-    ("+fp32+share+l0 deep", "kokkos_opt", True, False, True, True, "domain"),
+    ("amrex", "amrex", False, True, "fp64", False, 0),
+    ("kokkos", "kokkos", False, True, "fp64", False, 0),
+    ("kokkos_fused", "kokkos_fused", False, True, "fp64", False, 0),
+    ("kokkos_opt", "kokkos_opt", False, True, "fp64", False, 0),
+    ("kokkos_opt+agg", "kokkos_opt", True, True, "fp64", False, 0),
+    ("kokkos_opt+share", "kokkos_opt", True, True, "fp64", True, 0),
+    ("kokkos_opt+share+l0", "kokkos_opt", True, True, "fp64", True, "domain"),
+    ("kokkos_opt+fp32", "kokkos_opt", True, True, "fp32", False, 0),
+    ("kokkos_opt+fp32+share", "kokkos_opt", True, True, "fp32", True, 0),
+    ("+fp32+share+l0", "kokkos_opt", True, True, "fp32", True, "domain"),
+    ("+fp32+share+l0 deep", "kokkos_opt", True, False, "fp32", True, "domain"),
+    ("+bf16+share+l0", "kokkos_opt", True, True, "bf16", True, "domain"),
+    ("+bf16+share+l0 deep", "kokkos_opt", True, False, "bf16", True, "domain"),
 ]
 
 # The agglomerated coarse box size. 32 not MLMG's 3D default of 8: MLMG agglomerates
@@ -188,7 +206,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
 
     rows = []
     baseline_levels = 0
-    for cfg_label, backend, agglomerate, pin_depth, fp32, share, l0 in CONFIGS:
+    for cfg_label, backend, agglomerate, pin_depth, precision, share, l0 in CONFIGS:
         stats = dict(
             blockamr.bench_gmg_vcycle(
                 backend,
@@ -204,7 +222,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 omega=OMEGA,
                 agglomerate=agglomerate,
                 agg_grid_size=AGG_GRID_SIZE,
-                fp32=fp32,
+                precision=precision,
                 share_coeffs=share,
                 agg_level0_size=(n_cell if l0 == "domain" else l0),
                 max_levels=baseline_levels if pin_depth else 0,

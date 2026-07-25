@@ -153,12 +153,22 @@ struct GmgArgs
     // fewer boxes than the caller's. kokkos_opt only.
     int aggLevel0Size = 0;
 
-    // Carry the whole hierarchy in fp32, as production's gmg_precision does. The
-    // caller's fields and the residual gate stay fp64; what halves is the traffic of
-    // the smoother, which is what the V-cycle is bound by once the launch cost is
-    // gone. Unlike the switches above this DOES change arithmetic, so the residual
-    // moves in the last few digits. kokkos_opt only -- the baselines stay fp64.
-    bool fp32 = false;
+    // The value type the whole hierarchy is STORED in, as production's
+    // gmg_precision: "fp64" (the default), "fp32" or "bf16". The caller's fields
+    // and the residual gate stay fp64 whatever this says; what shrinks is the
+    // traffic of the smoother, which is what the V-cycle is bound by once the
+    // launch cost is gone -- half at fp32, a quarter at bf16.
+    //
+    // Unlike the switches above these DO change arithmetic. fp32 moves the
+    // residual in the last few digits; bf16 keeps only ~3 decimal digits per
+    // stored value, and the resulting cycle is measurably weaker -- more so the
+    // finer the grid, since the restricted residual carries psi's storage error
+    // multiplied by ||A|| ~ 6/dx^2 (1.05x weaker at 16^3, 3.2x at 256^3), which
+    // costs more CG iterations than the saved bytes buy back at any size. Its
+    // arithmetic still happens in fp32 (solvers::GmgComputeT, bf16.hpp); in bf16
+    // the residual would cancel to exactly zero. kokkos_opt only, for all three:
+    // the baselines stay fp64.
+    std::string precision = "fp64";
 
     // Store ONE face coefficient per direction instead of an upper/lower pair.
     // ux(i+1,j,k) is cell i's east coefficient and lx(i+1,j,k) is cell i+1's west

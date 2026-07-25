@@ -114,8 +114,11 @@ METHODS = (
 # Smoother for the native-GMG preconditioner (mf-gmg); "rbgs" reproduces the
 # historical default, "chebyshev" is the M4 polynomial smoother. Set from --gmg-smoother.
 GMG_SMOOTHER = "rbgs"
-# V-cycle hierarchy precision for mf-gmg; "fp64" reproduces the historical
-# default, "fp32" is the M5 single-precision V-cycle. Set from --gmg-precision.
+# V-cycle hierarchy precision; "fp64" reproduces the historical default, "fp32" is
+# the M5 single-precision V-cycle and "bf16" stores the hierarchy in bfloat16 (still
+# computed in fp32). Only mf-gmgk has a bf16 hierarchy, so --gmg-precision bf16
+# refuses the methods that would silently run something else. Set from
+# --gmg-precision.
 GMG_PRECISION = "fp64"
 # Convergence norm for the Ginkgo-side methods; "l2" reproduces the historical
 # default, "linf" is MLMG's own criterion (||r||_inf <= rtol*||b||_inf). The mlmg
@@ -449,10 +452,21 @@ def main():
     ap.add_argument(
         "--gmg-precision",
         default="fp64",
-        choices=("fp64", "fp32"),
-        help="V-cycle precision for the mf-gmg native-GMG preconditioner (default fp64)",
+        choices=("fp64", "fp32", "bf16"),
+        help="V-cycle hierarchy precision (default fp64); bf16 needs --methods mf-gmgk",
     )
     args = ap.parse_args()
+
+    # bf16 exists for precond="gmg_kokkos" alone. Rather than let the other GMG rows
+    # quietly run fp64 under a bf16 heading -- which is exactly what makes a
+    # comparison table lie -- name them and stop.
+    if args.gmg_precision == "bf16":
+        no_bf16 = sorted({"mf-gmg", "gmg", "gmg-ir"} & set(args.methods))
+        if no_bf16:
+            ap.error(
+                "--gmg-precision bf16 is implemented for mf-gmgk only; "
+                f"drop {', '.join(no_bf16)} from --methods"
+            )
     global GMG_SMOOTHER, GMG_PRECISION, NORM, GMG_AGG_L0_SIZE
     GMG_SMOOTHER = args.gmg_smoother
     GMG_PRECISION = args.gmg_precision

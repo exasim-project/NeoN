@@ -170,6 +170,65 @@ def test_level0_agglomeration_is_the_same_preconditioner(blockamr_session, preci
     assert np.array_equal(agg["sol"], ref["sol"])
 
 
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_bf16_preconditions_the_same_system(blockamr_session, max_size):
+    """A bf16 hierarchy is a deliberately approximate preconditioner, and the point of
+    a preconditioner is that being approximate is allowed.
+
+    It cannot move the fixed point -- the operator CG applies and the residual CG
+    stops on are fp64 whatever the V-cycle is stored in -- so the answer has to match
+    the fp32 hierarchy's to the same tolerance the two of them stop at. What it IS
+    allowed to cost is iterations, since ~3 decimal digits per stored value make the
+    cycle a few percent weaker. A couple of extra iterations is the deal on offer; an
+    order more would mean the apply is losing information rather than precision, so
+    the margin is bounded rather than waived.
+    """
+    geom, ba, dm, alpha, faces = _helmholtz(16, max_size)
+    rhs = _rhs(ba, dm)
+    kw = dict(precond="gmg_kokkos")
+    ref = _solve(geom, ba, dm, alpha, faces, rhs, gmg_precision="fp32", **kw)
+    bf = _solve(geom, ba, dm, alpha, faces, rhs, gmg_precision="bf16", **kw)
+
+    assert bf["converged"] is True
+    assert np.max(np.abs(bf["sol"] - ref["sol"])) < 1e-7 * max(1.0, np.max(np.abs(ref["sol"])))
+    assert bf["num_iters"] <= ref["num_iters"] + 3
+    # And it really is the bf16 path: a weaker preconditioner may not be free, and
+    # silently running fp32 would be.
+    assert not np.array_equal(bf["sol"], ref["sol"])
+
+
+def test_gmg_config_carries_bf16(blockamr_session):
+    """The pydantic layer says which precisions EXIST; the solver says which precond
+    supports each. So GmgConfig has to accept bf16 and hand it through unchanged --
+    otherwise the only way to reach the bf16 hierarchy is the raw kwarg."""
+    geom, ba, dm, alpha, faces = _helmholtz(16)
+    cfg = blockamr.GmgConfig(precision="bf16")
+    assert cfg.kwargs()["gmg_precision"] == "bf16"
+    # precond_cycles is _solve's own argument; everything else splats.
+    kw = {k: v for k, v in cfg.kwargs().items() if k != "precond_cycles"}
+    st = _solve(geom, ba, dm, alpha, faces, _rhs(ba, dm), precond="gmg_kokkos", **kw)
+    assert st["converged"] is True
+
+
+def test_bf16_needs_the_kokkos_precond(blockamr_session):
+    """The shipped GmgPrecondT hierarchy is fp64/fp32; asking it for bf16 has to name
+    the precond that has one rather than fall back to fp64 under a bf16 label."""
+    geom, ba, dm, alpha, faces = _helmholtz(16)
+    with pytest.raises(RuntimeError, match="bf16.*gmg_kokkos"):
+        _solve(geom, ba, dm, alpha, faces, _rhs(ba, dm), precond="gmg", gmg_precision="bf16")
+
+
+def test_rejects_an_unknown_precision(blockamr_session):
+    """gmg_kokkos parses the spelling itself (the string goes straight through), so a
+    typo must raise there too rather than quietly select fp64."""
+    geom, ba, dm, alpha, faces = _helmholtz(16)
+    with pytest.raises(RuntimeError, match="unknown precision 'fp8'"):
+        _solve(
+            geom, ba, dm, alpha, faces, _rhs(ba, dm),
+            precond="gmg_kokkos", gmg_precision="fp8",
+        )
+
+
 def test_rejects_the_chebyshev_smoother(blockamr_session):
     """Only the red-black smoother is ported; asking for Chebyshev must fail loudly
     rather than quietly running red-black under a Chebyshev label."""

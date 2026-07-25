@@ -41,9 +41,18 @@ class GmgConfig(BaseModel):
     smoother: Literal["rbgs", "chebyshev"] = "rbgs"
     cycles: int = Field(default=1, ge=1)  # V-cycles per preconditioner apply
     # V-cycle hierarchy precision: "fp64" (default; byte-for-byte the built-in
-    # behaviour) or "fp32" (single-precision V-cycle, outer CG/operator stay
-    # double — halves the bandwidth-bound V-cycle traffic).
-    precision: Literal["fp64", "fp32"] = "fp64"
+    # behaviour), "fp32" (single-precision V-cycle, outer CG/operator stay
+    # double — halves the bandwidth-bound V-cycle traffic) or "bf16" (quarters
+    # it; stored in bfloat16, still computed in fp32).
+    #
+    # "bf16" needs ``precond="gmg_kokkos"`` — the shipped GMG hierarchy carries
+    # fp64/fp32 only, and the solver raises for the other precond values. It is a
+    # measured negative result rather than a recommended setting: 1.36x off the
+    # V-cycle, but psi's storage error reaches the coarse grid multiplied by
+    # ||A|| ~ 6/dx^2, so the cycle weakens as n^2 and the CG iteration count more
+    # than doubles already at 64^3 (11 -> 25) and reaches 273 vs 12 at 256^3.
+    # There is no size at which it wins. See solvers/bf16.hpp.
+    precision: Literal["fp64", "fp32", "bf16"] = "fp64"
 
     def kwargs(self) -> dict:
         """Constructor kwargs to splat into ``FaceCoeffSolver(..., precond="gmg")``."""

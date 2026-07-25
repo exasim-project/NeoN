@@ -283,7 +283,12 @@ void execCopyPlan(
                     const int i = t.lo[0] + c % nx;
                     const int j = t.lo[1] + (c / nx) % t.len[1];
                     const int k = t.lo[2] + c / nxy;
-                    const T v = src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
+                    // The compute type, not T: for a bf16 level the two arms of the
+                    // ternary would otherwise be Bf16 and float, each convertible to
+                    // the other, which is ambiguous. Both the load and the sign flip
+                    // are exact in it, so the copy still moves values unchanged.
+                    const solvers::GmgComputeT<T> v =
+                        src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
                     dst[t.dst](i, j, k) = (t.sign < 0) ? -v : v;
                 }
             );

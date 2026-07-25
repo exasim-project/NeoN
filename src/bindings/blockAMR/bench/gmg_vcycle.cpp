@@ -79,10 +79,39 @@ namespace
 {
 
 // The level scalar is a template parameter, as in production's GmgPrecondT: the whole
-// hierarchy below level 0 can be carried in fp32 while the operator and the caller's
-// fields stay fp64, halving the traffic of a smoother that is bandwidth-bound at
-// scale. Only kokkos_opt is instantiated for float — the baselines stay fp64, which
-// is what keeps them baselines.
+// hierarchy below level 0 can be carried in fp32 — or in bf16 — while the operator and
+// the caller's fields stay fp64, shrinking the traffic of a smoother that is
+// bandwidth-bound at scale. Only kokkos_opt is instantiated for the reduced types; the
+// baselines stay fp64, which is what keeps them baselines.
+//
+// bf16 is a STORAGE type only: solvers::Bf16 converts to float on every read and rounds
+// once on every write, and the kernels compute in solvers::GmgComputeT<T>. See bf16.hpp
+// for why anything else turns the preconditioner's operator singular.
+enum class Precision
+{
+    fp64,
+    fp32,
+    bf16
+};
+
+Precision parsePrecision(const std::string& p)
+{
+    if (p == "fp64")
+    {
+        return Precision::fp64;
+    }
+    if (p == "fp32")
+    {
+        return Precision::fp32;
+    }
+    if (p == "bf16")
+    {
+        return Precision::bf16;
+    }
+    throw std::runtime_error(
+        "benchGmgVcycle: unknown precision '" + p + "' (expected 'fp64', 'fp32' or 'bf16')"
+    );
+}
 
 // ---------------------------------------------------------------------------
 // The backends. Each is the three kernels the timed V-cycle runs plus the two
@@ -961,14 +990,19 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     args.omega = opts.omega;
     args.agglomerate = opts.agglomerate;
     args.aggGridSize = opts.aggGridSize;
-    args.fp32 = opts.fp32;
+    args.precision = opts.precision;
     args.shareCoeffs = opts.shareCoeffs;
     args.bc = opts.bc;
     args.aggLevel0Size = opts.aggLevel0Size;
 
-    if (opts.fp32)
+    switch (parsePrecision(opts.precision))
     {
+    case Precision::fp32:
         return std::make_unique<KokkosGmgApplyImpl<float>>(args, opts.cycles);
+    case Precision::bf16:
+        return std::make_unique<KokkosGmgApplyImpl<solvers::Bf16>>(args, opts.cycles);
+    case Precision::fp64:
+        break;
     }
     return std::make_unique<KokkosGmgApplyImpl<double>>(args, opts.cycles);
 }
@@ -985,13 +1019,15 @@ std::vector<std::string> benchGmgBackends()
 
 GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int iters, int batches)
 {
-    // Before the dispatch, not after: silently ignoring fp32 on a backend that has no
-    // fp32 hierarchy would report an fp64 timing under an fp32 label.
-    if (args.fp32 && backend != KokkosOptGmgBackend::tag)
+    // Parse before the dispatch, not after: an unknown spelling must not silently
+    // fall through to fp64, and silently ignoring a reduced precision on a backend
+    // that has no reduced hierarchy would report an fp64 timing under its label.
+    const Precision prec = parsePrecision(args.precision);
+    if (prec != Precision::fp64 && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(
-            "benchGmgVcycle: fp32 is implemented for the '" + std::string(KokkosOptGmgBackend::tag)
-            + "' backend only, not '" + backend + "'"
+            "benchGmgVcycle: precision '" + args.precision + "' is implemented for the '"
+            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
         );
     }
     // Same reason: a baseline silently ignoring share_coeffs would report the
@@ -1024,15 +1060,16 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
     }
     if (backend == KokkosOptGmgBackend::tag)
     {
-        return args.fp32 ? run<KokkosOptGmgBackend, float>(args, iters, batches)
-                         : run<KokkosOptGmgBackend, double>(args, iters, batches);
-    }
-    if (args.fp32)
-    {
-        throw std::runtime_error(
-            "benchGmgVcycle: fp32 is implemented for the '" + std::string(KokkosOptGmgBackend::tag)
-            + "' backend only, not '" + backend + "'"
-        );
+        switch (prec)
+        {
+        case Precision::fp32:
+            return run<KokkosOptGmgBackend, float>(args, iters, batches);
+        case Precision::bf16:
+            return run<KokkosOptGmgBackend, solvers::Bf16>(args, iters, batches);
+        case Precision::fp64:
+            break;
+        }
+        return run<KokkosOptGmgBackend, double>(args, iters, batches);
     }
     throw std::runtime_error("benchGmgVcycle: unknown backend '" + backend + "'");
 }

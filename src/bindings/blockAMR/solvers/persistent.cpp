@@ -407,7 +407,10 @@ FaceCoeffSolver::FaceCoeffSolver(
         opts.maxLevels = gmg_max_levels;
         opts.minBottom = gmg_min_bottom;
         opts.omega = gmg_omega;
-        opts.fp32 = (gmg_precision == "fp32");
+        // Straight through, unvalidated here: makeKokkosGmgApply parses it and
+        // throws on an unknown spelling, so a typo cannot quietly run fp64. This
+        // is the only precond that has a bf16 hierarchy.
+        opts.precision = gmg_precision;
         // The parsed spec straight through: the ported V-cycle carries the same
         // homogeneous Dirichlet/Neumann reflection as precond="gmg", built once per
         // level as a device plan rather than as a per-box AMReX launch.
@@ -475,6 +478,15 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
     double gmg_omega
 )
 {
+    // bf16 is named separately from an outright typo: it exists, but only for
+    // precond='gmg_kokkos'. The shipped GmgPrecondT hierarchy is fp64/fp32, and
+    // instantiating it for a storage-only type would mean porting its Chebyshev
+    // smoother and lambda-max power iteration too.
+    if (gmg_precision == "bf16")
+    {
+        throw std::runtime_error("FaceCoeffSolver: gmg_precision='bf16' needs precond='gmg_kokkos' "
+                                 "(the shipped GMG hierarchy is fp64/fp32 only)");
+    }
     if (gmg_precision != "fp64" && gmg_precision != "fp32")
     {
         throw std::runtime_error(

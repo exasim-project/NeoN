@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <string>
 
 #include <AMReX_Geometry.H>
 #include <AMReX_MultiFab.H>
@@ -46,7 +47,10 @@ struct KokkosGmgOpts
     int maxLevels = 0; // 0 = coarsen as far as the grid allows
     int minBottom = 2;
     double omega = 1.0;
-    bool fp32 = false;
+
+    // The level storage type: "fp64", "fp32" or "bf16" (see GmgArgs::precision).
+    // The flat vectors this class exchanges with the solver are fp64 regardless.
+    std::string precision = "fp64";
 
     // On by default here, unlike in the bench. It cannot change the result at equal
     // depth (red-black smoothing is decomposition-independent) and it is what keeps

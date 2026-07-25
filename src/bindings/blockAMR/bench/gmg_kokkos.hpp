@@ -82,14 +82,25 @@ inline amrex::MFItInfo gmgNoSync() { return amrex::MFItInfo().DisableDeviceSync(
 // update for one cell. The per-box launcher builds one on the host per box; the
 // fused launcher builds one on the device per cell out of AMReX's cached Array4
 // table. Written once so a fused launch cannot silently compute something else.
+//
+// The Array4s carry T, the level's STORAGE type; every local is declared C =
+// solvers::GmgComputeT<T>, the type the arithmetic happens in. For T = double and
+// T = float those are the same type, so these structs stay the character-for-
+// character twins of the *Device kernels named above and generate the code they
+// always did. For T = Bf16 they are what makes the hierarchy storage-only, and
+// `acc`, `off` and `diag` are exactly where it matters: the residual
+// b - (diag*psi + off) subtracts two numbers ~7000x larger than itself, which in
+// bf16 round to the SAME value and cancel to exactly zero. See bf16.hpp.
 // ---------------------------------------------------------------------------
 
 template<class T>
 struct GmgGsCell
 {
+    using C = solvers::GmgComputeT<T>;
+
     amrex::Array4<T> psi;
     amrex::Array4<const T> b, ax, lxa, ay, lya, az, lza, al;
-    T om;
+    C om;
     int parity;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void operator()(int i, int j, int k) const
@@ -98,19 +109,19 @@ struct GmgGsCell
         {
             return;
         }
-        const T aE = ax(i + 1, j, k);
-        const T aW = lxa(i, j, k);
-        const T aN = ay(i, j + 1, k);
-        const T aS = lya(i, j, k);
-        const T aT = az(i, j, k + 1);
-        const T aB = lza(i, j, k);
-        const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
+        const C aE = ax(i + 1, j, k);
+        const C aW = lxa(i, j, k);
+        const C aN = ay(i, j + 1, k);
+        const C aS = lya(i, j, k);
+        const C aT = az(i, j, k + 1);
+        const C aB = lza(i, j, k);
+        const C off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
                     + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-        const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-        if (amrex::Math::abs(diag) > solvers::gmgDiagFloor<T>())
+        const C diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+        if (amrex::Math::abs(diag) > solvers::gmgDiagFloor<C>())
         {
-            const T gs = (b(i, j, k) - off) / diag;
-            psi(i, j, k) += om * (gs - psi(i, j, k));
+            const C gs = (b(i, j, k) - off) / diag;
+            psi(i, j, k) += om * (gs - static_cast<C>(psi(i, j, k)));
         }
     }
 };
@@ -118,12 +129,14 @@ struct GmgGsCell
 template<class T>
 struct GmgResidRestrictCell
 {
+    using C = solvers::GmgComputeT<T>;
+
     amrex::Array4<T> cr;
     amrex::Array4<const T> psi, b, ax, lxa, ay, lya, az, lza, al;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void operator()(int ic, int jc, int kc) const
     {
-        T acc = 0;
+        C acc = 0;
         for (int dk = 0; dk < 2; ++dk)
         {
             for (int dj = 0; dj < 2; ++dj)
@@ -131,21 +144,21 @@ struct GmgResidRestrictCell
                 for (int di = 0; di < 2; ++di)
                 {
                     const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                    const T aE = ax(i + 1, j, k);
-                    const T aW = lxa(i, j, k);
-                    const T aN = ay(i, j + 1, k);
-                    const T aS = lya(i, j, k);
-                    const T aT = az(i, j, k + 1);
-                    const T aB = lza(i, j, k);
-                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                    const C aE = ax(i + 1, j, k);
+                    const C aW = lxa(i, j, k);
+                    const C aN = ay(i, j + 1, k);
+                    const C aS = lya(i, j, k);
+                    const C aT = az(i, j, k + 1);
+                    const C aB = lza(i, j, k);
+                    const C off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
                                 + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
                                 + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const C diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
                     acc += b(i, j, k) - (diag * psi(i, j, k) + off);
                 }
             }
         }
-        cr(ic, jc, kc) = static_cast<T>(0.125) * acc;
+        cr(ic, jc, kc) = static_cast<C>(0.125) * acc;
     }
 };
 
@@ -181,7 +194,7 @@ void gmgGsColorKokkos(
     double omega
 )
 {
-    const T om = static_cast<T>(omega);
+    const solvers::GmgComputeT<T> om = static_cast<solvers::GmgComputeT<T>>(omega);
     for (amrex::MFIter mfi(rhs, gmgNoSync()); mfi.isValid(); ++mfi)
     {
         const GmgGsCell<T> cell {
@@ -292,7 +305,7 @@ void gmgGsColorKokkosFused(
     bool fence = true
 )
 {
-    const T om = static_cast<T>(omega);
+    const solvers::GmgComputeT<T> om = static_cast<solvers::GmgComputeT<T>>(omega);
     const auto psi = sol.arrays();
     const auto b = rhs.const_arrays();
     const auto ax = ux.const_arrays();

@@ -259,12 +259,72 @@ def test_fp32_hierarchy_is_the_same_vcycle(max_size):
     gate: comfortably above the rounding and far below any real defect.
     """
     fp64 = _vcycle("kokkos_opt", max_size)
-    fp32 = _vcycle("kokkos_opt", max_size, fp32=True)
+    fp32 = _vcycle("kokkos_opt", max_size, precision="fp32")
     assert fp32["nlevels"] == fp64["nlevels"]
     assert fp32["resid0"] == pytest.approx(fp64["resid0"], rel=1e-4)
     assert fp32["resid1"] == pytest.approx(fp64["resid1"], rel=1e-4)
     # And it is not accidentally the fp64 path: fp32 rounding has to show up somewhere.
     assert fp32["resid1"] != fp64["resid1"]
+
+
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_bf16_hierarchy_is_the_same_vcycle(max_size):
+    """A bf16 hierarchy must still be the same V-cycle, at bf16's ~3 decimal digits.
+
+    bf16 keeps FP32's exponent, so nothing about this operator overflows -- unlike
+    IEEE half, whose 65504 ceiling the face coefficient 1/dx^2 clears at 256^3 -- but
+    it keeps only 8 significand bits, and the V-cycle forms its residual as
+    ``b - (diag * psi + off)``, a difference of two quantities thousands of times
+    larger than itself. Round either intermediate to bf16 and they land on the same
+    value: the residual cancels to exactly zero. So the thing this test has to
+    separate is a hierarchy that merely STORES bf16 (what we want, and what
+    ``solvers::GmgComputeT`` delivers) from one that also COMPUTES in it. Neither
+    crashes; both return a smaller residual.
+
+    Hence a gate on the CONTRACTION rather than only on the answer. One V-cycle of
+    this operator takes the residual to 0.1354 of itself in fp64 and 0.1426 in bf16 --
+    5.3% weaker, which is what 3 digits of stored data costs. A cycle whose
+    arithmetic had gone through bf16 would be far weaker than that, so the 15% bound
+    below is both comfortably clear of the real rounding and nowhere near what a
+    defect would produce.
+
+    The 5.3% is this grid's number and does not generalise: the restricted residual
+    carries psi's storage error multiplied by ||A|| ~ 6/dx^2, so the penalty grows as
+    n^2 -- 3.2x weaker by 256^3. That is a property of bf16 storage, not a defect,
+    and benchmarks/blockamr/bench_gmg_kokkos.py is where it is measured.
+    """
+    fp64 = _vcycle("kokkos_opt", max_size)
+    bf16 = _vcycle("kokkos_opt", max_size, precision="bf16")
+    assert bf16["nlevels"] == fp64["nlevels"]
+    # resid0 is ||b|| read back from the bf16-stored level-0 rhs, so it carries one
+    # rounding and no cycle: much tighter than resid1, and a check that the scatter
+    # into a 16-bit level fab is not doing anything worse than rounding.
+    assert bf16["resid0"] == pytest.approx(fp64["resid0"], rel=1e-2)
+    assert bf16["resid1"] == pytest.approx(fp64["resid1"], rel=1e-1)
+    # Not accidentally another path: bf16 rounding has to show up.
+    assert bf16["resid1"] != fp64["resid1"]
+    # The V-cycle's STRENGTH, one-sided: bf16 may be a slightly weaker
+    # preconditioner, it may not be a materially weaker one.
+    assert bf16["resid1"] / bf16["resid0"] < 1.15 * fp64["resid1"] / fp64["resid0"]
+
+
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_bf16_is_coarser_than_fp32(max_size):
+    """The three precisions must be three distinct hierarchies, ordered as their
+    significands are. Without this, a bf16 label that silently ran fp32 -- the compute
+    type, which is what every local in those kernels is -- would pass every other test
+    in this file, since fp32 agrees with fp64 far better than bf16 is asked to."""
+    fp64 = _vcycle("kokkos_opt", max_size)
+    fp32 = _vcycle("kokkos_opt", max_size, precision="fp32")
+    bf16 = _vcycle("kokkos_opt", max_size, precision="bf16")
+    assert bf16["resid1"] != fp32["resid1"]
+    assert abs(bf16["resid1"] - fp64["resid1"]) > abs(fp32["resid1"] - fp64["resid1"])
+
+
+def test_unknown_precision_is_rejected():
+    """Silently falling back to fp64 would report an fp64 timing under any label."""
+    with pytest.raises(RuntimeError, match="unknown precision 'fp8'"):
+        _vcycle("kokkos_opt", 8, precision="fp8")
 
 
 @pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
@@ -381,11 +441,12 @@ def test_share_coeffs_is_rejected_on_the_baselines(backend):
 
 
 @pytest.mark.parametrize("backend", ["amrex", "kokkos", "kokkos_fused"])
-def test_fp32_is_rejected_on_the_baselines(backend):
-    """Only kokkos_opt has an fp32 hierarchy. Asking any baseline for one has to fail
-    loudly -- quietly running fp64 would report it under an fp32 label."""
-    with pytest.raises(RuntimeError, match="fp32 is implemented"):
-        _vcycle(backend, 8, fp32=True)
+@pytest.mark.parametrize("precision", ["fp32", "bf16"])
+def test_reduced_precision_is_rejected_on_the_baselines(backend, precision):
+    """Only kokkos_opt has a reduced-precision hierarchy. Asking any baseline for one
+    has to fail loudly -- quietly running fp64 would report it under its label."""
+    with pytest.raises(RuntimeError, match=f"precision '{precision}' is implemented"):
+        _vcycle(backend, 8, precision=precision)
 
 
 @pytest.mark.parametrize("backend", BACKENDS)
