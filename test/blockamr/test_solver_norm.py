@@ -129,10 +129,17 @@ def _solve(geom, ba, dm, alpha, faces, rhs, **kwargs):
     return st
 
 
-# rtol loose enough that the two criteria stop at DIFFERENT iterations on this rhs:
-# at 1e-10 both paths run to the same near-exact answer and the test would pass
-# without the criterion being in effect at all.
-RTOL = 1e-4
+# rtol chosen so the two criteria stop at DIFFERENT iterations on this rhs: at
+# 1e-10 both paths run to the same near-exact answer and the test would pass
+# without the criterion being in effect at all, while at a loose enough tolerance
+# both stop on the same early iteration and it would pass just as vacuously. This
+# is an EMPIRICAL constant -- it has to be rechosen whenever the V-cycle gets
+# stronger, because a preconditioner that needs fewer iterations has fewer places
+# left for the two criteria to disagree. It last moved from 1e-4 when the default
+# shape became min_bottom=2 / coarsest_sweeps=16 / omega=1.1, which took both
+# paths to 3 iterations at 1e-4 and made the assertion below vacuous. At 3e-5 the
+# l2 criterion is the stricter one on both paths (4 iterations against 3).
+RTOL = 3e-5
 
 # Both stopping-test implementations: the Krylov criterion and the native loop.
 PATHS = [

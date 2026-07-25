@@ -60,9 +60,11 @@ RTOL = 1e-11
 AGREE = 1e-9
 
 # The stationary V-cycle needs a strong bottom solve to be a solver at all (the
-# default coarsest_sweeps=8 leaves it bottom-limited even single-box). These knobs
-# make it converge in ~10 cycles on the easy problem, so a failure in the tests
-# below is attributable to the axis under test and not to a weak bottom.
+# default coarsest_sweeps=16 is tuned for PRECONDITIONED CG, where Krylov absorbs
+# a merely-decent bottom, and still leaves the stationary path bottom-limited even
+# single-box). These knobs make it converge in ~10 cycles on the easy problem, so a
+# failure in the tests below is attributable to the axis under test and not to a
+# weak bottom.
 STRONG_BOTTOM = {"gmg_coarsest_sweeps": 64, "gmg_min_bottom": 2}
 
 # Cycle budget for the stationary solver. Not a performance bound: 10 cycles solve

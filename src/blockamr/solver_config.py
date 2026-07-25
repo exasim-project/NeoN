@@ -20,8 +20,13 @@ from pydantic import BaseModel, ConfigDict, Field
 class GmgConfig(BaseModel):
     """Knobs for the native matrix-free GMG V-cycle preconditioner.
 
-    Defaults reproduce the built-in fixed behaviour (2+2 red-black
-    Gauss-Seidel sweeps, 8 coarsest sweeps, unlimited coarsening).
+    Defaults mirror the C++ binding's (2+2 red-black Gauss-Seidel sweeps, 16
+    coarsest sweeps, unlimited coarsening down to a 2-cell bottom, omega=1.1) —
+    a measured V-cycle shape rather than a historical one. Preconditioned CG on
+    the periodic Helmholtz takes 8 iterations at 64^3, 128^3 and 256^3 alike;
+    the previous 8/4/1.0 shape took 11/11/12, so this is both ~1.4x faster at
+    256^3 and mesh-independent, which it was not. See ``ginkgo_solve.cpp`` for
+    the per-knob measurements and the omega turnover curve.
 
     Notes
     -----
@@ -29,17 +34,28 @@ class GmgConfig(BaseModel):
     preconditioner: with unequal counts the post-smoother is no longer the exact
     adjoint of the pre-smoother, so the V-cycle is non-symmetric and CG may
     stall or diverge (the C++ solver warns in that case).
+
+    ``omega`` != 1.0 breaks that symmetry too, by a smaller amount that the
+    measurements say is worth paying up to ~1.1 and not beyond. Set it back to
+    1.0 for a bit-for-bit self-adjoint V-cycle.
+
+    The two do not compose: with ``pre_sweeps != post_sweeps`` the default
+    ``omega=1.1`` stops CG converging at all, where either breaker alone is fine.
+    If you set unequal sweeps, set ``omega=1.0`` with them.
     """
 
     model_config = ConfigDict(frozen=True)
 
     pre_sweeps: int = Field(default=2, ge=0)
     post_sweeps: int = Field(default=2, ge=0)
-    coarsest_sweeps: int = Field(default=8, ge=1)
+    coarsest_sweeps: int = Field(default=16, ge=1)
     max_levels: int = Field(default=0, ge=0)  # 0 = auto / unlimited coarsening
-    min_bottom: int = Field(default=4, ge=2)
+    min_bottom: int = Field(default=2, ge=2)
     smoother: Literal["rbgs", "chebyshev"] = "rbgs"
     cycles: int = Field(default=1, ge=1)  # V-cycles per preconditioner apply
+    # RB-SOR relaxation: sol <- sol + omega * (gs - sol). Ignored by
+    # smoother="chebyshev". Must stay in (0, 2) to be a convergent relaxation.
+    omega: float = Field(default=1.1, gt=0.0, lt=2.0)
     # V-cycle hierarchy precision: "fp64" (default; byte-for-byte the built-in
     # behaviour), "fp32" (single-precision V-cycle, outer CG/operator stay
     # double — halves the bandwidth-bound V-cycle traffic) or "bf16" (quarters
@@ -62,6 +78,7 @@ class GmgConfig(BaseModel):
             "gmg_coarsest_sweeps": self.coarsest_sweeps,
             "gmg_max_levels": self.max_levels,
             "gmg_min_bottom": self.min_bottom,
+            "gmg_omega": self.omega,
             "gmg_smoother": self.smoother,
             "gmg_precision": self.precision,
             "precond_cycles": self.cycles,

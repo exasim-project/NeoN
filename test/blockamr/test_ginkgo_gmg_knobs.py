@@ -118,7 +118,12 @@ def test_gmg_one_plus_one_sweeps_converges(blockamr_session, executor):
 
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
 def test_gmg_asymmetric_sweeps_warns_but_runs(blockamr_session, executor, capfd):
-    """pre != post is allowed but warns (non-symmetric V-cycle); it still solves."""
+    """pre != post is allowed but warns (non-symmetric V-cycle); it still solves.
+
+    omega is pinned to 1.0 so this measures the axis it names. The default 1.1 is
+    the OTHER symmetry breaker, and the two do not compose -- see
+    ``test_asymmetric_sweeps_and_over_relaxation_stack`` below.
+    """
     N = 32
     geom, ba, dm = _make_mesh(N)
     coeffs = _helmholtz_coeffs(geom, ba, dm, N)
@@ -133,6 +138,7 @@ def test_gmg_asymmetric_sweeps_warns_but_runs(blockamr_session, executor, capfd)
         precond="gmg",
         gmg_pre_sweeps=2,
         gmg_post_sweeps=1,
+        gmg_omega=1.0,
     )
     out = capfd.readouterr()
     assert "non-symmetric" in (out.err + out.out), "expected a symmetry warning on pre != post"
@@ -141,6 +147,42 @@ def test_gmg_asymmetric_sweeps_warns_but_runs(blockamr_session, executor, capfd)
     # asymmetry it still reaches tolerance (just more iterations).
     assert stats["converged"] is True
     assert stats["res_norm"] < 1e-6
+
+
+def test_asymmetric_sweeps_and_over_relaxation_stack(blockamr_session):
+    """The V-cycle's two symmetry breakers COMPOSE, and the pair is not survivable.
+
+    Either alone is fine for CG: pre != post costs iterations but converges (the
+    test above), and omega=1.1 with pre == post is the shipped default and the
+    fastest configuration measured. Together they are not -- CG stops converging
+    at all. That is the whole reason the default omega is safe to raise: the
+    default sweeps are symmetric, and the asymmetric case has warned since it was
+    added.
+
+    Measured on this problem (N=32, precond="gmg", 300-iteration budget):
+
+        sweeps    omega=1.0   omega=1.05   omega=1.1   omega=1.15
+        2 / 1      16 iters    21 iters     diverges    diverges
+        2 / 2       8 iters     8 iters      8 iters     8 iters
+    """
+    N = 32
+    geom, ba, dm = _make_mesh(N)
+    coeffs = _helmholtz_coeffs(geom, ba, dm, N)
+    rhs = _random_rhs(ba, dm)
+
+    def solve(pre, post, omega):
+        s = _make_solver_or_skip(
+            coeffs, geom, "cuda", solver="cg", max_iter=300, rtol=1e-10,
+            precond="gmg", gmg_pre_sweeps=pre, gmg_post_sweeps=post, gmg_omega=omega,
+        )
+        return s.solve(rhs, _zero_sol(ba, dm))
+
+    # Symmetric sweeps: over-relaxation is safe, which is what makes it the default.
+    assert solve(2, 2, 1.1)["converged"] is True
+    # Asymmetric sweeps alone: converges, just slower.
+    assert solve(2, 1, 1.0)["converged"] is True
+    # Both at once: does not.
+    assert solve(2, 1, 1.1)["converged"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -242,9 +284,10 @@ def test_gmg_config_defaults_and_kwargs():
     assert cfg.kwargs() == {
         "gmg_pre_sweeps": 2,
         "gmg_post_sweeps": 2,
-        "gmg_coarsest_sweeps": 8,
+        "gmg_coarsest_sweeps": 16,
         "gmg_max_levels": 0,
-        "gmg_min_bottom": 4,
+        "gmg_min_bottom": 2,
+        "gmg_omega": 1.1,
         "gmg_smoother": "rbgs",
         "gmg_precision": "fp64",
         "precond_cycles": 1,
@@ -270,6 +313,12 @@ def test_gmg_config_validation():
         blockamr.GmgConfig(min_bottom=1)
     with pytest.raises(ValidationError):
         blockamr.GmgConfig(smoother="bogus")
+    # omega must stay inside (0, 2) to be a convergent relaxation; the bounds are
+    # exclusive, so both endpoints are rejected.
+    with pytest.raises(ValidationError):
+        blockamr.GmgConfig(omega=0.0)
+    with pytest.raises(ValidationError):
+        blockamr.GmgConfig(omega=2.0)
 
 
 @pytest.mark.parametrize("executor", ["reference", "cuda"])

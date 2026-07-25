@@ -60,6 +60,35 @@ void registerLinOp(nb::module_& m)
             [](LPInfo& info, bool x) -> LPInfo& { return info.setConsolidation(x); },
             nb::arg("x"),
             nb::rv_policy::reference
+        )
+        // Semicoarsening: coarsen only the direction(s) the operator is strongly
+        // coupled in, instead of all three. This is MLMG's answer to anisotropic
+        // cells, and without it full coarsening makes the anisotropy WORSE on every
+        // level (4:1 cells become 8:1, 16:1, ...) until the smoother stops smoothing
+        // in the weak directions and the solve stalls or aborts. Off by default,
+        // matching AMReX.
+        .def(
+            "set_semicoarsening",
+            [](LPInfo& info, bool x) -> LPInfo& { return info.setSemicoarsening(x); },
+            nb::arg("x"),
+            nb::rv_policy::reference
+        )
+        // How many levels may semicoarsen before reverting to full coarsening.
+        // 0 (AMReX's default) means none, so setSemicoarsening alone does nothing
+        // useful -- both have to be set.
+        .def(
+            "set_max_semicoarsening_level",
+            [](LPInfo& info, int n) -> LPInfo& { return info.setMaxSemicoarseningLevel(n); },
+            nb::arg("n"),
+            nb::rv_policy::reference
+        )
+        // Force the semicoarsening direction (0/1/2); -1 (the default) lets MLMG
+        // pick per level from the cell aspect ratio.
+        .def(
+            "set_semicoarsening_direction",
+            [](LPInfo& info, int n) -> LPInfo& { return info.setSemicoarseningDirection(n); },
+            nb::arg("n"),
+            nb::rv_policy::reference
         );
 
     // --- Base class (opaque, needed for MLMG to accept derived types) ---
@@ -279,6 +308,31 @@ void registerLinOp(nb::module_& m)
         .def("set_bottom_verbose", &MLMG::setBottomVerbose, nb::arg("v"))
         .def("set_bottom_max_iter", &MLMG::setBottomMaxIter, nb::arg("n"))
         .def("set_bottom_tolerance", &MLMG::setBottomTolerance, nb::arg("t"))
+        // MLMG's own V-cycle smoothing counts (nu1/nu2/nuf/nub), the direct
+        // counterparts of gmg_pre_sweeps / gmg_post_sweeps / gmg_coarsest_sweeps on
+        // the native side. Bound so that MLMG can be tuned on the same axes we tune
+        // ourselves on -- without them any "faster than MLMG" number is a tuned
+        // solver measured against a stock one.
+        //
+        // AMReX defaults: nu1 = nu2 = 2 (the same 2+2 we default to), nuf = 8, and
+        // nub = 0. nuf applies only when the SMOOTHER is the bottom solver, so it
+        // does nothing under set_bottom_solver("cg").
+        .def("set_pre_smooth", &MLMG::setPreSmooth, nb::arg("n"))
+        .def("set_post_smooth", &MLMG::setPostSmooth, nb::arg("n"))
+        // Smoothing when the smoother itself is the bottom solver (nuf).
+        .def("set_final_smooth", &MLMG::setFinalSmooth, nb::arg("n"))
+        // Extra smoothing AFTER the bottom Krylov solve (nub, default 0).
+        .def("set_bottom_smooth", &MLMG::setBottomSmooth, nb::arg("n"))
+        // Solve the coarsest level on a small dedicated grid ("N-solve") rather than
+        // on the coarsened original decomposition.
+        .def("set_nsolve", &MLMG::setNSolve, nb::arg("flag"))
+        .def("set_nsolve_grid_size", &MLMG::setNSolveGridSize, nb::arg("s"))
+        // Run exactly this many iterations, ignoring the tolerance (0 = off).
+        .def("set_fixed_iter", &MLMG::setFixedIter, nb::arg("nit"))
+        // Measure the relative tolerance against ||b|| always, rather than against
+        // max(||b||, ||r0||) -- which of the two is used changes what rtol MEANS,
+        // and therefore any iteration count compared against another solver's.
+        .def("set_always_use_bnorm", &MLMG::setAlwaysUseBNorm, nb::arg("flag"))
         .def(
             "set_bottom_solver",
             [](MLMG& mlmg, const std::string& s)

@@ -126,6 +126,14 @@ GMG_PRECISION = "fp64"
 # what makes the iteration counts in this table comparable across methods rather
 # than each method's own convention. Set from --norm.
 NORM = "l2"
+# MLMG's own V-cycle shape, so the REFERENCE solver can be tuned on the same axes
+# we tune ourselves on. AMReX defaults: nu1 = nu2 = 2 (the same 2+2 the native GMG
+# defaults to), nub = 0, semicoarsening off. Set from --mlmg-*.
+MLMG_PRE_SMOOTH = 2
+MLMG_POST_SMOOTH = 2
+MLMG_BOTTOM_SMOOTH = 0
+# Max semicoarsening levels; 0 = off (AMReX's default).
+MLMG_SEMICOARSENING = 0
 # Target box size for level 0 of the mf-gmgk hierarchy; 0 keeps the caller's boxes.
 # Set from --gmg-agg-l0-size.
 GMG_AGG_L0_SIZE = 0
@@ -185,11 +193,31 @@ def const_face(geom, dm, d, max_size, value):
     return mf
 
 
+def tune_mlmg(mlmg):
+    """Apply the MLMG V-cycle knobs from --mlmg-*.
+
+    These are the direct counterparts of the gmg_* knobs the native side is tuned
+    on (nu1/nu2/nub against pre/post/coarsest sweeps). Without them the table
+    compares a tuned solver against a stock one, which flatters us for free.
+    """
+    mlmg.set_pre_smooth(MLMG_PRE_SMOOTH)
+    mlmg.set_post_smooth(MLMG_POST_SMOOTH)
+    mlmg.set_bottom_smooth(MLMG_BOTTOM_SMOOTH)
+    return mlmg
+
+
 def make_abec(geom, ba, dm, max_size, max_coarsen=None):
     """Periodic Helmholtz (phi - laplacian phi): MLABecLaplacian, alpha=beta=a=b=1."""
     info = blockamr.LPInfo()
     if max_coarsen is not None:
         info.set_max_coarsening_level(max_coarsen)
+    # Semicoarsening is MLMG's answer to anisotropic cells: coarsen only the
+    # strongly-coupled direction instead of all three. Off unless asked for, which
+    # is AMReX's own default; it does nothing on the isotropic cells this bench uses
+    # but has to be reachable for the anisotropic comparison to be honest.
+    if MLMG_SEMICOARSENING > 0:
+        info.set_semicoarsening(True)
+        info.set_max_semicoarsening_level(MLMG_SEMICOARSENING)
     abec = blockamr.MLABecLaplacian(geom, ba, dm, info)
     abec.set_domain_bc([blockamr.LinOpBCType.Periodic] * 3, [blockamr.LinOpBCType.Periodic] * 3)
     abec.set_level_bc(0, None)
@@ -233,7 +261,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         # MLMG preconditioner on the equivalent assembled operator: one V-cycle
         # per Krylov iteration. Built here, so it counts as setup; the solver's
         # keep_alive ties its lifetime to the returned object.
-        mlmg = blockamr.MLMG(make_abec(geom, ba, dm, max_size))
+        mlmg = tune_mlmg(blockamr.MLMG(make_abec(geom, ba, dm, max_size)))
         mlmg.set_verbose(0)
         kwargs = {"precond_mlmg": mlmg, "precond_cycles": 1}
     elif method == "mf-gmg":
@@ -312,7 +340,7 @@ def solve_once(method, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter):
         return stats["num_iters"], stats["res_norm"]
 
     max_coarsen = 0 if method == "mlmg-nomg" else None
-    mlmg = blockamr.MLMG(make_abec(geom, ba, dm, max_size, max_coarsen))
+    mlmg = tune_mlmg(blockamr.MLMG(make_abec(geom, ba, dm, max_size, max_coarsen)))
     mlmg.set_verbose(0)
     mlmg.set_max_iter(max_iter)
     mlmg.set_bottom_solver("cg")  # SPD
@@ -455,6 +483,26 @@ def main():
         choices=("fp64", "fp32", "bf16"),
         help="V-cycle hierarchy precision (default fp64); bf16 needs --methods mf-gmgk",
     )
+    # MLMG's own V-cycle shape. Defaults are AMReX's, so leaving these alone
+    # reproduces the historical table; they exist so the REFERENCE can be tuned on
+    # the same axes as ours instead of being compared at stock settings.
+    ap.add_argument(
+        "--mlmg-pre-smooth", type=int, default=2,
+        help="MLMG nu1, pre-smoothing sweeps (AMReX default 2)",
+    )
+    ap.add_argument(
+        "--mlmg-post-smooth", type=int, default=2,
+        help="MLMG nu2, post-smoothing sweeps (AMReX default 2)",
+    )
+    ap.add_argument(
+        "--mlmg-bottom-smooth", type=int, default=0,
+        help="MLMG nub, extra smoothing after the bottom solve (AMReX default 0)",
+    )
+    ap.add_argument(
+        "--mlmg-semicoarsening", type=int, default=0,
+        help="MLMG max semicoarsening levels (0 = off, AMReX's default). Coarsens only "
+        "the strongly-coupled direction; the designed answer to anisotropic cells",
+    )
     args = ap.parse_args()
 
     # bf16 exists for precond="gmg_kokkos" alone. Rather than let the other GMG rows
@@ -468,10 +516,15 @@ def main():
                 f"drop {', '.join(no_bf16)} from --methods"
             )
     global GMG_SMOOTHER, GMG_PRECISION, NORM, GMG_AGG_L0_SIZE
+    global MLMG_PRE_SMOOTH, MLMG_POST_SMOOTH, MLMG_BOTTOM_SMOOTH, MLMG_SEMICOARSENING
     GMG_SMOOTHER = args.gmg_smoother
     GMG_PRECISION = args.gmg_precision
     NORM = args.norm
     GMG_AGG_L0_SIZE = args.gmg_agg_l0_size
+    MLMG_PRE_SMOOTH = args.mlmg_pre_smooth
+    MLMG_POST_SMOOTH = args.mlmg_post_smooth
+    MLMG_BOTTOM_SMOOTH = args.mlmg_bottom_smooth
+    MLMG_SEMICOARSENING = args.mlmg_semicoarsening
 
     header = [
         "n_cell",

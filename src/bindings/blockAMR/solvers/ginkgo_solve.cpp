@@ -164,20 +164,41 @@ void bindPersistent(nb::module_& m, const char* name)
             // matrix-free geometric multigrid on the face coefficients —
             // matrix-free solver only, no MLMG involved).
             nb::arg("precond") = "none",
-            // Native-GMG (precond="gmg") V-cycle knobs. Defaults reproduce the
-            // previous fixed behaviour. gmg_pre_sweeps/gmg_post_sweeps: RB-GS
-            // sweep count / Chebyshev degree per pre-/post-smooth (keep them
-            // equal for a CG-safe symmetric V-cycle). gmg_coarsest_sweeps:
-            // smoothing on the bottom level. gmg_max_levels: 0 = auto/unlimited
-            // coarsening; else cap the hierarchy depth. gmg_min_bottom: stop
-            // coarsening before the domain shortside drops below this.
-            // gmg_smoother: "rbgs" (red-black Gauss-Seidel) or "chebyshev"
-            // (Jacobi-preconditioned polynomial, plain-stencil bandwidth).
+            // Native-GMG (precond="gmg") V-cycle knobs. gmg_pre_sweeps/
+            // gmg_post_sweeps: RB-GS sweep count / Chebyshev degree per pre-/
+            // post-smooth (keep them equal for a CG-safe symmetric V-cycle).
+            // gmg_coarsest_sweeps: smoothing on the bottom level. gmg_max_levels:
+            // 0 = auto/unlimited coarsening; else cap the hierarchy depth.
+            // gmg_min_bottom: stop coarsening before the domain shortside drops
+            // below this. gmg_smoother: "rbgs" (red-black Gauss-Seidel) or
+            // "chebyshev" (Jacobi-preconditioned polynomial, plain-stencil
+            // bandwidth).
+            //
+            // gmg_min_bottom=2 and gmg_coarsest_sweeps=16 (with gmg_omega=1.1
+            // below) are a MEASURED shape, not the historical one — the previous
+            // 4/8/1.0 predated agglomeration, fp32, shared coefficients and
+            // level-0 re-decomposition, four features that each changed what a
+            // level costs. The three compose super-additively, because a deeper
+            // ladder is what makes extra bottom sweeps cheap (a 2^3 bottom is 8
+            // cells) and a better-solved bottom is what makes the deeper ladder
+            // pay. Preconditioned CG on the periodic Helmholtz, fp32 hierarchy,
+            // level-0 agglomerated:
+            //
+            //     grid     4/8/1.0        2/16/1.1      speedup
+            //     64^3     11 iters        8 iters       1.23x
+            //     128^3    11 iters        8 iters       1.28x
+            //     256^3    12 iters        8 iters       1.40x
+            //
+            // The iteration count is now FLAT in N, which is the mesh-independence
+            // multigrid is supposed to have and 4/8/1.0 did not. Confirmed off the
+            // constant-coefficient problem at 128^3 (smooth b 12->8, a 1e4 b jump
+            // 28->23, 4:1 anisotropic cells 81->59), and every knob is load-bearing
+            // in the drop-one controls on every one of those.
             nb::arg("gmg_pre_sweeps") = 2,
             nb::arg("gmg_post_sweeps") = 2,
-            nb::arg("gmg_coarsest_sweeps") = 8,
+            nb::arg("gmg_coarsest_sweeps") = 16,
             nb::arg("gmg_max_levels") = 0,
-            nb::arg("gmg_min_bottom") = 4,
+            nb::arg("gmg_min_bottom") = 2,
             nb::arg("gmg_smoother") = "rbgs",
             // GMG hierarchy precision: "fp64" (default; byte-for-byte the
             // previous behaviour), "fp32" or "bf16" — the whole V-cycle (level
@@ -198,16 +219,51 @@ void bindPersistent(nb::module_& m, const char* name)
             nb::arg("gmg_precision") = "fp64",
             // RB-SOR relaxation factor for gmg_smoother="rbgs":
             //   sol <- sol + gmg_omega * (gs - sol)
-            // 1.0 (default) is plain red-black Gauss-Seidel, bit-for-bit the
-            // previous behaviour. MLMG's own abec_gsrb over-relaxes with 1.15.
-            // Must lie in (0, 2) for a convergent relaxation. Ignored by
+            // 1.0 is plain red-black Gauss-Seidel; 1.1 (the default) over-relaxes
+            // by 10%. Must lie in (0, 2) for a convergent relaxation. Ignored by
             // gmg_smoother="chebyshev", whose damping comes from the polynomial.
-            // NOTE: omega != 1.0 makes the colour sweep non-symmetric, so the
-            // V-cycle is no longer exactly self-adjoint even with the reversed
-            // post-smooth. That is harmless for solver="gmg"/"ir" (stationary
-            // iterations), but can degrade CG, which assumes an SPD
-            // preconditioner — prefer omega = 1.0 or "chebyshev" under precond="gmg".
-            nb::arg("gmg_omega") = 1.0,
+            //
+            // Why over-relaxing helps a SMOOTHER, which is not trying to solve
+            // anything: its whole job is to annihilate the modes the coarse grid
+            // cannot represent, theta in [pi/2, pi]. At omega=1 RB-GS damps that
+            // band very unevenly — modes near pi are crushed while modes near
+            // pi/2, exactly where the coarse grid is also weakest, are barely
+            // touched — and the cycle's contraction is set by the WORST mode in
+            // the band. Over-relaxing trades surplus damping near pi for scarce
+            // damping near pi/2, which lowers that maximum. MLMG's own abec_gsrb
+            // over-relaxes for the same reason, at 1.15.
+            //
+            // It is bounded on the other side by symmetry: omega != 1.0 makes the
+            // colour sweep non-self-adjoint, so the V-cycle is no longer exactly
+            // SPD even with the reversed post-smooth, and CG's theory stops
+            // applying. Harmless for solver="gmg"/"ir" (stationary iterations);
+            // for precond="gmg" it is a real cost, and the measured turnover is
+            // where it starts to outweigh the better damping. 256^3, preconditioned
+            // CG, everything else at the defaults above:
+            //
+            //     omega    0.9   1.0   1.1   1.15   1.2   1.3
+            //     iters     15    12    11     11    12    13
+            //     (combined with min_bottom=2, coarsest_sweeps=16)
+            //     iters      -    10     8      9     9     -
+            //
+            // Hence 1.1 rather than MLMG's 1.15, which costs an iteration at both
+            // 128^3 and 256^3. The gain is largest where the coarse grid is worst:
+            // 4:1 anisotropic cells (we coarsen all three axes, no semicoarsening)
+            // go 70 -> 59 iterations, against 12 -> 11 on the isotropic problem.
+            //
+            // WARNING: this is the V-cycle's SECOND symmetry breaker, and the two
+            // do not compose. gmg_pre_sweeps != gmg_post_sweeps is the first, and
+            // it already warns. Either alone is survivable; both at once are not
+            // (N=32, precond="gmg", 300-iteration budget):
+            //
+            //     sweeps    omega=1.0   omega=1.05   omega=1.1   omega=1.15
+            //     2 / 1      16 iters    21 iters     diverges    diverges
+            //     2 / 2       8 iters     8 iters      8 iters     8 iters
+            //
+            // Raising this default is safe precisely because the default sweeps
+            // are symmetric. Set gmg_omega=1.0 whenever they are not. Pinned by
+            // test_asymmetric_sweeps_and_over_relaxation_stack.
+            nb::arg("gmg_omega") = 1.1,
             // Which norm the stopping test (and the reported res_norm) measures:
             // "l2" (default, Ginkgo's ||r||_2 <= rtol*||b||_2 — byte-for-byte the
             // previous behaviour) or "linf", AMReX MLMG's criterion
