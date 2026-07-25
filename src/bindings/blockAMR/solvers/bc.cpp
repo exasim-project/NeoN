@@ -72,34 +72,6 @@ parseBc(const std::vector<std::string>& bc, const amrex::Geometry& geom, const s
     return out;
 }
 
-bool bcGhostFill(
-    const amrex::Box& vbx, const amrex::Box& domain, const BcArray& bc, int s, BcGhostFill& f
-)
-{
-    if (bc[static_cast<std::size_t>(s)] == 0)
-    {
-        return false;
-    }
-    const int dir = s / 2;
-    const bool low = (s % 2) == 0;
-    const bool touches =
-        low ? vbx.smallEnd(dir) == domain.smallEnd(dir) : vbx.bigEnd(dir) == domain.bigEnd(dir);
-    if (!touches)
-    {
-        return false;
-    }
-    const int gpos = low ? vbx.smallEnd(dir) - 1 : vbx.bigEnd(dir) + 1;
-    f.gbx = vbx;
-    f.gbx.setSmall(dir, gpos);
-    f.gbx.setBig(dir, gpos);
-    f.sign = (bc[static_cast<std::size_t>(s)] == 1) ? -1.0 : 1.0;
-    const int shift = low ? 1 : -1;
-    f.di = (dir == 0) ? shift : 0;
-    f.dj = (dir == 1) ? shift : 0;
-    f.dk = (dir == 2) ? shift : 0;
-    return true;
-}
-
 void scatterShellDevice(const double* vec, amrex::MultiFab& mf)
 {
     long off = 0;

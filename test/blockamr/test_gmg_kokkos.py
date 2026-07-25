@@ -49,10 +49,10 @@ MAX_SIZE = [None, 8]
 MAX_SIZE_IDS = ["1box", "8box"]
 
 
-def _mesh(max_size):
+def _mesh(max_size, periodic=True):
     box = blockamr.Box([0, 0, 0], [N_CELL - 1] * 3)
     rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
-    geom = blockamr.Geometry(box, rb, 0, [1, 1, 1])  # triply periodic
+    geom = blockamr.Geometry(box, rb, 0, [1, 1, 1] if periodic else [0, 0, 0])
     ba = blockamr.BoxArray(box)
     ba.max_size(N_CELL if max_size is None else max_size)
     dm = blockamr.DistributionMapping(ba)
@@ -70,11 +70,11 @@ def _const_face(geom, dm, d, max_size, value):
     return mf
 
 
-def _problem(max_size):
+def _problem(max_size, periodic=True):
     """Periodic Helmholtz (phi - laplacian phi) in face-coefficient form, plus a
     smooth mean-zero rhs. Returns everything the bench needs, alive for the call."""
     box_size = N_CELL if max_size is None else max_size
-    geom, ba, dm = _mesh(max_size)
+    geom, ba, dm = _mesh(max_size, periodic)
     dx = geom.cell_size()
 
     alpha = blockamr.MultiFab(ba, dm, 1, 0)
@@ -97,8 +97,8 @@ def _problem(max_size):
     return geom, ba, dm, rhs, alpha, faces
 
 
-def _vcycle(backend, max_size, **kwargs):
-    geom, _, _, rhs, alpha, faces = _problem(max_size)
+def _vcycle(backend, max_size, periodic=True, **kwargs):
+    geom, _, _, rhs, alpha, faces = _problem(max_size, periodic)
     return dict(
         blockamr.bench_gmg_vcycle(
             backend,
@@ -160,6 +160,43 @@ def test_kokkos_halo_is_exactly_fillboundary(max_size):
     opt = _vcycle("kokkos_opt", max_size)
     assert opt["resid0"] == fused["resid0"]
     assert opt["resid1"] == fused["resid1"]
+
+
+DOMAIN_BCS = [[1] * 6, [2] * 6, [1, 1, 2, 2, 1, 1]]
+DOMAIN_BC_IDS = ["dirichlet", "neumann", "mixed"]
+
+
+@pytest.mark.parametrize("bc", DOMAIN_BCS, ids=DOMAIN_BC_IDS)
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_kokkos_domain_bc_is_exactly_the_amrex_reflection(bc, max_size):
+    """The physical-BC ghost fill, ported to a device plan, against the AMReX loop.
+
+    Homogeneous BCs are folded into the stencil by reflecting the interior into the
+    ghost layer (-interior for Dirichlet, +interior for Neumann), and ``kokkos_opt``
+    does it from a table built at setup while the other backends call the production
+    per-box ``fillDomainBcGhostsDevice``. Reflection is not arithmetic the two could
+    round differently, so exact agreement is the gate.
+
+    The mixed case matters most: it is the one where a wrong side-to-direction mapping
+    (reflecting a y ghost with the x sign, say) still produces a plausible residual.
+    """
+    ref = _vcycle("kokkos_fused", max_size, periodic=False, bc=bc)
+    opt = _vcycle("kokkos_opt", max_size, periodic=False, bc=bc)
+    assert opt["resid0"] == ref["resid0"]
+    assert opt["resid1"] == ref["resid1"]
+    # And the BCs are doing something: a Dirichlet box is a different problem from the
+    # periodic one, so a fill that silently did nothing would show up here.
+    assert opt["resid1"] != _vcycle("kokkos_opt", max_size)["resid1"]
+
+
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_dirichlet_and_neumann_are_not_the_same_fill(max_size):
+    """The sign is the whole difference between the two conditions, so if it were
+    dropped (or applied to both) these two would agree -- and one of them would be
+    silently solving the other's problem."""
+    d = _vcycle("kokkos_opt", max_size, periodic=False, bc=[1] * 6)
+    n = _vcycle("kokkos_opt", max_size, periodic=False, bc=[2] * 6)
+    assert d["resid1"] != n["resid1"]
 
 
 @pytest.mark.parametrize("backend", KOKKOS_BACKENDS)
@@ -228,6 +265,81 @@ def test_fp32_hierarchy_is_the_same_vcycle(max_size):
     assert fp32["resid1"] == pytest.approx(fp64["resid1"], rel=1e-4)
     # And it is not accidentally the fp64 path: fp32 rounding has to show up somewhere.
     assert fp32["resid1"] != fp64["resid1"]
+
+
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_sharing_face_coefficients_does_not_change_the_vcycle(max_size):
+    """Sharing must be exactly the same V-cycle, to the last bit.
+
+    ux(i+1,j,k) is cell i's east coefficient and lx(i+1,j,k) is cell i+1's west one;
+    for a symmetric operator those are the same matrix entry, so dropping one of the
+    two fabs and reading the survivor at face i and face i+1 has to reproduce the run
+    that kept both. If the two indices were ever confused -- reading the east
+    coefficient where the west belongs -- the residual would move, so exact agreement
+    is the gate and no tolerance is allowed.
+    """
+    plain = _vcycle("kokkos_opt", max_size, agglomerate=True)
+    shared = _vcycle("kokkos_opt", max_size, agglomerate=True, share_coeffs=True)
+    assert shared["shared_coeffs"] is True
+    assert plain["shared_coeffs"] is False
+    assert shared["nlevels"] == plain["nlevels"]
+    assert shared["resid0"] == plain["resid0"]
+    assert shared["resid1"] == plain["resid1"]
+
+
+def test_sharing_detects_symmetry_in_two_separate_fabs():
+    """The cheap case is the same fab handed in twice, which pointer equality settles.
+    The real check is the value comparison: two DISTINCT fabs holding the same numbers
+    are just as shareable, and must be recognised as such."""
+    geom, ba, dm, rhs, alpha, faces = _problem(8)
+    dx = geom.cell_size()
+    lower = [_const_face(geom, dm, d, 8, -1.0 / dx[d] ** 2) for d in range(3)]
+    r = dict(
+        blockamr.bench_gmg_vcycle(
+            "kokkos_opt", geom, rhs, alpha, faces[0], faces[1], faces[2],
+            fx_lo=lower[0], fy_lo=lower[1], fz_lo=lower[2],
+            share_coeffs=True, iters=1, batches=1,
+        )
+    )
+    assert r["shared_coeffs"] is True
+    assert r["resid1"] == _vcycle("kokkos_opt", 8)["resid1"]
+
+
+def test_sharing_falls_back_on_an_asymmetric_operator():
+    """An asymmetric operator has ux != lx, so one array cannot stand for both. Asking
+    to share must then keep the pair rather than silently symmetrise the operator --
+    which would be a wrong V-cycle running at the shared speed. The residual has to
+    match the unshared run of the SAME asymmetric operator, bit for bit."""
+    geom, ba, dm, rhs, alpha, faces = _problem(8)
+    dx = geom.cell_size()
+    # Lower coefficients scaled by 0.5: still a valid stencil, no longer symmetric.
+    lower = [_const_face(geom, dm, d, 8, -0.5 / dx[d] ** 2) for d in range(3)]
+
+    def run(share):
+        return dict(
+            blockamr.bench_gmg_vcycle(
+                "kokkos_opt", geom, rhs, alpha, faces[0], faces[1], faces[2],
+                fx_lo=lower[0], fy_lo=lower[1], fz_lo=lower[2],
+                share_coeffs=share, iters=1, batches=1,
+            )
+        )
+
+    asked = run(True)
+    plain = run(False)
+    assert asked["shared_coeffs"] is False
+    assert asked["resid0"] == plain["resid0"]
+    assert asked["resid1"] == plain["resid1"]
+    # And it really is a different operator from the symmetric one, so the fallback is
+    # protecting something: sharing it would have changed the answer.
+    assert plain["resid1"] != _vcycle("kokkos_opt", 8)["resid1"]
+
+
+@pytest.mark.parametrize("backend", ["amrex", "kokkos", "kokkos_fused"])
+def test_share_coeffs_is_rejected_on_the_baselines(backend):
+    """Only kokkos_opt shares. A baseline quietly ignoring the flag would report the
+    unshared timing under a shared label -- the same trap as fp32."""
+    with pytest.raises(RuntimeError, match="share_coeffs is implemented"):
+        _vcycle(backend, 8, share_coeffs=True)
 
 
 @pytest.mark.parametrize("backend", ["amrex", "kokkos", "kokkos_fused"])

@@ -9,6 +9,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_Reduce.H>
 
+#include <algorithm>
 #include <cmath>
 
 #include "profiling.hpp"
@@ -156,10 +157,21 @@ void gmgConvertAddHost(DST& dst, const GmgFab<T>& src)
 // authority is unchanged. In the fp32 hierarchy (T=float) `out` holds the residual
 // rounded to float; the reduced norm therefore carries ~6e-8 relative rounding,
 // far below the ~10x per-cycle residual drop, so the stopping cycle is unchanged
-// (verified: iters and converged answer identical to the FP64-norm path). Returns
-// the FP64 sum of squares (caller takes the sqrt). Device + host twins.
+// (verified: iters and converged answer identical to the FP64-norm path).
+//
+// BOTH norms come out of the one reduction: the 2-norm's sum of squares and the
+// inf-norm's max|r|, so the native stationary solver can stop in either
+// (norm="l2" | "linf", the latter MLMG's — see stop_norm_inf.hpp) without a
+// second pass over the residual. The extra ReduceOpMax is register-only work in
+// an already bandwidth-bound kernel. Device + host twins.
+struct ResidNorms
+{
+    double sumsq;  // sum r_i^2 — caller takes the sqrt for ||r||_2
+    double maxabs; // max |r_i| — ||r||_inf
+};
+
 template<class T>
-double faceCoeffResidScatterNormDevice(
+ResidNorms faceCoeffResidScatterNormDevice(
     const amrex::MultiFab& sol,
     const amrex::MultiFab& rhs,
     const amrex::MultiFab& ux,
@@ -173,7 +185,7 @@ double faceCoeffResidScatterNormDevice(
     GmgFab<T>& out
 )
 {
-    double res;
+    ResidNorms res {};
     {
         prof::Timer t("gmg.solve.residkern");
         for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
@@ -212,23 +224,25 @@ double faceCoeffResidScatterNormDevice(
     {
         prof::Timer t("gmg.solve.normkern");
         const auto o_ma = out.const_arrays();
-        res = amrex::ParReduce(
-            amrex::TypeList<amrex::ReduceOpSum> {},
-            amrex::TypeList<double> {},
+        const auto both = amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum, amrex::ReduceOpMax> {},
+            amrex::TypeList<double, double> {},
             out,
             amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
+            [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double, double>
             {
                 const double v = static_cast<double>(o_ma[box](i, j, k));
-                return {v * v};
+                return {v * v, amrex::Math::abs(v)};
             }
         );
+        res.sumsq = amrex::get<0>(both);
+        res.maxabs = amrex::get<1>(both);
     }
     return res;
 }
 
 template<class T>
-double faceCoeffResidScatterNormHost(
+ResidNorms faceCoeffResidScatterNormHost(
     const amrex::MultiFab& sol,
     const amrex::MultiFab& rhs,
     const amrex::MultiFab& ux,
@@ -242,7 +256,7 @@ double faceCoeffResidScatterNormHost(
     GmgFab<T>& out
 )
 {
-    double sumsq = 0.0;
+    ResidNorms res {};
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -280,12 +294,13 @@ double faceCoeffResidScatterNormHost(
                     // ParReduce over `out`) so reference and cuda give an identical
                     // norm: exact FP64 for T=double, fp32-rounded for T=float.
                     const double v = static_cast<double>(o(i, j, k));
-                    sumsq += v * v;
+                    res.sumsq += v * v;
+                    res.maxabs = std::max(res.maxabs, std::abs(v));
                 }
             }
         }
     }
-    return sumsq;
+    return res;
 }
 
 // ||mf||_2 over the valid region (0 ghost), accumulated in the fab's value_type

@@ -68,10 +68,11 @@ public:
 
     virtual ~GmgApplyMf() = default;
 
-    // Fused r = rhs - A*sol - shift -> (cast to T) L0 rhs; L0 sol := 0; returns the
-    // FP64 sum of squares of r (norm authority stays double even for a float L0
-    // rhs). `sol`'s ghosts must already be filled by the caller.
-    virtual double residScatterNorm(
+    // Fused r = rhs - A*sol - shift -> (cast to T) L0 rhs; L0 sol := 0; returns
+    // BOTH FP64 norms of r (the sum of squares and max|r|), so the caller can
+    // stop in either norm; the norm authority stays double even for a float L0
+    // rhs. `sol`'s ghosts must already be filled by the caller.
+    virtual ResidNorms residScatterNorm(
         const amrex::MultiFab& sol,
         const amrex::MultiFab& rhs,
         const amrex::MultiFab& ux,
@@ -233,7 +234,7 @@ public:
     // convert-scatter. vcycleGather then runs the V-cycle(s) and adds the T-typed
     // correction back onto the FP64 x. Runs entirely on AMReX fabs (no Ginkgo
     // vector); conversions are identities when T==double.
-    double residScatterNorm(
+    ResidNorms residScatterNorm(
         const amrex::MultiFab& sol,
         const amrex::MultiFab& rhs,
         const amrex::MultiFab& ux,
@@ -247,23 +248,23 @@ public:
     ) const override
     {
         const GmgLevelT<T>& L0 = levels_.front();
-        double sumsq;
+        ResidNorms norms;
         if (onDevice_)
         {
-            sumsq = faceCoeffResidScatterNormDevice<T>(
+            norms = faceCoeffResidScatterNormDevice<T>(
                 sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs
             );
             L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
         }
         else
         {
-            sumsq = faceCoeffResidScatterNormHost<T>(
+            norms = faceCoeffResidScatterNormHost<T>(
                 sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs
             );
             L0.sol->setVal(T(0));
             amrex::Gpu::streamSynchronize();
         }
-        return sumsq;
+        return norms;
     }
 
     void vcycleGather(amrex::MultiFab& x) const override

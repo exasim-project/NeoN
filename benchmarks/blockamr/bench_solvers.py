@@ -57,7 +57,12 @@ several ways, all on the GPU, and times the solve:
                    assembled (stream the matrix) — and of the assembly setup cost.
 
 Fairness: identical operator (Helmholtz alpha=beta=a=b=1), identical zero
-initial guess, identical relative tolerance, all on one GPU. Timing is the
+initial guess, identical relative tolerance, all on one GPU. The convergence
+NORM is a fairness axis too: MLMG stops on ||r||_inf <= rtol*||b||_inf and
+Ginkgo on the 2-norm, so an iteration count from one is not directly comparable
+with the other's. ``--norm linf`` puts the Ginkgo methods on MLMG's criterion
+(MLMG's own norm is not configurable), which is the apples-to-apples setting;
+``--norm l2`` (the default) keeps each side's native convention. Timing is the
 median of ``--repeats`` solves after ``--warmup`` untimed solves. For ``mf``/
 ``csr`` the one-time operator/solver build (matrix assembly, for ``csr``) is the
 reported ``setup_ms`` and is excluded from ``solve_ms``; the one-shot methods
@@ -112,6 +117,12 @@ GMG_SMOOTHER = "rbgs"
 # V-cycle hierarchy precision for mf-gmg; "fp64" reproduces the historical
 # default, "fp32" is the M5 single-precision V-cycle. Set from --gmg-precision.
 GMG_PRECISION = "fp64"
+# Convergence norm for the Ginkgo-side methods; "l2" reproduces the historical
+# default, "linf" is MLMG's own criterion (||r||_inf <= rtol*||b||_inf). The mlmg
+# rows ALWAYS stop on linf -- it is not configurable in MLMG -- so --norm linf is
+# what makes the iteration counts in this table comparable across methods rather
+# than each method's own convention. Set from --norm.
+NORM = "l2"
 # Persistent solvers built once and reused (per-solve = pack/apply/unpack only).
 PERSISTENT = {
     "mf": "FaceCoeffSolver",
@@ -269,6 +280,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         solver=solver,
         max_iter=max_iter,
         rtol=rtol,
+        norm=NORM,
         **kwargs,
     )
 
@@ -408,6 +420,13 @@ def main():
     ap.add_argument("--repeats", type=int, default=5)
     ap.add_argument("--warmup", type=int, default=2)
     ap.add_argument("--rtol", type=float, default=1e-10)
+    ap.add_argument(
+        "--norm",
+        choices=("l2", "linf"),
+        default="l2",
+        help="convergence norm for the Ginkgo methods; 'linf' matches MLMG's criterion "
+        "(mlmg always uses linf, so this is what makes iters comparable)",
+    )
     ap.add_argument("--atol", type=float, default=0.0)
     ap.add_argument("--max-iter", type=int, default=20000)
     ap.add_argument("--csv", default="bench_solvers.csv", help="output CSV path")
@@ -424,9 +443,10 @@ def main():
         help="V-cycle precision for the mf-gmg native-GMG preconditioner (default fp64)",
     )
     args = ap.parse_args()
-    global GMG_SMOOTHER, GMG_PRECISION
+    global GMG_SMOOTHER, GMG_PRECISION, NORM
     GMG_SMOOTHER = args.gmg_smoother
     GMG_PRECISION = args.gmg_precision
+    NORM = args.norm
 
     header = [
         "n_cell",

@@ -89,7 +89,8 @@ void bindPersistent(nb::module_& m, const char* name)
                int gmg_min_bottom,
                const std::string& gmg_smoother,
                const std::string& gmg_precision,
-               double gmg_omega)
+               double gmg_omega,
+               const std::string& norm)
             {
                 new (self)
                     S(executor,
@@ -117,7 +118,8 @@ void bindPersistent(nb::module_& m, const char* name)
                       gmg_min_bottom,
                       gmg_smoother,
                       gmg_precision,
-                      gmg_omega);
+                      gmg_omega,
+                      norm);
             },
             nb::arg("alpha"),
             nb::arg("ux"),
@@ -194,6 +196,15 @@ void bindPersistent(nb::module_& m, const char* name)
             // iterations), but can degrade CG, which assumes an SPD
             // preconditioner — prefer omega = 1.0 or "chebyshev" under precond="gmg".
             nb::arg("gmg_omega") = 1.0,
+            // Which norm the stopping test (and the reported res_norm) measures:
+            // "l2" (default, Ginkgo's ||r||_2 <= rtol*||b||_2 — byte-for-byte the
+            // previous behaviour) or "linf", AMReX MLMG's criterion
+            // ||r||_inf <= rtol*||b||_inf. Two solvers stopping on different norms
+            // are answering different questions, so "linf" is what makes an
+            // iteration count directly comparable with mlmg's. Applies to the
+            // Krylov path (via a custom Ginkgo criterion) and to the native
+            // stationary solver="gmg" loop alike.
+            nb::arg("norm") = "l2",
             nb::keep_alive<1, 2>(),
             nb::keep_alive<1, 3>(),
             nb::keep_alive<1, 4>(),

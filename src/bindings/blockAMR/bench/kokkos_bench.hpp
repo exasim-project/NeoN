@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -149,6 +150,27 @@ struct GmgArgs
     // gone. Unlike the switches above this DOES change arithmetic, so the residual
     // moves in the last few digits. kokkos_opt only -- the baselines stay fp64.
     bool fp32 = false;
+
+    // Store ONE face coefficient per direction instead of an upper/lower pair.
+    // ux(i+1,j,k) is cell i's east coefficient and lx(i+1,j,k) is cell i+1's west
+    // coefficient -- for a SYMMETRIC operator those are the same matrix entry, so
+    // the two fabs hold identical numbers and a colour sweep streams 9 arrays where
+    // 6 suffice. When on, the level allocates ux/uy/uz only and the kernels read the
+    // east coefficient at face i+1 and the west at face i of that one array: not an
+    // approximation, the same numbers with half the coefficient traffic.
+    //
+    // Symmetry is CHECKED (bitwise, at setup) rather than assumed, and an asymmetric
+    // operator silently keeps the pair -- GmgResult::sharedCoeffs reports which
+    // happened, so a timing can never be labelled as shared when it was not.
+    // kokkos_opt only.
+    bool shareCoeffs = false;
+
+    // Homogeneous domain boundary conditions per side (xlo, xhi, ylo, yhi, zlo, zhi):
+    // 0 periodic, 1 Dirichlet, 2 Neumann -- the same spec (and the same type as)
+    // solvers::BcArray, spelled out here so this header keeps its no-AMReX-headers
+    // contract. All-zero (the default) is the triply periodic mesh the bench itself
+    // uses, where the boundary fill has nothing to do.
+    std::array<int, 6> bc {};
 };
 
 struct GmgResult
@@ -165,6 +187,10 @@ struct GmgResult
     // the timed launcher computed the V-cycle rather than something cheaper.
     double resid0 = 0.0;
     double resid1 = 0.0;
+
+    // Whether the hierarchy actually shares one face coefficient per direction (see
+    // GmgArgs::shareCoeffs): asking for it on an asymmetric operator does not get it.
+    bool sharedCoeffs = false;
 };
 
 std::vector<std::string> benchGmgBackends();

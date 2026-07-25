@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "stop_norm_inf.hpp"
 #include "types.hpp"
 
 namespace nb = nanobind;
@@ -99,29 +100,44 @@ private:
 // that second baseline, though every current call site uses the default).
 // Passing atol = 0.0 reproduces call sites that never had an atol branch at
 // all, so this single helper covers all of them exactly.
+//
+// `norm` selects which norm the residual criteria measure: "l2" (Ginkgo's
+// gko::stop::ResidualNorm, the default and the historical behaviour) or "linf"
+// (ResidualNormInf, MLMG's norm — see stop_norm_inf.hpp). The iteration
+// criterion is norm-independent.
 inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCriteria(
     std::shared_ptr<const gko::Executor> exec,
     int max_iter,
     gko::stop::mode baseline,
     double reduction_factor,
     double atol,
-    gko::stop::mode atol_baseline = gko::stop::mode::absolute
+    gko::stop::mode atol_baseline = gko::stop::mode::absolute,
+    const std::string& norm = "l2"
 )
 {
+    const NormKind kind = parseNorm(norm);
     std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> criteria;
     criteria.push_back(
         gko::stop::Iteration::build().with_max_iters(static_cast<gko::size_type>(max_iter)).on(exec)
     );
-    criteria.push_back(gko::stop::ResidualNorm<double>::build()
-                           .with_baseline(baseline)
-                           .with_reduction_factor(reduction_factor)
-                           .on(exec));
+    auto residual = [&](gko::stop::mode base,
+                        double factor) -> std::shared_ptr<const gko::stop::CriterionFactory>
+    {
+        if (kind == NormKind::linf)
+        {
+            return ResidualNormInf::build().with_baseline(base).with_reduction_factor(factor).on(
+                exec
+            );
+        }
+        return gko::stop::ResidualNorm<double>::build()
+            .with_baseline(base)
+            .with_reduction_factor(factor)
+            .on(exec);
+    };
+    criteria.push_back(residual(baseline, reduction_factor));
     if (atol > 0.0)
     {
-        criteria.push_back(gko::stop::ResidualNorm<double>::build()
-                               .with_baseline(atol_baseline)
-                               .with_reduction_factor(atol)
-                               .on(exec));
+        criteria.push_back(residual(atol_baseline, atol));
     }
     return criteria;
 }
@@ -130,7 +146,8 @@ inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCrite
 // residual ||r|| <= rtol*||rhs|| (recomputed per solve, so one generate() is
 // reused across right-hand sides), or — when atol > 0 — the absolute residual
 // ||r|| <= atol. A non-null `precond` (an already-generated LinOp, e.g.
-// MlmgPrecond) is attached as the solver's generated preconditioner.
+// MlmgPrecond) is attached as the solver's generated preconditioner. `norm`
+// picks the norm both residual tests measure in ("l2" | "linf").
 std::shared_ptr<gko::LinOp> buildKrylov(
     const std::string& solver,
     std::shared_ptr<const gko::Executor> exec,
@@ -138,7 +155,8 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     int max_iter,
     double rtol,
     double atol,
-    std::shared_ptr<const gko::LinOp> precond = nullptr
+    std::shared_ptr<const gko::LinOp> precond = nullptr,
+    const std::string& norm = "l2"
 );
 
 // Assemble the {num_iters, res_norm, converged, res_history} result dict

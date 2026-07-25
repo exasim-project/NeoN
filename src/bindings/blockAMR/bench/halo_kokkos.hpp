@@ -15,6 +15,7 @@
 #include <AMReX_BoxList.H>
 #include <AMReX_Periodicity.H>
 
+#include "../solvers/bc_geom.hpp"
 #include "../solvers/gmg_kernels.hpp"
 #include "launch.hpp"
 
@@ -56,7 +57,7 @@ namespace blockamr::bench
 constexpr int kCopyBlock = 128;
 
 // One work block of one rectangular region copy, in GLOBAL cell indices:
-//   dst[dstBox](i, j, k) = src[srcBox](i + sh[0], j + sh[1], k + sh[2])
+//   dst[dstBox](i, j, k) = sign * src[srcBox](i + sh[0], j + sh[1], k + sh[2])
 // over cells [base, base + kCopyBlock) of the region [lo, lo + len), counted i
 // fastest. Box indices are LOCAL, matching the order of FabArray::arrays() and
 // IndexArray(). `sh` is zero for a same-region copy and the negated periodic image
@@ -77,6 +78,10 @@ struct CopyTask
     int len[3];
     int sh[3];
     int base;
+    // +1 for every data movement; -1 only for a reflect-odd (homogeneous Dirichlet)
+    // domain ghost, which is a copy of the mirror cell with the sign flipped. Carrying
+    // it here is what lets the boundary fill be the same kernel as the halo exchange.
+    int sign;
 };
 
 // A whole exchange as one device table, so it executes in one launch.
@@ -107,12 +112,18 @@ inline CopyPlan toDevice(const std::vector<CopyTask>& host, const char* name)
 }
 
 inline void addTask(
-    std::vector<CopyTask>& out, int dst, int src, const amrex::Box& region, const amrex::IntVect& sh
+    std::vector<CopyTask>& out,
+    int dst,
+    int src,
+    const amrex::Box& region,
+    const amrex::IntVect& sh,
+    int sign = 1
 )
 {
     CopyTask t {};
     t.dst = dst;
     t.src = src;
+    t.sign = sign;
     for (int d = 0; d < 3; ++d)
     {
         t.lo[d] = region.smallEnd(d);
@@ -170,6 +181,46 @@ CopyPlan makeHaloPlan(const amrex::FabArray<FAB>& mf, const amrex::Periodicity& 
         }
     }
     return detail::toDevice(tasks, "gmg_halo_plan");
+}
+
+// The homogeneous domain-boundary ghost fill, as a plan: for every valid box touching
+// a non-periodic domain face, the one-cell ghost layer outside that face and the
+// mirror interior cell to reflect into it (sign -1 for Dirichlet, +1 for Neumann).
+//
+// This is the twin of fillDomainBcGhosts* (solvers/bc.hpp) and it shares that path's
+// geometry rather than restating it: solvers::bcGhostFill decides, per box and side,
+// whether the side fires and what the layer, sign and offset are. So the two fills
+// cannot drift apart, and the Kokkos one is testable against the AMReX one to the bit.
+//
+// Face layers only, as in production: the 7-point stencil never reads edge or corner
+// ghosts, so nothing writes them. Runs AFTER the halo plan, which is the same order
+// the production fillGhosts uses (FillBoundary first, then reflection) -- it matters
+// on a box that touches a physical face in one direction and a periodic neighbour in
+// another, where the reflection must see the already-exchanged interior values.
+template<class FAB>
+CopyPlan
+makeBcPlan(const amrex::FabArray<FAB>& mf, const amrex::Box& domain, const solvers::BcArray& bc)
+{
+    const amrex::BoxArray& ba = mf.boxArray();
+    std::vector<CopyTask> tasks;
+    for (int li = 0; li < mf.local_size(); ++li)
+    {
+        const amrex::Box valid = ba[mf.IndexArray()[li]];
+        for (int s = 0; s < 6; ++s)
+        {
+            solvers::BcGhostFill f;
+            if (!solvers::bcGhostFill(valid, domain, bc, s, f))
+            {
+                continue;
+            }
+            // Same box on both sides: a ghost layer of a box is filled from that
+            // box's own interior, so dst and src are the one local index.
+            detail::addTask(
+                tasks, li, li, f.gbx, amrex::IntVect(f.di, f.dj, f.dk), (f.sign < 0.0) ? -1 : 1
+            );
+        }
+    }
+    return detail::toDevice(tasks, "gmg_bc_plan");
 }
 
 // The valid-to-valid copy between two FabArrays over the same region on different
@@ -232,7 +283,8 @@ void execCopyPlan(
                     const int i = t.lo[0] + c % nx;
                     const int j = t.lo[1] + (c / nx) % t.len[1];
                     const int k = t.lo[2] + c / nxy;
-                    dst[t.dst](i, j, k) = src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
+                    const T v = src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
+                    dst[t.dst](i, j, k) = (t.sign < 0) ? -v : v;
                 }
             );
         }
@@ -246,6 +298,14 @@ template<class T>
 void gmgFillBoundaryKokkos(solvers::GmgFab<T>& mf, const CopyPlan& plan)
 {
     execCopyPlan("gmg_halo", mf.arrays(), mf.const_arrays(), plan);
+}
+
+// Twin of fillDomainBcGhostsDevice(mf, domain, bc), from a plan built by makeBcPlan.
+// Reads interior cells and writes ghost cells, disjoint, so one kernel is safe.
+template<class T>
+void gmgFillDomainBcKokkos(solvers::GmgFab<T>& mf, const CopyPlan& plan)
+{
+    execCopyPlan("gmg_bc", mf.arrays(), mf.const_arrays(), plan);
 }
 
 // Twin of dst.ParallelCopy(src, 0, 0, 1).

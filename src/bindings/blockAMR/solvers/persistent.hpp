@@ -46,7 +46,9 @@ protected:
         std::shared_ptr<const gko::Executor> exec, gko::size_type n, bool allocDense = true
     );
 
-    // Subclass calls this once its operator is built.
+    // Subclass calls this once its operator is built. `norm` selects the norm
+    // the stopping criteria — and the reported res_norm — measure in ("l2" |
+    // "linf", MLMG's; see stop_norm_inf.hpp).
     void build(
         std::shared_ptr<gko::LinOp> op,
         const std::string& solver,
@@ -54,7 +56,8 @@ protected:
         double rtol,
         double atol,
         bool project_nullspace,
-        std::shared_ptr<const gko::LinOp> precond = nullptr
+        std::shared_ptr<const gko::LinOp> precond = nullptr,
+        const std::string& norm = "l2"
     );
 
     // v -= mean(v), computed on the executor (dot with ones); only the scalar
@@ -72,6 +75,7 @@ protected:
     std::shared_ptr<ResidualHistoryLogger> resLogger_;
     bool projectNullspace_ = false;
     std::unique_ptr<Dense> ones_;
+    NormKind norm_ = NormKind::l2;
 };
 
 // Matrix-free persistent solver: the operator reads the caller's coefficient
@@ -107,7 +111,8 @@ public:
         int gmg_min_bottom,
         const std::string& gmg_smoother,
         const std::string& gmg_precision,
-        double gmg_omega
+        double gmg_omega,
+        const std::string& norm
     );
 
     // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
@@ -213,7 +218,8 @@ public:
         int /*gmg_min_bottom*/,
         const std::string& /*gmg_smoother*/,
         const std::string& /*gmg_precision*/,
-        double /*gmg_omega*/
+        double /*gmg_omega*/,
+        const std::string& norm
     );
 };
 

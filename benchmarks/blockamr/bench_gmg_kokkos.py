@@ -38,6 +38,13 @@ the one above it:
                         pinned to the baseline's, so this is the SAME V-cycle -- the
                         residual is unchanged to the last digit, only the launch
                         count moves.
+    kokkos_opt+share    ... plus one face coefficient per direction instead of an
+                        upper/lower pair. ux(i+1) is cell i's east coefficient and
+                        lx(i+1) is cell i+1's west one -- the same matrix entry for a
+                        symmetric operator -- so three of the nine arrays a colour
+                        sweep streams were a duplicate of another three. Symmetry is
+                        checked at setup, so like agglomeration this is the SAME
+                        V-cycle: the residual does not move at all.
     kokkos_opt+fp32     ... plus an fp32 hierarchy, as production's gmg_precision
                         does. Once the launch cost is gone the smoother is bound by
                         memory traffic, and this halves it. The one row that changes
@@ -74,17 +81,19 @@ import numpy as np
 
 import blockamr
 
-# (label, backend, agglomerate, pin_depth, fp32). pin_depth truncates the hierarchy to
-# the baseline's level count, which is what makes a row comparable to the baseline
-# rather than merely faster at a different job.
+# (label, backend, agglomerate, pin_depth, fp32, share). pin_depth truncates the
+# hierarchy to the baseline's level count, which is what makes a row comparable to the
+# baseline rather than merely faster at a different job.
 CONFIGS = [
-    ("amrex", "amrex", False, True, False),
-    ("kokkos", "kokkos", False, True, False),
-    ("kokkos_fused", "kokkos_fused", False, True, False),
-    ("kokkos_opt", "kokkos_opt", False, True, False),
-    ("kokkos_opt+agg", "kokkos_opt", True, True, False),
-    ("kokkos_opt+fp32", "kokkos_opt", True, True, True),
-    ("kokkos_opt+fp32 deep", "kokkos_opt", True, False, True),
+    ("amrex", "amrex", False, True, False, False),
+    ("kokkos", "kokkos", False, True, False, False),
+    ("kokkos_fused", "kokkos_fused", False, True, False, False),
+    ("kokkos_opt", "kokkos_opt", False, True, False, False),
+    ("kokkos_opt+agg", "kokkos_opt", True, True, False, False),
+    ("kokkos_opt+share", "kokkos_opt", True, True, False, True),
+    ("kokkos_opt+fp32", "kokkos_opt", True, True, True, False),
+    ("kokkos_opt+fp32+share", "kokkos_opt", True, True, True, True),
+    ("+fp32+share deep", "kokkos_opt", True, False, True, True),
 ]
 
 # The agglomerated coarse box size. 32 not MLMG's 3D default of 8: MLMG agglomerates
@@ -166,7 +175,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
 
     rows = []
     baseline_levels = 0
-    for cfg_label, backend, agglomerate, pin_depth, fp32 in CONFIGS:
+    for cfg_label, backend, agglomerate, pin_depth, fp32, share in CONFIGS:
         stats = dict(
             blockamr.bench_gmg_vcycle(
                 backend,
@@ -183,6 +192,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 agglomerate=agglomerate,
                 agg_grid_size=AGG_GRID_SIZE,
                 fp32=fp32,
+                share_coeffs=share,
                 max_levels=baseline_levels if pin_depth else 0,
                 iters=iters,
                 batches=batches,
@@ -201,6 +211,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 "ms_enqueue": stats["ms_enqueue"],
                 "resid0": stats["resid0"],
                 "resid1": stats["resid1"],
+                "shared_coeffs": stats["shared_coeffs"],
             }
         )
     return rows
@@ -214,7 +225,7 @@ def _report(rows):
             continue
         print(f"\n{case}   cells/level {sel[0]['cells_per_level']}")
         print(
-            f"  {'config':<21} {'lvls':>4} {'ms/vcycle':>10} {'enqueue':>9} {'r1/r0':>9} "
+            f"  {'config':<22} {'lvls':>4} {'ms/vcycle':>10} {'enqueue':>9} {'r1/r0':>9} "
             f"{'speedup':>9}  boxes/level"
         )
         print("  " + "-" * 81)
@@ -223,7 +234,7 @@ def _report(rows):
             flag = "" if r["backend"] == "amrex" else f"{base / r['ms_min']:7.2f}x"
             drop = r["resid1"] / r["resid0"] if r["resid0"] > 0 else float("nan")
             print(
-                f"  {r['backend']:<21} {r['nlevels']:>4} {r['ms_min']:>10.4f} "
+                f"  {r['backend']:<22} {r['nlevels']:>4} {r['ms_min']:>10.4f} "
                 f"{r['ms_enqueue']:>9.4f} {drop:>9.3e} {flag:>9}  {r['boxes_per_level']}"
             )
 

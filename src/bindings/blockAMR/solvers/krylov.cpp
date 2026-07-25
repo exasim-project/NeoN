@@ -31,10 +31,13 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     int max_iter,
     double rtol,
     double atol,
-    std::shared_ptr<const gko::LinOp> precond
+    std::shared_ptr<const gko::LinOp> precond,
+    const std::string& norm
 )
 {
-    auto criteria = makeCriteria(exec, max_iter, gko::stop::mode::rhs_norm, rtol, atol);
+    auto criteria = makeCriteria(
+        exec, max_iter, gko::stop::mode::rhs_norm, rtol, atol, gko::stop::mode::absolute, norm
+    );
     if (solver == "cg")
     {
         auto params = gko::solver::Cg<double>::build().with_criteria(criteria);

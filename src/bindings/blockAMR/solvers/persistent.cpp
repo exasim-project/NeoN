@@ -80,17 +80,27 @@ nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
         }
     }
 
-    // Final 2-norm residual ||b - A x|| for reporting.
+    // Final residual ||b - A x|| for reporting, in the norm the solve stopped on
+    // (so a reported res_norm is always comparable with the rtol that produced it).
     prof::Timer tRep("solve.report");
     auto res = b_->clone();
     auto one = gko::initialize<Dense>({1.0}, exec_);
     auto negOne = gko::initialize<Dense>({-1.0}, exec_);
     op_->apply(negOne, x_, one, res);
-    auto norm = Dense::create(exec_, gko::dim<2> {1, 1});
-    res->compute_norm2(norm);
-    auto normHost = gko::clone(exec_->get_master(), norm);
+    double resNorm;
+    if (norm_ == NormKind::linf)
+    {
+        resNorm = normInf(res.get());
+    }
+    else
+    {
+        auto norm = Dense::create(exec_, gko::dim<2> {1, 1});
+        res->compute_norm2(norm);
+        auto normHost = gko::clone(exec_->get_master(), norm);
+        resNorm = normHost->at(0, 0);
+    }
 
-    return makeResultDict(*logger_, *resLogger_, normHost->at(0, 0));
+    return makeResultDict(*logger_, *resLogger_, resNorm);
 }
 
 PersistentSolver::PersistentSolver(
@@ -112,11 +122,13 @@ void PersistentSolver::build(
     double rtol,
     double atol,
     bool project_nullspace,
-    std::shared_ptr<const gko::LinOp> precond
+    std::shared_ptr<const gko::LinOp> precond,
+    const std::string& norm
 )
 {
+    norm_ = parseNorm(norm);
     op_ = std::move(op);
-    solver_ = buildKrylov(solver, exec_, op_, max_iter, rtol, atol, std::move(precond));
+    solver_ = buildKrylov(solver, exec_, op_, max_iter, rtol, atol, std::move(precond), norm);
     logger_ = gko::share(gko::log::Convergence<double>::create());
     solver_->add_logger(logger_);
     resLogger_ = std::make_shared<ResidualHistoryLogger>();
@@ -164,7 +176,8 @@ FaceCoeffSolver::FaceCoeffSolver(
     int gmg_min_bottom,
     const std::string& gmg_smoother,
     const std::string& gmg_precision,
-    double gmg_omega
+    double gmg_omega,
+    const std::string& norm
 )
     : PersistentSolver(
         makeExecutor(executor),
@@ -239,6 +252,9 @@ FaceCoeffSolver::FaceCoeffSolver(
         maxIter_ = max_iter;
         rtol_ = rtol;
         atol_ = atol;
+        // The stationary loop runs its own stopping test, so build() -- which is
+        // where the Krylov path records the norm -- is never reached here.
+        norm_ = parseNorm(norm);
         projectNull_ = project_nullspace;
         gmgOwner_ = buildGmgHierarchy(
             alpha,
@@ -329,7 +345,7 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_precision,
             gmg_omega
         );
-        build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(inner));
+        build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(inner), norm);
         return;
     }
 
@@ -391,6 +407,10 @@ FaceCoeffSolver::FaceCoeffSolver(
         opts.minBottom = gmg_min_bottom;
         opts.omega = gmg_omega;
         opts.fp32 = (gmg_precision == "fp32");
+        // The parsed spec straight through: the ported V-cycle carries the same
+        // homogeneous Dirichlet/Neumann reflection as precond="gmg", built once per
+        // level as a device plan rather than as a per-box AMReX launch.
+        opts.bc = bcArr;
         pc = gko::share(GmgKokkosPrecond::create(
             exec_,
             n_,
@@ -420,7 +440,7 @@ FaceCoeffSolver::FaceCoeffSolver(
             + "' (expected 'none', 'mlmg', 'gmg' or 'gmg_kokkos')"
         );
     }
-    build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc));
+    build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
 }
 
 nb::dict FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
@@ -534,7 +554,11 @@ nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
         rhsUse = rhsPinned_.get();
     }
 
-    const double bNorm = rhs.norm2(0);
+    // Same stopping test in either norm: ||r|| <= max(rtol*||b||, atol), with
+    // both measured consistently (norm="linf" is MLMG's ||.||_inf, so a solve can
+    // be held to exactly MLMG's criterion -- see stop_norm_inf.hpp).
+    const bool useInf = (norm_ == NormKind::linf);
+    const double bNorm = useInf ? rhs.norminf(0, 1, amrex::IntVect(0)) : rhs.norm2(0);
     const double stopTol = std::max(rtol_ * bNorm, atol_);
     const double rhsMean = projectNull_ ? rhs.sum(0) / static_cast<double>(n_) : 0.0;
     if (projectNull_)
@@ -552,10 +576,10 @@ nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
     {
         prof::Timer t("gmg.solve.resid");
         fillGmgGhosts(*xWork_);
-        const double sumsq = gmgMf_->residScatterNorm(
+        const ResidNorms nr = gmgMf_->residScatterNorm(
             *xWork_, *rhsUse, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_, rhsMean
         );
-        const double rn = std::sqrt(sumsq);
+        const double rn = useInf ? nr.maxabs : std::sqrt(nr.sumsq);
         history.push_back(rn);
         return rn;
     };
@@ -609,7 +633,8 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     int /*gmg_min_bottom*/,
     const std::string& /*gmg_smoother*/,
     const std::string& /*gmg_precision*/,
-    double /*gmg_omega*/
+    double /*gmg_omega*/,
+    const std::string& norm
 )
     : PersistentSolver(
         makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts())
@@ -649,7 +674,7 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
             exec_, precond_mlmg, alpha->boxArray(), alpha->DistributionMap(), n_, precond_cycles
         ));
     }
-    build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc));
+    build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
 }
 
 } // namespace blockamr::solvers

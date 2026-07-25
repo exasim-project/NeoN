@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include <AMReX_Geometry.H>
@@ -53,6 +54,18 @@ struct KokkosGmgOpts
     // unlocks is a better-coarsened hierarchy, which the iteration count will show.
     bool agglomerate = true;
     int aggGridSize = 32;
+
+    // On by default here for the same reason as agglomeration: it cannot change the
+    // result. ux and lx are the SAME matrix entries of a symmetric operator stored
+    // twice (see GmgArgs::shareCoeffs), so keeping one face fab per direction removes
+    // three of the nine arrays a colour sweep streams. Symmetry is verified at setup
+    // and an asymmetric operator keeps the pair, so this is safe to leave on.
+    bool shareCoeffs = true;
+
+    // Homogeneous domain boundary conditions per side (xlo, xhi, ylo, yhi, zlo, zhi):
+    // 0 periodic, 1 Dirichlet, 2 Neumann. Same encoding and same type as
+    // solvers::BcArray, so the caller passes the parsed spec straight through.
+    std::array<int, 6> bc {};
 };
 
 // z = M^{-1} r, on flat DEVICE vectors in the solver's cell ordering (MFIter order,
@@ -76,9 +89,11 @@ public:
 // Build the hierarchy from the same face-coefficient pieces FaceCoeffOp takes. The
 // fields must outlive the returned object, which reads them for the setup only.
 //
-// Triply periodic and red-black only: the ported V-cycle has no physical-BC handling
-// and no Chebyshev smoother, so anything else throws rather than quietly solving a
-// different problem.
+// Red-black only: the ported V-cycle has no Chebyshev smoother, so asking for one
+// throws rather than quietly solving with a different smoother. Boundary conditions
+// are supported -- periodic, homogeneous Dirichlet and homogeneous Neumann, the same
+// three the shipped preconditioner takes -- via opts.bc, which must agree with the
+// geometry's periodicity (solvers::parseBc enforces that at the solver boundary).
 std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const amrex::Geometry& geom,
     const amrex::MultiFab& alpha,

@@ -12,6 +12,10 @@
 
 #include <AMReX_MultiFab.H>
 
+#include <cstddef>
+#include <stdexcept>
+#include <vector>
+
 #include "../bindings.hpp"
 #include "kokkos_bench.hpp"
 
@@ -147,6 +151,9 @@ void registerKokkosBench(nb::module_& m)
            amrex::MultiFab& fx,
            amrex::MultiFab& fy,
            amrex::MultiFab& fz,
+           amrex::MultiFab* fx_lo,
+           amrex::MultiFab* fy_lo,
+           amrex::MultiFab* fz_lo,
            int pre_sweeps,
            int post_sweeps,
            int coarsest_sweeps,
@@ -156,6 +163,8 @@ void registerKokkosBench(nb::module_& m)
            bool agglomerate,
            int agg_grid_size,
            bool fp32,
+           bool share_coeffs,
+           const std::vector<int>& bc,
            int iters,
            int batches)
         {
@@ -163,14 +172,17 @@ void registerKokkosBench(nb::module_& m)
             args.geom = &geom;
             args.rhs = &rhs;
             args.alpha = &alpha;
-            // Symmetric operator: the upper and lower coefficient of a direction are
-            // the same face field, as the persistent solvers are handed it.
+            // Symmetric operator by default: the upper and lower coefficient of a
+            // direction are the same face field, as the persistent solvers are handed
+            // it. Passing fx_lo/fy_lo/fz_lo gives the lower coefficients separately,
+            // which is what makes share_coeffs testable -- equal-but-distinct fabs
+            // must be detected as shareable, and genuinely different ones must not.
             args.ux = &fx;
-            args.lx = &fx;
+            args.lx = (fx_lo != nullptr) ? fx_lo : &fx;
             args.uy = &fy;
-            args.ly = &fy;
+            args.ly = (fy_lo != nullptr) ? fy_lo : &fy;
             args.uz = &fz;
-            args.lz = &fz;
+            args.lz = (fz_lo != nullptr) ? fz_lo : &fz;
             args.preSweeps = pre_sweeps;
             args.postSweeps = post_sweeps;
             args.coarsestSweeps = coarsest_sweeps;
@@ -180,6 +192,21 @@ void registerKokkosBench(nb::module_& m)
             args.agglomerate = agglomerate;
             args.aggGridSize = agg_grid_size;
             args.fp32 = fp32;
+            args.shareCoeffs = share_coeffs;
+            // Integers, not the solver's bc strings: parseBc lives in the Ginkgo-only
+            // half of the module and this binding is always built. Empty = periodic.
+            if (!bc.empty())
+            {
+                if (bc.size() != 6)
+                {
+                    throw std::runtime_error("bench_gmg_vcycle: bc needs 6 entries "
+                                             "(xlo, xhi, ylo, yhi, zlo, zhi)");
+                }
+                for (std::size_t i = 0; i < 6; ++i)
+                {
+                    args.bc[i] = bc[i];
+                }
+            }
 
             const auto r = blockamr::bench::benchGmgVcycle(backend, args, iters, batches);
             nb::dict d;
@@ -191,6 +218,9 @@ void registerKokkosBench(nb::module_& m)
             d["cells_per_level"] = r.cellsPerLevel;
             d["resid0"] = r.resid0;
             d["resid1"] = r.resid1;
+            // What the hierarchy DID, not what was asked for: share_coeffs is only
+            // honoured for a symmetric operator.
+            d["shared_coeffs"] = r.sharedCoeffs;
             return d;
         },
         nb::arg("backend"),
@@ -200,6 +230,9 @@ void registerKokkosBench(nb::module_& m)
         nb::arg("fx"),
         nb::arg("fy"),
         nb::arg("fz"),
+        nb::arg("fx_lo").none() = nb::none(),
+        nb::arg("fy_lo").none() = nb::none(),
+        nb::arg("fz_lo").none() = nb::none(),
         nb::arg("pre_sweeps") = 2,
         nb::arg("post_sweeps") = 2,
         nb::arg("coarsest_sweeps") = 8,
@@ -209,6 +242,10 @@ void registerKokkosBench(nb::module_& m)
         nb::arg("agglomerate") = false,
         nb::arg("agg_grid_size") = 32,
         nb::arg("fp32") = false,
+        nb::arg("share_coeffs") = false,
+        // Per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1 homogeneous
+        // Dirichlet, 2 homogeneous Neumann. Empty (the default) means all periodic.
+        nb::arg("bc") = std::vector<int> {},
         nb::arg("iters") = 10,
         nb::arg("batches") = 5
     );

@@ -131,16 +131,27 @@ def test_matches_the_shipped_gmg_preconditioner(blockamr_session, max_size, prec
     assert opt["num_iters"] <= ref["num_iters"]
 
 
-def test_rejects_a_non_periodic_geometry(blockamr_session):
-    """No physical-BC handling in the ported V-cycle, so it must refuse rather than
-    solve a subtly different problem. bc is given explicitly because the solver's own
-    bc/geometry consistency check would otherwise fire first and hide this one."""
-    geom, ba, dm, alpha, faces = _helmholtz(16, periodic=False)
-    with pytest.raises(RuntimeError, match="triply periodic"):
-        _solve(
-            geom, ba, dm, alpha, faces, _rhs(ba, dm),
-            precond="gmg_kokkos", bc=["dirichlet"] * 6,
-        )
+@pytest.mark.parametrize("bc_name", ["dirichlet", "neumann"])
+@pytest.mark.parametrize("max_size", MAX_SIZE, ids=MAX_SIZE_IDS)
+def test_matches_the_shipped_preconditioner_with_physical_bcs(blockamr_session, max_size, bc_name):
+    """The same gate as above on a NON-periodic domain.
+
+    A periodic mesh never exercises the boundary fill at all, so it cannot tell a
+    correct reflection from a missing one. Here every level has six physical faces:
+    the ghost layer outside each is filled by reflecting the interior with the sign the
+    condition dictates, and the V-cycle is only the same V-cycle as precond="gmg" if
+    that fill agrees on every level of the hierarchy, coarse ones included.
+    """
+    geom, ba, dm, alpha, faces = _helmholtz(16, max_size, periodic=False)
+    rhs = _rhs(ba, dm)
+    kw = dict(bc=[bc_name] * 6)
+    ref = _solve(geom, ba, dm, alpha, faces, rhs, precond="gmg", **kw)
+    opt = _solve(geom, ba, dm, alpha, faces, rhs, precond="gmg_kokkos", **kw)
+
+    assert ref["converged"] is True
+    assert opt["converged"] is True
+    assert np.max(np.abs(opt["sol"] - ref["sol"])) < 1e-7 * max(1.0, np.max(np.abs(ref["sol"])))
+    assert opt["num_iters"] <= ref["num_iters"]
 
 
 def test_rejects_the_chebyshev_smoother(blockamr_session):

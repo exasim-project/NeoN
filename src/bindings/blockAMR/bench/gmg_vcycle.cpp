@@ -64,6 +64,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_Reduce.H>
 
+#include "../solvers/bc_geom.hpp"
 #include "../solvers/gmg_kernels.hpp"
 #include "../solvers/transfer.hpp"
 #include "gmg_apply.hpp"
@@ -98,6 +99,7 @@ namespace
 struct AmrexGmgBackend
 {
     static constexpr const char* tag = "amrex";
+    static constexpr bool canShareCoeffs = false;
     static constexpr bool amrexFreeCycle = false;
 
     // AMReX kernels are issued to AMReX's own stream, so an AMReX write before them
@@ -129,6 +131,7 @@ struct AmrexGmgBackend
 struct KokkosGmgBackend
 {
     static constexpr const char* tag = "kokkos";
+    static constexpr bool canShareCoeffs = false;
     static constexpr bool amrexFreeCycle = false;
 
     // Every kernel already fences, so a following AMReX read is ordered.
@@ -168,6 +171,7 @@ struct KokkosGmgBackend
 struct KokkosFusedGmgBackend
 {
     static constexpr const char* tag = "kokkos_fused";
+    static constexpr bool canShareCoeffs = false;
     static constexpr bool amrexFreeCycle = false;
 
     static void beforeAmrexRead() {}
@@ -208,6 +212,7 @@ struct KokkosOptGmgBackend
 {
     static constexpr const char* tag = "kokkos_opt";
     static constexpr bool amrexFreeCycle = true;
+    static constexpr bool canShareCoeffs = true;
 
     // The reset/residual path still crosses into AMReX, outside the timed region.
     static void beforeAmrexRead() { Kokkos::fence(); }
@@ -235,6 +240,41 @@ struct KokkosOptGmgBackend
     }
 };
 
+// Are these two fields the same numbers everywhere?
+//
+// The question this answers is whether the operator is symmetric. Cell i's east
+// coefficient is stored at face i+1 of ux; cell i+1's west coefficient is stored at
+// face i+1 of lx; and they are the two off-diagonal entries A[i][i+1] and A[i+1][i].
+// So ux == lx pointwise IS symmetry, and it is the exact condition under which one
+// array can stand in for both.
+//
+// Bitwise, deliberately: near-equal is a different operator, and a tolerance here
+// would silently symmetrise it. The common case is the same fab passed twice (the
+// solver hands ux=lx=fx), which the pointer test settles without a kernel; setup
+// only, so the reduction costs nothing that gets timed.
+bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
+{
+    if (&a == &b)
+    {
+        return true;
+    }
+    if (a.boxArray() != b.boxArray() || a.DistributionMap() != b.DistributionMap())
+    {
+        return false;
+    }
+    const auto aa = a.const_arrays();
+    const auto bb = b.const_arrays();
+    const double diff = amrex::ParReduce(
+        amrex::TypeList<amrex::ReduceOpMax> {},
+        amrex::TypeList<double> {},
+        a,
+        amrex::IntVect(0),
+        [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
+        { return {amrex::Math::abs(aa[box](i, j, k) - bb[box](i, j, k))}; }
+    );
+    return diff == 0.0;
+}
+
 // One multigrid level, as in GmgLevelT: geometry, rediscretised coefficients and
 // preallocated work fields (sol needs 1 ghost for the stencil, rhs is valid-only).
 template<class T>
@@ -246,6 +286,18 @@ struct LevelT
 
     amrex::Geometry geom;
     std::unique_ptr<Fab> alpha, ux, lx, uy, ly, uz, lz, sol, rhs;
+
+    // lx/ly/lz are NULL on a level that shares one face coefficient per direction
+    // (GmgArgs::shareCoeffs, kokkos_opt only). The stencil reads the east coefficient
+    // at face i+1 and the west at face i, so for a symmetric operator -- where the
+    // two fabs hold identical numbers -- handing the kernels ux for both arguments is
+    // the same arithmetic on half the storage. Read the lower coefficients through
+    // these accessors, never through the pointers, so a shared level cannot be
+    // dereferenced by accident.
+    [[nodiscard]] const Fab& lxf() const { return lx ? *lx : *ux; }
+    [[nodiscard]] const Fab& lyf() const { return ly ? *ly : *uy; }
+    [[nodiscard]] const Fab& lzf() const { return lz ? *lz : *uz; }
+    [[nodiscard]] bool shared() const { return lx == nullptr; }
 
     // Agglomerated levels only. This level's BoxArray is a fresh decomposition of
     // its domain rather than the fine level's coarsened in place, so it no longer
@@ -260,8 +312,10 @@ struct LevelT
 
     // kokkos_opt only, and empty for every other backend: the data movements of this
     // level resolved to device tables at setup. `halo` is the ghost exchange of sol,
-    // `xferIn`/`xferOut` the two directions of the agglomeration transfer.
-    CopyPlan halo, xferIn, xferOut;
+    // `bc` the homogeneous domain-boundary reflection (empty on a periodic mesh, and
+    // on any level whose boxes touch no physical face), `xferIn`/`xferOut` the two
+    // directions of the agglomeration transfer.
+    CopyPlan halo, bc, xferIn, xferOut;
 };
 
 template<class Backend, class T>
@@ -274,19 +328,31 @@ public:
 
     Vcycle(const GmgArgs& args)
         : preSweeps_(args.preSweeps), postSweeps_(args.postSweeps),
-          coarsestSweeps_(args.coarsestSweeps), omega_(args.omega)
+          coarsestSweeps_(args.coarsestSweeps), omega_(args.omega), bc_(args.bc),
+          hasPhysBc_(std::any_of(args.bc.begin(), args.bc.end(), [](int b) { return b != 0; }))
     {
         const amrex::BoxArray& ba = args.alpha->boxArray();
         const amrex::DistributionMapping& dm = args.alpha->DistributionMap();
 
-        levels_.push_back(makeLevel(ba, dm, *args.geom));
+        // One face coefficient per direction instead of an upper/lower pair, when the
+        // caller asked for it, the backend supports it AND the operator really is
+        // symmetric. Checked rather than assumed: ux == lx is what makes the two fabs
+        // interchangeable, and an asymmetric operator that quietly lost its lower
+        // coefficients would solve a different system at full speed.
+        shared_ = Backend::canShareCoeffs && args.shareCoeffs && sameField(*args.ux, *args.lx)
+               && sameField(*args.uy, *args.ly) && sameField(*args.uz, *args.lz);
+
+        levels_.push_back(makeLevel(ba, dm, *args.geom, shared_));
         solvers::gmgConvertCopyDevice(*levels_[0].alpha, *args.alpha);
         solvers::gmgConvertCopyDevice(*levels_[0].ux, *args.ux);
-        solvers::gmgConvertCopyDevice(*levels_[0].lx, *args.lx);
         solvers::gmgConvertCopyDevice(*levels_[0].uy, *args.uy);
-        solvers::gmgConvertCopyDevice(*levels_[0].ly, *args.ly);
         solvers::gmgConvertCopyDevice(*levels_[0].uz, *args.uz);
-        solvers::gmgConvertCopyDevice(*levels_[0].lz, *args.lz);
+        if (!shared_)
+        {
+            solvers::gmgConvertCopyDevice(*levels_[0].lx, *args.lx);
+            solvers::gmgConvertCopyDevice(*levels_[0].ly, *args.ly);
+            solvers::gmgConvertCopyDevice(*levels_[0].lz, *args.lz);
+        }
 
         // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps
         // >= minBottom cells per direction. Without agglomeration the fine BoxArray
@@ -346,7 +412,7 @@ public:
                 }
             }
 
-            levels_.push_back(makeLevel(aba, adm, cgeom));
+            levels_.push_back(makeLevel(aba, adm, cgeom, shared_));
             const Level& fl = levels_[levels_.size() - 2];
             Level& c = levels_.back();
             if (!agg)
@@ -361,7 +427,7 @@ public:
                 // The restriction kernels only speak the fine level's layout, so
                 // rediscretise there and copy the result onto this level's
                 // decomposition. Setup, so the extra fabs are transient and untimed.
-                Level t = makeLevel(cba, fdm, cgeom);
+                Level t = makeLevel(cba, fdm, cgeom, shared_);
                 restrictCoeffs(fl, t);
                 copyCoeffs(t, c);
             }
@@ -374,6 +440,13 @@ public:
             for (Level& L : levels_)
             {
                 L.halo = makeHaloPlan(*L.sol, L.geom.periodicity());
+                if (hasPhysBc_)
+                {
+                    // The coarse domains are the fine one coarsened, so every level
+                    // has the same physical faces and the same bc spec applies
+                    // throughout -- as in production (gmg_precond.hpp fillGhosts).
+                    L.bc = makeBcPlan(*L.sol, L.geom.Domain(), bc_);
+                }
                 if (L.agglomerated)
                 {
                     L.xferIn = makeCopyPlan(*L.rhs, *L.xferRhs);
@@ -429,11 +502,11 @@ public:
         const auto psi = L.sol->const_arrays();
         const auto b = L.rhs->const_arrays();
         const auto ax = L.ux->const_arrays();
-        const auto lxa = L.lx->const_arrays();
+        const auto lxa = L.lxf().const_arrays();
         const auto ay = L.uy->const_arrays();
-        const auto lya = L.ly->const_arrays();
+        const auto lya = L.lyf().const_arrays();
         const auto az = L.uz->const_arrays();
-        const auto lza = L.lz->const_arrays();
+        const auto lza = L.lzf().const_arrays();
         const auto al = L.alpha->const_arrays();
         return amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum> {},
@@ -459,6 +532,9 @@ public:
     }
 
     int nlevels() const { return static_cast<int>(levels_.size()); }
+
+    // What the hierarchy actually does, not what was requested (see sameField).
+    bool sharedCoeffs() const { return shared_; }
 
     // Boxes and cells PER LEVEL: the point of the exercise is that the box count
     // does not shrink while the cell count does.
@@ -493,7 +569,10 @@ private:
     }
 
     static Level makeLevel(
-        const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, const amrex::Geometry& geom
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm,
+        const amrex::Geometry& geom,
+        bool shared
     )
     {
         Level L;
@@ -502,11 +581,14 @@ private:
         const auto fba = [&ba](int d)
         { return amrex::convert(ba, amrex::IntVect::TheDimensionVector(d)); };
         L.ux = makeMf(fba(0), dm, 0);
-        L.lx = makeMf(fba(0), dm, 0);
         L.uy = makeMf(fba(1), dm, 0);
-        L.ly = makeMf(fba(1), dm, 0);
         L.uz = makeMf(fba(2), dm, 0);
-        L.lz = makeMf(fba(2), dm, 0);
+        if (!shared)
+        {
+            L.lx = makeMf(fba(0), dm, 0);
+            L.ly = makeMf(fba(1), dm, 0);
+            L.lz = makeMf(fba(2), dm, 0);
+        }
         L.sol = makeMf(ba, dm, 1);
         L.rhs = makeMf(ba, dm, 0);
         return L;
@@ -515,15 +597,21 @@ private:
     // Rediscretise the operator on the coarse level: volume-average the diagonal
     // source, area-average the face coefficients (4 fine faces per coarse face).
     // Both fabs must share a DistributionMapping and box order.
+    // A shared level rediscretises three faces instead of six -- area-averaging the
+    // same fine values twice would produce the same coarse numbers, so symmetry is
+    // preserved down the hierarchy and the pair never has to be re-formed.
     static void restrictCoeffs(const Level& f, Level& c)
     {
         solvers::gmgRestrictDevice<T>(*f.alpha, *c.alpha);
         solvers::gmgCoarsenFaceDevice<T>(*f.ux, *c.ux, 0, 4.0);
-        solvers::gmgCoarsenFaceDevice<T>(*f.lx, *c.lx, 0, 4.0);
         solvers::gmgCoarsenFaceDevice<T>(*f.uy, *c.uy, 1, 4.0);
-        solvers::gmgCoarsenFaceDevice<T>(*f.ly, *c.ly, 1, 4.0);
         solvers::gmgCoarsenFaceDevice<T>(*f.uz, *c.uz, 2, 4.0);
-        solvers::gmgCoarsenFaceDevice<T>(*f.lz, *c.lz, 2, 4.0);
+        if (!c.shared())
+        {
+            solvers::gmgCoarsenFaceDevice<T>(f.lxf(), *c.lx, 0, 4.0);
+            solvers::gmgCoarsenFaceDevice<T>(f.lyf(), *c.ly, 1, 4.0);
+            solvers::gmgCoarsenFaceDevice<T>(f.lzf(), *c.lz, 2, 4.0);
+        }
     }
 
     // Move the rediscretised coefficients onto a different decomposition of the same
@@ -533,24 +621,37 @@ private:
     {
         dst.alpha->ParallelCopy(*src.alpha, 0, 0, 1);
         dst.ux->ParallelCopy(*src.ux, 0, 0, 1);
-        dst.lx->ParallelCopy(*src.lx, 0, 0, 1);
         dst.uy->ParallelCopy(*src.uy, 0, 0, 1);
-        dst.ly->ParallelCopy(*src.ly, 0, 0, 1);
         dst.uz->ParallelCopy(*src.uz, 0, 0, 1);
-        dst.lz->ParallelCopy(*src.lz, 0, 0, 1);
+        if (!dst.shared())
+        {
+            dst.lx->ParallelCopy(src.lxf(), 0, 0, 1);
+            dst.ly->ParallelCopy(src.lyf(), 0, 0, 1);
+            dst.lz->ParallelCopy(src.lzf(), 0, 0, 1);
+        }
     }
 
-    // Periodic/internal ghosts only — the bench mesh is triply periodic, so the
-    // physical-BC reflection of the production fillGhosts has nothing to do.
+    // Periodic/internal ghosts, then the homogeneous physical-BC reflection — the
+    // same two steps in the same order as the production fillGhosts. On the bench's
+    // own triply periodic mesh the second step has no tasks and is skipped entirely,
+    // so the measured backends are unaffected by its existence.
     void fillGhosts(Level& L) const
     {
         if constexpr (Backend::amrexFreeCycle)
         {
             gmgFillBoundaryKokkos<T>(*L.sol, L.halo);
+            if (hasPhysBc_)
+            {
+                gmgFillDomainBcKokkos<T>(*L.sol, L.bc);
+            }
         }
         else
         {
             L.sol->FillBoundary(L.geom.periodicity());
+            if (hasPhysBc_)
+            {
+                solvers::fillDomainBcGhostsDevice(*L.sol, L.geom.Domain(), bc_);
+            }
             Backend::afterAmrexWrite();
         }
     }
@@ -570,11 +671,11 @@ private:
                     *L.sol,
                     *L.rhs,
                     *L.ux,
-                    *L.lx,
+                    L.lxf(),
                     *L.uy,
-                    *L.ly,
+                    L.lyf(),
                     *L.uz,
-                    *L.lz,
+                    L.lzf(),
                     *L.alpha,
                     parity,
                     omega_
@@ -606,11 +707,11 @@ private:
             *L.rhs,
             C.agglomerated ? *C.xferRhs : *C.rhs,
             *L.ux,
-            *L.lx,
+            L.lxf(),
             *L.uy,
-            *L.ly,
+            L.lyf(),
             *L.uz,
-            *L.lz,
+            L.lzf(),
             *L.alpha
         );
         if constexpr (Backend::amrexFreeCycle)
@@ -651,6 +752,9 @@ private:
     int postSweeps_;
     int coarsestSweeps_;
     double omega_;
+    solvers::BcArray bc_ {};
+    bool hasPhysBc_ = false;
+    bool shared_ = false;
     std::vector<Level> levels_;
 };
 
@@ -671,6 +775,7 @@ GmgResult run(const GmgArgs& args, int iters, int batches)
 
     GmgResult r;
     r.nlevels = v.nlevels();
+    r.sharedCoeffs = v.sharedCoeffs();
     r.boxesPerLevel = v.boxesPerLevel();
     r.cellsPerLevel = v.cellsPerLevel();
 
@@ -744,17 +849,10 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const KokkosGmgOpts& opts
 )
 {
-    for (int d = 0; d < AMREX_SPACEDIM; ++d)
-    {
-        if (!geom.isPeriodic(d))
-        {
-            throw std::runtime_error(
-                "makeKokkosGmgApply: the ported V-cycle has no physical-BC handling, so it "
-                "requires a triply periodic geometry"
-            );
-        }
-    }
-
+    // No bc/geometry consistency check here: solvers::parseBc already refuses a
+    // non-periodic direction marked periodic and a periodic one marked otherwise, and
+    // it is the only path that reaches this factory. Repeating it would be a branch no
+    // test could reach.
     GmgArgs args;
     args.geom = &geom;
     args.rhs = nullptr; // the hierarchy is built from the coefficients alone
@@ -774,6 +872,8 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     args.agglomerate = opts.agglomerate;
     args.aggGridSize = opts.aggGridSize;
     args.fp32 = opts.fp32;
+    args.shareCoeffs = opts.shareCoeffs;
+    args.bc = opts.bc;
 
     if (opts.fp32)
     {
@@ -801,6 +901,15 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
         throw std::runtime_error(
             "benchGmgVcycle: fp32 is implemented for the '" + std::string(KokkosOptGmgBackend::tag)
             + "' backend only, not '" + backend + "'"
+        );
+    }
+    // Same reason: a baseline silently ignoring share_coeffs would report the
+    // unshared timing under a shared label.
+    if (args.shareCoeffs && backend != KokkosOptGmgBackend::tag)
+    {
+        throw std::runtime_error(
+            "benchGmgVcycle: share_coeffs is implemented for the '"
+            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
         );
     }
     if (backend == AmrexGmgBackend::tag)
