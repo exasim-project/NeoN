@@ -112,6 +112,7 @@ public:
         const std::string& gmg_smoother,
         const std::string& gmg_precision,
         double gmg_omega,
+        int gmg_agg_l0_size,
         const std::string& norm
     );
 
@@ -219,6 +220,7 @@ public:
         const std::string& /*gmg_smoother*/,
         const std::string& /*gmg_precision*/,
         double /*gmg_omega*/,
+        int /*gmg_agg_l0_size*/,
         const std::string& norm
     );
 };

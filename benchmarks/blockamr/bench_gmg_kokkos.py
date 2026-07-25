@@ -45,6 +45,16 @@ the one above it:
                         sweep streams were a duplicate of another three. Symmetry is
                         checked at setup, so like agglomeration this is the SAME
                         V-cycle: the residual does not move at all.
+    ..+share+l0         ... plus level 0 on its OWN decomposition instead of the
+                        caller's. Every other level already chooses its boxes; level 0
+                        is the one the caller addresses, so it costs a staging fab and
+                        a copy at each end of an apply -- outside the timed cycle here,
+                        but inside a real solve, where it is still a large net win
+                        (bench_solvers.py --gmg-agg-l0-size). Level 0 is 7/8 of the
+                        hierarchy's cells and a box's halo traffic falls as its side
+                        grows: 6*32^2 ghosts per 32^3 interior is 19% overhead, 64^3 is
+                        9.4%, one box is only the periodic wrap. Same V-cycle again --
+                        the residual is unchanged to the bit.
     kokkos_opt+fp32     ... plus an fp32 hierarchy, as production's gmg_precision
                         does. Once the launch cost is gone the smoother is bound by
                         memory traffic, and this halves it. The one row that changes
@@ -81,19 +91,22 @@ import numpy as np
 
 import blockamr
 
-# (label, backend, agglomerate, pin_depth, fp32, share). pin_depth truncates the
+# (label, backend, agglomerate, pin_depth, fp32, share, l0). pin_depth truncates the
 # hierarchy to the baseline's level count, which is what makes a row comparable to the
-# baseline rather than merely faster at a different job.
+# baseline rather than merely faster at a different job. l0 is the level-0 box size:
+# 0 keeps the caller's boxes, "domain" puts the whole grid in one box.
 CONFIGS = [
-    ("amrex", "amrex", False, True, False, False),
-    ("kokkos", "kokkos", False, True, False, False),
-    ("kokkos_fused", "kokkos_fused", False, True, False, False),
-    ("kokkos_opt", "kokkos_opt", False, True, False, False),
-    ("kokkos_opt+agg", "kokkos_opt", True, True, False, False),
-    ("kokkos_opt+share", "kokkos_opt", True, True, False, True),
-    ("kokkos_opt+fp32", "kokkos_opt", True, True, True, False),
-    ("kokkos_opt+fp32+share", "kokkos_opt", True, True, True, True),
-    ("+fp32+share deep", "kokkos_opt", True, False, True, True),
+    ("amrex", "amrex", False, True, False, False, 0),
+    ("kokkos", "kokkos", False, True, False, False, 0),
+    ("kokkos_fused", "kokkos_fused", False, True, False, False, 0),
+    ("kokkos_opt", "kokkos_opt", False, True, False, False, 0),
+    ("kokkos_opt+agg", "kokkos_opt", True, True, False, False, 0),
+    ("kokkos_opt+share", "kokkos_opt", True, True, False, True, 0),
+    ("kokkos_opt+share+l0", "kokkos_opt", True, True, False, True, "domain"),
+    ("kokkos_opt+fp32", "kokkos_opt", True, True, True, False, 0),
+    ("kokkos_opt+fp32+share", "kokkos_opt", True, True, True, True, 0),
+    ("+fp32+share+l0", "kokkos_opt", True, True, True, True, "domain"),
+    ("+fp32+share+l0 deep", "kokkos_opt", True, False, True, True, "domain"),
 ]
 
 # The agglomerated coarse box size. 32 not MLMG's 3D default of 8: MLMG agglomerates
@@ -175,7 +188,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
 
     rows = []
     baseline_levels = 0
-    for cfg_label, backend, agglomerate, pin_depth, fp32, share in CONFIGS:
+    for cfg_label, backend, agglomerate, pin_depth, fp32, share, l0 in CONFIGS:
         stats = dict(
             blockamr.bench_gmg_vcycle(
                 backend,
@@ -193,6 +206,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 agg_grid_size=AGG_GRID_SIZE,
                 fp32=fp32,
                 share_coeffs=share,
+                agg_level0_size=(n_cell if l0 == "domain" else l0),
                 max_levels=baseline_levels if pin_depth else 0,
                 iters=iters,
                 batches=batches,
@@ -212,6 +226,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 "resid0": stats["resid0"],
                 "resid1": stats["resid1"],
                 "shared_coeffs": stats["shared_coeffs"],
+                "agg_level0": stats["agg_level0"],
             }
         )
     return rows

@@ -165,6 +165,7 @@ void registerKokkosBench(nb::module_& m)
            bool fp32,
            bool share_coeffs,
            const std::vector<int>& bc,
+           int agg_level0_size,
            int iters,
            int batches)
         {
@@ -193,6 +194,7 @@ void registerKokkosBench(nb::module_& m)
             args.aggGridSize = agg_grid_size;
             args.fp32 = fp32;
             args.shareCoeffs = share_coeffs;
+            args.aggLevel0Size = agg_level0_size;
             // Integers, not the solver's bc strings: parseBc lives in the Ginkgo-only
             // half of the module and this binding is always built. Empty = periodic.
             if (!bc.empty())
@@ -221,6 +223,7 @@ void registerKokkosBench(nb::module_& m)
             // What the hierarchy DID, not what was asked for: share_coeffs is only
             // honoured for a symmetric operator.
             d["shared_coeffs"] = r.sharedCoeffs;
+            d["agg_level0"] = r.aggLevel0;
             return d;
         },
         nb::arg("backend"),
@@ -246,6 +249,8 @@ void registerKokkosBench(nb::module_& m)
         // Per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1 homogeneous
         // Dirichlet, 2 homogeneous Neumann. Empty (the default) means all periodic.
         nb::arg("bc") = std::vector<int> {},
+        // Target box size for level 0's own decomposition; 0 keeps the caller's boxes.
+        nb::arg("agg_level0_size") = 0,
         nb::arg("iters") = 10,
         nb::arg("batches") = 5
     );

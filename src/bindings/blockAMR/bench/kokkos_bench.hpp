@@ -144,6 +144,15 @@ struct GmgArgs
     bool agglomerate = false;
     int aggGridSize = 32;
 
+    // Target box size for LEVEL 0's own decomposition; 0 (the default) leaves level 0
+    // on the caller's boxes, which is what every level did before. Level 0 is the one
+    // decomposition the caller can see, so re-deciding it costs a staging fab and a
+    // copy at each end of an apply -- but level 0 holds 7/8 of the hierarchy's cells,
+    // and a box's halo traffic falls as its side grows (6*32^2 ghosts per 32^3
+    // interior is 19% overhead; 64^3 is 9.4%). Ignored unless it yields strictly
+    // fewer boxes than the caller's. kokkos_opt only.
+    int aggLevel0Size = 0;
+
     // Carry the whole hierarchy in fp32, as production's gmg_precision does. The
     // caller's fields and the residual gate stay fp64; what halves is the traffic of
     // the smoother, which is what the V-cycle is bound by once the launch cost is
@@ -191,6 +200,9 @@ struct GmgResult
     // Whether the hierarchy actually shares one face coefficient per direction (see
     // GmgArgs::shareCoeffs): asking for it on an asymmetric operator does not get it.
     bool sharedCoeffs = false;
+
+    // Whether level 0 actually got its own decomposition (GmgArgs::aggLevel0Size).
+    bool aggLevel0 = false;
 };
 
 std::vector<std::string> benchGmgBackends();

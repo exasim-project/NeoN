@@ -123,6 +123,9 @@ GMG_PRECISION = "fp64"
 # what makes the iteration counts in this table comparable across methods rather
 # than each method's own convention. Set from --norm.
 NORM = "l2"
+# Target box size for level 0 of the mf-gmgk hierarchy; 0 keeps the caller's boxes.
+# Set from --gmg-agg-l0-size.
+GMG_AGG_L0_SIZE = 0
 # Persistent solvers built once and reused (per-solve = pack/apply/unpack only).
 PERSISTENT = {
     "mf": "FaceCoeffSolver",
@@ -251,6 +254,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
             "precond_cycles": 1,
             "gmg_smoother": GMG_SMOOTHER,
             "gmg_precision": GMG_PRECISION,
+            "gmg_agg_l0_size": GMG_AGG_L0_SIZE,
         }
     elif method in ("gmg", "gmg-ir"):
         # Native stationary GMG solver (solver="gmg") or its Ginkgo iterative-
@@ -437,16 +441,23 @@ def main():
         help="smoother for the mf-gmg native-GMG preconditioner (default rbgs)",
     )
     ap.add_argument(
+        "--gmg-agg-l0-size",
+        type=int,
+        default=0,
+        help="target box size for level 0 of the mf-gmgk hierarchy (0 = the caller's boxes)",
+    )
+    ap.add_argument(
         "--gmg-precision",
         default="fp64",
         choices=("fp64", "fp32"),
         help="V-cycle precision for the mf-gmg native-GMG preconditioner (default fp64)",
     )
     args = ap.parse_args()
-    global GMG_SMOOTHER, GMG_PRECISION, NORM
+    global GMG_SMOOTHER, GMG_PRECISION, NORM, GMG_AGG_L0_SIZE
     GMG_SMOOTHER = args.gmg_smoother
     GMG_PRECISION = args.gmg_precision
     NORM = args.norm
+    GMG_AGG_L0_SIZE = args.gmg_agg_l0_size
 
     header = [
         "n_cell",

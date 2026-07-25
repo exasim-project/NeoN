@@ -154,6 +154,22 @@ def test_matches_the_shipped_preconditioner_with_physical_bcs(blockamr_session, 
     assert opt["num_iters"] <= ref["num_iters"]
 
 
+@pytest.mark.parametrize("precision", ["fp64", "fp32"])
+def test_level0_agglomeration_is_the_same_preconditioner(blockamr_session, precision):
+    """gmg_agg_l0_size gives level 0 its own boxes, at the cost of one copy per apply
+    in each direction -- the flat vectors CG hands the preconditioner are in the
+    caller's cell order, not level 0's. A copy that lost the ordering would still
+    precondition something, just worse, so the gate is that CG cannot tell: same
+    answer, same iteration count."""
+    geom, ba, dm, alpha, faces = _helmholtz(16, 8)
+    rhs = _rhs(ba, dm)
+    kw = dict(precond="gmg_kokkos", gmg_precision=precision)
+    ref = _solve(geom, ba, dm, alpha, faces, rhs, **kw)
+    agg = _solve(geom, ba, dm, alpha, faces, rhs, gmg_agg_l0_size=16, **kw)
+    assert agg["num_iters"] == ref["num_iters"]
+    assert np.array_equal(agg["sol"], ref["sol"])
+
+
 def test_rejects_the_chebyshev_smoother(blockamr_session):
     """Only the red-black smoother is ported; asking for Chebyshev must fail loudly
     rather than quietly running red-black under a Chebyshev label."""

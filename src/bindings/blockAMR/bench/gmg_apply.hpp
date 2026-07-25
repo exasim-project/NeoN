@@ -55,6 +55,11 @@ struct KokkosGmgOpts
     bool agglomerate = true;
     int aggGridSize = 32;
 
+    // Target box size for level 0's own decomposition; 0 leaves level 0 on the
+    // caller's boxes. See GmgArgs::aggLevel0Size -- it trades one copy per apply for
+    // the halo traffic of the level that holds most of the cells.
+    int aggLevel0Size = 0;
+
     // On by default here for the same reason as agglomeration: it cannot change the
     // result. ux and lx are the SAME matrix entries of a symmetric operator stored
     // twice (see GmgArgs::shareCoeffs), so keeping one face fab per direction removes

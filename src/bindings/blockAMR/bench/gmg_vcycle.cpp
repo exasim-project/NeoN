@@ -342,16 +342,47 @@ public:
         shared_ = Backend::canShareCoeffs && args.shareCoeffs && sameField(*args.ux, *args.lx)
                && sameField(*args.uy, *args.ly) && sameField(*args.uz, *args.lz);
 
-        levels_.push_back(makeLevel(ba, dm, *args.geom, shared_));
-        solvers::gmgConvertCopyDevice(*levels_[0].alpha, *args.alpha);
-        solvers::gmgConvertCopyDevice(*levels_[0].ux, *args.ux);
-        solvers::gmgConvertCopyDevice(*levels_[0].uy, *args.uy);
-        solvers::gmgConvertCopyDevice(*levels_[0].uz, *args.uz);
-        if (!shared_)
+        // Level 0 on ITS OWN decomposition of the caller's grid, when asked. Every
+        // other level is free to pick its boxes because it exists only inside the
+        // cycle; level 0 is the one the caller addresses, so giving it bigger boxes
+        // costs an interface: a fab on the caller's layout at each end of an apply,
+        // and a plan-driven copy between the two decompositions. What it buys is halo
+        // traffic. A 32^3 box carries 6*32^2 ghost cells against 32^3 interior ones,
+        // 19% overhead; a 64^3 box carries 9.4% -- and level 0 is 7/8 of the cells in
+        // the whole hierarchy, so that ratio dominates the cycle.
+        amrex::BoxArray l0ba = ba;
+        amrex::DistributionMapping l0dm = dm;
+        if constexpr (Backend::amrexFreeCycle)
         {
-            solvers::gmgConvertCopyDevice(*levels_[0].lx, *args.lx);
-            solvers::gmgConvertCopyDevice(*levels_[0].ly, *args.ly);
-            solvers::gmgConvertCopyDevice(*levels_[0].lz, *args.lz);
+            if (args.aggLevel0Size > 0)
+            {
+                amrex::BoxArray tba(args.geom->Domain());
+                tba.maxSize(args.aggLevel0Size);
+                // Strictly fewer boxes, or there is nothing to gain and the interface
+                // would be pure cost.
+                if (tba.size() < ba.size())
+                {
+                    l0ba = tba;
+                    l0dm = amrex::DistributionMapping(tba);
+                    aggL0_ = true;
+                }
+            }
+        }
+
+        levels_.push_back(makeLevel(l0ba, l0dm, *args.geom, shared_));
+        if (aggL0_)
+        {
+            // The convert-copies below need matching layouts, so rediscretise on the
+            // caller's decomposition and ParallelCopy across -- the same two-step the
+            // agglomerated coarse levels use. Setup, so the temporary is untimed.
+            Level t = makeLevel(ba, dm, *args.geom, shared_);
+            copyCallerCoeffs(args, t);
+            copyCoeffs(t, levels_[0]);
+            iface_ = makeMf(ba, dm, 0);
+        }
+        else
+        {
+            copyCallerCoeffs(args, levels_[0]);
         }
 
         // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps
@@ -437,6 +468,11 @@ public:
         // untimed: what the timed cycle sees is a device table and one launch.
         if constexpr (Backend::amrexFreeCycle)
         {
+            if (aggL0_)
+            {
+                ifaceIn_ = makeCopyPlan(*levels_[0].rhs, *iface_);
+                ifaceOut_ = makeCopyPlan(*iface_, *levels_[0].sol);
+            }
             for (Level& L : levels_)
             {
                 L.halo = makeHaloPlan(*L.sol, L.geom.periodicity());
@@ -461,6 +497,15 @@ public:
     // starts from (z0 = 0, so this applies M^{-1} rather than warm-starting).
     void reset(const amrex::MultiFab& rhs)
     {
+        if (aggL0_)
+        {
+            solvers::gmgConvertCopyDevice(*iface_, rhs);
+            Backend::afterAmrexWrite();
+            gmgCopyKokkos<T>(*levels_[0].rhs, *iface_, ifaceIn_);
+            gmgZeroKokkos<T>(*levels_[0].sol);
+            Kokkos::fence();
+            return;
+        }
         solvers::gmgConvertCopyDevice(*levels_[0].rhs, rhs);
         levels_[0].sol->setVal(T(0));
         amrex::Gpu::streamSynchronize();
@@ -482,6 +527,24 @@ public:
     void applyFlat(const double* r, double* z, int nCycles)
     {
         Level& L0 = levels_.front();
+        // The flat vector's cell order is the CALLER's (MFIter order over the caller's
+        // BoxArray, i fastest), so with an agglomerated level 0 the scatter lands in
+        // the staging fab and a plan copy carries it across -- and back again on the
+        // way out. That copy is the price of the bigger boxes, and it is paid once per
+        // APPLY rather than once per cycle: with precond_cycles > 1 it amortises.
+        if (aggL0_)
+        {
+            solvers::scatter_device(r, *iface_);
+            Backend::afterAmrexWrite();
+            gmgCopyKokkos<T>(*L0.rhs, *iface_, ifaceIn_);
+            gmgZeroKokkos<T>(*L0.sol); // z0 = 0: apply M^{-1}, not a warm-started solve
+            cycles(nCycles);
+            gmgCopyKokkos<T>(*iface_, *L0.sol, ifaceOut_);
+            Backend::beforeAmrexRead();
+            solvers::gather_device(*iface_, z, 1.0);
+            amrex::Gpu::streamSynchronize();
+            return;
+        }
         solvers::scatter_device(r, *L0.rhs);
         L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
         Backend::afterAmrexWrite();
@@ -535,6 +598,10 @@ public:
 
     // What the hierarchy actually does, not what was requested (see sameField).
     bool sharedCoeffs() const { return shared_; }
+
+    // Whether level 0 really got its own decomposition: asking for one no coarser
+    // than the caller's does not get it.
+    bool aggLevel0() const { return aggL0_; }
 
     // Boxes and cells PER LEVEL: the point of the exercise is that the box count
     // does not shrink while the cell count does.
@@ -592,6 +659,21 @@ private:
         L.sol = makeMf(ba, dm, 1);
         L.rhs = makeMf(ba, dm, 0);
         return L;
+    }
+
+    // The caller's fields into a level that shares their decomposition.
+    static void copyCallerCoeffs(const GmgArgs& args, Level& L)
+    {
+        solvers::gmgConvertCopyDevice(*L.alpha, *args.alpha);
+        solvers::gmgConvertCopyDevice(*L.ux, *args.ux);
+        solvers::gmgConvertCopyDevice(*L.uy, *args.uy);
+        solvers::gmgConvertCopyDevice(*L.uz, *args.uz);
+        if (!L.shared())
+        {
+            solvers::gmgConvertCopyDevice(*L.lx, *args.lx);
+            solvers::gmgConvertCopyDevice(*L.ly, *args.ly);
+            solvers::gmgConvertCopyDevice(*L.lz, *args.lz);
+        }
     }
 
     // Rediscretise the operator on the coarse level: volume-average the diagonal
@@ -755,6 +837,13 @@ private:
     solvers::BcArray bc_ {};
     bool hasPhysBc_ = false;
     bool shared_ = false;
+
+    // Level-0 agglomeration only: the caller-layout staging fab and the plans that
+    // move between it and level 0. Empty otherwise, and the apply path then talks to
+    // level 0 directly as before.
+    bool aggL0_ = false;
+    std::unique_ptr<Fab> iface_;
+    CopyPlan ifaceIn_, ifaceOut_;
     std::vector<Level> levels_;
 };
 
@@ -776,6 +865,7 @@ GmgResult run(const GmgArgs& args, int iters, int batches)
     GmgResult r;
     r.nlevels = v.nlevels();
     r.sharedCoeffs = v.sharedCoeffs();
+    r.aggLevel0 = v.aggLevel0();
     r.boxesPerLevel = v.boxesPerLevel();
     r.cellsPerLevel = v.cellsPerLevel();
 
@@ -874,6 +964,7 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     args.fp32 = opts.fp32;
     args.shareCoeffs = opts.shareCoeffs;
     args.bc = opts.bc;
+    args.aggLevel0Size = opts.aggLevel0Size;
 
     if (opts.fp32)
     {
@@ -905,6 +996,13 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
     }
     // Same reason: a baseline silently ignoring share_coeffs would report the
     // unshared timing under a shared label.
+    if (args.aggLevel0Size > 0 && backend != KokkosOptGmgBackend::tag)
+    {
+        throw std::runtime_error(
+            "benchGmgVcycle: agg_level0_size is implemented for the '"
+            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
+        );
+    }
     if (args.shareCoeffs && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(

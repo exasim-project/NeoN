@@ -177,6 +177,7 @@ FaceCoeffSolver::FaceCoeffSolver(
     const std::string& gmg_smoother,
     const std::string& gmg_precision,
     double gmg_omega,
+    int gmg_agg_l0_size,
     const std::string& norm
 )
     : PersistentSolver(
@@ -411,6 +412,7 @@ FaceCoeffSolver::FaceCoeffSolver(
         // homogeneous Dirichlet/Neumann reflection as precond="gmg", built once per
         // level as a device plan rather than as a per-box AMReX launch.
         opts.bc = bcArr;
+        opts.aggLevel0Size = gmg_agg_l0_size;
         pc = gko::share(GmgKokkosPrecond::create(
             exec_,
             n_,
@@ -634,6 +636,7 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const std::string& /*gmg_smoother*/,
     const std::string& /*gmg_precision*/,
     double /*gmg_omega*/,
+    int /*gmg_agg_l0_size*/,
     const std::string& norm
 )
     : PersistentSolver(

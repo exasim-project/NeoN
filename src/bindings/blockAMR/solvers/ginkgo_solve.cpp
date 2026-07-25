@@ -90,6 +90,7 @@ void bindPersistent(nb::module_& m, const char* name)
                const std::string& gmg_smoother,
                const std::string& gmg_precision,
                double gmg_omega,
+               int gmg_agg_l0_size,
                const std::string& norm)
             {
                 new (self)
@@ -119,6 +120,7 @@ void bindPersistent(nb::module_& m, const char* name)
                       gmg_smoother,
                       gmg_precision,
                       gmg_omega,
+                      gmg_agg_l0_size,
                       norm);
             },
             nb::arg("alpha"),
@@ -204,6 +206,14 @@ void bindPersistent(nb::module_& m, const char* name)
             // iteration count directly comparable with mlmg's. Applies to the
             // Krylov path (via a custom Ginkgo criterion) and to the native
             // stationary solver="gmg" loop alike.
+            // Target box size for LEVEL 0 of the gmg_kokkos hierarchy; 0 (the default)
+            // leaves level 0 on the caller's boxes, byte-for-byte the previous
+            // behaviour. Level 0 holds 7/8 of the hierarchy's cells and a box's halo
+            // traffic falls as its side grows, so bigger boxes there are the single
+            // largest remaining lever -- paid for with one copy per preconditioner
+            // apply, since the solver's flat vectors are in the CALLER's cell order.
+            // precond="gmg_kokkos" only; ignored by every other preconditioner.
+            nb::arg("gmg_agg_l0_size") = 0,
             nb::arg("norm") = "l2",
             nb::keep_alive<1, 2>(),
             nb::keep_alive<1, 3>(),

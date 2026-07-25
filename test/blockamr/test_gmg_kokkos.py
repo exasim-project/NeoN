@@ -334,6 +334,44 @@ def test_sharing_falls_back_on_an_asymmetric_operator():
     assert plain["resid1"] != _vcycle("kokkos_opt", 8)["resid1"]
 
 
+def test_level0_agglomeration_does_not_change_the_vcycle():
+    """Level 0 on its own decomposition must be the same V-cycle, exactly.
+
+    Every other level is free to choose its boxes because it exists only inside the
+    cycle; level 0 is the one the caller addresses, so re-deciding it adds a staging
+    fab and a copy at each end of an apply. What crosses those copies has to be
+    exactly what would have been there -- and since red-black smoothing is
+    decomposition-independent, the residual must not move at all. A transfer that
+    dropped or duplicated cells would land here.
+    """
+    plain = _vcycle("kokkos_opt", 8, agglomerate=True, share_coeffs=True)
+    agg = _vcycle(
+        "kokkos_opt", 8, agglomerate=True, share_coeffs=True,
+        agg_level0_size=N_CELL, max_levels=plain["nlevels"],
+    )
+    assert agg["agg_level0"] is True
+    assert plain["agg_level0"] is False
+    assert agg["resid0"] == plain["resid0"]
+    assert agg["resid1"] == plain["resid1"]
+    # It did what it is for: strictly fewer boxes at level 0, same cells everywhere.
+    assert agg["boxes_per_level"][0] < plain["boxes_per_level"][0]
+    assert agg["cells_per_level"] == plain["cells_per_level"]
+
+
+def test_level0_agglomeration_is_skipped_when_it_would_not_help():
+    """Asking for boxes no coarser than the caller's would buy nothing and still cost
+    the interface copy, so it must be declined rather than paid for."""
+    r = _vcycle("kokkos_opt", None, agglomerate=True, agg_level0_size=N_CELL)
+    assert r["agg_level0"] is False
+
+
+@pytest.mark.parametrize("backend", ["amrex", "kokkos", "kokkos_fused"])
+def test_agg_level0_is_rejected_on_the_baselines(backend):
+    """The interface transfer is a Kokkos copy plan, so only kokkos_opt has it."""
+    with pytest.raises(RuntimeError, match="agg_level0_size is implemented"):
+        _vcycle(backend, 8, agg_level0_size=N_CELL)
+
+
 @pytest.mark.parametrize("backend", ["amrex", "kokkos", "kokkos_fused"])
 def test_share_coeffs_is_rejected_on_the_baselines(backend):
     """Only kokkos_opt shares. A baseline quietly ignoring the flag would report the
