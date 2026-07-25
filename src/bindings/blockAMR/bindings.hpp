@@ -20,3 +20,4 @@ void registerFillPatch(nb::module_& m);
 void registerLinOp(nb::module_& m);
 void registerStencilKernels(nb::module_& m);
 void registerTileLayout(nb::module_& m);
+void registerWallTable(nb::module_& m);

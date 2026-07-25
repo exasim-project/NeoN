@@ -37,9 +37,13 @@ class CppBackend:
         self._evaluate_spatial_terms(equation.spatial_ops, cell_field, lev, t, src)
         blockamr.euler_update(cell_field.mf[lev], src, dt / ddt_coeff, cell_field.ncomp)
 
-    def evaluate(self, terms, cell_field, lev, t):
+    def evaluate(self, terms, cell_field, lev, t, post=None):
         src = self._scratch(cell_field, lev)
         self._evaluate_spatial_terms(terms, cell_field, lev, t, src)
+        if post is not None:
+            # The IBM restriction (R) — a separate, named step on the result
+            # MultiFab, never fused into the bulk kernel (row-format rule R4).
+            post(src)
         # src has ngrow=0 → copy_to_host returns the valid region per box.
         return [src.copy_to_host(mfi) for mfi in blockamr.MFIterator(src)]
 

@@ -157,8 +157,10 @@ def test_ibm_lookup_unknown_method_raises():
         IBM.lookup("bogus")
 
 
-@pytest.mark.parametrize("name", ["cutCell", "ghostCell"])
+@pytest.mark.parametrize("name", ["cutCell"])
 def test_ibm_lookup_not_implemented_methods_raise(name):
+    """``ghostCell`` used to be listed here; it is implemented now (task T10)
+    and its lookup is covered by ``test_ibm_rungs.py``."""
     with pytest.raises(NotImplementedError):
         IBM.lookup(name)
 

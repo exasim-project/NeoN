@@ -51,7 +51,9 @@ class Field:
 class CellField:
     """Cell-centred field. Works with both Mesh and AmrMesh."""
 
-    def __init__(self, mesh, ncomp=1, ngrow=0, name="", fill_patch=None, memory="default"):
+    def __init__(
+        self, mesh, ncomp=1, ngrow=0, name="", fill_patch=None, memory="default", ibm_bc=None
+    ):
         self.mesh = mesh
         self.name = name
         self.ncomp = ncomp
@@ -60,6 +62,12 @@ class CellField:
         self._memory = memory
         self.mf = [None] * (mesh.max_level + 1)
         self._layout = [None] * (mesh.max_level + 1)
+        # Immersed-surface BCs, patch-keyed to match ``mesh.bodies`` (API doc
+        # §6). The wall condition is a property of the *field*, the geometry a
+        # property of the mesh — so one mesh can carry U on one method and T on
+        # another. Populated caches live in ``blockamr.ibm`` (see _IbmRuntime).
+        self.ibm_bc = {} if ibm_bc is None else dict(ibm_bc)
+        self._ibm_cache = {}
         mesh.register_field(self)
 
     def __getitem__(self, lev):

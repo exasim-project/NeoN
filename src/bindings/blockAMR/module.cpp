@@ -24,4 +24,5 @@ NB_MODULE(_blockamr, m)
     registerLinOp(m);
     registerStencilKernels(m);
     registerTileLayout(m);
+    registerWallTable(m);
 }

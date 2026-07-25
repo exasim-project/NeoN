@@ -4,6 +4,27 @@
 
 import blockamr
 
+_SINGLE_BODY_KEY = "body"
+
+
+def _body_property():
+    """The pre-multi-patch ``mesh.body`` singular alias over ``mesh.bodies``.
+
+    Immersed geometry is patch-keyed (``mesh.bodies``) so more than one body is
+    expressible; ``mesh.body = c`` remains as the single-body shorthand and
+    stores it under the reserved patch name ``"body"``.
+    """
+
+    def _get(self):
+        if len(self.bodies) != 1:
+            return None
+        return next(iter(self.bodies.values()))
+
+    def _set(self, value):
+        self.bodies = {} if value is None else {_SINGLE_BODY_KEY: value}
+
+    return property(_get, _set)
+
 
 class Mesh:
     """Single-level mesh. Same interface as AmrMesh."""
@@ -14,10 +35,17 @@ class Mesh:
         self._geom = geom
         self._fields = []
         # Immersed-body geometry + precomputed per-method IBM data (API doc
-        # §6). ``body`` is set by the caller (e.g. the mesh factory, from
-        # meshDict); ``build_ibm``/``ibm_data`` below.
-        self.body = None
+        # §6). ``bodies`` is a patch-keyed dict set by the caller (e.g. the
+        # mesh factory, from meshDict); ``build_ibm``/``ibm_data`` below.
+        self.bodies = {}
         self._ibm_data = {}
+        # Bumped on every regrid; a WallTable built from an older generation is
+        # rejected by the kernels rather than computing plausible wrong numbers
+        # (see plans/IBM/ibm-row-format.md §3). A single-level Mesh never
+        # regrids, so this stays 0.
+        self.grid_version = 0
+
+    body = _body_property()
 
     @property
     def max_level(self):
@@ -54,7 +82,10 @@ class Mesh:
         ``self.body``. ``methods`` is a list of IBM strategy classes (e.g.
         ``[DirectForcing]``, or via ``IBM.lookup(name)``)."""
         if self.body is None:
-            raise ValueError("mesh.body must be set before build_ibm(...)")
+            raise ValueError(
+                "mesh.body must be set (or mesh.bodies must hold exactly one "
+                "body) before build_ibm(...)"
+            )
         self._ibm_methods = list(methods)
         self._ibm_data = {method: method.build_data(self, self.body) for method in methods}
 
@@ -101,10 +132,14 @@ class AmrMesh:
         self._fields = []
         self._tag_func = None
         # Immersed-body geometry + precomputed per-method IBM data (API doc
-        # §6). ``body`` is set by the caller (e.g. the mesh factory, from
-        # meshDict); ``build_ibm``/``ibm_data`` below.
-        self.body = None
+        # §6). ``bodies`` is a patch-keyed dict set by the caller (e.g. the
+        # mesh factory, from meshDict); ``build_ibm``/``ibm_data`` below.
+        self.bodies = {}
         self._ibm_data = {}
+        # Bumped on every regrid — see the note on ``Mesh.grid_version``.
+        self.grid_version = 0
+
+    body = _body_property()
 
     # Metadata delegates
     def n_levels(self):
@@ -140,6 +175,7 @@ class AmrMesh:
     def regrid(self, t, tag):
         self._tag_func = tag
         self._core.regrid(0, t)
+        self.grid_version += 1
         self._rebuild_ibm()
 
     # ------------------------------------------------------------------
@@ -153,7 +189,10 @@ class AmrMesh:
         ``self.body``. ``methods`` is a list of IBM strategy classes (e.g.
         ``[DirectForcing]``, or via ``IBM.lookup(name)``)."""
         if self.body is None:
-            raise ValueError("mesh.body must be set before build_ibm(...)")
+            raise ValueError(
+                "mesh.body must be set (or mesh.bodies must hold exactly one "
+                "body) before build_ibm(...)"
+            )
         self._ibm_methods = list(methods)
         self._ibm_data = {method: method.build_data(self, self.body) for method in methods}
 

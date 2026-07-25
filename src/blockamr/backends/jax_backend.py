@@ -283,7 +283,7 @@ class JaxBackend:
         ddt_coeff = equation.temporal_ops[0].coeff
         _forward_euler_level(equation, cell_field, lev, t, dt, ddt_coeff)
 
-    def evaluate(self, terms, cell_field, lev, t):
+    def evaluate(self, terms, cell_field, lev, t, post=None):
         mesh = cell_field.mesh
         mf = cell_field.mf[lev]
         dh = tuple(float(d) for d in mesh.geom(lev).cell_size())
@@ -300,6 +300,11 @@ class JaxBackend:
         out_mf.set_val(0.0)
 
         parallel_for(kernel, cell_field, lev, out_mf=out_mf)
+
+        if post is not None:
+            # The IBM restriction (R) — a separate, named step on the result
+            # MultiFab, never fused into the bulk kernel (row-format rule R4).
+            post(out_mf)
 
         # Extract per-box valid results
         meta = mf.fab_metadata()

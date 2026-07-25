@@ -360,6 +360,47 @@ void registerMultiFab(nb::module_& m)
     );
     m.def("node_type", []() { return IntVect::TheNodeVector(); });
 
+    // Free function: device-to-device MultiFab copy including `ngrow` ghost
+    // cells. The IBM prolongation needs the field duplicated into a work
+    // buffer before the wall rows overwrite it (`evaluate` must not mutate its
+    // input), and that copy must not detour through the host.
+    //
+    // MultiFab::Copy asserts only that *dst* is grown enough, and BL_ASSERT is
+    // a no-op in a release build anyway; amrex::Copy then sweeps
+    // growntilebox(ngrow) reading src.array(mfi). An over-wide ngrow therefore
+    // reads past the source allocation and returns silent garbage, so the
+    // widths and component counts are checked here instead.
+    m.def(
+        "copy_multifab",
+        [](MultiFab& dst, const MultiFab& src, int ncomp, int ngrow)
+        {
+            if (ngrow > src.nGrow())
+                throw std::invalid_argument(
+                    "copy_multifab: ngrow = " + std::to_string(ngrow)
+                    + " exceeds the source MultiFab's ghost width "
+                    + std::to_string(src.nGrow()));
+            if (ngrow > dst.nGrow())
+                throw std::invalid_argument(
+                    "copy_multifab: ngrow = " + std::to_string(ngrow)
+                    + " exceeds the destination MultiFab's ghost width "
+                    + std::to_string(dst.nGrow()));
+            const int max_ncomp =
+                (src.nComp() < dst.nComp()) ? src.nComp() : dst.nComp();
+            if (ncomp > max_ncomp)
+                throw std::invalid_argument(
+                    "copy_multifab: ncomp = " + std::to_string(ncomp)
+                    + " exceeds the component count of src ("
+                    + std::to_string(src.nComp()) + ") or dst ("
+                    + std::to_string(dst.nComp()) + ")");
+            amrex::MultiFab::Copy(dst, src, 0, 0, ncomp, ngrow);
+        },
+        nb::arg("dst"),
+        nb::arg("src"),
+        nb::arg("ncomp"),
+        nb::arg("ngrow"),
+        "Copy src into dst (component 0..ncomp, including ngrow ghost cells)."
+    );
+
     nb::class_<DistributionMapping>(m, "DistributionMapping")
         .def(nb::init<const BoxArray&>(), nb::arg("ba"));
 

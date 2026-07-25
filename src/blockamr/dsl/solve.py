@@ -25,6 +25,23 @@ def __getattr__(name):
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
+def _resolve_schemes(spatial_ops, schemes):
+    """Resolve operator schemes from the schemes dict (names or objects, keyed
+    by scheme_key or class name).
+
+    A scheme object pinned via direct operator construction
+    (``Div(..., scheme=obj)``) wins over the dict; the ``exp.*`` DSL surface has
+    no ``scheme=`` kwarg and always resolves by name. Shared by ``solve`` and
+    ``evaluate`` — an operator must discretise the same way whether it is
+    stepped or merely evaluated.
+    """
+    for sp_op in spatial_ops:
+        if sp_op._scheme_explicit or sp_op._scheme_operator is None:
+            continue
+        keys = [sp_op._scheme_key_or_none(), type(sp_op).__name__]
+        sp_op.scheme = lookup_scheme(schemes, keys, sp_op._scheme_operator, sp_op.scheme)
+
+
 def solve(equation, *, dt=None, t=None, solution=None):
     """Discretise and solve an Equation.
 
@@ -64,15 +81,7 @@ def solve(equation, *, dt=None, t=None, solution=None):
 
     ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
 
-    # Resolve operator schemes from the schemes dict (names or objects,
-    # keyed by scheme_key or class name). A scheme object pinned via direct
-    # operator construction (Div(..., scheme=obj)) wins over the dict; the
-    # exp.* DSL surface has no scheme= kwarg and always resolves by name.
-    for sp_op in equation.spatial_ops:
-        if sp_op._scheme_explicit or sp_op._scheme_operator is None:
-            continue
-        keys = [sp_op._scheme_key_or_none(), type(sp_op).__name__]
-        sp_op.scheme = lookup_scheme(schemes, keys, sp_op._scheme_operator, sp_op.scheme)
+    _resolve_schemes(equation.spatial_ops, schemes)
 
     # Validate that the field has enough ghost cells for the widest stencil
     required = equation.required_ngrow
@@ -107,7 +116,7 @@ def solve(equation, *, dt=None, t=None, solution=None):
         raise ValueError(f"Unknown ddt scheme: {ddt_scheme}")
 
 
-def evaluate(expr, t=0.0):
+def evaluate(expr, t=0.0, solution=None):
     """Evaluate spatial operators and return the source term.
 
     Unlike solve(), does NOT update the field — just computes and returns
@@ -120,6 +129,11 @@ def evaluate(expr, t=0.0):
         ``exp.div(phi, U) - exp.laplacian(nu, U)``.
     t : float
         Current time (for time-dependent coefficients).
+    solution : dict, optional
+        ``fvSolution.solvers[field]`` entries. ``"backend"`` picks the dispatch
+        backend (default ``"jax"``); ``"ibm"`` names the field's immersed
+        boundary method. With no ``"ibm"`` key the IBM path is not entered at
+        all, so the result is bitwise the plain operator's.
 
     Returns
     -------
@@ -128,6 +142,7 @@ def evaluate(expr, t=0.0):
         Each array has shape (vNx, vNy, vNz) for ncomp=1
         or (vNx, vNy, vNz, ncomp) for ncomp>1.
     """
+    from ..ibm import evaluation
     from .equation import Equation
 
     # Wrap a bare operator in an equation if needed
@@ -138,14 +153,27 @@ def evaluate(expr, t=0.0):
     else:
         spatial_ops = expr.spatial_ops
         cell_field = spatial_ops[0].field
+        _resolve_schemes(spatial_ops, expr.schemes)
 
+    cfg = solution or {}
     mesh = cell_field.mesh
-    impl = backends.get("jax")
+    impl = backends.get(cfg.get("backend", "jax"))
+    # P before the operator, R after it — one schedule for every method; see
+    # plans/IBM/ibm-row-format.md §6.
+    ibm = evaluation(cfg.get("ibm"), cell_field)
     all_levels = []
 
     for lev in range(mesh.n_levels()):
         cell_field.fill_patch(lev, t)
-        all_levels.append(impl.evaluate(spatial_ops, cell_field, lev, t))
+        field = ibm.prolong(lev)
+        all_levels.append(
+            # `lev=lev` binds this iteration's level: the hook is called during
+            # the evaluate below, but binding by default makes that independent
+            # of when the backend chooses to call it.
+            impl.evaluate(
+                spatial_ops, field, lev, t, post=lambda mf, lev=lev: ibm.restrict(mf, lev)
+            )
+        )
 
     return all_levels
 

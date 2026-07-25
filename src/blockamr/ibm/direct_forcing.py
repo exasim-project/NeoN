@@ -32,7 +32,15 @@ class DirectForcing:
     through the ``mesh``/``data`` arguments, so the class itself (not an
     instance) is both what ``mesh.build_ibm([DirectForcing])`` expects and
     what ``IBM.lookup("directForcing")`` returns.
+
+    A *step* method: it fires between (RK) stages on the field itself, so it has
+    no operator-level evaluation — asking for one is an error, not a no-op (see
+    ``blockamr.ibm.evaluation``).
     """
+
+    kind = "step"
+    restrict_mode = "Overwrite"
+    requires_bodies = True
 
     @staticmethod
     def build_data(mesh, body):

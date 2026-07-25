@@ -17,6 +17,11 @@ class ExplicitBackend(Protocol):
         """In-place forward-Euler update of ``cell_field`` on level ``lev``."""
         ...
 
-    def evaluate(self, terms, cell_field, lev, t) -> list:
-        """Per-box source arrays for the spatial ``terms`` on level ``lev``."""
+    def evaluate(self, terms, cell_field, lev, t, post=None) -> list:
+        """Per-box source arrays for the spatial ``terms`` on level ``lev``.
+
+        ``post``, when given, is called with the result MultiFab before it is
+        read back — the hook the IBM restriction (``R``) uses to act on the
+        operator result without any operator knowing IBM exists.
+        """
         ...
