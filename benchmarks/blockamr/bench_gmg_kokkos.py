@@ -2,26 +2,58 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Kokkos vs AMReX on the native GMG V-cycle, over the same level hierarchy.
+"""Optimising the Kokkos GMG V-cycle against the AMReX one as the orientation point.
 
 The operator bench (``bench_kokkos.py``) compares single kernels. This one compares
-a whole solver phase: the V-cycle of ``solvers/gmg_precond.hpp``, run once with its
-AMReX kernels and once with the Kokkos twins in ``bench/gmg_kokkos.hpp``. Same
-hierarchy, same sweep counts, same order of operations -- only the launcher differs.
+a whole solver phase: the V-cycle of ``solvers/gmg_precond.hpp``, run with its AMReX
+kernels and with the Kokkos twins in ``bench/gmg_kokkos.hpp``.
 
 Why the V-cycle and not more kernels: it is the launch-bound shape. Per V-cycle it
 launches ``(sweeps x 2 colours + 2)`` kernels PER LEVEL, each once per box, with a
-ghost exchange between colours. And because the hierarchy coarsens the BoxArray in
-place (no agglomeration), the box COUNT is the same on every level while the cell
-count falls 8x per level -- so the coarsest level launches as many kernels as the
-finest for a few hundred cells. The ``boxes`` and ``cells`` columns below print that
-hierarchy per case.
+ghost exchange between colours. And because production coarsens the BoxArray in
+place, the box COUNT is the same on every level while the cell count falls 8x per
+level -- so the coarsest level launches as many kernels as the finest for a few
+hundred cells. The ``boxes`` and ``cells`` columns below print that hierarchy.
 
-What is NOT ported, and is AMReX in both columns: ``FillBoundary`` (a halo exchange,
-not a cell loop), ``setVal``, and the untimed hierarchy setup. The Kokkos column
-therefore pays two host syncs per colour where AMReX pays one -- its own fence after
-each kernel, plus a wait on AMReX's stream after each ``FillBoundary``, since the two
-runtimes' streams are unordered. That cost is part of what is measured, not hidden.
+The rows are one baseline and six cumulative changes, so each line is read against
+the one above it:
+
+    amrex               the shipped V-cycle, per-box AMReX kernels. Fixed reference:
+                        it is deliberately NOT optimised, so every other row is
+                        measured against the thing that ships.
+    kokkos              the 1:1 Kokkos port, also one launch per box.
+    kokkos_fused        the same kernels under one TeamPolicy launch per level.
+                        Attacks the per-box launch cost directly.
+    kokkos_opt          ... plus the halo exchange, the zero fill and the
+                        agglomeration transfers on Kokkos (``halo_kokkos.hpp``),
+                        which leaves no AMReX operation inside the timed cycle and
+                        so no reason to fence between kernels. The point is not the
+                        fences: it is that they forced the host to wait on the
+                        device twice per colour sweep, so nothing could overlap.
+                        Watch the ``enqueue`` column, which until this row equals
+                        ``ms/vcycle`` exactly.
+    kokkos_opt+agg      ... plus coarse-grid agglomeration: a coarse level takes a
+                        fresh 32-capped decomposition of its domain when that has
+                        fewer boxes than coarsening the fine one in place. Depth is
+                        pinned to the baseline's, so this is the SAME V-cycle -- the
+                        residual is unchanged to the last digit, only the launch
+                        count moves.
+    kokkos_opt+fp32     ... plus an fp32 hierarchy, as production's gmg_precision
+                        does. Once the launch cost is gone the smoother is bound by
+                        memory traffic, and this halves it. The one row that changes
+                        arithmetic: r1/r0 moves in the 6th digit, which is fp32
+                        rounding and not a different V-cycle.
+    +fp32 (deep)        the same, with the depth agglomeration unlocks: big coarse
+                        boxes stay coarsenable long after 2^3 boxes stop being, so
+                        the hierarchy goes further. This row's r1/r0 legitimately
+                        differs -- it is a different (better-coarsened) V-cycle.
+
+``FillBoundary``, ``setVal`` and the agglomeration ``ParallelCopy`` stay AMReX up to
+and including ``kokkos_fused``, so those rows pay two host syncs per colour where
+AMReX pays one -- their own fence after each kernel, plus a wait on AMReX's stream
+after each ``FillBoundary``, since the two runtimes' streams are unordered. That cost
+is measured, not hidden, and removing it is what ``kokkos_opt`` is. What stays AMReX
+in every row is the untimed hierarchy setup and the residual gate.
 
 The operator is the periodic Helmholtz (phi - laplacian phi) in face-coefficient
 form, i.e. the operator ``bench_solvers.py`` hands the persistent solvers.
@@ -42,7 +74,23 @@ import numpy as np
 
 import blockamr
 
-BACKENDS = ["amrex", "kokkos"]
+# (label, backend, agglomerate, pin_depth, fp32). pin_depth truncates the hierarchy to
+# the baseline's level count, which is what makes a row comparable to the baseline
+# rather than merely faster at a different job.
+CONFIGS = [
+    ("amrex", "amrex", False, True, False),
+    ("kokkos", "kokkos", False, True, False),
+    ("kokkos_fused", "kokkos_fused", False, True, False),
+    ("kokkos_opt", "kokkos_opt", False, True, False),
+    ("kokkos_opt+agg", "kokkos_opt", True, True, False),
+    ("kokkos_opt+fp32", "kokkos_opt", True, True, True),
+    ("kokkos_opt+fp32 deep", "kokkos_opt", True, False, True),
+]
+
+# The agglomerated coarse box size. 32 not MLMG's 3D default of 8: MLMG agglomerates
+# to shrink the number of MPI ranks holding work, which on one GPU would leave the
+# box count (and therefore the launch count) untouched.
+AGG_GRID_SIZE = 32
 
 # (label, n_cell, max_size). The box count is what this bench is about: max_size
 # fixes the box size, so a level's box count is (n_cell / max_size)^3 and stays that
@@ -117,7 +165,8 @@ def _run_case(label, n_cell, max_size, iters, batches):
     rhs = _rhs(ba, dm, n_cell)
 
     rows = []
-    for backend in BACKENDS:
+    baseline_levels = 0
+    for cfg_label, backend, agglomerate, pin_depth, fp32 in CONFIGS:
         stats = dict(
             blockamr.bench_gmg_vcycle(
                 backend,
@@ -131,14 +180,19 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 post_sweeps=POST_SWEEPS,
                 coarsest_sweeps=COARSEST_SWEEPS,
                 omega=OMEGA,
+                agglomerate=agglomerate,
+                agg_grid_size=AGG_GRID_SIZE,
+                fp32=fp32,
+                max_levels=baseline_levels if pin_depth else 0,
                 iters=iters,
                 batches=batches,
             )
         )
+        baseline_levels = baseline_levels or stats["nlevels"]
         rows.append(
             {
                 "case": label,
-                "backend": backend,
+                "backend": cfg_label,
                 "nlevels": stats["nlevels"],
                 "boxes_per_level": " ".join(str(b) for b in stats["boxes_per_level"]),
                 "cells_per_level": " ".join(str(c) for c in stats["cells_per_level"]),
@@ -154,27 +208,24 @@ def _run_case(label, n_cell, max_size, iters, batches):
 
 def _report(rows):
     print(f"\nexecution space: {blockamr.kokkos_execution_space()}")
-    print(
-        f"{'case':<14} {'backend':<8} {'lvls':>4} {'ms/vcycle':>10} {'enqueue':>9} "
-        f"{'r1/r0':>8} {'vs amrex':>9}"
-    )
-    print("-" * 68)
     for case, _, _ in CASES:
         sel = [r for r in rows if r["case"] == case]
         if not sel:
             continue
+        print(f"\n{case}   cells/level {sel[0]['cells_per_level']}")
+        print(
+            f"  {'config':<21} {'lvls':>4} {'ms/vcycle':>10} {'enqueue':>9} {'r1/r0':>9} "
+            f"{'speedup':>9}  boxes/level"
+        )
+        print("  " + "-" * 81)
         base = next(r["ms_min"] for r in sel if r["backend"] == "amrex")
         for r in sel:
-            ratio = r["ms_min"] / base
-            flag = "" if r["backend"] == "amrex" else f"{ratio:8.2f}x"
+            flag = "" if r["backend"] == "amrex" else f"{base / r['ms_min']:7.2f}x"
             drop = r["resid1"] / r["resid0"] if r["resid0"] > 0 else float("nan")
             print(
-                f"{r['case']:<14} {r['backend']:<8} {r['nlevels']:>4} "
-                f"{r['ms_min']:>10.4f} {r['ms_enqueue']:>9.4f} {drop:>8.2e} {flag:>9}"
+                f"  {r['backend']:<21} {r['nlevels']:>4} {r['ms_min']:>10.4f} "
+                f"{r['ms_enqueue']:>9.4f} {drop:>9.3e} {flag:>9}  {r['boxes_per_level']}"
             )
-        print(f"{'':<14} boxes/level {sel[0]['boxes_per_level']}")
-        print(f"{'':<14} cells/level {sel[0]['cells_per_level']}")
-        print()
 
 
 def main():

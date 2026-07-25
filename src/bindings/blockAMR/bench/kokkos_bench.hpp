@@ -113,21 +113,42 @@ BenchResult benchOperator(const std::string& name, const OpArgs& args, int iters
 // production physical-BC ghost fill.
 struct GmgArgs
 {
+    // const: the V-cycle only ever reads these — it copies them into its own level
+    // fields at setup — and a const-correct GmgArgs is what lets a caller holding
+    // const fields (the gmg_apply.hpp factory) build one.
     const amrex::Geometry* geom = nullptr;
-    amrex::MultiFab* rhs = nullptr;
-    amrex::MultiFab* alpha = nullptr;
-    amrex::MultiFab* ux = nullptr;
-    amrex::MultiFab* lx = nullptr;
-    amrex::MultiFab* uy = nullptr;
-    amrex::MultiFab* ly = nullptr;
-    amrex::MultiFab* uz = nullptr;
-    amrex::MultiFab* lz = nullptr;
+    const amrex::MultiFab* rhs = nullptr;
+    const amrex::MultiFab* alpha = nullptr;
+    const amrex::MultiFab* ux = nullptr;
+    const amrex::MultiFab* lx = nullptr;
+    const amrex::MultiFab* uy = nullptr;
+    const amrex::MultiFab* ly = nullptr;
+    const amrex::MultiFab* uz = nullptr;
+    const amrex::MultiFab* lz = nullptr;
     int preSweeps = 2;
     int postSweeps = 2;
     int coarsestSweeps = 8;
     int maxLevels = 0; // 0 = coarsen as far as the grid allows
     int minBottom = 2;
     double omega = 1.0;
+
+    // Coarse-grid agglomeration. Off = production: the fine BoxArray is coarsened
+    // in place, so every level has the SAME box count and the coarsest level
+    // launches as many kernels as the finest for a few hundred cells. On = a coarse
+    // level whose in-place decomposition would have more boxes than a fresh
+    // aggGridSize-capped decomposition of its domain uses the fresh one instead,
+    // and the inter-level kernels route through a transfer fab on the fine level's
+    // layout. Red-black smoothing is decomposition-independent, so this changes
+    // cost and not arithmetic -- at equal depth the residual is unchanged.
+    bool agglomerate = false;
+    int aggGridSize = 32;
+
+    // Carry the whole hierarchy in fp32, as production's gmg_precision does. The
+    // caller's fields and the residual gate stay fp64; what halves is the traffic of
+    // the smoother, which is what the V-cycle is bound by once the launch cost is
+    // gone. Unlike the switches above this DOES change arithmetic, so the residual
+    // moves in the last few digits. kokkos_opt only -- the baselines stay fp64.
+    bool fp32 = false;
 };
 
 struct GmgResult

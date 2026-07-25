@@ -3,21 +3,42 @@
 // SPDX-License-Identifier: MIT
 
 // The GMG V-cycle bench: the native geometric-multigrid V-cycle of
-// solvers/gmg_precond.hpp, run once with its AMReX kernels and once with the
-// Kokkos twins in gmg_kokkos.hpp. Same hierarchy, same sweep counts, same control
-// flow, same order of operations — only the launcher differs, which is the same
-// discipline the operator bench uses.
+// solvers/gmg_precond.hpp, run with its AMReX kernels and with the Kokkos twins in
+// gmg_kokkos.hpp. Same hierarchy, same sweep counts, same control flow, same order
+// of operations — only the launcher differs, which is the same discipline the
+// operator bench uses.
+//
+// Four backends, each the previous one plus one change, so a row of the bench is
+// read against the row above it:
+//
+//   amrex         the production per-box path — the orientation point.
+//   kokkos        its per-box Kokkos twin.
+//   kokkos_fused  the same kernels under one TeamPolicy launch per level.
+//   kokkos_opt    ... and the halo exchange, the zero fill and the agglomeration
+//                 transfers on Kokkos too (halo_kokkos.hpp), which leaves no AMReX
+//                 operation inside the timed cycle and therefore no reason to fence
+//                 between kernels at all. The whole cycle becomes one stream the
+//                 host can run ahead of.
+//
+// Only the Kokkos side is optimised, deliberately — the AMReX column has to stay the
+// shipped V-cycle for the comparison to mean anything, and `kokkos`/`kokkos_fused`
+// stay put as the intermediate baselines. Orthogonal to the backend,
+// GmgArgs::agglomerate switches the hierarchy from production's in-place BoxArray
+// coarsening to a re-decomposed coarse grid; since red-black smoothing is
+// decomposition-independent, at equal depth that changes cost without changing a
+// single arithmetic result.
 //
 // This is a port of the DEVICE path of GmgPrecondT<double>, reduced to what the
 // timed V-cycle needs and nothing more:
 //
 //   kept     hierarchy construction by in-place BoxArray coarsening (so box COUNT
-//            is preserved down the levels, exactly as in production), RB-SOR
-//            smoothing with the reversed post-sweep, fused residual+restriction,
+//            is preserved down the levels, exactly as in production, unless
+//            agglomeration is asked for), RB-SOR smoothing with the reversed
+//            post-sweep, fused residual+restriction,
 //            piecewise-constant prolongation, the ghost fill per colour, and the
 //            recursive V-cycle with warm-started sol.
 //   dropped  Ginkgo (no LinOp, no Dense pack/unpack), the ReferenceExecutor host
-//            path, the FP32 hierarchy (T=double only), the Chebyshev smoother and
+//            path, the Chebyshev smoother and
 //            its λmax power iteration, and physical boundary conditions — the
 //            bench is triply periodic, so bc handling never fires and solvers/bc
 //            stays out of this translation unit.
@@ -44,7 +65,10 @@
 #include <AMReX_Reduce.H>
 
 #include "../solvers/gmg_kernels.hpp"
+#include "../solvers/transfer.hpp"
+#include "gmg_apply.hpp"
 #include "gmg_kokkos.hpp"
+#include "halo_kokkos.hpp"
 #include "kokkos_bench.hpp"
 
 namespace blockamr::bench
@@ -53,22 +77,35 @@ namespace blockamr::bench
 namespace
 {
 
-// The level fab type production uses (FabArray<BaseFab<double>>, not MultiFab), so
-// the production kernels apply unchanged.
-using Fab = solvers::GmgFab<double>;
+// The level scalar is a template parameter, as in production's GmgPrecondT: the whole
+// hierarchy below level 0 can be carried in fp32 while the operator and the caller's
+// fields stay fp64, halving the traffic of a smoother that is bandwidth-bound at
+// scale. Only kokkos_opt is instantiated for float — the baselines stay fp64, which
+// is what keeps them baselines.
 
 // ---------------------------------------------------------------------------
-// The two backends. Each is the three kernels the timed V-cycle runs, nothing
-// else, so a backend cannot quietly differ in anything but the launcher.
+// The backends. Each is the three kernels the timed V-cycle runs plus the two
+// cross-runtime ordering points, and nothing else, so a backend cannot quietly
+// differ in anything but what it is meant to.
+//
+//   afterAmrexWrite   order an AMReX write against a following backend kernel.
+//   beforeAmrexRead   order a backend kernel against a following AMReX read.
+//   amrexFreeCycle    the timed cycle contains no AMReX operation, so the kernels
+//                     need no fence between them (they share one stream) and the
+//                     data movements come from halo_kokkos.hpp.
 // ---------------------------------------------------------------------------
 
 struct AmrexGmgBackend
 {
     static constexpr const char* tag = "amrex";
+    static constexpr bool amrexFreeCycle = false;
 
     // AMReX kernels are issued to AMReX's own stream, so an AMReX write before them
-    // (FillBoundary, setVal) is already ordered against them: nothing to do.
+    // (FillBoundary, setVal) is already ordered against them: nothing to do. Nor is
+    // there anything to do the other way round.
     static void afterAmrexWrite() {}
+
+    static void beforeAmrexRead() {}
 
     template<class... A>
     static void gsColor(A&&... a)
@@ -92,6 +129,10 @@ struct AmrexGmgBackend
 struct KokkosGmgBackend
 {
     static constexpr const char* tag = "kokkos";
+    static constexpr bool amrexFreeCycle = false;
+
+    // Every kernel already fences, so a following AMReX read is ordered.
+    static void beforeAmrexRead() {}
 
     // The other half of straddling two runtimes (the Kokkos::fence at the end of
     // each ported kernel is the first half): a Kokkos kernel about to read what
@@ -120,18 +161,116 @@ struct KokkosGmgBackend
     }
 };
 
-// One multigrid level, as in GmgLevelT: geometry, rediscretised coefficients and
-// preallocated work fields (sol needs 1 ghost for the stencil, rhs is valid-only).
-struct Level
+// The same three kernels under ONE launch per level instead of one per box. Only
+// the Kokkos side gets a fused variant: the AMReX column stays the production
+// per-box path, so it remains the orientation point every other column is read
+// against.
+struct KokkosFusedGmgBackend
 {
-    amrex::Geometry geom;
-    std::unique_ptr<Fab> alpha, ux, lx, uy, ly, uz, lz, sol, rhs;
+    static constexpr const char* tag = "kokkos_fused";
+    static constexpr bool amrexFreeCycle = false;
+
+    static void beforeAmrexRead() {}
+
+    static void afterAmrexWrite() { amrex::Gpu::streamSynchronizeAll(); }
+
+    template<class... A>
+    static void gsColor(A&&... a)
+    {
+        gmgGsColorKokkosFused<double>(std::forward<A>(a)...);
+    }
+
+    template<class... A>
+    static void residRestrict(A&&... a)
+    {
+        gmgResidRestrictKokkosFused<double>(std::forward<A>(a)...);
+    }
+
+    template<class... A>
+    static void prolongAdd(A&&... a)
+    {
+        gmgProlongAddKokkosFused<double>(std::forward<A>(a)...);
+    }
 };
 
-template<class Backend>
+// The fused kernels again, with every AMReX operation removed from the timed cycle
+// (halo_kokkos.hpp supplies the halo exchange, the zero fill and the agglomeration
+// transfers) and therefore with the per-kernel fence removed too: consecutive Kokkos
+// kernels on one execution space are already ordered by the stream. What that buys is
+// not the fences themselves but the serialisation they enforced -- the host no longer
+// waits on the device inside a cycle, so it can run the launch of a coarse level
+// ahead of the arithmetic of the level above it.
+//
+// The fence could not be dropped before this: each colour sweep was followed by an
+// AMReX FillBoundary, which needs exactly the same ordering the fence provided. The
+// halo port is what makes the removal possible, not an optimisation beside it.
+struct KokkosOptGmgBackend
+{
+    static constexpr const char* tag = "kokkos_opt";
+    static constexpr bool amrexFreeCycle = true;
+
+    // The reset/residual path still crosses into AMReX, outside the timed region.
+    static void beforeAmrexRead() { Kokkos::fence(); }
+
+    static void afterAmrexWrite() { amrex::Gpu::streamSynchronizeAll(); }
+
+    // The level scalar is deduced from the fabs rather than fixed at double, which is
+    // what lets this backend — and only this one — be instantiated for fp32.
+    template<class... A>
+    static void gsColor(A&&... a)
+    {
+        gmgGsColorKokkosFused(std::forward<A>(a)..., /*fence=*/false);
+    }
+
+    template<class... A>
+    static void residRestrict(A&&... a)
+    {
+        gmgResidRestrictKokkosFused(std::forward<A>(a)..., /*fence=*/false);
+    }
+
+    template<class... A>
+    static void prolongAdd(A&&... a)
+    {
+        gmgProlongAddKokkosFused(std::forward<A>(a)..., /*fence=*/false);
+    }
+};
+
+// One multigrid level, as in GmgLevelT: geometry, rediscretised coefficients and
+// preallocated work fields (sol needs 1 ghost for the stencil, rhs is valid-only).
+template<class T>
+struct LevelT
+{
+    // The level fab type production uses (FabArray<BaseFab<T>>, not MultiFab), so the
+    // production kernels apply unchanged.
+    using Fab = solvers::GmgFab<T>;
+
+    amrex::Geometry geom;
+    std::unique_ptr<Fab> alpha, ux, lx, uy, ly, uz, lz, sol, rhs;
+
+    // Agglomerated levels only. This level's BoxArray is a fresh decomposition of
+    // its domain rather than the fine level's coarsened in place, so it no longer
+    // matches the fine level box for box and the inter-level kernels -- which
+    // address a fine and a coarse fab at the SAME local box index -- cannot reach it
+    // directly. These two hold the restriction's output and the prolongation's input
+    // on coarsen(fine BoxArray, 2) with the FINE DistributionMapping, which is the
+    // layout those kernels can address; AMReX ParallelCopy moves between them and
+    // this level's own fields.
+    std::unique_ptr<Fab> xferRhs, xferSol;
+    bool agglomerated = false;
+
+    // kokkos_opt only, and empty for every other backend: the data movements of this
+    // level resolved to device tables at setup. `halo` is the ghost exchange of sol,
+    // `xferIn`/`xferOut` the two directions of the agglomeration transfer.
+    CopyPlan halo, xferIn, xferOut;
+};
+
+template<class Backend, class T>
 class Vcycle
 {
 public:
+
+    using Level = LevelT<T>;
+    using Fab = solvers::GmgFab<T>;
 
     Vcycle(const GmgArgs& args)
         : preSweeps_(args.preSweeps), postSweeps_(args.postSweeps),
@@ -149,24 +288,26 @@ public:
         solvers::gmgConvertCopyDevice(*levels_[0].uz, *args.uz);
         solvers::gmgConvertCopyDevice(*levels_[0].lz, *args.lz);
 
-        // Coarsen the BoxArray in place while it stays coarsenable and the coarse
-        // domain keeps >= minBottom cells per direction. The DistributionMapping is
-        // reused, so the number of boxes is the same on every level and only their
-        // size shrinks — the production behaviour, and the reason the coarsest
-        // level is launch-bound.
+        // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps
+        // >= minBottom cells per direction. Without agglomeration the fine BoxArray
+        // is coarsened in place and the DistributionMapping reused, so the number of
+        // boxes is the same on every level and only their size shrinks — the
+        // production behaviour, and the reason the coarsest level is launch-bound.
         while (true)
         {
             if (args.maxLevels > 0 && static_cast<int>(levels_.size()) >= args.maxLevels)
             {
                 break;
             }
-            const Level& f = levels_.back();
-            const amrex::BoxArray& fba = f.alpha->boxArray();
+            // Copies, not references: push_back below moves the Level structs.
+            const amrex::BoxArray fba = levels_.back().alpha->boxArray();
+            const amrex::DistributionMapping fdm = levels_.back().alpha->DistributionMap();
+            const amrex::Geometry fgeom = levels_.back().geom;
             if (!fba.coarsenable(2, 2))
             {
                 break;
             }
-            const amrex::Box cdom = amrex::coarsen(f.geom.Domain(), 2);
+            const amrex::Box cdom = amrex::coarsen(fgeom.Domain(), 2);
             if (cdom.shortside() < args.minBottom)
             {
                 break;
@@ -175,20 +316,70 @@ public:
             cba.coarsen(2);
             const amrex::Geometry cgeom(
                 cdom,
-                f.geom.ProbDomain(),
-                f.geom.Coord(),
-                {f.geom.isPeriodic(0), f.geom.isPeriodic(1), f.geom.isPeriodic(2)}
+                fgeom.ProbDomain(),
+                fgeom.Coord(),
+                {fgeom.isPeriodic(0), fgeom.isPeriodic(1), fgeom.isPeriodic(2)}
             );
-            levels_.push_back(makeLevel(cba, dm, cgeom));
+
+            // Agglomeration: take a fresh aggGridSize-capped decomposition of the
+            // coarse domain when it has strictly fewer boxes than the in-place
+            // coarsening. Same mechanism MLMG uses (LPInfo::do_agglomeration
+            // rebuilds the coarse grids as BoxArray(domain).maxSize(agg_grid_size),
+            // AMReX_MLLinOp.H:1028) but not the same trigger: MLMG agglomerates once
+            // the average box falls below agg_grid_size^3 cells, with a default
+            // agg_grid_size of 8 in 3D, because what it is reducing is the number of
+            // MPI ranks with work. On one GPU that default would leave the box count
+            // untouched; the cost here is per-box kernel launches, so the trigger is
+            // the box count itself.
+            amrex::BoxArray aba = cba;
+            amrex::DistributionMapping adm = fdm;
+            bool agg = false;
+            if (args.agglomerate)
+            {
+                amrex::BoxArray tba(cdom);
+                tba.maxSize(args.aggGridSize);
+                if (tba.size() < cba.size())
+                {
+                    aba = tba;
+                    adm = amrex::DistributionMapping(tba);
+                    agg = true;
+                }
+            }
+
+            levels_.push_back(makeLevel(aba, adm, cgeom));
             const Level& fl = levels_[levels_.size() - 2];
             Level& c = levels_.back();
-            solvers::gmgRestrictDevice<double>(*fl.alpha, *c.alpha);
-            solvers::gmgCoarsenFaceDevice<double>(*fl.ux, *c.ux, 0, 4.0);
-            solvers::gmgCoarsenFaceDevice<double>(*fl.lx, *c.lx, 0, 4.0);
-            solvers::gmgCoarsenFaceDevice<double>(*fl.uy, *c.uy, 1, 4.0);
-            solvers::gmgCoarsenFaceDevice<double>(*fl.ly, *c.ly, 1, 4.0);
-            solvers::gmgCoarsenFaceDevice<double>(*fl.uz, *c.uz, 2, 4.0);
-            solvers::gmgCoarsenFaceDevice<double>(*fl.lz, *c.lz, 2, 4.0);
+            if (!agg)
+            {
+                restrictCoeffs(fl, c);
+            }
+            else
+            {
+                c.agglomerated = true;
+                c.xferRhs = makeMf(cba, fdm, 0);
+                c.xferSol = makeMf(cba, fdm, 0);
+                // The restriction kernels only speak the fine level's layout, so
+                // rediscretise there and copy the result onto this level's
+                // decomposition. Setup, so the extra fabs are transient and untimed.
+                Level t = makeLevel(cba, fdm, cgeom);
+                restrictCoeffs(fl, t);
+                copyCoeffs(t, c);
+            }
+        }
+
+        // Resolve the data movements once, now that the hierarchy is final. Setup, so
+        // untimed: what the timed cycle sees is a device table and one launch.
+        if constexpr (Backend::amrexFreeCycle)
+        {
+            for (Level& L : levels_)
+            {
+                L.halo = makeHaloPlan(*L.sol, L.geom.periodicity());
+                if (L.agglomerated)
+                {
+                    L.xferIn = makeCopyPlan(*L.rhs, *L.xferRhs);
+                    L.xferOut = makeCopyPlan(*L.xferSol, *L.sol);
+                }
+            }
         }
         amrex::Gpu::streamSynchronize();
     }
@@ -198,7 +389,7 @@ public:
     void reset(const amrex::MultiFab& rhs)
     {
         solvers::gmgConvertCopyDevice(*levels_[0].rhs, rhs);
-        levels_[0].sol->setVal(0.0);
+        levels_[0].sol->setVal(T(0));
         amrex::Gpu::streamSynchronize();
     }
 
@@ -210,6 +401,23 @@ public:
         }
     }
 
+    // Preconditioner apply on flat device vectors: L0 rhs <- r, L0 sol <- 0, n
+    // V-cycles, z <- L0 sol. This is the same sequence GmgPrecondT::apply_impl runs
+    // (gmg_precond.hpp:304), including the two AMReX transfers -- so it pays the same
+    // cross-runtime sync at each end, and a solver-level comparison measures the
+    // cycle rather than a difference in plumbing. Inside, the cycle stays fence-free.
+    void applyFlat(const double* r, double* z, int nCycles)
+    {
+        Level& L0 = levels_.front();
+        solvers::scatter_device(r, *L0.rhs);
+        L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
+        Backend::afterAmrexWrite();
+        cycles(nCycles);
+        Backend::beforeAmrexRead();
+        solvers::gather_device(*L0.sol, z, 1.0);
+        amrex::Gpu::streamSynchronize(); // z complete before the caller reads it
+    }
+
     // sum((rhs - A sol)^2) on the finest level. Reporting only: it is the gate that
     // says the timed V-cycle did the work, so it stays an AMReX reduction for both
     // backends and never runs inside a timed region.
@@ -217,6 +425,7 @@ public:
     {
         Level& L = levels_.front();
         fillGhosts(L);
+        Backend::beforeAmrexRead();
         const auto psi = L.sol->const_arrays();
         const auto b = L.rhs->const_arrays();
         const auto ax = L.ux->const_arrays();
@@ -279,7 +488,7 @@ private:
     makeMf(const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, int ng)
     {
         auto mf = std::make_unique<Fab>(ba, dm, 1, ng);
-        mf->setVal(0.0);
+        mf->setVal(T(0));
         return mf;
     }
 
@@ -303,13 +512,47 @@ private:
         return L;
     }
 
+    // Rediscretise the operator on the coarse level: volume-average the diagonal
+    // source, area-average the face coefficients (4 fine faces per coarse face).
+    // Both fabs must share a DistributionMapping and box order.
+    static void restrictCoeffs(const Level& f, Level& c)
+    {
+        solvers::gmgRestrictDevice<T>(*f.alpha, *c.alpha);
+        solvers::gmgCoarsenFaceDevice<T>(*f.ux, *c.ux, 0, 4.0);
+        solvers::gmgCoarsenFaceDevice<T>(*f.lx, *c.lx, 0, 4.0);
+        solvers::gmgCoarsenFaceDevice<T>(*f.uy, *c.uy, 1, 4.0);
+        solvers::gmgCoarsenFaceDevice<T>(*f.ly, *c.ly, 1, 4.0);
+        solvers::gmgCoarsenFaceDevice<T>(*f.uz, *c.uz, 2, 4.0);
+        solvers::gmgCoarsenFaceDevice<T>(*f.lz, *c.lz, 2, 4.0);
+    }
+
+    // Move the rediscretised coefficients onto a different decomposition of the same
+    // region. The face BoxArrays overlap on internal faces, but a shared face carries
+    // one value, so which source box wins does not matter.
+    static void copyCoeffs(const Level& src, Level& dst)
+    {
+        dst.alpha->ParallelCopy(*src.alpha, 0, 0, 1);
+        dst.ux->ParallelCopy(*src.ux, 0, 0, 1);
+        dst.lx->ParallelCopy(*src.lx, 0, 0, 1);
+        dst.uy->ParallelCopy(*src.uy, 0, 0, 1);
+        dst.ly->ParallelCopy(*src.ly, 0, 0, 1);
+        dst.uz->ParallelCopy(*src.uz, 0, 0, 1);
+        dst.lz->ParallelCopy(*src.lz, 0, 0, 1);
+    }
+
     // Periodic/internal ghosts only — the bench mesh is triply periodic, so the
-    // physical-BC reflection of the production fillGhosts has nothing to do. Stays
-    // AMReX for both backends: it is a halo exchange, not a cell kernel.
+    // physical-BC reflection of the production fillGhosts has nothing to do.
     void fillGhosts(Level& L) const
     {
-        L.sol->FillBoundary(L.geom.periodicity());
-        Backend::afterAmrexWrite();
+        if constexpr (Backend::amrexFreeCycle)
+        {
+            gmgFillBoundaryKokkos<T>(*L.sol, L.halo);
+        }
+        else
+        {
+            L.sol->FillBoundary(L.geom.periodicity());
+            Backend::afterAmrexWrite();
+        }
     }
 
     // Red-black colour sweeps; `reversed` flips the colour order (black-red), the
@@ -354,13 +597,53 @@ private:
         smooth(l, preSweeps_, false);
         fillGhosts(L);
         Level& C = levels_[l + 1];
+        // On an agglomerated level the kernels write/read the transfer fab, which
+        // lives on this level's coarsened layout, and a copy bridges to and from the
+        // coarse decomposition — AMReX ParallelCopy, or its Kokkos twin under
+        // kokkos_opt.
         Backend::residRestrict(
-            *L.sol, *L.rhs, *C.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
+            *L.sol,
+            *L.rhs,
+            C.agglomerated ? *C.xferRhs : *C.rhs,
+            *L.ux,
+            *L.lx,
+            *L.uy,
+            *L.ly,
+            *L.uz,
+            *L.lz,
+            *L.alpha
         );
-        C.sol->setVal(0.0);
-        Backend::afterAmrexWrite();
+        if constexpr (Backend::amrexFreeCycle)
+        {
+            if (C.agglomerated)
+            {
+                gmgCopyKokkos<T>(*C.rhs, *C.xferRhs, C.xferIn);
+            }
+            gmgZeroKokkos<T>(*C.sol);
+        }
+        else
+        {
+            if (C.agglomerated)
+            {
+                C.rhs->ParallelCopy(*C.xferRhs, 0, 0, 1);
+            }
+            C.sol->setVal(T(0));
+            Backend::afterAmrexWrite();
+        }
         vcycle(l + 1);
-        Backend::prolongAdd(*C.sol, *L.sol);
+        if (C.agglomerated)
+        {
+            if constexpr (Backend::amrexFreeCycle)
+            {
+                gmgCopyKokkos<T>(*C.xferSol, *C.sol, C.xferOut);
+            }
+            else
+            {
+                C.xferSol->ParallelCopy(*C.sol, 0, 0, 1);
+                Backend::afterAmrexWrite();
+            }
+        }
+        Backend::prolongAdd(C.agglomerated ? *C.xferSol : *C.sol, *L.sol);
         smooth(l, postSweeps_, true);
     }
 
@@ -381,10 +664,10 @@ void fenceAll()
     }
 }
 
-template<class Backend>
+template<class Backend, class T>
 GmgResult run(const GmgArgs& args, int iters, int batches)
 {
-    Vcycle<Backend> v(args);
+    Vcycle<Backend, T> v(args);
 
     GmgResult r;
     r.nlevels = v.nlevels();
@@ -427,22 +710,122 @@ GmgResult run(const GmgArgs& args, int iters, int batches)
     return r;
 }
 
+// The optimised V-cycle behind the Ginkgo-free handle of gmg_apply.hpp. Fixed to
+// KokkosOptGmgBackend: a caller wanting the baselines has the bench for that, and a
+// preconditioner has no reason to run a deliberately unoptimised launcher.
+template<class T>
+class KokkosGmgApplyImpl final : public KokkosGmgApply
+{
+public:
+
+    KokkosGmgApplyImpl(const GmgArgs& args, int nCycles) : v_(args), nCycles_(nCycles) {}
+
+    void apply(const double* r, double* z) override { v_.applyFlat(r, z, nCycles_); }
+
+    [[nodiscard]] int nlevels() const override { return v_.nlevels(); }
+
+private:
+
+    Vcycle<KokkosOptGmgBackend, T> v_;
+    int nCycles_;
+};
+
 } // namespace
+
+std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
+    const amrex::Geometry& geom,
+    const amrex::MultiFab& alpha,
+    const amrex::MultiFab& ux,
+    const amrex::MultiFab& lx,
+    const amrex::MultiFab& uy,
+    const amrex::MultiFab& ly,
+    const amrex::MultiFab& uz,
+    const amrex::MultiFab& lz,
+    const KokkosGmgOpts& opts
+)
+{
+    for (int d = 0; d < AMREX_SPACEDIM; ++d)
+    {
+        if (!geom.isPeriodic(d))
+        {
+            throw std::runtime_error(
+                "makeKokkosGmgApply: the ported V-cycle has no physical-BC handling, so it "
+                "requires a triply periodic geometry"
+            );
+        }
+    }
+
+    GmgArgs args;
+    args.geom = &geom;
+    args.rhs = nullptr; // the hierarchy is built from the coefficients alone
+    args.alpha = &alpha;
+    args.ux = &ux;
+    args.lx = &lx;
+    args.uy = &uy;
+    args.ly = &ly;
+    args.uz = &uz;
+    args.lz = &lz;
+    args.preSweeps = opts.preSweeps;
+    args.postSweeps = opts.postSweeps;
+    args.coarsestSweeps = opts.coarsestSweeps;
+    args.maxLevels = opts.maxLevels;
+    args.minBottom = opts.minBottom;
+    args.omega = opts.omega;
+    args.agglomerate = opts.agglomerate;
+    args.aggGridSize = opts.aggGridSize;
+    args.fp32 = opts.fp32;
+
+    if (opts.fp32)
+    {
+        return std::make_unique<KokkosGmgApplyImpl<float>>(args, opts.cycles);
+    }
+    return std::make_unique<KokkosGmgApplyImpl<double>>(args, opts.cycles);
+}
 
 std::vector<std::string> benchGmgBackends()
 {
-    return {AmrexGmgBackend::tag, KokkosGmgBackend::tag};
+    return {
+        AmrexGmgBackend::tag,
+        KokkosGmgBackend::tag,
+        KokkosFusedGmgBackend::tag,
+        KokkosOptGmgBackend::tag
+    };
 }
 
 GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int iters, int batches)
 {
+    // Before the dispatch, not after: silently ignoring fp32 on a backend that has no
+    // fp32 hierarchy would report an fp64 timing under an fp32 label.
+    if (args.fp32 && backend != KokkosOptGmgBackend::tag)
+    {
+        throw std::runtime_error(
+            "benchGmgVcycle: fp32 is implemented for the '" + std::string(KokkosOptGmgBackend::tag)
+            + "' backend only, not '" + backend + "'"
+        );
+    }
     if (backend == AmrexGmgBackend::tag)
     {
-        return run<AmrexGmgBackend>(args, iters, batches);
+        return run<AmrexGmgBackend, double>(args, iters, batches);
     }
     if (backend == KokkosGmgBackend::tag)
     {
-        return run<KokkosGmgBackend>(args, iters, batches);
+        return run<KokkosGmgBackend, double>(args, iters, batches);
+    }
+    if (backend == KokkosFusedGmgBackend::tag)
+    {
+        return run<KokkosFusedGmgBackend, double>(args, iters, batches);
+    }
+    if (backend == KokkosOptGmgBackend::tag)
+    {
+        return args.fp32 ? run<KokkosOptGmgBackend, float>(args, iters, batches)
+                         : run<KokkosOptGmgBackend, double>(args, iters, batches);
+    }
+    if (args.fp32)
+    {
+        throw std::runtime_error(
+            "benchGmgVcycle: fp32 is implemented for the '" + std::string(KokkosOptGmgBackend::tag)
+            + "' backend only, not '" + backend + "'"
+        );
     }
     throw std::runtime_error("benchGmgVcycle: unknown backend '" + backend + "'");
 }

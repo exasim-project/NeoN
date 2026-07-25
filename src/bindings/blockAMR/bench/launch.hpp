@@ -172,8 +172,16 @@ void launchAmrexFused(const amrex::MultiFab& mf, F const& f)
 // pays a host-to-device copy per launch). What differs is that AMReX hand-writes
 // <<<nblocks, MT, 0, stream>>> plus blockIdx.x arithmetic per backend, while this
 // is one portable TeamPolicy.
-template<class F>
-void launchKokkosTeam(const amrex::MultiFab& mf, F const& f)
+//
+// Templated on the FabArray, not fixed to MultiFab: everything it touches
+// (IndexArray, box, getParForInfo) lives on FabArrayBase, and the GMG levels are
+// FabArray<BaseFab<T>>. `name` labels the kernel so a profile can tell callers
+// apart.
+//
+// Valid cells only. A grown iteration space would need the MDRangePolicy fallback
+// below to accept a negative lower bound, which its unsigned index type rejects.
+template<class MF, class F>
+void launchKokkosTeamNamed(const char* name, const MF& mf, F const& f)
 {
     const int nboxes = static_cast<int>(mf.IndexArray().size());
     if (nboxes == 0)
@@ -187,8 +195,8 @@ void launchKokkosTeam(const amrex::MultiFab& mf, F const& f)
         // L2-resident kernel. Without this, the fused column would report a
         // handicap AMReX does not take at 1 box.
         const amrex::Box bx = mf.box(mf.IndexArray()[0]);
-        launchKokkosMd(
-            bx, BENCH_LAMBDA(int i, int j, int k) { f(0, i, j, k); }
+        launchKokkosMdNamed(
+            name, bx, BENCH_LAMBDA(int i, int j, int k) { f(0, i, j, k); }
         );
         return;
     }
@@ -202,7 +210,7 @@ void launchKokkosTeam(const amrex::MultiFab& mf, F const& f)
 
     using Policy = Kokkos::TeamPolicy<Kokkos::DefaultExecutionSpace>;
     Kokkos::parallel_for(
-        "bench_team",
+        name,
         Policy(nboxes * nblocksPerBox, MT / VL, VL),
         KOKKOS_LAMBDA(const Policy::member_type& team) {
             const int blk = team.league_rank();
@@ -223,6 +231,12 @@ void launchKokkosTeam(const amrex::MultiFab& mf, F const& f)
             );
         }
     );
+}
+
+template<class MF, class F>
+void launchKokkosTeam(const MF& mf, F const& f)
+{
+    launchKokkosTeamNamed("bench_team", mf, f);
 }
 
 // ---------------------------------------------------------------------------

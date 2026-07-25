@@ -29,6 +29,14 @@ several ways, all on the GPU, and times the solve:
                    AMReX primitives only — no MLLinOp/MLMG anywhere — so each
                    preconditioner apply is a plain V-cycle with none of MLMG's
                    per-solve residual bookkeeping.
+* ``mf-gmgk``    — ``mf-gmg`` with the OPTIMISED V-cycle (``precond="gmg_kokkos"``):
+                   the same kernels and the same cycle, launched once per level
+                   instead of once per box, with the halo exchange and the coarse
+                   transfers on Kokkos so no host fence is needed inside a cycle,
+                   plus coarse-grid agglomeration. Nothing else differs from
+                   ``mf-gmg``, so the pair isolates the V-cycle inside a real solve
+                   — and against ``mlmg`` it says whether the optimised native
+                   V-cycle beats AMReX's own multigrid.
 * ``gmg``        — the NATIVE geometric-multigrid V-cycle run as a STANDALONE
                    stationary solver (``solver="gmg"``): x <- x + V(b - A x)
                    until tolerance, a Richardson iteration exactly like MLMG,
@@ -86,7 +94,18 @@ import numpy as np
 
 import blockamr
 
-METHODS = ("mlmg", "mlmg-nomg", "ginkgo", "mf", "mf-pmg", "mf-gmg", "gmg", "gmg-ir", "csr")
+METHODS = (
+    "mlmg",
+    "mlmg-nomg",
+    "ginkgo",
+    "mf",
+    "mf-pmg",
+    "mf-gmg",
+    "mf-gmgk",
+    "gmg",
+    "gmg-ir",
+    "csr",
+)
 # Smoother for the native-GMG preconditioner (mf-gmg); "rbgs" reproduces the
 # historical default, "chebyshev" is the M4 polynomial smoother. Set from --gmg-smoother.
 GMG_SMOOTHER = "rbgs"
@@ -98,6 +117,7 @@ PERSISTENT = {
     "mf": "FaceCoeffSolver",
     "mf-pmg": "FaceCoeffSolver",
     "mf-gmg": "FaceCoeffSolver",
+    "mf-gmgk": "FaceCoeffSolver",
     "gmg": "FaceCoeffSolver",
     "gmg-ir": "FaceCoeffSolver",
     "csr": "FaceCoeffCsrSolver",
@@ -205,6 +225,18 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         # coefficients alone — no MLMG object involved.
         kwargs = {
             "precond": "gmg",
+            "precond_cycles": 1,
+            "gmg_smoother": GMG_SMOOTHER,
+            "gmg_precision": GMG_PRECISION,
+        }
+    elif method == "mf-gmgk":
+        # The same V-cycle as mf-gmg, under the optimised Kokkos launchers
+        # (precond="gmg_kokkos"): fused one-launch-per-level kernels, the halo
+        # exchange and coarse transfers on Kokkos so the cycle needs no host fence,
+        # and coarse-grid agglomeration. Everything else -- operator, Krylov, sweep
+        # counts, tolerance -- is mf-gmg's, so mf-gmgk / mf-gmg isolates the V-cycle.
+        kwargs = {
+            "precond": "gmg_kokkos",
             "precond_cycles": 1,
             "gmg_smoother": GMG_SMOOTHER,
             "gmg_precision": GMG_PRECISION,

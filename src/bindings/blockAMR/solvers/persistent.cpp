@@ -19,6 +19,7 @@
 
 #include "csr.hpp"
 #include "face_coeff_op.hpp"
+#include "gmg_kokkos_precond.hpp"
 #include "mlmg_ops.hpp"
 #include "profiling.hpp"
 #include "transfer.hpp"
@@ -362,6 +363,42 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_omega
         );
     }
+    else if (precond == "gmg_kokkos")
+    {
+        // The same V-cycle as precond="gmg", under the optimised Kokkos launchers
+        // (bench/gmg_apply.hpp). A separate object rather than a mode of GmgPrecondT:
+        // that one is the shipped baseline and stays untouched, so both can run in
+        // one process and be compared directly.
+        if (precond_mlmg != nullptr)
+        {
+            throw std::runtime_error(
+                "FaceCoeffSolver: precond='gmg_kokkos' cannot be combined with precond_mlmg"
+            );
+        }
+        if (gmg_smoother != "rbgs")
+        {
+            throw std::runtime_error(
+                "FaceCoeffSolver: precond='gmg_kokkos' has only the red-black smoother, not '"
+                + gmg_smoother + "'"
+            );
+        }
+        bench::KokkosGmgOpts opts;
+        opts.cycles = precond_cycles;
+        opts.preSweeps = gmg_pre_sweeps;
+        opts.postSweeps = gmg_post_sweeps;
+        opts.coarsestSweeps = gmg_coarsest_sweeps;
+        opts.maxLevels = gmg_max_levels;
+        opts.minBottom = gmg_min_bottom;
+        opts.omega = gmg_omega;
+        opts.fp32 = (gmg_precision == "fp32");
+        pc = gko::share(GmgKokkosPrecond::create(
+            exec_,
+            n_,
+            std::shared_ptr<bench::KokkosGmgApply>(
+                bench::makeKokkosGmgApply(geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, opts)
+            )
+        ));
+    }
     else if (precond == "mlmg" || precond == "none")
     {
         // precond_mlmg alone implies "mlmg" (pre-existing behaviour).
@@ -379,7 +416,8 @@ FaceCoeffSolver::FaceCoeffSolver(
     else
     {
         throw std::runtime_error(
-            "FaceCoeffSolver: unknown precond '" + precond + "' (expected 'none', 'mlmg' or 'gmg')"
+            "FaceCoeffSolver: unknown precond '" + precond
+            + "' (expected 'none', 'mlmg', 'gmg' or 'gmg_kokkos')"
         );
     }
     build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc));

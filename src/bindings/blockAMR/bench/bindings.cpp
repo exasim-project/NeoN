@@ -153,6 +153,9 @@ void registerKokkosBench(nb::module_& m)
            int max_levels,
            int min_bottom,
            double omega,
+           bool agglomerate,
+           int agg_grid_size,
+           bool fp32,
            int iters,
            int batches)
         {
@@ -174,6 +177,9 @@ void registerKokkosBench(nb::module_& m)
             args.maxLevels = max_levels;
             args.minBottom = min_bottom;
             args.omega = omega;
+            args.agglomerate = agglomerate;
+            args.aggGridSize = agg_grid_size;
+            args.fp32 = fp32;
 
             const auto r = blockamr::bench::benchGmgVcycle(backend, args, iters, batches);
             nb::dict d;
@@ -200,6 +206,9 @@ void registerKokkosBench(nb::module_& m)
         nb::arg("max_levels") = 0,
         nb::arg("min_bottom") = 2,
         nb::arg("omega") = 1.0,
+        nb::arg("agglomerate") = false,
+        nb::arg("agg_grid_size") = 32,
+        nb::arg("fp32") = false,
         nb::arg("iters") = 10,
         nb::arg("batches") = 5
     );
