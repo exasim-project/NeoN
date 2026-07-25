@@ -201,13 +201,13 @@ struct SharedSparsityBundle
     // Explicit constructor: CUDA-12.4 nvcc rejects parenthesized aggregate init, so give the
     // bundle a real constructor for portability (brace-init would otherwise suffice).
     SharedSparsityBundle(
-        std::shared_ptr<const SystemSparsityType> systemSparsity_,
-        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress_,
-        std::shared_ptr<const BoundarySparsityType> boundarySparsity_
+        std::shared_ptr<const SystemSparsityType> systemSparsity,
+        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress,
+        std::shared_ptr<const BoundarySparsityType> boundarySparsity
     )
-        : systemSparsity(std::move(systemSparsity_)),
-          faceToMatrixAddress(std::move(faceToMatrixAddress_)),
-          boundarySparsity(std::move(boundarySparsity_))
+        : systemSparsity(std::move(systemSparsity)),
+          faceToMatrixAddress(std::move(faceToMatrixAddress)),
+          boundarySparsity(std::move(boundarySparsity))
     {}
 };
 
