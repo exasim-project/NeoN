@@ -162,7 +162,8 @@ FaceCoeffSolver::FaceCoeffSolver(
     int gmg_max_levels,
     int gmg_min_bottom,
     const std::string& gmg_smoother,
-    const std::string& gmg_precision
+    const std::string& gmg_precision,
+    double gmg_omega
 )
     : PersistentSolver(
         makeExecutor(executor),
@@ -255,7 +256,8 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_max_levels,
             gmg_min_bottom,
             gmg_smoother,
-            gmg_precision
+            gmg_precision,
+            gmg_omega
         );
         const amrex::BoxArray& ba = alpha->boxArray();
         const amrex::DistributionMapping& dm = alpha->DistributionMap();
@@ -323,7 +325,8 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_max_levels,
             gmg_min_bottom,
             gmg_smoother,
-            gmg_precision
+            gmg_precision,
+            gmg_omega
         );
         build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(inner));
         return;
@@ -355,7 +358,8 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_max_levels,
             gmg_min_bottom,
             gmg_smoother,
-            gmg_precision
+            gmg_precision,
+            gmg_omega
         );
     }
     else if (precond == "mlmg" || precond == "none")
@@ -407,7 +411,8 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
     int gmg_max_levels,
     int gmg_min_bottom,
     const std::string& gmg_smoother,
-    const std::string& gmg_precision
+    const std::string& gmg_precision,
+    double gmg_omega
 )
 {
     if (gmg_precision != "fp64" && gmg_precision != "fp32")
@@ -440,7 +445,8 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
             gmg_coarsest_sweeps,
             gmg_max_levels,
             gmg_min_bottom,
-            gmg_smoother
+            gmg_smoother,
+            gmg_omega
         );
         gmgMf_ = p.get(); // GmgPrecondT<T>* -> const GmgApplyMf* (kept alive by the return)
         return gko::share(std::move(p));
@@ -564,7 +570,8 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     int /*gmg_max_levels*/,
     int /*gmg_min_bottom*/,
     const std::string& /*gmg_smoother*/,
-    const std::string& /*gmg_precision*/
+    const std::string& /*gmg_precision*/,
+    double /*gmg_omega*/
 )
     : PersistentSolver(
         makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts())

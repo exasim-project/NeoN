@@ -317,11 +317,15 @@ double gmgNorm2(const GmgFab<T>& mf)
     return std::sqrt(static_cast<double>(sq));
 }
 
-// One red-black Gauss-Seidel colour pass: cells with (i+j+k) parity `parity`
-// are solved exactly in place, sol = (rhs - off) / D with D = alpha -
-// sum(face coeffs) recomputed on the fly (tiny |D| guarded to no update). The
-// 7-point stencil only couples opposite colours, so the in-place update is
-// race-free. sol's ghosts must be refreshed before EACH colour pass.
+// One red-black successive-over-relaxation colour pass: cells with (i+j+k)
+// parity `parity` are updated in place towards the exact Gauss-Seidel value
+// gs = (rhs - off) / D, with D = alpha - sum(face coeffs) recomputed on the fly
+// (tiny |D| guarded to no update). The update is
+//   sol <- sol + omega * (gs - sol),
+// so omega = 1 is plain Gauss-Seidel (the previous behaviour, bit-for-bit) and
+// omega > 1 over-relaxes — MLMG's abec_gsrb uses omega = 1.15. The 7-point
+// stencil only couples opposite colours, so the in-place update is race-free.
+// sol's ghosts must be refreshed before EACH colour pass.
 template<class T>
 void gmgGsColorDevice(
     GmgFab<T>& sol,
@@ -333,9 +337,11 @@ void gmgGsColorDevice(
     const GmgFab<T>& uz,
     const GmgFab<T>& lz,
     const GmgFab<T>& alpha,
-    int parity
+    int parity,
+    double omega
 )
 {
+    const T om = static_cast<T>(omega);
     for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -367,7 +373,8 @@ void gmgGsColorDevice(
                 const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
                 if (amrex::Math::abs(diag) > gmgDiagFloor<T>())
                 {
-                    psi(i, j, k) = (b(i, j, k) - off) / diag;
+                    const T gs = (b(i, j, k) - off) / diag;
+                    psi(i, j, k) += om * (gs - psi(i, j, k));
                 }
             }
         );
@@ -385,9 +392,11 @@ void gmgGsColorHost(
     const GmgFab<T>& uz,
     const GmgFab<T>& lz,
     const GmgFab<T>& alpha,
-    int parity
+    int parity,
+    double omega
 )
 {
+    const T om = static_cast<T>(omega);
     for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -424,7 +433,8 @@ void gmgGsColorHost(
                     const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
                     if (std::abs(diag) > gmgDiagFloor<T>())
                     {
-                        psi(i, j, k) = (b(i, j, k) - off) / diag;
+                        const T gs = (b(i, j, k) - off) / diag;
+                        psi(i, j, k) += om * (gs - psi(i, j, k));
                     }
                 }
             }

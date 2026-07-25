@@ -106,7 +106,8 @@ public:
         int gmg_max_levels,
         int gmg_min_bottom,
         const std::string& gmg_smoother,
-        const std::string& gmg_precision
+        const std::string& gmg_precision,
+        double gmg_omega
     );
 
     // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
@@ -137,7 +138,8 @@ private:
         int gmg_max_levels,
         int gmg_min_bottom,
         const std::string& gmg_smoother,
-        const std::string& gmg_precision
+        const std::string& gmg_precision,
+        double gmg_omega
     );
 
     // Fill xWork_'s ghost layer for the FP64 residual: periodic/internal via
@@ -210,7 +212,8 @@ public:
         int /*gmg_max_levels*/,
         int /*gmg_min_bottom*/,
         const std::string& /*gmg_smoother*/,
-        const std::string& /*gmg_precision*/
+        const std::string& /*gmg_precision*/,
+        double /*gmg_omega*/
     );
 };
 

@@ -118,14 +118,23 @@ public:
         int coarsest_sweeps,
         int max_levels,
         int min_bottom,
-        const std::string& smoother
+        const std::string& smoother,
+        double omega
     )
         : AmrexLinOpBase<GmgPrecondT<T>>(exec, gko::dim<2> {n, n}), bc_(bc),
           hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
           onDevice_(exec->get_master().get() != exec.get()), nCycles_(n_cycles),
           preSweeps_(pre_sweeps), postSweeps_(post_sweeps), coarsestSweeps_(coarsest_sweeps),
-          useCheb_(smoother == "chebyshev")
+          useCheb_(smoother == "chebyshev"), omega_(omega)
     {
+        if (omega <= 0.0 || omega >= 2.0)
+        {
+            throw std::runtime_error(
+                "GmgPrecond: gmg_omega must lie in (0, 2) for a convergent "
+                "relaxation (got "
+                + std::to_string(omega) + ")"
+            );
+        }
         if (smoother != "rbgs" && smoother != "chebyshev")
         {
             throw std::runtime_error(
@@ -452,13 +461,33 @@ private:
                 {
                     prof::Timer t("gmg.gs", static_cast<int>(l));
                     gmgGsColorDevice(
-                        *L.sol, *L.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha, parity
+                        *L.sol,
+                        *L.rhs,
+                        *L.ux,
+                        *L.lx,
+                        *L.uy,
+                        *L.ly,
+                        *L.uz,
+                        *L.lz,
+                        *L.alpha,
+                        parity,
+                        omega_
                     );
                 }
                 else
                 {
                     gmgGsColorHost(
-                        *L.sol, *L.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha, parity
+                        *L.sol,
+                        *L.rhs,
+                        *L.ux,
+                        *L.lx,
+                        *L.uy,
+                        *L.ly,
+                        *L.uz,
+                        *L.lz,
+                        *L.alpha,
+                        parity,
+                        omega_
                     );
                 }
             }
@@ -661,6 +690,8 @@ private:
     int postSweeps_ = 2;
     int coarsestSweeps_ = 8;
     bool useCheb_ = false;
+    // RB-SOR relaxation factor; 1.0 = plain Gauss-Seidel. Unused when useCheb_.
+    double omega_ = 1.0;
     std::vector<GmgLevelT<T>> levels_;
 };
 

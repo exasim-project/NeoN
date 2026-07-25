@@ -88,7 +88,8 @@ void bindPersistent(nb::module_& m, const char* name)
                int gmg_max_levels,
                int gmg_min_bottom,
                const std::string& gmg_smoother,
-               const std::string& gmg_precision)
+               const std::string& gmg_precision,
+               double gmg_omega)
             {
                 new (self)
                     S(executor,
@@ -115,7 +116,8 @@ void bindPersistent(nb::module_& m, const char* name)
                       gmg_max_levels,
                       gmg_min_bottom,
                       gmg_smoother,
-                      gmg_precision);
+                      gmg_precision,
+                      gmg_omega);
             },
             nb::arg("alpha"),
             nb::arg("ux"),
@@ -180,6 +182,18 @@ void bindPersistent(nb::module_& m, const char* name)
             // stays double, halving the bandwidth-bound V-cycle traffic.
             // Matrix-free solver only.
             nb::arg("gmg_precision") = "fp64",
+            // RB-SOR relaxation factor for gmg_smoother="rbgs":
+            //   sol <- sol + gmg_omega * (gs - sol)
+            // 1.0 (default) is plain red-black Gauss-Seidel, bit-for-bit the
+            // previous behaviour. MLMG's own abec_gsrb over-relaxes with 1.15.
+            // Must lie in (0, 2) for a convergent relaxation. Ignored by
+            // gmg_smoother="chebyshev", whose damping comes from the polynomial.
+            // NOTE: omega != 1.0 makes the colour sweep non-symmetric, so the
+            // V-cycle is no longer exactly self-adjoint even with the reversed
+            // post-smooth. That is harmless for solver="gmg"/"ir" (stationary
+            // iterations), but can degrade CG, which assumes an SPD
+            // preconditioner — prefer omega = 1.0 or "chebyshev" under precond="gmg".
+            nb::arg("gmg_omega") = 1.0,
             nb::keep_alive<1, 2>(),
             nb::keep_alive<1, 3>(),
             nb::keep_alive<1, 4>(),
