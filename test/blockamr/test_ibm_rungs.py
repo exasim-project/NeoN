@@ -429,6 +429,70 @@ def test_result_rotates_with_the_body(blockamr_session):
 
 
 # ---------------------------------------------------------------------------
+# Rung 8 — div, with a nonzero tangential velocity at the wall
+# ---------------------------------------------------------------------------
+
+# Rigid rotation about the cylinder axis at OMEGA = 1/R, so the tangential
+# speed on the surface is exactly |u| = OMEGA*R = 1: the first rung where the
+# wall sees an O(1) velocity rather than none at all.
+OMEGA = 1.0 / R
+
+
+def _rotation_velocity(x, y, z, t):
+    """``u = omega x r`` about the cylinder axis — solid-body rotation.
+
+    Divergence-free analytically *and* discretely: ``u_x`` does not depend on
+    x and ``u_y`` does not depend on y, so both face differences vanish
+    identically, whatever the mesh.
+    """
+    return -OMEGA * (y - CENTRE[1]), OMEGA * (x - CENTRE[0]), np.zeros_like(x)
+
+
+def _rotation_flux(mesh, ngrow):
+    """Face flux field for the rigid rotation, built the way every other div
+    test in this suite builds one."""
+    ff = FaceField(mesh, ncomp=1, ngrow=ngrow, name="phi")
+    update_face_fluxes(ff[0], _rotation_velocity, mesh.geom(0), t=0.0)
+    return ff
+
+
+def test_div_of_a_radial_scalar_on_a_tangential_flux_is_zero(blockamr_session):
+    """Rung 8 — the div counterpart of rungs 3-6, and exact.
+
+    ``u = omega x r`` is divergence-free and exactly tangential to a concentric
+    cylinder, and ``T(r) = A + B(r^2 - R^2)`` is radial, so
+    ``div(u T) = u . grad T == 0`` identically. The whole result is therefore
+    error and there is nothing to subtract off — no analytic post-processing,
+    no resolution study.
+
+    It is exact discretely too, on the *linear* (central) flux interpolation:
+    ``u_x`` is x-independent so the x-flux difference collapses to
+    ``u_x (T_{i+1} - T_{i-1}) / 2dx = -omega*Y * 2X``, the y-difference to
+    ``+omega*X * 2Y``, and the two cancel to the last bit. ``upwind`` would not
+    — its O(dx) dissipation is a scheme property, not an IBM defect — so the
+    scheme is named explicitly rather than left at the ``Div`` default.
+
+    What this adds over every laplacian rung: the wall sees a **nonzero
+    tangential velocity** (|u| = OMEGA*R = 1 on the surface). A wall treatment
+    that couples into the face values — as opposed to the cell reconstruction
+    the rungs above probe — can only show up here.
+
+    The mesh is non-periodic and the ghost band is seeded analytically: neither
+    ``T`` nor ``u`` is periodic, and a wrapped halo would contaminate the
+    domain-edge cells for reasons that have nothing to do with the IBM.
+    """
+    mesh = _make_mesh(bodies=_cylinder(), periodic=(0, 0, 0))
+    T = CellField(mesh, ncomp=1, ngrow=1, name="T", ibm_bc={"cyl": FixedValue(A_MMS)})
+    _fill(T, mesh, _mms(CENTRE))
+    _fill_halo(T, mesh, _mms(CENTRE))
+
+    eqn = Equation(exp.div(_rotation_flux(mesh, T.ngrow), T), schemes={"Div": "linear"})
+    out = evaluate(eqn, t=0.0, solution=_sol("ghostCell"))
+
+    np.testing.assert_allclose(_assemble(T, out), 0.0, atol=1e-12)
+
+
+# ---------------------------------------------------------------------------
 # The scheme x method grid (verification plan §5)
 # ---------------------------------------------------------------------------
 
@@ -480,6 +544,157 @@ def test_every_scheme_runs_under_every_method_and_annihilates_a_constant(
     out = evaluate(eqn, t=0.0, solution=solution)
     assert isinstance(eqn.spatial_ops[0].scheme, SCHEME_REGISTRY[op][scheme])
     np.testing.assert_allclose(_flat(out), 0.0, atol=1e-12)
+
+
+# ---------------------------------------------------------------------------
+# D1 — a scheme wider than the reconstructed depth degrades to width 1 in the
+# band, and only there (verification plan §4, §5)
+# ---------------------------------------------------------------------------
+
+# ``ghostCell`` reconstructs exactly one solid layer (the cells with a fluid
+# face-neighbour); every deeper solid cell carries a ``b = 0, ndonor = 0`` row
+# and is pinned to zero. A scheme whose stencil is wider than that depth reads
+# one of those pinned cells from the band — a number that is not a
+# reconstruction of anything.
+RECONSTRUCTED_SOLID_DEPTH = 1
+
+# Split the div schemes by their own declared ``stencil_width`` rather than by a
+# hand-written name list, so a new wide scheme joins these tests by existing
+# (verification plan §10: both axes enter as parametrize data).
+WIDE_DIV_SCHEMES = sorted(
+    name for name, cls in SCHEME_REGISTRY["div"].items() if cls().stencil_width > 1
+)
+NARROW_DIV_SCHEMES = sorted(
+    name for name, cls in SCHEME_REGISTRY["div"].items() if cls().stencil_width == 1
+)
+
+
+def _plane_linear_case(scheme, n=N, nz=NZ):
+    """``div(u T)`` with ``u = (1,1,1)`` and ``T`` linear along a plane normal.
+
+    The rung-5 geometry (a plane so the surface trace is a constant a scalar
+    ``FixedValue`` can express), carried over to ``div``. ``ngrow=2`` because
+    the wide schemes ask for it, and the x halo is seeded analytically because
+    a linear field is not periodic.
+    """
+    mesh = _make_mesh(
+        n=n,
+        nz=nz,
+        bodies={"wall": Plane(point=(X_WALL, 0.0, 0.0), normal=(1.0, 0.0, 0.0))},
+        periodic=(0, 1, 1),
+    )
+    T = CellField(mesh, ncomp=1, ngrow=2, name="T", ibm_bc={"wall": FixedValue(A_LIN)})
+
+    def exact(X, Y, Z):
+        return A_LIN + B_LIN * (X - X_WALL)
+
+    _fill(T, mesh, exact)
+    _fill_halo(T, mesh, exact)
+    eqn = Equation(exp.div(_uniform_flux(mesh, T.ngrow), T), schemes={"Div": scheme})
+    return mesh, T, eqn
+
+
+def _fluid_of_the_plane(n=N, nz=NZ):
+    """Cells whose centre is on the fluid side of the ``X_WALL`` plane.
+
+    Analytic, from the body — an independent oracle, never the implementation's
+    own classification (verification plan §10).
+    """
+    xs = (np.arange(n) + 0.5) / n
+    X, _Y, _Z = np.meshgrid(xs, np.arange(n), np.arange(nz), indexing="ij")
+    return X > X_WALL
+
+
+@pytest.mark.parametrize("scheme", NARROW_DIV_SCHEMES + WIDE_DIV_SCHEMES)
+def test_every_div_scheme_is_exact_on_a_linear_field_at_a_plane_wall(blockamr_session, scheme):
+    """D1, the sharp form. ``u = (1,1,1)`` is divergence-free and ``T`` is linear,
+    so ``div(u T) = u . grad T = B_LIN`` exactly — and *every* div scheme in the
+    registry reproduces a linear field exactly on a uniform flux (``upwind``
+    included: its dissipation is proportional to the second derivative, which is
+    zero here). So this is an exact probe with no tolerance to argue about, and
+    it holds for a width-1 and a width-2 scheme alike.
+
+    It holds in the **band** only if the wide schemes degrade there. ``ghostCell``
+    reconstructs ``RECONSTRUCTED_SOLID_DEPTH == 1`` solid layer; a width-2 stencil
+    reaches the second layer, which is pinned to zero, and the band result is then
+    not the divergence of anything. The decision this test encodes: such a scheme
+    must fall back to a width-1 scheme *for the band cells only*.
+
+    **Red pending that fallback** for every entry of ``WIDE_DIV_SCHEMES``; green
+    today for ``NARROW_DIV_SCHEMES``, which are in the parametrization precisely
+    so the failure reads as "the wide schemes, and only the wide schemes".
+    ``vanLeer`` matters more here, not less: on a *constant* field its limiter
+    degenerates at the wall and hides the defect entirely, so the constant probe
+    in the scheme x method grid passes for it. A linear field is the coarsest
+    probe that sees through the limiter.
+
+    The assertion covers the whole fluid region: the plane's x halo is seeded
+    analytically, so no domain-edge column has to be eroded away.
+    """
+    _mesh, T, eqn = _plane_linear_case(scheme)
+    out = _assemble(T, evaluate(eqn, t=0.0, solution=_sol("ghostCell")))
+    fluid = _fluid_of_the_plane()
+    np.testing.assert_allclose(out[fluid], B_LIN, atol=1e-12)
+
+
+def _stencil_entirely_in_fluid(width, n=N, nz=NZ, centre=CENTRE):
+    """Cells whose full ``width``-wide cross stencil lies in the fluid.
+
+    Computed test-side from the analytic cylinder — with no access to the
+    implementation's classification that is an independent oracle, and the plan
+    (§4, §10) prefers it to asking the code which cells it believes are near the
+    wall. ``np.roll`` wraps, which is harmless: the body sits well inside the
+    domain, so every cell a wrap brings in is fluid anyway.
+    """
+    xs = (np.arange(n) + 0.5) / n
+    zs = (np.arange(nz) + 0.5) / nz
+    X, Y, _Z = np.meshgrid(xs, xs, zs, indexing="ij")
+    fluid = np.hypot(X - centre[0], Y - centre[1]) > R
+    mask = fluid.copy()
+    for d in range(3):
+        for s in range(1, width + 1):
+            mask &= np.roll(fluid, s, axis=d) & np.roll(fluid, -s, axis=d)
+    return mask
+
+
+@pytest.mark.parametrize("scheme", WIDE_DIV_SCHEMES)
+def test_degrading_a_wide_scheme_in_the_band_leaves_the_bulk_bitwise_unchanged(
+    blockamr_session, scheme
+):
+    """D1, the other half — and the half that forbids the lazy fix.
+
+    The fallback of the test above is confined to the band. A cell whose full
+    width-2 stencil lies entirely in the fluid never reads a reconstructed or a
+    pinned value, so under ``ghostCell`` it must produce the number the plain
+    operator produces — **bitwise**, not to a tolerance, because a tolerance
+    would permit exactly the coupling this forbids (verification plan §10).
+
+    Degrading the whole field to width 1 would satisfy the constant probe and the
+    linear probe above and fail here, which is the point: the bulk keeps the full
+    wide scheme.
+
+    The field is deliberately **non-constant** (the MMS quadratic) — a constant
+    is annihilated by every scheme at every width, so it cannot tell a degraded
+    stencil from an intact one. ``noIbm`` is the reference rather than the no-key
+    path because rung 2 already pins those two together.
+
+    One field, two evaluations: ``evaluate`` does not mutate its input (asserted
+    at the rung-5 tier), so "the same data" is literally the same data.
+
+    Green today and it must stay green — this is the constraint on the fix, not
+    a prediction about it.
+    """
+    mesh = _make_mesh(bodies=_cylinder(), periodic=(0, 0, 0))
+    T = CellField(mesh, ncomp=1, ngrow=2, name="T", ibm_bc={"cyl": FixedValue(A_MMS)})
+    _fill(T, mesh, _mms(CENTRE))
+    _fill_halo(T, mesh, _mms(CENTRE))
+    eqn = Equation(exp.div(_uniform_flux(mesh, T.ngrow), T), schemes={"Div": scheme})
+
+    with_ibm = _assemble(T, evaluate(eqn, t=0.0, solution=_sol("ghostCell")))
+    without = _assemble(T, evaluate(eqn, t=0.0, solution=_sol("noIbm")))
+
+    bulk = _stencil_entirely_in_fluid(SCHEME_REGISTRY["div"][scheme]().stencil_width)
+    np.testing.assert_array_equal(with_ibm[bulk], without[bulk])
 
 
 # ---------------------------------------------------------------------------
