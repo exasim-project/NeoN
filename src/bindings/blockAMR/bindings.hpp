@@ -21,3 +21,4 @@ void registerLinOp(nb::module_& m);
 void registerStencilKernels(nb::module_& m);
 void registerTileLayout(nb::module_& m);
 void registerGinkgoSolve(nb::module_& m);
+void registerKokkosBench(nb::module_& m);

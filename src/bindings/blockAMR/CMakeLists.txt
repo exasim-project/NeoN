@@ -24,7 +24,17 @@ set(_blockamr_sources
     fillpatch.cpp
     solvers/linop.cpp
     stencil_kernels.cpp
-    tile_layout.cpp)
+    tile_layout.cpp
+    bench/bindings.cpp)
+
+# Kernels for the Kokkos-vs-AMReX operator bench. Compiled as their own object library, NOT as
+# _blockamr sources: AMReX sets CUDA_SEPARABLE_COMPILATION on _blockamr (-rdc=true) and Kokkos'
+# desul atomics refuse that mode outright ("#error Relocatable device code mode incompatible with
+# desul atomics configuration") because libkokkoscore was built without separable compilation.
+# Non-RDC objects link into an RDC module fine -- their device code is already fully resolved. Both
+# backends' kernels belong in this target so the comparison runs under identical compile flags; note
+# this means the AMReX bench kernels are non-RDC while production AMReX kernels are RDC.
+set(_blockamr_bench_sources bench/kokkos_spike.cpp bench/operators.cpp bench/gmg_vcycle.cpp)
 
 # Ginkgo-only sources: the matrix-free solver stack under solvers/.
 set(_blockamr_ginkgo_sources
@@ -39,7 +49,10 @@ set(_blockamr_ginkgo_sources
 
 nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
 
-target_link_libraries(_blockamr PRIVATE amrex)
+# NeoN::NeoN brings Kokkos (via the NeoN_public_api INTERFACE target) for the bench/ operator
+# comparison: the same cell kernels launched by amrex::ParallelFor and by Kokkos, over the same
+# MultiFab memory.
+target_link_libraries(_blockamr PRIVATE amrex NeoN::NeoN)
 
 # The real ginkgo_solve.cpp (and the solvers/ stack it drives) only compiles against Ginkgo; without
 # it a stub raising RuntimeError is built instead, so module.cpp stays unconditional.
@@ -63,6 +76,24 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     set_source_files_properties(solvers/ginkgo_solve_stub.cpp PROPERTIES LANGUAGE CUDA)
   endif()
 endif()
+
+# The bench object library: same CUDA language and architecture as _blockamr, but
+# CUDA_SEPARABLE_COMPILATION explicitly OFF so Kokkos headers compile (see above).
+add_library(blockamr_bench OBJECT ${_blockamr_bench_sources})
+target_link_libraries(blockamr_bench PRIVATE amrex NeoN::NeoN)
+set_target_properties(blockamr_bench PROPERTIES CUDA_SEPARABLE_COMPILATION OFF
+                                                POSITION_INDEPENDENT_CODE ON)
+if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
+  set_source_files_properties(${_blockamr_bench_sources} PROPERTIES LANGUAGE CUDA)
+  get_target_property(_blockamr_cuda_archs _blockamr CUDA_ARCHITECTURES)
+  set_target_properties(
+    blockamr_bench
+    PROPERTIES CUDA_ARCHITECTURES "${_blockamr_cuda_archs}"
+               CUDA_EXTENSIONS OFF
+               CUDA_STANDARD_REQUIRED ON)
+  target_compile_features(blockamr_bench PUBLIC cuda_std_17)
+endif()
+target_link_libraries(_blockamr PRIVATE blockamr_bench)
 
 # Set RPATH so _blockamr.so can find libamrex at ../lib/ (blockamr is a top-level package:
 # site-packages/blockamr/_blockamr.so -> ../lib).
