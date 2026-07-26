@@ -38,8 +38,12 @@ Features that are out of scope rather than broken are still written out, so that
 removing a marker is all it takes when they land. AMR gets an ``xfail`` rather than a
 ``skip`` on purpose: its body solves a real 2-level hierarchy against MLMG on every
 run and only the preconditioner assertions fail, so the multi-level operator is
-genuinely exercised. MPI (needs ``mpirun``) and Robin BCs (no ghost fill for it) have
-nothing runnable behind them and stay ``skip``.
+genuinely exercised. Robin BCs (no ghost fill for it) have nothing runnable behind
+them and stay ``skip``.
+
+The MPI tests in section 8 are real, but they only mean anything under ``mpirun -n 2
+pytest`` — on one rank they skip. The native path passes there; the Ginkgo Krylov
+paths still ``xfail`` because their flat vectors have no row partition.
 
 Referees: MLMG where it can solve the problem, the manufactured solution where there
 is one, and otherwise an independent numpy residual of the same 7-point operator —
@@ -968,7 +972,7 @@ def test_inhomogeneous_dirichlet_via_rhs_fold(blockamr_session, executor, multib
 
 
 # ---------------------------------------------------------------------------
-# 8. MPI — out of scope, body ready
+# 8. MPI — the native path works multi-rank; the Ginkgo paths do not yet
 # ---------------------------------------------------------------------------
 def _n_ranks():
     for var in ("OMPI_COMM_WORLD_SIZE", "PMI_SIZE", "MV2_COMM_WORLD_SIZE", "SLURM_NTASKS"):
@@ -978,43 +982,118 @@ def _n_ranks():
     return 1
 
 
-def _run_multirank(shape, cfg, values):
-    """Solve, then assemble the solution across ranks (valid regions are disjoint)."""
-    mpi = pytest.importorskip("mpi4py.MPI", reason="needs mpi4py for the cross-rank gather")
+def _require_multirank():
+    """Refuse to run an MPI test on one rank.
+
+    The skipif markers below read the LAUNCHER's environment, because a marker is
+    evaluated at collection time — before the blockamr_session fixture initialises
+    AMReX, so blockamr.n_ranks() is not available yet. Under an mpirun whose
+    variables are spelled differently that sniffing silently returns 1, and every
+    test here would then pass as a single-rank run. Ask AMReX itself, now that it
+    is up.
+    """
+    assert blockamr.n_ranks() > 1, "MPI test reached on 1 rank — _n_ranks() misread the launcher"
+
+
+def _solve_multirank(shape, cfg, values, executor):
+    """Solve the standard problem decomposed over the ranks; returns stats only.
+
+    Deliberately does not gather — a rank owns only its own boxes, so there is no
+    whole solution to return, and nothing AMReX-backed escapes this frame (see
+    _run's docstring for why that matters).
+    """
+    _require_multirank()
+    geom, ba, dm = _make_mesh(shape, max_size=8)
+    coeffs, _, _ = _coeffs(geom, ba, dm, shape)
+    rhs = _cell_mf(ba, dm, values)
+    solver = _make_solver_or_skip(coeffs, geom, executor, **cfg)
+    sol = _zero_sol(ba, dm)
+    return dict(solver.solve(rhs, sol))
+
+
+def _run_multirank(shape, cfg, values, executor):
+    """Solve, then assemble the solution across ranks (valid regions are disjoint).
+
+    The gather is a sum of per-rank arrays that are zero outside the boxes the rank
+    owns, over AMReX's OWN communicator (blockamr.allreduce_sum wraps
+    ParallelAllReduce on ParallelContext::CommunicatorSub) rather than mpi4py's
+    COMM_WORLD. Same reduction, but on the communicator the solver measured its
+    norms with, and without a second MPI binding in the process.
+    """
+    _require_multirank()
     geom, ba, dm = _make_mesh(shape, max_size=8)
     coeffs, _, referee = _coeffs(geom, ba, dm, shape)
     rhs = _cell_mf(ba, dm, values)
-    solver = _make_solver_or_skip(coeffs, geom, "cuda", **cfg)
+    solver = _make_solver_or_skip(coeffs, geom, executor, **cfg)
     sol = _zero_sol(ba, dm)
     stats = dict(solver.solve(rhs, sol))
 
-    local = np.zeros(shape)
+    glob = np.zeros(shape)
     for mfi in blockamr.MFIterator(sol):
         bx = mfi.valid_box()
         lo, hi = bx.small_end(), bx.big_end()
         arr = sol.copy_to_host(mfi)
-        local[lo[0] : hi[0] + 1, lo[1] : hi[1] + 1, lo[2] : hi[2] + 1] = arr[:, :, :, 0]
-    glob = np.zeros(shape)
-    mpi.COMM_WORLD.Allreduce(local, glob, op=mpi.SUM)
+        glob[lo[0] : hi[0] + 1, lo[1] : hi[1] + 1, lo[2] : hi[2] + 1] = arr[:, :, :, 0]
+    blockamr.allreduce_sum(glob)  # in place; disjoint valid regions, so a sum gathers
     return stats, glob, referee
 
 
 @pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
-@pytest.mark.xfail(
-    reason="MPI is out of scope and known-broken in two places: the native path's "
-    "stopping test compares a RANK-LOCAL residual (gmg_kernels.hpp "
-    "faceCoeffResidScatterNorm* reduce with ParReduce and no ParallelAllReduce) "
-    "against a globally reduced ||rhs||, so it stops early; and the Ginkgo path's "
-    "Dense vectors and their dot products are rank-local, so CG's scalars are "
-    "wrong. Fix the norm first (see the rank-local-norm task).",
-    strict=False,
-)
-@pytest.mark.parametrize("cfg", [PRECONDITIONED, STATIONARY], ids=["cg+gmg", "native"])
-def test_gmg_multirank(blockamr_session, cfg):
-    """The solve should give the same answer on 2 ranks as on 1."""
+@pytest.mark.parametrize("norm", ["l2", "linf"])
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+def test_multirank_residual_norm_is_global(blockamr_session, executor, norm):
+    """The reported residual norm is the GLOBAL one, not this rank's share of it.
+
+    The sharpest available probe of the reduction, and the only one that needs no
+    cross-rank gather: the initial guess is zero, so r0 = b EXACTLY and the first
+    entry of res_history must equal ||b|| — which every rank can compute in numpy
+    over the whole domain, because every rank generated the whole `values` array
+    even though it owns only part of it.
+
+    Both norms, because they are two different collectives (Sum for l2, Max for
+    linf). Measured at 2 ranks before gmg_kernels.hpp gained reduceResidNorms: the
+    reported r0 was 0.711x the true ||b||_2 (~1/sqrt(2)) and 0.871x the true
+    ||b||_inf, while the stopping baseline ||rhs|| came from MultiFab::norm2, which
+    IS globally reduced. A residual understated against a global baseline is a
+    solve that stops early and reports success.
+    """
     shape = (16, 16, 16)
     values = _random_values(shape)
-    stats, sol, referee = _run_multirank(shape, cfg, values)
+    stats = _solve_multirank(shape, {**STATIONARY, "norm": norm}, values, executor)
+    expected = np.abs(values).max() if norm == "linf" else float(np.linalg.norm(values))
+    assert stats["res_history"][0] == pytest.approx(expected, rel=1e-12)
+
+
+@pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+@pytest.mark.parametrize(
+    "cfg",
+    [
+        pytest.param(
+            PRECONDITIONED,
+            id="cg+gmg",
+            marks=pytest.mark.xfail(
+                reason="the Ginkgo Krylov paths are still single-rank: transfer.hpp "
+                "gathers the owned boxes into a FLAT vector sized n_ = the GLOBAL "
+                "cell count (persistent.cpp), so every rank builds a differently "
+                "laid-out vector over the same index range, and Dense's dot products "
+                "and norms are rank-local on top of that. Needs a real row partition "
+                "(see linearAlgebra/ginkgo/ginkgoDistributed.cpp).",
+                strict=False,
+            ),
+        ),
+        pytest.param(STATIONARY, id="native"),
+    ],
+)
+def test_gmg_multirank(blockamr_session, executor, cfg):
+    """The solve gives the same answer on 2 ranks as on 1.
+
+    The native path passes: it never leaves AMReX fabs, so FillBoundary carries the
+    halo and the only rank-local step was the residual norm.
+    """
+    shape = (16, 16, 16)
+    values = _random_values(shape)
+    stats, sol, referee = _run_multirank(shape, cfg, values, executor)
     assert stats["converged"] is True
     assert _rel_residual(sol, values, referee) < AGREE
 

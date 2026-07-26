@@ -6,6 +6,8 @@
 
 #include <ginkgo/ginkgo.hpp>
 
+#include <AMReX_ParallelContext.H>
+#include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
 #include <algorithm>
@@ -67,35 +69,49 @@ inline NormKind parseNorm(const std::string& norm)
     );
 }
 
-// max |v_i| over a single-column Dense, computed on its own executor.
+// max |v_i| over a single-column Dense, computed on its own executor and reduced
+// across ranks.
 //
 // The AMReX reduction runs on the AMReX stream while Ginkgo wrote `v` on its
 // own, and the two are unordered -- hence the explicit synchronize first, the
 // same guard the GMG preconditioners use before reading Ginkgo-written data.
+//
+// The cross-rank Max mirrors what MultiFab::norminf does and what the native
+// V-cycle's norms now do (gmg_kernels.hpp reduceResidNorms): every reduction the
+// stopping test consults has to be global, or a rank stops on its own residual.
+// It is a no-op on one rank, and it is safe as a collective because the criterion
+// is driven by a Ginkgo solver whose iteration sequence is identical on every rank.
+// Note this only makes the CRITERION global; the flat Dense vector `v` itself is
+// still assembled rank-locally, which is a separate gap (see the gather/scatter
+// task) -- fixing the norm does not by itself make the Krylov paths multi-rank.
 inline double normInf(const Dense* v)
 {
     const auto n = v->get_size()[0] * v->get_size()[1];
-    if (n == 0)
+    double m = 0.0;
+    if (n > 0)
     {
-        return 0.0;
-    }
-    const double* p = v->get_const_values();
-    auto exec = v->get_executor();
-    if (exec->get_master().get() == exec.get())
-    {
-        double m = 0.0;
-        for (gko::size_type i = 0; i < n; ++i)
+        const double* p = v->get_const_values();
+        auto exec = v->get_executor();
+        if (exec->get_master().get() == exec.get())
         {
-            m = std::max(m, std::abs(p[i]));
+            for (gko::size_type i = 0; i < n; ++i)
+            {
+                m = std::max(m, std::abs(p[i]));
+            }
         }
-        return m;
+        else
+        {
+            exec->synchronize();
+            // Max and Min rather than a Max over |p_i|: the pointer overloads take
+            // no device lambda, so this header stays compilable wherever it is
+            // included.
+            const auto hi = amrex::Reduce::Max<double>(n, p);
+            const auto lo = amrex::Reduce::Min<double>(n, p);
+            m = std::max(std::abs(hi), std::abs(lo));
+        }
     }
-    exec->synchronize();
-    // Max and Min rather than a Max over |p_i|: the pointer overloads take no
-    // device lambda, so this header stays compilable wherever it is included.
-    const auto hi = amrex::Reduce::Max<double>(n, p);
-    const auto lo = amrex::Reduce::Min<double>(n, p);
-    return std::max(std::abs(hi), std::abs(lo));
+    amrex::ParallelAllReduce::Max(m, amrex::ParallelContext::CommunicatorSub());
+    return m;
 }
 
 // ||r||_inf <= tau * baseline, in MLMG's norm.

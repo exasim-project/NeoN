@@ -7,6 +7,8 @@
 #include <AMReX_GpuLaunch.H>
 #include <AMReX_Math.H>
 #include <AMReX_MultiFab.H>
+#include <AMReX_ParallelContext.H>
+#include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
 #include <algorithm>
@@ -178,6 +180,26 @@ struct ResidNorms
     double maxabs; // max |r_i| — ||r||_inf
 };
 
+// Combine the per-rank norms into the global ones.
+//
+// amrex::ParReduce and amrex::ReduceSum are LOCAL: they reduce over the boxes a
+// rank owns and do no MPI at all. AMReX's own MultiFab::norm2/Dot call
+// ParallelAllReduce on the result afterwards (AMReX_FabArrayUtility.H), and that
+// is what has to happen here too, on the SAME communicator — gmgSolve compares
+// this norm against a ||rhs|| taken with MultiFab::norm2/norminf, so a rank-local
+// residual against a globally reduced baseline understates the residual and stops
+// the solve early and silently. Measured at 2 ranks before this reduction: the
+// reported ||r||_2 was 0.711x the true one (~1/sqrt(2)) and ||r||_inf 0.871x.
+//
+// Two collectives rather than one: the 2-norm needs a Sum and the inf-norm a Max.
+// They cost one latency each per V-cycle, not per kernel.
+inline void reduceResidNorms(ResidNorms& r)
+{
+    const MPI_Comm comm = amrex::ParallelContext::CommunicatorSub();
+    amrex::ParallelAllReduce::Sum(r.sumsq, comm);
+    amrex::ParallelAllReduce::Max(r.maxabs, comm);
+}
+
 template<class T>
 ResidNorms faceCoeffResidScatterNormDevice(
     const amrex::MultiFab& sol,
@@ -246,6 +268,7 @@ ResidNorms faceCoeffResidScatterNormDevice(
         res.sumsq = amrex::get<0>(both);
         res.maxabs = amrex::get<1>(both);
     }
+    reduceResidNorms(res);
     return res;
 }
 
@@ -308,11 +331,18 @@ ResidNorms faceCoeffResidScatterNormHost(
             }
         }
     }
+    reduceResidNorms(res);
     return res;
 }
 
 // ||mf||_2 over the valid region (0 ghost), accumulated in the fab's value_type
-// (single-box/single-rank hierarchy; used only by the setup power iteration).
+// and summed across ranks (used only by the setup power iteration).
+//
+// The cross-rank sum is not cosmetic: the power iteration divides by this norm to
+// renormalise its iterate, so a per-rank norm would give each rank a DIFFERENT
+// lambda_max and hence different Chebyshev coefficients — the smoother would stop
+// being one global linear operator. Every level shares level 0's
+// DistributionMapping, so all ranks reach this collective the same number of times.
 template<class T>
 double gmgNorm2(const GmgFab<T>& mf)
 {
@@ -337,7 +367,9 @@ double gmgNorm2(const GmgFab<T>& mf)
             return s;
         }
     );
-    return std::sqrt(static_cast<double>(sq));
+    double sumsq = static_cast<double>(sq);
+    amrex::ParallelAllReduce::Sum(sumsq, amrex::ParallelContext::CommunicatorSub());
+    return std::sqrt(sumsq);
 }
 
 // One red-black successive-over-relaxation colour pass: cells with (i+j+k)
