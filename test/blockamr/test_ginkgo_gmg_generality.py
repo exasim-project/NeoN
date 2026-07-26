@@ -1038,6 +1038,7 @@ def _run_multirank(shape, cfg, values, executor):
     return stats, glob, referee
 
 
+@pytest.mark.mpi
 @pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
 @pytest.mark.parametrize("norm", ["l2", "linf"])
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
@@ -1064,6 +1065,7 @@ def test_multirank_residual_norm_is_global(blockamr_session, executor, norm):
     assert stats["res_history"][0] == pytest.approx(expected, rel=1e-12)
 
 
+@pytest.mark.mpi
 @pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
 @pytest.mark.parametrize(
@@ -1079,6 +1081,21 @@ def test_multirank_residual_norm_is_global(blockamr_session, executor, norm):
                 "laid-out vector over the same index range, and Dense's dot products "
                 "and norms are rank-local on top of that. Needs a real row partition "
                 "(see linearAlgebra/ginkgo/ginkgoDistributed.cpp).",
+                strict=False,
+            ),
+        ),
+        pytest.param(
+            KRYLOV_BOTTOM,
+            id="native+krylov-bottom",
+            marks=pytest.mark.xfail(
+                reason="the native V-cycle is multi-rank-correct only with the default "
+                "gmg_bottom_solver='smoother'. A Krylov bottom takes the same flat "
+                "vector as the Ginkgo Krylov paths: gmg_precond.hpp sizes it "
+                "nBottom = boxArray().numPts(), the GLOBAL coarse cell count, while "
+                "transfer.hpp fills it from the rank's OWN boxes with a local running "
+                "offset. Same row partition gap as cg+gmg above. Fails by not "
+                "converging at all, not by a wrong answer: the bottom solve returns "
+                "garbage and the V-cycle stalls.",
                 strict=False,
             ),
         ),
