@@ -23,6 +23,24 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
 
+// TODO(operator-registration workaround): drop this once the runtime-selection registry is shared
+// across shared objects (e.g. exporting the factory table with default visibility). The operators
+// above are declared `extern template`, so simply including the headers does NOT instantiate them
+// here and their self-registration only fires in libNeoN. The `_neon` module is compiled
+// `-fvisibility=hidden`, giving it a private, empty copy of the factory's lookup table, so scheme
+// resolution at assembly time (e.g. "Gauss" for div/laplacian) aborts with "Could not find
+// constructor for Gauss". Forcing explicit instantiation here runs the self-registration inside
+// `_neon` so its table is populated.
+namespace NeoN::finiteVolume::cellCentred
+{
+template class GaussGreenDiv<scalar>;
+template class GaussGreenDiv<Vec3>;
+template class GaussGreenDiv<Vec3, scalar>;
+template class GaussGreenLaplacian<scalar>;
+template class GaussGreenLaplacian<Vec3>;
+template class GaussGreenLaplacian<Vec3, scalar>;
+} // namespace NeoN::finiteVolume::cellCentred
+
 namespace nb = nanobind;
 using namespace nb::literals;
 
@@ -135,7 +153,17 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
         .def(
             "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
         )
-        .def("size", &Expr::size);
+        .def("size", &Expr::size)
+        // Resolve each operator's discretisation scheme from a schemes Dictionary
+        // (e.g. {"divSchemes": {"div(phi,U)": ["Gauss", "linear"]}}). This is the call
+        // that drives the runtime-selection factory lookup (create("Gauss")), so it is
+        // also the regression hook for operator self-registration inside _neon.
+        .def(
+            "read",
+            [](Expr& self, const Dictionary& schemes) { self.read(schemes); },
+            "schemes"_a,
+            "Resolve operator schemes from a Dictionary"
+        );
 }
 
 void registerDSL(nb::module_& m)
@@ -150,9 +178,15 @@ void registerDSL(nb::module_& m)
     using VectorVolField = NeoN::finiteVolume::cellCentred::VolumeField<Vec3>;
     using ScalarSurfField = NeoN::finiteVolume::cellCentred::SurfaceField<scalar>;
 
-    // Implicit factories
-    imp_m.def("ddt", &dsl::imp::ddt<scalar>);
-    imp_m.def("ddt", &dsl::imp::ddt<Vec3>);
+    // Implicit factories. ddt is overloaded (single-field and density-weighted), so bind
+    // via lambdas that resolve the overload by arity rather than taking &ddt<T> directly.
+    imp_m.def("ddt", [](ScalarVolField& phi) { return dsl::imp::ddt<scalar>(phi); });
+    imp_m.def("ddt", [](VectorVolField& phi) { return dsl::imp::ddt<Vec3>(phi); });
+    // Density-weighted ddt(rho, U) overload (two field args).
+    imp_m.def(
+        "ddt",
+        [](ScalarVolField& rho, VectorVolField& phi) { return dsl::imp::ddt<Vec3>(rho, phi); }
+    );
     imp_m.def("div", &dsl::imp::div<scalar>);
     imp_m.def("div", &dsl::imp::div<Vec3>);
     imp_m.def("laplacian", &dsl::imp::laplacian<scalar>);
@@ -173,6 +207,8 @@ void registerDSL(nb::module_& m)
     exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
     exp_m.def("grad", &dsl::exp::grad);
     exp_m.def("source", [](ScalarVolField& coeff) { return dsl::exp::source<scalar>(coeff); });
+    // Vec3 explicit Su source — wraps a reconstructed cell body force as an rhs operator.
+    exp_m.def("source", [](VectorVolField& coeff) { return dsl::exp::source<Vec3>(coeff); });
     exp_m.def(
         "source",
         [](const ScalarVolField& coeff, const ScalarVolField& phi)

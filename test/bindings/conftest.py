@@ -17,10 +17,16 @@ import neon
 
 @pytest.fixture(scope="session", autouse=True)
 def neon_global_session():
-    """Initialize NeoN once for all test files in this session."""
-    neon.initialize()
+    """Initialize NeoN and/or blockAMR once for all test files in this session."""
+    if _neon_available:
+        neon.initialize()
+    if _blockamr_available:
+        blockamr.initialize()
     yield  # This is where all tests run
-    neon.finalize()
+    if _blockamr_available:
+        blockamr.finalize()
+    if _neon_available:
+        neon.finalize()
 
 
 def pytest_configure(config):

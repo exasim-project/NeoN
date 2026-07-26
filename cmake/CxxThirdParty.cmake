@@ -238,14 +238,29 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
-  find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  # When building a wheel (SKBUILD), always fetch Ginkgo from source via CPM so it is bundled with
+  # the package instead of linking against a system install. In particular, a previously installed
+  # wheel puts a Ginkgo config into the venv's site-packages, which find_package would then pick up.
+  if(NOT DEFINED SKBUILD)
+    find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
+  endif()
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # FORCE under SKBUILD: CPM_USE_LOCAL_PACKAGES would otherwise route through CPM's own
+    # find_package, which the previously installed wheel's Ginkgo config in site-packages satisfies
+    # — leaving only imported targets, so install(TARGETS ginkgo ...) fails.
+    if(DEFINED SKBUILD)
+      set(GINKGO_CPM_FORCE YES)
+    else()
+      set(GINKGO_CPM_FORCE NO)
+    endif()
     cpmaddpackage(
       NAME
       Ginkgo
+      FORCE
+      ${GINKGO_CPM_FORCE}
       VERSION
       ${NeoN_GINKGO_VERSION}
       GITHUB_REPOSITORY
@@ -264,6 +279,73 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+  endif()
+endif()
+
+# Derive AMReX GPU backend from Kokkos detection
+if(Kokkos_ENABLE_CUDA)
+  set(NeoN_AMREX_GPU_BACKEND
+      "CUDA"
+      CACHE STRING "AMReX GPU backend: NONE, CUDA, HIP, SYCL")
+elseif(Kokkos_ENABLE_HIP)
+  set(NeoN_AMREX_GPU_BACKEND
+      "HIP"
+      CACHE STRING "AMReX GPU backend: NONE, CUDA, HIP, SYCL")
+else()
+  set(NeoN_AMREX_GPU_BACKEND
+      "NONE"
+      CACHE STRING "AMReX GPU backend: NONE, CUDA, HIP, SYCL")
+endif()
+
+if(${NeoN_WITH_AMREX})
+  # Enable CUDA language before AMReX
+  if(Kokkos_ENABLE_CUDA AND NOT CMAKE_CUDA_COMPILER_ID)
+    set(CMAKE_CUDA_COMPILER
+        "${CMAKE_CXX_COMPILER}"
+        CACHE FILEPATH "" FORCE)
+    enable_language(CUDA)
+  endif()
+  # When building a wheel (SKBUILD), always fetch AMReX from source via CPM so it is bundled with
+  # the package instead of linking against a system install.
+  if(DEFINED SKBUILD)
+    set(_AMREX_FORCE_CPM FORCE TRUE)
+  else()
+    set(_AMREX_FORCE_CPM "")
+    find_package(AMReX ${NeoN_AMREX_VERSION} CONFIG QUIET)
+  endif()
+  if(AMReX_FOUND)
+    message(STATUS "Using system-installed AMReX (version: ${AMReX_VERSION})")
+  else()
+    message(STATUS "System AMReX not found — fetching from GitHub via CPM.cmake...")
+    set(AMREX_TEST_INSTALL_PATCH git apply
+                                 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/amrex_test_install.patch)
+    cpmaddpackage(
+      NAME
+      AMReX
+      VERSION
+      ${NeoN_AMREX_VERSION}
+      GITHUB_REPOSITORY
+      AMReX-Codes/amrex
+      GIT_TAG
+      ${NeoN_AMREX_TAG}
+      PATCH_COMMAND
+      ${AMREX_TEST_INSTALL_PATCH}
+      SYSTEM
+      YES
+      ${_AMREX_FORCE_CPM}
+      OPTIONS
+      "AMReX_PIC ON"
+      "AMReX_ENABLE_TESTS OFF"
+      "AMReX_FORTRAN OFF"
+      "AMReX_FORTRAN_INTERFACES OFF"
+      "AMReX_BUILD_TUTORIALS OFF"
+      "AMReX_PARTICLES ON"
+      "AMReX_EB ON"
+      "AMReX_DIFFERENT_COMPILER ON"
+      "AMReX_GPU_BACKEND ${NeoN_AMREX_GPU_BACKEND}")
+    # Make AMReX CMake helpers (setup_target_for_cuda_compilation) available
+    list(APPEND CMAKE_MODULE_PATH "${AMReX_SOURCE_DIR}/Tools/CMake")
+    include(AMReXTargetHelpers)
   endif()
 endif()
 

@@ -42,6 +42,7 @@ nanobind_add_module(
   surfaceInterpolation.cpp
   inputs.cpp
   coNum.cpp
+  reconstruct.cpp
   initialization.cpp
   linearAlgebra.cpp
   dsl.cpp
@@ -102,8 +103,19 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
   install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
-  install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/__init__.py DESTINATION neon)
-  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed DESTINATION neon)
+  # Use CMAKE_CURRENT_SOURCE_DIR (this bindings dir) not CMAKE_SOURCE_DIR: when
+  # NeoN is add_subdirectory()'d into neofoam, CMAKE_SOURCE_DIR is the neofoam
+  # root, so ${CMAKE_SOURCE_DIR}/src/neon/__init__.py does not exist.
+  install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/__init__.py
+    DESTINATION neon
+    COMPONENT python)
+  install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
+    DESTINATION neon
+    COMPONENT python)
+  # Install libNeoN.so so _neon.so can find it via RPATH ($ORIGIN/../lib/)
+  install(TARGETS NeoN LIBRARY DESTINATION lib COMPONENT python)
 else()
   # Standalone installation
   install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
@@ -111,4 +123,8 @@ else()
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
+endif()
+
+if(NeoN_WITH_AMREX)
+  add_subdirectory(blockAMR)
 endif()

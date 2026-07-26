@@ -52,6 +52,7 @@ option(NeoN_WITH_KOKKOS "Enable using Kokkos as platform portability layer." ON)
 option(NeoN_WITH_UMPIRE "Enable using Umpire as memory manager [Experimental]." ON)
 option(NeoN_WITH_ADIOS2 "Build NeoN with ADIOS2 support" OFF)
 option(NeoN_WITH_SUNDIALS "Build NeoN with Sundials support." OFF)
+option(NeoN_WITH_AMREX "Build NeoN with AMReX support" OFF)
 option(NeoN_WITH_GINKGO "Enable using Ginkgo as linear algebra backend." ON)
 option(NeoN_WITH_PETSC "Enable using Petsc as linear algebra backend." OFF)
 option(NeoN_WITH_OMP "Prefer OMP over Kokkos Threads" OFF)
@@ -117,6 +118,15 @@ if(DEFINED SKBUILD)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
   # Set RPATH so _neon.so can find libNeoN.so at ../lib/
   set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+endif()
+
+# Enable CUDA early so Kokkos doesn't replace CMAKE_CXX_COMPILER with
+# kokkos_launch_compiler, which triggers a CMake re-configure that loses all -D
+# flags and preset variables (e.g. NeoN_WITH_AMREX / NeoN_AMREX_GPU_BACKEND).
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
 endif()
 
 include(cmake/CxxThirdParty.cmake)

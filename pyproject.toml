@@ -26,6 +26,9 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.19.0",
+    "jax",
+    "equinox",
+    "pydantic>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -35,12 +38,18 @@ dev = [
     "black",
     "ruff>=0.14.0",
     "mypy",
+    "scikit-build-core[pyproject]>=0.11.0",
+    "nanobind>=2.9.0",
 ]
 test = [
     "pytest>=6.0",
 ]
 all = [
     "neon_pde[dev,test]",
+]
+cuda = [
+    "jax[cuda12-local]",
+    "nvidia-cudnn-cu12",
 ]
 
 [build-system]
@@ -61,6 +70,13 @@ editable.rebuild = false
 
 [tool.scikit-build.cmake.define]
 NeoN_BUILD_PYTHON_BINDINGS = "ON"
+NeoN_WITH_AMREX = "ON"
+NeoN_WITH_UMPIRE = "OFF"
+AMReX_INSTALL = "ON"
+CMAKE_BUILD_WITH_INSTALL_RPATH = "ON"
+
+[tool.uv]
+no-build-isolation-package = ["neon_pde"]
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
