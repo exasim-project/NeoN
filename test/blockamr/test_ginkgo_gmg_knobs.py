@@ -290,6 +290,7 @@ def test_gmg_config_defaults_and_kwargs():
         "gmg_omega": 1.1,
         "gmg_smoother": "rbgs",
         "gmg_precision": "fp64",
+        "gmg_coeff_precision": "",
         "precond_cycles": 1,
     }
     cfg2 = blockamr.GmgConfig(smoother="chebyshev", pre_sweeps=3, post_sweeps=3, cycles=2)

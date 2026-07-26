@@ -170,6 +170,30 @@ struct GmgArgs
     // the baselines stay fp64.
     std::string precision = "fp64";
 
+    // The value type the COEFFICIENTS (alpha and the face arrays) are stored in;
+    // empty means "same as precision", which is what every level did before this
+    // knob existed. The split is the refinement the bf16 measurement pointed at: a
+    // rounded psi is amplified by ||A|| when the cycle restricts b - A psi, while a
+    // rounded coefficient is only a perturbation of the PRECONDITIONER's operator --
+    // CG still stops on the fp64 one, so the cost is iterations, not correctness.
+    // With shareCoeffs on, the coefficients are 4 of the 6 arrays a colour sweep
+    // streams, so narrowing them alone moves most of the bytes bf16 was after.
+    // kokkos_opt only, and it may not be WIDER than precision.
+    //
+    // Measured, 256^3 single box, level-0 agglomerated, one cycle from z0 = 0:
+    //
+    //     fields/coeffs   ms/cycle   r1/r0 (smooth b)
+    //     fp64 / fp64       23.82        0.70078
+    //     fp64 / bf16       26.54        0.70053     <- 1.11x SLOWER
+    //     fp32 / fp32       12.52        0.70185
+    //     fp32 / bf16       10.60        0.70147     <- 1.18x faster, same cycle
+    //     bf16 / bf16        9.37       97.7         <- diverges (see bf16.hpp)
+    //
+    // So: narrow the coefficients only once the FIELDS are narrow. Under fp32
+    // fields it is 1.18x off the cycle at a residual reduction indistinguishable
+    // from fp32's; under fp64 fields the same change costs 11%.
+    std::string coeffPrecision;
+
     // Store ONE face coefficient per direction instead of an upper/lower pair.
     // ux(i+1,j,k) is cell i's east coefficient and lx(i+1,j,k) is cell i+1's west
     // coefficient -- for a SYMMETRIC operator those are the same matrix entry, so

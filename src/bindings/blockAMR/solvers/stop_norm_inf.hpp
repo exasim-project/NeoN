@@ -166,12 +166,23 @@ protected:
     ) override
     {
         const auto* r = dynamic_cast<const Dense*>(updater.residual_);
+        if (r == nullptr && updater.ignore_residual_check_)
+        {
+            // Not a missing residual: a solver saying "do the cheap checks now,
+            // I will call you again with the residual". Ir does exactly this on
+            // every iteration past the first (core/solver/update_residual.hpp) --
+            // it runs the iteration-count criterion before forming b - A x, so
+            // that a solver that has already stopped never pays for the residual.
+            // Ginkgo's own ResidualNorm returns false here; throwing instead made
+            // ResidualNormInf unusable with solver="ir" and solver="mpir", which
+            // is what surfaced it.
+            return false;
+        }
         if (r == nullptr)
         {
-            // Ir and the Krylov solvers used here all publish the residual; a
-            // solver that only publishes the implicit squared 2-norm cannot be
-            // stopped on an inf-norm at all, so say so rather than fall back to
-            // a different criterion than the caller asked for.
+            // The genuine case: a solver that publishes only the implicit squared
+            // 2-norm cannot be stopped on an inf-norm at all, so say so rather
+            // than fall back to a different criterion than the caller asked for.
             throw gko::NotSupported(
                 __FILE__, __LINE__, __func__, "ResidualNormInf needs the residual vector"
             );

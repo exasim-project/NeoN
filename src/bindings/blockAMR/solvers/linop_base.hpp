@@ -34,10 +34,17 @@ namespace blockamr::solvers
 //     keeps the build log clean).
 // The exec-only constructor stays required by the polymorphic-object machinery
 // (create_default / clear), which does `new D(exec)`.
-template<class D>
+// V is the value type of the Dense vectors this operator is applied to -- double
+// for the fp64 Krylov path, float for the mixed-precision one. It appears only in
+// the Dense casts below; gko::EnableLinOp carries no value type, so a derived
+// operator is a plain gko::LinOp either way and Cg<float> accepts it directly.
+template<class D, class V = double>
 class AmrexLinOpBase : public gko::EnableLinOp<D>, public gko::EnableCreateMethod<D>
 {
 protected:
+
+    using DenseV = gko::matrix::Dense<V>;
+
 
     explicit AmrexLinOpBase(std::shared_ptr<const gko::Executor> exec) : gko::EnableLinOp<D>(exec)
     {}
@@ -67,7 +74,7 @@ protected:
     ) const override
     {
         prof::Timer tAll("adv.apply");
-        auto denseX = gko::as<Dense>(x);
+        auto denseX = gko::as<DenseV>(x);
         const double alphaVal = hostScalar(alpha);
         const double betaVal = hostScalar(beta);
 
@@ -86,7 +93,7 @@ protected:
         if (!scratch_ || scratch_->get_size() != size)
         {
             prof::Timer t("adv.alloc");
-            scratch_ = Dense::create(this->get_executor(), size);
+            scratch_ = DenseV::create(this->get_executor(), size);
         }
         this->apply_impl(b, scratch_.get());
         if (betaVal != 1.0)
@@ -106,7 +113,7 @@ private:
     // through the host master to read it (cf. ResidualHistoryLogger::readScalar).
     static double hostScalar(const gko::LinOp* s)
     {
-        auto d = gko::as<Dense>(s);
+        auto d = gko::as<DenseV>(s);
         auto exec = d->get_executor();
         if (exec->get_master().get() != exec.get())
         {
@@ -119,7 +126,7 @@ private:
     // these operators a copy-assignment, which a move-only member would delete.
     // Sharing a scratch buffer between copies is harmless — it holds no state
     // across calls.
-    mutable std::shared_ptr<Dense> scratch_;
+    mutable std::shared_ptr<DenseV> scratch_;
 };
 
 } // namespace blockamr::solvers

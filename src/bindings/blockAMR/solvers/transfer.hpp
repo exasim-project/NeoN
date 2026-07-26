@@ -22,10 +22,11 @@ namespace blockamr::solvers
 // apply the SPD sign flip (-L) in the same pass.
 // Templated on the FabArray type so the same host path serves the FP64
 // MultiFab (Ginkgo double vector) and the FP32 GMG level fields
-// (FabArray<BaseFab<float>>): the flat Ginkgo buffer is always double, so the
-// per-cell read/write converts to/from the fab's value_type.
-template<class FA>
-void gather(const FA& mf, double* buf, double scale)
+// (FabArray<BaseFab<float>>), and on the flat buffer's value type V so it
+// compiles for the fp32 Krylov instantiation as well -- that path is device-only
+// and its constructor says so, but the host branch still has to be valid code.
+template<class V, class FA>
+void gather(const FA& mf, V* buf, double scale)
 {
     using T = typename FA::value_type;
     const bool hostOk = mf.arena()->isHostAccessible();
@@ -53,15 +54,15 @@ void gather(const FA& mf, double* buf, double scale)
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    buf[idx++] = scale * static_cast<double>(arr(i, j, k));
+                    buf[idx++] = static_cast<V>(scale * static_cast<double>(arr(i, j, k)));
                 }
             }
         }
     }
 }
 
-template<class FA>
-void scatter(const double* buf, FA& mf)
+template<class V, class FA>
+void scatter(const V* buf, FA& mf)
 {
     using T = typename FA::value_type;
     const bool hostOk = mf.arena()->isHostAccessible();
@@ -106,11 +107,13 @@ void scatter(const double* buf, FA& mf)
 // match the host gather/scatter above (MFIter order; within a valid box the
 // index runs fastest in i, then j, then k), because the one-time RHS pack and
 // solution unpack in the solve still use the host path.
-// Templated on the FabArray type (see the host twins): the flat Ginkgo vector
-// is double; the fab may be double (FP64 path) or float (FP32 GMG level), so the
-// per-cell copy converts through the fab's value_type on the device.
-template<class FA>
-void scatter_device(const double* vec, FA& mf)
+// Templated on the FabArray type (see the host twins) AND on the flat vector's
+// value type: the fab may be double (FP64 path) or float (FP32 GMG level), and
+// the flat vector is double for the fp64 Krylov and float for the mixed-precision
+// one, so the per-cell copy converts between the two on the device. V is deduced
+// from the pointer, so every existing double call site is unchanged.
+template<class V, class FA>
+void scatter_device(const V* vec, FA& mf)
 {
     using T = typename FA::value_type;
     long off = 0;
@@ -135,8 +138,8 @@ void scatter_device(const double* vec, FA& mf)
     }
 }
 
-template<class FA>
-void gather_device(const FA& mf, double* vec, double scale)
+template<class V, class FA>
+void gather_device(const FA& mf, V* vec, double scale)
 {
     long off = 0;
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
@@ -153,7 +156,7 @@ void gather_device(const FA& mf, double* vec, double scale)
             {
                 const long idx =
                     o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                vec[idx] = scale * static_cast<double>(a(i, j, k));
+                vec[idx] = static_cast<V>(scale * static_cast<double>(a(i, j, k)));
             }
         );
         off += vbx.numPts();

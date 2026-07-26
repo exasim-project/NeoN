@@ -204,6 +204,28 @@ def test_l2_is_the_default_and_unchanged(blockamr_session):
     assert np.array_equal(default["x"], explicit["x"])
 
 
+def test_linf_works_with_iterative_refinement(blockamr_session):
+    """solver="ir" + norm="linf" must converge, not raise.
+
+    Regression. Ir runs the cheap criteria BEFORE forming b - A x on every
+    iteration past the first, and signals that by calling the criterion with no
+    residual and ignore_residual_check set (Ginkgo core/solver/update_residual.hpp);
+    Ginkgo's own ResidualNorm returns false there and waits to be called again with
+    the residual. ResidualNormInf threw instead, which made every Ir-shaped solver
+    -- solver="ir" and solver="mpir" -- unusable in the one norm that makes their
+    iteration counts comparable with MLMG's.
+    """
+    geom, ba, dm, alpha, faces, inv_dx2 = _helmholtz()
+    rhs, b = _spiky_rhs(ba, dm)
+    st = _solve(
+        geom, ba, dm, alpha, faces, rhs,
+        solver="ir", gmg_coarsest_sweeps=100, max_iter=500, rtol=RTOL, norm="linf",
+    )
+    assert st["converged"] is True
+    r = b - _apply(st["x"], inv_dx2)
+    assert np.max(np.abs(r)) <= RTOL * np.max(np.abs(b))
+
+
 @pytest.mark.parametrize("solver", ["cg", "gmg"])
 def test_unknown_norm_is_rejected(blockamr_session, solver):
     """Naming a norm that does not exist must fail loudly, not fall back to l2 --

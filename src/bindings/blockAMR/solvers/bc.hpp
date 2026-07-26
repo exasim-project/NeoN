@@ -45,6 +45,9 @@ parseBc(const std::vector<std::string>& bc, const amrex::Geometry& geom, const s
 // populate the face ghosts the fused stencil consults; the interior valid cells
 // are read straight from the flat vector by faceCoeffStencilFusedDevice, so they
 // need not be copied. Flat index matches scatter_device (box-by-box, i fastest).
-void scatterShellDevice(const double* vec, amrex::MultiFab& mf);
+// Explicitly instantiated for V = double and V = float (bc.cpp); the MultiFab is
+// always amrex::Real, only the flat Krylov vector changes width.
+template<class V>
+void scatterShellDevice(const V* vec, amrex::MultiFab& mf);
 
 } // namespace blockamr::solvers

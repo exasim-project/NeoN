@@ -107,6 +107,7 @@ METHODS = (
     "mf-pmg",
     "mf-gmg",
     "mf-gmgk",
+    "mf-mpir",
     "gmg",
     "gmg-ir",
     "csr",
@@ -120,6 +121,11 @@ GMG_SMOOTHER = "rbgs"
 # refuses the methods that would silently run something else. Set from
 # --gmg-precision.
 GMG_PRECISION = "fp64"
+# Storage type of the V-cycle COEFFICIENTS alone; "" (the default) means the same as
+# GMG_PRECISION, i.e. the historical single-type hierarchy. Only mf-gmgk can narrow
+# them separately, so --gmg-coeff-precision refuses the other GMG methods for the
+# same reason --gmg-precision bf16 does. Set from --gmg-coeff-precision.
+GMG_COEFF_PRECISION = ""
 # Convergence norm for the Ginkgo-side methods; "l2" reproduces the historical
 # default, "linf" is MLMG's own criterion (||r||_inf <= rtol*||b||_inf). The mlmg
 # rows ALWAYS stop on linf -- it is not configurable in MLMG -- so --norm linf is
@@ -137,12 +143,18 @@ MLMG_SEMICOARSENING = 0
 # Target box size for level 0 of the mf-gmgk hierarchy; 0 keeps the caller's boxes.
 # Set from --gmg-agg-l0-size.
 GMG_AGG_L0_SIZE = 0
+# solver="mpir" only (method mf-mpir): the relative residual the INNER fp32 Cg stops
+# at, and its iteration cap. The outer contraction factor IS the inner tolerance, so
+# this is the one knob a refinement scheme lives or dies by. Set from --mp-*.
+MP_INNER_RTOL = 1e-2
+MP_INNER_MAX_ITER = 20
 # Persistent solvers built once and reused (per-solve = pack/apply/unpack only).
 PERSISTENT = {
     "mf": "FaceCoeffSolver",
     "mf-pmg": "FaceCoeffSolver",
     "mf-gmg": "FaceCoeffSolver",
     "mf-gmgk": "FaceCoeffSolver",
+    "mf-mpir": "FaceCoeffSolver",
     "gmg": "FaceCoeffSolver",
     "gmg-ir": "FaceCoeffSolver",
     "csr": "FaceCoeffCsrSolver",
@@ -285,7 +297,25 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
             "precond_cycles": 1,
             "gmg_smoother": GMG_SMOOTHER,
             "gmg_precision": GMG_PRECISION,
+            "gmg_coeff_precision": GMG_COEFF_PRECISION,
             "gmg_agg_l0_size": GMG_AGG_L0_SIZE,
+        }
+    elif method == "mf-mpir":
+        # mf-gmgk's operator, hierarchy and tolerance, with the Krylov solve moved
+        # into an fp64 iterative-refinement loop and narrowed to fp32. The outer
+        # residual, the stopping test and the answer stay fp64; what halves is the
+        # width of every vector in the inner CG. mf-mpir / mf-gmgk therefore
+        # isolates the precision of the KRYLOV side exactly as mf-gmgk / mf-gmg
+        # isolates the V-cycle's launchers.
+        kwargs = {
+            "precond": "gmg_kokkos",
+            "precond_cycles": 1,
+            "gmg_smoother": GMG_SMOOTHER,
+            "gmg_precision": GMG_PRECISION,
+            "gmg_coeff_precision": GMG_COEFF_PRECISION,
+            "gmg_agg_l0_size": GMG_AGG_L0_SIZE,
+            "mp_inner_rtol": MP_INNER_RTOL,
+            "mp_inner_max_iter": MP_INNER_MAX_ITER,
         }
     elif method in ("gmg", "gmg-ir"):
         # Native stationary GMG solver (solver="gmg") or its Ginkgo iterative-
@@ -301,7 +331,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
             "gmg_precision": GMG_PRECISION,
             "gmg_coarsest_sweeps": 160 if GMG_SMOOTHER == "chebyshev" else 100,
         }
-    solver = {"gmg": "gmg", "gmg-ir": "ir"}.get(method, "cg")
+    solver = {"gmg": "gmg", "gmg-ir": "ir", "mf-mpir": "mpir"}.get(method, "cg")
     return cls(
         alpha=alpha,
         ux=fx,
@@ -483,6 +513,25 @@ def main():
         choices=("fp64", "fp32", "bf16"),
         help="V-cycle hierarchy precision (default fp64); bf16 needs --methods mf-gmgk",
     )
+    ap.add_argument(
+        "--mp-inner-rtol",
+        type=float,
+        default=1e-2,
+        help="mf-mpir: relative residual the inner fp32 CG stops at (default 1e-2)",
+    )
+    ap.add_argument(
+        "--mp-inner-max-iter",
+        type=int,
+        default=20,
+        help="mf-mpir: iteration cap on the inner fp32 CG (default 20)",
+    )
+    ap.add_argument(
+        "--gmg-coeff-precision",
+        default="",
+        choices=("", "fp64", "fp32", "bf16"),
+        help="storage type of the V-cycle COEFFICIENTS alone (default: same as "
+        "--gmg-precision). May not be wider than it; needs --methods mf-gmgk",
+    )
     # MLMG's own V-cycle shape. Defaults are AMReX's, so leaving these alone
     # reproduces the historical table; they exist so the REFERENCE can be tuned on
     # the same axes as ours instead of being compared at stock settings.
@@ -515,10 +564,29 @@ def main():
                 "--gmg-precision bf16 is implemented for mf-gmgk only; "
                 f"drop {', '.join(no_bf16)} from --methods"
             )
-    global GMG_SMOOTHER, GMG_PRECISION, NORM, GMG_AGG_L0_SIZE
+    # Same rule for the coefficient type, and for the same reason: mf-gmg / gmg /
+    # gmg-ir share the shipped hierarchy, which stores one type per level.
+    if args.gmg_coeff_precision:
+        no_split = sorted({"mf-gmg", "gmg", "gmg-ir"} & set(args.methods))
+        if no_split:
+            ap.error(
+                "--gmg-coeff-precision is implemented for mf-gmgk only; "
+                f"drop {', '.join(no_split)} from --methods"
+            )
+        width = {"fp64": 8, "fp32": 4, "bf16": 2}
+        if width[args.gmg_coeff_precision] > width[args.gmg_precision]:
+            ap.error(
+                f"--gmg-coeff-precision {args.gmg_coeff_precision} is wider than "
+                f"--gmg-precision {args.gmg_precision}; narrow the fields first"
+            )
+    global GMG_SMOOTHER, GMG_PRECISION, GMG_COEFF_PRECISION, NORM, GMG_AGG_L0_SIZE
+    global MP_INNER_RTOL, MP_INNER_MAX_ITER
     global MLMG_PRE_SMOOTH, MLMG_POST_SMOOTH, MLMG_BOTTOM_SMOOTH, MLMG_SEMICOARSENING
     GMG_SMOOTHER = args.gmg_smoother
     GMG_PRECISION = args.gmg_precision
+    GMG_COEFF_PRECISION = args.gmg_coeff_precision
+    MP_INNER_RTOL = args.mp_inner_rtol
+    MP_INNER_MAX_ITER = args.mp_inner_max_iter
     NORM = args.norm
     GMG_AGG_L0_SIZE = args.gmg_agg_l0_size
     MLMG_PRE_SMOOTH = args.mlmg_pre_smooth

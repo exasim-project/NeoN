@@ -93,13 +93,23 @@ inline amrex::MFItInfo gmgNoSync() { return amrex::MFItInfo().DisableDeviceSync(
 // bf16 round to the SAME value and cancel to exactly zero. See bf16.hpp.
 // ---------------------------------------------------------------------------
 
-template<class T>
+// TC is the COEFFICIENT storage type, separate from the field storage type T and
+// defaulted to it. The split exists because the two carry different error
+// sensitivities: psi and b are what the residual is formed as a difference of, so
+// rounding them is amplified by ||A|| ~ 6/dx^2 (bf16.hpp measured the damage), while
+// a coefficient rounded to 0.4% is a 0.4% perturbation of the preconditioner's
+// operator -- something a Krylov method absorbs into its iteration count without
+// amplification, because the operator CG stops on is still the fp64 one. Making them
+// one type forced the safe choice on both; making them two lets the coefficients --
+// 4 of the 6 arrays a shared-coefficient colour sweep streams -- be the narrow ones.
+template<class T, class TC = T>
 struct GmgGsCell
 {
     using C = solvers::GmgComputeT<T>;
 
     amrex::Array4<T> psi;
-    amrex::Array4<const T> b, ax, lxa, ay, lya, az, lza, al;
+    amrex::Array4<const T> b;
+    amrex::Array4<const TC> ax, lxa, ay, lya, az, lza, al;
     C om;
     int parity;
 
@@ -126,13 +136,14 @@ struct GmgGsCell
     }
 };
 
-template<class T>
+template<class T, class TC = T>
 struct GmgResidRestrictCell
 {
     using C = solvers::GmgComputeT<T>;
 
     amrex::Array4<T> cr;
-    amrex::Array4<const T> psi, b, ax, lxa, ay, lya, az, lza, al;
+    amrex::Array4<const T> psi, b;
+    amrex::Array4<const TC> ax, lxa, ay, lya, az, lza, al;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void operator()(int ic, int jc, int kc) const
     {
@@ -179,17 +190,17 @@ struct GmgProlongCell
 // ---------------------------------------------------------------------------
 
 // One red-black over-relaxation colour pass. Twin of gmgGsColorDevice.
-template<class T>
+template<class T, class TC>
 void gmgGsColorKokkos(
     solvers::GmgFab<T>& sol,
     const solvers::GmgFab<T>& rhs,
-    const solvers::GmgFab<T>& ux,
-    const solvers::GmgFab<T>& lx,
-    const solvers::GmgFab<T>& uy,
-    const solvers::GmgFab<T>& ly,
-    const solvers::GmgFab<T>& uz,
-    const solvers::GmgFab<T>& lz,
-    const solvers::GmgFab<T>& alpha,
+    const solvers::GmgFab<TC>& ux,
+    const solvers::GmgFab<TC>& lx,
+    const solvers::GmgFab<TC>& uy,
+    const solvers::GmgFab<TC>& ly,
+    const solvers::GmgFab<TC>& uz,
+    const solvers::GmgFab<TC>& lz,
+    const solvers::GmgFab<TC>& alpha,
     int parity,
     double omega
 )
@@ -197,7 +208,7 @@ void gmgGsColorKokkos(
     const solvers::GmgComputeT<T> om = static_cast<solvers::GmgComputeT<T>>(omega);
     for (amrex::MFIter mfi(rhs, gmgNoSync()); mfi.isValid(); ++mfi)
     {
-        const GmgGsCell<T> cell {
+        const GmgGsCell<T, TC> cell {
             sol.array(mfi),
             rhs.const_array(mfi),
             ux.const_array(mfi),
@@ -218,23 +229,23 @@ void gmgGsColorKokkos(
 }
 
 // Fused residual + volume-average restriction. Twin of gmgResidRestrictDevice.
-template<class T>
+template<class T, class TC>
 void gmgResidRestrictKokkos(
     const solvers::GmgFab<T>& sol,
     const solvers::GmgFab<T>& rhs,
     solvers::GmgFab<T>& crhs,
-    const solvers::GmgFab<T>& ux,
-    const solvers::GmgFab<T>& lx,
-    const solvers::GmgFab<T>& uy,
-    const solvers::GmgFab<T>& ly,
-    const solvers::GmgFab<T>& uz,
-    const solvers::GmgFab<T>& lz,
-    const solvers::GmgFab<T>& alpha
+    const solvers::GmgFab<TC>& ux,
+    const solvers::GmgFab<TC>& lx,
+    const solvers::GmgFab<TC>& uy,
+    const solvers::GmgFab<TC>& ly,
+    const solvers::GmgFab<TC>& uz,
+    const solvers::GmgFab<TC>& lz,
+    const solvers::GmgFab<TC>& alpha
 )
 {
     for (amrex::MFIter mfi(crhs, gmgNoSync()); mfi.isValid(); ++mfi)
     {
-        const GmgResidRestrictCell<T> cell {
+        const GmgResidRestrictCell<T, TC> cell {
             crhs.array(mfi),
             sol.const_array(mfi),
             rhs.const_array(mfi),
@@ -289,17 +300,17 @@ void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fin
 // Kokkos kernel on the same execution space, which is already ordered by the stream.
 // ---------------------------------------------------------------------------
 
-template<class T>
+template<class T, class TC>
 void gmgGsColorKokkosFused(
     solvers::GmgFab<T>& sol,
     const solvers::GmgFab<T>& rhs,
-    const solvers::GmgFab<T>& ux,
-    const solvers::GmgFab<T>& lx,
-    const solvers::GmgFab<T>& uy,
-    const solvers::GmgFab<T>& ly,
-    const solvers::GmgFab<T>& uz,
-    const solvers::GmgFab<T>& lz,
-    const solvers::GmgFab<T>& alpha,
+    const solvers::GmgFab<TC>& ux,
+    const solvers::GmgFab<TC>& lx,
+    const solvers::GmgFab<TC>& uy,
+    const solvers::GmgFab<TC>& ly,
+    const solvers::GmgFab<TC>& uz,
+    const solvers::GmgFab<TC>& lz,
+    const solvers::GmgFab<TC>& alpha,
     int parity,
     double omega,
     bool fence = true
@@ -319,7 +330,7 @@ void gmgGsColorKokkosFused(
         "gmg_gs_fused",
         rhs,
         BENCH_LAMBDA(int ib, int i, int j, int k) {
-            GmgGsCell<T> {
+            GmgGsCell<T, TC> {
                 psi[ib],
                 b[ib],
                 ax[ib],
@@ -340,18 +351,18 @@ void gmgGsColorKokkosFused(
     }
 }
 
-template<class T>
+template<class T, class TC>
 void gmgResidRestrictKokkosFused(
     const solvers::GmgFab<T>& sol,
     const solvers::GmgFab<T>& rhs,
     solvers::GmgFab<T>& crhs,
-    const solvers::GmgFab<T>& ux,
-    const solvers::GmgFab<T>& lx,
-    const solvers::GmgFab<T>& uy,
-    const solvers::GmgFab<T>& ly,
-    const solvers::GmgFab<T>& uz,
-    const solvers::GmgFab<T>& lz,
-    const solvers::GmgFab<T>& alpha,
+    const solvers::GmgFab<TC>& ux,
+    const solvers::GmgFab<TC>& lx,
+    const solvers::GmgFab<TC>& uy,
+    const solvers::GmgFab<TC>& ly,
+    const solvers::GmgFab<TC>& uz,
+    const solvers::GmgFab<TC>& lz,
+    const solvers::GmgFab<TC>& alpha,
     bool fence = true
 )
 {
@@ -369,7 +380,7 @@ void gmgResidRestrictKokkosFused(
         "gmg_residrestrict_fused",
         crhs,
         BENCH_LAMBDA(int ib, int ic, int jc, int kc) {
-            GmgResidRestrictCell<T> {
+            GmgResidRestrictCell<T, TC> {
                 cr[ib], psi[ib], b[ib], ax[ib], lxa[ib], ay[ib], lya[ib], az[ib], lza[ib], al[ib]
             }(ic, jc, kc);
         }

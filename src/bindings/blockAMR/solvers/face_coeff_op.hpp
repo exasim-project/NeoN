@@ -36,13 +36,22 @@ namespace blockamr::solvers
 // off-diagonal and the diagonal. This is exact whenever the flux part
 // annihilates a constant (divergence-free flux / pure diffusion); any
 // non-conservative diagonal contribution must be folded into alpha.
-class FaceCoeffOp : public AmrexLinOpBase<FaceCoeffOp>
+//
+// V is the value type of the flat Ginkgo vectors it is applied to -- double for
+// the fp64 Krylov solvers, float for the inner solve of the mixed-precision
+// refinement. The COEFFICIENTS are amrex::MultiFab either way, so an fp32
+// instantiation narrows the Krylov vectors and nothing else; the operator it
+// applies is the same one, evaluated in V. V = float is a DEVICE path only (the
+// host stencil below stays double), which the constructor rejects rather than
+// silently downgrades.
+template<class V>
+class FaceCoeffOpT : public AmrexLinOpBase<FaceCoeffOpT<V>, V>
 {
 public:
 
-    explicit FaceCoeffOp(std::shared_ptr<const gko::Executor> exec);
+    explicit FaceCoeffOpT(std::shared_ptr<const gko::Executor> exec);
 
-    FaceCoeffOp(
+    FaceCoeffOpT(
         std::shared_ptr<const gko::Executor> exec,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm,
@@ -62,7 +71,7 @@ protected:
 
     // Keeps the base's advanced apply_impl(alpha, b, beta, x) visible in this
     // scope (the declaration below would otherwise hide it).
-    using AmrexLinOpBase<FaceCoeffOp>::apply_impl;
+    using AmrexLinOpBase<FaceCoeffOpT<V>, V>::apply_impl;
 
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override;
 
@@ -87,5 +96,10 @@ private:
     std::shared_ptr<amrex::MultiFab> in_;
     std::shared_ptr<amrex::MultiFab> out_;
 };
+
+// The fp64 operator every existing caller means by "FaceCoeffOp", and its fp32
+// twin. Both are explicitly instantiated in face_coeff_op.cpp.
+using FaceCoeffOp = FaceCoeffOpT<double>;
+using FaceCoeffOp32 = FaceCoeffOpT<float>;
 
 } // namespace blockamr::solvers

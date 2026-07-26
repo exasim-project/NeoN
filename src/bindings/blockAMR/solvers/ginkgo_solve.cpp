@@ -89,8 +89,11 @@ void bindPersistent(nb::module_& m, const char* name)
                int gmg_min_bottom,
                const std::string& gmg_smoother,
                const std::string& gmg_precision,
+               const std::string& gmg_coeff_precision,
                double gmg_omega,
                int gmg_agg_l0_size,
+               double mp_inner_rtol,
+               int mp_inner_max_iter,
                const std::string& norm)
             {
                 new (self)
@@ -119,8 +122,11 @@ void bindPersistent(nb::module_& m, const char* name)
                       gmg_min_bottom,
                       gmg_smoother,
                       gmg_precision,
+                      gmg_coeff_precision,
                       gmg_omega,
                       gmg_agg_l0_size,
+                      mp_inner_rtol,
+                      mp_inner_max_iter,
                       norm);
             },
             nb::arg("alpha"),
@@ -147,6 +153,27 @@ void bindPersistent(nb::module_& m, const char* name)
             // the generated GMG V-cycle LinOp. Same GMG semantics (builds the
             // hierarchy, ignores `precond`, needs the accurate coarsest solve) but
             // driven through Ginkgo's Dense pack/unpack + Convergence logger.
+            //
+            // solver="mpir" is mixed-precision iterative refinement, and needs
+            // precond="gmg_kokkos" (the only preconditioner with an fp32 apply). The
+            // OUTER loop is the same gko::solver::Ir<double> over the same fp64
+            // FaceCoeffOp, so r = b - A x, the stopping test and the answer are the
+            // fp64 solver's; what changes is the inner correction, a preconditioned
+            // Cg<float>. Every Krylov vector in that inner solve is half the width,
+            // which is the point: at 256^3 the Krylov side of a tuned solve is 74 of
+            // 189 ms and every kernel in it is at 83-100% of the memory roofline, so
+            // bytes are the only lever left.
+            //
+            // A MEASURED NEGATIVE RESULT, kept wired as one. The saving arrives: an
+            // fp32 inner iteration costs 18.1 ms against fp64 CG's 21.4, i.e. the
+            // 1.18x that halving the vectors predicts. Refinement then spends it and
+            // more -- the cheapest schedule needs 15 preconditioner applies where CG
+            // needed 10, because a restart re-pays the initial residual and the
+            // pre-check preconditioner apply and discards the Krylov space. Net at
+            // 256^3: 302 ms against 214, 1.41x SLOWER, and no inner tolerance
+            // recovers it. Drive it with mp_inner_max_iter rather than
+            // mp_inner_rtol. Full table and the two hypotheses ruled out in
+            // mixed_precision.hpp.
             nb::arg("solver") = "bicgstab",
             nb::arg("max_iter") = 1000,
             nb::arg("rtol") = 1e-10,
@@ -217,6 +244,35 @@ void bindPersistent(nb::module_& m, const char* name)
             // result, wired up and kept as one: see bf16.hpp. Matrix-free
             // solver only.
             nb::arg("gmg_precision") = "fp64",
+            // The storage type of the COEFFICIENTS alone (alpha and the face
+            // arrays); "" (the default) means the same as gmg_precision, which is
+            // what every level did before this option existed. May not be wider
+            // than gmg_precision, and needs precond="gmg_kokkos".
+            //
+            // This is the half of the bf16 experiment that survives. A rounded psi
+            // is amplified: the cycle restricts b - A psi, so psi's ~0.4% storage
+            // error reaches the coarse grid times ||A|| ~ 6/dx^2, and the cycle
+            // weakens as n^2 (see gmg_precision above). A rounded COEFFICIENT is a
+            // ~0.4% perturbation of the preconditioner's operator and nothing
+            // else -- the operator CG applies and the residual it stops on are
+            // still fp64 -- so it cannot make an answer wrong, only cost
+            // iterations. With gmg_share_coeffs on they are 4 of the 6 arrays a
+            // colour sweep streams.
+            //
+            // Measured at 256^3 (single box, l0 agglomerated), fields/coeffs:
+            //
+            //   fp32/bf16   V-cycle 12.52 -> 10.60 ms, r1/r0 0.70185 -> 0.70147,
+            //               CG 9 iterations either way, solve 213 -> 195 ms.
+            //   fp64/bf16   23.82 -> 26.54 ms, i.e. 1.11x SLOWER at the same cycle
+            //               strength -- narrowing pays only once the FIELDS are
+            //               narrow. Kept reachable as the measured negative.
+            //
+            // Note the benchmark trap: on a constant-coefficient Laplacian over a
+            // power-of-two grid every coefficient (1/dx^2, alpha=1, and the 1/4 and
+            // 1/8 restriction weights) is exactly representable, so a bf16
+            // hierarchy is BIT-IDENTICAL and reports the full saving for free. The
+            // rows above use a varying b for exactly that reason.
+            nb::arg("gmg_coeff_precision") = "",
             // RB-SOR relaxation factor for gmg_smoother="rbgs":
             //   sol <- sol + gmg_omega * (gs - sol)
             // 1.0 is plain red-black Gauss-Seidel; 1.1 (the default) over-relaxes
@@ -280,6 +336,14 @@ void bindPersistent(nb::module_& m, const char* name)
             // apply, since the solver's flat vectors are in the CALLER's cell order.
             // precond="gmg_kokkos" only; ignored by every other preconditioner.
             nb::arg("gmg_agg_l0_size") = 0,
+            // solver="mpir" only. The relative residual the INNER fp32 Cg stops at,
+            // and its iteration cap. This is the whole design of a refinement
+            // scheme: the outer contraction factor IS the inner tolerance, so 1e-2
+            // means ~2 digits per outer step. Tighter wastes fp32 iterations on
+            // digits the outer loop recomputes; looser turns the outer loop into
+            // Richardson. Ignored by every other solver.
+            nb::arg("mp_inner_rtol") = 1e-2,
+            nb::arg("mp_inner_max_iter") = 20,
             nb::arg("norm") = "l2",
             nb::keep_alive<1, 2>(),
             nb::keep_alive<1, 3>(),

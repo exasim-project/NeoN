@@ -69,6 +69,23 @@ class GmgConfig(BaseModel):
     # than doubles already at 64^3 (11 -> 25) and reaches 273 vs 12 at 256^3.
     # There is no size at which it wins. See solvers/bf16.hpp.
     precision: Literal["fp64", "fp32", "bf16"] = "fp64"
+    # Storage type of the COEFFICIENTS alone (alpha and the face arrays); "" means
+    # the same as ``precision``, which is what every level did before this existed.
+    # May not be wider than ``precision``, and needs ``precond="gmg_kokkos"``.
+    #
+    # This is the half of the bf16 experiment above that survives. Rounding psi is
+    # amplified — the cycle restricts ``b - A psi``, so psi's storage error reaches
+    # the coarse grid times ``||A|| ~ 6/dx^2``. Rounding a COEFFICIENT only perturbs
+    # the preconditioner's operator by the same ~0.4%; the operator CG applies and
+    # the residual it stops on stay fp64, so it can cost iterations but never
+    # correctness.
+    #
+    # Measured at 256^3 with a varying b, fields/coeffs: fp32/bf16 takes the
+    # V-cycle from 12.52 to 10.60 ms at a residual reduction of 0.70147 against
+    # fp32/fp32's 0.70185 — same cycle, 1.18x cheaper, 9 CG iterations either way
+    # (solve 213 -> 195 ms). fp64/bf16 is 1.11x SLOWER: narrow the coefficients
+    # only once the fields are narrow.
+    coeff_precision: Literal["", "fp64", "fp32", "bf16"] = ""
 
     def kwargs(self) -> dict:
         """Constructor kwargs to splat into ``FaceCoeffSolver(..., precond="gmg")``."""
@@ -81,5 +98,6 @@ class GmgConfig(BaseModel):
             "gmg_omega": self.omega,
             "gmg_smoother": self.smoother,
             "gmg_precision": self.precision,
+            "gmg_coeff_precision": self.coeff_precision,
             "precond_cycles": self.cycles,
         }

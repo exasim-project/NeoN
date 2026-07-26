@@ -163,6 +163,7 @@ void registerKokkosBench(nb::module_& m)
            bool agglomerate,
            int agg_grid_size,
            const std::string& precision,
+           const std::string& coeff_precision,
            bool share_coeffs,
            const std::vector<int>& bc,
            int agg_level0_size,
@@ -193,6 +194,7 @@ void registerKokkosBench(nb::module_& m)
             args.agglomerate = agglomerate;
             args.aggGridSize = agg_grid_size;
             args.precision = precision;
+            args.coeffPrecision = coeff_precision;
             args.shareCoeffs = share_coeffs;
             args.aggLevel0Size = agg_level0_size;
             // Integers, not the solver's bc strings: parseBc lives in the Ginkgo-only
@@ -246,6 +248,9 @@ void registerKokkosBench(nb::module_& m)
         nb::arg("agg_grid_size") = 32,
         // The level storage type: "fp64", "fp32" or "bf16" -- kokkos_opt only.
         nb::arg("precision") = "fp64",
+        // The COEFFICIENT storage type; "" (the default) means the same as
+        // `precision`. May not be wider than it. kokkos_opt only.
+        nb::arg("coeff_precision") = "",
         nb::arg("share_coeffs") = false,
         // Per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1 homogeneous
         // Dirichlet, 2 homogeneous Neumann. Empty (the default) means all periodic.

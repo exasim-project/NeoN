@@ -113,6 +113,43 @@ Precision parsePrecision(const std::string& p)
     );
 }
 
+// Bytes per stored value, used only to reject a coefficient type WIDER than the field
+// type: that combination costs traffic to buy accuracy in the array that needs it
+// least, so it is a configuration mistake rather than a trade-off worth instantiating.
+int precisionBytes(Precision p)
+{
+    switch (p)
+    {
+    case Precision::fp64:
+        return 8;
+    case Precision::fp32:
+        return 4;
+    case Precision::bf16:
+        return 2;
+    }
+    return 8;
+}
+
+// The coefficient precision defaults to the field precision, which is what the whole
+// hierarchy used before the two were separable.
+Precision parseCoeffPrecision(const std::string& coeff, const std::string& field)
+{
+    const Precision f = parsePrecision(field);
+    if (coeff.empty())
+    {
+        return f;
+    }
+    const Precision c = parsePrecision(coeff);
+    if (precisionBytes(c) > precisionBytes(f))
+    {
+        throw std::runtime_error(
+            "benchGmgVcycle: coeff_precision '" + coeff + "' is wider than precision '" + field
+            + "'; narrow the fields first"
+        );
+    }
+    return c;
+}
+
 // ---------------------------------------------------------------------------
 // The backends. Each is the three kernels the timed V-cycle runs plus the two
 // cross-runtime ordering points, and nothing else, so a backend cannot quietly
@@ -306,15 +343,18 @@ bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
 
 // One multigrid level, as in GmgLevelT: geometry, rediscretised coefficients and
 // preallocated work fields (sol needs 1 ghost for the stencil, rhs is valid-only).
-template<class T>
+template<class T, class TC>
 struct LevelT
 {
     // The level fab type production uses (FabArray<BaseFab<T>>, not MultiFab), so the
-    // production kernels apply unchanged.
+    // production kernels apply unchanged. Two of them: the fields (sol, rhs) carry T,
+    // the coefficients carry TC. See GmgGsCell for why the two are separable.
     using Fab = solvers::GmgFab<T>;
+    using CoeffFab = solvers::GmgFab<TC>;
 
     amrex::Geometry geom;
-    std::unique_ptr<Fab> alpha, ux, lx, uy, ly, uz, lz, sol, rhs;
+    std::unique_ptr<CoeffFab> alpha, ux, lx, uy, ly, uz, lz;
+    std::unique_ptr<Fab> sol, rhs;
 
     // lx/ly/lz are NULL on a level that shares one face coefficient per direction
     // (GmgArgs::shareCoeffs, kokkos_opt only). The stencil reads the east coefficient
@@ -323,9 +363,9 @@ struct LevelT
     // the same arithmetic on half the storage. Read the lower coefficients through
     // these accessors, never through the pointers, so a shared level cannot be
     // dereferenced by accident.
-    [[nodiscard]] const Fab& lxf() const { return lx ? *lx : *ux; }
-    [[nodiscard]] const Fab& lyf() const { return ly ? *ly : *uy; }
-    [[nodiscard]] const Fab& lzf() const { return lz ? *lz : *uz; }
+    [[nodiscard]] const CoeffFab& lxf() const { return lx ? *lx : *ux; }
+    [[nodiscard]] const CoeffFab& lyf() const { return ly ? *ly : *uy; }
+    [[nodiscard]] const CoeffFab& lzf() const { return lz ? *lz : *uz; }
     [[nodiscard]] bool shared() const { return lx == nullptr; }
 
     // Agglomerated levels only. This level's BoxArray is a fresh decomposition of
@@ -347,13 +387,14 @@ struct LevelT
     CopyPlan halo, bc, xferIn, xferOut;
 };
 
-template<class Backend, class T>
+template<class Backend, class T, class TC = T>
 class Vcycle
 {
 public:
 
-    using Level = LevelT<T>;
+    using Level = LevelT<T, TC>;
     using Fab = solvers::GmgFab<T>;
+    using CoeffFab = solvers::GmgFab<TC>;
 
     Vcycle(const GmgArgs& args)
         : preSweeps_(args.preSweeps), postSweeps_(args.postSweeps),
@@ -553,7 +594,8 @@ public:
     // (gmg_precond.hpp:304), including the two AMReX transfers -- so it pays the same
     // cross-runtime sync at each end, and a solver-level comparison measures the
     // cycle rather than a difference in plumbing. Inside, the cycle stays fence-free.
-    void applyFlat(const double* r, double* z, int nCycles)
+    template<class V>
+    void applyFlat(const V* r, V* z, int nCycles)
     {
         Level& L0 = levels_.front();
         // The flat vector's cell order is the CALLER's (MFIter order over the caller's
@@ -656,12 +698,27 @@ public:
 
 private:
 
+    // Templated on the fab's value type so the field fabs and the (possibly narrower)
+    // coefficient fabs share one allocation path.
+    template<class V>
+    static std::unique_ptr<solvers::GmgFab<V>>
+    makeFab(const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, int ng)
+    {
+        auto mf = std::make_unique<solvers::GmgFab<V>>(ba, dm, 1, ng);
+        mf->setVal(V(0));
+        return mf;
+    }
+
     static std::unique_ptr<Fab>
     makeMf(const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, int ng)
     {
-        auto mf = std::make_unique<Fab>(ba, dm, 1, ng);
-        mf->setVal(T(0));
-        return mf;
+        return makeFab<T>(ba, dm, ng);
+    }
+
+    static std::unique_ptr<CoeffFab>
+    makeCoeffMf(const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, int ng)
+    {
+        return makeFab<TC>(ba, dm, ng);
     }
 
     static Level makeLevel(
@@ -673,17 +730,17 @@ private:
     {
         Level L;
         L.geom = geom;
-        L.alpha = makeMf(ba, dm, 0);
+        L.alpha = makeCoeffMf(ba, dm, 0);
         const auto fba = [&ba](int d)
         { return amrex::convert(ba, amrex::IntVect::TheDimensionVector(d)); };
-        L.ux = makeMf(fba(0), dm, 0);
-        L.uy = makeMf(fba(1), dm, 0);
-        L.uz = makeMf(fba(2), dm, 0);
+        L.ux = makeCoeffMf(fba(0), dm, 0);
+        L.uy = makeCoeffMf(fba(1), dm, 0);
+        L.uz = makeCoeffMf(fba(2), dm, 0);
         if (!shared)
         {
-            L.lx = makeMf(fba(0), dm, 0);
-            L.ly = makeMf(fba(1), dm, 0);
-            L.lz = makeMf(fba(2), dm, 0);
+            L.lx = makeCoeffMf(fba(0), dm, 0);
+            L.ly = makeCoeffMf(fba(1), dm, 0);
+            L.lz = makeCoeffMf(fba(2), dm, 0);
         }
         L.sol = makeMf(ba, dm, 1);
         L.rhs = makeMf(ba, dm, 0);
@@ -713,15 +770,15 @@ private:
     // preserved down the hierarchy and the pair never has to be re-formed.
     static void restrictCoeffs(const Level& f, Level& c)
     {
-        solvers::gmgRestrictDevice<T>(*f.alpha, *c.alpha);
-        solvers::gmgCoarsenFaceDevice<T>(*f.ux, *c.ux, 0, 4.0);
-        solvers::gmgCoarsenFaceDevice<T>(*f.uy, *c.uy, 1, 4.0);
-        solvers::gmgCoarsenFaceDevice<T>(*f.uz, *c.uz, 2, 4.0);
+        solvers::gmgRestrictDevice<TC>(*f.alpha, *c.alpha);
+        solvers::gmgCoarsenFaceDevice<TC>(*f.ux, *c.ux, 0, 4.0);
+        solvers::gmgCoarsenFaceDevice<TC>(*f.uy, *c.uy, 1, 4.0);
+        solvers::gmgCoarsenFaceDevice<TC>(*f.uz, *c.uz, 2, 4.0);
         if (!c.shared())
         {
-            solvers::gmgCoarsenFaceDevice<T>(f.lxf(), *c.lx, 0, 4.0);
-            solvers::gmgCoarsenFaceDevice<T>(f.lyf(), *c.ly, 1, 4.0);
-            solvers::gmgCoarsenFaceDevice<T>(f.lzf(), *c.lz, 2, 4.0);
+            solvers::gmgCoarsenFaceDevice<TC>(f.lxf(), *c.lx, 0, 4.0);
+            solvers::gmgCoarsenFaceDevice<TC>(f.lyf(), *c.ly, 1, 4.0);
+            solvers::gmgCoarsenFaceDevice<TC>(f.lzf(), *c.lz, 2, 4.0);
         }
     }
 
@@ -886,10 +943,10 @@ void fenceAll()
     }
 }
 
-template<class Backend, class T>
+template<class Backend, class T, class TC = T>
 GmgResult run(const GmgArgs& args, int iters, int batches)
 {
-    Vcycle<Backend, T> v(args);
+    Vcycle<Backend, T, TC> v(args);
 
     GmgResult r;
     r.nlevels = v.nlevels();
@@ -937,7 +994,7 @@ GmgResult run(const GmgArgs& args, int iters, int batches)
 // The optimised V-cycle behind the Ginkgo-free handle of gmg_apply.hpp. Fixed to
 // KokkosOptGmgBackend: a caller wanting the baselines has the bench for that, and a
 // preconditioner has no reason to run a deliberately unoptimised launcher.
-template<class T>
+template<class T, class TC = T>
 class KokkosGmgApplyImpl final : public KokkosGmgApply
 {
 public:
@@ -946,13 +1003,51 @@ public:
 
     void apply(const double* r, double* z) override { v_.applyFlat(r, z, nCycles_); }
 
+    void apply(const float* r, float* z) override { v_.applyFlat(r, z, nCycles_); }
+
     [[nodiscard]] int nlevels() const override { return v_.nlevels(); }
 
 private:
 
-    Vcycle<KokkosOptGmgBackend, T> v_;
+    Vcycle<KokkosOptGmgBackend, T, TC> v_;
     int nCycles_;
 };
+
+// The six (field, coefficient) pairs, as one enum. parseCoeffPrecision has already
+// rejected a coefficient type wider than the field type, so the other three cells of
+// the 3x3 matrix cannot arrive here and are never instantiated.
+enum class PrecPair
+{
+    f64c64,
+    f64c32,
+    f64c16,
+    f32c32,
+    f32c16,
+    f16c16
+};
+
+PrecPair precPair(Precision field, Precision coeff)
+{
+    switch (field)
+    {
+    case Precision::fp64:
+        switch (coeff)
+        {
+        case Precision::fp32:
+            return PrecPair::f64c32;
+        case Precision::bf16:
+            return PrecPair::f64c16;
+        case Precision::fp64:
+            break;
+        }
+        return PrecPair::f64c64;
+    case Precision::fp32:
+        return coeff == Precision::bf16 ? PrecPair::f32c16 : PrecPair::f32c32;
+    case Precision::bf16:
+        break;
+    }
+    return PrecPair::f16c16;
+}
 
 } // namespace
 
@@ -991,17 +1086,25 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     args.agglomerate = opts.agglomerate;
     args.aggGridSize = opts.aggGridSize;
     args.precision = opts.precision;
+    args.coeffPrecision = opts.coeffPrecision;
     args.shareCoeffs = opts.shareCoeffs;
     args.bc = opts.bc;
     args.aggLevel0Size = opts.aggLevel0Size;
 
-    switch (parsePrecision(opts.precision))
+    const Precision coeff = parseCoeffPrecision(opts.coeffPrecision, opts.precision);
+    switch (precPair(parsePrecision(opts.precision), coeff))
     {
-    case Precision::fp32:
+    case PrecPair::f64c32:
+        return std::make_unique<KokkosGmgApplyImpl<double, float>>(args, opts.cycles);
+    case PrecPair::f64c16:
+        return std::make_unique<KokkosGmgApplyImpl<double, solvers::Bf16>>(args, opts.cycles);
+    case PrecPair::f32c32:
         return std::make_unique<KokkosGmgApplyImpl<float>>(args, opts.cycles);
-    case Precision::bf16:
+    case PrecPair::f32c16:
+        return std::make_unique<KokkosGmgApplyImpl<float, solvers::Bf16>>(args, opts.cycles);
+    case PrecPair::f16c16:
         return std::make_unique<KokkosGmgApplyImpl<solvers::Bf16>>(args, opts.cycles);
-    case Precision::fp64:
+    case PrecPair::f64c64:
         break;
     }
     return std::make_unique<KokkosGmgApplyImpl<double>>(args, opts.cycles);
@@ -1023,10 +1126,18 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
     // fall through to fp64, and silently ignoring a reduced precision on a backend
     // that has no reduced hierarchy would report an fp64 timing under its label.
     const Precision prec = parsePrecision(args.precision);
+    const Precision coeffPrec = parseCoeffPrecision(args.coeffPrecision, args.precision);
     if (prec != Precision::fp64 && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(
             "benchGmgVcycle: precision '" + args.precision + "' is implemented for the '"
+            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
+        );
+    }
+    if (coeffPrec != prec && backend != KokkosOptGmgBackend::tag)
+    {
+        throw std::runtime_error(
+            "benchGmgVcycle: coeff_precision '" + args.coeffPrecision + "' is implemented for the '"
             + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
         );
     }
@@ -1060,16 +1171,23 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
     }
     if (backend == KokkosOptGmgBackend::tag)
     {
-        switch (prec)
+        using B = KokkosOptGmgBackend;
+        switch (precPair(prec, coeffPrec))
         {
-        case Precision::fp32:
-            return run<KokkosOptGmgBackend, float>(args, iters, batches);
-        case Precision::bf16:
-            return run<KokkosOptGmgBackend, solvers::Bf16>(args, iters, batches);
-        case Precision::fp64:
+        case PrecPair::f64c32:
+            return run<B, double, float>(args, iters, batches);
+        case PrecPair::f64c16:
+            return run<B, double, solvers::Bf16>(args, iters, batches);
+        case PrecPair::f32c32:
+            return run<B, float>(args, iters, batches);
+        case PrecPair::f32c16:
+            return run<B, float, solvers::Bf16>(args, iters, batches);
+        case PrecPair::f16c16:
+            return run<B, solvers::Bf16>(args, iters, batches);
+        case PrecPair::f64c64:
             break;
         }
-        return run<KokkosOptGmgBackend, double>(args, iters, batches);
+        return run<B, double>(args, iters, batches);
     }
     throw std::runtime_error("benchGmgVcycle: unknown backend '" + backend + "'");
 }

@@ -37,21 +37,27 @@
 namespace blockamr::solvers
 {
 
-class GmgKokkosPrecond : public AmrexLinOpBase<GmgKokkosPrecond>
+// V is the value type of the Krylov vectors this preconditioner is applied to --
+// double for the ordinary solvers, float inside the mixed-precision refinement. It
+// is independent of the HIERARCHY's storage type: KokkosGmgApply converts on the
+// way in and out, so an fp32 Krylov can drive an fp64 hierarchy and vice versa.
+template<class V>
+class GmgKokkosPrecondT : public AmrexLinOpBase<GmgKokkosPrecondT<V>, V>
 {
 public:
 
     // Required by Ginkgo's polymorphic-object machinery (create_default / clear).
-    explicit GmgKokkosPrecond(std::shared_ptr<const gko::Executor> exec)
-        : AmrexLinOpBase<GmgKokkosPrecond>(exec)
+    explicit GmgKokkosPrecondT(std::shared_ptr<const gko::Executor> exec)
+        : AmrexLinOpBase<GmgKokkosPrecondT<V>, V>(exec)
     {}
 
-    GmgKokkosPrecond(
+    GmgKokkosPrecondT(
         std::shared_ptr<const gko::Executor> exec,
         gko::size_type n,
         std::shared_ptr<bench::KokkosGmgApply> vcycle
     )
-        : AmrexLinOpBase<GmgKokkosPrecond>(exec, gko::dim<2> {n, n}), vcycle_(std::move(vcycle))
+        : AmrexLinOpBase<GmgKokkosPrecondT<V>, V>(exec, gko::dim<2> {n, n}),
+          vcycle_(std::move(vcycle))
     {
         if (exec->get_master().get() == exec.get())
         {
@@ -66,7 +72,7 @@ public:
 protected:
 
     // Keeps the base's advanced apply_impl(alpha, b, beta, x) visible in this scope.
-    using AmrexLinOpBase<GmgKokkosPrecond>::apply_impl;
+    using AmrexLinOpBase<GmgKokkosPrecondT<V>, V>::apply_impl;
 
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
     {
@@ -78,7 +84,8 @@ protected:
         prof::Timer t("gmgk.vcycle");
         // shared_ptr<T> in a const method still yields a non-const T*, so the
         // handle's mutating apply is reachable without a cast.
-        vcycle_->apply(gko::as<Dense>(b)->get_const_values(), gko::as<Dense>(x)->get_values());
+        using DenseV = gko::matrix::Dense<V>;
+        vcycle_->apply(gko::as<DenseV>(b)->get_const_values(), gko::as<DenseV>(x)->get_values());
     }
 
 private:
@@ -87,5 +94,8 @@ private:
     // operators a copy-assignment, which a move-only member would delete.
     std::shared_ptr<bench::KokkosGmgApply> vcycle_;
 };
+
+using GmgKokkosPrecond = GmgKokkosPrecondT<double>;
+using GmgKokkosPrecond32 = GmgKokkosPrecondT<float>;
 
 } // namespace blockamr::solvers

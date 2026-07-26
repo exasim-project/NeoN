@@ -20,6 +20,7 @@
 #include "csr.hpp"
 #include "face_coeff_op.hpp"
 #include "gmg_kokkos_precond.hpp"
+#include "mixed_precision.hpp"
 #include "mlmg_ops.hpp"
 #include "profiling.hpp"
 #include "transfer.hpp"
@@ -176,8 +177,11 @@ FaceCoeffSolver::FaceCoeffSolver(
     int gmg_min_bottom,
     const std::string& gmg_smoother,
     const std::string& gmg_precision,
+    const std::string& gmg_coeff_precision,
     double gmg_omega,
     int gmg_agg_l0_size,
+    double mp_inner_rtol,
+    int mp_inner_max_iter,
     const std::string& norm
 )
     : PersistentSolver(
@@ -186,6 +190,18 @@ FaceCoeffSolver::FaceCoeffSolver(
         solver != "gmg"
     )
 {
+    // A separate coefficient precision exists in the Kokkos hierarchy alone. Named
+    // rather than ignored: the shipped GmgPrecondT stores one type per level, so
+    // accepting the option there would report a narrowed-coefficient timing for a
+    // hierarchy that never narrowed anything.
+    if (!gmg_coeff_precision.empty() && precond != "gmg_kokkos")
+    {
+        throw std::runtime_error(
+            "FaceCoeffSolver: gmg_coeff_precision needs precond='gmg_kokkos' (the shipped GMG "
+            "hierarchy stores its coefficients in the same type as its fields)"
+        );
+    }
+
     // CG-safety: the V-cycle is a symmetric (SPD) preconditioner only when
     // the post-smoother is the adjoint of the pre-smoother, which requires
     // equal pre/post counts. With asymmetric counts CG's assumption breaks;
@@ -351,6 +367,8 @@ FaceCoeffSolver::FaceCoeffSolver(
     }
 
     std::shared_ptr<const gko::LinOp> pc;
+    // Set only by precond="gmg_kokkos"; solver="mpir" needs it and says so.
+    std::shared_ptr<bench::KokkosGmgApply> vcycle;
     if (precond == "gmg")
     {
         if (precond_mlmg != nullptr)
@@ -411,18 +429,21 @@ FaceCoeffSolver::FaceCoeffSolver(
         // throws on an unknown spelling, so a typo cannot quietly run fp64. This
         // is the only precond that has a bf16 hierarchy.
         opts.precision = gmg_precision;
+        // Likewise unvalidated here beyond the guard above: makeKokkosGmgApply
+        // rejects an unknown spelling and a coefficient type wider than the fields.
+        opts.coeffPrecision = gmg_coeff_precision;
         // The parsed spec straight through: the ported V-cycle carries the same
         // homogeneous Dirichlet/Neumann reflection as precond="gmg", built once per
         // level as a device plan rather than as a per-box AMReX launch.
         opts.bc = bcArr;
         opts.aggLevel0Size = gmg_agg_l0_size;
-        pc = gko::share(GmgKokkosPrecond::create(
-            exec_,
-            n_,
-            std::shared_ptr<bench::KokkosGmgApply>(
-                bench::makeKokkosGmgApply(geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, opts)
-            )
-        ));
+        // Held in a local as well: solver="mpir" wraps the SAME hierarchy in an fp32
+        // LinOp, and building it twice would double the setup and the device memory
+        // for two views of one V-cycle.
+        vcycle = std::shared_ptr<bench::KokkosGmgApply>(
+            bench::makeKokkosGmgApply(geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, opts)
+        );
+        pc = gko::share(GmgKokkosPrecond::create(exec_, n_, vcycle));
     }
     else if (precond == "mlmg" || precond == "none")
     {
@@ -445,7 +466,58 @@ FaceCoeffSolver::FaceCoeffSolver(
             + "' (expected 'none', 'mlmg', 'gmg' or 'gmg_kokkos')"
         );
     }
-    build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
+    // Mixed-precision iterative refinement. The OUTER loop is Ginkgo's Ir over the
+    // fp64 operator -- it forms r = b - A x and runs the stopping test in fp64, so
+    // the answer and the tolerance are the fp64 solver's -- and the inner correction
+    // is a preconditioned Cg<float>. Expressed through the existing "ir" path
+    // because Ir::with_generated_solver is exactly the hook needed: what changes is
+    // only WHICH LinOp plays the inner solver.
+    std::string krylov = solver;
+    if (solver == "mpir")
+    {
+        if (!vcycle)
+        {
+            throw std::runtime_error(
+                "FaceCoeffSolver: solver='mpir' needs precond='gmg_kokkos' (it is the only "
+                "preconditioner with an fp32 apply)"
+            );
+        }
+        auto op32 = gko::share(FaceCoeffOp32::create(
+            exec_,
+            alpha->boxArray(),
+            alpha->DistributionMap(),
+            geom,
+            n_,
+            alpha,
+            ux,
+            lx,
+            uy,
+            ly,
+            uz,
+            lz,
+            bcArr
+        ));
+        auto pc32 = gko::share(GmgKokkosPrecond32::create(exec_, n_, vcycle));
+        // l2 rather than the caller's norm: this is an INNER tolerance, not a
+        // convergence claim, and ResidualNormInf is an fp64 criterion.
+        std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> innerCriteria {
+            gko::stop::Iteration::build()
+                .with_max_iters(static_cast<gko::size_type>(mp_inner_max_iter))
+                .on(exec_),
+            gko::stop::ResidualNorm<float>::build()
+                .with_baseline(gko::stop::mode::rhs_norm)
+                .with_reduction_factor(static_cast<float>(mp_inner_rtol))
+                .on(exec_)
+        };
+        auto cg32 = gko::share(gko::solver::Cg<float>::build()
+                                   .with_criteria(innerCriteria)
+                                   .with_generated_preconditioner(pc32)
+                                   .on(exec_)
+                                   ->generate(op32));
+        pc = gko::share(MixedPrecisionSolve::create(exec_, n_, cg32));
+        krylov = "ir";
+    }
+    build(op, krylov, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
 }
 
 nb::dict FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
@@ -647,8 +719,11 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     int /*gmg_min_bottom*/,
     const std::string& /*gmg_smoother*/,
     const std::string& /*gmg_precision*/,
+    const std::string& /*gmg_coeff_precision*/,
     double /*gmg_omega*/,
     int /*gmg_agg_l0_size*/,
+    double /*mp_inner_rtol*/,
+    int /*mp_inner_max_iter*/,
     const std::string& norm
 )
     : PersistentSolver(

@@ -111,8 +111,11 @@ public:
         int gmg_min_bottom,
         const std::string& gmg_smoother,
         const std::string& gmg_precision,
+        const std::string& gmg_coeff_precision,
         double gmg_omega,
         int gmg_agg_l0_size,
+        double mp_inner_rtol,
+        int mp_inner_max_iter,
         const std::string& norm
     );
 
@@ -219,8 +222,11 @@ public:
         int /*gmg_min_bottom*/,
         const std::string& /*gmg_smoother*/,
         const std::string& /*gmg_precision*/,
+        const std::string& /*gmg_coeff_precision*/,
         double /*gmg_omega*/,
         int /*gmg_agg_l0_size*/,
+        double /*mp_inner_rtol*/,
+        int /*mp_inner_max_iter*/,
         const std::string& norm
     );
 };

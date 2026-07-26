@@ -75,11 +75,36 @@ namespace blockamr::solvers
 // It is kept, wired and tested rather than deleted because a measured "no" is
 // worth more than an untested "probably not", and because the parts generalise:
 // GmgComputeT is what any reduced-precision level will need, and the precision
-// axis is now first-class in the bench. The refinement the numbers point at is
-// to store the COEFFICIENTS in bf16 while psi and rhs stay fp32 -- a coefficient
+// axis is now first-class in the bench.
+//
+// THE REFINEMENT THE NUMBERS POINTED AT, AND WHAT IT MEASURED
+//
+// Storing the COEFFICIENTS in bf16 while psi and rhs stay fp32 -- a coefficient
 // error is a 0.4% perturbation of the operator, which a preconditioner absorbs
 // without amplification, and it is 4 of the 6 arrays a shared-coefficient colour
-// sweep streams.
+// sweep streams. That is `gmg_coeff_precision`, and it works. 256^3, one box,
+// level-0 agglomerated, one V-cycle from z0 = 0:
+//
+//     fields/coeffs   ms/cycle   r1/r0 (smooth b)   CG iters   solve
+//     fp32 / fp32       12.52         0.70185           9      213 ms
+//     fp32 / bf16       10.60         0.70147           9      195 ms
+//     bf16 / bf16        9.37        97.7 (!)          --        --
+//
+// The middle column is the whole argument. Narrowing the COEFFICIENTS leaves the
+// cycle's residual reduction where it was -- 0.70147 against 0.70185, a 0.05%
+// difference, and in the favourable direction -- while narrowing the FIELDS as
+// well turns a contraction into a 98x AMPLIFICATION at this size. Same storage
+// type, same kernels, same 3 decimal digits: the difference is only which array
+// carries them, and whether ||A|| ~ 6/dx^2 multiplies the error before the coarse
+// grid sees it.
+//
+// One negative result inside the positive one: fp64 FIELDS with bf16 coefficients
+// is 23.82 -> 26.54 ms, i.e. 1.11x SLOWER, at a cycle strength identical to five
+// digits. Narrowing is only worth it once the fields are narrow too. The mechanism
+// was not isolated (no ncu run); the arithmetic is the visible difference --
+// GmgComputeT<double> is double, so every coefficient there is unpacked to float
+// and then widened again, where the fp32 path stops at the float bf16 natively
+// converts to.
 // ---------------------------------------------------------------------------
 struct Bf16
 {

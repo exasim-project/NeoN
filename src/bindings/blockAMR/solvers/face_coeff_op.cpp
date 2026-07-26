@@ -8,6 +8,7 @@
 #include <AMReX_MultiFabUtil.H>
 
 #include <algorithm>
+#include <type_traits>
 
 #include "profiling.hpp"
 #include "transfer.hpp"
@@ -24,9 +25,10 @@ namespace blockamr::solvers
 // face-coefficient stencil + full scatter/gather (interior flat values equal the
 // scattered in_ values). Flat index matches scatter_device. Assumes b/x do not
 // alias (Krylov apply never aliases operand and result).
+template<class V>
 void faceCoeffStencilFusedDevice(
-    const double* bvec,
-    double* xvec,
+    const V* bvec,
+    V* xvec,
     const amrex::MultiFab& in,
     const amrex::MultiFab& ux,
     const amrex::MultiFab& lx,
@@ -55,29 +57,33 @@ void faceCoeffStencilFusedDevice(
         const int nj = vbx.length(1);
         const long nij = static_cast<long>(ni) * nj;
         const long o = off;
-        const double* b = bvec;
-        double* xo = xvec;
+        const V* b = bvec;
+        V* xo = xvec;
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
                 const long idx =
                     o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                const double pC = b[idx];
-                const double pE = (i < hi.x) ? b[idx + 1] : psi(i + 1, j, k);
-                const double pW = (i > lo.x) ? b[idx - 1] : psi(i - 1, j, k);
-                const double pN = (j < hi.y) ? b[idx + ni] : psi(i, j + 1, k);
-                const double pS = (j > lo.y) ? b[idx - ni] : psi(i, j - 1, k);
-                const double pT = (k < hi.z) ? b[idx + nij] : psi(i, j, k + 1);
-                const double pB = (k > lo.z) ? b[idx - nij] : psi(i, j, k - 1);
-                const double aE = ax(i + 1, j, k);
-                const double aW = lxa(i, j, k);
-                const double aN = ay(i, j + 1, k);
-                const double aS = lya(i, j, k);
-                const double aT = az(i, j, k + 1);
-                const double aB = lza(i, j, k);
-                const double offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
-                const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                // Locals stay V: at V = float this is what makes the stencil an
+                // fp32 evaluation of the same operator rather than an fp64 one
+                // with narrowed endpoints. The coefficient reads below promote
+                // from amrex::Real, so a float instantiation rounds each once.
+                const V pC = b[idx];
+                const V pE = (i < hi.x) ? b[idx + 1] : static_cast<V>(psi(i + 1, j, k));
+                const V pW = (i > lo.x) ? b[idx - 1] : static_cast<V>(psi(i - 1, j, k));
+                const V pN = (j < hi.y) ? b[idx + ni] : static_cast<V>(psi(i, j + 1, k));
+                const V pS = (j > lo.y) ? b[idx - ni] : static_cast<V>(psi(i, j - 1, k));
+                const V pT = (k < hi.z) ? b[idx + nij] : static_cast<V>(psi(i, j, k + 1));
+                const V pB = (k > lo.z) ? b[idx - nij] : static_cast<V>(psi(i, j, k - 1));
+                const V aE = static_cast<V>(ax(i + 1, j, k));
+                const V aW = static_cast<V>(lxa(i, j, k));
+                const V aN = static_cast<V>(ay(i, j + 1, k));
+                const V aS = static_cast<V>(lya(i, j, k));
+                const V aT = static_cast<V>(az(i, j, k + 1));
+                const V aB = static_cast<V>(lza(i, j, k));
+                const V offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
+                const V diag = static_cast<V>(al(i, j, k)) - (aE + aW + aN + aS + aT + aB);
                 xo[idx] = diag * pC + offd;
             }
         );
@@ -85,11 +91,13 @@ void faceCoeffStencilFusedDevice(
     }
 }
 
-FaceCoeffOp::FaceCoeffOp(std::shared_ptr<const gko::Executor> exec)
-    : AmrexLinOpBase<FaceCoeffOp>(exec)
+template<class V>
+FaceCoeffOpT<V>::FaceCoeffOpT(std::shared_ptr<const gko::Executor> exec)
+    : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec)
 {}
 
-FaceCoeffOp::FaceCoeffOp(
+template<class V>
+FaceCoeffOpT<V>::FaceCoeffOpT(
     std::shared_ptr<const gko::Executor> exec,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm,
@@ -104,10 +112,18 @@ FaceCoeffOp::FaceCoeffOp(
     const amrex::MultiFab* lz,
     BcArray bc
 )
-    : AmrexLinOpBase<FaceCoeffOp>(exec, gko::dim<2> {n, n}), geom_(geom), bc_(bc),
+    : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(geom), bc_(bc),
       hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
       onDevice_(exec->get_master().get() != exec.get())
 {
+    // Only the device stencil is instantiated in V; the host loop below computes in
+    // double. Refused rather than silently run at fp64 under an fp32 label.
+    if (!onDevice_ && !std::is_same_v<V, double>)
+    {
+        throw std::runtime_error(
+            "FaceCoeffOp: the reduced-precision operator is a device path; use executor='cuda'"
+        );
+    }
     if (onDevice_)
     {
         // Reference the caller's device fields directly; the stencil reads
@@ -153,8 +169,10 @@ FaceCoeffOp::FaceCoeffOp(
     out_->setVal(0.0);
 }
 
-void FaceCoeffOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
+template<class V>
+void FaceCoeffOpT<V>::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
 {
+    using DenseV = gko::matrix::Dense<V>;
     if (onDevice_)
     {
         prof::Timer tAll("op.apply");
@@ -162,8 +180,8 @@ void FaceCoeffOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
             prof::Timer t("op.sync_gko");
             this->get_executor()->synchronize(); // b written by Ginkgo
         }
-        const double* bvals = gko::as<Dense>(b)->get_const_values();
-        double* xvals = gko::as<Dense>(x)->get_values();
+        const V* bvals = gko::as<DenseV>(b)->get_const_values();
+        V* xvals = gko::as<DenseV>(x)->get_values();
         {
             // M3 3a: only the ghost-adjacent shell needs to reach the MF —
             // FillBoundary/domain-BC read it to fill the face ghosts; the
@@ -198,7 +216,7 @@ void FaceCoeffOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
         return;
     }
 
-    scatter(gko::as<Dense>(b)->get_const_values(), *in_);
+    scatter(gko::as<DenseV>(b)->get_const_values(), *in_);
     // Fill periodic + internal-box ghosts. Physical-boundary ghosts are
     // then set by the reflect fill below when bc has dirichlet/neumann
     // sides; on all-periodic operators they stay whatever scatter left
@@ -247,7 +265,12 @@ void FaceCoeffOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
             }
         }
     }
-    gather(*out_, gko::as<Dense>(x)->get_values(), 1.0);
+    gather(*out_, gko::as<DenseV>(x)->get_values(), 1.0);
 }
+
+// The two value types the Krylov paths use. FaceCoeffOpT<float> is device-only and
+// its constructor says so; both instantiations share every line above.
+template class FaceCoeffOpT<double>;
+template class FaceCoeffOpT<float>;
 
 } // namespace blockamr::solvers

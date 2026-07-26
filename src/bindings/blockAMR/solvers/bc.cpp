@@ -72,7 +72,8 @@ parseBc(const std::vector<std::string>& bc, const amrex::Geometry& geom, const s
     return out;
 }
 
-void scatterShellDevice(const double* vec, amrex::MultiFab& mf)
+template<class V>
+void scatterShellDevice(const V* vec, amrex::MultiFab& mf)
 {
     long off = 0;
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
@@ -92,12 +93,17 @@ void scatterShellDevice(const double* vec, amrex::MultiFab& mf)
                 {
                     const long idx =
                         o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                    a(i, j, k) = vec[idx];
+                    a(i, j, k) = static_cast<amrex::Real>(vec[idx]);
                 }
             }
         );
         off += vbx.numPts();
     }
 }
+
+// The two flat-vector value types the Krylov paths use: double for the fp64
+// solvers, float for the mixed-precision inner solve.
+template void scatterShellDevice<double>(const double*, amrex::MultiFab&);
+template void scatterShellDevice<float>(const float*, amrex::MultiFab&);
 
 } // namespace blockamr::solvers

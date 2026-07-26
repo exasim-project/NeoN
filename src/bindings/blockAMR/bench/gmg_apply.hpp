@@ -52,6 +52,12 @@ struct KokkosGmgOpts
     // The flat vectors this class exchanges with the solver are fp64 regardless.
     std::string precision = "fp64";
 
+    // The storage type of the COEFFICIENTS alone; empty = same as `precision`. See
+    // GmgArgs::coeffPrecision -- narrowing these is cheaper in iterations than
+    // narrowing psi and rhs, because a coefficient error perturbs only the
+    // preconditioner's operator and never the residual CG stops on.
+    std::string coeffPrecision;
+
     // On by default here, unlike in the bench. It cannot change the result at equal
     // depth (red-black smoothing is decomposition-independent) and it is what keeps
     // the coarse levels from being one launch per tiny box; the depth it additionally
@@ -79,8 +85,12 @@ struct KokkosGmgOpts
 
 // z = M^{-1} r, on flat DEVICE vectors in the solver's cell ordering (MFIter order,
 // i fastest within a valid box -- the ordering solvers/transfer.hpp defines and the
-// whole Ginkgo stack already uses). Always fp64 on the outside, whatever the
-// hierarchy carries inside.
+// whole Ginkgo stack already uses).
+//
+// Two widths, because the Krylov vectors have two: fp64 for the ordinary solvers,
+// fp32 for the inner solve of the mixed-precision refinement. Both are independent
+// of what the HIERARCHY is stored in (`precision` above) -- the flat vector is the
+// solver's, the levels are the V-cycle's, and the scatter/gather converts.
 class KokkosGmgApply
 {
 public:
@@ -91,6 +101,7 @@ public:
     KokkosGmgApply& operator=(const KokkosGmgApply&) = delete;
 
     virtual void apply(const double* r, double* z) = 0;
+    virtual void apply(const float* r, float* z) = 0;
 
     [[nodiscard]] virtual int nlevels() const = 0;
 };
