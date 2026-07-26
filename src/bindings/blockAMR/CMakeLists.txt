@@ -67,7 +67,22 @@ endif()
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   setup_target_for_cuda_compilation(_blockamr)
   target_compile_features(_blockamr PUBLIC cuda_std_17)
-  set_target_properties(_blockamr PROPERTIES CUDA_EXTENSIONS OFF CUDA_STANDARD_REQUIRED ON)
+  # CUDA_SEPARABLE_COMPILATION OFF undoes what setup_target_for_cuda_compilation just
+  # turned on, deliberately. Kokkos here is built with
+  # Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=OFF, and desul's guard
+  # (tpls/desul/include/desul/atomics/Macros.hpp) is a preprocessor check on
+  # __CUDACC_RDC__ -- so under -rdc=true ANY Kokkos header fails to compile on
+  # inclusion, not just one that instantiates an atomic. That is what kept the
+  # solvers/ stack free of NeoN includes and forced the blockamr_bench fence.
+  #
+  # We need the fence gone on the solvers/ side: the executor argument is now a
+  # NeoN::Executor, and NeoN/core/executor/executor.hpp includes
+  # NeoN/core/memory/kokkos.hpp. Dropping RDC for the whole module is the cheaper
+  # half of that trade -- blockamr_bench already compiles AMReX kernels non-RDC in
+  # this same build, so the mode is proven here. If AMReX ever needs a device symbol
+  # resolved across translation units this breaks at LINK time, loudly, not silently.
+  set_target_properties(_blockamr PROPERTIES CUDA_EXTENSIONS OFF CUDA_STANDARD_REQUIRED ON
+                                             CUDA_SEPARABLE_COMPILATION OFF)
   # Mark all .cpp sources to be compiled as CUDA
   set_source_files_properties(${_blockamr_sources} PROPERTIES LANGUAGE CUDA)
   if(NeoN_WITH_GINKGO)

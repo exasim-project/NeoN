@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "bc.hpp"
+#include "face_coeff_op.hpp"
 #include "gmg_precond.hpp"
 #include "krylov.hpp"
 #include "types.hpp"
@@ -75,6 +76,12 @@ protected:
     std::shared_ptr<ResidualHistoryLogger> resLogger_;
     bool projectNullspace_ = false;
     std::unique_ptr<Dense> ones_;
+    // Constant offset of an AFFINE operator (inhomogeneous domain BCs): op_ stays
+    // the linear part A, and solve() runs it on rhs - bcOffset_. Null on every
+    // homogeneous configuration, which is the default, so nothing is allocated
+    // and nothing is subtracted unless a caller asked for inhomogeneous BCs.
+    // Refreshed per solve by the subclass that owns the BC data.
+    std::unique_ptr<Dense> bcOffset_;
     NormKind norm_ = NormKind::l2;
 };
 
@@ -86,7 +93,7 @@ class FaceCoeffSolver : public PersistentSolver
 public:
 
     FaceCoeffSolver(
-        const std::string& executor,
+        const NeoN::Executor& executor,
         amrex::Geometry geom,
         const amrex::MultiFab* alpha,
         const amrex::MultiFab* ux,
@@ -114,9 +121,14 @@ public:
         const std::string& gmg_coeff_precision,
         double gmg_omega,
         int gmg_agg_l0_size,
+        bool symmetric,
+        const std::string& gmg_bottom_solver,
+        int gmg_bottom_max_iter,
+        double gmg_bottom_rtol,
         double mp_inner_rtol,
         int mp_inner_max_iter,
-        const std::string& norm
+        const std::string& norm,
+        const amrex::MultiFab* bc_data
     );
 
     // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
@@ -148,12 +160,24 @@ private:
         int gmg_min_bottom,
         const std::string& gmg_smoother,
         const std::string& gmg_precision,
-        double gmg_omega
+        double gmg_omega,
+        bool symmetric,
+        const std::string& gmg_bottom_solver,
+        int gmg_bottom_max_iter,
+        double gmg_bottom_rtol
     );
 
     // Fill xWork_'s ghost layer for the FP64 residual: periodic/internal via
-    // FillBoundary, then homogeneous domain BCs via ghost reflection — the same
-    // fill FaceCoeffOp does, so the residual uses the identical operator A.
+    // FillBoundary, then domain BCs via ghost reflection — the same fill
+    // FaceCoeffOp does, so the residual uses the identical operator A.
+    //
+    // With bcData_ the reflection is the INHOMOGENEOUS one, which makes the outer
+    // residual rhs - L(x) rather than rhs - A x. That is the whole of the
+    // stationary path's inhomogeneous-BC support: the V-cycle then solves
+    // A delta = rhs - L(x) with its own homogeneous fills, which is right because
+    // a correction's boundary condition is homogeneous whatever the solution's
+    // is, and the iteration converges to L(x) = rhs. No extra apply, no rhs fold
+    // — the Krylov path needs both only because Ginkgo requires a linear operator.
     void fillGmgGhosts(amrex::MultiFab& mf) const;
 
     // mf -= mean(mf) over the valid region (constant-nullspace projection for
@@ -178,6 +202,13 @@ private:
     amrex::Geometry geom_ {};
     BcArray bcArr_ {};
     bool hasPhysBc_ = false;
+    // Inhomogeneous domain-BC data, null when the BCs are homogeneous. bcData_
+    // drives the stationary path's residual fill (pinned in ownedBcData_ on the
+    // host); bcOffsetOp_ is the typed hook into op_ the Krylov path calls once
+    // per solve to refresh PersistentSolver::bcOffset_.
+    const amrex::MultiFab* bcData_ = nullptr;
+    std::shared_ptr<amrex::MultiFab> ownedBcData_;
+    const FaceCoeffOp* bcOffsetOp_ = nullptr;
     int maxIter_ = 0;
     double rtol_ = 0.0;
     double atol_ = 0.0;
@@ -197,7 +228,7 @@ class FaceCoeffCsrSolver : public PersistentSolver
 public:
 
     FaceCoeffCsrSolver(
-        const std::string& executor,
+        const NeoN::Executor& executor,
         amrex::Geometry geom,
         const amrex::MultiFab* alpha,
         const amrex::MultiFab* ux,
@@ -225,9 +256,14 @@ public:
         const std::string& /*gmg_coeff_precision*/,
         double /*gmg_omega*/,
         int /*gmg_agg_l0_size*/,
+        bool /*symmetric*/,
+        const std::string& /*gmg_bottom_solver*/,
+        int /*gmg_bottom_max_iter*/,
+        double /*gmg_bottom_rtol*/,
         double /*mp_inner_rtol*/,
         int /*mp_inner_max_iter*/,
-        const std::string& norm
+        const std::string& norm,
+        const amrex::MultiFab* bc_data
     );
 };
 

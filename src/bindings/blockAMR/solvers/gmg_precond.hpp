@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "bc.hpp"
+#include "gmg_bottom.hpp"
 #include "gmg_kernels.hpp"
 #include "linop_base.hpp"
 #include "profiling.hpp"
@@ -120,13 +121,17 @@ public:
         int max_levels,
         int min_bottom,
         const std::string& smoother,
-        double omega
+        double omega,
+        bool symmetric,
+        const std::string& bottom_solver,
+        int bottom_max_iter,
+        double bottom_rtol
     )
         : AmrexLinOpBase<GmgPrecondT<T>>(exec, gko::dim<2> {n, n}), bc_(bc),
           hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
           onDevice_(exec->get_master().get() != exec.get()), nCycles_(n_cycles),
           preSweeps_(pre_sweeps), postSweeps_(post_sweeps), coarsestSweeps_(coarsest_sweeps),
-          useCheb_(smoother == "chebyshev"), omega_(omega)
+          useCheb_(smoother == "chebyshev"), omega_(omega), symmetric_(symmetric)
     {
         if (omega <= 0.0 || omega >= 2.0)
         {
@@ -142,6 +147,39 @@ public:
                 "GmgPrecond: unknown gmg_smoother '" + smoother
                 + "' (expected 'rbgs' or 'chebyshev')"
             );
+        }
+        validateBottomSolver(bottom_solver, symmetric);
+        // Two settings whose justification is a symmetry argument, refused
+        // rather than warned about when the caller has declared the operator
+        // asymmetric.
+        //
+        // omega != 1: the colour sweep stops being self-adjoint, which is
+        // survivable for a symmetric operator (it is a tuning knob there, and
+        // 1.1 is the measured optimum) but compounds with an already
+        // non-self-adjoint operator.
+        //
+        // chebyshev: the polynomial is built on a REAL interval
+        // [lambda_max/6, lambda_max] estimated by a power iteration. An
+        // asymmetric operator has a complex spectrum, so that interval does not
+        // describe it and the polynomial has no contraction guarantee.
+        if (!symmetric)
+        {
+            if (omega != 1.0)
+            {
+                throw std::runtime_error(
+                    "GmgPrecond: gmg_omega != 1.0 assumes a symmetric operator, but "
+                    "symmetric=False was set (got omega = "
+                    + std::to_string(omega) + "). Set gmg_omega=1.0."
+                );
+            }
+            if (useCheb_)
+            {
+                throw std::runtime_error(
+                    "GmgPrecond: gmg_smoother='chebyshev' builds its polynomial on a real "
+                    "eigenvalue interval and assumes a symmetric operator, but "
+                    "symmetric=False was set. Use gmg_smoother='rbgs'."
+                );
+            }
         }
         // Finest level: copy the coefficients into this preconditioner's arena
         // (default/device on cuda, pinned on reference — MultiFab::Copy handles
@@ -225,6 +263,34 @@ public:
                 levels_[l].lambdaMax = estimateLambdaMax(l);
             }
             amrex::Gpu::streamSynchronize();
+        }
+
+        // Bottom solver, built once on the coarsest level. Null for "smoother",
+        // which leaves vcycle() on the historical fixed-sweep path.
+        if (bottom_solver != "smoother")
+        {
+            const GmgLevelT<T>& B = levels_.back();
+            const auto nBottom = static_cast<gko::size_type>(B.alpha->boxArray().numPts());
+            bottomOp_ = gko::share(GmgBottomOp<T>::create(
+                exec,
+                nBottom,
+                B.alpha->boxArray(),
+                B.alpha->DistributionMap(),
+                B.geom,
+                B.alpha,
+                B.ux,
+                B.lx,
+                B.uy,
+                B.ly,
+                B.uz,
+                B.lz,
+                bc_,
+                onDevice_
+            ));
+            bottomSolver_ =
+                makeBottomSolver<T>(bottom_solver, exec, bottomOp_, bottom_max_iter, bottom_rtol);
+            bottomB_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottom, 1});
+            bottomX_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottom, 1});
         }
     }
 
@@ -629,6 +695,38 @@ private:
         return lambda * kChebSafety;
     }
 
+    // Krylov solve of the coarsest system A z = rhs, replacing the fixed sweeps.
+    //
+    // The incoming sol is zero on this level (the parent zeroes the coarse sol
+    // before recursing), so there is no warm start to preserve and x starts at
+    // zero -- which also keeps the bottom solve's own iteration count
+    // reproducible for a given rhs, one less source of apply-to-apply variation
+    // in a preconditioner the outer CG wants to be stationary.
+    void bottomSolve(const GmgLevelT<T>& L) const
+    {
+        prof::Timer t("gmg.bottom");
+        if (onDevice_)
+        {
+            gather_device(*L.rhs, bottomB_->get_values(), 1.0);
+            amrex::Gpu::streamSynchronize(); // b read by Ginkgo next
+        }
+        else
+        {
+            gather(*L.rhs, bottomB_->get_values(), 1.0);
+        }
+        bottomX_->fill(T(0));
+        bottomSolver_->apply(bottomB_, bottomX_);
+        if (onDevice_)
+        {
+            this->get_executor()->synchronize(); // x written by Ginkgo
+            scatter_device(bottomX_->get_const_values(), *L.sol);
+        }
+        else
+        {
+            scatter(bottomX_->get_const_values(), *L.sol);
+        }
+    }
+
     // One V-cycle correcting levels_[l].sol in place (warm start allowed, so
     // repeated cycles at l = 0 compose correctly).
     void vcycle(std::size_t l) const
@@ -636,6 +734,11 @@ private:
         const GmgLevelT<T>& L = levels_[l];
         if (l + 1 == levels_.size())
         {
+            if (bottomSolver_)
+            {
+                bottomSolve(L);
+                return;
+            }
             // Tiny grid: smoothing is cheap; forward + reversed halves keep
             // the coarsest "solve" self-adjoint (RB-GS; Chebyshev is symmetric
             // regardless, so the two halves just compose into a degree-2*n poly).
@@ -693,7 +796,17 @@ private:
     bool useCheb_ = false;
     // RB-SOR relaxation factor; 1.0 = plain Gauss-Seidel. Unused when useCheb_.
     double omega_ = 1.0;
+    // Whether the caller declared the operator symmetric. Set explicitly rather
+    // than sniffed: a coefficient set that happens to be symmetric on this call
+    // may not be on the next, and silently switching algorithm on that would
+    // change the answer without changing the configuration.
+    bool symmetric_ = true;
     std::vector<GmgLevelT<T>> levels_;
+    // Null when gmg_bottom_solver == "smoother" (the default), in which case the
+    // bottom stays the historical fixed sweeps.
+    std::shared_ptr<const GmgBottomOp<T>> bottomOp_;
+    std::shared_ptr<const gko::LinOp> bottomSolver_;
+    mutable std::shared_ptr<gko::matrix::Dense<T>> bottomB_, bottomX_;
 };
 
 } // namespace blockamr::solvers

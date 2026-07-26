@@ -6,6 +6,7 @@
 
 #include <AMReX_Arena.H>
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace blockamr::solvers
@@ -70,6 +71,35 @@ parseBc(const std::vector<std::string>& bc, const amrex::Geometry& geom, const s
         }
     }
     return out;
+}
+
+void checkBcData(
+    const amrex::MultiFab& bcdata,
+    const amrex::MultiFab& like,
+    const BcArray& bc,
+    const std::string& who
+)
+{
+    if (bcdata.boxArray() != like.boxArray() || bcdata.DistributionMap() != like.DistributionMap())
+    {
+        throw std::runtime_error(
+            who + ": bc_data must share the BoxArray and DistributionMapping of alpha"
+        );
+    }
+    if (bcdata.nGrow() < 1)
+    {
+        throw std::runtime_error(
+            who
+            + ": bc_data needs at least 1 ghost cell — the boundary datum lives in the "
+              "ghost layer (MLMG's set_level_bc contract)"
+        );
+    }
+    if (std::none_of(bc.begin(), bc.end(), [](int b) { return b != 0; }))
+    {
+        throw std::runtime_error(
+            who + ": bc_data was given but every side is 'periodic', so nothing would read it"
+        );
+    }
 }
 
 template<class V>

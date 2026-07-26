@@ -39,6 +39,8 @@ import pytest
 
 import blockamr
 
+from ._executors import gko_executor
+
 BACKENDS = ["amrex", "kokkos", "kokkos_fused", "kokkos_opt"]
 KOKKOS_BACKENDS = ["kokkos", "kokkos_fused", "kokkos_opt"]
 
@@ -486,7 +488,7 @@ def test_bench_reproduces_the_production_vcycle(max_size):
         uz=faces[2],
         lz=faces[2],
         geom=geom,
-        executor="cuda",
+        executor=gko_executor("cuda"),
         solver="gmg",
         max_iter=1,
         rtol=0.0,

@@ -138,4 +138,97 @@ void fillDomainBcGhostsHost(FA& mf, const amrex::Box& domain, const BcArray& bc)
     }
 }
 
+// Inhomogeneous twin of the two fills above: ghost = sign*interior + scale*g,
+// with g read from the SAME ghost cell of `bcdata` and
+//   Dirichlet (sign -1): scale = 2        , g = u on the boundary FACE
+//   Neumann   (sign +1): scale = dx[dir]  , g = du/dn, the OUTWARD normal derivative
+// which is exactly the homogeneous fill with the datum moved off zero: it makes
+// (interior + ghost)/2 = g at a Dirichlet face and (ghost - interior)/dx = g across
+// a Neumann one, on the same dx/2 face placement the homogeneous fills already
+// assume — so the discretisation ORDER is unchanged, only the constant.
+//
+// The Neumann scale carries no side sign: on a low side the ghost sits below the
+// interior cell AND the outward normal points the other way, and the two flips
+// cancel, so ghost = interior + dx*g on both.
+//
+// `bcdata` is cell-centred on `mf`'s BoxArray/DistributionMapping with >= 1 ghost
+// and the datum living in the ghost layer — MLMG's setLevelBC contract, so one
+// MultiFab drives both solvers (pinned by test_inhomogeneous_dirichlet_matches_mlmg).
+// Only the domain-boundary ghost layer is read; periodic/internal ghosts are not.
+//
+// Callers use this for the OUTER residual only. The V-cycle and the Ginkgo
+// operator keep the homogeneous fill, because both solve for a CORRECTION, whose
+// boundary condition is homogeneous whatever the solution's is — see
+// FaceCoeffSolver::gmgSolve and FaceCoeffOpT::applyBcOffset.
+inline void fillDomainBcGhostsInhomDevice(
+    amrex::MultiFab& mf,
+    const amrex::MultiFab& bcdata,
+    const amrex::Box& domain,
+    const BcArray& bc,
+    const amrex::Real* dx
+)
+{
+    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto a = mf.array(mfi);
+        const auto g = bcdata.const_array(mfi);
+        for (int s = 0; s < 6; ++s)
+        {
+            BcGhostFill f;
+            if (!bcGhostFill(vbx, domain, bc, s, f))
+            {
+                continue;
+            }
+            const amrex::Real sign = static_cast<amrex::Real>(f.sign);
+            const amrex::Real scale =
+                (bc[static_cast<std::size_t>(s)] == 1) ? amrex::Real(2.0) : dx[s / 2];
+            const int di = f.di, dj = f.dj, dk = f.dk;
+            amrex::ParallelFor(
+                f.gbx,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+                { a(i, j, k) = sign * a(i + di, j + dj, k + dk) + scale * g(i, j, k); }
+            );
+        }
+    }
+}
+
+// Host-loop twin of fillDomainBcGhostsInhomDevice for the ReferenceExecutor path.
+inline void fillDomainBcGhostsInhomHost(
+    amrex::MultiFab& mf,
+    const amrex::MultiFab& bcdata,
+    const amrex::Box& domain,
+    const BcArray& bc,
+    const amrex::Real* dx
+)
+{
+    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto a = mf.array(mfi);
+        const auto g = bcdata.const_array(mfi);
+        for (int s = 0; s < 6; ++s)
+        {
+            BcGhostFill f;
+            if (!bcGhostFill(vbx, domain, bc, s, f))
+            {
+                continue;
+            }
+            const double scale = (bc[static_cast<std::size_t>(s)] == 1) ? 2.0 : dx[s / 2];
+            const auto lo = amrex::lbound(f.gbx);
+            const auto hi = amrex::ubound(f.gbx);
+            for (int k = lo.z; k <= hi.z; ++k)
+            {
+                for (int j = lo.y; j <= hi.y; ++j)
+                {
+                    for (int i = lo.x; i <= hi.x; ++i)
+                    {
+                        a(i, j, k) = f.sign * a(i + f.di, j + f.dj, k + f.dk) + scale * g(i, j, k);
+                    }
+                }
+            }
+        }
+    }
+}
+
 } // namespace blockamr::solvers

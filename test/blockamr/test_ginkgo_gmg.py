@@ -19,6 +19,8 @@ import pytest
 
 import blockamr
 
+from ._executors import gko_executor
+
 
 def _make_mesh(n, periodic=True):
     """Single-box mesh on [0,1]^3 with n cells per side."""
@@ -87,7 +89,7 @@ def _make_solver_or_skip(coeffs, geom, executor, cls="FaceCoeffSolver", **kwargs
     alpha, fx, fy, fz = coeffs
     try:
         return getattr(blockamr, cls)(
-            alpha, fx, fx, fy, fy, fz, fz, geom, executor=executor, **kwargs
+            alpha, fx, fx, fy, fy, fz, fz, geom, executor=gko_executor(executor), **kwargs
         )
     except RuntimeError as exc:
         if "without Ginkgo" in str(exc):

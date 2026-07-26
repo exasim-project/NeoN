@@ -16,6 +16,11 @@ caller supplies face coefficients on ALL faces including boundary ones. Checks:
   (``set_max_order(2)`` makes MLMG's Dirichlet ghost fill linear = ours);
 * validation errors (bc vs geometry periodicity, CSR solver periodic-only);
 * the singular all-Neumann pure Poisson composes with project_nullspace.
+
+The ``bc_data`` constructor kwarg makes those same BCs INHOMOGENEOUS: a ghosted
+cell MultiFab whose ghost layer carries u on the face (dirichlet sides) or the
+outward du/dn (neumann sides) — MLMG's ``set_level_bc`` contract, so one fab
+drives both solvers. Section 2 below covers it.
 """
 
 import math
@@ -24,6 +29,8 @@ import numpy as np
 import pytest
 
 import blockamr
+
+from ._executors import gko_executor
 
 
 def _make_mesh(n, periodic):
@@ -128,7 +135,7 @@ def _make_solver_or_skip(cls, coeffs, geom, executor, **kwargs):
     alpha, fx, fy, fz = coeffs
     try:
         return getattr(blockamr, cls)(
-            alpha, fx, fx, fy, fy, fz, fz, geom, executor=executor, **kwargs
+            alpha, fx, fx, fy, fy, fz, fz, geom, executor=gko_executor(executor), **kwargs
         )
     except RuntimeError as exc:
         if "without Ginkgo" in str(exc):
@@ -309,7 +316,7 @@ def test_bc_validation_errors(blockamr_session):
 
     def build(cls, geom, bc):
         return getattr(blockamr, cls)(
-            alpha, fx, fx, fy, fy, fz, fz, geom, executor="reference", bc=bc
+            alpha, fx, fx, fy, fy, fz, fz, geom, executor=gko_executor("reference"), bc=bc
         )
 
     try:
@@ -375,3 +382,387 @@ def test_all_neumann_singular_projected(blockamr_session, executor):
     assert abs(_mean(sol)) < 1e-10, f"solution mean {_mean(sol)} not ~0"
     err = _max_err_vs_analytic(sol, dx, u_fn)
     assert err < 2e-2, f"error vs analytic {err} too large"
+
+
+# ---------------------------------------------------------------------------
+# 2. Inhomogeneous BCs (bc_data)
+#
+# The homogeneous fills above are ghost = sign*interior; bc_data adds the affine
+# term, ghost = sign*interior + scale*g, with scale = 2 for dirichlet (so
+# (interior+ghost)/2 = g at the face) and scale = dx for neumann (so
+# (ghost-interior)/dx = g across it). Same face placement, same order — only the
+# constant moves off zero.
+#
+# That constant makes the boundary operator AFFINE, L(x) = A x + c0, and the two
+# solver paths deal with it differently, which is why every test below runs on
+# both. The Krylov path keeps `apply` linear (Ginkgo requires it) and folds
+# c0 = L(0) into the right-hand side, one extra apply per solve. solver="gmg"
+# instead lets its OUTER residual be rhs - L(x) directly; the V-cycle underneath
+# still solves for a correction, whose BC is homogeneous whatever the solution's
+# is. test_inhomogeneous_bc_paths_agree pins the two against each other.
+# ---------------------------------------------------------------------------
+
+# One manufactured solution for the whole section, chosen so that NOTHING about
+# it is zero on the boundary: a homogeneous fill cannot accidentally reproduce
+# it, which is what test_bc_data_is_not_ignored turns into an assertion.
+_PHASE = (0.4, 0.7, 1.1)
+
+
+def _u_inhom(x, y, z):
+    pi = math.pi
+    return np.sin(pi * x + _PHASE[0]) * np.sin(pi * y + _PHASE[1]) * np.sin(pi * z + _PHASE[2])
+
+
+def _f_inhom(x, y, z):
+    """rhs of u - lap u = f (alpha=1 Helmholtz, nonsingular under any BC mix)."""
+    return (1.0 + 3.0 * math.pi**2) * _u_inhom(x, y, z)
+
+
+def _grad_u_inhom(d, x, y, z):
+    """d-th partial of _u_inhom."""
+    pi = math.pi
+    fac = [np.sin, np.sin, np.sin]
+    fac[d] = np.cos
+    return pi * fac[0](pi * x + _PHASE[0]) * fac[1](pi * y + _PHASE[1]) * fac[2](pi * z + _PHASE[2])
+
+
+def _bc_datum(side, x, y, z, bc):
+    """The datum bc_data must carry on `side` for the exact solution _u_inhom.
+
+    dirichlet -> u on the face; neumann -> du/dn with n the OUTWARD normal, so
+    the low sides carry -d(u)/dx_d and the high sides +d(u)/dx_d.
+    """
+    if bc[side] == "dirichlet":
+        return _u_inhom(x, y, z)
+    d = side // 2
+    sign = -1.0 if side % 2 == 0 else 1.0
+    return sign * _grad_u_inhom(d, x, y, z)
+
+
+def _bc_data(ba, dm, geom, bc):
+    """MLMG-style carrier: cell MultiFab, 1 ghost, datum in the GHOST layer.
+
+    Each ghost cell outside a non-periodic domain side holds the datum for the
+    boundary face it looks across — evaluated AT that face, not at the ghost
+    cell centre, since that is where both fills place it. Everything else (valid
+    region, interior/periodic ghosts) stays zero and is never read.
+    """
+    dx = geom.cell_size()
+    dom = geom.domain()
+    dlo, dhi = dom.small_end(), dom.big_end()
+    mf = blockamr.MultiFab(ba, dm, 1, 1)
+    mf.set_val(0.0)
+    for mfi in blockamr.MFIterator(mf):
+        arr = mf.copy_grown_to_host(mfi)
+        vb = mfi.valid_box()
+        glo = [vb.small_end()[d] - 1 for d in range(3)]
+        grids = list(_cell_centers(glo, arr.shape, dx))
+        for side in range(6):
+            if bc[side] == "periodic":
+                continue
+            d = side // 2
+            low = side % 2 == 0
+            ghost = (dlo[d] - 1) if low else (dhi[d] + 1)
+            local = ghost - glo[d]
+            if not 0 <= local < arr.shape[d]:
+                continue  # this box does not touch that domain face
+            sl = [slice(None)] * 3
+            sl[d] = local
+            sl = tuple(sl)
+            coords = [g[sl] for g in grids]
+            # Move the normal coordinate off the ghost centre and onto the face.
+            face = (dlo[d] if low else dhi[d] + 1) * dx[d]
+            coords[d] = np.full_like(coords[d], face)
+            arr[sl + (0,)] = _bc_datum(side, *coords, bc)
+        mf.copy_grown_from(mfi, arr)
+    return mf
+
+
+def _multibox_mesh(n, max_size):
+    """Non-periodic mesh chopped into boxes of `max_size`, plus matching coeffs.
+
+    convert_ba keeps the box ORDER, so the cell DistributionMapping still applies
+    to the face fabs — which is what lets this file use more than one box
+    (surrounding_nodes on the whole domain would not line up).
+    """
+    box = blockamr.Box([0, 0, 0], [n - 1, n - 1, n - 1])
+    rb = blockamr.RealBox([0.0, 0.0, 0.0], [1.0, 1.0, 1.0])
+    geom = blockamr.Geometry(box, rb, 0, [0, 0, 0])
+    ba = blockamr.BoxArray(box)
+    ba.max_size(max_size)
+    dm = blockamr.DistributionMapping(ba)
+    inv_dx2 = 1.0 / geom.cell_size()[0] ** 2
+    faces = []
+    for d in range(3):
+        typ = [0, 0, 0]
+        typ[d] = 1
+        mf = blockamr.MultiFab(blockamr.convert_ba(ba, blockamr.IntVect(*typ)), dm, 1, 0)
+        mf.set_val(-inv_dx2)
+        faces.append(mf)
+    return geom, ba, dm, (_const_cell(ba, dm, 1.0), *faces)
+
+
+def _solve_inhom(n, executor, bc, max_size=None, **solver_kw):
+    """Solve u - lap u = f with the inhomogeneous BCs of `bc`; return (err, sol)."""
+    if max_size is None:
+        geom, ba, dm = _make_mesh(n, [0, 0, 0])
+        coeffs = _poisson_coeffs(geom, ba, dm, n, 1.0)
+    else:
+        geom, ba, dm, coeffs = _multibox_mesh(n, max_size)
+    dx = geom.cell_size()
+    rhs = blockamr.MultiFab(ba, dm, 1, 0)
+    _fill_cell(rhs, dx, _f_inhom)
+    sol = _zero_sol(ba, dm)
+    s = _make_solver_or_skip(
+        "FaceCoeffSolver",
+        coeffs,
+        geom,
+        executor,
+        bc=bc,
+        bc_data=_bc_data(ba, dm, geom, bc),
+        **solver_kw,
+    )
+    stats = s.solve(rhs, sol)
+    assert stats["converged"] is True, f"did not converge: {dict(stats)}"
+    return _max_err_vs_analytic(sol, dx, _u_inhom), sol
+
+
+_CG = dict(solver="cg", max_iter=5000, rtol=1e-11)
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+@pytest.mark.parametrize(
+    "kind, bc",
+    [
+        ("dirichlet", ["dirichlet"] * 6),
+        ("neumann", ["neumann"] * 6),
+        ("mixed", ["dirichlet", "neumann", "neumann", "dirichlet", "dirichlet", "neumann"]),
+    ],
+)
+def test_inhomogeneous_manufactured_second_order(blockamr_session, executor, kind, bc):
+    """u - lap u = f with u nonzero AND du/dn nonzero on every face: 2nd order.
+
+    The point of running all three mixes off ONE exact solution: the dirichlet
+    and neumann branches of the fill are independent (different sign, different
+    scale), and the mixed row is the only one that catches a per-side indexing
+    slip — a fill that used the wrong side's datum still passes both uniform
+    rows.
+    """
+    err_16, _ = _solve_inhom(16, executor, bc, **_CG)
+    err_32, _ = _solve_inhom(32, executor, bc, **_CG)
+
+    assert err_16 < 2e-2, f"{kind}: N=16 error {err_16} too large"
+    assert err_32 < 6e-3, f"{kind}: N=32 error {err_32} too large"
+    ratio = err_16 / err_32
+    assert ratio > 3, f"{kind}: convergence ratio {ratio} not ~2nd order (expected ~4)"
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+def test_inhomogeneous_bc_survives_decomposition(blockamr_session, executor):
+    """8 boxes must give the single box's answer — the ghost fill is PER BOX.
+
+    Every fill in bc_geom.hpp walks boxes and asks whether each one touches a
+    given domain face; an interior box touches none, and its ghost layer is
+    FillBoundary's business instead. A fill that wrote the boundary datum into
+    every box's ghost layer, or skipped a box that does touch, passes the
+    single-box tests above and fails here.
+    """
+    bc = ["dirichlet", "neumann", "dirichlet", "neumann", "dirichlet", "neumann"]
+    err_1, _ = _solve_inhom(16, executor, bc, **_CG)
+    err_8, _ = _solve_inhom(16, executor, bc, max_size=8, **_CG)
+
+    assert abs(err_8 - err_1) < 1e-7, f"decomposition changed the answer: {err_8} vs {err_1}"
+    assert err_1 < 2e-2, f"error vs analytic {err_1} too large"
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+def test_bc_data_is_not_ignored(blockamr_session, executor):
+    """Dropping bc_data must change the answer — the anti-vacuity check.
+
+    Every assertion in this section is a tolerance on the solution, and a
+    silently-ignored bc_data would still produce a converged solve of the
+    HOMOGENEOUS problem. So solve the same system both ways and require the
+    homogeneous one to be badly wrong: the exact solution is ~0.3-1 in
+    magnitude on the boundary, so anything under O(0.1) here would mean the
+    inhomogeneous term is not reaching the operator.
+    """
+    bc = ["dirichlet"] * 6
+    err_inhom, _ = _solve_inhom(16, executor, bc, **_CG)
+
+    geom, ba, dm = _make_mesh(16, [0, 0, 0])
+    dx = geom.cell_size()
+    coeffs = _poisson_coeffs(geom, ba, dm, 16, 1.0)
+    rhs = blockamr.MultiFab(ba, dm, 1, 0)
+    _fill_cell(rhs, dx, _f_inhom)
+    sol = _zero_sol(ba, dm)
+    s = _make_solver_or_skip("FaceCoeffSolver", coeffs, geom, executor, bc=bc, **_CG)
+    assert s.solve(rhs, sol)["converged"] is True
+    err_hom = _max_err_vs_analytic(sol, dx, _u_inhom)
+
+    assert err_hom > 0.1, f"homogeneous BCs gave error {err_hom} — bc_data may be a no-op"
+    assert err_inhom < 0.1 * err_hom, f"bc_data barely helped: {err_inhom} vs {err_hom}"
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+def test_inhomogeneous_bc_paths_agree(blockamr_session, executor):
+    """The Krylov rhs-fold and the stationary V-cycle solve the SAME system.
+
+    Three configurations that handle the affine term by different routes —
+    unpreconditioned CG (fold, no multigrid), CG preconditioned by the V-cycle
+    (fold, and a hierarchy built on homogeneous fills), and the native
+    stationary GMG solver (no fold at all, the offset lives in the outer
+    residual) — must land on one solution. Cross-checking them is what makes the
+    "a correction has homogeneous BCs" argument an assertion rather than a claim.
+    """
+    bc = ["dirichlet", "dirichlet", "neumann", "neumann", "dirichlet", "neumann"]
+    err_cg, sol_cg = _solve_inhom(16, executor, bc, **_CG)
+    _, sol_pc = _solve_inhom(16, executor, bc, precond="gmg", **_CG)
+    _, sol_gmg = _solve_inhom(
+        16,
+        executor,
+        bc,
+        solver="gmg",
+        max_iter=200,
+        rtol=1e-11,
+        gmg_coarsest_sweeps=100,
+    )
+
+    assert _max_abs_diff(sol_cg, sol_pc) < 1e-8, "precond='gmg' disagrees with plain CG"
+    assert _max_abs_diff(sol_cg, sol_gmg) < 1e-8, "solver='gmg' disagrees with CG"
+    assert err_cg < 2e-2, f"error vs analytic {err_cg} too large"
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+def test_inhomogeneous_bc_composes_with_kokkos_precond(blockamr_session, executor):
+    """precond='gmg_kokkos' composes with bc_data, for the reason precond='gmg' does.
+
+    The ported Kokkos V-cycle carries only the HOMOGENEOUS reflection and has no
+    bc_data of its own. That is not a gap: as a preconditioner it is handed a
+    residual and returns a correction, and a correction's boundary condition is
+    homogeneous. Asserted rather than argued, because the failure it rules out —
+    a preconditioner quietly solving a different boundary problem — surfaces only
+    as a worse iteration count, never as a wrong answer.
+    """
+    bc = ["dirichlet", "dirichlet", "neumann", "neumann", "dirichlet", "neumann"]
+    _, sol_cg = _solve_inhom(16, executor, bc, **_CG)
+    try:
+        _, sol_k = _solve_inhom(16, executor, bc, precond="gmg_kokkos", **_CG)
+    except RuntimeError as exc:  # device-only path
+        pytest.skip(f"precond='gmg_kokkos' unavailable on {executor}: {exc}")
+    assert _max_abs_diff(sol_cg, sol_k) < 1e-8, "gmg_kokkos-preconditioned solve disagrees"
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+def test_inhomogeneous_dirichlet_matches_mlmg(blockamr_session, executor):
+    """The same bc_data fab drives MLMG's set_level_bc and ours to one answer.
+
+    MLABecLaplacian (a=b=1 -> u - lap u) with Dirichlet domain BCs, the boundary
+    values handed to set_level_bc in the ghost layer, and set_max_order(2) so
+    MLMG's boundary interpolation is linear = ghost = 2g - interior. That is
+    exactly the inhomogeneous fill, so the two solve the SAME matrix with the
+    SAME right-hand side and must agree to solver tolerance — the external
+    referee for the convention (value at the FACE, not at the ghost centre).
+    """
+    N = 32
+    bc = ["dirichlet"] * 6
+    geom, ba, dm = _make_mesh(N, [0, 0, 0])
+    dx = geom.cell_size()
+    coeffs = _poisson_coeffs(geom, ba, dm, N, 1.0)
+    rhs = blockamr.MultiFab(ba, dm, 1, 0)
+    _fill_cell(rhs, dx, _f_inhom)
+    bc_data = _bc_data(ba, dm, geom, bc)
+
+    abec = blockamr.MLABecLaplacian(geom, ba, dm)
+    abec.set_domain_bc(
+        [blockamr.LinOpBCType.Dirichlet] * 3,
+        [blockamr.LinOpBCType.Dirichlet] * 3,
+    )
+    abec.set_level_bc(0, bc_data)
+    abec.set_max_order(2)
+    abec.set_scalars(1.0, 1.0)
+    abec.set_a_coeffs(0, _const_cell(ba, dm, 1.0))
+    abec.set_b_coeffs(
+        0,
+        _const_face(geom, dm, 0, N, 1.0),
+        _const_face(geom, dm, 1, N, 1.0),
+        _const_face(geom, dm, 2, N, 1.0),
+    )
+    sol_ref = _zero_sol(ba, dm)
+    mlmg = blockamr.MLMG(abec)
+    mlmg.set_verbose(0)
+    mlmg.set_max_iter(200)
+    mlmg.solve(sol_ref, rhs, 1e-12, 0.0)
+
+    sol_fc = _zero_sol(ba, dm)
+    s = _make_solver_or_skip(
+        "FaceCoeffSolver", coeffs, geom, executor, bc=bc, bc_data=bc_data, **_CG
+    )
+    assert s.solve(rhs, sol_fc)["converged"] is True
+
+    max_diff = _max_abs_diff(sol_fc, sol_ref)
+    assert max_diff < 1e-6, f"Max |sol_fc - sol_mlmg| = {max_diff} exceeds 1e-6"
+
+
+def test_bc_data_validation_errors(blockamr_session):
+    """bc_data is refused, not ignored, when nothing would read it correctly."""
+    if not hasattr(blockamr, "FaceCoeffSolver"):
+        pytest.skip("blockamr.FaceCoeffSolver binding not available")
+
+    N = 8
+    geom, ba, dm = _make_mesh(N, [0, 0, 0])
+    alpha, fx, fy, fz = _poisson_coeffs(geom, ba, dm, N, 1.0)
+    bc = ["dirichlet"] * 6
+
+    def build(geom_, bc_, data, cls="FaceCoeffSolver"):
+        return getattr(blockamr, cls)(
+            alpha,
+            fx,
+            fx,
+            fy,
+            fy,
+            fz,
+            fz,
+            geom_,
+            executor=gko_executor("reference"),
+            bc=bc_,
+            bc_data=data,
+        )
+
+    try:
+        # No ghost layer to carry the datum.
+        no_ghost = blockamr.MultiFab(ba, dm, 1, 0)
+        no_ghost.set_val(0.0)
+        with pytest.raises(RuntimeError, match="ghost cell"):
+            build(geom, bc, no_ghost)
+        # Different BoxArray than the coefficients.
+        other_ba = blockamr.BoxArray(blockamr.Box([0, 0, 0], [N - 1, N - 1, N - 1]))
+        other_ba.max_size(N // 2)
+        other = blockamr.MultiFab(other_ba, blockamr.DistributionMapping(other_ba), 1, 1)
+        other.set_val(0.0)
+        with pytest.raises(RuntimeError, match="BoxArray"):
+            build(geom, bc, other)
+        # All-periodic: no side would ever read it.
+        geom_p, ba_p, dm_p = _make_mesh(N, [1, 1, 1])
+        data_p = blockamr.MultiFab(ba_p, dm_p, 1, 1)
+        data_p.set_val(0.0)
+        with pytest.raises(RuntimeError, match="nothing would read it"):
+            getattr(blockamr, "FaceCoeffSolver")(
+                alpha,
+                fx,
+                fx,
+                fy,
+                fy,
+                fz,
+                fz,
+                geom_p,
+                executor=gko_executor("reference"),
+                bc=["periodic"] * 6,
+                bc_data=data_p,
+            )
+        # The assembled-CSR solver has no inhomogeneous path.
+        with pytest.raises(RuntimeError, match="periodic boundaries only"):
+            build(geom, bc, _bc_data(ba, dm, geom, bc), cls="FaceCoeffCsrSolver")
+    except RuntimeError as exc:  # pragma: no cover - gating only
+        if "without Ginkgo" in str(exc):
+            pytest.skip("blockamr built without Ginkgo")
+        raise

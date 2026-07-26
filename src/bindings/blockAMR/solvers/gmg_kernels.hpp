@@ -900,6 +900,106 @@ void gmgChebComputeDHost(
     }
 }
 
+// out = A v (v's ghosts filled). The same seven-point stencil as
+// gmgDinvApplyDevice without the diagonal scaling -- the operator itself, which
+// is what a Krylov bottom solve needs. The diagonal is recomputed from the face
+// coefficients rather than stored, exactly as every other kernel here does, so
+// an asymmetric operator (ux(i+1) != lx(i+1)) is handled with no special case:
+// each direction reads its own upper and lower array.
+template<class T>
+void gmgApplyDevice(
+    const GmgFab<T>& v,
+    GmgFab<T>& out,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha
+)
+{
+    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = v.const_array(mfi);
+        const auto o = out.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        amrex::ParallelFor(
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            {
+                const T aE = ax(i + 1, j, k);
+                const T aW = lxa(i, j, k);
+                const T aN = ay(i, j + 1, k);
+                const T aS = lya(i, j, k);
+                const T aT = az(i, j, k + 1);
+                const T aB = lza(i, j, k);
+                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
+                            + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                o(i, j, k) = diag * psi(i, j, k) + off;
+            }
+        );
+    }
+}
+
+template<class T>
+void gmgApplyHost(
+    const GmgFab<T>& v,
+    GmgFab<T>& out,
+    const GmgFab<T>& ux,
+    const GmgFab<T>& lx,
+    const GmgFab<T>& uy,
+    const GmgFab<T>& ly,
+    const GmgFab<T>& uz,
+    const GmgFab<T>& lz,
+    const GmgFab<T>& alpha
+)
+{
+    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = v.const_array(mfi);
+        const auto o = out.array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        const auto al = alpha.const_array(mfi);
+        const auto lo = amrex::lbound(vbx);
+        const auto hi = amrex::ubound(vbx);
+        for (int k = lo.z; k <= hi.z; ++k)
+        {
+            for (int j = lo.y; j <= hi.y; ++j)
+            {
+                for (int i = lo.x; i <= hi.x; ++i)
+                {
+                    const T aE = ax(i + 1, j, k);
+                    const T aW = lxa(i, j, k);
+                    const T aN = ay(i, j + 1, k);
+                    const T aS = lya(i, j, k);
+                    const T aT = az(i, j, k + 1);
+                    const T aB = lza(i, j, k);
+                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
+                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
+                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    o(i, j, k) = diag * psi(i, j, k) + off;
+                }
+            }
+        }
+    }
+}
+
 // out = D^{-1} A v (v's ghosts filled), used by the setup power iteration that
 // estimates lambda_max of D^{-1}A per level for the Chebyshev interval.
 template<class T>

@@ -27,6 +27,8 @@ import pytest
 
 import blockamr
 
+from ._executors import gko_executor
+
 N = 32  # coarse cells per side
 PATCH_LO, PATCH_HI = 8, 23  # coarse index range of the refined patch (ratio 2)
 
@@ -116,7 +118,7 @@ def _composite_solve_or_skip(lp, sol, rhs, executor, **kwargs):
     if not hasattr(blockamr, "ginkgo_solve_composite"):
         pytest.skip("blockamr.ginkgo_solve_composite binding not available")
     try:
-        return blockamr.ginkgo_solve_composite(lp, sol, rhs, executor=executor, **kwargs)
+        return blockamr.ginkgo_solve_composite(lp, sol, rhs, executor=gko_executor(executor), **kwargs)
     except RuntimeError as exc:
         if "without Ginkgo" in str(exc):
             pytest.skip("blockamr built without Ginkgo")

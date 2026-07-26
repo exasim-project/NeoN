@@ -98,6 +98,7 @@ os.environ.setdefault("AMREX_THE_ARENA_INIT_SIZE", "0")
 import numpy as np
 
 import blockamr
+import neon
 
 METHODS = (
     "mlmg",
@@ -341,7 +342,7 @@ def make_persistent(method, geom, ba, dm, max_size, rtol, max_iter):
         uz=fz,
         lz=fz,
         geom=geom,
-        executor="cuda",
+        executor=neon.GPUExecutor(),
         solver=solver,
         max_iter=max_iter,
         rtol=rtol,
@@ -365,7 +366,7 @@ def solve_once(method, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter):
             max_iter=max_iter,
             rtol=rtol,
             sign=1.0,  # MLABecLaplacian is already SPD
-            executor="cuda",
+            executor=neon.GPUExecutor(),
         )
         return stats["num_iters"], stats["res_norm"]
 

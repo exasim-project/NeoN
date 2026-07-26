@@ -8,6 +8,7 @@
 #include <AMReX_MultiFabUtil.H>
 
 #include <algorithm>
+#include <stdexcept>
 #include <type_traits>
 
 #include "profiling.hpp"
@@ -110,12 +111,17 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     const amrex::MultiFab* ly,
     const amrex::MultiFab* uz,
     const amrex::MultiFab* lz,
-    BcArray bc
+    BcArray bc,
+    const amrex::MultiFab* bcData
 )
     : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(geom), bc_(bc),
       hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
       onDevice_(exec->get_master().get() != exec.get())
 {
+    for (int d = 0; d < 3; ++d)
+    {
+        dx_[d] = geom_.CellSize(d);
+    }
     // Only the device stencil is instantiated in V; the host loop below computes in
     // double. Refused rather than silently run at fp64 under an fp32 label.
     if (!onDevice_ && !std::is_same_v<V, double>)
@@ -135,6 +141,7 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
         ly_ = ly;
         uz_ = uz;
         lz_ = lz;
+        bcData_ = bcData;
         in_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 1);
         out_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
     }
@@ -158,6 +165,11 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
         ly_ = owned_[4].get();
         uz_ = owned_[5].get();
         lz_ = owned_[6].get();
+        if (bcData != nullptr)
+        {
+            owned_.push_back(pinnedCopy(*bcData));
+            bcData_ = owned_.back().get();
+        }
         in_ = std::make_shared<amrex::MultiFab>(
             ba, dm, 1, 1, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
         );
@@ -171,6 +183,25 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
 
 template<class V>
 void FaceCoeffOpT<V>::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
+{
+    // The operator Ginkgo sees is always the LINEAR one: reflecting domain-BC
+    // ghosts, no bc_data. The inhomogeneous fill is reached only through
+    // applyBcOffset, whose result the solver folds into the right-hand side.
+    applyWith(b, x, false);
+}
+
+template<class V>
+void FaceCoeffOpT<V>::applyBcOffset(const gko::LinOp* zero, gko::LinOp* out) const
+{
+    if (bcData_ == nullptr)
+    {
+        throw std::runtime_error("FaceCoeffOp: applyBcOffset without bc_data");
+    }
+    applyWith(zero, out, true);
+}
+
+template<class V>
+void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) const
 {
     using DenseV = gko::matrix::Dense<V>;
     if (onDevice_)
@@ -196,7 +227,14 @@ void FaceCoeffOpT<V>::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
             {
                 // Domain-boundary ghosts: reflect-odd/even folds the
                 // homogeneous Dirichlet/Neumann BCs into the stencil.
-                fillDomainBcGhostsDevice(*in_, geom_.Domain(), bc_);
+                if (inhom)
+                {
+                    fillDomainBcGhostsInhomDevice(*in_, *bcData_, geom_.Domain(), bc_, dx_);
+                }
+                else
+                {
+                    fillDomainBcGhostsDevice(*in_, geom_.Domain(), bc_);
+                }
             }
         }
         amrex::Gpu::streamSynchronize();
@@ -226,7 +264,14 @@ void FaceCoeffOpT<V>::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
     amrex::Gpu::streamSynchronize();
     if (hasPhysBc_)
     {
-        fillDomainBcGhostsHost(*in_, geom_.Domain(), bc_);
+        if (inhom)
+        {
+            fillDomainBcGhostsInhomHost(*in_, *bcData_, geom_.Domain(), bc_, dx_);
+        }
+        else
+        {
+            fillDomainBcGhostsHost(*in_, geom_.Domain(), bc_);
+        }
     }
 
     for (amrex::MFIter mfi(*out_); mfi.isValid(); ++mfi)

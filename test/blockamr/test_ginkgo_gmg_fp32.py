@@ -19,6 +19,8 @@ import pytest
 
 import blockamr
 
+from ._executors import gko_executor
+
 
 def _make_mesh(n, periodic=True):
     box = blockamr.Box([0, 0, 0], [n - 1, n - 1, n - 1])
@@ -74,7 +76,7 @@ def _make_solver_or_skip(coeffs, geom, executor, **kwargs):
     alpha, fx, fy, fz = coeffs
     try:
         return blockamr.FaceCoeffSolver(
-            alpha, fx, fx, fy, fy, fz, fz, geom, executor=executor, **kwargs
+            alpha, fx, fx, fy, fy, fz, fz, geom, executor=gko_executor(executor), **kwargs
         )
     except RuntimeError as exc:
         if "without Ginkgo" in str(exc):

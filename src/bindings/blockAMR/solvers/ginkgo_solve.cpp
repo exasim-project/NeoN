@@ -17,6 +17,10 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
+// The caster for NeoN::Executor, which is a std::variant of the three executor
+// classes bound in bindings/executors.cpp.
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/variant.h>
 #include <nanobind/stl/vector.h>
 
 #include <AMReX_Arena.H>
@@ -32,6 +36,7 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -72,7 +77,7 @@ void bindPersistent(nb::module_& m, const char* name)
                amrex::MultiFab& uz,
                amrex::MultiFab& lz,
                const amrex::Geometry& geom,
-               const std::string& executor,
+               std::optional<NeoN::Executor> executor,
                const std::string& solver,
                int max_iter,
                double rtol,
@@ -92,12 +97,17 @@ void bindPersistent(nb::module_& m, const char* name)
                const std::string& gmg_coeff_precision,
                double gmg_omega,
                int gmg_agg_l0_size,
+               bool symmetric,
+               const std::string& gmg_bottom_solver,
+               int gmg_bottom_max_iter,
+               double gmg_bottom_rtol,
                double mp_inner_rtol,
                int mp_inner_max_iter,
-               const std::string& norm)
+               const std::string& norm,
+               amrex::MultiFab* bc_data)
             {
                 new (self)
-                    S(executor,
+                    S(executor.value_or(NeoN::createDefaultExecutor()),
                       geom,
                       &alpha,
                       &ux,
@@ -125,9 +135,14 @@ void bindPersistent(nb::module_& m, const char* name)
                       gmg_coeff_precision,
                       gmg_omega,
                       gmg_agg_l0_size,
+                      symmetric,
+                      gmg_bottom_solver,
+                      gmg_bottom_max_iter,
+                      gmg_bottom_rtol,
                       mp_inner_rtol,
                       mp_inner_max_iter,
-                      norm);
+                      norm,
+                      bc_data);
             },
             nb::arg("alpha"),
             nb::arg("ux"),
@@ -137,7 +152,7 @@ void bindPersistent(nb::module_& m, const char* name)
             nb::arg("uz"),
             nb::arg("lz"),
             nb::arg("geom"),
-            nb::arg("executor") = "cuda",
+            nb::arg("executor") = nb::none(),
             // Krylov solvers "cg" | "bicgstab" | "gmres", OR "gmg" (matrix-free
             // solver only): the NATIVE stationary geometric-multigrid solver
             // x <- x + V(b - A x) run to tolerance (Richardson iteration, like
@@ -336,6 +351,47 @@ void bindPersistent(nb::module_& m, const char* name)
             // apply, since the solver's flat vectors are in the CALLER's cell order.
             // precond="gmg_kokkos" only; ignored by every other preconditioner.
             nb::arg("gmg_agg_l0_size") = 0,
+            // Whether the caller declares the operator SYMMETRIC. Set explicitly
+            // rather than sniffed from the coefficients: a set that happens to be
+            // symmetric on this call may not be on the next, and silently switching
+            // algorithm on that would change the answer without changing the
+            // configuration. Symmetric is the default because the pressure Poisson
+            // system this solver exists for is symmetric; convection makes it false.
+            //
+            // What it gates, all REFUSED rather than warned about, because none of
+            // them fail loudly -- they converge to something wrong, or stall, and the
+            // caller sees only a worse iteration count:
+            //   * gmg_omega != 1.0        (over-relaxation's justification is a
+            //                              self-adjointness argument)
+            //   * gmg_smoother="chebyshev" (its polynomial is built on a REAL
+            //                              eigenvalue interval; an asymmetric
+            //                              operator has a complex spectrum)
+            //   * gmg_bottom_solver="cg"/"fcg" (both need an SPD operator)
+            // The outer solver is the caller's own choice and is NOT gated here:
+            // solver="bicgstab" (the default) and "gmres" are already safe, and
+            // ginkgo_solve_composite documents the same caveat for "cg".
+            nb::arg("symmetric") = true,
+            // How the COARSEST level is solved. "smoother" (the default) is the
+            // historical behaviour: gmg_coarsest_sweeps smoother sweeps, no residual
+            // test. It is cheap and, being fixed work, exactly stationary -- which
+            // matters because the V-cycle is used as a CG preconditioner and CG
+            // assumes a preconditioner that does not change between applies.
+            //
+            // It is also, on its own, unable to converge the bottom: a consistent
+            // polynomial smoother has p(0) = 1, so the coarse grid's constant mode
+            // survives every sweep no matter how many are run. MLMG solves its bottom
+            // with a Krylov method for exactly this reason.
+            //
+            // "cg" | "fcg" | "bicgstab" | "gmres" | "gcr" generate the corresponding
+            // Ginkgo solver on the coarsest level instead. cg/fcg need symmetric=True;
+            // bicgstab/gmres/gcr do not. Prefer a TIGHT gmg_bottom_rtol: an adaptive
+            // bottom makes the V-cycle a different operator on each apply, which an
+            // outer Cg is not entitled to assume. Solve it nearly exactly (cheap --
+            // the bottom is a handful of cells) or drive the outer solve with a
+            // flexible method (solver="gcr" or "fcg").
+            nb::arg("gmg_bottom_solver") = "smoother",
+            nb::arg("gmg_bottom_max_iter") = 200,
+            nb::arg("gmg_bottom_rtol") = 1e-12,
             // solver="mpir" only. The relative residual the INNER fp32 Cg stops at,
             // and its iteration cap. This is the whole design of a refinement
             // scheme: the outer contraction factor IS the inner tolerance, so 1e-2
@@ -345,6 +401,32 @@ void bindPersistent(nb::module_& m, const char* name)
             nb::arg("mp_inner_rtol") = 1e-2,
             nb::arg("mp_inner_max_iter") = 20,
             nb::arg("norm") = "l2",
+            // INHOMOGENEOUS domain BC data, or None (the default) for the
+            // homogeneous fills `bc` alone gives. A cell-centred MultiFab on
+            // alpha's BoxArray/DistributionMapping with >= 1 ghost cell, carrying
+            // the boundary datum in its GHOST layer — MLMG's set_level_bc
+            // contract, so one MultiFab drives both solvers and the two can be
+            // compared directly. Per boundary face:
+            //   'dirichlet' side -> u ON the face
+            //   'neumann'   side -> du/dn, the OUTWARD normal derivative
+            // Only ghost cells outside a non-periodic domain face are read; the
+            // valid region and the periodic/internal ghosts are ignored, so the
+            // same fab may be the solution's own ghosted MultiFab.
+            //
+            // The data is REFERENCED, not copied (device path), so an in-place
+            // update takes effect on the next solve — the coefficient contract.
+            //
+            // What it costs: with inhomogeneous BCs the boundary operator is
+            // AFFINE, L(x) = A x + c0, and Ginkgo's Krylov solvers assume a
+            // linear one. So the Krylov path solves A x = rhs - c0 with `apply`
+            // still computing A alone, paying ONE extra apply per solve to form
+            // c0 = L(0), plus one n-sized vector to hold it. solver='gmg' pays
+            // neither: its outer residual can be rhs - L(x) directly, and the
+            // V-cycle underneath still solves for a correction, whose boundary
+            // condition is homogeneous whatever the solution's is.
+            //
+            // Matrix-free solver only; needs at least one non-periodic side.
+            nb::arg("bc_data").none() = nb::none(),
             nb::keep_alive<1, 2>(),
             nb::keep_alive<1, 3>(),
             nb::keep_alive<1, 4>(),
@@ -355,7 +437,10 @@ void bindPersistent(nb::module_& m, const char* name)
             // The preconditioner MLMG (arg 16; self=1, args from 2) must
             // outlive the solver — MlmgPrecond holds a raw pointer to it.
             // keep_alive is a no-op when the arg is None.
-            nb::keep_alive<1, 16>()
+            nb::keep_alive<1, 16>(),
+            // bc_data (arg 37, the last one) is referenced by the operator on the
+            // device path exactly as the coefficients are.
+            nb::keep_alive<1, 37>()
         )
         .def(
             "solve",
@@ -380,7 +465,11 @@ void bindPersistent(nb::module_& m, const char* name)
             "kwarg, matrix-free solver only): 6 entries (xlo, xhi, ylo, yhi,\n"
             "zlo, zhi) of 'periodic' | 'dirichlet' | 'neumann' — homogeneous\n"
             "domain BCs folded in via ghost reflection; must match the\n"
-            "geometry's periodicity per direction. Returns a\n"
+            "geometry's periodicity per direction. bc_data (constructor kwarg,\n"
+            "matrix-free solver only) makes those BCs INHOMOGENEOUS: a ghosted\n"
+            "cell MultiFab whose ghost layer holds u on the face (dirichlet\n"
+            "sides) or du/dn outward (neumann sides), read fresh each solve.\n"
+            "Returns a\n"
             "dict with num_iters, res_norm, converged and res_history (per-\n"
             "iteration residual norms of this call)."
         );
@@ -403,14 +492,19 @@ void registerGinkgoSolve(nb::module_& m)
            double rtol,
            double atol,
            double sign,
-           const std::string& executor)
+           std::optional<NeoN::Executor> executor)
         {
             MLMG mlmg(lp);
 
-            // "reference" keeps the Krylov vector ops on the CPU; "cuda" runs
-            // them on the GPU (device 0) with a ReferenceExecutor as host
-            // master. The mat-vec (MLMG::apply) is on the GPU either way.
-            auto exec = makeExecutor(executor);
+            // A SerialExecutor keeps the Krylov vector ops on the CPU; a
+            // GPUExecutor runs them on the device. The mat-vec (MLMG::apply) is
+            // on the GPU either way. None means SerialExecutor here -- the
+            // default is resolved at CALL time, not at binding-registration
+            // time, so importing blockamr does not require neon to have been
+            // imported first (converting a NeoN::Executor default needs _neon's
+            // nb::class_ registrations, and getting that order wrong raises
+            // std::bad_cast at import).
+            auto exec = makeExecutor(executor.value_or(NeoN::Executor {NeoN::SerialExecutor {}}));
             const BoxArray& ba = sol.boxArray();
             const DistributionMapping& dm = sol.DistributionMap();
             const auto n = static_cast<gko::size_type>(ba.numPts());
@@ -480,7 +574,7 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("rtol") = 1e-10,
         nb::arg("atol") = 0.0,
         nb::arg("sign") = -1.0,
-        nb::arg("executor") = "reference",
+        nb::arg("executor") = nb::none(),
         "Matrix-free Ginkgo CG solve of the MLLinOp system L(sol) = rhs.\n\n"
         "sol's incoming values are the initial guess, and boundary data set\n"
         "via set_level_bc is honored (residual-correction solve). `sign` must\n"
@@ -489,8 +583,11 @@ void registerGinkgoSolve(nb::module_& m)
         "beta*div(b grad phi), positive-definite). CG stops when\n"
         "||r_k|| <= rtol*||rhs|| (or ||r_k|| <= atol when atol > 0), so a warm\n"
         "start converges immediately.\n"
-        "`executor` is 'reference' (CPU, default) or 'cuda' (GPU device 0). On\n"
-        "'cuda' the entire solve runs on the device: the Krylov vector ops, the\n"
+        "`executor` is a NeoN executor -- SerialExecutor (the default),\n"
+        "CPUExecutor or GPUExecutor -- and selects the Ginkgo executor via\n"
+        "NeoN.la.ginkgo.getGkoExecutor, so blockAMR and the rest of NeoN run on\n"
+        "one memoized executor and one stream. On GPUExecutor the entire solve\n"
+        "runs on the device: the Krylov vector ops, the\n"
         "MLMG::apply mat-vec, and the vector<->MultiFab pack/unpack kernels all\n"
         "stay on the GPU, with no per-iteration host transfer. Returns a dict\n"
         "with num_iters, res_norm (2-norm of the homogeneous-system residual),\n"
@@ -506,7 +603,7 @@ void registerGinkgoSolve(nb::module_& m)
            double rtol,
            double atol,
            double sign,
-           const std::string& executor,
+           std::optional<NeoN::Executor> executor,
            const std::string& solver)
         {
             const int nlevs = lp.NAMRLevels();
@@ -528,7 +625,7 @@ void registerGinkgoSolve(nb::module_& m)
 
             MLMG mlmg(lp);
 
-            auto exec = makeExecutor(executor);
+            auto exec = makeExecutor(executor.value_or(NeoN::Executor {NeoN::SerialExecutor {}}));
 
             std::vector<BoxArray> bas;
             std::vector<DistributionMapping> dms;
@@ -706,7 +803,7 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("rtol") = 1e-10,
         nb::arg("atol") = 0.0,
         nb::arg("sign") = -1.0,
-        nb::arg("executor") = "reference",
+        nb::arg("executor") = nb::none(),
         nb::arg("solver") = "bicgstab",
         "Matrix-free Ginkgo solve of the multi-level COMPOSITE MLLinOp system\n"
         "L(sol) = rhs on a 2+ level AMR hierarchy (one sol/rhs MultiFab per\n"
@@ -723,7 +820,8 @@ void registerGinkgoSolve(nb::module_& m)
         "(c/f interpolation vs reflux), so solver='bicgstab' (default) or\n"
         "'gmres' are safe; 'cg' may work in practice. Stops when\n"
         "||r_k|| <= rtol*||rhs|| (composite norm; or ||r_k|| <= atol when\n"
-        "atol > 0). executor='reference'|'cuda'. Returns a dict with\n"
+        "atol > 0). `executor` is a NeoN SerialExecutor / CPUExecutor /\n"
+        "GPUExecutor. Returns a dict with\n"
         "num_iters, res_norm, converged and res_history."
     );
 

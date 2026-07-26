@@ -8,6 +8,8 @@
 
 #include <ginkgo/ginkgo.hpp>
 
+#include "NeoN/core/executor/executor.hpp"
+
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -22,10 +24,17 @@ namespace nb = nanobind;
 namespace blockamr::solvers
 {
 
-// One long-lived CudaExecutor per process (see the note in ginkgo_solve): a
-// per-call executor re-inits cuBLAS/cuSPARSE and disturbs AMReX's CUDA context
-// at teardown. Assumes a single AMReX Initialize/Finalize cycle.
-std::shared_ptr<const gko::Executor> makeExecutor(const std::string& executor);
+// The Ginkgo executor backing a NeoN one. Thin forwarder to
+// NeoN::la::ginkgo::getGkoExecutor, which is where the lifetime rules live: it
+// memoizes one Ginkgo executor per NeoN executor kind (a per-call executor
+// re-inits cuBLAS/cuSPARSE and disturbs the CUDA context at teardown) and
+// releases the cache from a Kokkos finalize hook, while the device is alive.
+//
+// It also threads the Kokkos execution-space stream into Ginkgo rather than
+// letting Ginkgo pick its own, which is why blockAMR's AMReX initialisation
+// adopts that same stream (see init.cpp): one stream for AMReX, Kokkos and
+// Ginkgo means no cross-library synchronisation at the operator boundary.
+std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor);
 
 // Per-iteration residual-norm history. Ginkgo's iteration_complete event
 // hands (solver, b, x, it, residual, residual_norm, implicit_sq_norm, ...);
@@ -159,10 +168,18 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     const std::string& norm = "l2"
 );
 
-// Assemble the {num_iters, res_norm, converged, res_history} result dict
-// returned by every Krylov solve entry point (the epilogue duplicated at
-// several ginkgo_solve.cpp call sites). `res_history` is built from
-// `resLogger.history()`.
+// Assemble the {num_iters, res_norm, converged, res_history, contraction,
+// diagnostic} result dict returned by every solve entry point (the epilogue
+// duplicated at several ginkgo_solve.cpp call sites). `res_history` is built
+// from `resLogger.history()`.
+//
+// `contraction` and `diagnostic` are filled for EVERY path, not just the
+// stationary V-cycle that needs them, because the key set is a contract: a
+// caller reads one dict without branching on which solver produced it (see
+// test_gmg_solver_stats_keys_match_cg). `diagnostic` is left empty here and
+// only the stationary path fills it in -- its thresholds are calibrated for a
+// V-cycle's roughly constant contraction and say nothing useful about a Krylov
+// method, whose rate varies over the run.
 inline nb::dict makeResultDict(
     std::int64_t num_iters, double res_norm, bool converged, const std::vector<double>& res_history
 )
@@ -177,6 +194,19 @@ inline nb::dict makeResultDict(
         hist.append(v);
     }
     d["res_history"] = hist;
+    // Geometric mean of the per-iteration residual reduction. The history holds
+    // the initial residual plus one entry per iteration, so the number of
+    // reductions is size() - 1.
+    double contraction = 0.0;
+    if (res_history.size() >= 2 && res_history.front() > 0.0)
+    {
+        contraction = std::pow(
+            res_history.back() / res_history.front(),
+            1.0 / static_cast<double>(res_history.size() - 1)
+        );
+    }
+    d["contraction"] = contraction;
+    d["diagnostic"] = "";
     return d;
 }
 

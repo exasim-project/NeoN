@@ -46,6 +46,18 @@ nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
         }
     }
 
+    if (bcOffset_)
+    {
+        // Inhomogeneous domain BCs make the boundary operator AFFINE,
+        // L(x) = A x + c0. op_ is the linear part alone, so the system to solve
+        // is A x = rhs - c0; subtracting the offset here is the whole fold, and
+        // it also makes the residual reported below the residual of L (the
+        // report uses this same b_). c0 was refreshed by the subclass just
+        // before this call, so an in-place bc_data update takes effect.
+        auto negOne = gko::initialize<Dense>({-1.0}, exec_);
+        b_->add_scaled(negOne, bcOffset_);
+    }
+
     if (projectNullspace_)
     {
         // Singular system with the constant nullspace (e.g. fully-periodic
@@ -152,7 +164,7 @@ void PersistentSolver::subtractMean(Dense* v)
 }
 
 FaceCoeffSolver::FaceCoeffSolver(
-    const std::string& executor,
+    const NeoN::Executor& executor,
     amrex::Geometry geom,
     const amrex::MultiFab* alpha,
     const amrex::MultiFab* ux,
@@ -180,9 +192,14 @@ FaceCoeffSolver::FaceCoeffSolver(
     const std::string& gmg_coeff_precision,
     double gmg_omega,
     int gmg_agg_l0_size,
+    bool symmetric,
+    const std::string& gmg_bottom_solver,
+    int gmg_bottom_max_iter,
+    double gmg_bottom_rtol,
     double mp_inner_rtol,
     int mp_inner_max_iter,
-    const std::string& norm
+    const std::string& norm,
+    const amrex::MultiFab* bc_data
 )
     : PersistentSolver(
         makeExecutor(executor),
@@ -216,6 +233,10 @@ FaceCoeffSolver::FaceCoeffSolver(
                      "Use equal counts for a CG-safe preconditioner.\n";
     }
     const BcArray bcArr = parseBc(bc, geom, "FaceCoeffSolver");
+    if (bc_data != nullptr)
+    {
+        checkBcData(*bc_data, *alpha, bcArr, "FaceCoeffSolver");
+    }
 
     // solver="gmg": native stationary geometric-multigrid solver
     // (x <- x + V(b - A x) until tolerance). The GMG V-cycle IS the solver,
@@ -241,6 +262,7 @@ FaceCoeffSolver::FaceCoeffSolver(
             ly_ = ly;
             uz_ = uz;
             lz_ = lz;
+            bcData_ = bc_data;
         }
         else
         {
@@ -262,6 +284,11 @@ FaceCoeffSolver::FaceCoeffSolver(
             ly_ = ownedCoeff_[4].get();
             uz_ = ownedCoeff_[5].get();
             lz_ = ownedCoeff_[6].get();
+            if (bc_data != nullptr)
+            {
+                ownedBcData_ = pinnedCopy(*bc_data);
+                bcData_ = ownedBcData_.get();
+            }
         }
         geom_ = geom;
         bcArr_ = bcArr;
@@ -291,7 +318,11 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_min_bottom,
             gmg_smoother,
             gmg_precision,
-            gmg_omega
+            gmg_omega,
+            symmetric,
+            gmg_bottom_solver,
+            gmg_bottom_max_iter,
+            gmg_bottom_rtol
         );
         const amrex::BoxArray& ba = alpha->boxArray();
         const amrex::DistributionMapping& dm = alpha->DistributionMap();
@@ -324,8 +355,16 @@ FaceCoeffSolver::FaceCoeffSolver(
         ly,
         uz,
         lz,
-        bcArr
+        bcArr,
+        bc_data
     ));
+    if (bc_data != nullptr)
+    {
+        // The typed hook solve() calls to refresh c0, plus the vector to hold
+        // it. op_ (set by build() below) keeps the operator alive.
+        bcOffsetOp_ = op.get();
+        bcOffset_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+    }
 
     // solver="ir": Ginkgo iterative refinement (gko::solver::Ir<double>) whose
     // system matrix is the FaceCoeffOp above and whose inner solver is the
@@ -360,7 +399,11 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_min_bottom,
             gmg_smoother,
             gmg_precision,
-            gmg_omega
+            gmg_omega,
+            symmetric,
+            gmg_bottom_solver,
+            gmg_bottom_max_iter,
+            gmg_bottom_rtol
         );
         build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(inner), norm);
         return;
@@ -395,7 +438,11 @@ FaceCoeffSolver::FaceCoeffSolver(
             gmg_min_bottom,
             gmg_smoother,
             gmg_precision,
-            gmg_omega
+            gmg_omega,
+            symmetric,
+            gmg_bottom_solver,
+            gmg_bottom_max_iter,
+            gmg_bottom_rtol
         );
     }
     else if (precond == "gmg_kokkos")
@@ -408,6 +455,32 @@ FaceCoeffSolver::FaceCoeffSolver(
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: precond='gmg_kokkos' cannot be combined with precond_mlmg"
+            );
+        }
+        // Refused rather than ignored, for the same reason every other
+        // capability gap on this path is: accepting a knob that does nothing
+        // reports a Krylov bottom in the configuration and runs fixed sweeps.
+        // The ported V-cycle lives behind the bench fence and has no Ginkgo, so
+        // GmgBottomOp cannot reach it; closing this means porting the bottom
+        // solve to that side, not relaxing the check.
+        if (gmg_bottom_solver != "smoother")
+        {
+            throw std::runtime_error(
+                "FaceCoeffSolver: precond='gmg_kokkos' has no Krylov bottom solve, so "
+                "gmg_bottom_solver='"
+                + gmg_bottom_solver
+                + "' would silently run gmg_coarsest_sweeps sweeps. Use "
+                  "precond='gmg' for a Krylov bottom."
+            );
+        }
+        // The Kokkos V-cycle carries the same symmetry assumptions the shipped one
+        // does (an over-relaxed red-black sweep, a self-adjoint cycle), and has no
+        // path that would honour symmetric=False.
+        if (!symmetric)
+        {
+            throw std::runtime_error(
+                "FaceCoeffSolver: precond='gmg_kokkos' assumes a symmetric operator; "
+                "symmetric=False needs precond='gmg'"
             );
         }
         if (gmg_smoother != "rbgs")
@@ -526,6 +599,19 @@ nb::dict FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
     {
         return gmgSolve(rhs, sol);
     }
+    if (bcOffsetOp_ != nullptr)
+    {
+        // c0 = L(0), refreshed every solve: the BC data is REFERENCED, not copied,
+        // on the device path, so an in-place update has to take effect exactly as
+        // an in-place coefficient update does. One extra operator apply per solve,
+        // which is the whole price of inhomogeneous BCs on the Krylov path.
+        //
+        // x_ is the zero source rather than a dedicated vector: PersistentSolver::
+        // solve overwrites it with the initial guess as its first act, so the fold
+        // costs one n-vector (bcOffset_) instead of two.
+        x_->fill(0.0);
+        bcOffsetOp_->applyBcOffset(x_.get(), bcOffset_.get());
+    }
     return PersistentSolver::solve(rhs, sol);
 }
 
@@ -547,7 +633,11 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
     int gmg_min_bottom,
     const std::string& gmg_smoother,
     const std::string& gmg_precision,
-    double gmg_omega
+    double gmg_omega,
+    bool symmetric,
+    const std::string& gmg_bottom_solver,
+    int gmg_bottom_max_iter,
+    double gmg_bottom_rtol
 )
 {
     // bf16 is named separately from an outright typo: it exists, but only for
@@ -590,7 +680,11 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
             gmg_max_levels,
             gmg_min_bottom,
             gmg_smoother,
-            gmg_omega
+            gmg_omega,
+            symmetric,
+            gmg_bottom_solver,
+            gmg_bottom_max_iter,
+            gmg_bottom_rtol
         );
         gmgMf_ = p.get(); // GmgPrecondT<T>* -> const GmgApplyMf* (kept alive by the return)
         return gko::share(std::move(p));
@@ -607,13 +701,28 @@ void FaceCoeffSolver::fillGmgGhosts(amrex::MultiFab& mf) const
     }
     if (hasPhysBc_)
     {
+        const amrex::Real* dx = geom_.CellSize();
         if (onDevice_)
         {
-            fillDomainBcGhostsDevice(mf, geom_.Domain(), bcArr_);
+            if (bcData_ != nullptr)
+            {
+                fillDomainBcGhostsInhomDevice(mf, *bcData_, geom_.Domain(), bcArr_, dx);
+            }
+            else
+            {
+                fillDomainBcGhostsDevice(mf, geom_.Domain(), bcArr_);
+            }
         }
         else
         {
-            fillDomainBcGhostsHost(mf, geom_.Domain(), bcArr_);
+            if (bcData_ != nullptr)
+            {
+                fillDomainBcGhostsInhomHost(mf, *bcData_, geom_.Domain(), bcArr_, dx);
+            }
+            else
+            {
+                fillDomainBcGhostsHost(mf, geom_.Domain(), bcArr_);
+            }
         }
     }
 }
@@ -690,11 +799,53 @@ nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 
     amrex::MultiFab::Copy(sol, *xWork_, 0, 0, 1, 0);
 
-    return makeResultDict(static_cast<std::int64_t>(cycles), rnorm, converged, history);
+    nb::dict out = makeResultDict(static_cast<std::int64_t>(cycles), rnorm, converged, history);
+
+    // Convergence diagnostic. A stationary V-cycle contracts the residual by a
+    // roughly CONSTANT factor per cycle, so makeResultDict's `contraction` (the
+    // geometric mean of that factor) is the one number that says whether the
+    // cycle is working -- and it says it even on a run that converged, which a
+    // pass/fail flag cannot. Without it a caller sees only "did not converge in
+    // max_iter" and cannot tell a V-cycle that is grinding at 0.97/cycle from
+    // one that diverged on cycle two. Only this path attaches a `diagnostic` to
+    // it, because only here is the number a stable property of the method.
+    //
+    // Reported, not printed: this path already returns a dict the caller reads,
+    // and a std::cerr warning inside a solve is both unmissable in a sweep and
+    // unactionable in a script.
+    //
+    // The threshold is a "look here" signal, not a tolerance, but it has to sit
+    // BELOW the cases worth looking at. Measured at N=16 on the constant-coefficient
+    // periodic problem, smoothing bottom: 0.070 at 1 box, 0.155 at 8 boxes, 0.594
+    // at 64 boxes -- and only the last fails to converge in 30 cycles. With a Krylov
+    // bottom all three sit at 0.058-0.070, which is what "healthy" looks like here.
+    // So the degraded case is 4x the healthy rate, and a threshold anywhere in
+    // between separates them; one decade per 3 cycles is the round number in that
+    // gap, and still allows 3x the cycles a healthy V-cycle needs before it says
+    // anything. Crossing it means something structural: most often a bottom grid
+    // the smoother cannot solve (see gmg_bottom_solver), otherwise anisotropy or a
+    // coefficient jump the hierarchy does not represent.
+    constexpr double slowRho = 0.464; // 10^(-1/3), i.e. one decade per 3 cycles
+    const double rho = nb::cast<double>(out["contraction"]);
+    const char* diagnostic = "";
+    if (cycles > 0 && rho >= 1.0)
+    {
+        diagnostic = "V-cycle is not contracting (residual grew or stalled). Check the "
+                     "bottom solve (gmg_bottom_solver), cell aspect ratio and coefficient "
+                     "contrast.";
+    }
+    else if (cycles > 1 && rho > slowRho)
+    {
+        diagnostic = "V-cycle is contracting slowly (worse than one decade per 3 cycles). "
+                     "The usual cause is a bottom grid too large for gmg_coarsest_sweeps -- "
+                     "try gmg_bottom_solver='cg' (or 'bicgstab' when symmetric=False).";
+    }
+    out["diagnostic"] = diagnostic;
+    return out;
 }
 
 FaceCoeffCsrSolver::FaceCoeffCsrSolver(
-    const std::string& executor,
+    const NeoN::Executor& executor,
     amrex::Geometry geom,
     const amrex::MultiFab* alpha,
     const amrex::MultiFab* ux,
@@ -722,9 +873,14 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const std::string& /*gmg_coeff_precision*/,
     double /*gmg_omega*/,
     int /*gmg_agg_l0_size*/,
+    bool /*symmetric*/,
+    const std::string& /*gmg_bottom_solver*/,
+    int /*gmg_bottom_max_iter*/,
+    double /*gmg_bottom_rtol*/,
     double /*mp_inner_rtol*/,
     int /*mp_inner_max_iter*/,
-    const std::string& norm
+    const std::string& norm,
+    const amrex::MultiFab* bc_data
 )
     : PersistentSolver(
         makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts())
@@ -738,6 +894,15 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
         throw std::runtime_error(
             "FaceCoeffCsrSolver: periodic boundaries only — use FaceCoeffSolver "
             "for dirichlet/neumann bc"
+        );
+    }
+    // Unreachable via a valid bc (bc_data needs a non-periodic side, which the
+    // check above already refuses), but named rather than ignored so the message
+    // stays the one the caller needs if that ever changes.
+    if (bc_data != nullptr)
+    {
+        throw std::runtime_error(
+            "FaceCoeffCsrSolver: periodic boundaries only — bc_data needs FaceCoeffSolver"
         );
     }
     if (precond == "gmg")

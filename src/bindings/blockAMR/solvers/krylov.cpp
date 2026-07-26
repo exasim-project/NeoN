@@ -4,24 +4,19 @@
 
 #include "krylov.hpp"
 
+#include "NeoN/linearAlgebra/ginkgo.hpp"
+
 #include <stdexcept>
 
 namespace blockamr::solvers
 {
 
-std::shared_ptr<const gko::Executor> makeExecutor(const std::string& executor)
+std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor)
 {
-    if (executor == "reference")
-    {
-        return gko::ReferenceExecutor::create();
-    }
-    if (executor == "cuda")
-    {
-        static std::shared_ptr<gko::CudaExecutor> cudaExec =
-            gko::CudaExecutor::create(0, gko::ReferenceExecutor::create());
-        return cudaExec;
-    }
-    throw std::runtime_error("ginkgo: unknown executor '" + executor + "'");
+    // No mapping of our own: NeoN already owns this one (memoization, the Kokkos
+    // finalize hook, and the execution-space stream). Restating it here is how the
+    // two copies drift apart.
+    return NeoN::la::ginkgo::getGkoExecutor(executor);
 }
 
 std::shared_ptr<gko::LinOp> buildKrylov(
@@ -59,6 +54,34 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     if (solver == "gmres")
     {
         auto params = gko::solver::Gmres<double>::build().with_criteria(criteria);
+        if (precond)
+        {
+            params.with_generated_preconditioner(precond);
+        }
+        return params.on(exec)->generate(op);
+    }
+    if (solver == "gcr" || solver == "fcg")
+    {
+        // FLEXIBLE outer solvers: unlike Cg and Bicgstab they do not assume the
+        // preconditioner is the same linear operator on every apply, so they are
+        // the right outer method when the V-cycle's bottom is solved by an
+        // adaptive Krylov method (gmg_bottom_solver != 'smoother' with a loose
+        // gmg_bottom_rtol). Both cost more per iteration than Cg -- Gcr stores a
+        // growing search space, Fcg one extra vector -- so they are opt-in
+        // rather than the default; the stationary route (a tight bottom rtol,
+        // keeping solver='cg') is usually cheaper. Fcg still needs a SYMMETRIC
+        // operator; Gcr does not.
+        auto criteriaFlex = criteria;
+        if (solver == "gcr")
+        {
+            auto params = gko::solver::Gcr<double>::build().with_criteria(criteriaFlex);
+            if (precond)
+            {
+                params.with_generated_preconditioner(precond);
+            }
+            return params.on(exec)->generate(op);
+        }
+        auto params = gko::solver::Fcg<double>::build().with_criteria(criteriaFlex);
         if (precond)
         {
             params.with_generated_preconditioner(precond);

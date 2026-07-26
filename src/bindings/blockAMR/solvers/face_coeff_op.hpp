@@ -64,8 +64,21 @@ public:
         const amrex::MultiFab* ly,
         const amrex::MultiFab* uz,
         const amrex::MultiFab* lz,
-        BcArray bc = {}
+        BcArray bc = {},
+        const amrex::MultiFab* bcData = nullptr
     );
+
+    // c0 = L(0), the constant offset that inhomogeneous domain BCs add to the
+    // otherwise linear operator: the same stencil, applied to `zero` (a zero
+    // vector the caller supplies as scratch) with the INHOMOGENEOUS ghost fill
+    // instead of the reflecting one. `out` receives it.
+    //
+    // This is what keeps `apply` linear. With bc_data set the boundary operator
+    // is affine, L(x) = A x + c0, and Ginkgo's Krylov solvers are entitled to
+    // assume linearity; so the solve runs on A x = rhs - c0 with `apply` still
+    // computing A alone, and c0 folded into the right-hand side once per solve.
+    // Requires a bc_data operator; throws otherwise.
+    void applyBcOffset(const gko::LinOp* zero, gko::LinOp* out) const;
 
 protected:
 
@@ -76,6 +89,10 @@ protected:
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override;
 
 private:
+
+    // The shared body of apply_impl and applyBcOffset; `inhom` picks which
+    // domain-BC ghost fill runs, and nothing else differs between them.
+    void applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) const;
 
     amrex::Geometry geom_;
     BcArray bc_ {};
@@ -93,6 +110,11 @@ private:
     const amrex::MultiFab* ly_ = nullptr;
     const amrex::MultiFab* uz_ = nullptr;
     const amrex::MultiFab* lz_ = nullptr;
+    // Inhomogeneous domain-BC data (null = homogeneous, the default and the
+    // historical behaviour); staged to pinned memory in owned_ on the host path
+    // exactly like the coefficients. dx_ scales the Neumann datum.
+    const amrex::MultiFab* bcData_ = nullptr;
+    amrex::Real dx_[3] {};
     std::shared_ptr<amrex::MultiFab> in_;
     std::shared_ptr<amrex::MultiFab> out_;
 };
