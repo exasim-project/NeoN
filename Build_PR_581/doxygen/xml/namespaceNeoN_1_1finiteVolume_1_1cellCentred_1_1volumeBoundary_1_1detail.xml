@@ -1,0 +1,508 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail" kind="namespace" language="C++">
+    <compoundname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail</compoundname>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>NormalDamping</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::NormalDamping</qualifiedname>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a4ed71db54748b36eeb398876b0c747ac" prot="public">
+          <name>Deferred</name>
+          <briefdescription>
+<para>normal damping via refGrad -&gt; per-component RHS (multi-RHS friendly) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6a07e01d7a96d9fd76cf08aa5916f7c788" prot="public">
+          <name>Implicit</name>
+          <briefdescription>
+<para>normal damping via per-component diagonal correction (segregated solve) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="37" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="38" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aa1b62e12928cc3869c00b94b0359a31d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool NeoN::finiteVolume::cellCentred::volumeBoundary::detail::readTransformImplicit</definition>
+        <argsstring>(const Dictionary &amp;dict)</argsstring>
+        <name>readTransformImplicit</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::readTransformImplicit</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref> &amp;</type>
+          <declname>dict</declname>
+        </param>
+        <briefdescription>
+<para>Read the &quot;implicit&quot; flag from a slip/symmetry patch dictionary. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Defaults to TRUE (Implicit). The velocity is solved as a shared scalar matrix with a <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> (multi-RHS) Ginkgo solve, so the direction-dependent slip/symmetry normal damping (gamma|S|*Delta*|n_c|, different per component) cannot be carried by the shared scalar diagonal. Implicit mode routes it through the per-component diagCmpt store, which the solver applies column-by-column, constraining the wall-normal velocity in the solve. The Deferred alternative only writes the damping into refGrad (RHS) and lags it one outer iteration, which is too weak to hold the normal component on a developed field and lets it diverge in the momentum solve (observed on occDrivAer: U_normal runs away at the ground/freestream slip-symmetry boundaries). Set &quot;implicit no&quot; on a patch to opt back into the Deferred treatment. <ref refid="classA" kindref="compound">A</ref> boolean read from a dictionary arrives as a word/string, so accept bool, int, and the common truthy spellings. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="56" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="56" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4857f8d14e6706a3bdf5dfc5205bf685" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+        <definition>NormalDamping NeoN::finiteVolume::cellCentred::volumeBoundary::detail::normalDampingMode</definition>
+        <argsstring>(bool implicit)</argsstring>
+        <name>normalDampingMode</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::normalDampingMode</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>implicit</declname>
+        </param>
+        <briefdescription>
+<para>Map the implicit flag onto the NormalDamping mode. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="71" column="22" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="71" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a4d8ed8bc4e9f796c4d3068c5a88f3abe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, NormalDamping mode)</argsstring>
+        <name>setSlipSymmetryValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="78" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" declline="78" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a64b67045dc60ae731f132eb803366ae4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::scalar &gt;</definition>
+        <argsstring>(Field&lt; NeoN::scalar &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, NormalDamping mode)</argsstring>
+        <name>setSlipSymmetryValue&lt; NeoN::scalar &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::scalar &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="87" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="87" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a808902e55e1427e037c57626ea91ebcf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</definition>
+        <argsstring>(Field&lt; NeoN::Vec3 &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, NormalDamping mode)</argsstring>
+        <name>setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setSlipSymmetryValue&lt; NeoN::Vec3 &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">NeoN::Vec3</ref> &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ad3b44c9bd9296aadc06f4af287fe2ad6" kindref="member">NormalDamping</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="122" column="8" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" bodystart="122" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a2864d5431aa5578080a90ff1e791f389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::extrapolateValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range)</argsstring>
+        <name>extrapolateValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::extrapolateValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" line="24" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/extrapolated.hpp" bodystart="24" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a0d866de55405f02532dc5ab05c5d665b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setGradientValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, ValueType fixedGradient)</argsstring>
+        <name>setGradientValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setGradientValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>ValueType</type>
+          <declname>fixedGradient</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedGradient.hpp" line="24" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedGradient.hpp" bodystart="24" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a2ef18c0f426de4e5522a05bf1135e770" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setFixedValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, std::pair&lt; size_t, size_t &gt; range, ValueType fixedValue)</argsstring>
+        <name>setFixedValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setFixedValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref>, <ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>ValueType</type>
+          <declname>fixedValue</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedValue.hpp" line="23" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/fixedValue.hpp" bodystart="23" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ae0c1ed49ed36d3cf578eb4f4a4c071de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setInletOutletValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range, ValueType inletValue, View&lt; const NeoN::scalar &gt; boundaryFlux, bool hasFlux)</argsstring>
+        <name>setInletOutletValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setInletOutletValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>ValueType</type>
+          <declname>inletValue</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">NeoN::scalar</ref> &gt;</type>
+          <declname>boundaryFlux</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>hasFlux</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/inletOutlet.hpp" line="33" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/inletOutlet.hpp" bodystart="33" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ab9447ba88a3a3f318691277b64d77c1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, std::pair&lt; localIdx, localIdx &gt; range)</argsstring>
+        <name>setProcBoundaryCoefficients</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="22" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="22" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a0a401e2e06952f4f8fa8072a22833aad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue</definition>
+        <argsstring>(Field&lt; ValueType &gt; &amp;domainVector, const UnstructuredMesh &amp;mesh, std::pair&lt; localIdx, localIdx &gt; range)</argsstring>
+        <name>updateProcBoundaryOwnerValue</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; ValueType &gt; &amp;</type>
+          <declname>domainVector</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+          <declname>range</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="29" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="29" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1af8ada0ea6ac3d9c6c69f23de9e421429" prot="public" static="no" extern="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients&lt; scalar &gt;</definition>
+        <argsstring>(Field&lt; scalar &gt; &amp;, std::pair&lt; localIdx, localIdx &gt;)</argsstring>
+        <name>setProcBoundaryCoefficients&lt; scalar &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients&lt; scalar &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="35" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="35" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a572053e79641c76f64282530477a0c1c" prot="public" static="no" extern="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients&lt; Vec3 &gt;</definition>
+        <argsstring>(Field&lt; Vec3 &gt; &amp;, std::pair&lt; localIdx, localIdx &gt;)</argsstring>
+        <name>setProcBoundaryCoefficients&lt; Vec3 &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients&lt; Vec3 &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="37" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="37" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1afb68db4e50aecf3552accf7cad4e2ff3" prot="public" static="no" extern="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients&lt; Tensor &gt;</definition>
+        <argsstring>(Field&lt; Tensor &gt; &amp;, std::pair&lt; localIdx, localIdx &gt;)</argsstring>
+        <name>setProcBoundaryCoefficients&lt; Tensor &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::setProcBoundaryCoefficients&lt; Tensor &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="classNeoN_1_1Tensor" kindref="compound">Tensor</ref> &gt; &amp;</type>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="38" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="38" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ac7d30362519dd9c273ed6c59d790bf97" prot="public" static="no" extern="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue&lt; scalar &gt;</definition>
+        <argsstring>(Field&lt; scalar &gt; &amp;, const UnstructuredMesh &amp;, std::pair&lt; localIdx, localIdx &gt;)</argsstring>
+        <name>updateProcBoundaryOwnerValue&lt; scalar &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue&lt; scalar &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="41" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="41" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1a242267c68134593d8f4f3dfcf2250609" prot="public" static="no" extern="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue&lt; Vec3 &gt;</definition>
+        <argsstring>(Field&lt; Vec3 &gt; &amp;, const UnstructuredMesh &amp;, std::pair&lt; localIdx, localIdx &gt;)</argsstring>
+        <name>updateProcBoundaryOwnerValue&lt; Vec3 &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue&lt; Vec3 &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="43" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="43" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1aa045f711ab2b0d938268eec507c09efd" prot="public" static="no" extern="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue&lt; Tensor &gt;</definition>
+        <argsstring>(Field&lt; Tensor &gt; &amp;, const UnstructuredMesh &amp;, std::pair&lt; localIdx, localIdx &gt;)</argsstring>
+        <name>updateProcBoundaryOwnerValue&lt; Tensor &gt;</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::volumeBoundary::detail::updateProcBoundaryOwnerValue&lt; Tensor &gt;</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1Field" kindref="compound">Field</ref>&lt; <ref refid="classNeoN_1_1Tensor" kindref="compound">Tensor</ref> &gt; &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+        </param>
+        <param>
+          <type>std::pair&lt; <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref>, <ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" line="45" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/processor.hpp" declline="45" declcolumn="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/detail/slipSymmetry.hpp" line="34" column="1"/>
+  </compounddef>
+</doxygen>
