@@ -58,24 +58,24 @@ void AmrexOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
         // wait for Ginkgo's writes to b, run the AMReX mat-vec, then wait
         // for its writes to x before Ginkgo reads them.
         exec->synchronize();
-        scatter_device(gko::as<Dense>(b)->get_const_values(), *in_);
+        scatter_device(localValues<double>(b), *in_);
         mlmg_->apply({out_.get()}, {in_.get()});
         amrex::MultiFab::Subtract(*out_, *c0_, 0, 0, 1, 0);
-        gather_device(*out_, gko::as<Dense>(x)->get_values(), sign_);
+        gather_device(*out_, localValues<double>(x), sign_);
         amrex::Gpu::streamSynchronize();
     }
     else
     {
         auto host = exec->get_master();
-        auto bHost = gko::clone(host, gko::as<Dense>(b));
+        auto bHost = gko::clone(host, localView<double>(b));
         scatter(bHost->get_const_values(), *in_);
         mlmg_->apply({out_.get()}, {in_.get()});
         // Remove the affine BC offset, then apply the SPD sign on gather:
         // x = sign*(L_inhom(in) - c0).
         amrex::MultiFab::Subtract(*out_, *c0_, 0, 0, 1, 0);
-        auto xHost = Dense::create(host, gko::as<Dense>(x)->get_size());
+        auto xHost = Dense::create(host, gko::dim<2> {localRows(x), 1});
         gather(*out_, xHost->get_values(), sign_);
-        gko::as<Dense>(x)->copy_from(xHost);
+        localView<double>(x)->copy_from(xHost);
     }
 }
 
@@ -123,13 +123,13 @@ void CompositeAmrexOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
     if (onDevice)
     {
         exec->synchronize(); // b written by Ginkgo
-        const double* bv = gko::as<Dense>(b)->get_const_values();
+        const double* bv = localValues<double>(b);
         for (std::size_t lev = 0; lev < in_.size(); ++lev)
         {
             scatter_device(bv + off_[lev], *in_[lev]);
         }
         mlmg_->apply(ptrs(out_), ptrs(in_));
-        double* xv = gko::as<Dense>(x)->get_values();
+        double* xv = localValues<double>(x);
         for (std::size_t lev = 0; lev < out_.size(); ++lev)
         {
             amrex::MultiFab::Subtract(*out_[lev], *c0_[lev], 0, 0, 1, 0);
@@ -140,19 +140,19 @@ void CompositeAmrexOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
     else
     {
         auto host = exec->get_master();
-        auto bHost = gko::clone(host, gko::as<Dense>(b));
+        auto bHost = gko::clone(host, localView<double>(b));
         for (std::size_t lev = 0; lev < in_.size(); ++lev)
         {
             scatter(bHost->get_const_values() + off_[lev], *in_[lev]);
         }
         mlmg_->apply(ptrs(out_), ptrs(in_));
-        auto xHost = Dense::create(host, gko::as<Dense>(x)->get_size());
+        auto xHost = Dense::create(host, gko::dim<2> {localRows(x), 1});
         for (std::size_t lev = 0; lev < out_.size(); ++lev)
         {
             amrex::MultiFab::Subtract(*out_[lev], *c0_[lev], 0, 0, 1, 0);
             gather(*out_[lev], xHost->get_values() + off_[lev], sign_);
         }
-        gko::as<Dense>(x)->copy_from(xHost);
+        localView<double>(x)->copy_from(xHost);
     }
 }
 
@@ -202,22 +202,22 @@ void MlmgPrecond::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
     if (onDevice)
     {
         exec->synchronize(); // b written by Ginkgo
-        scatter_device(gko::as<Dense>(b)->get_const_values(), *in_);
+        scatter_device(localValues<double>(b), *in_);
         out_->setVal(0.0); // z0 = 0: apply M^{-1}, not a warm-started solve
         mlmg_->solve({out_.get()}, {in_.get()}, 1e-4, 0.0);
-        gather_device(*out_, gko::as<Dense>(x)->get_values(), 1.0);
+        gather_device(*out_, localValues<double>(x), 1.0);
         amrex::Gpu::streamSynchronize(); // x complete before Ginkgo reads it
     }
     else
     {
         auto host = exec->get_master();
-        auto bHost = gko::clone(host, gko::as<Dense>(b));
+        auto bHost = gko::clone(host, localView<double>(b));
         scatter(bHost->get_const_values(), *in_);
         out_->setVal(0.0);
         mlmg_->solve({out_.get()}, {in_.get()}, 1e-4, 0.0);
-        auto xHost = Dense::create(host, gko::as<Dense>(x)->get_size());
+        auto xHost = Dense::create(host, gko::dim<2> {localRows(x), 1});
         gather(*out_, xHost->get_values(), 1.0);
-        gko::as<Dense>(x)->copy_from(xHost);
+        localView<double>(x)->copy_from(xHost);
     }
 }
 

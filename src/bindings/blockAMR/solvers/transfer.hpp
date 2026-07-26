@@ -14,6 +14,29 @@
 namespace blockamr::solvers
 {
 
+// Cells this rank owns -- the length of the flat vectors below, and the local
+// row count of the distributed Ginkgo vector built over them.
+//
+// NOT boxArray().numPts(), which counts the cells on EVERY rank. Sizing a flat
+// vector by the global count while gather/scatter fill it from the rank's own
+// boxes with a local running offset was the long-standing multi-rank bug: each
+// rank then built a differently-laid-out vector over the same index range, and
+// Ginkgo's rank-local dots and norms turned that into a different CG iteration
+// per rank.
+//
+// Counted by the same MFIter walk gather/scatter use, so it agrees with them by
+// construction rather than by a matching formula.
+template<class FA>
+inline std::size_t localCount(const FA& mf)
+{
+    std::size_t n = 0;
+    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
+    {
+        n += static_cast<std::size_t>(mfi.validbox().numPts());
+    }
+    return n;
+}
+
 // Flat-vector <-> MultiFab transfer (component 0, valid cells only).
 // gather and scatter MUST traverse cells in the identical order: MFIter
 // without tiling, then k,j,i over the valid box. MultiFabs live in device

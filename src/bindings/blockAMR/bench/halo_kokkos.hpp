@@ -48,6 +48,13 @@
 // Single rank only, deliberately: with more than one rank a halo exchange is MPI and
 // the interesting part stops being the launch. Every box is local here, so every
 // task is a device-to-device copy.
+//
+// That is a limit of the PLANS, not of the V-cycle they serve. A task names two LOCAL
+// box indices, so a ghost cell covered by a box on another rank has no address to
+// copy from and no task can be emitted for it -- which is why nothing here consults
+// the rank count or falls back: on >1 rank these builders are simply not called, and
+// the caller routes the same three movements through AMReX instead
+// (gmg_vcycle.cpp, Vcycle::amrexFree_).
 // ---------------------------------------------------------------------------
 
 namespace blockamr::bench

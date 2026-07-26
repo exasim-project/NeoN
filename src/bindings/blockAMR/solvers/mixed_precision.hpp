@@ -139,18 +139,25 @@ protected:
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
     {
         prof::Timer tAll("mp.apply");
-        const auto size = gko::as<Dense>(b)->get_size();
+        const gko::dim<2> size {localRows(b), 1};
         if (!b32_ || b32_->get_size() != size)
         {
             prof::Timer t("mp.alloc");
             b32_ = Dense32::create(this->get_executor(), size);
             x32_ = Dense32::create(this->get_executor(), size);
+            // What the inner Cg<float> is actually handed. The buffers above are
+            // sized by THIS rank's rows, so on >1 rank a plain Dense would make the
+            // inner solver's dots and norms rank-local -- the same defect the fp64
+            // Krylov path had. Ginkgo clones its work vectors from these, so the
+            // distributed view propagates through the whole inner solve.
+            b32Global_ = makeGlobalVec(this->get_executor(), this->get_size()[0], b32_.get());
+            x32Global_ = makeGlobalVec(this->get_executor(), this->get_size()[0], x32_.get());
         }
         {
             // Dense::convert_to is the narrowing copy; Ginkgo rounds per element on
             // the device, so this is one pass and no host round-trip.
             prof::Timer t("mp.down");
-            gko::as<Dense>(b)->convert_to(b32_);
+            localView<double>(b)->convert_to(b32_);
         }
         {
             // Zero guess, not the incoming x: this operator IS the correction
@@ -161,11 +168,11 @@ protected:
         }
         {
             prof::Timer t("mp.inner");
-            inner_->apply(b32_, x32_);
+            inner_->apply(b32Global_, x32Global_);
         }
         {
             prof::Timer t("mp.up");
-            x32_->convert_to(gko::as<Dense>(x));
+            x32_->convert_to(localView<double>(x).get());
         }
     }
 
@@ -175,6 +182,9 @@ private:
     // Same shared_ptr-not-unique_ptr reason as AmrexLinOpBase::scratch_: Ginkgo
     // gives these operators a copy-assignment, which a move-only member deletes.
     mutable std::shared_ptr<Dense32> b32_, x32_;
+    // Non-owning views of the two above: the buffer on one rank, a
+    // distributed::Vector over it on several. Rebuilt whenever they are.
+    mutable std::shared_ptr<gko::LinOp> b32Global_, x32Global_;
 };
 
 } // namespace blockamr::solvers

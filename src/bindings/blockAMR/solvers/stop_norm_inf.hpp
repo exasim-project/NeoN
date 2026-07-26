@@ -17,6 +17,7 @@
 #include <string>
 #include <utility>
 
+#include "linop_base.hpp"
 #include "types.hpp"
 
 // ---------------------------------------------------------------------------
@@ -81,16 +82,17 @@ inline NormKind parseNorm(const std::string& norm)
 // stopping test consults has to be global, or a rank stops on its own residual.
 // It is a no-op on one rank, and it is safe as a collective because the criterion
 // is driven by a Ginkgo solver whose iteration sequence is identical on every rank.
-// Note this only makes the CRITERION global; the flat Dense vector `v` itself is
-// still assembled rank-locally, which is a separate gap (see the gather/scatter
-// task) -- fixing the norm does not by itself make the Krylov paths multi-rank.
-inline double normInf(const Dense* v)
+// `v` is a Dense on one rank and a distributed::Vector on several, so the size
+// and the values come from the local accessors rather than from Dense directly
+// -- get_size() on a distributed vector is the GLOBAL row count and reading that
+// many values off the local buffer would run off the end of it.
+inline double normInf(const gko::LinOp* v)
 {
-    const auto n = v->get_size()[0] * v->get_size()[1];
+    const auto n = localRows(v);
     double m = 0.0;
     if (n > 0)
     {
-        const double* p = v->get_const_values();
+        const double* p = localValues<double>(v);
         auto exec = v->get_executor();
         if (exec->get_master().get() == exec.get())
         {
@@ -181,7 +183,7 @@ protected:
         const Updater& updater
     ) override
     {
-        const auto* r = dynamic_cast<const Dense*>(updater.residual_);
+        const gko::LinOp* r = updater.residual_;
         if (r == nullptr && updater.ignore_residual_check_)
         {
             // Not a missing residual: a solver saying "do the cheap checks now,
@@ -229,14 +231,13 @@ private:
 
     static double baselineNorm(const gko::LinOp* v, const char* what)
     {
-        const auto* d = dynamic_cast<const Dense*>(v);
-        if (d == nullptr)
+        if (v == nullptr)
         {
             throw gko::NotSupported(
                 __FILE__, __LINE__, __func__, std::string("ResidualNormInf needs ") + what
             );
         }
-        const double nrm = normInf(d);
+        const double nrm = normInf(v);
         // A zero baseline would make the target 0 and the solve unstoppable;
         // gko::stop::ResidualNorm has the same degeneracy, and the call sites
         // that precompute a baseline already fall back to the bare rtol.

@@ -104,17 +104,16 @@ protected:
 
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
     {
-        using DenseT = gko::matrix::Dense<T>;
         prof::Timer tAll("gmg.bottom.apply");
         auto exec = this->get_executor();
         if (onDevice_)
         {
             exec->synchronize(); // b written by Ginkgo on its own stream
-            scatter_device(gko::as<DenseT>(b)->get_const_values(), *in_);
+            scatter_device(localValues<T>(b), *in_);
         }
         else
         {
-            scatter(gko::as<DenseT>(b)->get_const_values(), *in_);
+            scatter(localValues<T>(b), *in_);
         }
 
         in_->FillBoundary(geom_.periodicity());
@@ -137,13 +136,13 @@ protected:
         if (onDevice_)
         {
             gmgApplyDevice(*in_, *out_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_);
-            gather_device(*out_, gko::as<DenseT>(x)->get_values(), 1.0);
+            gather_device(*out_, localValues<T>(x), 1.0);
             amrex::Gpu::streamSynchronize(); // x read by Ginkgo next
         }
         else
         {
             gmgApplyHost(*in_, *out_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_);
-            gather(*out_, gko::as<DenseT>(x)->get_values(), 1.0);
+            gather(*out_, localValues<T>(x), 1.0);
         }
     }
 

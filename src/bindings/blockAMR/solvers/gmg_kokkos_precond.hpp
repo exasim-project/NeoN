@@ -84,8 +84,7 @@ protected:
         prof::Timer t("gmgk.vcycle");
         // shared_ptr<T> in a const method still yields a non-const T*, so the
         // handle's mutating apply is reachable without a cast.
-        using DenseV = gko::matrix::Dense<V>;
-        vcycle_->apply(gko::as<DenseV>(b)->get_const_values(), gko::as<DenseV>(x)->get_values());
+        vcycle_->apply(localValues<V>(b), localValues<V>(x));
     }
 
 private:

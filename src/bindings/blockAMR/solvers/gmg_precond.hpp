@@ -270,7 +270,11 @@ public:
         if (bottom_solver != "smoother")
         {
             const GmgLevelT<T>& B = levels_.back();
+            // GLOBAL for the operator's row/column dimension (every rank must
+            // agree on it), LOCAL for the vectors, which gather/scatter fill
+            // from this rank's own coarse boxes.
             const auto nBottom = static_cast<gko::size_type>(B.alpha->boxArray().numPts());
+            const auto nBottomLocal = static_cast<gko::size_type>(localCount(*B.alpha));
             bottomOp_ = gko::share(GmgBottomOp<T>::create(
                 exec,
                 nBottom,
@@ -289,8 +293,14 @@ public:
             ));
             bottomSolver_ =
                 makeBottomSolver<T>(bottom_solver, exec, bottomOp_, bottom_max_iter, bottom_rtol);
-            bottomB_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottom, 1});
-            bottomX_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottom, 1});
+            bottomB_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottomLocal, 1});
+            bottomX_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottomLocal, 1});
+            // The bottom Krylov is a Ginkgo solver like any other, so its dots
+            // and norms need the same distributed views the outer solve gets --
+            // shrinking the buffers alone would leave every rank converging on
+            // its own residual.
+            bottomBGlobal_ = makeGlobalVec(exec, nBottom, bottomB_.get());
+            bottomXGlobal_ = makeGlobalVec(exec, nBottom, bottomX_.get());
         }
     }
 
@@ -381,7 +391,7 @@ protected:
             }
             {
                 prof::Timer t("gmg.scatter");
-                scatter_device(gko::as<Dense>(b)->get_const_values(), *L0.rhs);
+                scatter_device(localValues<double>(b), *L0.rhs);
                 L0.sol->setVal(0.0); // z0 = 0: apply M^{-1}, not a warm-started solve
             }
             {
@@ -393,14 +403,14 @@ protected:
             }
             {
                 prof::Timer t("gmg.gather");
-                gather_device(*L0.sol, gko::as<Dense>(x)->get_values(), 1.0);
+                gather_device(*L0.sol, localValues<double>(x), 1.0);
                 amrex::Gpu::streamSynchronize(); // x complete before Ginkgo reads it
             }
         }
         else
         {
             auto host = exec->get_master();
-            auto bHost = gko::clone(host, gko::as<Dense>(b));
+            auto bHost = gko::clone(host, localView<double>(b));
             scatter(bHost->get_const_values(), *L0.rhs);
             L0.sol->setVal(0.0);
             amrex::Gpu::streamSynchronize(); // setVal may run on the GPU stream
@@ -408,9 +418,9 @@ protected:
             {
                 vcycle(0);
             }
-            auto xHost = Dense::create(host, gko::as<Dense>(x)->get_size());
+            auto xHost = Dense::create(host, gko::dim<2> {localRows(x), 1});
             gather(*L0.sol, xHost->get_values(), 1.0);
-            gko::as<Dense>(x)->copy_from(xHost);
+            localView<double>(x)->copy_from(xHost);
         }
     }
 
@@ -715,7 +725,7 @@ private:
             gather(*L.rhs, bottomB_->get_values(), 1.0);
         }
         bottomX_->fill(T(0));
-        bottomSolver_->apply(bottomB_, bottomX_);
+        bottomSolver_->apply(bottomBGlobal_, bottomXGlobal_);
         if (onDevice_)
         {
             this->get_executor()->synchronize(); // x written by Ginkgo
@@ -807,6 +817,7 @@ private:
     std::shared_ptr<const GmgBottomOp<T>> bottomOp_;
     std::shared_ptr<const gko::LinOp> bottomSolver_;
     mutable std::shared_ptr<gko::matrix::Dense<T>> bottomB_, bottomX_;
+    std::shared_ptr<gko::LinOp> bottomBGlobal_, bottomXGlobal_;
 };
 
 } // namespace blockamr::solvers

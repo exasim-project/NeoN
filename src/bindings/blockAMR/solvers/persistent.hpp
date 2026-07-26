@@ -43,8 +43,14 @@ protected:
     // allocDense=false skips the n-sized Ginkgo work vectors b_/x_ — the native
     // stationary solver (solver="gmg") drives the V-cycle on MultiFabs and never
     // touches them (a real memory saving at large N: 2 * n doubles).
+    // n is the GLOBAL cell count -- the operators' row/column dimension, which
+    // every rank must agree on. nLocal is the count this rank owns and is what
+    // the flat vectors are sized by; they differ only under MPI.
     PersistentSolver(
-        std::shared_ptr<const gko::Executor> exec, gko::size_type n, bool allocDense = true
+        std::shared_ptr<const gko::Executor> exec,
+        gko::size_type n,
+        gko::size_type nLocal,
+        bool allocDense = true
     );
 
     // Subclass calls this once its operator is built. `norm` selects the norm
@@ -63,19 +69,31 @@ protected:
 
     // v -= mean(v), computed on the executor (dot with ones); only the scalar
     // mean crosses to the host. Uniform cells, so volume mean == arithmetic mean.
-    void subtractMean(Dense* v);
+    // Takes the GLOBAL view (bGlobal_/xGlobal_), not the local Dense: the dot has
+    // to reduce across ranks or each rank subtracts its own partial mean.
+    void subtractMean(gko::LinOp* v);
 
     std::shared_ptr<const gko::Executor> exec_;
     bool onDevice_;
     gko::size_type n_;
+    gko::size_type nLocal_;
     std::shared_ptr<gko::LinOp> op_;
+    // Rank-local storage, sized nLocal_. gather/scatter fill these directly.
     std::unique_ptr<Dense> b_;
     std::unique_ptr<Dense> x_;
+    // What Ginkgo is handed: a distributed::Vector viewing the buffer above on
+    // >1 rank, the buffer itself on one. Everything the operators do to a vector
+    // is elementwise and stays rank-local; what these buy is that the dots and
+    // norms INSIDE the Krylov solver -- and in subtractMean below -- reduce
+    // across ranks, because the solver's work vectors are clones of these.
+    std::shared_ptr<gko::LinOp> bGlobal_;
+    std::shared_ptr<gko::LinOp> xGlobal_;
     std::shared_ptr<gko::LinOp> solver_;
     std::shared_ptr<gko::log::Convergence<double>> logger_;
     std::shared_ptr<ResidualHistoryLogger> resLogger_;
     bool projectNullspace_ = false;
     std::unique_ptr<Dense> ones_;
+    std::shared_ptr<gko::LinOp> onesGlobal_;
     // Constant offset of an AFFINE operator (inhomogeneous domain BCs): op_ stays
     // the linear part A, and solve() runs it on rhs - bcOffset_. Null on every
     // homogeneous configuration, which is the default, so nothing is allocated

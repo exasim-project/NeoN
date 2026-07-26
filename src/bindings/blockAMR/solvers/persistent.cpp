@@ -6,6 +6,7 @@
 
 #include <AMReX_Arena.H>
 #include <AMReX_GpuLaunch.H>
+#include <AMReX_ParallelContext.H>
 
 #include <algorithm>
 #include <cmath>
@@ -27,6 +28,84 @@
 
 namespace blockamr::solvers
 {
+
+// The one path whose flat Ginkgo vectors were never given the local sizing plus
+// distributed view that the Krylov paths got (makeGlobalVec below): the CSR
+// assembly, which is single-box only and so on >1 rank puts every row on one rank
+// while the others hold none. It still sizes by the global cell count and reduces
+// rank-locally, so it computes a wrong answer rather than a slow one. Refusing is
+// the whole point -- silence here is what let the residual norm be rank-local for
+// months.
+static void requireSingleRank(const char* what)
+{
+    if (amrex::ParallelContext::NProcsSub() > 1)
+    {
+        throw std::runtime_error(
+            std::string(what)
+            + " is single-rank only; it has not been converted to the "
+              "distributed vectors the fp64 Krylov path uses, and on more than one rank its "
+              "reductions are rank-local. Run it on one rank, or use solver='cg'/'gmg'."
+        );
+    }
+}
+
+// Declared in linop_base.hpp. The two bodies are spelled out rather than shared
+// through a template helper because nvcc rejects ANY template signature that
+// returns shared_ptr<LinOp> here (see the note in linop_base.hpp); the
+// duplication is the price of keeping this compilable in a CUDA build.
+std::shared_ptr<gko::LinOp> makeGlobalVec(
+    std::shared_ptr<const gko::Executor> exec,
+    gko::size_type nGlobal,
+    gko::matrix::Dense<double>* local
+)
+{
+    // Aliases `local`: owns the Dense object, not the data.
+    const auto nLocal = local->get_size()[0];
+    auto view = gko::matrix::Dense<double>::create(
+        exec, gko::dim<2> {nLocal, 1}, gko::make_array_view(exec, nLocal, local->get_values()), 1
+    );
+#if GINKGO_BUILD_MPI
+    if (amrex::ParallelContext::NProcsSub() > 1)
+    {
+        return gko::share(DistVec<double>::create(
+            exec,
+            gko::experimental::mpi::communicator(amrex::ParallelContext::CommunicatorSub()),
+            gko::dim<2> {nGlobal, 1},
+            std::move(view)
+        ));
+    }
+#else
+    (void)nGlobal;
+#endif
+    return gko::share(std::move(view));
+}
+
+std::shared_ptr<gko::LinOp> makeGlobalVec(
+    std::shared_ptr<const gko::Executor> exec,
+    gko::size_type nGlobal,
+    gko::matrix::Dense<float>* local
+)
+{
+    // Aliases `local`: owns the Dense object, not the data.
+    const auto nLocal = local->get_size()[0];
+    auto view = gko::matrix::Dense<float>::create(
+        exec, gko::dim<2> {nLocal, 1}, gko::make_array_view(exec, nLocal, local->get_values()), 1
+    );
+#if GINKGO_BUILD_MPI
+    if (amrex::ParallelContext::NProcsSub() > 1)
+    {
+        return gko::share(DistVec<float>::create(
+            exec,
+            gko::experimental::mpi::communicator(amrex::ParallelContext::CommunicatorSub()),
+            gko::dim<2> {nGlobal, 1},
+            std::move(view)
+        ));
+    }
+#else
+    (void)nGlobal;
+#endif
+    return gko::share(std::move(view));
+}
 
 nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 {
@@ -63,20 +142,20 @@ nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
         // Singular system with the constant nullspace (e.g. fully-periodic
         // pure Poisson): make the rhs consistent by removing its mean, and
         // keep the initial guess in the mean-zero subspace so CG stays there.
-        subtractMean(b_.get());
-        subtractMean(x_.get());
+        subtractMean(bGlobal_.get());
+        subtractMean(xGlobal_.get());
     }
 
     {
         prof::Timer t("solve.krylov");
-        solver_->apply(b_, x_);
+        solver_->apply(bGlobal_, xGlobal_);
     }
 
     if (projectNullspace_)
     {
         // Pin the arbitrary constant: return the mean-zero representative
         // (also removes any roundoff drift out of the subspace).
-        subtractMean(x_.get());
+        subtractMean(xGlobal_.get());
     }
 
     {
@@ -96,35 +175,32 @@ nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
     // Final residual ||b - A x|| for reporting, in the norm the solve stopped on
     // (so a reported res_norm is always comparable with the rtol that produced it).
     prof::Timer tRep("solve.report");
-    auto res = b_->clone();
+    // Cloned from the GLOBAL view, so the norm below reduces across ranks in
+    // exactly the way the stopping criterion did.
+    auto res = bGlobal_->clone();
     auto one = gko::initialize<Dense>({1.0}, exec_);
     auto negOne = gko::initialize<Dense>({-1.0}, exec_);
-    op_->apply(negOne, x_, one, res);
-    double resNorm;
-    if (norm_ == NormKind::linf)
-    {
-        resNorm = normInf(res.get());
-    }
-    else
-    {
-        auto norm = Dense::create(exec_, gko::dim<2> {1, 1});
-        res->compute_norm2(norm);
-        auto normHost = gko::clone(exec_->get_master(), norm);
-        resNorm = normHost->at(0, 0);
-    }
+    op_->apply(negOne, xGlobal_, one, res);
+    const double resNorm = (norm_ == NormKind::linf) ? normInf(res.get()) : globalNorm2(res.get());
 
     return makeResultDict(*logger_, *resLogger_, resNorm);
 }
 
 PersistentSolver::PersistentSolver(
-    std::shared_ptr<const gko::Executor> exec, gko::size_type n, bool allocDense
+    std::shared_ptr<const gko::Executor> exec,
+    gko::size_type n,
+    gko::size_type nLocal,
+    bool allocDense
 )
-    : exec_(std::move(exec)), onDevice_(exec_->get_master().get() != exec_.get()), n_(n)
+    : exec_(std::move(exec)), onDevice_(exec_->get_master().get() != exec_.get()), n_(n),
+      nLocal_(nLocal)
 {
     if (allocDense)
     {
-        b_ = Dense::create(exec_, gko::dim<2> {n_, 1});
-        x_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+        b_ = Dense::create(exec_, gko::dim<2> {nLocal_, 1});
+        x_ = Dense::create(exec_, gko::dim<2> {nLocal_, 1});
+        bGlobal_ = makeGlobalVec(exec_, n_, b_.get());
+        xGlobal_ = makeGlobalVec(exec_, n_, x_.get());
     }
 }
 
@@ -149,18 +225,19 @@ void PersistentSolver::build(
     projectNullspace_ = project_nullspace;
     if (projectNullspace_)
     {
-        ones_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+        ones_ = Dense::create(exec_, gko::dim<2> {nLocal_, 1});
         ones_->fill(1.0);
+        onesGlobal_ = makeGlobalVec(exec_, n_, ones_.get());
     }
 }
 
-void PersistentSolver::subtractMean(Dense* v)
+void PersistentSolver::subtractMean(gko::LinOp* v)
 {
-    auto sum = Dense::create(exec_, gko::dim<2> {1, 1});
-    v->compute_dot(ones_, sum);
-    auto sumHost = gko::clone(exec_->get_master(), sum);
-    auto negMean = gko::initialize<Dense>({-sumHost->at(0, 0) / static_cast<double>(n_)}, exec_);
-    v->add_scaled(negMean, ones_);
+    // n_ (global) is the right divisor for a sum that is now also global.
+    const double sum = globalDot(v, onesGlobal_.get());
+    auto negMean = gko::initialize<Dense>({-sum / static_cast<double>(n_)}, exec_);
+    // add_scaled is elementwise, so it runs on the rank's own slice.
+    localView<double>(v)->add_scaled(negMean, ones_);
 }
 
 FaceCoeffSolver::FaceCoeffSolver(
@@ -204,6 +281,7 @@ FaceCoeffSolver::FaceCoeffSolver(
     : PersistentSolver(
         makeExecutor(executor),
         static_cast<gko::size_type>(alpha->boxArray().numPts()),
+        localCount(*alpha),
         solver != "gmg"
     )
 {
@@ -363,7 +441,7 @@ FaceCoeffSolver::FaceCoeffSolver(
         // The typed hook solve() calls to refresh c0, plus the vector to hold
         // it. op_ (set by build() below) keeps the operator alive.
         bcOffsetOp_ = op.get();
-        bcOffset_ = Dense::create(exec_, gko::dim<2> {n_, 1});
+        bcOffset_ = Dense::create(exec_, gko::dim<2> {nLocal_, 1});
     }
 
     // solver="ir": Ginkgo iterative refinement (gko::solver::Ir<double>) whose
@@ -883,9 +961,14 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const amrex::MultiFab* bc_data
 )
     : PersistentSolver(
-        makeExecutor(executor), static_cast<gko::size_type>(alpha->boxArray().numPts())
+        makeExecutor(executor),
+        static_cast<gko::size_type>(alpha->boxArray().numPts()),
+        localCount(*alpha)
     )
 {
+    // The assembly is single-box only (csr.cpp), which on >1 rank would mean one
+    // rank holding every row while the others hold none.
+    requireSingleRank("FaceCoeffCsrSolver");
     // The CSR assembly wraps neighbour indices around the domain
     // (periodic-only); parseBc also rejects a non-periodic geometry.
     const BcArray bcArr = parseBc(bc, geom, "FaceCoeffCsrSolver");

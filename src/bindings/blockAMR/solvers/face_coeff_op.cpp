@@ -203,7 +203,6 @@ void FaceCoeffOpT<V>::applyBcOffset(const gko::LinOp* zero, gko::LinOp* out) con
 template<class V>
 void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) const
 {
-    using DenseV = gko::matrix::Dense<V>;
     if (onDevice_)
     {
         prof::Timer tAll("op.apply");
@@ -211,8 +210,8 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
             prof::Timer t("op.sync_gko");
             this->get_executor()->synchronize(); // b written by Ginkgo
         }
-        const V* bvals = gko::as<DenseV>(b)->get_const_values();
-        V* xvals = gko::as<DenseV>(x)->get_values();
+        const V* bvals = localValues<V>(b);
+        V* xvals = localValues<V>(x);
         {
             // M3 3a: only the ghost-adjacent shell needs to reach the MF —
             // FillBoundary/domain-BC read it to fill the face ghosts; the
@@ -254,7 +253,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
         return;
     }
 
-    scatter(gko::as<DenseV>(b)->get_const_values(), *in_);
+    scatter(localValues<V>(b), *in_);
     // Fill periodic + internal-box ghosts. Physical-boundary ghosts are
     // then set by the reflect fill below when bc has dirichlet/neumann
     // sides; on all-periodic operators they stay whatever scatter left
@@ -310,7 +309,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
             }
         }
     }
-    gather(*out_, gko::as<DenseV>(x)->get_values(), 1.0);
+    gather(*out_, localValues<V>(x), 1.0);
 }
 
 // The two value types the Krylov paths use. FaceCoeffOpT<float> is device-only and

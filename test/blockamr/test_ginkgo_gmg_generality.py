@@ -1071,48 +1071,110 @@ def test_multirank_residual_norm_is_global(blockamr_session, executor, norm):
 @pytest.mark.parametrize(
     "cfg",
     [
-        pytest.param(
-            PRECONDITIONED,
-            id="cg+gmg",
-            marks=pytest.mark.xfail(
-                reason="the Ginkgo Krylov paths are still single-rank: transfer.hpp "
-                "gathers the owned boxes into a FLAT vector sized n_ = the GLOBAL "
-                "cell count (persistent.cpp), so every rank builds a differently "
-                "laid-out vector over the same index range, and Dense's dot products "
-                "and norms are rank-local on top of that. Needs a real row partition "
-                "(see linearAlgebra/ginkgo/ginkgoDistributed.cpp).",
-                strict=False,
-            ),
-        ),
-        pytest.param(
-            KRYLOV_BOTTOM,
-            id="native+krylov-bottom",
-            marks=pytest.mark.xfail(
-                reason="the native V-cycle is multi-rank-correct only with the default "
-                "gmg_bottom_solver='smoother'. A Krylov bottom takes the same flat "
-                "vector as the Ginkgo Krylov paths: gmg_precond.hpp sizes it "
-                "nBottom = boxArray().numPts(), the GLOBAL coarse cell count, while "
-                "transfer.hpp fills it from the rank's OWN boxes with a local running "
-                "offset. Same row partition gap as cg+gmg above. Fails by not "
-                "converging at all, not by a wrong answer: the bottom solve returns "
-                "garbage and the V-cycle stalls.",
-                strict=False,
-            ),
-        ),
+        # The Ginkgo Krylov paths: flat vectors sized by THIS rank's cell count,
+        # viewed by a distributed::Vector so the solver's dots and norms reduce
+        # across ranks (linop_base.hpp makeGlobalVec, persistent.cpp).
+        pytest.param(PRECONDITIONED, id="cg+gmg"),
+        # Same treatment applied to the V-cycle's bottom solve, which is a Ginkgo
+        # Krylov solver like any other (gmg_precond.hpp). Without it the native
+        # path is multi-rank-correct only with the default bottom_solver="smoother".
+        pytest.param(KRYLOV_BOTTOM, id="native+krylov-bottom"),
         pytest.param(STATIONARY, id="native"),
     ],
 )
 def test_gmg_multirank(blockamr_session, executor, cfg):
     """The solve gives the same answer on 2 ranks as on 1.
 
-    The native path passes: it never leaves AMReX fabs, so FillBoundary carries the
-    halo and the only rank-local step was the residual norm.
+    The halo is AMReX's throughout -- FillBoundary carries it, and every operator
+    here is elementwise on top of that. What had to become rank-aware was only the
+    flat Ginkgo vectors: sized by this rank's cell count and viewed by a
+    distributed::Vector, so the dots and norms inside the Krylov solvers reduce
+    across ranks instead of each rank converging on its own residual.
     """
     shape = (16, 16, 16)
     values = _random_values(shape)
     stats, sol, referee = _run_multirank(shape, cfg, values, executor)
     assert stats["converged"] is True
     assert _rel_residual(sol, values, referee) < AGREE
+
+
+@pytest.mark.mpi
+@pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
+@pytest.mark.parametrize(
+    "cfg",
+    [
+        # The Kokkos V-cycle. Its cell kernels are unchanged; what differs on >1
+        # rank is that the halo exchange, the zero fill and the agglomeration
+        # transfers go back to AMReX, because a CopyPlan task names two LOCAL box
+        # indices and a remote ghost has no device address to copy from
+        # (bench/gmg_vcycle.cpp, Vcycle::amrexFree_).
+        pytest.param({"precond": "gmg_kokkos"}, id="gmg_kokkos"),
+        # The same hierarchy driven by the fp32 iterative refinement, whose INNER
+        # Cg<float> needed the distributed views of its own (mixed_precision.hpp) --
+        # its buffers were locally sized but handed to Ginkgo raw, so its dots
+        # reduced rank-locally even after the fp64 path was fixed.
+        pytest.param(
+            {
+                "solver": "mpir",
+                "precond": "gmg_kokkos",
+                "gmg_precision": "fp32",
+                # The settings test_ginkgo_gmg_kokkos.py already drives this path
+                # with, so a failure here is about the ranks and nothing else.
+                "mp_inner_rtol": 1e-2,
+                "mp_inner_max_iter": 20,
+            },
+            id="mpir",
+        ),
+    ],
+)
+def test_gmg_kokkos_multirank(blockamr_session, cfg):
+    """The Kokkos V-cycle solve gives the same answer on 2 ranks as on 1.
+
+    cuda only: the ported V-cycle is a device path and rejects a host executor at
+    construction. Two ranks sharing one GPU is a valid correctness test -- what is
+    under test is the reduction and the halo, not the device count.
+
+    The iteration cap is what makes this test non-vacuous, and the residual check
+    alone would not be. The OUTER loop forms r = b - A x with the fp64 operator and
+    stops on a globally reduced norm, so a preconditioner reading garbage ghosts
+    would still be driven to the right answer -- just slowly. Measured at 8 (and 5
+    for mpir) on both 1 and 2 ranks, i.e. the decomposition does not change the
+    preconditioner at all; the cap leaves room for a retuned hierarchy but not for a
+    V-cycle that stopped preconditioning.
+    """
+    shape = (16, 16, 16)
+    values = _random_values(shape)
+    stats, sol, referee = _run_multirank(shape, {**PRECONDITIONED, **cfg}, values, "cuda")
+    assert stats["converged"] is True
+    assert _rel_residual(sol, values, referee) < AGREE
+    assert stats["num_iters"] <= 20
+
+
+@pytest.mark.mpi
+@pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
+def test_csr_refuses_multirank(blockamr_session):
+    """The CSR path still sizes its flat vectors globally, so it must RAISE on >1 rank.
+
+    Its assembly is single-box only, which on more than one rank means one rank
+    holding every row while the others hold none, and its vectors were never given
+    the distributed views the Krylov paths got -- so its reductions are rank-local
+    and the answer is wrong, not merely slow. Refusing is the point: a silently
+    rank-local reduction is exactly what let the residual norm go wrong unnoticed
+    for months, and it went unnoticed because nothing complained.
+
+    Constructed directly rather than through _make_solver_or_skip -- that helper
+    turns a RuntimeError into a skip, which would swallow the very error under test.
+    """
+    if not hasattr(blockamr, "FaceCoeffCsrSolver"):
+        pytest.skip("blockamr.FaceCoeffCsrSolver binding not available")
+    shape = (16, 16, 16)
+    geom, ba, dm = _make_mesh(shape)
+    coeffs, _, _ = _coeffs(geom, ba, dm, shape)
+    with pytest.raises(RuntimeError) as exc:
+        blockamr.FaceCoeffCsrSolver(*coeffs, geom, executor=gko_executor("reference"))
+    if "without Ginkgo" in str(exc.value):
+        pytest.skip("blockamr built without Ginkgo")
+    assert "single-rank only" in str(exc.value)
 
 
 # ---------------------------------------------------------------------------

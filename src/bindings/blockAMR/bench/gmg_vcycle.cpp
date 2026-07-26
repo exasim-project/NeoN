@@ -62,6 +62,8 @@
 #include <Kokkos_Core.hpp>
 
 #include <AMReX_MultiFab.H>
+#include <AMReX_ParallelContext.H>
+#include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
 #include "../solvers/bc_geom.hpp"
@@ -274,6 +276,17 @@ struct KokkosFusedGmgBackend
 // The fence could not be dropped before this: each colour sweep was followed by an
 // AMReX FillBoundary, which needs exactly the same ordering the fence provided. The
 // halo port is what makes the removal possible, not an optimisation beside it.
+//
+// ON ONE RANK ONLY, and that is a property of the plans rather than of the kernels.
+// A CopyPlan task is a device-to-device rectangular copy between two LOCAL box
+// indices; a ghost cell covered by a box on another rank has no device address to
+// name, so the plan cannot express it. Filling that gap would mean packing buffers,
+// MPI and a completion wait per exchange -- i.e. reinstating exactly the
+// synchronisation point this backend exists to remove, for a cycle whose cost is
+// then no longer the launch (halo_kokkos.hpp says the same at its head). So on >1
+// rank the CELL KERNELS stay Kokkos and the DATA MOVEMENTS go back to AMReX, which
+// is precisely what `kokkos_fused` already does: same answer everywhere,
+// fence-free on one rank. `Vcycle::amrexFree_` is where that decision is made.
 struct KokkosOptGmgBackend
 {
     static constexpr const char* tag = "kokkos_opt";
@@ -330,7 +343,7 @@ bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
     }
     const auto aa = a.const_arrays();
     const auto bb = b.const_arrays();
-    const double diff = amrex::ParReduce(
+    double diff = amrex::ParReduce(
         amrex::TypeList<amrex::ReduceOpMax> {},
         amrex::TypeList<double> {},
         a,
@@ -338,6 +351,10 @@ bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
         [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
         { return {amrex::Math::abs(aa[box](i, j, k) - bb[box](i, j, k))}; }
     );
+    // ParReduce reduces over THIS rank's boxes only. The answer decides whether the
+    // hierarchy keeps one face fab per direction or two, so ranks that disagreed
+    // would build structurally different hierarchies for the same operator.
+    amrex::ParallelAllReduce::Max(diff, amrex::ParallelContext::CommunicatorSub());
     return diff == 0.0;
 }
 
@@ -399,7 +416,8 @@ public:
     Vcycle(const GmgArgs& args)
         : preSweeps_(args.preSweeps), postSweeps_(args.postSweeps),
           coarsestSweeps_(args.coarsestSweeps), omega_(args.omega), bc_(args.bc),
-          hasPhysBc_(std::any_of(args.bc.begin(), args.bc.end(), [](int b) { return b != 0; }))
+          hasPhysBc_(std::any_of(args.bc.begin(), args.bc.end(), [](int b) { return b != 0; })),
+          amrexFree_(Backend::amrexFreeCycle && amrex::ParallelContext::NProcsSub() == 1)
     {
         const amrex::BoxArray& ba = args.alpha->boxArray();
         const amrex::DistributionMapping& dm = args.alpha->DistributionMap();
@@ -422,7 +440,11 @@ public:
         // the whole hierarchy, so that ratio dominates the cycle.
         amrex::BoxArray l0ba = ba;
         amrex::DistributionMapping l0dm = dm;
-        if constexpr (Backend::amrexFreeCycle)
+        // Level 0's own decomposition rides on the plan-driven interface copy, so it
+        // is available exactly where the plans are. On >1 rank the caller's layout is
+        // kept -- the option trades halo traffic for one copy per apply, and a copy
+        // that has become an MPI ParallelCopy is not the trade it was measured to be.
+        if (amrexFree_)
         {
             if (args.aggLevel0Size > 0)
             {
@@ -536,7 +558,7 @@ public:
 
         // Resolve the data movements once, now that the hierarchy is final. Setup, so
         // untimed: what the timed cycle sees is a device table and one launch.
-        if constexpr (Backend::amrexFreeCycle)
+        if (amrexFree_)
         {
             if (aggL0_)
             {
@@ -576,6 +598,7 @@ public:
             Kokkos::fence();
             return;
         }
+        Backend::beforeAmrexRead(); // a previous cycle's kernels may still be in flight
         solvers::gmgConvertCopyDevice(*levels_[0].rhs, rhs);
         levels_[0].sol->setVal(T(0));
         amrex::Gpu::streamSynchronize();
@@ -616,6 +639,7 @@ public:
             amrex::Gpu::streamSynchronize();
             return;
         }
+        Backend::beforeAmrexRead(); // a previous apply's kernels may still be in flight
         solvers::scatter_device(r, *L0.rhs);
         L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
         Backend::afterAmrexWrite();
@@ -642,7 +666,7 @@ public:
         const auto az = L.uz->const_arrays();
         const auto lza = L.lzf().const_arrays();
         const auto al = L.alpha->const_arrays();
-        return amrex::ParReduce(
+        double sum = amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum> {},
             amrex::TypeList<double> {},
             *L.rhs,
@@ -663,6 +687,10 @@ public:
                 return {r * r};
             }
         );
+        // This rank's boxes only, like every ParReduce. The caller squares-roots it
+        // and prints it as THE residual of the cycle.
+        amrex::ParallelAllReduce::Sum(sum, amrex::ParallelContext::CommunicatorSub());
+        return sum;
     }
 
     int nlevels() const { return static_cast<int>(levels_.size()); }
@@ -805,23 +833,25 @@ private:
     // so the measured backends are unaffected by its existence.
     void fillGhosts(Level& L) const
     {
-        if constexpr (Backend::amrexFreeCycle)
+        if (amrexFree_)
         {
             gmgFillBoundaryKokkos<T>(*L.sol, L.halo);
             if (hasPhysBc_)
             {
                 gmgFillDomainBcKokkos<T>(*L.sol, L.bc);
             }
+            return;
         }
-        else
+        // AMReX is about to READ sol, which the last colour sweep wrote. For the
+        // fenced backends that sweep already fenced and this is a no-op; for
+        // kokkos_opt on >1 rank it is the ordering the dropped fence used to give.
+        Backend::beforeAmrexRead();
+        L.sol->FillBoundary(L.geom.periodicity());
+        if (hasPhysBc_)
         {
-            L.sol->FillBoundary(L.geom.periodicity());
-            if (hasPhysBc_)
-            {
-                solvers::fillDomainBcGhostsDevice(*L.sol, L.geom.Domain(), bc_);
-            }
-            Backend::afterAmrexWrite();
+            solvers::fillDomainBcGhostsDevice(*L.sol, L.geom.Domain(), bc_);
         }
+        Backend::afterAmrexWrite();
     }
 
     // Red-black colour sweeps; `reversed` flips the colour order (black-red), the
@@ -882,7 +912,7 @@ private:
             L.lzf(),
             *L.alpha
         );
-        if constexpr (Backend::amrexFreeCycle)
+        if (amrexFree_)
         {
             if (C.agglomerated)
             {
@@ -892,6 +922,7 @@ private:
         }
         else
         {
+            Backend::beforeAmrexRead(); // residRestrict just wrote xferRhs
             if (C.agglomerated)
             {
                 C.rhs->ParallelCopy(*C.xferRhs, 0, 0, 1);
@@ -902,12 +933,13 @@ private:
         vcycle(l + 1);
         if (C.agglomerated)
         {
-            if constexpr (Backend::amrexFreeCycle)
+            if (amrexFree_)
             {
                 gmgCopyKokkos<T>(*C.xferSol, *C.sol, C.xferOut);
             }
             else
             {
+                Backend::beforeAmrexRead(); // the coarse cycle just wrote C.sol
                 C.xferSol->ParallelCopy(*C.sol, 0, 0, 1);
                 Backend::afterAmrexWrite();
             }
@@ -923,6 +955,13 @@ private:
     solvers::BcArray bc_ {};
     bool hasPhysBc_ = false;
     bool shared_ = false;
+
+    // Whether the timed cycle really is AMReX-free: the backend must offer the
+    // Kokkos data movements AND every box they name must be addressable, which on
+    // more than one rank it is not (see KokkosOptGmgBackend). False here does not
+    // change a single arithmetic result -- it routes the halo, the zero fill and the
+    // agglomeration transfers through AMReX, the same ones every other backend uses.
+    bool amrexFree_ = false;
 
     // Level-0 agglomeration only: the caller-layout staging fab and the plans that
     // move between it and level 0. Empty otherwise, and the apply path then talks to
