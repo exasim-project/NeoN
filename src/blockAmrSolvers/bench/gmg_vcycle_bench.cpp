@@ -47,7 +47,7 @@
 // than a copy of them, so the baseline is the real thing. It is recompiled here in
 // the non-RDC object library, which is what makes the flags identical for both
 // columns: production's _blockamr is non-RDC too (see CMakeLists.txt for the
-// rationale). blockamr_bench stays a separate library by history, not because of an
+// rationale). blockamr_kokkos stays a separate library by history, not because of an
 // RDC split between the two.
 //
 // The templated Vcycle these backends are run through -- LevelT, sameField,

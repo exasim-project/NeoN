@@ -9,7 +9,7 @@
 #include <vector>
 
 // Deliberately free of both Kokkos and nanobind headers: the implementations live in
-// the blockamr_bench object library while the nanobind bindings live in _blockamr --
+// the blockamr_kokkos object library while the nanobind bindings live in _blockamr --
 // separate libraries by history, not by an RDC fence (see CMakeLists.txt for why the
 // whole module builds non-RDC). This header is the only thing the two sides share.
 

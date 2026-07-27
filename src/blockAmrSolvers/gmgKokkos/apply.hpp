@@ -15,10 +15,10 @@
 // The optimised (kokkos_opt) V-cycle as a preconditioner apply, behind an interface
 // that mentions neither Kokkos nor Ginkgo.
 //
-// That is the point of this header: the Kokkos kernels compile in the blockamr_bench
-// object library, while the Ginkgo solver stack compiles in _blockamr -- both are
-// CUDA_SEPARABLE_COMPILATION OFF (see CMakeLists.txt for the rationale;
-// blockamr_bench stays a separate library by history/inertia, not because of an RDC
+// That is the point of this header: the Kokkos kernels compile in the blockamr_kokkos
+// object library, while the Ginkgo solver stack compiles in blockamr_solvers -- both
+// are CUDA_SEPARABLE_COMPILATION OFF (see CMakeLists.txt for the rationale;
+// blockamr_kokkos stays a separate library by history/inertia, not because of an RDC
 // fence). So the V-cycle is exposed here as an opaque handle over flat device
 // vectors, and precond.hpp wraps it in a gko::LinOp on the other side -- Ginkgo
 // there, Kokkos here, nothing shared but this header and two double pointers.

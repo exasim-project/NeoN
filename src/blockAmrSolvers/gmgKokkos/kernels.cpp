@@ -12,7 +12,7 @@
 // every one of them is reached from KokkosOptGmgBackend (vcycle.hpp), which is shared
 // by apply.cpp (production) and bench/gmg_vcycle_bench.cpp (the bench
 // harness -- kokkos_fused also calls the first three of the five directly). Both
-// files land in the same final shared object (blockamr_bench is an OBJECT library
+// files land in the same final shared object (blockamr_kokkos is an OBJECT library
 // linked into _blockamr, not a separate .so -- see CMakeLists.txt), so a
 // header-inline template definition here used to be instantiated once per including
 // TU: two textually-identical extended-lambda-bearing functions compiled into two

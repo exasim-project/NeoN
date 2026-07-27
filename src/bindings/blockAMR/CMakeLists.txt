@@ -27,33 +27,10 @@ set(_blockamr_sources
     tile_layout.cpp
     bench_bindings.cpp)
 
-# Kernels for the Kokkos-vs-AMReX operator bench. Compiled as their own object library, NOT as
-# _blockamr sources -- but not because of an RDC fence: the whole module (including _blockamr
-# itself) builds CUDA_SEPARABLE_COMPILATION OFF, see the rationale at line ~70 below.
-# blockamr_bench remains a separate OBJECT library by history/inertia (it predates that fence
-# being dropped), not because it needs to be one. Both backends' kernels belong in this target so
-# the comparison runs under identical compile flags.
-set(_blockamr_bench_sources
-    ../../blockAmrSolvers/bench/kokkos_spike.cpp
-    ../../blockAmrSolvers/kokkos/runtime.cpp
-    ../../blockAmrSolvers/bench/operators.cpp
-    ../../blockAmrSolvers/gmgKokkos/kernels.cpp
-    ../../blockAmrSolvers/gmgKokkos/apply.cpp
-    ../../blockAmrSolvers/bench/gmg_vcycle_bench.cpp)
-
-# Ginkgo-only sources: the matrix-free solver stack, entirely under
-# ../../blockAmrSolvers/{common,operators,krylov,solve}/ since T3, plus the
-# registrar (ginkgo_solve.cpp) that binds it to Python.
-set(_blockamr_ginkgo_sources
-    ../../blockAmrSolvers/common/profiling.cpp
-    ../../blockAmrSolvers/common/bc.cpp
-    ../../blockAmrSolvers/operators/mlmg_ops.cpp
-    ../../blockAmrSolvers/operators/face_coeff_op.cpp
-    ../../blockAmrSolvers/operators/csr.cpp
-    ../../blockAmrSolvers/krylov/krylov.cpp
-    ../../blockAmrSolvers/solve/persistent.cpp
-    ../../blockAmrSolvers/solve/oneshot.cpp
-    ginkgo_solve.cpp)
+# The registrar for the Ginkgo-gated matrix-free solver stack (blockAmrSolvers/{common,
+# krylov,operators,gmg,solve}/, built by blockAmrSolvers/CMakeLists.txt as the
+# blockamr_solvers OBJECT library and linked below).
+set(_blockamr_ginkgo_sources ginkgo_solve.cpp)
 
 nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
 
@@ -62,12 +39,12 @@ nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
 # amrex::ParallelFor and by Kokkos, over the same MultiFab memory.
 target_link_libraries(_blockamr PRIVATE amrex NeoN::NeoN)
 
-# The real ginkgo_solve.cpp (and the blockAmrSolvers/ stack it drives) only compiles against
+# The real ginkgo_solve.cpp (and the blockamr_solvers stack it drives) only compiles against
 # Ginkgo; without it a stub raising RuntimeError is built instead, so module.cpp stays
 # unconditional.
 if(NeoN_WITH_GINKGO)
   target_sources(_blockamr PRIVATE ${_blockamr_ginkgo_sources})
-  target_link_libraries(_blockamr PRIVATE Ginkgo::ginkgo)
+  target_link_libraries(_blockamr PRIVATE Ginkgo::ginkgo blockamr_solvers)
 else()
   target_sources(_blockamr PRIVATE ginkgo_solve_stub.cpp)
 endif()
@@ -88,7 +65,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   # NeoN/core/memory/kokkos.hpp, so blockAmrSolvers/ already needs Kokkos headers to compile.
   # Dropping RDC for the whole module (this property) is what makes that possible.
   # Execution-verified for this revision: a CUDA configure+build of this target and
-  # blockamr_bench produces zero "-rdc=true" in build.ninja, and blockAmrSolvers/**/*.cpp
+  # blockamr_kokkos produces zero "-rdc=true" in build.ninja, and blockAmrSolvers/**/*.cpp
   # compiles clean as CUDA non-RDC. If AMReX ever needs a device symbol resolved across
   # translation units this breaks at LINK time, loudly, not silently.
   set_target_properties(_blockamr PROPERTIES CUDA_EXTENSIONS OFF CUDA_STANDARD_REQUIRED ON
@@ -102,25 +79,12 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   endif()
 endif()
 
-# The bench object library: same CUDA language, architecture and CUDA_SEPARABLE_COMPILATION
-# OFF as _blockamr (see the rationale on _blockamr's own property, above) -- kept as a
-# separate OBJECT library by history/inertia rather than because Kokkos needs a fence from
-# the rest of the module; the whole module builds non-RDC now.
-add_library(blockamr_bench OBJECT ${_blockamr_bench_sources})
-target_link_libraries(blockamr_bench PRIVATE amrex NeoN::NeoN)
-set_target_properties(blockamr_bench PROPERTIES CUDA_SEPARABLE_COMPILATION OFF
-                                                POSITION_INDEPENDENT_CODE ON)
-if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
-  set_source_files_properties(${_blockamr_bench_sources} PROPERTIES LANGUAGE CUDA)
-  get_target_property(_blockamr_cuda_archs _blockamr CUDA_ARCHITECTURES)
-  set_target_properties(
-    blockamr_bench
-    PROPERTIES CUDA_ARCHITECTURES "${_blockamr_cuda_archs}"
-               CUDA_EXTENSIONS OFF
-               CUDA_STANDARD_REQUIRED ON)
-  target_compile_features(blockamr_bench PUBLIC cuda_std_17)
-endif()
-target_link_libraries(_blockamr PRIVATE blockamr_bench)
+# blockamr_kokkos (gmgKokkos/ kokkos/ bench/) is defined by blockAmrSolvers/CMakeLists.txt
+# as its own OBJECT library, same CUDA_SEPARABLE_COMPILATION OFF as _blockamr (see the
+# rationale on _blockamr's own property, above) -- kept as a separate OBJECT library by
+# history/inertia rather than because Kokkos needs a fence from the rest of the module;
+# the whole module builds non-RDC now.
+target_link_libraries(_blockamr PRIVATE blockamr_kokkos)
 
 # Set RPATH so _blockamr.so can find libamrex at ../lib/ (blockamr is a top-level package:
 # site-packages/blockamr/_blockamr.so -> ../lib).
