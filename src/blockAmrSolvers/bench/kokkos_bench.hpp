@@ -175,18 +175,10 @@ struct GmgArgs
     // streams, so narrowing them alone moves most of the bytes bf16 was after.
     // kokkos_opt only, and it may not be WIDER than precision.
     //
-    // Measured, 256^3 single box, level-0 agglomerated, one cycle from z0 = 0:
-    //
-    //     fields/coeffs   ms/cycle   r1/r0 (smooth b)
-    //     fp64 / fp64       23.82        0.70078
-    //     fp64 / bf16       26.54        0.70053     <- 1.11x SLOWER
-    //     fp32 / fp32       12.52        0.70185
-    //     fp32 / bf16       10.60        0.70147     <- 1.18x faster, same cycle
-    //     bf16 / bf16        9.37       97.7         <- diverges (see bf16.hpp)
-    //
-    // So: narrow the coefficients only once the FIELDS are narrow. Under fp32
-    // fields it is 1.18x off the cycle at a residual reduction indistinguishable
-    // from fp32's; under fp64 fields the same change costs 11%.
+    // Measured: narrow the coefficients only once the FIELDS are narrow. Under fp32
+    // fields bf16 coefficients are 1.18x off the cycle at a residual reduction
+    // indistinguishable from fp32's; under fp64 fields the same change costs 11%.
+    // Tables: report/blockamr-precision-measurements.md in the NeoFOAM repo.
     std::string coeffPrecision;
 
     // Store ONE face coefficient per direction instead of an upper/lower pair.
