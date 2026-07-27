@@ -528,7 +528,7 @@ FaceCoeffSolver::FaceCoeffSolver(
     else if (precond == "gmg_kokkos")
     {
         // The same V-cycle as precond="gmg", under the optimised Kokkos launchers
-        // (bench/gmg_apply.hpp). A separate object rather than a mode of GmgPrecondT:
+        // (gmgKokkos/apply.hpp). A separate object rather than a mode of GmgPrecondT:
         // that one is the shipped baseline and stays untouched, so both can run in
         // one process and be compared directly.
         if (precond_mlmg != nullptr)

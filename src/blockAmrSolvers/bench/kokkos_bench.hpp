@@ -23,8 +23,8 @@ namespace blockamr::bench
 {
 
 // Kokkos lifetime (kokkosInitialize/kokkosFinalize/kokkosInitialized/
-// kokkosFinalized) now lives in kokkos_runtime.hpp -- production's init.cpp
-// includes that instead of this bench-only contract header.
+// kokkosFinalized) now lives in runtime.hpp (blockAmrSolvers/kokkos/) --
+// production's init.cpp includes that instead of this bench-only contract header.
 
 std::string kokkosExecutionSpace();
 
@@ -95,7 +95,7 @@ BenchResult benchOperator(const std::string& name, const OpArgs& args, int iters
 // ---------------------------------------------------------------------------
 // The GMG V-cycle bench
 //
-// The native geometric-multigrid V-cycle of solvers/gmg_precond.hpp, run with its
+// The native geometric-multigrid V-cycle of gmg_precond.hpp, run with its
 // AMReX kernels and with Kokkos twins of the same three kernels. Unlike the
 // operator bench this is a whole solver phase: per V-cycle it launches
 // (sweeps x 2 colours + 2) kernels PER LEVEL, each once per box, with a ghost
@@ -111,7 +111,7 @@ struct GmgArgs
 {
     // const: the V-cycle only ever reads these — it copies them into its own level
     // fields at setup — and a const-correct GmgArgs is what lets a caller holding
-    // const fields (the gmg_apply.hpp factory) build one.
+    // const fields (the apply.hpp factory) build one.
     const amrex::Geometry* geom = nullptr;
     const amrex::MultiFab* rhs = nullptr;
     const amrex::MultiFab* alpha = nullptr;

@@ -42,17 +42,17 @@
 #include <utility>
 #include <vector>
 
-#include "../bindings.hpp"
+#include "bindings.hpp"
 
-#include "../../../blockAmrSolvers/common/profiling.hpp"
-#include "../../../blockAmrSolvers/common/transfer.hpp"
-#include "../../../blockAmrSolvers/common/types.hpp"
-#include "../../../blockAmrSolvers/krylov/executor.hpp"
-#include "../../../blockAmrSolvers/krylov/krylov.hpp"
-#include "../../../blockAmrSolvers/krylov/logging.hpp"
-#include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
-#include "../../../blockAmrSolvers/operators/mlmg_ops.hpp"
-#include "../../../blockAmrSolvers/solve/persistent.hpp"
+#include "../../blockAmrSolvers/common/profiling.hpp"
+#include "../../blockAmrSolvers/common/transfer.hpp"
+#include "../../blockAmrSolvers/common/types.hpp"
+#include "../../blockAmrSolvers/krylov/executor.hpp"
+#include "../../blockAmrSolvers/krylov/krylov.hpp"
+#include "../../blockAmrSolvers/krylov/logging.hpp"
+#include "../../blockAmrSolvers/operators/face_coeff_op.hpp"
+#include "../../blockAmrSolvers/operators/mlmg_ops.hpp"
+#include "../../blockAmrSolvers/solve/persistent.hpp"
 
 namespace nb = nanobind;
 

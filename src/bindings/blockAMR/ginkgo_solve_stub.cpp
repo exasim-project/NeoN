@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-#include "../bindings.hpp"
+#include "bindings.hpp"
 
 namespace nb = nanobind;
 

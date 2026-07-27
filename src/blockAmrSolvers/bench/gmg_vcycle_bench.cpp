@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 // The GMG V-cycle bench: the native geometric-multigrid V-cycle of
-// solvers/gmg_precond.hpp, run with its AMReX kernels and with the Kokkos twins in
-// gmg_kokkos.hpp. Same hierarchy, same sweep counts, same control flow, same order
+// gmg_precond.hpp, run with its AMReX kernels and with the Kokkos twins in
+// kernels.hpp. Same hierarchy, same sweep counts, same control flow, same order
 // of operations — only the launcher differs, which is the same discipline the
 // operator bench uses.
 //
@@ -15,7 +15,7 @@
 //   kokkos        its per-box Kokkos twin.
 //   kokkos_fused  the same kernels under one TeamPolicy launch per level.
 //   kokkos_opt    ... and the halo exchange, the zero fill and the agglomeration
-//                 transfers on Kokkos too (halo_kokkos.hpp), which leaves no AMReX
+//                 transfers on Kokkos too (halo.hpp), which leaves no AMReX
 //                 operation inside the timed cycle and therefore no reason to fence
 //                 between kernels at all. The whole cycle becomes one stream the
 //                 host can run ahead of.
@@ -40,10 +40,10 @@
 //   dropped  Ginkgo (no LinOp, no Dense pack/unpack), the ReferenceExecutor host
 //            path, the Chebyshev smoother and
 //            its λmax power iteration, and physical boundary conditions — the
-//            bench is triply periodic, so bc handling never fires and solvers/bc
+//            bench is triply periodic, so bc handling never fires and bc.hpp
 //            stays out of this translation unit.
 //
-// The AMReX column calls the PRODUCTION kernels (solvers/gmg_kernels.hpp) rather
+// The AMReX column calls the PRODUCTION kernels (gmg_kernels.hpp) rather
 // than a copy of them, so the baseline is the real thing. It is recompiled here in
 // the non-RDC object library, which is what makes the flags identical for both
 // columns: production's _blockamr is non-RDC too (see CMakeLists.txt for the
@@ -52,7 +52,7 @@
 //
 // The templated Vcycle these backends are run through -- LevelT, sameField,
 // KokkosOptGmgBackend, Precision/PrecPair -- lives in vcycle.hpp, shared with the
-// production instantiation in gmg_apply.cpp; only the other three (bench-only)
+// production instantiation in apply.cpp; only the other three (bench-only)
 // backends and the timing driver are local to this TU.
 
 #include <algorithm>
@@ -88,7 +88,7 @@ namespace
 //   beforeAmrexRead   order a backend kernel against a following AMReX read.
 //   amrexFreeCycle    the timed cycle contains no AMReX operation, so the kernels
 //                     need no fence between them (they share one stream) and the
-//                     data movements come from halo_kokkos.hpp.
+//                     data movements come from halo.hpp.
 // ---------------------------------------------------------------------------
 
 struct AmrexGmgBackend

@@ -16,7 +16,7 @@
 // Kokkos twins of the native GMG V-cycle kernels: a 1:1 port of the three
 // *Device* kernels the timed V-cycle actually runs, in the same order, with the
 // same signatures and the same cell arithmetic. Each one is the Kokkos sibling of
-// a function in solvers/gmg_kernels.hpp, which already carries a *Device / *Host
+// a function in gmg_kernels.hpp, which already carries a *Device / *Host
 // twin per kernel; these are the third twin, so the correspondence stays
 // reviewable side by side:
 //

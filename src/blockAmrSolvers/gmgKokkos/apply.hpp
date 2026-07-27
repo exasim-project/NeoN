@@ -83,7 +83,7 @@ struct KokkosGmgOpts
 };
 
 // z = M^{-1} r, on flat DEVICE vectors in the solver's cell ordering (MFIter order,
-// i fastest within a valid box -- the ordering solvers/transfer.hpp defines and the
+// i fastest within a valid box -- the ordering transfer.hpp defines and the
 // whole Ginkgo stack already uses).
 //
 // Two widths, because the Krylov vectors have two: fp64 for the ordinary solvers,

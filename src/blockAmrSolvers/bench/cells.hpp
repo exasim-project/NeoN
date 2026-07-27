@@ -25,7 +25,7 @@ axpyCell(In const& x, Out const& y, int i, int j, int k, double a)
 }
 
 // Constant-coefficient 7-point Laplacian, 1 ghost. Same stencil shape as the
-// matrix-free apply in solvers/gmg_kernels.hpp, which is what the V-cycle spends
+// matrix-free apply in gmg_kernels.hpp, which is what the V-cycle spends
 // its time in -- bandwidth-bound, 8 reads and 1 write per cell before caching.
 template<class In, class Out>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void

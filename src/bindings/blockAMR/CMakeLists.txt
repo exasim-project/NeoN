@@ -22,10 +22,10 @@ set(_blockamr_sources
     amrcore.cpp
     tagbox.cpp
     fillpatch.cpp
-    solvers/linop.cpp
+    linop.cpp
     stencil_kernels.cpp
     tile_layout.cpp
-    bench/bindings.cpp)
+    bench_bindings.cpp)
 
 # Kernels for the Kokkos-vs-AMReX operator bench. Compiled as their own object library, NOT as
 # _blockamr sources -- but not because of an RDC fence: the whole module (including _blockamr
@@ -41,9 +41,9 @@ set(_blockamr_bench_sources
     ../../blockAmrSolvers/gmgKokkos/apply.cpp
     ../../blockAmrSolvers/bench/gmg_vcycle_bench.cpp)
 
-# Ginkgo-only sources: the matrix-free solver stack under solvers/, plus the
-# shared common/, operators/, krylov/ and solve/ seams that now live in
-# ../../blockAmrSolvers/ (T3).
+# Ginkgo-only sources: the matrix-free solver stack, entirely under
+# ../../blockAmrSolvers/{common,operators,krylov,solve}/ since T3, plus the
+# registrar (ginkgo_solve.cpp) that binds it to Python.
 set(_blockamr_ginkgo_sources
     ../../blockAmrSolvers/common/profiling.cpp
     ../../blockAmrSolvers/common/bc.cpp
@@ -52,22 +52,23 @@ set(_blockamr_ginkgo_sources
     ../../blockAmrSolvers/operators/csr.cpp
     ../../blockAmrSolvers/krylov/krylov.cpp
     ../../blockAmrSolvers/solve/persistent.cpp
-    solvers/ginkgo_solve.cpp)
+    ginkgo_solve.cpp)
 
 nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
 
-# NeoN::NeoN brings Kokkos (via the NeoN_public_api INTERFACE target) for the bench/ operator
-# comparison: the same cell kernels launched by amrex::ParallelFor and by Kokkos, over the same
-# MultiFab memory.
+# NeoN::NeoN brings Kokkos (via the NeoN_public_api INTERFACE target) for the
+# blockAmrSolvers/bench/ operator comparison: the same cell kernels launched by
+# amrex::ParallelFor and by Kokkos, over the same MultiFab memory.
 target_link_libraries(_blockamr PRIVATE amrex NeoN::NeoN)
 
-# The real ginkgo_solve.cpp (and the solvers/ stack it drives) only compiles against Ginkgo; without
-# it a stub raising RuntimeError is built instead, so module.cpp stays unconditional.
+# The real ginkgo_solve.cpp (and the blockAmrSolvers/ stack it drives) only compiles against
+# Ginkgo; without it a stub raising RuntimeError is built instead, so module.cpp stays
+# unconditional.
 if(NeoN_WITH_GINKGO)
   target_sources(_blockamr PRIVATE ${_blockamr_ginkgo_sources})
   target_link_libraries(_blockamr PRIVATE Ginkgo::ginkgo)
 else()
-  target_sources(_blockamr PRIVATE solvers/ginkgo_solve_stub.cpp)
+  target_sources(_blockamr PRIVATE ginkgo_solve_stub.cpp)
 endif()
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
@@ -81,13 +82,13 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   # __CUDACC_RDC__ -- so under -rdc=true ANY Kokkos header fails to compile on
   # inclusion, not just one that instantiates an atomic.
   #
-  # This is why the fence is gone on the solvers/ side too, not just here: the executor
+  # This is why the fence is gone on the blockAmrSolvers/ side too, not just here: the executor
   # argument there is a NeoN::Executor, and NeoN/core/executor/executor.hpp includes
-  # NeoN/core/memory/kokkos.hpp, so solvers/ already needs Kokkos headers to compile.
+  # NeoN/core/memory/kokkos.hpp, so blockAmrSolvers/ already needs Kokkos headers to compile.
   # Dropping RDC for the whole module (this property) is what makes that possible.
   # Execution-verified for this revision: a CUDA configure+build of this target and
-  # blockamr_bench produces zero "-rdc=true" in build.ninja, and solvers/*.cpp compiles
-  # clean as CUDA non-RDC. If AMReX ever needs a device symbol resolved across
+  # blockamr_bench produces zero "-rdc=true" in build.ninja, and blockAmrSolvers/**/*.cpp
+  # compiles clean as CUDA non-RDC. If AMReX ever needs a device symbol resolved across
   # translation units this breaks at LINK time, loudly, not silently.
   set_target_properties(_blockamr PROPERTIES CUDA_EXTENSIONS OFF CUDA_STANDARD_REQUIRED ON
                                              CUDA_SEPARABLE_COMPILATION OFF)
@@ -96,7 +97,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   if(NeoN_WITH_GINKGO)
     set_source_files_properties(${_blockamr_ginkgo_sources} PROPERTIES LANGUAGE CUDA)
   else()
-    set_source_files_properties(solvers/ginkgo_solve_stub.cpp PROPERTIES LANGUAGE CUDA)
+    set_source_files_properties(ginkgo_solve_stub.cpp PROPERTIES LANGUAGE CUDA)
   endif()
 endif()
 

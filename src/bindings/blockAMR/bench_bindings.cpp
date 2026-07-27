@@ -17,9 +17,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include "../../../blockAmrSolvers/bench/kokkos_bench.hpp"
-#include "../../../blockAmrSolvers/kokkos/runtime.hpp"
-#include "../bindings.hpp"
+#include "bindings.hpp"
+
+#include "../../blockAmrSolvers/bench/kokkos_bench.hpp"
+#include "../../blockAmrSolvers/kokkos/runtime.hpp"
 
 namespace nb = nanobind;
 

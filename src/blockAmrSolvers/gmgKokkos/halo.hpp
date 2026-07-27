@@ -194,7 +194,7 @@ CopyPlan makeHaloPlan(const amrex::FabArray<FAB>& mf, const amrex::Periodicity& 
 // a non-periodic domain face, the one-cell ghost layer outside that face and the
 // mirror interior cell to reflect into it (sign -1 for Dirichlet, +1 for Neumann).
 //
-// This is the twin of fillDomainBcGhosts* (solvers/bc.hpp) and it shares that path's
+// This is the twin of fillDomainBcGhosts* (bc.hpp) and it shares that path's
 // geometry rather than restating it: solvers::bcGhostFill decides, per box and side,
 // whether the side fires and what the layer, sign and offset are. So the two fills
 // cannot drift apart, and the Kokkos one is testable against the AMReX one to the bit.
