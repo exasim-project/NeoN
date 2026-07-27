@@ -16,12 +16,12 @@
 // what to reflect into it, and the AMReX fill that does it. Header-only and free of
 // nanobind and Ginkgo.
 //
-// Split out of bc.hpp so both sides of the RDC fence can share ONE definition. bc.cpp
-// compiles only when Ginkgo does and bc.hpp pulls in nanobind, while the Kokkos
-// V-cycle in bench/ has to build the same ghost fill as a device plan -- and wants the
-// AMReX fill as the reference to test that plan against. Copying twenty lines of index
-// arithmetic into the bench would be the alternative, and the two copies drifting
-// apart is exactly the bug this file prevents.
+// Split out of bc.hpp so both sides of the Ginkgo/nanobind split can share ONE
+// definition. bc.cpp compiles only when Ginkgo does and bc.hpp pulls in nanobind,
+// while the Kokkos V-cycle in bench/ has to build the same ghost fill as a device
+// plan -- and wants the AMReX fill as the reference to test that plan against.
+// Copying twenty lines of index arithmetic into the bench would be the alternative,
+// and the two copies drifting apart is exactly the bug this file prevents.
 // ---------------------------------------------------------------------------
 
 namespace blockamr::solvers

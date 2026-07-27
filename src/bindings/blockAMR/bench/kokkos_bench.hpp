@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-// Deliberately free of both Kokkos and nanobind headers: the implementations live
-// in a NON-RDC object library (Kokkos' desul atomics refuse to compile under
-// AMReX's -rdc=true) while the nanobind bindings live in the RDC module. This
-// header is the only thing the two sides share.
+// Deliberately free of both Kokkos and nanobind headers: the implementations live in
+// the blockamr_bench object library while the nanobind bindings live in _blockamr --
+// separate libraries by history, not by an RDC fence (see CMakeLists.txt for why the
+// whole module builds non-RDC). This header is the only thing the two sides share.
 
 namespace amrex
 {

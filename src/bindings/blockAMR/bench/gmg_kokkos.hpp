@@ -20,9 +20,9 @@
 // twin per kernel; these are the third twin, so the correspondence stays
 // reviewable side by side:
 //
-//   gmgGsColorKokkos       <- gmgGsColorDevice        (gmg_kernels.hpp:330)
-//   gmgResidRestrictKokkos <- gmgResidRestrictDevice  (gmg_kernels.hpp:636)
-//   gmgProlongAddKokkos    <- gmgProlongAddDevice     (gmg_kernels.hpp:592)
+//   gmgGsColorKokkos       <- gmgGsColorDevice        (gmg_kernels.hpp:385)
+//   gmgResidRestrictKokkos <- gmgResidRestrictDevice  (gmg_kernels.hpp:691)
+//   gmgProlongAddKokkos    <- gmgProlongAddDevice     (gmg_kernels.hpp:647)
 //
 // Each comes in two launch forms with identical signatures and one shared body:
 //

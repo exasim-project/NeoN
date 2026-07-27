@@ -4,10 +4,6 @@
 
 #pragma once
 
-#include <nanobind/nanobind.h>
-#include <nanobind/stl/string.h>
-#include <nanobind/stl/vector.h>
-
 #include <AMReX_Box.H>
 #include <AMReX_Geometry.H>
 #include <AMReX_GpuLaunch.H>
@@ -37,7 +33,8 @@ parseBc(const std::vector<std::string>& bc, const amrex::Geometry& geom, const s
 
 // fillDomainBcGhostsDevice / fillDomainBcGhostsHost also live in bc_geom.hpp, for the
 // same reason: the bench-side V-cycle needs the AMReX fill as the reference its Kokkos
-// twin is tested against, and cannot include this header (nanobind).
+// twin is tested against, and cannot include this header -- bc.hpp (and bc.cpp) only
+// compile under NeoN_WITH_GINKGO, while bc_geom.hpp is built unconditionally.
 
 // Validate an inhomogeneous-BC data carrier (the `bcdata` of
 // fillDomainBcGhostsInhom*, bc_geom.hpp) against the operator it will be read

@@ -28,12 +28,11 @@ set(_blockamr_sources
     bench/bindings.cpp)
 
 # Kernels for the Kokkos-vs-AMReX operator bench. Compiled as their own object library, NOT as
-# _blockamr sources: AMReX sets CUDA_SEPARABLE_COMPILATION on _blockamr (-rdc=true) and Kokkos'
-# desul atomics refuse that mode outright ("#error Relocatable device code mode incompatible with
-# desul atomics configuration") because libkokkoscore was built without separable compilation.
-# Non-RDC objects link into an RDC module fine -- their device code is already fully resolved. Both
-# backends' kernels belong in this target so the comparison runs under identical compile flags; note
-# this means the AMReX bench kernels are non-RDC while production AMReX kernels are RDC.
+# _blockamr sources -- but not because of an RDC fence: the whole module (including _blockamr
+# itself) builds CUDA_SEPARABLE_COMPILATION OFF, see the rationale at line ~70 below.
+# blockamr_bench remains a separate OBJECT library by history/inertia (it predates that fence
+# being dropped), not because it needs to be one. Both backends' kernels belong in this target so
+# the comparison runs under identical compile flags.
 set(_blockamr_bench_sources bench/kokkos_spike.cpp bench/operators.cpp bench/gmg_vcycle.cpp)
 
 # Ginkgo-only sources: the matrix-free solver stack under solvers/.
@@ -72,15 +71,16 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   # Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=OFF, and desul's guard
   # (tpls/desul/include/desul/atomics/Macros.hpp) is a preprocessor check on
   # __CUDACC_RDC__ -- so under -rdc=true ANY Kokkos header fails to compile on
-  # inclusion, not just one that instantiates an atomic. That is what kept the
-  # solvers/ stack free of NeoN includes and forced the blockamr_bench fence.
+  # inclusion, not just one that instantiates an atomic.
   #
-  # We need the fence gone on the solvers/ side: the executor argument is now a
-  # NeoN::Executor, and NeoN/core/executor/executor.hpp includes
-  # NeoN/core/memory/kokkos.hpp. Dropping RDC for the whole module is the cheaper
-  # half of that trade -- blockamr_bench already compiles AMReX kernels non-RDC in
-  # this same build, so the mode is proven here. If AMReX ever needs a device symbol
-  # resolved across translation units this breaks at LINK time, loudly, not silently.
+  # This is why the fence is gone on the solvers/ side too, not just here: the executor
+  # argument there is a NeoN::Executor, and NeoN/core/executor/executor.hpp includes
+  # NeoN/core/memory/kokkos.hpp, so solvers/ already needs Kokkos headers to compile.
+  # Dropping RDC for the whole module (this property) is what makes that possible.
+  # Execution-verified for this revision: a CUDA configure+build of this target and
+  # blockamr_bench produces zero "-rdc=true" in build.ninja, and solvers/*.cpp compiles
+  # clean as CUDA non-RDC. If AMReX ever needs a device symbol resolved across
+  # translation units this breaks at LINK time, loudly, not silently.
   set_target_properties(_blockamr PROPERTIES CUDA_EXTENSIONS OFF CUDA_STANDARD_REQUIRED ON
                                              CUDA_SEPARABLE_COMPILATION OFF)
   # Mark all .cpp sources to be compiled as CUDA
@@ -92,8 +92,10 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   endif()
 endif()
 
-# The bench object library: same CUDA language and architecture as _blockamr, but
-# CUDA_SEPARABLE_COMPILATION explicitly OFF so Kokkos headers compile (see above).
+# The bench object library: same CUDA language, architecture and CUDA_SEPARABLE_COMPILATION
+# OFF as _blockamr (see the rationale on _blockamr's own property, above) -- kept as a
+# separate OBJECT library by history/inertia rather than because Kokkos needs a fence from
+# the rest of the module; the whole module builds non-RDC now.
 add_library(blockamr_bench OBJECT ${_blockamr_bench_sources})
 target_link_libraries(blockamr_bench PRIVATE amrex NeoN::NeoN)
 set_target_properties(blockamr_bench PROPERTIES CUDA_SEPARABLE_COMPILATION OFF

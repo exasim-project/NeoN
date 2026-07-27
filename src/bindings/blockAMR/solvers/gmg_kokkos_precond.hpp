@@ -21,7 +21,7 @@
 // This is the whole Ginkgo side of it: a gko::LinOp whose apply hands two device
 // pointers to bench::KokkosGmgApply. All the multigrid lives on the other side of
 // that handle, in the non-RDC object library where the Kokkos kernels compile (see
-// bench/gmg_apply.hpp for why the fence exists).
+// bench/gmg_apply.hpp for why that's a separate library rather than an RDC fence).
 //
 // It sits beside GmgPrecondT rather than inside it. GmgPrecondT is the shipped
 // preconditioner and the baseline every measurement is read against, so it is left

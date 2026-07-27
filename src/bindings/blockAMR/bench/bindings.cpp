@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 // nanobind surface for the Kokkos-vs-AMReX operator bench. Kept apart from the
-// implementations: those compile in a non-RDC object library that must not see
-// nanobind, so that both sides agree on exactly one shared header.
+// implementations: those compile in the separate blockamr_bench object library (see
+// CMakeLists.txt -- not an RDC fence, the whole module builds non-RDC), so both
+// sides agree on exactly one shared header.
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>

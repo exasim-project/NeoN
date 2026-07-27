@@ -15,14 +15,14 @@
 // The optimised (kokkos_opt) V-cycle as a preconditioner apply, behind an interface
 // that mentions neither Kokkos nor Ginkgo.
 //
-// That is the point of this header, and it is a build constraint rather than a taste:
-// the Kokkos kernels compile in the non-RDC blockamr_bench object library (AMReX puts
-// _blockamr in -rdc=true mode and Kokkos' desul atomics refuse it), while the Ginkgo
-// solver stack compiles in the RDC one. Neither library can include the other's
-// headers. So the V-cycle is exposed here as an opaque handle over flat device
+// That is the point of this header: the Kokkos kernels compile in the blockamr_bench
+// object library, while the Ginkgo solver stack compiles in _blockamr -- both are
+// CUDA_SEPARABLE_COMPILATION OFF (see CMakeLists.txt for the rationale;
+// blockamr_bench stays a separate library by history/inertia, not because of an RDC
+// fence). So the V-cycle is exposed here as an opaque handle over flat device
 // vectors, and solvers/gmg_kokkos_precond.hpp wraps it in a gko::LinOp on the other
-// side of the fence -- Ginkgo there, Kokkos here, nothing shared but this header and
-// two double pointers.
+// side -- Ginkgo there, Kokkos here, nothing shared but this header and two double
+// pointers.
 //
 // Why bother: bench_gmg_kokkos.py measures the V-cycle in isolation, but a V-cycle is
 // a preconditioner. What a caller cares about is the SOLVE, where the V-cycle is one

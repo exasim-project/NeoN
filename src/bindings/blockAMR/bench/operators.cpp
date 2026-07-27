@@ -13,7 +13,8 @@
 // body is written once, against a Fields<> bundle of accessors, and both families
 // call it -- so no kernel is duplicated to serve a launcher.
 //
-// This TU is compiled WITHOUT relocatable device code (see CMakeLists.txt).
+// This TU is compiled WITHOUT relocatable device code, like the rest of the module
+// (see CMakeLists.txt for why _blockamr itself is also non-RDC).
 
 #include <algorithm>
 #include <array>

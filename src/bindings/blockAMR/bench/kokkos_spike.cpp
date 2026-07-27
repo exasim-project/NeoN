@@ -11,8 +11,8 @@
 //      (the_arena_is_managed defaults to false), so DefaultExecutionSpace's
 //      memory space is the correct label and no copy is involved.
 //
-// This TU is compiled WITHOUT relocatable device code (see CMakeLists.txt): AMReX
-// sets -rdc=true on _blockamr and Kokkos' desul atomics hard-error in that mode.
+// This TU is compiled WITHOUT relocatable device code, like the rest of the module
+// (see CMakeLists.txt for why _blockamr itself is also non-RDC).
 
 #include <stdexcept>
 
