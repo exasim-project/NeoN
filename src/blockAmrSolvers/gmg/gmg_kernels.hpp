@@ -405,104 +405,23 @@ double gmgNorm2(const GmgFab<T>& mf)
 // omega > 1 over-relaxes — MLMG's abec_gsrb uses omega = 1.15. The 7-point
 // stencil only couples opposite colours, so the in-place update is race-free.
 // sol's ghosts must be refreshed before EACH colour pass.
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp (via
+// gmg_precond.hpp) AND bench/gmg_vcycle_bench.cpp's "amrex" baseline column
+// (both object libraries land in the same _blockamr.so) — an
+// AMREX_GPU_HOST_DEVICE lambda here would be an extended lambda instantiated
+// in two CUDA TUs of one binary, the exact nvcc trap T2 already hit. So this
+// stays declaration-only in the header; the single definition + explicit
+// instantiation lives in gmg_kernels.cpp.
 template<class T>
-void gmgGsColorDevice(
-    GmgFab<T>& sol, const GmgFab<T>& rhs, const FaceCoeffs<T>& fc, int parity, double omega
-)
-{
-    const T om = static_cast<T>(omega);
-    for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            {
-                if (((i + j + k) & 1) != parity)
-                {
-                    return;
-                }
-                const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                const T off = stencilOffDiag(
-                    c,
-                    psi(i + 1, j, k),
-                    psi(i - 1, j, k),
-                    psi(i, j + 1, k),
-                    psi(i, j - 1, k),
-                    psi(i, j, k + 1),
-                    psi(i, j, k - 1)
-                );
-                const T diag = stencilDiag(al(i, j, k), c);
-                if (amrex::Math::abs(diag) > gmgDiagFloor<T>())
-                {
-                    const T gs = (b(i, j, k) - off) / diag;
-                    psi(i, j, k) += om * (gs - psi(i, j, k));
-                }
-            }
-        );
-    }
-}
-
-template<class T>
-void gmgGsColorHost(
-    GmgFab<T>& sol, const GmgFab<T>& rhs, const FaceCoeffs<T>& fc, int parity, double omega
-)
-{
-    const T om = static_cast<T>(omega);
-    for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    if (((i + j + k) & 1) != parity)
-                    {
-                        continue;
-                    }
-                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                    const T off = stencilOffDiag(
-                        c,
-                        psi(i + 1, j, k),
-                        psi(i - 1, j, k),
-                        psi(i, j + 1, k),
-                        psi(i, j - 1, k),
-                        psi(i, j, k + 1),
-                        psi(i, j, k - 1)
-                    );
-                    const T diag = stencilDiag(al(i, j, k), c);
-                    if (std::abs(diag) > gmgDiagFloor<T>())
-                    {
-                        const T gs = (b(i, j, k) - off) / diag;
-                        psi(i, j, k) += om * (gs - psi(i, j, k));
-                    }
-                }
-            }
-        }
-    }
-}
+void gmgGsColor(
+    GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    const FaceCoeffs<T>& fc,
+    int parity,
+    double omega,
+    bool onDevice
+);
 
 // Volume-average (factor-2) restriction of a cell field: coarse = mean of the
 // 8 fine children. Also used to coarsen alpha (a per-volume density). Iterates

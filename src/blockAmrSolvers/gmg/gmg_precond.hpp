@@ -532,11 +532,11 @@ private:
                 if (onDevice_)
                 {
                     prof::Timer t("gmg.gs", static_cast<int>(l));
-                    gmgGsColorDevice(*L.sol, *L.rhs, fc, parity, omega_);
+                    gmgGsColor(*L.sol, *L.rhs, fc, parity, omega_, onDevice_);
                 }
                 else
                 {
-                    gmgGsColorHost(*L.sol, *L.rhs, fc, parity, omega_);
+                    gmgGsColor(*L.sol, *L.rhs, fc, parity, omega_, onDevice_);
                 }
             }
         }

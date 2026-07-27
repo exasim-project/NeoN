@@ -122,12 +122,13 @@ struct AmrexGmgBackend
         double omega
     )
     {
-        solvers::gmgGsColorDevice<double>(
+        solvers::gmgGsColor<double>(
             sol,
             rhs,
             solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
             parity,
-            omega
+            omega,
+            /*onDevice=*/true
         );
     }
 

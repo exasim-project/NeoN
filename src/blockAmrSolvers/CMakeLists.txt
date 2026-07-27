@@ -57,6 +57,7 @@ set(_blockamr_kokkos_sources
     bench/kokkos_spike.cpp
     kokkos/runtime.cpp
     bench/operators.cpp
+    gmg/gmg_kernels.cpp
     gmgKokkos/kernels.cpp
     gmgKokkos/apply.cpp
     bench/gmg_vcycle_bench.cpp)

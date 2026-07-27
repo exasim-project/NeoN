@@ -20,7 +20,7 @@
 // twin per kernel; these are the third twin, so the correspondence stays
 // reviewable side by side:
 //
-//   gmgGsColorKokkos       <- gmgGsColorDevice        (gmg_kernels.hpp:385)
+//   gmgGsColorKokkos       <- gmgGsColor              (gmg_kernels.hpp)
 //   gmgResidRestrictKokkos <- gmgResidRestrictDevice  (gmg_kernels.hpp:691)
 //   gmgProlongAddKokkos    <- gmgProlongAddDevice     (gmg_kernels.hpp:647)
 //
@@ -189,7 +189,7 @@ struct GmgProlongCell
 // Per-box launchers: one MDRangePolicy per box.
 // ---------------------------------------------------------------------------
 
-// One red-black over-relaxation colour pass. Twin of gmgGsColorDevice.
+// One red-black over-relaxation colour pass. Twin of gmgGsColor.
 template<class T, class TC>
 void gmgGsColorKokkos(
     solvers::GmgFab<T>& sol,
