@@ -16,7 +16,7 @@
 #include <AMReX_Periodicity.H>
 
 #include "../../../blockAmrSolvers/common/bc.hpp"
-#include "../solvers/gmg_kernels.hpp"
+#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
 #include "launch.hpp"
 
 // ---------------------------------------------------------------------------

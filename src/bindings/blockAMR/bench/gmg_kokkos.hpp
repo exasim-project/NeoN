@@ -9,7 +9,7 @@
 #include <AMReX_Math.H>
 #include <AMReX_MultiFab.H>
 
-#include "../solvers/gmg_kernels.hpp"
+#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
 #include "launch.hpp"
 
 // ---------------------------------------------------------------------------

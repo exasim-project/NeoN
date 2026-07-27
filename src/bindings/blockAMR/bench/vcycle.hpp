@@ -36,7 +36,7 @@
 
 #include "../../../blockAmrSolvers/common/bc.hpp"
 #include "../../../blockAmrSolvers/common/transfer.hpp"
-#include "../solvers/gmg_kernels.hpp"
+#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
 #include "gmg_kokkos.hpp"
 #include "halo_kokkos.hpp"
 #include "kokkos_bench.hpp"

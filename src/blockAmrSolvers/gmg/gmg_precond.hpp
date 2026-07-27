@@ -20,11 +20,11 @@
 #include <string>
 #include <vector>
 
-#include "../../../blockAmrSolvers/common/bc.hpp"
-#include "../../../blockAmrSolvers/common/linop_base.hpp"
-#include "../../../blockAmrSolvers/common/profiling.hpp"
-#include "../../../blockAmrSolvers/common/transfer.hpp"
-#include "../../../blockAmrSolvers/common/types.hpp"
+#include "../common/bc.hpp"
+#include "../common/linop_base.hpp"
+#include "../common/profiling.hpp"
+#include "../common/transfer.hpp"
+#include "../common/types.hpp"
 #include "gmg_bottom.hpp"
 #include "gmg_kernels.hpp"
 

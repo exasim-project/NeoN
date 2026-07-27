@@ -29,8 +29,8 @@
 // combination that TU's callers need, so every OTHER including TU sees only a
 // declaration and links against this single definition instead of generating its own.
 
-#include "../solvers/bf16.hpp"
-#include "../solvers/gmg_kernels.hpp"
+#include "../../../blockAmrSolvers/gmg/bf16.hpp"
+#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
 #include "gmg_kokkos.hpp"
 #include "halo_kokkos.hpp"
 
