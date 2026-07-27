@@ -79,4 +79,26 @@ template void gmgGsColor<float>(
     GmgFab<float>&, const GmgFab<float>&, const FaceCoeffs<float>&, int, double, bool
 );
 
+// Piecewise-constant prolongation + correction: fine cell += coarse parent
+// value (the adjoint of the volume-average restriction, up to the 1/8 factor).
+template<class T>
+void gmgProlongAdd(const GmgFab<T>& crse, GmgFab<T>& fine, bool onDevice)
+{
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
+    for (amrex::MFIter mfi(fine); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto c = crse.const_array(mfi);
+        const auto f = fine.array(mfi);
+        amrex::HostDeviceParallelFor(
+            vbx,
+            [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
+            { f(i, j, k) += c(amrex::coarsen(i, 2), amrex::coarsen(j, 2), amrex::coarsen(k, 2)); }
+        );
+    }
+}
+
+template void gmgProlongAdd<double>(const GmgFab<double>&, GmgFab<double>&, bool);
+template void gmgProlongAdd<float>(const GmgFab<float>&, GmgFab<float>&, bool);
+
 } // namespace blockamr::solvers

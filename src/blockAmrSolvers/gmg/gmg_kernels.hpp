@@ -569,45 +569,16 @@ void gmgCoarsenFaceHost(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double 
 
 // Piecewise-constant prolongation + correction: fine cell += coarse parent
 // value (the adjoint of the volume-average restriction, up to the 1/8 factor).
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp (via
+// gmg_precond.hpp) AND bench/gmg_vcycle_bench.cpp's "amrex" baseline column
+// (both object libraries land in the same _blockamr.so) — an
+// AMREX_GPU_HOST_DEVICE lambda here would be an extended lambda instantiated
+// in two CUDA TUs of one binary, the exact nvcc trap T2 already hit. So this
+// stays declaration-only in the header; the single definition + explicit
+// instantiation lives in gmg_kernels.cpp.
 template<class T>
-void gmgProlongAddDevice(const GmgFab<T>& crse, GmgFab<T>& fine)
-{
-    for (amrex::MFIter mfi(fine); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto c = crse.const_array(mfi);
-        const auto f = fine.array(mfi);
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            { f(i, j, k) += c(amrex::coarsen(i, 2), amrex::coarsen(j, 2), amrex::coarsen(k, 2)); }
-        );
-    }
-}
-
-template<class T>
-void gmgProlongAddHost(const GmgFab<T>& crse, GmgFab<T>& fine)
-{
-    for (amrex::MFIter mfi(fine); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto c = crse.const_array(mfi);
-        const auto f = fine.array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    f(i, j, k) +=
-                        c(amrex::coarsen(i, 2), amrex::coarsen(j, 2), amrex::coarsen(k, 2));
-                }
-            }
-        }
-    }
-}
+void gmgProlongAdd(const GmgFab<T>& crse, GmgFab<T>& fine, bool onDevice);
 
 // Fused residual + volume-average restriction: coarse rhs cell = mean of the 8
 // fine residuals r = rhs - A sol, each computed on the fly. Iterates the coarse

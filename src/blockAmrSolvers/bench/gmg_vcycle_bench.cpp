@@ -153,7 +153,7 @@ struct AmrexGmgBackend
     template<class... A>
     static void prolongAdd(A&&... a)
     {
-        solvers::gmgProlongAddDevice<double>(std::forward<A>(a)...);
+        solvers::gmgProlongAdd<double>(std::forward<A>(a)..., /*onDevice=*/true);
     }
 };
 

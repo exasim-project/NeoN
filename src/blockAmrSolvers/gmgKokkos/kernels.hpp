@@ -22,7 +22,7 @@
 //
 //   gmgGsColorKokkos       <- gmgGsColor              (gmg_kernels.hpp)
 //   gmgResidRestrictKokkos <- gmgResidRestrictDevice  (gmg_kernels.hpp:691)
-//   gmgProlongAddKokkos    <- gmgProlongAddDevice     (gmg_kernels.hpp:647)
+//   gmgProlongAddKokkos    <- gmgProlongAdd           (gmg_kernels.hpp)
 //
 // Each comes in two launch forms with identical signatures and one shared body:
 //
@@ -266,7 +266,7 @@ void gmgResidRestrictKokkos(
     Kokkos::fence();
 }
 
-// Piecewise-constant prolongation + correction. Twin of gmgProlongAddDevice.
+// Piecewise-constant prolongation + correction. Twin of gmgProlongAdd.
 template<class T>
 void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fine)
 {

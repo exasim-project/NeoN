@@ -748,14 +748,7 @@ private:
         vcycle(l + 1);
         {
             prof::Timer t("gmg.prolong", static_cast<int>(l));
-            if (onDevice_)
-            {
-                gmgProlongAddDevice(*C.sol, *L.sol);
-            }
-            else
-            {
-                gmgProlongAddHost(*C.sol, *L.sol);
-            }
+            gmgProlongAdd(*C.sol, *L.sol, onDevice_);
         }
         smooth(l, postSweeps_, true);
     }
