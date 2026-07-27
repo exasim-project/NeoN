@@ -13,48 +13,60 @@
 #include <string>
 #include <vector>
 
-#include "../common/bc.hpp"
 #include "../common/types.hpp"
-#include "../gmg/gmg_precond.hpp"
 #include "../krylov/executor.hpp"
 #include "../krylov/krylov.hpp"
 #include "../krylov/logging.hpp"
 #include "../krylov/result.hpp"
-#include "../operators/face_coeff_op.hpp"
 #include "solver_config.hpp"
 
 namespace blockamr::solvers
 {
 
-// Persistent solver: the operator, the generated Ginkgo solver and the device
-// scratch vectors are built ONCE; each solve is just pack rhs -> apply ->
-// unpack sol, reusing everything (no per-call operator/solver rebuild). The
-// concrete operator is supplied by a subclass.
-class PersistentSolver
+// Anything the nanobind-visible solver facade (FaceCoeffSolver) can drive:
+// pack rhs -> solve -> unpack sol. Two things implement it, both file-local
+// to persistent.cpp: the Ginkgo Krylov path (KrylovSolver below -- also
+// FaceCoeffCsrSolver's own base) and the native stationary V-cycle loop
+// (GmgStationarySolver). FaceCoeffSolver picks one at construction time (see
+// makeFaceCoeffSolver in persistent.cpp) and forwards every solve() call to
+// it. Defined here in full (not forward-declared) so FaceCoeffSolver's
+// std::unique_ptr<ISolver> member never needs an out-of-line destructor.
+class ISolver
 {
 public:
 
-    virtual ~PersistentSolver() = default;
+    virtual ~ISolver() = default;
 
-    virtual SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
+    virtual SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) = 0;
+};
+
+// Ginkgo Krylov solver: the operator, the generated Ginkgo solver and the
+// device scratch vectors are built ONCE; each solve is just pack rhs -> apply
+// -> unpack sol, reusing everything (no per-call operator/solver rebuild).
+// The concrete operator is supplied by a subclass. Every KrylovSolver
+// unconditionally allocates its n-sized Ginkgo work vectors (b_/x_) --  the
+// native stationary solver (solver="gmg") never constructs one of these at
+// all; it is a GmgStationarySolver instead, which drives its own V-cycle on
+// MultiFabs and needs neither.
+class KrylovSolver : public ISolver
+{
+public:
+
+    ~KrylovSolver() override = default;
+
+    SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) override;
 
 protected:
 
-    // allocDense=false skips the n-sized Ginkgo work vectors b_/x_ — the native
-    // stationary solver (solver="gmg") drives the V-cycle on MultiFabs and never
-    // touches them (a real memory saving at large N: 2 * n doubles).
     // n is the GLOBAL cell count -- the operators' row/column dimension, which
     // every rank must agree on. nLocal is the count this rank owns and is what
     // the flat vectors are sized by; they differ only under MPI.
-    PersistentSolver(
-        std::shared_ptr<const gko::Executor> exec,
-        gko::size_type n,
-        gko::size_type nLocal,
-        bool allocDense = true
+    KrylovSolver(
+        std::shared_ptr<const gko::Executor> exec, gko::size_type n, gko::size_type nLocal
     );
 
     // Subclass calls this once its operator is built. `norm` selects the norm
-    // the stopping criteria — and the reported res_norm — measure in ("l2" |
+    // the stopping criteria -- and the reported res_norm -- measure in ("l2" |
     // "linf", MLMG's; see stop_norm_inf.hpp).
     void build(
         std::shared_ptr<gko::LinOp> op,
@@ -104,9 +116,16 @@ protected:
 };
 
 // Matrix-free persistent solver: the operator reads the caller's coefficient
-// fields on the fly, so an external in-place update to them changes the matrix
-// with no reassembly.
-class FaceCoeffSolver : public PersistentSolver
+// fields on the fly, so an external in-place update to them changes the
+// matrix with no reassembly. A pure facade: at construction it picks ONE of
+// two solve strategies from config.solverKind (see makeFaceCoeffSolver,
+// persistent.cpp) -- the native stationary GMG V-cycle for solver="gmg", a
+// Ginkgo Krylov solve (with the GMG hierarchy as an optional preconditioner
+// or IR inner solver) for everything else -- and forwards every solve() call
+// to whichever it built. Both strategies are file-local to persistent.cpp
+// (GmgStationarySolver, FaceCoeffKrylovSolver); this class is the only part
+// of either that Python, or any other translation unit, ever names.
+class FaceCoeffSolver
 {
 public:
 
@@ -123,88 +142,20 @@ public:
         const SolverConfig& config
     );
 
-    // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
-    // every other solver keeps the base Krylov path. Dispatch here so the binding
-    // (which calls S::solve on the concrete type) picks the right loop.
-    SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) override;
+    SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
 
 private:
 
-    // Build the precision-templated V-cycle hierarchy (fp64 default — byte-for-
-    // byte the historical behaviour; fp32 halves the bandwidth-bound V-cycle
-    // bytes, outer residual stays fp64). Also records the GmgApplyMf* so the
-    // stationary solver can drive the V-cycle on fabs without knowing the type.
-    std::shared_ptr<const gko::LinOp> buildGmgHierarchy(
-        const amrex::MultiFab* alpha,
-        const amrex::MultiFab* ux,
-        const amrex::MultiFab* lx,
-        const amrex::MultiFab* uy,
-        const amrex::MultiFab* ly,
-        const amrex::MultiFab* uz,
-        const amrex::MultiFab* lz,
-        const amrex::Geometry& geom,
-        const BcArray& bcArr,
-        int precondCycles,
-        const GmgConfig& gmg
-    );
-
-    // Fill xWork_'s ghost layer for the FP64 residual: periodic/internal via
-    // FillBoundary, then domain BCs via ghost reflection — the same fill
-    // FaceCoeffOp does, so the residual uses the identical operator A.
-    //
-    // With bcData_ the reflection is the INHOMOGENEOUS one, which makes the outer
-    // residual rhs - L(x) rather than rhs - A x. That is the whole of the
-    // stationary path's inhomogeneous-BC support: the V-cycle then solves
-    // A delta = rhs - L(x) with its own homogeneous fills, which is right because
-    // a correction's boundary condition is homogeneous whatever the solution's
-    // is, and the iteration converges to L(x) = rhs. No extra apply, no rhs fold
-    // — the Krylov path needs both only because Ginkgo requires a linear operator.
-    void fillGmgGhosts(amrex::MultiFab& mf) const;
-
-    // mf -= mean(mf) over the valid region (constant-nullspace projection for
-    // singular systems; uniform cells so the volume mean is the arithmetic mean).
-    void subtractMeanMf(amrex::MultiFab& mf) const;
-
-    // Native stationary V-cycle solve: x <- x + V(b - A x), warm-started from the
-    // incoming sol, until ||r|| <= max(rtol*||b||, atol) or max_iter cycles. Runs
-    // entirely on AMReX fabs — no Ginkgo Krylov object, no per-iteration
-    // flat-vector pack/unpack, no per-iteration Ginkgo<->AMReX crossings.
-    SolveResult gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
-
-    // Native stationary GMG solver state (only populated when solver="gmg").
-    bool gmgStationary_ = false;
-    const amrex::MultiFab* alpha_ = nullptr;
-    const amrex::MultiFab* ux_ = nullptr;
-    const amrex::MultiFab* lx_ = nullptr;
-    const amrex::MultiFab* uy_ = nullptr;
-    const amrex::MultiFab* ly_ = nullptr;
-    const amrex::MultiFab* uz_ = nullptr;
-    const amrex::MultiFab* lz_ = nullptr;
-    amrex::Geometry geom_ {};
-    BcArray bcArr_ {};
-    bool hasPhysBc_ = false;
-    // Inhomogeneous domain-BC data, null when the BCs are homogeneous. bcData_
-    // drives the stationary path's residual fill (pinned in ownedBcData_ on the
-    // host); bcOffsetOp_ is the typed hook into op_ the Krylov path calls once
-    // per solve to refresh PersistentSolver::bcOffset_.
-    const amrex::MultiFab* bcData_ = nullptr;
-    std::shared_ptr<amrex::MultiFab> ownedBcData_;
-    const FaceCoeffOp* bcOffsetOp_ = nullptr;
-    int maxIter_ = 0;
-    double rtol_ = 0.0;
-    double atol_ = 0.0;
-    bool projectNull_ = false;
-    std::shared_ptr<const gko::LinOp> gmgOwner_;               // keeps the V-cycle hierarchy alive
-    const GmgApplyMf* gmgMf_ = nullptr;                        // typed V-cycle hook into gmgOwner_
-    std::shared_ptr<amrex::MultiFab> xWork_;                   // FP64 iterate (1 ghost)
-    std::shared_ptr<amrex::MultiFab> rhsPinned_;               // pinned rhs stage (reference path)
-    std::vector<std::shared_ptr<amrex::MultiFab>> ownedCoeff_; // pinned coeffs (reference path)
+    std::unique_ptr<ISolver> impl_;
 };
 
 // Assembled-CSR persistent solver: same matrix, stored explicitly. Its per-
 // iteration SpMV streams the matrix from memory, versus FaceCoeffSolver which
-// recomputes entries from the face coefficients — the matrix-free comparison.
-class FaceCoeffCsrSolver : public PersistentSolver
+// recomputes entries from the face coefficients -- the matrix-free comparison.
+// Always a Ginkgo Krylov solve (there is no matrix-free CSR hierarchy), so
+// this derives from KrylovSolver directly -- no facade, no extra members, no
+// overrides.
+class FaceCoeffCsrSolver : public KrylovSolver
 {
 public:
 

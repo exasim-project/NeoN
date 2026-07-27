@@ -78,7 +78,7 @@ inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCrite
 // MlmgPrecond) is attached as the solver's generated preconditioner. `norm`
 // picks the norm both residual tests measure in ("l2" | "linf").
 //
-// `precond`/`norm` have no defaults: PersistentSolver::build (their one
+// `precond`/`norm` have no defaults: KrylovSolver::build (their one
 // caller) always passes both explicitly, so a default here would be dead.
 std::shared_ptr<gko::LinOp> buildKrylov(
     const std::string& solver,
