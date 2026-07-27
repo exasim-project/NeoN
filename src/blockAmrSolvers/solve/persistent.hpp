@@ -15,13 +15,13 @@
 #include <string>
 #include <vector>
 
-#include "../../../blockAmrSolvers/common/bc.hpp"
-#include "../../../blockAmrSolvers/common/types.hpp"
-#include "../../../blockAmrSolvers/gmg/gmg_precond.hpp"
-#include "../../../blockAmrSolvers/krylov/executor.hpp"
-#include "../../../blockAmrSolvers/krylov/krylov.hpp"
-#include "../../../blockAmrSolvers/krylov/logging.hpp"
-#include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
+#include "../common/bc.hpp"
+#include "../common/types.hpp"
+#include "../gmg/gmg_precond.hpp"
+#include "../krylov/executor.hpp"
+#include "../krylov/krylov.hpp"
+#include "../krylov/logging.hpp"
+#include "../operators/face_coeff_op.hpp"
 
 namespace nb = nanobind;
 

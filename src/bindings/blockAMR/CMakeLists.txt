@@ -42,7 +42,7 @@ set(_blockamr_bench_sources
     bench/gmg_vcycle_bench.cpp)
 
 # Ginkgo-only sources: the matrix-free solver stack under solvers/, plus the
-# shared common/, operators/ and krylov/ seams that now live in
+# shared common/, operators/, krylov/ and solve/ seams that now live in
 # ../../blockAmrSolvers/ (T3).
 set(_blockamr_ginkgo_sources
     ../../blockAmrSolvers/common/profiling.cpp
@@ -51,7 +51,7 @@ set(_blockamr_ginkgo_sources
     ../../blockAmrSolvers/operators/face_coeff_op.cpp
     ../../blockAmrSolvers/operators/csr.cpp
     ../../blockAmrSolvers/krylov/krylov.cpp
-    solvers/persistent.cpp
+    ../../blockAmrSolvers/solve/persistent.cpp
     solvers/ginkgo_solve.cpp)
 
 nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})

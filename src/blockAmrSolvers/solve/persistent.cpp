@@ -18,15 +18,15 @@
 #include <utility>
 #include <vector>
 
-#include "../../../blockAmrSolvers/common/profiling.hpp"
-#include "../../../blockAmrSolvers/common/transfer.hpp"
-#include "../../../blockAmrSolvers/gmgKokkos/precond.hpp"
-#include "../../../blockAmrSolvers/krylov/executor.hpp"
-#include "../../../blockAmrSolvers/krylov/logging.hpp"
-#include "../../../blockAmrSolvers/krylov/mixed_precision.hpp"
-#include "../../../blockAmrSolvers/operators/csr.hpp"
-#include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
-#include "../../../blockAmrSolvers/operators/mlmg_ops.hpp"
+#include "../common/profiling.hpp"
+#include "../common/transfer.hpp"
+#include "../gmgKokkos/precond.hpp"
+#include "../krylov/executor.hpp"
+#include "../krylov/logging.hpp"
+#include "../krylov/mixed_precision.hpp"
+#include "../operators/csr.hpp"
+#include "../operators/face_coeff_op.hpp"
+#include "../operators/mlmg_ops.hpp"
 
 namespace blockamr::solvers
 {
@@ -51,9 +51,9 @@ static void requireSingleRank(const char* what)
     }
 }
 
-// Declared in linop_base.hpp. The two bodies are spelled out rather than shared
+// Declared in dist_vec.hpp. The two bodies are spelled out rather than shared
 // through a template helper because nvcc rejects ANY template signature that
-// returns shared_ptr<LinOp> here (see the note in linop_base.hpp); the
+// returns shared_ptr<LinOp> here (see the note in dist_vec.hpp); the
 // duplication is the price of keeping this compilable in a CUDA build.
 std::shared_ptr<gko::LinOp> makeGlobalVec(
     std::shared_ptr<const gko::Executor> exec,

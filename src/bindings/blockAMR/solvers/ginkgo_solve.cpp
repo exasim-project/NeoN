@@ -52,7 +52,7 @@
 #include "../../../blockAmrSolvers/krylov/logging.hpp"
 #include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
 #include "../../../blockAmrSolvers/operators/mlmg_ops.hpp"
-#include "persistent.hpp"
+#include "../../../blockAmrSolvers/solve/persistent.hpp"
 
 namespace nb = nanobind;
 
