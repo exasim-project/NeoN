@@ -68,7 +68,14 @@ def test_correct_divergence_free(blockamr_session):
     # One explicit step → U* with non-zero divergence
     interpolate(U, phi)
     nu_func = lambda x, y, z, t: nu * jnp.ones_like(x)
-    solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu_func, U), t=0.0, dt=dt)
+    # jax pinned: callable gamma is a jax-only capability (Q14) — design §10 keeps a
+    # space-varying laplacian gamma on the v2 error surface, so cpp never learns it.
+    solve(
+        exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu_func, U),
+        t=0.0,
+        dt=dt,
+        solution={"backend": "jax"},
+    )
     U.fill_patch(0, 0.0)
 
     # Pressure projection

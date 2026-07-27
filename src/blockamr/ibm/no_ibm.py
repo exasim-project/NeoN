@@ -13,12 +13,13 @@ maintained by care — which is what makes it a usable baseline.
 class NoIbm:
     """Operator method that does nothing. Selected as ``solution["ibm"]``
     ``"noIbm"`` when a run wants the opt-out spelled out rather than implied by
-    an absent key."""
+    an absent key.
 
+    ``requires_bodies = False`` is the whole implementation: ``evaluation``
+    returns ``None`` for it, so no band is built, no row exists and no kernel
+    launches.
+    """
+
+    name = "noIbm"
     kind = "operator"
-    restrict_mode = None
     requires_bodies = False
-
-    @staticmethod
-    def build_tables(mesh, field):
-        return None

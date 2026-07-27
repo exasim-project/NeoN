@@ -65,9 +65,9 @@ class CellField:
         # Immersed-surface BCs, patch-keyed to match ``mesh.bodies`` (API doc
         # §6). The wall condition is a property of the *field*, the geometry a
         # property of the mesh — so one mesh can carry U on one method and T on
-        # another. Populated caches live in ``blockamr.ibm`` (see _IbmRuntime).
+        # another. Every IBM cache lives on ``mesh.ibm``, keyed by the IBM
+        # generation; the field carries the datum and nothing else.
         self.ibm_bc = {} if ibm_bc is None else dict(ibm_bc)
-        self._ibm_cache = {}
         mesh.register_field(self)
 
     def __getitem__(self, lev):

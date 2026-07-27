@@ -52,6 +52,12 @@ def test_mlpoisson_trivial(blockamr_session):
 
     sol = blockamr.MultiFab(ba, dm, 1, 1)
     rhs = blockamr.MultiFab(ba, dm, 1, 0)
+    # Seed both explicitly: the test used to rely on a fresh MultiFab handing back
+    # zeroed memory, which the arena stopped doing once the cpp backend's scratch
+    # MultiFabs started recycling blocks (Q14) — a latent nondeterminism, not a
+    # property of this solve.
+    sol.set_val(0.0)
+    rhs.set_val(0.0)
 
     mlmg = blockamr.MLMG(lp)
     mlmg.set_verbose(0)

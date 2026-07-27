@@ -5,7 +5,7 @@
 import blockamr
 from .. import backends
 from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
-from ..schemes.registry import lookup_scheme
+from ..schemes.registry import lookup_scheme, resolve as resolve_scheme
 
 # Backward-compat re-exports of the explicit machinery moved to
 # ``blockamr.backends.jax_backend`` (removed in plan 06). ``BF`` is a
@@ -49,9 +49,12 @@ def solve(equation, *, dt=None, t=None, solution=None):
 
       solve(Equation(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U),
                      schemes=schemes), dt=dt, t=t)
-        → explicit Forward Euler (JAX/Pallas). Schemes are resolved from the
-          equation's own ``schemes`` (bound at construction); ``solution``
-          may carry the field's IBM method.
+        → explicit time integration (Euler / RK2 / RK4). ``solution`` may
+          carry ``"backend"`` (dispatch backend, default ``"cpp"``), ``"ibm"``
+          (the field's immersed boundary method — absent means the IBM path is
+          not entered at all and the result is bitwise the plain operator's)
+          and ``"ddt"`` (the time scheme name; when present it wins over the
+          equation's ``schemes["ddt"]``, which stays the default route).
 
       solve(Equation(imp.laplacian(sigma, p) == exp.div(U)), dt=dt,
             solution=sol_p)
@@ -59,6 +62,7 @@ def solve(equation, *, dt=None, t=None, solution=None):
           (solver/rtol/atol/maxIter/bottomSolver/verbose/bottomVerbose).
     """
     from .equation import Equation
+    from ..ibm import IBM, evaluation
 
     if not isinstance(equation, Equation):
         raise TypeError(f"solve() expects an Equation, got {type(equation).__name__}")
@@ -78,8 +82,14 @@ def solve(equation, *, dt=None, t=None, solution=None):
     schemes = equation.schemes
     cell_field = equation.temporal_ops[0].field  # CellField
     mesh = cell_field.mesh
+    cfg = solution or {}
 
-    ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
+    if "ddt" in cfg:
+        # Decision Q8 (plans/IBM/review.md §4): the solution key wins when both
+        # are present; the equation route stays the default when it is absent.
+        ddt_scheme = resolve_scheme("ddt", cfg["ddt"])()
+    else:
+        ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
 
     _resolve_schemes(equation.spatial_ops, schemes)
 
@@ -93,27 +103,209 @@ def solve(equation, *, dt=None, t=None, solution=None):
             f"Create the field with ngrow>={required}."
         )
 
+    # solution["ibm"] (api §1): validate the name, then branch on the method's
+    # kind. Operator methods become the band driver (None when the IBM path is
+    # not entered at all — no key, noIbm, empty band — keeping those results
+    # bitwise the plain operator's); step methods fire on the field after each
+    # stage update.
+    band = None
+    step_method = None
+    ibm_name = cfg.get("ibm")
+    if ibm_name is not None:
+        method = IBM.lookup(ibm_name)  # unknown name -> ValueError + names()
+        if method.kind == "step":
+            step_method = method
+        else:
+            band = evaluation(ibm_name, cell_field, equation.spatial_ops)
+
+    impl = backends.get(cfg.get("backend", "cpp"))
+    ddt_coeff = equation.temporal_ops[0].coeff
+
     if isinstance(ddt_scheme, ForwardEuler):
-        impl = backends.get((solution or {}).get("backend", "jax"))
         for lev in range(mesh.n_levels()):
             cell_field.fill_patch(lev, t)
-            impl.euler_step(equation, cell_field, lev, t, dt)
-
-        # restrict fine -> coarse
-        for lev in reversed(range(mesh.n_levels() - 1)):
-            blockamr.average_down(
-                cell_field.mf[lev + 1],
-                cell_field.mf[lev],
-                mesh.geom(lev + 1),
-                mesh.geom(lev),
-                0,
-                cell_field.ncomp,
-                mesh.ref_ratio(lev),
-            )
-    elif isinstance(ddt_scheme, (RungeKutta2, RungeKutta4)):
-        raise NotImplementedError(f"{ddt_scheme.type} is not yet implemented")
+            if band is None:
+                # The exact pre-IBM call chain — bitwise the plain operator.
+                impl.euler_step(equation, cell_field, lev, t, dt)
+            else:
+                # Accumulating source (interior sweep + band rows; the pin ran
+                # at classification time, Q3/B25) plus the generic update,
+                # never a fused step kernel (R4).
+                src = band.source_level(impl, equation.spatial_ops, cell_field, lev, t)
+                blockamr.euler_update(
+                    cell_field.mf[lev], src, dt / ddt_coeff, cell_field.ncomp
+                )
+        if step_method is not None:
+            _apply_step_method(step_method, cell_field, dt, t + dt)
+    elif isinstance(ddt_scheme, RungeKutta2):
+        _rk2_step(impl, equation, band, step_method, cell_field, dt, t, ddt_coeff)
+    elif isinstance(ddt_scheme, RungeKutta4):
+        _rk4_step(impl, equation, band, step_method, cell_field, dt, t, ddt_coeff)
     else:
         raise ValueError(f"Unknown ddt scheme: {ddt_scheme}")
+
+    # restrict fine -> coarse
+    for lev in reversed(range(mesh.n_levels() - 1)):
+        blockamr.average_down(
+            cell_field.mf[lev + 1],
+            cell_field.mf[lev],
+            mesh.geom(lev + 1),
+            mesh.geom(lev),
+            0,
+            cell_field.ncomp,
+            mesh.ref_ratio(lev),
+        )
+
+
+def _stage_source(impl, equation, band, cell_field, lev, t_s):
+    """One stage's accumulated source on one level, at stage time ``t_s``.
+
+    The band route (interior sweep + band rows; the pin ran at classification
+    time, Q3/B25) when a band driver is active, the plain accumulating kernels
+    otherwise — never a fused step kernel (R4). The returned MultiFab may be a
+    backend scratch reused by the next call: consume it before the next
+    ``source``.
+    """
+    if band is None:
+        return impl.source(equation.spatial_ops, cell_field, lev, t_s)
+    return band.source_level(impl, equation.spatial_ops, cell_field, lev, t_s)
+
+
+def _snapshot(cell_field, lev):
+    """A fresh copy of the field's level-``lev`` MultiFab (ghosts included)."""
+    mesh = cell_field.mesh
+    mf = cell_field.mf[lev]
+    ng = mf.n_grow()
+    snap = blockamr.MultiFab(
+        mesh.box_array(lev), mesh.dm(lev), cell_field.ncomp, ng, memory=cell_field._memory
+    )
+    blockamr.copy_multifab(snap, mf, cell_field.ncomp, ng)
+    return snap
+
+
+def _accumulator(cell_field, lev):
+    """A zeroed ngrow=0 MultiFab on the field's level-``lev`` box array."""
+    mesh = cell_field.mesh
+    acc = blockamr.MultiFab(
+        mesh.box_array(lev), mesh.dm(lev), cell_field.ncomp, 0, memory=cell_field._memory
+    )
+    acc.set_val(0.0)
+    return acc
+
+
+def _rk2_step(impl, equation, band, step_method, cell_field, dt, t, ddt_coeff):
+    """Explicit midpoint (two-stage, second order), built from ``source`` +
+    ``copy_multifab`` + ``euler_update`` only (R4: no fused step kernel).
+
+    ``phi_half = phi0 - (dt/2c)·src(phi0, t)``;
+    ``phi_new  = phi0 - (dt/c)·src(phi_half, t + dt/2)``.
+    A step method (directForcing) fires after every stage update, so the solid
+    value is held between stages, not just between steps.
+
+    Single-level per-stage schedule: a fine level's stage sees the already
+    advanced coarse level and no ``average_down`` runs between stages —
+    multi-level per-stage AMR is out of scope (rung 10 is single-level).
+    """
+    mesh = cell_field.mesh
+    ncomp = cell_field.ncomp
+    phi0 = [_snapshot(cell_field, lev) for lev in range(mesh.n_levels())]
+
+    for a_stage, t_stage, t_state in ((0.5, t, t + 0.5 * dt), (1.0, t + 0.5 * dt, t + dt)):
+        for lev in range(mesh.n_levels()):
+            cell_field.fill_patch(lev, t_stage)
+            src = _stage_source(impl, equation, band, cell_field, lev, t_stage)
+            ng = cell_field.mf[lev].n_grow()
+            blockamr.copy_multifab(cell_field.mf[lev], phi0[lev], ncomp, ng)
+            blockamr.euler_update(cell_field.mf[lev], src, a_stage * dt / ddt_coeff, ncomp)
+        if step_method is not None:
+            _apply_step_method(step_method, cell_field, dt, t_state)
+
+
+def _rk4_step(impl, equation, band, step_method, cell_field, dt, t, ddt_coeff):
+    """Classical RK4, built from ``source`` + ``copy_multifab`` +
+    ``euler_update`` only (R4: no fused step kernel).
+
+    Each stage's source is folded into a zeroed accumulator with its classical
+    weight (``acc += w·src`` via ``euler_update(acc, src, -w)``) and, for the
+    first three stages, also forms the next stage state from the ``phi0``
+    snapshot. The final state is ``phi0 - (dt/6c)·acc``. A step method fires
+    after every stage update and after the final update.
+
+    Single-level per-stage schedule: a fine level's stage sees the already
+    advanced coarse level and no ``average_down`` runs between stages —
+    multi-level per-stage AMR is out of scope (rung 10 is single-level).
+    """
+    mesh = cell_field.mesh
+    ncomp = cell_field.ncomp
+    phi0 = [_snapshot(cell_field, lev) for lev in range(mesh.n_levels())]
+    acc = [_accumulator(cell_field, lev) for lev in range(mesh.n_levels())]
+
+    # (stage time, classical weight, next-state coefficient a in
+    #  phi <- phi0 - a*(dt/c)*src; None for the last stage) — the state formed
+    # by stage s lives at time t + c_{s+1}*dt, which is what a step method sees.
+    stages = (
+        (t, 1.0, 0.5, t + 0.5 * dt),
+        (t + 0.5 * dt, 2.0, 0.5, t + 0.5 * dt),
+        (t + 0.5 * dt, 2.0, 1.0, t + dt),
+        (t + dt, 1.0, None, None),
+    )
+    for t_stage, weight, a_next, t_state in stages:
+        for lev in range(mesh.n_levels()):
+            cell_field.fill_patch(lev, t_stage)
+            src = _stage_source(impl, equation, band, cell_field, lev, t_stage)
+            blockamr.euler_update(acc[lev], src, -weight, ncomp)  # acc += w*src
+            if a_next is not None:
+                ng = cell_field.mf[lev].n_grow()
+                blockamr.copy_multifab(cell_field.mf[lev], phi0[lev], ncomp, ng)
+                blockamr.euler_update(cell_field.mf[lev], src, a_next * dt / ddt_coeff, ncomp)
+        if a_next is not None and step_method is not None:
+            _apply_step_method(step_method, cell_field, dt, t_state)
+
+    for lev in range(mesh.n_levels()):
+        ng = cell_field.mf[lev].n_grow()
+        blockamr.copy_multifab(cell_field.mf[lev], phi0[lev], ncomp, ng)
+        blockamr.euler_update(cell_field.mf[lev], acc[lev], dt / (6.0 * ddt_coeff), ncomp)
+    if step_method is not None:
+        _apply_step_method(step_method, cell_field, dt, t + dt)
+
+
+def _apply_step_method(method, cell_field, dt, t):
+    """Apply a step-kind IBM method (directForcing) to the field.
+
+    Builds the method's mesh data lazily when ``mesh.build_ibm`` was never
+    called, and derives the pin datum from the field's own ``ibm_bc``: a single
+    patch carrying ``FixedValue`` broadcasts to the field's ncomp. Anything
+    else raises naming the missing capability (S6: loud, never a silent
+    interior value).
+    """
+    from ..ibm.bc import FixedValue, broadcast_gamma
+
+    mesh = cell_field.mesh
+    try:
+        data = mesh.ibm_data(method)
+    except RuntimeError:
+        built = list(getattr(mesh, "_ibm_methods", []))
+        if method not in built:
+            built.append(method)
+        mesh.build_ibm(built)
+        data = mesh.ibm_data(method)
+
+    ibm_bc = cell_field.ibm_bc
+    if len(ibm_bc) != 1:
+        raise NotImplementedError(
+            f"step-kind IBM '{method.__name__}' through solve() supports exactly "
+            f"one immersed patch; field '{cell_field.name}' has "
+            f"{sorted(ibm_bc) or 'none'}."
+        )
+    ((patch, bc),) = ibm_bc.items()
+    if not isinstance(bc, FixedValue):
+        raise NotImplementedError(
+            f"step-kind IBM '{method.__name__}' through solve() supports a "
+            f"FixedValue ibm_bc datum only; patch {patch!r} carries "
+            f"{type(bc).__name__}."
+        )
+    u_body = broadcast_gamma(bc.value, cell_field.ncomp)
+    method.apply(cell_field, dt, t, data, u_body=u_body)
 
 
 def evaluate(expr, t=0.0, solution=None):
@@ -131,9 +323,10 @@ def evaluate(expr, t=0.0, solution=None):
         Current time (for time-dependent coefficients).
     solution : dict, optional
         ``fvSolution.solvers[field]`` entries. ``"backend"`` picks the dispatch
-        backend (default ``"jax"``); ``"ibm"`` names the field's immersed
-        boundary method. With no ``"ibm"`` key the IBM path is not entered at
-        all, so the result is bitwise the plain operator's.
+        backend (default ``"cpp"``); ``"ibm"`` names the field's immersed
+        boundary method. With no ``"ibm"`` key — and with ``"noIbm"``, and with
+        a body that has no boundary cell on this mesh — the IBM path is not
+        entered at all, so the result is bitwise the plain operator's.
 
     Returns
     -------
@@ -157,23 +350,20 @@ def evaluate(expr, t=0.0, solution=None):
 
     cfg = solution or {}
     mesh = cell_field.mesh
-    impl = backends.get(cfg.get("backend", "jax"))
-    # P before the operator, R after it — one schedule for every method; see
-    # plans/IBM/ibm-row-format.md §6.
-    ibm = evaluation(cfg.get("ibm"), cell_field)
+    impl = backends.get(cfg.get("backend", "cpp"))
+    # None when the IBM path is not entered at all: no "ibm" key, the noIbm
+    # opt-out, or an empty band. Then the level loop below is the plain
+    # operator's, call for call (plans/IBM/design.md §6).
+    ibm = evaluation(cfg.get("ibm"), cell_field, spatial_ops)
     all_levels = []
 
     for lev in range(mesh.n_levels()):
+        # Once per level, before the terms: nothing writes to phi during them.
         cell_field.fill_patch(lev, t)
-        field = ibm.prolong(lev)
-        all_levels.append(
-            # `lev=lev` binds this iteration's level: the hook is called during
-            # the evaluate below, but binding by default makes that independent
-            # of when the backend chooses to call it.
-            impl.evaluate(
-                spatial_ops, field, lev, t, post=lambda mf, lev=lev: ibm.restrict(mf, lev)
-            )
-        )
+        if ibm is None:
+            all_levels.append(impl.evaluate(spatial_ops, cell_field, lev, t))
+        else:
+            all_levels.append(ibm.evaluate_level(impl, spatial_ops, cell_field, lev, t))
 
     return all_levels
 

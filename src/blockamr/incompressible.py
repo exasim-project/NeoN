@@ -205,7 +205,12 @@ def step(state: IncompressibleState) -> None:
     interpolate(U, phi)
     mac_project(phi, state.sol_p)
 
-    state.UEqn.solve(dt=dt, t=t, solution=state.sol_U)
+    # The driver owns the IBM application schedule for the projection loop:
+    # the method fires once, AFTER the full projection (step 8 below, the
+    # pre-refactor order). solve() now honours solution["ibm"] itself, so the
+    # key must not be forwarded to the momentum predictor — that would apply
+    # the method a second time, inside the predictor.
+    state.UEqn.solve(dt=dt, t=t, solution={k: v for k, v in state.sol_U.items() if k != "ibm"})
 
     for lev in range(n_levels):
         U.fill_patch(lev, t)

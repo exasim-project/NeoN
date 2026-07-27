@@ -25,4 +25,5 @@ NB_MODULE(_blockamr, m)
     registerStencilKernels(m);
     registerTileLayout(m);
     registerWallTable(m);
+    registerBandTable(m);
 }

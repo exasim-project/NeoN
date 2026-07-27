@@ -20,6 +20,11 @@ from blockamr.operators.div import Div, update_face_fluxes
 from blockamr.dsl import exp, solve
 from blockamr.schemes.div_schemes import Upwind
 
+# jax pinned tier-wide: every count here is a JAX compilation, which only the jax
+# backend produces — under the cpp default (B14) the counters would read 0 and the
+# zero-recompile assertions would pass vacuously (Q14).
+_JAX = {"backend": "jax"}
+
 
 class CompileCounter:
     """Count JAX backend compilations via the monitoring API."""
@@ -114,7 +119,7 @@ def _do_step(phi, ff, mesh, t=0.0, dt=0.001):
         if ff[lev] is not None:
             update_face_fluxes(ff[lev], _vel_func, mesh.geom(lev), t)
     expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
-    solve(expr, t=t, dt=dt)
+    solve(expr, t=t, dt=dt, solution=_JAX)
     jax.block_until_ready(None)
 
 

@@ -14,14 +14,35 @@ class ExplicitBackend(Protocol):
     """
 
     def euler_step(self, equation, cell_field, lev, t, dt) -> None:
-        """In-place forward-Euler update of ``cell_field`` on level ``lev``."""
+        """In-place forward-Euler update of ``cell_field`` on level ``lev``.
+
+        The no-IBM step only, call-for-call the plain operator's (the
+        "absent ⇒ bitwise the plain operator" contract, api §1). An active
+        band never lands here: ``solve()`` routes it through the driver's
+        ``source_level`` (which owns the pin) plus ``blockamr.euler_update``
+        — never a fused step kernel (row-format rule R4).
+        """
         ...
 
-    def evaluate(self, terms, cell_field, lev, t, post=None) -> list:
+    def source(self, terms, cell_field, lev, t, ibm=None):
+        """The accumulated source MultiFab ``Σ coeff·op(phi)`` on level ``lev``.
+
+        The R4 seam made explicit: operator evaluation and time update are
+        separate named launches, so a wall sweep (``ibm.apply``) fits between
+        them and RK stages can consume the source without an update. The
+        returned MultiFab is on the level's box array; it may be a scratch
+        buffer reused by the next ``source`` call, so consume it first.
+        """
+        ...
+
+    def evaluate(self, terms, cell_field, lev, t, ibm=None) -> list:
         """Per-box source arrays for the spatial ``terms`` on level ``lev``.
 
-        ``post``, when given, is called with the result MultiFab before it is
-        read back — the hook the IBM restriction (``R``) uses to act on the
-        operator result without any operator knowing IBM exists.
+        ``ibm``, when given, is the band driver
+        (:class:`~blockamr.ibm.driver.BandEvaluation`): once every term's
+        interior sweep has run, ``ibm.apply(result_mf, lev, t)`` overwrites the
+        band cells with the boundary schemes' rows. ``None`` — the no-``"ibm"``
+        path, ``noIbm`` and an empty band — is one branch outside the kernel,
+        which is what keeps those results bitwise the plain operator's.
         """
         ...

@@ -5,7 +5,7 @@
 """Laplacian schemes — cell-level kernels."""
 from __future__ import annotations
 
-from typing import Annotated, Literal, Union
+from typing import Annotated, ClassVar, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Discriminator
 
@@ -18,6 +18,10 @@ class CentralDiffLaplacian(BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal["CentralDiffLaplacian"] = "CentralDiffLaplacian"
     stencil_width: int = 1
+    #: Axis rays only, so the band of this scheme is ``{depth <= width}``.
+    #: Declared, never defaulted: the boundary resolver refuses a scheme
+    #: that leaves it open (``plans/IBM/design.md`` §4).
+    stencil_shape: ClassVar[str] = "cross"
 
     def build_kernel(self, dh, coeff=1.0, ncomp=1,
                      gamma_buf=None, gamma_offsets=None,

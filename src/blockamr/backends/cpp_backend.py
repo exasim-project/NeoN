@@ -33,17 +33,28 @@ class CppBackend:
 
     def euler_step(self, equation, cell_field, lev, t, dt):
         ddt_coeff = equation.temporal_ops[0].coeff
-        src = self._scratch(cell_field, lev)
-        self._evaluate_spatial_terms(equation.spatial_ops, cell_field, lev, t, src)
+        src = self.source(equation.spatial_ops, cell_field, lev, t)
         blockamr.euler_update(cell_field.mf[lev], src, dt / ddt_coeff, cell_field.ncomp)
 
-    def evaluate(self, terms, cell_field, lev, t, post=None):
+    def source(self, terms, cell_field, lev, t, ibm=None):
+        """Accumulated source (scratch, ngrow=0): ``Σ coeff·op(phi)``, with the
+        band rows applied when ``ibm`` is given. The R4 seam: operator
+        evaluation and time update stay separate named launches. The returned
+        scratch is reused (and zeroed) by the next ``source`` call — consume
+        it first.
+        """
         src = self._scratch(cell_field, lev)
         self._evaluate_spatial_terms(terms, cell_field, lev, t, src)
-        if post is not None:
-            # The IBM restriction (R) — a separate, named step on the result
-            # MultiFab, never fused into the bulk kernel (row-format rule R4).
-            post(src)
+        if ibm is not None:
+            # The band overwrite, after every term's interior sweep and never
+            # fused into one (row-format rule R4). `ibm is None` is this one
+            # branch, outside the kernel — which is what makes the no-IBM
+            # result bitwise the plain operator's.
+            ibm.apply(src, lev, t)
+        return src
+
+    def evaluate(self, terms, cell_field, lev, t, ibm=None):
+        src = self.source(terms, cell_field, lev, t, ibm=ibm)
         # src has ngrow=0 → copy_to_host returns the valid region per box.
         return [src.copy_to_host(mfi) for mfi in blockamr.MFIterator(src)]
 

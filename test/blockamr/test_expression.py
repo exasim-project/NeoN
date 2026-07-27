@@ -161,7 +161,9 @@ def test_diffusion_single_step():
 
     dt = 1e-5
     expr = exp.ddt(phi) - exp.laplacian(gamma_one, phi)
-    solve(expr, t=0.0, dt=dt)
+    # jax pinned: callable gamma is a jax-only capability (Q14) — design §10 keeps a
+    # space-varying laplacian gamma on the v2 error surface, so cpp never learns it.
+    solve(expr, t=0.0, dt=dt, solution={"backend": "jax"})
 
     pi = math.pi
     decay = 1.0 + dt * (-12.0 * pi**2)

@@ -281,9 +281,18 @@ class JaxBackend:
 
     def euler_step(self, equation, cell_field, lev, t, dt):
         ddt_coeff = equation.temporal_ops[0].coeff
+        # The no-IBM path stays the fused kernel, call-for-call ("absent ⇒
+        # bitwise the plain operator", api §1). An active band never lands
+        # here: solve() routes it through the driver's source_level (which
+        # owns the pin) + euler_update (R4).
         _forward_euler_level(equation, cell_field, lev, t, dt, ddt_coeff)
 
-    def evaluate(self, terms, cell_field, lev, t, post=None):
+    def source(self, terms, cell_field, lev, t, ibm=None):
+        """Accumulated source MultiFab: ``Σ coeff·op(phi)``, band rows applied
+        when ``ibm`` is given. The R4 seam — a fresh MultiFab per call (jax has
+        no scratch cache), ngrow matching the field (``euler_update`` sweeps
+        the valid box by global index, so the ghost band is inert).
+        """
         mesh = cell_field.mesh
         mf = cell_field.mf[lev]
         dh = tuple(float(d) for d in mesh.geom(lev).cell_size())
@@ -301,10 +310,18 @@ class JaxBackend:
 
         parallel_for(kernel, cell_field, lev, out_mf=out_mf)
 
-        if post is not None:
-            # The IBM restriction (R) — a separate, named step on the result
-            # MultiFab, never fused into the bulk kernel (row-format rule R4).
-            post(out_mf)
+        if ibm is not None:
+            # The band overwrite, after the interior sweep of every term and
+            # never fused into it (row-format rule R4) — the same call the cpp
+            # backend makes, on the same rows: the backend difference is the
+            # launch, not the arithmetic.
+            ibm.apply(out_mf, lev, t)
+        return out_mf
+
+    def evaluate(self, terms, cell_field, lev, t, ibm=None):
+        mf = cell_field.mf[lev]
+        ng = mf.n_grow()
+        out_mf = self.source(terms, cell_field, lev, t, ibm=ibm)
 
         # Extract per-box valid results
         meta = mf.fab_metadata()

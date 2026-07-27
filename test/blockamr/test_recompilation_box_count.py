@@ -18,6 +18,11 @@ from blockamr.dsl import exp, solve
 from blockamr.operators.div import Div
 from blockamr.schemes.div_schemes import Upwind
 
+# jax pinned tier-wide: every count here is a JAX compilation, which only the jax
+# backend produces — under the cpp default (B14) the counters would read 0 and the
+# zero-recompile assertions would pass vacuously (Q14).
+_JAX = {"backend": "jax"}
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -91,7 +96,7 @@ def test_same_box_count_no_recompile(blockamr_session):
     expr = exp.ddt(phi) + Div(ff, phi, scheme=Upwind())
 
     # Warmup: first call compiles
-    solve(expr, t=0.0, dt=0.001)
+    solve(expr, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi.mf[0].contiguous_array())
 
     # Second call with same mesh → no recompilation
@@ -105,7 +110,7 @@ def test_same_box_count_no_recompile(blockamr_session):
         phi.mf[0].copy_from(mfi, arr)
     phi.fill_patch(0, 0.0)
 
-    solve(expr, t=0.0, dt=0.001)
+    solve(expr, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi.mf[0].contiguous_array())
     counter.stop()
 
@@ -128,7 +133,7 @@ def test_different_box_count_recompiles(blockamr_session):
     phi_a, ff_a = _setup_fields(mesh_a)
     expr_a = exp.ddt(phi_a) + Div(ff_a, phi_a, scheme=Upwind())
 
-    solve(expr_a, t=0.0, dt=0.001)
+    solve(expr_a, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
     # --- Setup B: 4 boxes (different n_boxes_padded) ---
@@ -138,7 +143,7 @@ def test_different_box_count_recompiles(blockamr_session):
 
     counter = CompileCounter()
     counter.start()
-    solve(expr_b, t=0.0, dt=0.001)
+    solve(expr_b, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi_b.mf[0].contiguous_array())
     counter.stop()
 
@@ -168,7 +173,7 @@ def test_crossing_power_of_2_boundary_recompiles(blockamr_session):
 
     phi_a, ff_a = _setup_fields(mesh_a)
     expr_a = exp.ddt(phi_a) + Div(ff_a, phi_a, scheme=Upwind())
-    solve(expr_a, t=0.0, dt=0.001)
+    solve(expr_a, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
     # --- 5 boxes → padded to 8 (crosses power-of-2 boundary) ---
@@ -185,7 +190,7 @@ def test_crossing_power_of_2_boundary_recompiles(blockamr_session):
 
     counter = CompileCounter()
     counter.start()
-    solve(expr_b, t=0.0, dt=0.001)
+    solve(expr_b, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi_b.mf[0].contiguous_array())
     counter.stop()
 
@@ -214,7 +219,7 @@ def test_same_padded_count_no_recompile(blockamr_session):
 
     phi_a, ff_a = _setup_fields(mesh_a)
     expr_a = exp.ddt(phi_a) + Div(ff_a, phi_a, scheme=Upwind())
-    solve(expr_a, t=0.0, dt=0.001)
+    solve(expr_a, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi_a.mf[0].contiguous_array())
 
     # --- 3 boxes → also padded to 4 ---
@@ -231,7 +236,7 @@ def test_same_padded_count_no_recompile(blockamr_session):
 
     counter = CompileCounter()
     counter.start()
-    solve(expr_b, t=0.0, dt=0.001)
+    solve(expr_b, t=0.0, dt=0.001, solution=_JAX)
     jax.block_until_ready(phi_b.mf[0].contiguous_array())
     counter.stop()
 

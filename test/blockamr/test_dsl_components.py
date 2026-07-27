@@ -188,10 +188,13 @@ def _advdiff_error(N, nu, n_steps=1):
     # Time-step
     t = 0.0
     for _ in range(n_steps):
+        # jax pinned: callable gamma is a jax-only capability (Q14) — design §10 keeps a
+        # space-varying laplacian gamma on the v2 error surface, so cpp never learns it.
         solve(
             exp.ddt(phi_field) + exp.div(face_flux, phi_field) - exp.laplacian(nu_func, phi_field),
             t=t,
             dt=dt,
+            solution={"backend": "jax"},
         )
         t += dt
 
@@ -313,7 +316,14 @@ def test_pressure_correction_divergence_free(blockamr_session):
 
     # One explicit step → U* may have non-zero divergence
     interpolate(U, phi)
-    solve(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu_func, U), t=0.0, dt=dt)
+    # jax pinned: callable gamma is a jax-only capability (Q14) — design §10 keeps a
+    # space-varying laplacian gamma on the v2 error surface, so cpp never learns it.
+    solve(
+        exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu_func, U),
+        t=0.0,
+        dt=dt,
+        solution={"backend": "jax"},
+    )
     U.fill_patch(0, 0.0)
 
     # Pressure projection

@@ -276,7 +276,9 @@ def test_laplacian_single_box_convergence():
         _init_sin3d(U, mesh)
 
         nu_func = lambda x, y, z, t: jnp.ones_like(x)
-        source = evaluate(exp.laplacian(nu_func, U), t=0.0)
+        # jax pinned: callable gamma is a jax-only capability (Q14) — design §10 keeps a
+        # space-varying laplacian gamma on the v2 error surface, so cpp never learns it.
+        source = evaluate(exp.laplacian(nu_func, U), t=0.0, solution={"backend": "jax"})
         result = _extract_valid(source[0])
 
         X, Y, Z = _cell_centres(mesh)
@@ -402,7 +404,9 @@ def test_laplacian_single_vs_multi_box():
         U = CellField(mesh, ncomp=1, ngrow=1, name="U", fill_patch=FillPatchCellConservative())
         _init_sin3d(U, mesh)
         nu_func = lambda x, y, z, t: jnp.ones_like(x)
-        source = evaluate(exp.laplacian(nu_func, U), t=0.0)
+        # jax pinned: callable gamma is a jax-only capability (Q14) — design §10 keeps a
+        # space-varying laplacian gamma on the v2 error surface, so cpp never learns it.
+        source = evaluate(exp.laplacian(nu_func, U), t=0.0, solution={"backend": "jax"})
         assembled = _assemble_full_field(source[0], mesh)
         results.append(assembled)
 

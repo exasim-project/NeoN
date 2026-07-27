@@ -5,10 +5,11 @@
 """IBM method registry (API doc §6): ``IBM.lookup(name)`` resolves a
 per-field ``solution["ibm"]`` name to a strategy class."""
 
+from .band_rows import BandRows, band_table
 from .bc import FixedGradient, FixedValue, Mixed
 from .body import Cylinder, Plane
-from .context import IbmEvaluation
 from .direct_forcing import DirectForcing, DirectForcingData
+from .driver import BandEvaluation, equation_band
 from .ghost_cell import GhostCell
 from .no_ibm import NoIbm
 
@@ -28,6 +29,17 @@ class IBM:
     strategy class."""
 
     @staticmethod
+    def names():
+        """Every ``solution["ibm"]`` spelling this build validates, sorted.
+
+        Includes the schema-valid but deferred ones (``cutCell``): the list is
+        what an unknown name is offered, and it is the method axis of the
+        scheme x method grid (verification §5), so a method that validates but
+        refuses has to be in it and has to say so when the grid reaches it.
+        """
+        return sorted(set(_METHODS) | _NOT_IMPLEMENTED)
+
+    @staticmethod
     def lookup(name):
         if name in _METHODS:
             return _METHODS[name]
@@ -36,18 +48,25 @@ class IBM:
                 f"IBM method '{name}' is not implemented (cut-cell support is "
                 "deferred); the name validates the schema, execution refuses."
             )
-        valid = sorted(_METHODS) + sorted(_NOT_IMPLEMENTED)
-        raise ValueError(f"Unknown IBM method '{name}'; valid methods: {valid}")
+        raise ValueError(f"Unknown IBM method '{name}'; valid methods: {IBM.names()}")
 
 
-def evaluation(name, cell_field):
+def evaluation(name, cell_field, spatial_ops):
     """Validate the request and build the per-``evaluate`` IBM driver.
 
-    ``name is None`` (no ``solution["ibm"]`` key) means the IBM path is not
-    entered at all.
+    Returns ``None`` when the IBM path is not entered at all — no
+    ``solution["ibm"]`` key, the explicit ``noIbm`` opt-out, or an **empty
+    band** (a body whose boundary cells are none of this mesh's). All three are
+    then a short-circuit *outside* any kernel in the caller, which is what
+    makes bitwise equality with the plain operator structural rather than
+    maintained (design §6).
+
+    Otherwise the driver is the band flow of :mod:`blockamr.ibm.driver` — the
+    only flow there is: the prolong/restrict schedule that ``ghostCell`` ran on
+    until its three ``(operator, method)`` pairs existed is gone with W5.
     """
     if name is None:
-        return IbmEvaluation(None, None, cell_field)
+        return None
     method = IBM.lookup(name)
     if method.kind == "step":
         raise ValueError(
@@ -56,7 +75,27 @@ def evaluation(name, cell_field):
         )
     if method.requires_bodies:
         _validate_patches(name, cell_field)
-    return IbmEvaluation(method, name, cell_field)
+    if not method.requires_bodies or _band_is_empty(cell_field, spatial_ops):
+        return None
+    return BandEvaluation(method, name, cell_field, spatial_ops)
+
+
+def _band_is_empty(cell_field, spatial_ops):
+    """True when the equation's band has no cell to correct, on any level.
+
+    Asked of the *equation's* band — the widest of its terms', in the stencil
+    shape they declare (:func:`~blockamr.ibm.driver.equation_band`) — because
+    that is the one set the rows are built over. Taking the default cross band
+    of width 1 instead would short-circuit a corner-reading or a wide scheme
+    whose band is not empty.
+
+    The classification is the method-agnostic layer, so this is decided from
+    ``mesh.ibm`` alone — before a method's own preprocessing runs and before a
+    single row is built.
+    """
+    mesh = cell_field.mesh
+    width, shape = equation_band(spatial_ops)
+    return not any(mesh.ibm.band(lev, width, shape).nrows for lev in range(mesh.n_levels()))
 
 
 def _validate_patches(name, cell_field):
@@ -85,15 +124,17 @@ def _validate_patches(name, cell_field):
 
 __all__ = [
     "IBM",
+    "BandEvaluation",
+    "BandRows",
     "Cylinder",
     "DirectForcing",
     "DirectForcingData",
     "FixedGradient",
     "FixedValue",
     "GhostCell",
-    "IbmEvaluation",
     "Mixed",
     "NoIbm",
     "Plane",
+    "band_table",
     "evaluation",
 ]

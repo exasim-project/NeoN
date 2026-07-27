@@ -26,7 +26,55 @@ def _body_property():
     return property(_get, _set)
 
 
-class Mesh:
+class _ImmersedGeometry:
+    """The mesh's immersed-body surface: ``bodies``, ``body`` and ``ibm``.
+
+    ``bodies`` is the patch-keyed geometry (API doc §6), and everything derived
+    from it lives behind the lazy ``mesh.ibm`` (``plans/IBM/design.md`` §8):
+    nothing is classified until a scheme asks, and re-assigning ``bodies``
+    starts a new IBM generation so no cache can serve a moved body.
+
+    The IBM generation is deliberately *not* ``grid_version``: that one is the
+    box layout's version, which the compiled kernels compare against, and a
+    body that moves on an unchanged layout must not look like a regrid to them.
+    """
+
+    def _init_immersed(self):
+        self._bodies = {}
+        self._ibm = None
+        self._ibm_generation = 0
+
+    body = _body_property()
+
+    @property
+    def bodies(self):
+        """Immersed bodies, keyed by patch name; re-assign to move them."""
+        return self._bodies
+
+    @bodies.setter
+    def bodies(self, value):
+        self._bodies = value
+        self._invalidate_ibm()
+
+    @property
+    def ibm(self):
+        """The lazy IBM cache of this mesh (:class:`~blockamr.ibm.mesh.IbmMesh`)."""
+        if self._ibm is None:
+            # deferred: blockamr.ibm pulls in jax and the methods, and mesh.py
+            # is imported while the package is still assembling.
+            from .ibm.mesh import IbmMesh
+
+            self._ibm = IbmMesh(self)
+        return self._ibm
+
+    def _invalidate_ibm(self):
+        """Start a new IBM generation and drop what the old one built."""
+        self._ibm_generation += 1
+        if self._ibm is not None:
+            self._ibm._clear()
+
+
+class Mesh(_ImmersedGeometry):
     """Single-level mesh. Same interface as AmrMesh."""
 
     def __init__(self, ba, dm, geom):
@@ -37,15 +85,13 @@ class Mesh:
         # Immersed-body geometry + precomputed per-method IBM data (API doc
         # §6). ``bodies`` is a patch-keyed dict set by the caller (e.g. the
         # mesh factory, from meshDict); ``build_ibm``/``ibm_data`` below.
-        self.bodies = {}
+        self._init_immersed()
         self._ibm_data = {}
         # Bumped on every regrid; a WallTable built from an older generation is
         # rejected by the kernels rather than computing plausible wrong numbers
         # (see plans/IBM/ibm-row-format.md §3). A single-level Mesh never
         # regrids, so this stays 0.
         self.grid_version = 0
-
-    body = _body_property()
 
     @property
     def max_level(self):
@@ -124,7 +170,7 @@ class _AmrCoreDelegate(blockamr.AmrCore):
         self._owner._on_error_est(lev, tags, time, ngrow)
 
 
-class AmrMesh:
+class AmrMesh(_ImmersedGeometry):
     """High-level AMR mesh managing fields and their lifecycle callbacks."""
 
     def __init__(self, geom, amr_info):
@@ -134,12 +180,10 @@ class AmrMesh:
         # Immersed-body geometry + precomputed per-method IBM data (API doc
         # §6). ``bodies`` is a patch-keyed dict set by the caller (e.g. the
         # mesh factory, from meshDict); ``build_ibm``/``ibm_data`` below.
-        self.bodies = {}
+        self._init_immersed()
         self._ibm_data = {}
         # Bumped on every regrid — see the note on ``Mesh.grid_version``.
         self.grid_version = 0
-
-    body = _body_property()
 
     # Metadata delegates
     def n_levels(self):
@@ -176,6 +220,7 @@ class AmrMesh:
         self._tag_func = tag
         self._core.regrid(0, t)
         self.grid_version += 1
+        self._invalidate_ibm()
         self._rebuild_ibm()
 
     # ------------------------------------------------------------------

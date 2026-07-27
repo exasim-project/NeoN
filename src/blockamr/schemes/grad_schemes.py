@@ -5,7 +5,7 @@
 """Gradient schemes — each `compute()` is a fused JIT kernel."""
 from __future__ import annotations
 
-from typing import Annotated, Literal, Union
+from typing import Annotated, ClassVar, Literal, Union
 
 import jax
 import jax.numpy as jnp
@@ -58,6 +58,10 @@ class CentralDiffGrad(BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal["CentralDiffGrad"] = "CentralDiffGrad"
     stencil_width: int = 1
+    #: Axis rays only, so the band of this scheme is ``{depth <= width}``.
+    #: Declared, never defaulted: the boundary resolver refuses a scheme
+    #: that leaves it open (``plans/IBM/design.md`` §4).
+    stencil_shape: ClassVar[str] = "cross"
 
     def compute(self, phi: Array, dh: Array, ngrow: int = 0) -> Array:
         ng = ngrow if ngrow > 0 else self.stencil_width

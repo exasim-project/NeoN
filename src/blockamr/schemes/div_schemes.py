@@ -5,7 +5,7 @@
 """Divergence schemes — cell-level kernels."""
 from __future__ import annotations
 
-from typing import Annotated, Literal, Union
+from typing import Annotated, ClassVar, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Discriminator
 
@@ -23,6 +23,10 @@ class Upwind(BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal["Upwind"] = "Upwind"
     stencil_width: int = 1
+    #: Axis rays only, so the band of this scheme is ``{depth <= width}``.
+    #: Declared, never defaulted: the boundary resolver refuses a scheme
+    #: that leaves it open (``plans/IBM/design.md`` §4).
+    stencil_shape: ClassVar[str] = "cross"
 
     def build_kernel(self, face_bufs, face_offsets, Nx, Ny, Nz, ng, dh,
                      coeff=1.0, ncomp=1, ng_face=None):
@@ -45,6 +49,10 @@ class Linear(BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal["Linear"] = "Linear"
     stencil_width: int = 1
+    #: Axis rays only, so the band of this scheme is ``{depth <= width}``.
+    #: Declared, never defaulted: the boundary resolver refuses a scheme
+    #: that leaves it open (``plans/IBM/design.md`` §4).
+    stencil_shape: ClassVar[str] = "cross"
 
     def build_kernel(self, face_bufs, face_offsets, Nx, Ny, Nz, ng, dh,
                      coeff=1.0, ncomp=1, ng_face=None):
@@ -65,6 +73,10 @@ class VanLeer(BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal["VanLeer"] = "VanLeer"
     stencil_width: int = 2
+    #: Axis rays only, so the band of this scheme is ``{depth <= width}``.
+    #: Declared, never defaulted: the boundary resolver refuses a scheme
+    #: that leaves it open (``plans/IBM/design.md`` §4).
+    stencil_shape: ClassVar[str] = "cross"
 
     def build_kernel(self, face_bufs, face_offsets, Nx, Ny, Nz, ng, dh,
                      coeff=1.0, ncomp=1, ng_face=None):
@@ -87,6 +99,10 @@ class QUICK(BaseModel):
     model_config = ConfigDict(frozen=True)
     type: Literal["QUICK"] = "QUICK"
     stencil_width: int = 2
+    #: Axis rays only, so the band of this scheme is ``{depth <= width}``.
+    #: Declared, never defaulted: the boundary resolver refuses a scheme
+    #: that leaves it open (``plans/IBM/design.md`` §4).
+    stencil_shape: ClassVar[str] = "cross"
 
     def build_kernel(self, face_bufs, face_offsets, Nx, Ny, Nz, ng, dh,
                      coeff=1.0, ncomp=1, ng_face=None):

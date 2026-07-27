@@ -25,7 +25,8 @@ nanobind_add_module(
   linop.cpp
   stencil_kernels.cpp
   tile_layout.cpp
-  wall_table.cpp)
+  wall_table.cpp
+  band_table.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
@@ -50,6 +51,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     stencil_kernels.cpp
     tile_layout.cpp
     wall_table.cpp
+    band_table.cpp
     PROPERTIES LANGUAGE CUDA)
 endif()
 

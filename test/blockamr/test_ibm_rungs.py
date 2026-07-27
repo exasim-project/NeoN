@@ -4,7 +4,7 @@
 
 """The IBM diagnostic ladder — rungs 1-5, the scheme x method grid, error paths.
 
-Companion to ``test_ibm_laplacian.py`` (the MMS convergence suite); this file
+Companion to ``test_ibm_convergence.py`` (the MMS convergence suite); this file
 is the *ordered* suite of `plans/IBM/ibm-verification-plan.md` §2: each rung
 adds exactly one demand over the rung above, so **the first failing rung names
 the defect**. Red by design until the IBM path lands.
@@ -30,10 +30,12 @@ import pytest
 import blockamr
 from blockamr.dsl import Equation, evaluate, exp
 from blockamr.field import CellField, FaceField
-from blockamr.ibm import Cylinder, FixedGradient, FixedValue, Mixed, Plane
+from blockamr.ibm import IBM, Cylinder, FixedGradient, FixedValue, Mixed, Plane
 from blockamr.mesh import Mesh
 from blockamr.operators.div import update_face_fluxes
 from blockamr.schemes.registry import SCHEME_REGISTRY
+
+from .ibm_gaps import RECONSTRUCTION_ORDER
 
 # The backend every rung runs on (verification plan §3 spells "cpp"
 # throughout). `jax` parity is a pre-merge tier concern, not a rung.
@@ -44,13 +46,14 @@ NZ = 4  # thin in the cylinder axis direction; every probe is z-invariant
 
 CONST = 3.0  # the constant field value of rungs 1, 3 and 4
 
-# MMS quadratic of test_ibm_laplacian, reused by the rotation probe:
+# The MMS quadratic of rungs 6-7, reused by the rotation probe:
 # T(r) = A + B*(r^2 - R^2)  ->  laplacian(T) = 4B exactly, T|_R = A.
 A_MMS = 0.3
 B_MMS = 0.5
 R = 0.2
 CENTRE = (0.5, 0.5)
 AXIS = 2
+GRAD_DATUM = 2.0 * B_MMS * R  # dT/dr|_R — the Neumann datum of the same MMS
 
 # Rung 5: T = A_LIN + B_LIN * (x - X_WALL), constant (= A_LIN) on the plane.
 X_WALL = 0.5
@@ -60,7 +63,23 @@ B_LIN = 2.0
 # verification plan §8: the sentence a step method owes an operator-level call.
 STEP_METHOD_MSG = "does not support operator-level evaluation"
 
-METHODS = ["noIbm", "directForcing", "ghostCell"]
+# Generated from the IBM registry, so a new method cannot be added without
+# entering the scheme x method grid (verification plan §5).
+METHODS = IBM.names()
+
+# What each registered method owes an operator-level ``evaluate``: ``None`` is
+# "the number", anything else is the sentence it must refuse with. Written as a
+# table over the whole registry rather than a filtered list, so adding a method
+# without classifying it breaks
+# ``test_every_ibm_method_says_what_it_owes_an_operator_evaluation`` instead of
+# silently entering the grid with the wrong expectation (verification plan §10:
+# both axes enter as data).
+METHOD_EXPECTS = {
+    "noIbm": None,
+    "ghostCell": None,
+    "directForcing": STEP_METHOD_MSG,
+    "cutCell": "not implemented",
+}
 
 # Generated from the registry so a new scheme cannot be added without
 # entering the grid (verification plan §5). ``ddt`` is a time scheme — it has
@@ -157,6 +176,30 @@ def _constant_field(mesh, value=CONST, ncomp=1, ngrow=1, ibm_bc=None):
     return T
 
 
+def _mms(centre):
+    """T(r) = A + B*(r^2 - R^2) about *centre*; laplacian(T) = 4B exactly."""
+
+    def func(X, Y, Z):
+        r2 = (X - centre[0]) ** 2 + (Y - centre[1]) ** 2
+        return A_MMS + B_MMS * (r2 - R**2)
+
+    return func
+
+
+def _mms_case(max_size=None, centre=CENTRE, n=N, bc=None):
+    """Mesh + MMS-filled field + ``laplacian`` equation for the cylinder case.
+
+    ``bc`` is the immersed wall condition; the default is the Dirichlet datum
+    the MMS satisfies exactly (``T|_R = A_MMS``).
+    """
+    mesh = _make_mesh(n=n, max_size=max_size, bodies=_cylinder(centre=centre))
+    T = CellField(
+        mesh, ncomp=1, ngrow=1, name="T", ibm_bc={"cyl": FixedValue(A_MMS) if bc is None else bc}
+    )
+    _fill(T, mesh, _mms(centre))
+    return mesh, T, Equation(exp.laplacian(1.0, T))
+
+
 def _flat(results):
     """All valid cells of level 0 as one flat array."""
     return np.concatenate([np.asarray(a).ravel() for a in results[0]])
@@ -240,6 +283,66 @@ def test_body_outside_the_domain_is_bitwise_identical_to_no_ibm(blockamr_session
     np.testing.assert_array_equal(none, plain)
 
 
+def test_ibm_is_opt_in(blockamr_session):
+    """Rung 2, the other degeneration: **no ``"ibm"`` key at all**.
+
+    Rung 2 above puts the body outside the domain and keeps the key; this puts
+    the body *inside* the domain and drops the key. The plain laplacian must
+    then be bitwise identical to the one a field carrying no ``ibm_bc`` at all
+    produces — the IBM datum is inert until it is asked for.
+
+    Transferred from ``test_ibm_laplacian.py`` at B23 (assertion unchanged).
+    """
+    _mesh, _T, eqn = _mms_case()
+    with_bc = _flat(evaluate(eqn, t=0.0, solution=_sol()))
+
+    plain_mesh = _make_mesh(bodies=_cylinder())
+    P = CellField(plain_mesh, ncomp=1, ngrow=1, name="T")
+    _fill(P, plain_mesh, _mms(CENTRE))
+    plain = _flat(evaluate(Equation(exp.laplacian(1.0, P)), t=0.0, solution=_sol()))
+
+    assert np.array_equal(with_bc, plain)
+
+
+def test_two_patches_independent(blockamr_session):
+    """Rung 2 tier, over two patches. A second body placed entirely outside the
+    domain (with a wildly different BC) must not leak into the first patch's
+    result, which stays bitwise equal to the single-patch run — proving
+    ``ibm_bc`` binds each BC to its own patch by key.
+
+    The field is the MMS quadratic, not a constant: a constant is annihilated
+    whatever the wall does, so it could not see a leak.
+
+    Transferred from ``test_ibm_laplacian.py`` at B23 (assertion unchanged).
+    """
+    n = 64
+    _m_ref, T_ref, eqn_ref = _mms_case(n=n)
+    ref = _assemble(T_ref, evaluate(eqn_ref, t=0.0, solution=_sol("ghostCell")), n=n)
+
+    two_mesh = _make_mesh(
+        n=n,
+        bodies={
+            "cyl": Cylinder(centre=CENTRE, radius=R, axis=AXIS),
+            "far": Cylinder(centre=(5.0, 5.0), radius=R, axis=AXIS),
+        },
+    )
+    T = CellField(
+        two_mesh,
+        ncomp=1,
+        ngrow=1,
+        name="T",
+        ibm_bc={"cyl": FixedValue(A_MMS), "far": FixedGradient(999.0)},
+    )
+    _fill(T, two_mesh, _mms(CENTRE))
+    two = _assemble(
+        T,
+        evaluate(Equation(exp.laplacian(1.0, T)), t=0.0, solution=_sol("ghostCell")),
+        n=n,
+    )
+
+    assert np.array_equal(two, ref)
+
+
 # ---------------------------------------------------------------------------
 # Rungs 3-4 — row consistency and the Neumann branch
 # ---------------------------------------------------------------------------
@@ -266,6 +369,38 @@ def test_constant_field_is_annihilated_for_every_bc_type(blockamr_session, bc):
     T = _constant_field(mesh, ibm_bc={"cyl": bc})
     out = evaluate(Equation(exp.laplacian(1.0, T)), t=0.0, solution=_sol("ghostCell"))
     np.testing.assert_allclose(_flat(out), 0.0, atol=1e-12)
+
+
+@pytest.mark.parametrize(
+    "fraction, pure_bc",
+    [
+        (1.0, lambda: FixedValue(A_MMS)),  # fraction=1 -> pure FixedValue
+        (0.0, lambda: FixedGradient(GRAD_DATUM)),  # fraction=0 -> pure FixedGradient
+    ],
+    ids=["fraction-1-is-dirichlet", "fraction-0-is-neumann"],
+)
+def test_mixed_limits(blockamr_session, fraction, pure_bc):
+    """Rungs 3-4, at the two ends of ``Mixed``: at ``fraction`` 1 and 0 it must
+    be **bitwise** equal to the corresponding pure BC, not merely close.
+
+    The probe is the MMS quadratic rather than the constant of the test above:
+    a constant is annihilated by both branches whatever the blend does, so it
+    cannot tell the Dirichlet limit from the Neumann one. The ``fraction=0``
+    half is the only place in the suite where ``Mixed`` degenerates to a
+    non-zero Neumann datum.
+
+    Transferred from ``test_ibm_laplacian.py`` at B23 (assertion unchanged).
+    """
+    n = 48
+    _m_mixed, T_mixed, eqn_mixed = _mms_case(
+        n=n, bc=Mixed(value=A_MMS, gradient=GRAD_DATUM, fraction=fraction)
+    )
+    mixed = _assemble(T_mixed, evaluate(eqn_mixed, t=0.0, solution=_sol("ghostCell")), n=n)
+
+    _m_pure, T_pure, eqn_pure = _mms_case(n=n, bc=pure_bc())
+    pure = _assemble(T_pure, evaluate(eqn_pure, t=0.0, solution=_sol("ghostCell")), n=n)
+
+    assert np.array_equal(mixed, pure)
 
 
 # ---------------------------------------------------------------------------
@@ -347,35 +482,91 @@ def test_linear_field_normal_to_a_tilted_plane_wall_is_reproduced_exactly(blocka
 # ---------------------------------------------------------------------------
 
 
-def _mms(centre):
-    """T(r) = A + B*(r^2 - R^2) about *centre*; laplacian(T) = 4B exactly."""
+def _fluid_of_the_cylinder(centre=CENTRE, n=N, nz=NZ):
+    """Cells whose centre is outside the cylinder.
 
-    def func(X, Y, Z):
-        r2 = (X - centre[0]) ** 2 + (Y - centre[1]) ** 2
-        return A_MMS + B_MMS * (r2 - R**2)
+    Analytic, from the body — an independent oracle, never the
+    implementation's own classification (verification plan §10).
+    """
+    xs = (np.arange(n) + 0.5) / n
+    zs = (np.arange(nz) + 0.5) / nz
+    X, Y, _Z = np.meshgrid(xs, xs, zs, indexing="ij")
+    return np.hypot(X - centre[0], Y - centre[1]) > R
 
-    return func
+
+def _solid_of_the_cylinder(centre=CENTRE, n=N, nz=NZ):
+    """Cells whose centre is strictly inside the cylinder.
+
+    Strictly ``< R``, so it is **not** the complement of
+    :func:`_fluid_of_the_cylinder` (which is strictly ``> R``): the ``r == R``
+    shell belongs to neither, and claiming it for the solid would assert
+    something about a cell the body does not contain.
+    """
+    xs = (np.arange(n) + 0.5) / n
+    zs = (np.arange(nz) + 0.5) / nz
+    X, Y, _Z = np.meshgrid(xs, xs, zs, indexing="ij")
+    return np.hypot(X - centre[0], Y - centre[1]) < R
 
 
-def _mms_case(max_size=None, centre=CENTRE, n=N):
-    mesh = _make_mesh(n=n, max_size=max_size, bodies=_cylinder(centre=centre))
-    T = CellField(mesh, ncomp=1, ngrow=1, name="T", ibm_bc={"cyl": FixedValue(A_MMS)})
-    _fill(T, mesh, _mms(centre))
-    return mesh, T, Equation(exp.laplacian(1.0, T))
+def _field_cells(field, n=N, nz=NZ):
+    """The field's own valid cells, stitched into one global array."""
+    mf = field.mf[0]
+    out = np.full((n, n, nz), np.nan)
+    for mfi in blockamr.MFIterator(mf):
+        lo = mfi.valid_box().small_end()
+        arr = np.asarray(mf.copy_to_host(mfi))
+        arr = arr.reshape(arr.shape[:3])
+        out[
+            lo[0] : lo[0] + arr.shape[0],
+            lo[1] : lo[1] + arr.shape[1],
+            lo[2] : lo[2] + arr.shape[2],
+        ] = arr
+    assert not np.isnan(out).any(), "box decomposition did not cover the domain"
+    return out
 
 
 def test_evaluate_does_not_mutate_the_input_field(blockamr_session):
-    """Rung 5 tier. ``evaluate`` computes a source term; it must never write
-    the reconstruction back into T — not even into the solid cells, which are
-    valid cells of the field and the natural place for a ghost value to leak."""
-    _mesh, T, eqn = _mms_case()
-    before = _valid_cells(T)
-    evaluate(eqn, t=0.0, solution=_sol("ghostCell"))
-    after = _valid_cells(T)
+    """Rung 5 tier, in the two halves the purity contract actually has.
 
-    assert len(before) == len(after)
-    for bi, (b, a) in enumerate(zip(before, after)):
-        np.testing.assert_array_equal(a, b, err_msg=f"box {bi}: evaluate mutated T")
+    ``evaluate`` computes a source term; it must never write its wall treatment
+    back into T. Both halves are bitwise:
+
+    * **no fluid cell is ever touched** — the strong half, and the one that
+      matters: every value the solution is made of is exactly where it was
+      left, on the first evaluate and on every one after it;
+    * **evaluate leaves T where it found it** — a second call reproduces the
+      first call's field bit for bit, over the *whole* domain, solid included.
+
+    The one write this design makes to a user field is the non-fluid pin: the
+    interior sweep runs over the whole valid box, so at a band cell it reads
+    its non-fluid neighbours and those reads must be finite. Design §7 argues
+    it and states the contract this test asserts — the pin touches only cells
+    (``depth <= 0``) whose value no fluid cell ever reads, and it is
+    idempotent, so purity holds bitwise once the field has been pinned. Since
+    B25 the pin runs at *classification* time — once per ``(field, method,
+    lev, grid_version)``, when the band evaluation is built — so a freshly
+    seeded solid region is written there, and ``evaluate`` is a pure read from
+    the field's first call onwards. Demanding otherwise would demand that the
+    interior sweep read whatever the user left inside the body.
+
+    The fluid mask is analytic, from the body, so it is an oracle independent
+    of the implementation's classification.
+    """
+    _mesh, T, eqn = _mms_case()
+    fluid = _fluid_of_the_cylinder()
+
+    before = _field_cells(T)
+    evaluate(eqn, t=0.0, solution=_sol("ghostCell"))
+    once = _valid_cells(T)
+    evaluate(eqn, t=0.0, solution=_sol("ghostCell"))
+    twice = _valid_cells(T)
+
+    np.testing.assert_array_equal(
+        _field_cells(T)[fluid], before[fluid], err_msg="evaluate wrote a fluid cell of T"
+    )
+    assert len(once) == len(twice)
+    for bi, (a, b) in enumerate(zip(once, twice)):
+        np.testing.assert_array_equal(b, a, err_msg=f"box {bi}: evaluate mutated T")
 
 
 def test_repeated_evaluate_is_bitwise_reproducible(blockamr_session):
@@ -428,6 +619,23 @@ def test_result_rotates_with_the_body(blockamr_session):
     np.testing.assert_allclose(rotated, np.rot90(base, k=1, axes=(0, 1)), rtol=1e-12, atol=1e-12)
 
 
+def test_solid_cells_are_masked(blockamr_session):
+    """Rung 5 tier. The result is **exactly** zero inside the body.
+
+    The field is the MMS quadratic, so the fluid answer is ``4B != 0``
+    everywhere: unlike the rung-5 plane probes (where the fluid answer is zero
+    too) this can tell masking from arithmetic. Exact equality, not a
+    tolerance — the solid is not computed, it is masked.
+
+    Transferred from ``test_ibm_laplacian.py`` at B23 (assertion unchanged).
+    """
+    n = 64
+    _mesh, T, eqn = _mms_case(n=n)
+    lap = _assemble(T, evaluate(eqn, t=0.0, solution=_sol("ghostCell")), n=n)
+    solid = _solid_of_the_cylinder(n=n)
+    assert np.all(lap[solid] == 0.0)
+
+
 # ---------------------------------------------------------------------------
 # Rung 8 — div, with a nonzero tangential velocity at the wall
 # ---------------------------------------------------------------------------
@@ -456,6 +664,7 @@ def _rotation_flux(mesh, ngrow):
     return ff
 
 
+@RECONSTRUCTION_ORDER
 def test_div_of_a_radial_scalar_on_a_tangential_flux_is_zero(blockamr_session):
     """Rung 8 — the div counterpart of rungs 3-6, and exact.
 
@@ -480,6 +689,14 @@ def test_div_of_a_radial_scalar_on_a_tangential_flux_is_zero(blockamr_session):
     The mesh is non-periodic and the ghost band is seeded analytically: neither
     ``T`` nor ``u`` is periodic, and a wrapped halo would contaminate the
     domain-edge cells for reasons that have nothing to do with the IBM.
+
+    **Red on the band**, and the bulk confirms the reason: away from the wall
+    the cancellation holds to ``1e-15``, while 160 of 4096 cells carry up to
+    ``2.6e-3`` -- ``O(dx^2)`` at ``dx = 1/16``. ``T`` is quadratic in ``r`` and
+    the reconstruction is trilinear, so the reconstructed value is off by the
+    second-order term and the exact cancellation breaks in the band only. This
+    is the reconstruction order, not the scheme: ``linear`` is already width 1,
+    so no band degradation (D1) would change it.
     """
     mesh = _make_mesh(bodies=_cylinder(), periodic=(0, 0, 0))
     T = CellField(mesh, ncomp=1, ngrow=1, name="T", ibm_bc={"cyl": FixedValue(A_MMS)})
@@ -514,6 +731,14 @@ def _grid_equation(op, scheme, mesh, T):
     return Equation(term, schemes={SCHEME_DICT_KEY[op]: scheme})
 
 
+def test_every_ibm_method_says_what_it_owes_an_operator_evaluation():
+    """The grid's method axis is generated, so a new method must be classified
+    before the grid can say anything about it — one dict entry, never a new
+    test body (verification plan §5, §10). The peer of
+    ``test_ibm_combinations.py``'s linear/nonlinear split for div schemes."""
+    assert set(METHOD_EXPECTS) == set(METHODS)
+
+
 @pytest.mark.parametrize("op, scheme", SCHEMES, ids=SCHEME_IDS)
 @pytest.mark.parametrize("method", METHODS)
 def test_every_scheme_runs_under_every_method_and_annihilates_a_constant(
@@ -527,17 +752,28 @@ def test_every_scheme_runs_under_every_method_and_annihilates_a_constant(
     ``grad(C) = 0`` — including in the band, where the wall reconstruction
     reproduces C.
 
-    ``directForcing`` is a *step* method: it restricts the field between steps
-    and has no operator-level form, so the expectation for that column is the
-    §8 refusal sentence, not a number.
+    Both axes are generated from their registries, so neither a new scheme nor
+    a new method can be added without entering the grid. What a method owes an
+    operator-level evaluate is not uniform, and ``METHOD_EXPECTS`` carries that
+    as data: ``directForcing`` is a *step* method with no operator-level form,
+    so its column is the §8 refusal sentence; ``cutCell`` validates as a
+    schema value and refuses to run; the rest owe the number.
+
+    Every cell of the grid is green since B10/B11: a width-2 div scheme
+    degrades to width 1 inside the band, so it no longer reaches the second
+    solid layer (which is pinned to zero and is not a reconstruction of
+    anything). ``vanLeer`` never showed the defect here in the first place --
+    on a constant field its limiter degenerates at the wall and hides it -- so
+    the linear-field probe below, not this one, is what sees through a limiter.
     """
     mesh = _make_mesh(n=16, bodies=_cylinder())
     T = _constant_field(mesh, ngrow=2, ibm_bc={"cyl": FixedValue(CONST)})
     eqn = _grid_equation(op, scheme, mesh, T)
     solution = _sol(method)
 
-    if method == "directForcing":
-        with pytest.raises((ValueError, NotImplementedError), match=STEP_METHOD_MSG):
+    refusal = METHOD_EXPECTS[method]
+    if refusal is not None:
+        with pytest.raises((ValueError, NotImplementedError), match=refusal):
             evaluate(eqn, t=0.0, solution=solution)
         return
 
@@ -620,13 +856,13 @@ def test_every_div_scheme_is_exact_on_a_linear_field_at_a_plane_wall(blockamr_se
     not the divergence of anything. The decision this test encodes: such a scheme
     must fall back to a width-1 scheme *for the band cells only*.
 
-    **Red pending that fallback** for every entry of ``WIDE_DIV_SCHEMES``; green
-    today for ``NARROW_DIV_SCHEMES``, which are in the parametrization precisely
-    so the failure reads as "the wide schemes, and only the wide schemes".
-    ``vanLeer`` matters more here, not less: on a *constant* field its limiter
-    degenerates at the wall and hides the defect entirely, so the constant probe
-    in the scheme x method grid passes for it. A linear field is the coarsest
-    probe that sees through the limiter.
+    Green since B10/B11 for every entry of ``WIDE_DIV_SCHEMES`` as well as for
+    ``NARROW_DIV_SCHEMES``, which stay in the parametrization so a regression
+    reads as "the wide schemes, and only the wide schemes". ``vanLeer`` matters
+    more here, not less: on a *constant* field its limiter degenerates at the
+    wall and hides the defect entirely, so the constant probe in the scheme x
+    method grid passes for it. A linear field is the coarsest probe that sees
+    through the limiter.
 
     The assertion covers the whole fluid region: the plane's x halo is seeded
     analytically, so no domain-edge column has to be eroded away.
@@ -778,3 +1014,43 @@ def test_deferred_method_refuses_execution(blockamr_session):
     msg = str(excinfo.value)
     assert "cutCell" in msg
     assert "not implemented" in msg.lower() or "refus" in msg.lower()
+
+
+def test_a_space_varying_diffusivity_is_refused_with_a_sentence(blockamr_session):
+    """§8, in the two places a varying ``gamma`` is refused.
+
+    The **user-visible** half is the interior kernel's: both backends discretise
+    ``laplacian(gamma(x), T)`` with one scalar per term and refuse a varying
+    one, so an equation carrying it never reaches the band at all. That is what
+    a user gets, and it must name the term and the scheme.
+
+    The wall row has the *same* limitation for its own reason — a row is
+    ``sum_k a_k phi_k + c``, and a per-cell diffusivity would have to enter
+    ``a`` cell by cell while the interior sweep used a single scalar, so the two
+    would disagree in the band only — and it carries its own guard. That guard
+    is not reachable through ``evaluate`` while the kernels refuse first, which
+    is exactly why it is asserted here directly rather than left to rot behind
+    an unreachable branch. A gamma that is *constant* is fine however it is
+    spelled, so the probe is a genuinely varying one.
+    """
+    from blockamr.schemes.boundary.ghost_cell import _coefficient
+
+    def varying(x, y, z, t):
+        return 1.0 + x
+
+    mesh = _make_mesh(n=16, bodies=_cylinder())
+    T = _constant_field(mesh, ibm_bc={"cyl": FixedValue(CONST)})
+
+    with pytest.raises(NotImplementedError) as kernel:
+        evaluate(Equation(exp.laplacian(varying, T)), t=0.0, solution=_sol("ghostCell"))
+    assert "gamma" in str(kernel.value)
+    assert "Laplacian" in str(kernel.value)
+
+    with pytest.raises(NotImplementedError) as row:
+        _coefficient(exp.laplacian(varying, T), 0.0)
+    assert "constant gamma" in str(row.value)
+    assert "ghostCell" in str(row.value)
+
+    # ...and a constant one passes both, whether it is a number or a callable.
+    assert _coefficient(exp.laplacian(2.5, T), 0.0) == 2.5
+    assert _coefficient(exp.laplacian(lambda x, y, z, t: 2.5 * np.ones_like(x), T), 0.0) == 2.5

@@ -91,8 +91,10 @@ class DirectForcing:
         rho=1) in ``data.force_history``.
         """
         masks = data.masks
-        u_vec = jnp.asarray(u_body).reshape(1, 1, 1, 3)
-        force = jnp.zeros(3)
+        # Sized to the datum, not hard-wired to 3: solve() feeds the field's
+        # ibm_bc value broadcast to ncomp, so a scalar field pins too.
+        u_vec = jnp.asarray(u_body).reshape(1, 1, 1, -1)
+        force = jnp.zeros(u_vec.shape[-1])
         mesh = cell_field.mesh
         for lev in range(mesh.n_levels()):
             mf = cell_field.mf[lev]
@@ -111,7 +113,10 @@ class DirectForcing:
                 results.append(g.at[sl[0], sl[1], sl[2], :].set(new_valid))
             mf.copy_grown_arrays(results)
         fvec = force / dt
-        data.force_history.append((t, float(fvec[0]), float(fvec[1]), float(fvec[2])))
+        # History entries stay (t, Fx, Fy, Fz); components the field does not
+        # have are zero.
+        comps = [float(fvec[i]) if i < fvec.shape[0] else 0.0 for i in range(3)]
+        data.force_history.append((t, *comps))
 
     @staticmethod
     def force_history(data):
