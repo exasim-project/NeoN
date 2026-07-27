@@ -54,7 +54,7 @@
 // copy from and no task can be emitted for it -- which is why nothing here consults
 // the rank count or falls back: on >1 rank these builders are simply not called, and
 // the caller routes the same three movements through AMReX instead
-// (gmg_vcycle.cpp, Vcycle::amrexFree_).
+// (vcycle.hpp, Vcycle::amrexFree_).
 // ---------------------------------------------------------------------------
 
 namespace blockamr::bench
@@ -252,6 +252,15 @@ CopyPlan makeCopyPlan(const amrex::FabArray<FAB>& dst, const amrex::FabArray<FAB
     return detail::toDevice(tasks, "gmg_copy_plan");
 }
 
+// Declared here, DEFINED (and explicitly instantiated for every field type T the
+// V-cycle needs) in gmg_kokkos_shared.cpp, NOT header-inline: this is the launcher
+// KokkosOptGmgBackend's amrexFree_ path (vcycle.hpp) drives from BOTH
+// bench/gmg_apply.cpp and bench/gmg_vcycle_bench.cpp, and instantiating a function
+// with an extended __host__ __device__ lambda identically in two CUDA TUs that feed
+// the same shared object is the nvcc trap gmg_kokkos.hpp's Fused kernels document
+// above their own (now equally out-of-line) declarations -- a null function-pointer
+// call at runtime, not a build failure. See gmg_kokkos_shared.cpp.
+//
 // Execute a plan in ONE launch: one team per work block. A block short of a full
 // kCopyBlock (the tail of a region, or a whole corner region of one cell) leaves lanes
 // idle, which is cheaper than any mapping that would even it out.
@@ -261,47 +270,7 @@ void execCopyPlan(
     const amrex::MultiArray4<T>& dst,
     const amrex::MultiArray4<const T>& src,
     const CopyPlan& plan
-)
-{
-    const int nblocks = plan.size();
-    if (nblocks == 0)
-    {
-        return;
-    }
-    constexpr int VL = 32;
-    // Function-local: a namespace-scope constexpr has no device symbol to reference
-    // from the kernel body below.
-    constexpr int MT = kCopyBlock;
-    const auto tasks = plan.tasks;
-    using Policy = Kokkos::TeamPolicy<Kokkos::DefaultExecutionSpace>;
-    Kokkos::parallel_for(
-        name,
-        Policy(nblocks, MT / VL, VL),
-        KOKKOS_LAMBDA(const Policy::member_type& team) {
-            const CopyTask t = tasks(team.league_rank());
-            const int nx = t.len[0];
-            const int nxy = t.len[0] * t.len[1];
-            const int left = nxy * t.len[2] - t.base;
-            Kokkos::parallel_for(
-                Kokkos::TeamVectorRange(team, left < MT ? left : MT),
-                [&](const int q)
-                {
-                    const int c = t.base + q;
-                    const int i = t.lo[0] + c % nx;
-                    const int j = t.lo[1] + (c / nx) % t.len[1];
-                    const int k = t.lo[2] + c / nxy;
-                    // The compute type, not T: for a bf16 level the two arms of the
-                    // ternary would otherwise be Bf16 and float, each convertible to
-                    // the other, which is ambiguous. Both the load and the sign flip
-                    // are exact in it, so the copy still moves values unchanged.
-                    const solvers::GmgComputeT<T> v =
-                        src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
-                    dst[t.dst](i, j, k) = (t.sign < 0) ? -v : v;
-                }
-            );
-        }
-    );
-}
+);
 
 // Twin of FillBoundary(periodicity): fills this fab's ghosts from its own valid data.
 // Reads are valid cells and writes are ghost cells, disjoint, so the whole exchange
@@ -336,13 +305,11 @@ void gmgCopyKokkos(solvers::GmgFab<T>& dst, const solvers::GmgFab<T>& src, const
 // domain). Prolongation reads valid cells only. Give this file a non-periodic domain
 // -- which it does not have, physical BCs being out of its scope -- and the physical
 // ghosts would have to be cleared here as well.
+//
+// Declared here, defined out-of-line in gmg_kokkos_shared.cpp, same reason as
+// execCopyPlan above: it launches its own extended lambda directly and is driven
+// from both bench/gmg_apply.cpp and bench/gmg_vcycle_bench.cpp.
 template<class T>
-void gmgZeroKokkos(solvers::GmgFab<T>& mf)
-{
-    const auto a = mf.arrays();
-    launchKokkosTeamNamed(
-        "gmg_zero", mf, BENCH_LAMBDA(int ib, int i, int j, int k) { a[ib](i, j, k) = T(0); }
-    );
-}
+void gmgZeroKokkos(solvers::GmgFab<T>& mf);
 
 } // namespace blockamr::bench

@@ -19,6 +19,7 @@
 
 #include "../bindings.hpp"
 #include "kokkos_bench.hpp"
+#include "kokkos_runtime.hpp"
 
 namespace nb = nanobind;
 

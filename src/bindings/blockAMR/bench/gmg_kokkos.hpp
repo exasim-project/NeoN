@@ -51,7 +51,7 @@
 //     and `kokkos_fused` backends call the same AMReX FillBoundary. This is a real
 //     result about the scope of a port, not a gap in this one.
 //   * ParallelCopy between an agglomerated level and its fine neighbour's
-//     decomposition (see gmg_vcycle.cpp) -- likewise a data movement.
+//     decomposition (see vcycle.hpp) -- likewise a data movement.
 //   * setVal on the coarse solution, and the hierarchy setup (coefficient
 //     restriction / face coarsening): AMReX for both backends. Setup runs once and
 //     is untimed.
@@ -61,7 +61,7 @@
 // one is a synchronisation point between the two runtimes, and a cycle with none of
 // them left needs no host fence at all. The `fence` argument of the fused launchers
 // below is what lets that backend drop the per-kernel fence while the baselines keep
-// it; see gmg_vcycle.cpp.
+// it; see vcycle.hpp.
 //
 // Accessors are amrex::Array4 for both backends, not an unmanaged Kokkos View.
 // The operator bench already isolated that variable -- kokkos_md_a4 (Kokkos
@@ -291,7 +291,7 @@ void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fin
 // for the prolongation -- and every other field is addressed at the same local box
 // index. That is exact whenever the fabs share a DistributionMapping and box order,
 // which holds for the fields of one level and for the fine/coarse pair the
-// inter-level kernels are handed (gmg_vcycle.cpp routes an agglomerated level
+// inter-level kernels are handed (vcycle.hpp routes an agglomerated level
 // through a transfer fab on the fine level's layout precisely to keep it true).
 //
 // `fence` is the ordering against whatever runs next. It has to be true whenever the
@@ -300,6 +300,19 @@ void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fin
 // Kokkos kernel on the same execution space, which is already ordered by the stream.
 // ---------------------------------------------------------------------------
 
+// Declared here, DEFINED (and explicitly instantiated for every {T, TC} the
+// V-cycle needs) in gmg_kokkos_shared.cpp -- NOT header-inline, unlike every other
+// launcher in this file. These three are the ones KokkosOptGmgBackend (vcycle.hpp)
+// calls, and vcycle.hpp is included by BOTH bench/gmg_apply.cpp (production) and
+// bench/gmg_vcycle_bench.cpp (the bench harness, which also calls them directly for
+// kokkos_fused): a header-inline template here would instantiate an identical
+// extended-__host__-__device__-lambda-bearing function in TWO CUDA translation
+// units feeding the SAME final shared object, which is an nvcc trap -- the linker's
+// weak/COMDAT folding of the host-side stub does not keep the two TUs' device-side
+// registrations consistent, and the result is a null function-pointer call at
+// runtime (not a compile or link error). Emitting the definition in exactly one TU
+// and only DECLARING it here removes the duplicate instantiation entirely. See
+// gmg_kokkos_shared.cpp for the instantiation list.
 template<class T, class TC>
 void gmgGsColorKokkosFused(
     solvers::GmgFab<T>& sol,
@@ -314,42 +327,7 @@ void gmgGsColorKokkosFused(
     int parity,
     double omega,
     bool fence = true
-)
-{
-    const solvers::GmgComputeT<T> om = static_cast<solvers::GmgComputeT<T>>(omega);
-    const auto psi = sol.arrays();
-    const auto b = rhs.const_arrays();
-    const auto ax = ux.const_arrays();
-    const auto lxa = lx.const_arrays();
-    const auto ay = uy.const_arrays();
-    const auto lya = ly.const_arrays();
-    const auto az = uz.const_arrays();
-    const auto lza = lz.const_arrays();
-    const auto al = alpha.const_arrays();
-    launchKokkosTeamNamed(
-        "gmg_gs_fused",
-        rhs,
-        BENCH_LAMBDA(int ib, int i, int j, int k) {
-            GmgGsCell<T, TC> {
-                psi[ib],
-                b[ib],
-                ax[ib],
-                lxa[ib],
-                ay[ib],
-                lya[ib],
-                az[ib],
-                lza[ib],
-                al[ib],
-                om,
-                parity
-            }(i, j, k);
-        }
-    );
-    if (fence)
-    {
-        Kokkos::fence();
-    }
-}
+);
 
 template<class T, class TC>
 void gmgResidRestrictKokkosFused(
@@ -364,51 +342,11 @@ void gmgResidRestrictKokkosFused(
     const solvers::GmgFab<TC>& lz,
     const solvers::GmgFab<TC>& alpha,
     bool fence = true
-)
-{
-    const auto cr = crhs.arrays();
-    const auto psi = sol.const_arrays();
-    const auto b = rhs.const_arrays();
-    const auto ax = ux.const_arrays();
-    const auto lxa = lx.const_arrays();
-    const auto ay = uy.const_arrays();
-    const auto lya = ly.const_arrays();
-    const auto az = uz.const_arrays();
-    const auto lza = lz.const_arrays();
-    const auto al = alpha.const_arrays();
-    launchKokkosTeamNamed(
-        "gmg_residrestrict_fused",
-        crhs,
-        BENCH_LAMBDA(int ib, int ic, int jc, int kc) {
-            GmgResidRestrictCell<T, TC> {
-                cr[ib], psi[ib], b[ib], ax[ib], lxa[ib], ay[ib], lya[ib], az[ib], lza[ib], al[ib]
-            }(ic, jc, kc);
-        }
-    );
-    if (fence)
-    {
-        Kokkos::fence();
-    }
-}
+);
 
 template<class T>
 void gmgProlongAddKokkosFused(
     const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fine, bool fence = true
-)
-{
-    const auto f = fine.arrays();
-    const auto c = crse.const_arrays();
-    launchKokkosTeamNamed(
-        "gmg_prolong_fused",
-        fine,
-        BENCH_LAMBDA(int ib, int i, int j, int k) {
-            GmgProlongCell<T> {f[ib], c[ib]}(i, j, k);
-        }
-    );
-    if (fence)
-    {
-        Kokkos::fence();
-    }
-}
+);
 
 } // namespace blockamr::bench

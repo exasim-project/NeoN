@@ -33,7 +33,13 @@ set(_blockamr_sources
 # blockamr_bench remains a separate OBJECT library by history/inertia (it predates that fence
 # being dropped), not because it needs to be one. Both backends' kernels belong in this target so
 # the comparison runs under identical compile flags.
-set(_blockamr_bench_sources bench/kokkos_spike.cpp bench/operators.cpp bench/gmg_vcycle.cpp)
+set(_blockamr_bench_sources
+    bench/kokkos_spike.cpp
+    bench/kokkos_runtime.cpp
+    bench/operators.cpp
+    bench/gmg_kokkos_shared.cpp
+    bench/gmg_apply.cpp
+    bench/gmg_vcycle_bench.cpp)
 
 # Ginkgo-only sources: the matrix-free solver stack under solvers/.
 set(_blockamr_ginkgo_sources

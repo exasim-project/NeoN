@@ -2,57 +2,24 @@
 //
 // SPDX-License-Identifier: MIT
 
-// The GMG V-cycle bench: the native geometric-multigrid V-cycle of
-// solvers/gmg_precond.hpp, run with its AMReX kernels and with the Kokkos twins in
-// gmg_kokkos.hpp. Same hierarchy, same sweep counts, same control flow, same order
-// of operations — only the launcher differs, which is the same discipline the
-// operator bench uses.
+// The production Kokkos GMG V-cycle: Vcycle<Backend,T,TC> and the types it needs
+// (LevelT, sameField, KokkosOptGmgBackend, Precision/PrecPair) -- split out of
+// what used to be one TU, bench/gmg_vcycle.cpp, so the shipped precond="gmg_kokkos"
+// path (bench/gmg_apply.cpp) does not carry the four-backend benchmark harness
+// into the wheel with it. See bench/gmg_vcycle_bench.cpp for the harness (the
+// other three backends, the timing driver, benchGmgVcycle) and for the "why
+// compare these four backends" rationale that used to sit at the head of the
+// single file.
 //
-// Four backends, each the previous one plus one change, so a row of the bench is
-// read against the row above it:
-//
-//   amrex         the production per-box path — the orientation point.
-//   kokkos        its per-box Kokkos twin.
-//   kokkos_fused  the same kernels under one TeamPolicy launch per level.
-//   kokkos_opt    ... and the halo exchange, the zero fill and the agglomeration
-//                 transfers on Kokkos too (halo_kokkos.hpp), which leaves no AMReX
-//                 operation inside the timed cycle and therefore no reason to fence
-//                 between kernels at all. The whole cycle becomes one stream the
-//                 host can run ahead of.
-//
-// Only the Kokkos side is optimised, deliberately — the AMReX column has to stay the
-// shipped V-cycle for the comparison to mean anything, and `kokkos`/`kokkos_fused`
-// stay put as the intermediate baselines. Orthogonal to the backend,
-// GmgArgs::agglomerate switches the hierarchy from production's in-place BoxArray
-// coarsening to a re-decomposed coarse grid; since red-black smoothing is
-// decomposition-independent, at equal depth that changes cost without changing a
-// single arithmetic result.
-//
-// This is a port of the DEVICE path of GmgPrecondT<double>, reduced to what the
-// timed V-cycle needs and nothing more:
-//
-//   kept     hierarchy construction by in-place BoxArray coarsening (so box COUNT
-//            is preserved down the levels, exactly as in production, unless
-//            agglomeration is asked for), RB-SOR smoothing with the reversed
-//            post-sweep, fused residual+restriction,
-//            piecewise-constant prolongation, the ghost fill per colour, and the
-//            recursive V-cycle with warm-started sol.
-//   dropped  Ginkgo (no LinOp, no Dense pack/unpack), the ReferenceExecutor host
-//            path, the Chebyshev smoother and
-//            its λmax power iteration, and physical boundary conditions — the
-//            bench is triply periodic, so bc handling never fires and solvers/bc
-//            stays out of this translation unit.
-//
-// The AMReX column calls the PRODUCTION kernels (solvers/gmg_kernels.hpp) rather
-// than a copy of them, so the baseline is the real thing. It is recompiled here in
-// the non-RDC object library, which is what makes the flags identical for both
-// columns: production's _blockamr is non-RDC too (see CMakeLists.txt for the
-// rationale). blockamr_bench stays a separate library by history, not because of an
-// RDC split between the two.
+// A header, not a .cpp, because Vcycle is a template: bench/gmg_apply.cpp
+// instantiates it for KokkosOptGmgBackend only (the production path),
+// bench/gmg_vcycle_bench.cpp for all four backends (the comparison). What used to
+// be one set of instantiation points emitted in one TU is now emitted once per
+// including TU -- more compile time, no change in behaviour.
+
+#pragma once
 
 #include <algorithm>
-#include <chrono>
-#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
@@ -70,7 +37,6 @@
 #include "../solvers/bc_geom.hpp"
 #include "../solvers/gmg_kernels.hpp"
 #include "../solvers/transfer.hpp"
-#include "gmg_apply.hpp"
 #include "gmg_kokkos.hpp"
 #include "halo_kokkos.hpp"
 #include "kokkos_bench.hpp"
@@ -152,119 +118,6 @@ Precision parseCoeffPrecision(const std::string& coeff, const std::string& field
     }
     return c;
 }
-
-// ---------------------------------------------------------------------------
-// The backends. Each is the three kernels the timed V-cycle runs plus the two
-// cross-runtime ordering points, and nothing else, so a backend cannot quietly
-// differ in anything but what it is meant to.
-//
-//   afterAmrexWrite   order an AMReX write against a following backend kernel.
-//   beforeAmrexRead   order a backend kernel against a following AMReX read.
-//   amrexFreeCycle    the timed cycle contains no AMReX operation, so the kernels
-//                     need no fence between them (they share one stream) and the
-//                     data movements come from halo_kokkos.hpp.
-// ---------------------------------------------------------------------------
-
-struct AmrexGmgBackend
-{
-    static constexpr const char* tag = "amrex";
-    static constexpr bool canShareCoeffs = false;
-    static constexpr bool amrexFreeCycle = false;
-
-    // AMReX kernels are issued to AMReX's own stream, so an AMReX write before them
-    // (FillBoundary, setVal) is already ordered against them: nothing to do. Nor is
-    // there anything to do the other way round.
-    static void afterAmrexWrite() {}
-
-    static void beforeAmrexRead() {}
-
-    template<class... A>
-    static void gsColor(A&&... a)
-    {
-        solvers::gmgGsColorDevice<double>(std::forward<A>(a)...);
-    }
-
-    template<class... A>
-    static void residRestrict(A&&... a)
-    {
-        solvers::gmgResidRestrictDevice<double>(std::forward<A>(a)...);
-    }
-
-    template<class... A>
-    static void prolongAdd(A&&... a)
-    {
-        solvers::gmgProlongAddDevice<double>(std::forward<A>(a)...);
-    }
-};
-
-struct KokkosGmgBackend
-{
-    static constexpr const char* tag = "kokkos";
-    static constexpr bool canShareCoeffs = false;
-    static constexpr bool amrexFreeCycle = false;
-
-    // Every kernel already fences, so a following AMReX read is ordered.
-    static void beforeAmrexRead() {}
-
-    // The other half of straddling two runtimes (the Kokkos::fence at the end of
-    // each ported kernel is the first half): a Kokkos kernel about to read what
-    // AMReX just wrote has no ordering against AMReX's stream, so the write has to
-    // be waited on. This is the one thing the port cannot express in Kokkos, and it
-    // doubles the host syncs per colour -- one for FillBoundary, one for the kernel
-    // -- where the AMReX path needs only the one MFIter already performs.
-    static void afterAmrexWrite() { amrex::Gpu::streamSynchronizeAll(); }
-
-    template<class... A>
-    static void gsColor(A&&... a)
-    {
-        gmgGsColorKokkos<double>(std::forward<A>(a)...);
-    }
-
-    template<class... A>
-    static void residRestrict(A&&... a)
-    {
-        gmgResidRestrictKokkos<double>(std::forward<A>(a)...);
-    }
-
-    template<class... A>
-    static void prolongAdd(A&&... a)
-    {
-        gmgProlongAddKokkos<double>(std::forward<A>(a)...);
-    }
-};
-
-// The same three kernels under ONE launch per level instead of one per box. Only
-// the Kokkos side gets a fused variant: the AMReX column stays the production
-// per-box path, so it remains the orientation point every other column is read
-// against.
-struct KokkosFusedGmgBackend
-{
-    static constexpr const char* tag = "kokkos_fused";
-    static constexpr bool canShareCoeffs = false;
-    static constexpr bool amrexFreeCycle = false;
-
-    static void beforeAmrexRead() {}
-
-    static void afterAmrexWrite() { amrex::Gpu::streamSynchronizeAll(); }
-
-    template<class... A>
-    static void gsColor(A&&... a)
-    {
-        gmgGsColorKokkosFused<double>(std::forward<A>(a)...);
-    }
-
-    template<class... A>
-    static void residRestrict(A&&... a)
-    {
-        gmgResidRestrictKokkosFused<double>(std::forward<A>(a)...);
-    }
-
-    template<class... A>
-    static void prolongAdd(A&&... a)
-    {
-        gmgProlongAddKokkosFused<double>(std::forward<A>(a)...);
-    }
-};
 
 // The fused kernels again, with every AMReX operation removed from the timed cycle
 // (halo_kokkos.hpp supplies the halo exchange, the zero fill and the agglomeration
@@ -973,86 +826,6 @@ private:
     std::vector<Level> levels_;
 };
 
-// Fence both runtimes regardless of backend, as in benchOperator.
-void fenceAll()
-{
-    amrex::Gpu::streamSynchronize();
-    if (Kokkos::is_initialized())
-    {
-        Kokkos::fence();
-    }
-}
-
-template<class Backend, class T, class TC = T>
-GmgResult run(const GmgArgs& args, int iters, int batches)
-{
-    Vcycle<Backend, T, TC> v(args);
-
-    GmgResult r;
-    r.nlevels = v.nlevels();
-    r.sharedCoeffs = v.sharedCoeffs();
-    r.aggLevel0 = v.aggLevel0();
-    r.boxesPerLevel = v.boxesPerLevel();
-    r.cellsPerLevel = v.cellsPerLevel();
-
-    // Correctness/strength gate, untimed: how far ONE V-cycle from z0 = 0 moves the
-    // residual. A launcher that indexes wrongly cannot reproduce this number.
-    v.reset(*args.rhs);
-    r.resid0 = std::sqrt(v.residSumSq());
-    v.cycles(1);
-    r.resid1 = std::sqrt(v.residSumSq());
-
-    // Timed: every batch starts from the same state, so a batch measures
-    // `iters` V-cycles of the same work rather than an ever-converging one.
-    v.reset(*args.rhs);
-    v.cycles(1);
-    fenceAll();
-
-    std::vector<double> ms, msEnq;
-    ms.reserve(static_cast<std::size_t>(batches));
-    msEnq.reserve(static_cast<std::size_t>(batches));
-    for (int b = 0; b < batches; ++b)
-    {
-        v.reset(*args.rhs);
-        fenceAll();
-        const auto t0 = std::chrono::steady_clock::now();
-        v.cycles(iters);
-        const auto t1 = std::chrono::steady_clock::now();
-        fenceAll();
-        const auto t2 = std::chrono::steady_clock::now();
-        msEnq.push_back(std::chrono::duration<double, std::milli>(t1 - t0).count() / iters);
-        ms.push_back(std::chrono::duration<double, std::milli>(t2 - t0).count() / iters);
-    }
-    std::sort(ms.begin(), ms.end());
-    std::sort(msEnq.begin(), msEnq.end());
-    r.msMin = ms.front();
-    r.msMedian = ms[ms.size() / 2];
-    r.msEnqueue = msEnq.front();
-    return r;
-}
-
-// The optimised V-cycle behind the Ginkgo-free handle of gmg_apply.hpp. Fixed to
-// KokkosOptGmgBackend: a caller wanting the baselines has the bench for that, and a
-// preconditioner has no reason to run a deliberately unoptimised launcher.
-template<class T, class TC = T>
-class KokkosGmgApplyImpl final : public KokkosGmgApply
-{
-public:
-
-    KokkosGmgApplyImpl(const GmgArgs& args, int nCycles) : v_(args), nCycles_(nCycles) {}
-
-    void apply(const double* r, double* z) override { v_.applyFlat(r, z, nCycles_); }
-
-    void apply(const float* r, float* z) override { v_.applyFlat(r, z, nCycles_); }
-
-    [[nodiscard]] int nlevels() const override { return v_.nlevels(); }
-
-private:
-
-    Vcycle<KokkosOptGmgBackend, T, TC> v_;
-    int nCycles_;
-};
-
 // The six (field, coefficient) pairs, as one enum. parseCoeffPrecision has already
 // rejected a coefficient type wider than the field type, so the other three cells of
 // the 3x3 matrix cannot arrive here and are never instantiated.
@@ -1090,146 +863,5 @@ PrecPair precPair(Precision field, Precision coeff)
 }
 
 } // namespace
-
-std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
-    const amrex::Geometry& geom,
-    const amrex::MultiFab& alpha,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
-    const KokkosGmgOpts& opts
-)
-{
-    // No bc/geometry consistency check here: solvers::parseBc already refuses a
-    // non-periodic direction marked periodic and a periodic one marked otherwise, and
-    // it is the only path that reaches this factory. Repeating it would be a branch no
-    // test could reach.
-    GmgArgs args;
-    args.geom = &geom;
-    args.rhs = nullptr; // the hierarchy is built from the coefficients alone
-    args.alpha = &alpha;
-    args.ux = &ux;
-    args.lx = &lx;
-    args.uy = &uy;
-    args.ly = &ly;
-    args.uz = &uz;
-    args.lz = &lz;
-    args.preSweeps = opts.preSweeps;
-    args.postSweeps = opts.postSweeps;
-    args.coarsestSweeps = opts.coarsestSweeps;
-    args.maxLevels = opts.maxLevels;
-    args.minBottom = opts.minBottom;
-    args.omega = opts.omega;
-    args.agglomerate = opts.agglomerate;
-    args.aggGridSize = opts.aggGridSize;
-    args.precision = opts.precision;
-    args.coeffPrecision = opts.coeffPrecision;
-    args.shareCoeffs = opts.shareCoeffs;
-    args.bc = opts.bc;
-    args.aggLevel0Size = opts.aggLevel0Size;
-
-    const Precision coeff = parseCoeffPrecision(opts.coeffPrecision, opts.precision);
-    switch (precPair(parsePrecision(opts.precision), coeff))
-    {
-    case PrecPair::f64c32:
-        return std::make_unique<KokkosGmgApplyImpl<double, float>>(args, opts.cycles);
-    case PrecPair::f64c16:
-        return std::make_unique<KokkosGmgApplyImpl<double, solvers::Bf16>>(args, opts.cycles);
-    case PrecPair::f32c32:
-        return std::make_unique<KokkosGmgApplyImpl<float>>(args, opts.cycles);
-    case PrecPair::f32c16:
-        return std::make_unique<KokkosGmgApplyImpl<float, solvers::Bf16>>(args, opts.cycles);
-    case PrecPair::f16c16:
-        return std::make_unique<KokkosGmgApplyImpl<solvers::Bf16>>(args, opts.cycles);
-    case PrecPair::f64c64:
-        break;
-    }
-    return std::make_unique<KokkosGmgApplyImpl<double>>(args, opts.cycles);
-}
-
-std::vector<std::string> benchGmgBackends()
-{
-    return {
-        AmrexGmgBackend::tag,
-        KokkosGmgBackend::tag,
-        KokkosFusedGmgBackend::tag,
-        KokkosOptGmgBackend::tag
-    };
-}
-
-GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int iters, int batches)
-{
-    // Parse before the dispatch, not after: an unknown spelling must not silently
-    // fall through to fp64, and silently ignoring a reduced precision on a backend
-    // that has no reduced hierarchy would report an fp64 timing under its label.
-    const Precision prec = parsePrecision(args.precision);
-    const Precision coeffPrec = parseCoeffPrecision(args.coeffPrecision, args.precision);
-    if (prec != Precision::fp64 && backend != KokkosOptGmgBackend::tag)
-    {
-        throw std::runtime_error(
-            "benchGmgVcycle: precision '" + args.precision + "' is implemented for the '"
-            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
-        );
-    }
-    if (coeffPrec != prec && backend != KokkosOptGmgBackend::tag)
-    {
-        throw std::runtime_error(
-            "benchGmgVcycle: coeff_precision '" + args.coeffPrecision + "' is implemented for the '"
-            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
-        );
-    }
-    // Same reason: a baseline silently ignoring share_coeffs would report the
-    // unshared timing under a shared label.
-    if (args.aggLevel0Size > 0 && backend != KokkosOptGmgBackend::tag)
-    {
-        throw std::runtime_error(
-            "benchGmgVcycle: agg_level0_size is implemented for the '"
-            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
-        );
-    }
-    if (args.shareCoeffs && backend != KokkosOptGmgBackend::tag)
-    {
-        throw std::runtime_error(
-            "benchGmgVcycle: share_coeffs is implemented for the '"
-            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
-        );
-    }
-    if (backend == AmrexGmgBackend::tag)
-    {
-        return run<AmrexGmgBackend, double>(args, iters, batches);
-    }
-    if (backend == KokkosGmgBackend::tag)
-    {
-        return run<KokkosGmgBackend, double>(args, iters, batches);
-    }
-    if (backend == KokkosFusedGmgBackend::tag)
-    {
-        return run<KokkosFusedGmgBackend, double>(args, iters, batches);
-    }
-    if (backend == KokkosOptGmgBackend::tag)
-    {
-        using B = KokkosOptGmgBackend;
-        switch (precPair(prec, coeffPrec))
-        {
-        case PrecPair::f64c32:
-            return run<B, double, float>(args, iters, batches);
-        case PrecPair::f64c16:
-            return run<B, double, solvers::Bf16>(args, iters, batches);
-        case PrecPair::f32c32:
-            return run<B, float>(args, iters, batches);
-        case PrecPair::f32c16:
-            return run<B, float, solvers::Bf16>(args, iters, batches);
-        case PrecPair::f16c16:
-            return run<B, solvers::Bf16>(args, iters, batches);
-        case PrecPair::f64c64:
-            break;
-        }
-        return run<B, double>(args, iters, batches);
-    }
-    throw std::runtime_error("benchGmgVcycle: unknown backend '" + backend + "'");
-}
 
 } // namespace blockamr::bench

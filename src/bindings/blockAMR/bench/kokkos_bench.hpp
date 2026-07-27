@@ -22,14 +22,9 @@ class MultiFab;
 namespace blockamr::bench
 {
 
-// ---------------------------------------------------------------------------
-// Kokkos lifetime, driven from blockamr.initialize()/finalize() so the ordering
-// against amrex::Initialize/Finalize is enforced in one place.
-// ---------------------------------------------------------------------------
-void kokkosInitialize();
-void kokkosFinalize();
-bool kokkosInitialized();
-bool kokkosFinalized();
+// Kokkos lifetime (kokkosInitialize/kokkosFinalize/kokkosInitialized/
+// kokkosFinalized) now lives in kokkos_runtime.hpp -- production's init.cpp
+// includes that instead of this bench-only contract header.
 
 std::string kokkosExecutionSpace();
 

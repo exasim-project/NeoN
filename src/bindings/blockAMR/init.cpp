@@ -10,7 +10,7 @@
 #include <AMReX_ParallelDescriptor.H>
 #include <AMReX_ParallelReduce.H>
 
-#include "bench/kokkos_bench.hpp"
+#include "bench/kokkos_runtime.hpp"
 
 namespace nb = nanobind;
 

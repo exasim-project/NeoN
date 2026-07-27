@@ -21,7 +21,6 @@
 #include <AMReX_MultiFab.H>
 
 #include "kokkos_bench.hpp"
-#include "launch.hpp"
 
 namespace blockamr::bench
 {
@@ -50,30 +49,6 @@ void requireKokkos()
 }
 
 } // namespace
-
-void kokkosInitialize()
-{
-    if (!Kokkos::is_initialized() && !Kokkos::is_finalized())
-    {
-        Kokkos::initialize(Kokkos::InitializationSettings());
-    }
-}
-
-void kokkosFinalize()
-{
-    if (Kokkos::is_initialized())
-    {
-        // The kokkos_stream backend's execution space instances own cudaStreams
-        // (ManageStream::yes), so they have to go before finalize -- and before
-        // amrex::Finalize tears the CUDA context down.
-        releaseStreamPool();
-        Kokkos::finalize();
-    }
-}
-
-bool kokkosInitialized() { return Kokkos::is_initialized(); }
-
-bool kokkosFinalized() { return Kokkos::is_finalized(); }
 
 std::string kokkosExecutionSpace() { return std::string(Kokkos::DefaultExecutionSpace::name()); }
 
