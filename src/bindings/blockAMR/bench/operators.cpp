@@ -28,9 +28,9 @@
 
 #include "NeoN/core/runtimeSelectionFactory.hpp"
 
+#include "../../../blockAmrSolvers/gmgKokkos/launch.hpp"
 #include "cells.hpp"
 #include "kokkos_bench.hpp"
-#include "launch.hpp"
 
 namespace blockamr::bench
 {

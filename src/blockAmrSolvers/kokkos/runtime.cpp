@@ -2,16 +2,16 @@
 //
 // SPDX-License-Identifier: MIT
 
-// See kokkos_runtime.hpp. Split out of bench/kokkos_spike.cpp, which keeps only
+// See runtime.hpp. Split out of bench/kokkos_spike.cpp, which keeps only
 // the feasibility spike (FabView, kokkosSelftest, kokkosMfSum). This TU is
 // compiled WITHOUT relocatable device code, like the rest of the module (see
 // CMakeLists.txt for why _blockamr itself is also non-RDC).
 
-#include "kokkos_runtime.hpp"
+#include "runtime.hpp"
 
 #include <Kokkos_Core.hpp>
 
-#include "launch.hpp"
+#include "../gmgKokkos/launch.hpp"
 
 namespace blockamr::bench
 {

@@ -15,15 +15,15 @@
 #include <AMReX_BoxList.H>
 #include <AMReX_Periodicity.H>
 
-#include "../../../blockAmrSolvers/common/bc.hpp"
-#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
+#include "../common/bc.hpp"
+#include "../gmg/gmg_kernels.hpp"
 #include "launch.hpp"
 
 // ---------------------------------------------------------------------------
 // The data movements of the V-cycle, on Kokkos: the ghost exchange, the copy
 // between two decompositions of the same region, and the zero fill.
 //
-// These are the operations gmg_kokkos.hpp deliberately does NOT port, because they
+// These are the operations kernels.hpp deliberately does NOT port, because they
 // are not cell loops -- both the `kokkos` and `kokkos_fused` backends hand them to
 // AMReX (FillBoundary / ParallelCopy / setVal). That choice has a cost the V-cycle
 // bench made visible: every AMReX operation between two Kokkos kernels is a
@@ -253,13 +253,13 @@ CopyPlan makeCopyPlan(const amrex::FabArray<FAB>& dst, const amrex::FabArray<FAB
 }
 
 // Declared here, DEFINED (and explicitly instantiated for every field type T the
-// V-cycle needs) in gmg_kokkos_shared.cpp, NOT header-inline: this is the launcher
+// V-cycle needs) in kernels.cpp, NOT header-inline: this is the launcher
 // KokkosOptGmgBackend's amrexFree_ path (vcycle.hpp) drives from BOTH
-// bench/gmg_apply.cpp and bench/gmg_vcycle_bench.cpp, and instantiating a function
+// apply.cpp and bench/gmg_vcycle_bench.cpp, and instantiating a function
 // with an extended __host__ __device__ lambda identically in two CUDA TUs that feed
-// the same shared object is the nvcc trap gmg_kokkos.hpp's Fused kernels document
+// the same shared object is the nvcc trap kernels.hpp's Fused kernels document
 // above their own (now equally out-of-line) declarations -- a null function-pointer
-// call at runtime, not a build failure. See gmg_kokkos_shared.cpp.
+// call at runtime, not a build failure. See kernels.cpp.
 //
 // Execute a plan in ONE launch: one team per work block. A block short of a full
 // kCopyBlock (the tail of a region, or a whole corner region of one cell) leaves lanes
@@ -306,9 +306,9 @@ void gmgCopyKokkos(solvers::GmgFab<T>& dst, const solvers::GmgFab<T>& src, const
 // -- which it does not have, physical BCs being out of its scope -- and the physical
 // ghosts would have to be cleared here as well.
 //
-// Declared here, defined out-of-line in gmg_kokkos_shared.cpp, same reason as
+// Declared here, defined out-of-line in kernels.cpp, same reason as
 // execCopyPlan above: it launches its own extended lambda directly and is driven
-// from both bench/gmg_apply.cpp and bench/gmg_vcycle_bench.cpp.
+// from both apply.cpp and bench/gmg_vcycle_bench.cpp.
 template<class T>
 void gmgZeroKokkos(solvers::GmgFab<T>& mf);
 

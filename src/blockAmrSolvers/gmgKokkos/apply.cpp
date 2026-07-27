@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: MIT
 
 // The production instantiations of Vcycle: the KokkosGmgApply implementation and
-// the factory declared in gmg_apply.hpp. Split out of what used to be one TU,
+// the factory declared in apply.hpp. Split out of what used to be one TU,
 // bench/gmg_vcycle.cpp, together with bench/gmg_vcycle_bench.cpp (the benchmark
 // half) and vcycle.hpp (the Vcycle template itself, shared by both).
 
-#include "gmg_apply.hpp"
+#include "apply.hpp"
 #include "vcycle.hpp"
 
 namespace blockamr::bench
@@ -16,7 +16,7 @@ namespace blockamr::bench
 namespace
 {
 
-// The optimised V-cycle behind the Ginkgo-free handle of gmg_apply.hpp. Fixed to
+// The optimised V-cycle behind the Ginkgo-free handle of apply.hpp. Fixed to
 // KokkosOptGmgBackend: a caller wanting the baselines has the bench for that, and a
 // preconditioner has no reason to run a deliberately unoptimised launcher.
 template<class T, class TC = T>

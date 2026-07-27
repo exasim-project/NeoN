@@ -35,10 +35,10 @@ set(_blockamr_sources
 # the comparison runs under identical compile flags.
 set(_blockamr_bench_sources
     bench/kokkos_spike.cpp
-    bench/kokkos_runtime.cpp
+    ../../blockAmrSolvers/kokkos/runtime.cpp
     bench/operators.cpp
-    bench/gmg_kokkos_shared.cpp
-    bench/gmg_apply.cpp
+    ../../blockAmrSolvers/gmgKokkos/kernels.cpp
+    ../../blockAmrSolvers/gmgKokkos/apply.cpp
     bench/gmg_vcycle_bench.cpp)
 
 # Ginkgo-only sources: the matrix-free solver stack under solvers/, plus the

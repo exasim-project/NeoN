@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: MIT
 
 // The definitions -- and, below, the explicit instantiations -- of the handful of
-// Kokkos launchers that gmg_kokkos.hpp and halo_kokkos.hpp only DECLARE:
+// Kokkos launchers that kernels.hpp and halo.hpp only DECLARE:
 // gmgGsColorKokkosFused, gmgResidRestrictKokkosFused, gmgProlongAddKokkosFused,
 // execCopyPlan and gmgZeroKokkos.
 //
 // Why these five and not the rest of the bench's launchers: every one of them opens
 // an extended __host__ __device__ lambda (BENCH_LAMBDA / KOKKOS_LAMBDA) directly, and
 // every one of them is reached from KokkosOptGmgBackend (vcycle.hpp), which is shared
-// by bench/gmg_apply.cpp (production) and bench/gmg_vcycle_bench.cpp (the bench
+// by apply.cpp (production) and bench/gmg_vcycle_bench.cpp (the bench
 // harness -- kokkos_fused also calls the first three of the five directly). Both
 // files land in the same final shared object (blockamr_bench is an OBJECT library
 // linked into _blockamr, not a separate .so -- see CMakeLists.txt), so a
@@ -29,10 +29,10 @@
 // combination that TU's callers need, so every OTHER including TU sees only a
 // declaration and links against this single definition instead of generating its own.
 
-#include "../../../blockAmrSolvers/gmg/bf16.hpp"
-#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
-#include "gmg_kokkos.hpp"
-#include "halo_kokkos.hpp"
+#include "../gmg/bf16.hpp"
+#include "../gmg/gmg_kernels.hpp"
+#include "halo.hpp"
+#include "kernels.hpp"
 
 namespace blockamr::bench
 {

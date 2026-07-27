@@ -20,9 +20,8 @@
 // CUDA_SEPARABLE_COMPILATION OFF (see CMakeLists.txt for the rationale;
 // blockamr_bench stays a separate library by history/inertia, not because of an RDC
 // fence). So the V-cycle is exposed here as an opaque handle over flat device
-// vectors, and solvers/gmg_kokkos_precond.hpp wraps it in a gko::LinOp on the other
-// side -- Ginkgo there, Kokkos here, nothing shared but this header and two double
-// pointers.
+// vectors, and precond.hpp wraps it in a gko::LinOp on the other side -- Ginkgo
+// there, Kokkos here, nothing shared but this header and two double pointers.
 //
 // Why bother: bench_gmg_kokkos.py measures the V-cycle in isolation, but a V-cycle is
 // a preconditioner. What a caller cares about is the SOLVE, where the V-cycle is one

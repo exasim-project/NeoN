@@ -5,13 +5,13 @@
 // The production Kokkos GMG V-cycle: Vcycle<Backend,T,TC> and the types it needs
 // (LevelT, sameField, KokkosOptGmgBackend, Precision/PrecPair) -- split out of
 // what used to be one TU, bench/gmg_vcycle.cpp, so the shipped precond="gmg_kokkos"
-// path (bench/gmg_apply.cpp) does not carry the four-backend benchmark harness
+// path (apply.cpp) does not carry the four-backend benchmark harness
 // into the wheel with it. See bench/gmg_vcycle_bench.cpp for the harness (the
 // other three backends, the timing driver, benchGmgVcycle) and for the "why
 // compare these four backends" rationale that used to sit at the head of the
 // single file.
 //
-// A header, not a .cpp, because Vcycle is a template: bench/gmg_apply.cpp
+// A header, not a .cpp, because Vcycle is a template: apply.cpp
 // instantiates it for KokkosOptGmgBackend only (the production path),
 // bench/gmg_vcycle_bench.cpp for all four backends (the comparison). What used to
 // be one set of instantiation points emitted in one TU is now emitted once per
@@ -34,12 +34,12 @@
 #include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
-#include "../../../blockAmrSolvers/common/bc.hpp"
-#include "../../../blockAmrSolvers/common/transfer.hpp"
-#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
-#include "gmg_kokkos.hpp"
-#include "halo_kokkos.hpp"
-#include "kokkos_bench.hpp"
+#include "../../bindings/blockAMR/bench/kokkos_bench.hpp"
+#include "../common/bc.hpp"
+#include "../common/transfer.hpp"
+#include "../gmg/gmg_kernels.hpp"
+#include "halo.hpp"
+#include "kernels.hpp"
 
 namespace blockamr::bench
 {
@@ -120,7 +120,7 @@ Precision parseCoeffPrecision(const std::string& coeff, const std::string& field
 }
 
 // The fused kernels again, with every AMReX operation removed from the timed cycle
-// (halo_kokkos.hpp supplies the halo exchange, the zero fill and the agglomeration
+// (halo.hpp supplies the halo exchange, the zero fill and the agglomeration
 // transfers) and therefore with the per-kernel fence removed too: consecutive Kokkos
 // kernels on one execution space are already ordered by the stream. What that buys is
 // not the fences themselves but the serialisation they enforced -- the host no longer
@@ -137,7 +137,7 @@ Precision parseCoeffPrecision(const std::string& coeff, const std::string& field
 // name, so the plan cannot express it. Filling that gap would mean packing buffers,
 // MPI and a completion wait per exchange -- i.e. reinstating exactly the
 // synchronisation point this backend exists to remove, for a cycle whose cost is
-// then no longer the launch (halo_kokkos.hpp says the same at its head). So on >1
+// then no longer the launch (halo.hpp says the same at its head). So on >1
 // rank the CELL KERNELS stay Kokkos and the DATA MOVEMENTS go back to AMReX, which
 // is precisely what `kokkos_fused` already does: same answer everywhere,
 // fence-free on one rank. `Vcycle::amrexFree_` is where that decision is made.

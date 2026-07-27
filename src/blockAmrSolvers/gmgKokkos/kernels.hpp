@@ -9,7 +9,7 @@
 #include <AMReX_Math.H>
 #include <AMReX_MultiFab.H>
 
-#include "../../../blockAmrSolvers/gmg/gmg_kernels.hpp"
+#include "../gmg/gmg_kernels.hpp"
 #include "launch.hpp"
 
 // ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@
 //     restriction / face coarsening): AMReX for both backends. Setup runs once and
 //     is untimed.
 //
-// halo_kokkos.hpp then goes on to port the first three anyway, for the `kokkos_opt`
+// halo.hpp then goes on to port the first three anyway, for the `kokkos_opt`
 // backend alone. Not because they are cell loops -- they are not -- but because each
 // one is a synchronisation point between the two runtimes, and a cycle with none of
 // them left needs no host fence at all. The `fence` argument of the fused launchers
@@ -301,9 +301,9 @@ void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fin
 // ---------------------------------------------------------------------------
 
 // Declared here, DEFINED (and explicitly instantiated for every {T, TC} the
-// V-cycle needs) in gmg_kokkos_shared.cpp -- NOT header-inline, unlike every other
+// V-cycle needs) in kernels.cpp -- NOT header-inline, unlike every other
 // launcher in this file. These three are the ones KokkosOptGmgBackend (vcycle.hpp)
-// calls, and vcycle.hpp is included by BOTH bench/gmg_apply.cpp (production) and
+// calls, and vcycle.hpp is included by BOTH apply.cpp (production) and
 // bench/gmg_vcycle_bench.cpp (the bench harness, which also calls them directly for
 // kokkos_fused): a header-inline template here would instantiate an identical
 // extended-__host__-__device__-lambda-bearing function in TWO CUDA translation
@@ -312,7 +312,7 @@ void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fin
 // registrations consistent, and the result is a null function-pointer call at
 // runtime (not a compile or link error). Emitting the definition in exactly one TU
 // and only DECLARING it here removes the duplicate instantiation entirely. See
-// gmg_kokkos_shared.cpp for the instantiation list.
+// kernels.cpp for the instantiation list.
 template<class T, class TC>
 void gmgGsColorKokkosFused(
     solvers::GmgFab<T>& sol,
