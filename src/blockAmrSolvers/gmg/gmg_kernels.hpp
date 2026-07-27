@@ -169,43 +169,20 @@ void gmgConvertCopyHost(GmgFab<T>& dst, const SRC& src)
 // The native stationary solver adds the (possibly FP32) V-cycle correction back
 // onto the FP64 solution; for both double it is a plain in-place add.
 template<class DST, class T>
-void gmgConvertAddDevice(DST& dst, const GmgFab<T>& src)
+void gmgConvertAdd(DST& dst, const GmgFab<T>& src, bool onDevice)
 {
     using DT = typename DST::value_type;
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
     for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto d = dst.array(mfi);
         const auto s = src.const_array(mfi);
-        amrex::ParallelFor(
+        amrex::HostDeviceParallelFor(
             vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
             { d(i, j, k) += static_cast<DT>(s(i, j, k)); }
         );
-    }
-}
-
-template<class DST, class T>
-void gmgConvertAddHost(DST& dst, const GmgFab<T>& src)
-{
-    using DT = typename DST::value_type;
-    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto d = dst.array(mfi);
-        const auto s = src.const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    d(i, j, k) += static_cast<DT>(s(i, j, k));
-                }
-            }
-        }
     }
 }
 
@@ -260,8 +237,28 @@ inline void reduceResidNorms(ResidNorms& r)
     amrex::ParallelAllReduce::Max(r.maxabs, comm);
 }
 
+// Two internal building blocks, not one HostDeviceParallelFor: (1) the
+// residual write into `out` is a plain stencil kernel, collapsed the same way
+// as every other twin -- HostDeviceParallelFor genuinely honors
+// Gpu::LaunchSafeGuard here. (2) the norm is a SEPARATE reduction over the
+// just-written `out`, kept as an EXPLICIT if (onDevice) branch rather than a
+// LaunchSafeGuard-wrapped amrex::ParReduce: unlike HostDeviceParallelFor (and
+// unlike amrex::ReduceSum, gmgNorm2's own pattern), amrex::ParReduce's
+// ReduceOps::eval() for a FabArray is selected at COMPILE time by
+// #ifdef AMREX_USE_GPU with no runtime Gpu::inLaunchRegion() check anywhere
+// in its call chain -- AMReX's own LaunchSafeGuard doc says as much ("This
+// will only switch from GPU to CPU for kernels launched with macros...
+// should not be used for comparing GPU to non-GPU... behavior"). So the
+// device branch below is the old device twin's amrex::ParReduce verbatim,
+// and the host branch is the old host twin's sequential accumulation loop
+// verbatim (same MFIter/k/j/i iteration order, same res.sumsq/res.maxabs
+// accumulation order) -- a real host-vs-device split, not a cosmetic one.
+// Reducing the STORED value of `out` (not the local double `r`) is preserved
+// for both paths, so reference and cuda give an identical norm: exact FP64
+// for T=double, fp32-rounded for T=float -- see the two-kernel-fusion
+// rationale above.
 template<class T>
-ResidNorms faceCoeffResidScatterNormDevice(
+ResidNorms faceCoeffResidScatterNorm(
     const amrex::MultiFab& sol,
     const amrex::MultiFab& rhs,
     const amrex::MultiFab& ux,
@@ -272,12 +269,14 @@ ResidNorms faceCoeffResidScatterNormDevice(
     const amrex::MultiFab& lz,
     const amrex::MultiFab& alpha,
     double shift,
-    GmgFab<T>& out
+    GmgFab<T>& out,
+    bool onDevice
 )
 {
     ResidNorms res {};
     {
         prof::Timer t("gmg.solve.residkern");
+        amrex::Gpu::LaunchSafeGuard lsg(onDevice);
         for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
         {
             const amrex::Box& vbx = mfi.validbox();
@@ -291,9 +290,9 @@ ResidNorms faceCoeffResidScatterNormDevice(
             const auto az = uz.const_array(mfi);
             const auto lza = lz.const_array(mfi);
             const auto al = alpha.const_array(mfi);
-            amrex::ParallelFor(
+            amrex::HostDeviceParallelFor(
                 vbx,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+                [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
                 {
                     const auto c = loadFaceCoeffs<double>(ax, lxa, ay, lya, az, lza, i, j, k);
                     const double offd = stencilOffDiag(
@@ -312,6 +311,7 @@ ResidNorms faceCoeffResidScatterNormDevice(
             );
         }
     }
+    if (onDevice)
     {
         prof::Timer t("gmg.solve.normkern");
         const auto o_ma = out.const_arrays();
@@ -329,66 +329,28 @@ ResidNorms faceCoeffResidScatterNormDevice(
         res.sumsq = amrex::get<0>(both);
         res.maxabs = amrex::get<1>(both);
     }
-    reduceResidNorms(res);
-    return res;
-}
-
-template<class T>
-ResidNorms faceCoeffResidScatterNormHost(
-    const amrex::MultiFab& sol,
-    const amrex::MultiFab& rhs,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
-    const amrex::MultiFab& alpha,
-    double shift,
-    GmgFab<T>& out
-)
-{
-    ResidNorms res {};
-    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
+    else
     {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.const_array(mfi);
-        const auto bb = rhs.const_array(mfi);
-        const auto o = out.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
+        for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
         {
-            for (int j = lo.y; j <= hi.y; ++j)
+            const amrex::Box& vbx = mfi.validbox();
+            const auto o = out.const_array(mfi);
+            const auto lo = amrex::lbound(vbx);
+            const auto hi = amrex::ubound(vbx);
+            for (int k = lo.z; k <= hi.z; ++k)
             {
-                for (int i = lo.x; i <= hi.x; ++i)
+                for (int j = lo.y; j <= hi.y; ++j)
                 {
-                    const auto c = loadFaceCoeffs<double>(ax, lxa, ay, lya, az, lza, i, j, k);
-                    const double offd = stencilOffDiag(
-                        c,
-                        psi(i + 1, j, k),
-                        psi(i - 1, j, k),
-                        psi(i, j + 1, k),
-                        psi(i, j - 1, k),
-                        psi(i, j, k + 1),
-                        psi(i, j, k - 1)
-                    );
-                    const double diag = stencilDiag(al(i, j, k), c);
-                    const double r = bb(i, j, k) - (diag * psi(i, j, k) + offd) - shift;
-                    o(i, j, k) = static_cast<T>(r);
-                    // Reduce the STORED value (like the device twin's separate
-                    // ParReduce over `out`) so reference and cuda give an identical
-                    // norm: exact FP64 for T=double, fp32-rounded for T=float.
-                    const double v = static_cast<double>(o(i, j, k));
-                    res.sumsq += v * v;
-                    res.maxabs = std::max(res.maxabs, std::abs(v));
+                    for (int i = lo.x; i <= hi.x; ++i)
+                    {
+                        // Reduce the STORED value (like the device branch's
+                        // ParReduce over `out`) so reference and cuda give an
+                        // identical norm: exact FP64 for T=double, fp32-rounded
+                        // for T=float.
+                        const double v = static_cast<double>(o(i, j, k));
+                        res.sumsq += v * v;
+                        res.maxabs = std::max(res.maxabs, std::abs(v));
+                    }
                 }
             }
         }
@@ -847,16 +809,18 @@ void gmgResidRestrictHost(
 // afterwards, so the whole step is Jacobi-like (race-free) and, being a fixed
 // polynomial in the symmetric operator, a symmetric linear smoother (CG-safe).
 template<class T>
-void gmgChebComputeDDevice(
+void gmgChebComputeD(
     const GmgFab<T>& sol,
     const GmgFab<T>& rhs,
     const FaceCoeffs<T>& fc,
     GmgFab<T>& d,
     T ca,
     T cb,
-    bool readOld
+    bool readOld,
+    bool onDevice
 )
 {
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
     for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -870,9 +834,9 @@ void gmgChebComputeDDevice(
         const auto az = fc.uz->const_array(mfi);
         const auto lza = fc.lz->const_array(mfi);
         const auto al = fc.alpha->const_array(mfi);
-        amrex::ParallelFor(
+        amrex::HostDeviceParallelFor(
             vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
             {
                 const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
                 const T off = stencilOffDiag(
@@ -897,71 +861,16 @@ void gmgChebComputeDDevice(
     }
 }
 
-template<class T>
-void gmgChebComputeDHost(
-    const GmgFab<T>& sol,
-    const GmgFab<T>& rhs,
-    const FaceCoeffs<T>& fc,
-    GmgFab<T>& d,
-    T ca,
-    T cb,
-    bool readOld
-)
-{
-    for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.const_array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto dd = d.array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                    const T off = stencilOffDiag(
-                        c,
-                        psi(i + 1, j, k),
-                        psi(i - 1, j, k),
-                        psi(i, j + 1, k),
-                        psi(i, j - 1, k),
-                        psi(i, j, k + 1),
-                        psi(i, j, k - 1)
-                    );
-                    const T diag = stencilDiag(al(i, j, k), c);
-                    const T r = b(i, j, k) - (diag * psi(i, j, k) + off);
-                    T dval = cb * (r / diag);
-                    if (readOld)
-                    {
-                        dval += ca * dd(i, j, k);
-                    }
-                    dd(i, j, k) = dval;
-                }
-            }
-        }
-    }
-}
-
 // out = A v (v's ghosts filled). The same seven-point stencil as
-// gmgDinvApplyDevice without the diagonal scaling -- the operator itself, which
+// gmgDinvApply without the diagonal scaling -- the operator itself, which
 // is what a Krylov bottom solve needs. The diagonal is recomputed from the face
 // coefficients rather than stored, exactly as every other kernel here does, so
 // an asymmetric operator (ux(i+1) != lx(i+1)) is handled with no special case:
 // each direction reads its own upper and lower array.
 template<class T>
-void gmgApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
+void gmgApply(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc, bool onDevice)
 {
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -974,9 +883,9 @@ void gmgApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
         const auto az = fc.uz->const_array(mfi);
         const auto lza = fc.lz->const_array(mfi);
         const auto al = fc.alpha->const_array(mfi);
-        amrex::ParallelFor(
+        amrex::HostDeviceParallelFor(
             vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
             {
                 const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
                 const T off = stencilOffDiag(
@@ -995,52 +904,12 @@ void gmgApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
     }
 }
 
-template<class T>
-void gmgApplyHost(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
-{
-    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = v.const_array(mfi);
-        const auto o = out.array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                    const T off = stencilOffDiag(
-                        c,
-                        psi(i + 1, j, k),
-                        psi(i - 1, j, k),
-                        psi(i, j + 1, k),
-                        psi(i, j - 1, k),
-                        psi(i, j, k + 1),
-                        psi(i, j, k - 1)
-                    );
-                    const T diag = stencilDiag(al(i, j, k), c);
-                    o(i, j, k) = diag * psi(i, j, k) + off;
-                }
-            }
-        }
-    }
-}
-
 // out = D^{-1} A v (v's ghosts filled), used by the setup power iteration that
 // estimates lambda_max of D^{-1}A per level for the Chebyshev interval.
 template<class T>
-void gmgDinvApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
+void gmgDinvApply(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc, bool onDevice)
 {
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
@@ -1053,9 +922,9 @@ void gmgDinvApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>&
         const auto az = fc.uz->const_array(mfi);
         const auto lza = fc.lz->const_array(mfi);
         const auto al = fc.alpha->const_array(mfi);
-        amrex::ParallelFor(
+        amrex::HostDeviceParallelFor(
             vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
             {
                 const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
                 const T off = stencilOffDiag(
@@ -1071,47 +940,6 @@ void gmgDinvApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>&
                 o(i, j, k) = (diag * psi(i, j, k) + off) / diag;
             }
         );
-    }
-}
-
-template<class T>
-void gmgDinvApplyHost(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
-{
-    for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = v.const_array(mfi);
-        const auto o = out.array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                    const T off = stencilOffDiag(
-                        c,
-                        psi(i + 1, j, k),
-                        psi(i - 1, j, k),
-                        psi(i, j + 1, k),
-                        psi(i, j - 1, k),
-                        psi(i, j, k + 1),
-                        psi(i, j, k - 1)
-                    );
-                    const T diag = stencilDiag(al(i, j, k), c);
-                    o(i, j, k) = (diag * psi(i, j, k) + off) / diag;
-                }
-            }
-        }
     }
 }
 

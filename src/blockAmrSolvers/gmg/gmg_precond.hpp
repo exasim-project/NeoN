@@ -324,20 +324,12 @@ public:
     ) const override
     {
         const GmgLevelT<T>& L0 = levels_.front();
-        ResidNorms norms;
-        if (onDevice_)
+        ResidNorms norms = faceCoeffResidScatterNorm<T>(
+            sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs, onDevice_
+        );
+        L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
+        if (!onDevice_)
         {
-            norms = faceCoeffResidScatterNormDevice<T>(
-                sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs
-            );
-            L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
-        }
-        else
-        {
-            norms = faceCoeffResidScatterNormHost<T>(
-                sol, rhs, ux, lx, uy, ly, uz, lz, alpha, shift, *L0.rhs
-            );
-            L0.sol->setVal(T(0));
             amrex::Gpu::streamSynchronize();
         }
         return norms;
@@ -357,7 +349,7 @@ public:
             }
             {
                 prof::Timer t("gmg.solve.gather");
-                gmgConvertAddDevice(x, *L0.sol); // x += (double) L0 correction
+                gmgConvertAdd(x, *L0.sol, onDevice_); // x += (double) L0 correction
                 amrex::Gpu::streamSynchronize();
             }
         }
@@ -367,7 +359,7 @@ public:
             {
                 vcycle(0);
             }
-            gmgConvertAddHost(x, *L0.sol);
+            gmgConvertAdd(x, *L0.sol, onDevice_);
             amrex::Gpu::streamSynchronize();
         }
     }
@@ -591,14 +583,28 @@ private:
             if (onDevice_)
             {
                 prof::Timer t("gmg.cheb", static_cast<int>(l));
-                gmgChebComputeDDevice(
-                    *L.sol, *L.rhs, fc, *L.chebD, static_cast<T>(ca), static_cast<T>(cb), readOld
+                gmgChebComputeD(
+                    *L.sol,
+                    *L.rhs,
+                    fc,
+                    *L.chebD,
+                    static_cast<T>(ca),
+                    static_cast<T>(cb),
+                    readOld,
+                    onDevice_
                 );
             }
             else
             {
-                gmgChebComputeDHost(
-                    *L.sol, *L.rhs, fc, *L.chebD, static_cast<T>(ca), static_cast<T>(cb), readOld
+                gmgChebComputeD(
+                    *L.sol,
+                    *L.rhs,
+                    fc,
+                    *L.chebD,
+                    static_cast<T>(ca),
+                    static_cast<T>(cb),
+                    readOld,
+                    onDevice_
                 );
                 amrex::Gpu::streamSynchronize();
             }
@@ -632,13 +638,9 @@ private:
         for (int it = 0; it < kPowerIters; ++it)
         {
             fillGhosts(L, static_cast<int>(l));
-            if (onDevice_)
+            gmgDinvApply(v, w, fc, onDevice_);
+            if (!onDevice_)
             {
-                gmgDinvApplyDevice(v, w, fc);
-            }
-            else
-            {
-                gmgDinvApplyHost(v, w, fc);
                 amrex::Gpu::streamSynchronize();
             }
             lambda = gmgNorm2(w); // v is unit-norm -> ||D^{-1}A v|| ~ lambda_max

@@ -136,15 +136,14 @@ protected:
         const FaceCoeffs<T> fc {
             alpha_.get(), ux_.get(), lx_.get(), uy_.get(), ly_.get(), uz_.get(), lz_.get()
         };
+        gmgApply(*in_, *out_, fc, onDevice_);
         if (onDevice_)
         {
-            gmgApplyDevice(*in_, *out_, fc);
             gather_device(*out_, localValues<T>(x), 1.0);
             amrex::Gpu::streamSynchronize(); // x read by Ginkgo next
         }
         else
         {
-            gmgApplyHost(*in_, *out_, fc);
             gather(*out_, localValues<T>(x), 1.0);
         }
     }
