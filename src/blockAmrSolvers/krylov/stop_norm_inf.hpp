@@ -142,12 +142,6 @@ public:
     GKO_ENABLE_CRITERION_FACTORY(ResidualNormInf, parameters, Factory);
     GKO_ENABLE_BUILD_METHOD(Factory);
 
-    // The inf-norm of the residual at the last check (0 before the first one).
-    [[nodiscard]] double last_norm() const { return last_; }
-
-    // The absolute threshold this criterion resolved its baseline to.
-    [[nodiscard]] double target() const { return target_; }
-
 protected:
 
     // Required by Ginkgo's polymorphic-object machinery (create_default/clear).

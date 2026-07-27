@@ -13,7 +13,6 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
-#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -237,25 +236,8 @@ SolveResult solveComposite(
     auto criteria = makeCriteria(exec, max_iter, gko::stop::mode::absolute, stopTol, atol);
     auto logger = gko::share(gko::log::Convergence<double>::create());
     auto resLogger = std::make_shared<ResidualHistoryLogger>();
-    std::shared_ptr<gko::LinOp> gsolver;
-    if (solver == "cg")
-    {
-        gsolver = gko::solver::Cg<double>::build().with_criteria(criteria).on(exec)->generate(op);
-    }
-    else if (solver == "bicgstab")
-    {
-        gsolver =
-            gko::solver::Bicgstab<double>::build().with_criteria(criteria).on(exec)->generate(op);
-    }
-    else if (solver == "gmres")
-    {
-        gsolver =
-            gko::solver::Gmres<double>::build().with_criteria(criteria).on(exec)->generate(op);
-    }
-    else
-    {
-        throw std::runtime_error("ginkgo_solve_composite: unknown solver '" + solver + "'");
-    }
+    std::shared_ptr<gko::LinOp> gsolver =
+        generateBasicSolver(solver, exec, op, criteria, "ginkgo_solve_composite");
     gsolver->add_logger(logger);
     gsolver->add_logger(resLogger);
     gsolver->apply(b, x);
@@ -340,25 +322,8 @@ SolveResult solveFaceCoeffs(
     auto criteria = makeCriteria(exec, max_iter, gko::stop::mode::absolute, stopTol, 0.0);
 
     auto logger = gko::share(gko::log::Convergence<double>::create());
-    std::shared_ptr<gko::LinOp> gsolver;
-    if (solver == "cg")
-    {
-        gsolver = gko::solver::Cg<double>::build().with_criteria(criteria).on(exec)->generate(op);
-    }
-    else if (solver == "bicgstab")
-    {
-        gsolver =
-            gko::solver::Bicgstab<double>::build().with_criteria(criteria).on(exec)->generate(op);
-    }
-    else if (solver == "gmres")
-    {
-        gsolver =
-            gko::solver::Gmres<double>::build().with_criteria(criteria).on(exec)->generate(op);
-    }
-    else
-    {
-        throw std::runtime_error("ginkgo_solve_face_coeffs: unknown solver '" + solver + "'");
-    }
+    std::shared_ptr<gko::LinOp> gsolver =
+        generateBasicSolver(solver, exec, op, criteria, "ginkgo_solve_face_coeffs");
     gsolver->add_logger(logger);
     gsolver->apply(b, x);
 

@@ -89,7 +89,8 @@ nb::dict toDict(const SolveResult& r)
 // Repackages the 27 non-fixed __init__ arguments (36 nb::arg total minus the 9
 // fixed: executor, geom, alpha..lz) into one SolverConfig, built once here so
 // FaceCoeffSolver/FaceCoeffCsrSolver take `const SolverConfig&` instead of
-// spelling out all 27. Pure repackaging, zero validation, zero nanobind types.
+// spelling out all 27. Zero nanobind types; also parses solver/precond to
+// their enums (parseSolverKind/parsePrecondKind throw on unknown spellings).
 SolverConfig parseSolverConfig(
     const std::string& solver,
     int max_iter,
@@ -122,6 +123,11 @@ SolverConfig parseSolverConfig(
 {
     SolverConfig config;
     config.solver = solver;
+    // Parsed once, here, rather than wherever a solver name/precond first
+    // happens to be dispatched on: an unknown spelling is now rejected before
+    // any other constructor work runs, with the same message either check
+    // threw before (see solver_config.hpp).
+    config.solverKind = parseSolverKind(solver);
     config.maxIter = max_iter;
     config.rtol = rtol;
     config.atol = atol;
@@ -130,6 +136,7 @@ SolverConfig parseSolverConfig(
     config.precondCycles = precond_cycles;
     config.bc = bc;
     config.precond = precond;
+    config.precondKind = parsePrecondKind(precond);
     config.gmg.preSweeps = gmg_pre_sweeps;
     config.gmg.postSweeps = gmg_post_sweeps;
     config.gmg.coarsestSweeps = gmg_coarsest_sweeps;

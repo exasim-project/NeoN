@@ -12,6 +12,37 @@
 namespace blockamr::solvers
 {
 
+namespace
+{
+
+// Every gko::solver::X::build().with_criteria(criteria) params object shares
+// this line: attach `precond` as the generated preconditioner when one was
+// given. Was five verbatim copies of it (one per solver kind); collapsing it
+// is why `buildKrylov` below no longer needs a `criteriaFlex` copy of
+// `criteria` either -- the per-branch local variable that copy stood in for
+// is now this function's own `params` argument.
+//
+// Returns `params` itself (not `.on(exec)->generate(op)`'s result): that
+// conversion -- std::unique_ptr<SolverType> to std::shared_ptr<gko::LinOp> --
+// has to stay in buildKrylov's own (non-template) body, one call site per
+// solver kind, exactly where it lived before this collapse. GCC 13 rejects
+// that same conversion when it instead happens inside a function template
+// parameterised on the builder type Params (a GCC 13 regression: "use of
+// built-in trait '__remove_cv(gko::LinOp)' in function signature", reproduced
+// for all five Params instantiations), so no shared_ptr<gko::LinOp>
+// conversion happens inside any template here.
+template<class Params>
+Params withPrecond(Params params, const std::shared_ptr<const gko::LinOp>& precond)
+{
+    if (precond)
+    {
+        params.with_generated_preconditioner(precond);
+    }
+    return params;
+}
+
+} // namespace
+
 std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor)
 {
     // No mapping of our own: NeoN already owns this one (memoization, the Kokkos
@@ -31,63 +62,45 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     const std::string& norm
 )
 {
-    auto criteria = makeCriteria(
-        exec, max_iter, gko::stop::mode::rhs_norm, rtol, atol, gko::stop::mode::absolute, norm
-    );
+    auto criteria = makeCriteria(exec, max_iter, gko::stop::mode::rhs_norm, rtol, atol, norm);
     if (solver == "cg")
     {
-        auto params = gko::solver::Cg<double>::build().with_criteria(criteria);
-        if (precond)
-        {
-            params.with_generated_preconditioner(precond);
-        }
-        return params.on(exec)->generate(op);
+        return withPrecond(gko::solver::Cg<double>::build().with_criteria(criteria), precond)
+            .on(exec)
+            ->generate(op);
     }
     if (solver == "bicgstab")
     {
-        auto params = gko::solver::Bicgstab<double>::build().with_criteria(criteria);
-        if (precond)
-        {
-            params.with_generated_preconditioner(precond);
-        }
-        return params.on(exec)->generate(op);
+        return withPrecond(gko::solver::Bicgstab<double>::build().with_criteria(criteria), precond)
+            .on(exec)
+            ->generate(op);
     }
     if (solver == "gmres")
     {
-        auto params = gko::solver::Gmres<double>::build().with_criteria(criteria);
-        if (precond)
-        {
-            params.with_generated_preconditioner(precond);
-        }
-        return params.on(exec)->generate(op);
+        return withPrecond(gko::solver::Gmres<double>::build().with_criteria(criteria), precond)
+            .on(exec)
+            ->generate(op);
     }
-    if (solver == "gcr" || solver == "fcg")
+    // FLEXIBLE outer solvers: unlike Cg and Bicgstab they do not assume the
+    // preconditioner is the same linear operator on every apply, so they are
+    // the right outer method when the V-cycle's bottom is solved by an
+    // adaptive Krylov method (gmg_bottom_solver != 'smoother' with a loose
+    // gmg_bottom_rtol). Both cost more per iteration than Cg -- Gcr stores a
+    // growing search space, Fcg one extra vector -- so they are opt-in
+    // rather than the default; the stationary route (a tight bottom rtol,
+    // keeping solver='cg') is usually cheaper. Fcg still needs a SYMMETRIC
+    // operator; Gcr does not.
+    if (solver == "gcr")
     {
-        // FLEXIBLE outer solvers: unlike Cg and Bicgstab they do not assume the
-        // preconditioner is the same linear operator on every apply, so they are
-        // the right outer method when the V-cycle's bottom is solved by an
-        // adaptive Krylov method (gmg_bottom_solver != 'smoother' with a loose
-        // gmg_bottom_rtol). Both cost more per iteration than Cg -- Gcr stores a
-        // growing search space, Fcg one extra vector -- so they are opt-in
-        // rather than the default; the stationary route (a tight bottom rtol,
-        // keeping solver='cg') is usually cheaper. Fcg still needs a SYMMETRIC
-        // operator; Gcr does not.
-        auto criteriaFlex = criteria;
-        if (solver == "gcr")
-        {
-            auto params = gko::solver::Gcr<double>::build().with_criteria(criteriaFlex);
-            if (precond)
-            {
-                params.with_generated_preconditioner(precond);
-            }
-            return params.on(exec)->generate(op);
-        }
-        auto params = gko::solver::Fcg<double>::build().with_criteria(criteriaFlex);
-        if (precond)
-        {
-            params.with_generated_preconditioner(precond);
-        }
-        return params.on(exec)->generate(op);
+        return withPrecond(gko::solver::Gcr<double>::build().with_criteria(criteria), precond)
+            .on(exec)
+            ->generate(op);
+    }
+    if (solver == "fcg")
+    {
+        return withPrecond(gko::solver::Fcg<double>::build().with_criteria(criteria), precond)
+            .on(exec)
+            ->generate(op);
     }
     if (solver == "ir")
     {
@@ -96,7 +109,10 @@ std::shared_ptr<gko::LinOp> buildKrylov(
         // relaxation_factor 1.0 this is plain Richardson driven by the V-cycle,
         // Ginkgo's idiomatic counterpart of the native solver="gmg" loop.
         // default_initial_guess defaults to `provided`, so the incoming x seeds
-        // the iteration (the persistent-solver warm-start contract).
+        // the iteration (the persistent-solver warm-start contract). Ir attaches
+        // its inner solver via with_generated_solver rather than
+        // with_generated_preconditioner, so it does not go through
+        // withPrecond.
         auto params = gko::solver::Ir<double>::build().with_criteria(criteria);
         params.with_relaxation_factor(1.0);
         if (precond)
@@ -106,6 +122,31 @@ std::shared_ptr<gko::LinOp> buildKrylov(
         return params.on(exec)->generate(op);
     }
     throw std::runtime_error("ginkgo: unknown solver '" + solver + "'");
+}
+
+std::shared_ptr<gko::LinOp> generateBasicSolver(
+    const std::string& solver,
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> op,
+    const std::vector<std::shared_ptr<const gko::stop::CriterionFactory>>& criteria,
+    const char* what
+)
+{
+    if (solver == "cg")
+    {
+        return gko::solver::Cg<double>::build().with_criteria(criteria).on(exec)->generate(op);
+    }
+    if (solver == "bicgstab")
+    {
+        return gko::solver::Bicgstab<double>::build().with_criteria(criteria).on(exec)->generate(
+            op
+        );
+    }
+    if (solver == "gmres")
+    {
+        return gko::solver::Gmres<double>::build().with_criteria(criteria).on(exec)->generate(op);
+    }
+    throw std::runtime_error(std::string(what) + ": unknown solver '" + solver + "'");
 }
 
 } // namespace blockamr::solvers

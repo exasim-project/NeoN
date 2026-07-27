@@ -242,6 +242,27 @@ void PersistentSolver::subtractMean(gko::LinOp* v)
     localView<double>(v)->add_scaled(negMean, ones_);
 }
 
+namespace
+{
+
+// The one shape shared by all four "gmg forbids precond_mlmg" checks
+// (solver='gmg'/'ir', precond='gmg'/'gmg_kokkos'): a V-cycle already IS the
+// preconditioner/solver, so combining it with an externally-built MLMG makes
+// no sense. `active` is the caller's own combination test (solverKind==gmg,
+// etc.); `what` names which one fired, matching the four historical messages
+// this replaces exactly.
+void forbidPrecondMlmg(const SolverConfig& config, bool active, const char* what)
+{
+    if (active && config.precondMlmg != nullptr)
+    {
+        throw std::runtime_error(
+            std::string("FaceCoeffSolver: ") + what + " cannot be combined with precond_mlmg"
+        );
+    }
+}
+
+} // namespace
+
 FaceCoeffSolver::FaceCoeffSolver(
     const NeoN::Executor& executor,
     amrex::Geometry geom,
@@ -258,14 +279,14 @@ FaceCoeffSolver::FaceCoeffSolver(
           makeExecutor(executor),
           static_cast<gko::size_type>(alpha->boxArray().numPts()),
           localCount(*alpha),
-          config.solver != "gmg"
+          config.solverKind != SolverKind::gmg
       )
 {
     // A separate coefficient precision exists in the Kokkos hierarchy alone. Named
     // rather than ignored: the shipped GmgPrecondT stores one type per level, so
     // accepting the option there would report a narrowed-coefficient timing for a
     // hierarchy that never narrowed anything.
-    if (!config.gmg.coeffPrecision.empty() && config.precond != "gmg_kokkos")
+    if (!config.gmg.coeffPrecision.empty() && config.precondKind != PrecondKind::gmg_kokkos)
     {
         throw std::runtime_error(
             "FaceCoeffSolver: gmg_coeff_precision needs precond='gmg_kokkos' (the shipped GMG "
@@ -279,7 +300,7 @@ FaceCoeffSolver::FaceCoeffSolver(
     // warn but allow (usable as a stationary/flexible-CG smoother). The native
     // stationary solver (solver="gmg") is NOT CG, so asymmetric sweeps there
     // are legitimate and never warn (this guard requires solver=="cg").
-    if (config.precond == "gmg" && config.solver == "cg"
+    if (config.precondKind == PrecondKind::gmg && config.solverKind == SolverKind::cg
         && config.gmg.preSweeps != config.gmg.postSweeps)
     {
         std::cerr << "FaceCoeffSolver: warning — gmg_pre_sweeps (" << config.gmg.preSweeps
@@ -293,18 +314,27 @@ FaceCoeffSolver::FaceCoeffSolver(
         checkBcData(*config.bcData, *alpha, bcArr, "FaceCoeffSolver");
     }
 
+    // "gmg forbids precond_mlmg", in all four modes that build a GMG hierarchy
+    // (the native stationary loop, its Ginkgo-IR twin, and precond="gmg"/
+    // "gmg_kokkos"): the V-cycle already IS the preconditioner/solver, so an
+    // externally-built precond_mlmg would have nothing to do. Checked once,
+    // here, for all four rather than once per branch below -- two of those
+    // four branches (solver="ir", precond="gmg"/"gmg_kokkos") only reach their
+    // own copy of this check AFTER building the matrix-free operator, so
+    // hoisting it here also moves their rejection ahead of that allocation.
+    forbidPrecondMlmg(config, config.solverKind == SolverKind::gmg, "solver='gmg'");
+    forbidPrecondMlmg(config, config.solverKind == SolverKind::ir, "solver='ir'");
+    forbidPrecondMlmg(config, config.precondKind == PrecondKind::gmg, "precond='gmg'");
+    forbidPrecondMlmg(
+        config, config.precondKind == PrecondKind::gmg_kokkos, "precond='gmg_kokkos'"
+    );
+
     // solver="gmg": native stationary geometric-multigrid solver
     // (x <- x + V(b - A x) until tolerance). The GMG V-cycle IS the solver,
     // so `precond` is ignored; the hierarchy is built directly and the whole
     // iteration runs on AMReX fabs (see gmgSolve). No Ginkgo Krylov object.
-    if (config.solver == "gmg")
+    if (config.solverKind == SolverKind::gmg)
     {
-        if (config.precondMlmg != nullptr)
-        {
-            throw std::runtime_error(
-                "FaceCoeffSolver: solver='gmg' cannot be combined with precond_mlmg"
-            );
-        }
         gmgStationary_ = true;
         if (onDevice_)
         {
@@ -407,14 +437,8 @@ FaceCoeffSolver::FaceCoeffSolver(
     // the loop runs through Ginkgo (Dense pack/unpack + Convergence logger kept),
     // so the measured overhead across the LinOp boundaries vs the native gmg loop
     // is part of the deliverable — this variant does NOT fuse across it.
-    if (config.solver == "ir")
+    if (config.solverKind == SolverKind::ir)
     {
-        if (config.precondMlmg != nullptr)
-        {
-            throw std::runtime_error(
-                "FaceCoeffSolver: solver='ir' cannot be combined with precond_mlmg"
-            );
-        }
         auto inner = buildGmgHierarchy(
             alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
         );
@@ -434,30 +458,18 @@ FaceCoeffSolver::FaceCoeffSolver(
     std::shared_ptr<const gko::LinOp> pc;
     // Set only by precond="gmg_kokkos"; solver="mpir" needs it and says so.
     std::shared_ptr<bench::KokkosGmgApply> vcycle;
-    if (config.precond == "gmg")
+    if (config.precondKind == PrecondKind::gmg)
     {
-        if (config.precondMlmg != nullptr)
-        {
-            throw std::runtime_error(
-                "FaceCoeffSolver: precond='gmg' cannot be combined with precond_mlmg"
-            );
-        }
         pc = buildGmgHierarchy(
             alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
         );
     }
-    else if (config.precond == "gmg_kokkos")
+    else if (config.precondKind == PrecondKind::gmg_kokkos)
     {
         // The same V-cycle as precond="gmg", under the optimised Kokkos launchers
         // (gmgKokkos/apply.hpp). A separate object rather than a mode of GmgPrecondT:
         // that one is the shipped baseline and stays untouched, so both can run in
         // one process and be compared directly.
-        if (config.precondMlmg != nullptr)
-        {
-            throw std::runtime_error(
-                "FaceCoeffSolver: precond='gmg_kokkos' cannot be combined with precond_mlmg"
-            );
-        }
         // Refused rather than ignored, for the same reason every other
         // capability gap on this path is: accepting a knob that does nothing
         // reports a Krylov bottom in the configuration and runs fixed sweeps.
@@ -519,10 +531,14 @@ FaceCoeffSolver::FaceCoeffSolver(
         );
         pc = gko::share(GmgKokkosPrecond::create(exec_, n_, vcycle));
     }
-    else if (config.precond == "mlmg" || config.precond == "none")
+    else
     {
+        // config.precondKind is one of {none, mlmg, gmg, gmg_kokkos}
+        // (parseSolverConfig already rejected anything else), and gmg/
+        // gmg_kokkos are handled by the two branches above, so this is
+        // precond="none"/"mlmg".
         // precond_mlmg alone implies "mlmg" (pre-existing behaviour).
-        if (config.precond == "mlmg" && config.precondMlmg == nullptr)
+        if (config.precondKind == PrecondKind::mlmg && config.precondMlmg == nullptr)
         {
             throw std::runtime_error("FaceCoeffSolver: precond='mlmg' requires precond_mlmg");
         }
@@ -538,13 +554,6 @@ FaceCoeffSolver::FaceCoeffSolver(
             ));
         }
     }
-    else
-    {
-        throw std::runtime_error(
-            "FaceCoeffSolver: unknown precond '" + config.precond
-            + "' (expected 'none', 'mlmg', 'gmg' or 'gmg_kokkos')"
-        );
-    }
     // Mixed-precision iterative refinement. The OUTER loop is Ginkgo's Ir over the
     // fp64 operator -- it forms r = b - A x and runs the stopping test in fp64, so
     // the answer and the tolerance are the fp64 solver's -- and the inner correction
@@ -552,7 +561,7 @@ FaceCoeffSolver::FaceCoeffSolver(
     // because Ir::with_generated_solver is exactly the hook needed: what changes is
     // only WHICH LinOp plays the inner solver.
     std::string krylov = config.solver;
-    if (config.solver == "mpir")
+    if (config.solverKind == SolverKind::mpir)
     {
         if (!vcycle)
         {
@@ -946,20 +955,25 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
             "FaceCoeffCsrSolver: periodic boundaries only — bc_data needs FaceCoeffSolver"
         );
     }
-    if (config.precond == "gmg")
+    // config.precondKind's spelling was already validated once, by
+    // parseSolverConfig; what is checked here is CSR's own, narrower
+    // combination legality -- it has no matrix-free operator, so 'gmg' and
+    // 'gmg_kokkos' (both otherwise-valid PrecondKind values) are refused, the
+    // former with its own message.
+    if (config.precondKind == PrecondKind::gmg)
     {
         throw std::runtime_error(
             "FaceCoeffCsrSolver: precond='gmg' is matrix-free only — use FaceCoeffSolver"
         );
     }
-    if (config.precond != "none" && config.precond != "mlmg")
+    if (config.precondKind != PrecondKind::none && config.precondKind != PrecondKind::mlmg)
     {
         throw std::runtime_error(
             "FaceCoeffCsrSolver: unknown precond '" + config.precond
             + "' (expected 'none' or 'mlmg')"
         );
     }
-    if (config.precond == "mlmg" && config.precondMlmg == nullptr)
+    if (config.precondKind == PrecondKind::mlmg && config.precondMlmg == nullptr)
     {
         throw std::runtime_error("FaceCoeffCsrSolver: precond='mlmg' requires precond_mlmg");
     }

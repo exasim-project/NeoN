@@ -25,10 +25,11 @@ namespace blockamr::solvers
 // gko::stop::mode::rhs_norm for a relative rtol against ||rhs||, or
 // gko::stop::mode::absolute when the caller has already folded rtol into an
 // absolute `reduction_factor`); when `atol > 0.0` a second, absolute-baseline
-// ResidualNorm criterion is appended (`atol_baseline` lets a caller override
-// that second baseline, though every current call site uses the default).
-// Passing atol = 0.0 reproduces call sites that never had an atol branch at
-// all, so this single helper covers all of them exactly.
+// ResidualNorm criterion is appended (the second baseline is always
+// gko::stop::mode::absolute — every call site wants the plain ||r|| <= atol
+// test, so there is nothing left for a caller to override). Passing
+// atol = 0.0 reproduces call sites that never had an atol branch at all, so
+// this single helper covers all of them exactly.
 //
 // `norm` selects which norm the residual criteria measure: "l2" (Ginkgo's
 // gko::stop::ResidualNorm, the default and the historical behaviour) or "linf"
@@ -40,7 +41,6 @@ inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCrite
     gko::stop::mode baseline,
     double reduction_factor,
     double atol,
-    gko::stop::mode atol_baseline = gko::stop::mode::absolute,
     const std::string& norm = "l2"
 )
 {
@@ -66,7 +66,7 @@ inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCrite
     criteria.push_back(residual(baseline, reduction_factor));
     if (atol > 0.0)
     {
-        criteria.push_back(residual(atol_baseline, atol));
+        criteria.push_back(residual(gko::stop::mode::absolute, atol));
     }
     return criteria;
 }
@@ -77,6 +77,9 @@ inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCrite
 // ||r|| <= atol. A non-null `precond` (an already-generated LinOp, e.g.
 // MlmgPrecond) is attached as the solver's generated preconditioner. `norm`
 // picks the norm both residual tests measure in ("l2" | "linf").
+//
+// `precond`/`norm` have no defaults: PersistentSolver::build (their one
+// caller) always passes both explicitly, so a default here would be dead.
 std::shared_ptr<gko::LinOp> buildKrylov(
     const std::string& solver,
     std::shared_ptr<const gko::Executor> exec,
@@ -84,8 +87,25 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     int max_iter,
     double rtol,
     double atol,
-    std::shared_ptr<const gko::LinOp> precond = nullptr,
-    const std::string& norm = "l2"
+    std::shared_ptr<const gko::LinOp> precond,
+    const std::string& norm
+);
+
+// The cg/bicgstab/gmres subset used by the one-shot (non-persistent) solves in
+// oneshot.cpp. Unlike buildKrylov, the criteria are supplied by the caller
+// rather than built here: those solves stop on a baseline computed once from
+// the ORIGINAL system (a warm start's residual is not a fair yardstick for
+// itself), not buildKrylov's per-generate() rhs_norm, so the two cannot share
+// a criteria-building step. `what` names the caller in the "unknown solver"
+// message — ginkgo_solve_composite and ginkgo_solve_face_coeffs are the only
+// two callers, and carried byte-identical dispatch chains (differing only in
+// that name) before this consolidation.
+std::shared_ptr<gko::LinOp> generateBasicSolver(
+    const std::string& solver,
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> op,
+    const std::vector<std::shared_ptr<const gko::stop::CriterionFactory>>& criteria,
+    const char* what
 );
 
 // Assemble the {num_iters, res_norm, converged, res_history, contraction,
