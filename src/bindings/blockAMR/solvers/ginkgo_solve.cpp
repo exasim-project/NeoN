@@ -47,9 +47,11 @@
 #include "../../../blockAmrSolvers/common/profiling.hpp"
 #include "../../../blockAmrSolvers/common/transfer.hpp"
 #include "../../../blockAmrSolvers/common/types.hpp"
-#include "face_coeff_op.hpp"
-#include "krylov.hpp"
-#include "mlmg_ops.hpp"
+#include "../../../blockAmrSolvers/krylov/executor.hpp"
+#include "../../../blockAmrSolvers/krylov/krylov.hpp"
+#include "../../../blockAmrSolvers/krylov/logging.hpp"
+#include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
+#include "../../../blockAmrSolvers/operators/mlmg_ops.hpp"
 #include "persistent.hpp"
 
 namespace nb = nanobind;

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include "executor.hpp"
 #include "krylov.hpp"
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"

@@ -20,11 +20,13 @@
 
 #include "../../../blockAmrSolvers/common/profiling.hpp"
 #include "../../../blockAmrSolvers/common/transfer.hpp"
-#include "csr.hpp"
-#include "face_coeff_op.hpp"
+#include "../../../blockAmrSolvers/krylov/executor.hpp"
+#include "../../../blockAmrSolvers/krylov/logging.hpp"
+#include "../../../blockAmrSolvers/krylov/mixed_precision.hpp"
+#include "../../../blockAmrSolvers/operators/csr.hpp"
+#include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
+#include "../../../blockAmrSolvers/operators/mlmg_ops.hpp"
 #include "gmg_kokkos_precond.hpp"
-#include "mixed_precision.hpp"
-#include "mlmg_ops.hpp"
 
 namespace blockamr::solvers
 {

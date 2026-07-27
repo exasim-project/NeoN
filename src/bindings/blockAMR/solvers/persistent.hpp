@@ -17,9 +17,11 @@
 
 #include "../../../blockAmrSolvers/common/bc.hpp"
 #include "../../../blockAmrSolvers/common/types.hpp"
-#include "face_coeff_op.hpp"
+#include "../../../blockAmrSolvers/krylov/executor.hpp"
+#include "../../../blockAmrSolvers/krylov/krylov.hpp"
+#include "../../../blockAmrSolvers/krylov/logging.hpp"
+#include "../../../blockAmrSolvers/operators/face_coeff_op.hpp"
 #include "gmg_precond.hpp"
-#include "krylov.hpp"
 
 namespace nb = nanobind;
 

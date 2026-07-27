@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
-#include "../../../blockAmrSolvers/common/linop_base.hpp"
-#include "../../../blockAmrSolvers/common/profiling.hpp"
-#include "../../../blockAmrSolvers/common/types.hpp"
+#include "../common/linop_base.hpp"
+#include "../common/profiling.hpp"
+#include "../common/types.hpp"
 
 // ---------------------------------------------------------------------------
 // An FP32 solver wearing an FP64 LinOp's clothes, so that gko::solver::Ir<double>
