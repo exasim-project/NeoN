@@ -14,9 +14,9 @@
 #include <memory>
 #include <vector>
 
-#include "bc.hpp"
-#include "linop_base.hpp"
-#include "types.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
+#include "../../../blockAmrSolvers/common/linop_base.hpp"
+#include "../../../blockAmrSolvers/common/types.hpp"
 
 namespace blockamr::solvers
 {

@@ -18,13 +18,13 @@
 #include <utility>
 #include <vector>
 
+#include "../../../blockAmrSolvers/common/profiling.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
 #include "csr.hpp"
 #include "face_coeff_op.hpp"
 #include "gmg_kokkos_precond.hpp"
 #include "mixed_precision.hpp"
 #include "mlmg_ops.hpp"
-#include "profiling.hpp"
-#include "transfer.hpp"
 
 namespace blockamr::solvers
 {

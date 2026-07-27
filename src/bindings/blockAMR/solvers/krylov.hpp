@@ -16,8 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "../../../blockAmrSolvers/common/types.hpp"
 #include "stop_norm_inf.hpp"
-#include "types.hpp"
 
 namespace nb = nanobind;
 

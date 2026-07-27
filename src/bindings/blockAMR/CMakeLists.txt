@@ -41,10 +41,11 @@ set(_blockamr_bench_sources
     bench/gmg_apply.cpp
     bench/gmg_vcycle_bench.cpp)
 
-# Ginkgo-only sources: the matrix-free solver stack under solvers/.
+# Ginkgo-only sources: the matrix-free solver stack under solvers/, plus the
+# shared common/ seams that now live in ../../blockAmrSolvers/ (T3).
 set(_blockamr_ginkgo_sources
-    solvers/profiling.cpp
-    solvers/bc.cpp
+    ../../blockAmrSolvers/common/profiling.cpp
+    ../../blockAmrSolvers/common/bc.cpp
     solvers/mlmg_ops.cpp
     solvers/face_coeff_op.cpp
     solvers/krylov.cpp

@@ -10,10 +10,10 @@
 #include <stdexcept>
 #include <utility>
 
+#include "../../../blockAmrSolvers/common/linop_base.hpp"
+#include "../../../blockAmrSolvers/common/profiling.hpp"
+#include "../../../blockAmrSolvers/common/types.hpp"
 #include "../bench/gmg_apply.hpp"
-#include "linop_base.hpp"
-#include "profiling.hpp"
-#include "types.hpp"
 
 // ---------------------------------------------------------------------------
 // The optimised Kokkos V-cycle as a Ginkgo preconditioner.

@@ -44,13 +44,13 @@
 
 #include "../bindings.hpp"
 
+#include "../../../blockAmrSolvers/common/profiling.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
+#include "../../../blockAmrSolvers/common/types.hpp"
 #include "face_coeff_op.hpp"
 #include "krylov.hpp"
 #include "mlmg_ops.hpp"
 #include "persistent.hpp"
-#include "profiling.hpp"
-#include "transfer.hpp"
-#include "types.hpp"
 
 namespace nb = nanobind;
 

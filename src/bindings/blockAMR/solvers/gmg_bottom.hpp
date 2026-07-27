@@ -10,11 +10,11 @@
 #include <stdexcept>
 #include <string>
 
-#include "bc_geom.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
+#include "../../../blockAmrSolvers/common/linop_base.hpp"
+#include "../../../blockAmrSolvers/common/profiling.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
 #include "gmg_kernels.hpp"
-#include "linop_base.hpp"
-#include "profiling.hpp"
-#include "transfer.hpp"
 
 // ---------------------------------------------------------------------------
 // The coarsest multigrid level as a Ginkgo operator, and the solver selection

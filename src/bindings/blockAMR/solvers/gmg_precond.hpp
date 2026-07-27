@@ -20,13 +20,13 @@
 #include <string>
 #include <vector>
 
-#include "bc.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
+#include "../../../blockAmrSolvers/common/linop_base.hpp"
+#include "../../../blockAmrSolvers/common/profiling.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
+#include "../../../blockAmrSolvers/common/types.hpp"
 #include "gmg_bottom.hpp"
 #include "gmg_kernels.hpp"
-#include "linop_base.hpp"
-#include "profiling.hpp"
-#include "transfer.hpp"
-#include "types.hpp"
 
 namespace blockamr::solvers
 {

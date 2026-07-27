@@ -15,11 +15,11 @@
 #include <string>
 #include <vector>
 
-#include "bc.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
+#include "../../../blockAmrSolvers/common/types.hpp"
 #include "face_coeff_op.hpp"
 #include "gmg_precond.hpp"
 #include "krylov.hpp"
-#include "types.hpp"
 
 namespace nb = nanobind;
 

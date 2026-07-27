@@ -34,9 +34,9 @@
 #include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
-#include "../solvers/bc_geom.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
 #include "../solvers/gmg_kernels.hpp"
-#include "../solvers/transfer.hpp"
 #include "gmg_kokkos.hpp"
 #include "halo_kokkos.hpp"
 #include "kokkos_bench.hpp"

@@ -11,8 +11,8 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "profiling.hpp"
-#include "transfer.hpp"
+#include "../../../blockAmrSolvers/common/profiling.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
 
 namespace blockamr::solvers
 {

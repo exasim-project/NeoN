@@ -4,7 +4,7 @@
 
 #include "csr.hpp"
 
-#include "bc.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
 
 #include <AMReX_GpuLaunch.H>
 

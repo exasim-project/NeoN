@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-#include "transfer.hpp"
+#include "../../../blockAmrSolvers/common/transfer.hpp"
 
 namespace blockamr::solvers
 {

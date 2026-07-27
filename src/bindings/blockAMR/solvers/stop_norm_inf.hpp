@@ -17,8 +17,8 @@
 #include <string>
 #include <utility>
 
-#include "linop_base.hpp"
-#include "types.hpp"
+#include "../../../blockAmrSolvers/common/linop_base.hpp"
+#include "../../../blockAmrSolvers/common/types.hpp"
 
 // ---------------------------------------------------------------------------
 // The convergence norm, as a choice.

@@ -14,8 +14,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "../../../blockAmrSolvers/common/profiling.hpp"
 #include "bf16.hpp"
-#include "profiling.hpp"
 
 namespace blockamr::solvers
 {

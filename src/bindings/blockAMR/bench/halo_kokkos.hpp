@@ -15,7 +15,7 @@
 #include <AMReX_BoxList.H>
 #include <AMReX_Periodicity.H>
 
-#include "../solvers/bc_geom.hpp"
+#include "../../../blockAmrSolvers/common/bc.hpp"
 #include "../solvers/gmg_kernels.hpp"
 #include "launch.hpp"
 
