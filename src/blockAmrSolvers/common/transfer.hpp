@@ -135,55 +135,19 @@ void scatter(const V* buf, FA& mf)
 // the flat vector is double for the fp64 Krylov and float for the mixed-precision
 // one, so the per-cell copy converts between the two on the device. V is deduced
 // from the pointer, so every existing double call site is unchanged.
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp and
+// mlmg_ops.cpp (via gmg_precond.hpp / gmg_bottom.hpp and the MLMG operators)
+// AND from gmgKokkos/apply.cpp (via vcycle.hpp's applyFlat) — both object
+// libraries land in the same _blockamr.so, so an AMREX_GPU_DEVICE lambda here
+// would be an extended lambda instantiated in three CUDA TUs of one binary, the
+// exact nvcc trap T2 already hit. So these stay declaration-only in the header;
+// the single definition + explicit instantiation lives in
+// common/device_kernels.cpp.
 template<class V, class FA>
-void scatter_device(const V* vec, FA& mf)
-{
-    using T = typename FA::value_type;
-    long off = 0;
-    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto a = mf.array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const int ni = vbx.length(0);
-        const int nj = vbx.length(1);
-        const long o = off;
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            {
-                const long idx =
-                    o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                a(i, j, k) = static_cast<T>(vec[idx]);
-            }
-        );
-        off += vbx.numPts();
-    }
-}
+void scatter_device(const V* vec, FA& mf);
 
 template<class V, class FA>
-void gather_device(const FA& mf, V* vec, double scale)
-{
-    long off = 0;
-    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto a = mf.const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const int ni = vbx.length(0);
-        const int nj = vbx.length(1);
-        const long o = off;
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            {
-                const long idx =
-                    o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                vec[idx] = static_cast<V>(scale * static_cast<double>(a(i, j, k)));
-            }
-        );
-        off += vbx.numPts();
-    }
-}
+void gather_device(const FA& mf, V* vec, double scale);
 
 } // namespace blockamr::solvers

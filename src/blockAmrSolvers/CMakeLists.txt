@@ -45,7 +45,8 @@ if(NeoN_WITH_GINKGO)
   endif()
 endif()
 
-# Kernels for the Kokkos-vs-AMReX operator bench: gmgKokkos/ kokkos/ bench/. Compiled as
+# Kernels for the Kokkos-vs-AMReX operator bench (gmgKokkos/ kokkos/ bench/) plus the
+# single-TU device kernels (gmg/gmg_kernels.cpp, common/device_kernels.cpp). Compiled as
 # its own object library, NOT into _blockamr directly -- but not because of an RDC fence:
 # the whole module (including _blockamr itself) builds CUDA_SEPARABLE_COMPILATION OFF,
 # see the rationale on _blockamr's own property in bindings/blockAMR/CMakeLists.txt.
@@ -57,6 +58,7 @@ set(_blockamr_kokkos_sources
     bench/kokkos_spike.cpp
     kokkos/runtime.cpp
     bench/operators.cpp
+    common/device_kernels.cpp
     gmg/gmg_kernels.cpp
     gmgKokkos/kernels.cpp
     gmgKokkos/apply.cpp

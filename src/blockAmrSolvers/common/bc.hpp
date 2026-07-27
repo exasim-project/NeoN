@@ -72,31 +72,16 @@ inline bool bcGhostFill(
 // protected/private member.
 // Templated on the FabArray type: serves the FP64 operator MultiFab and the
 // FP32 GMG level fabs; `value_type` sizes the sign/reflection cast.
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp and
+// face_coeff_op.cpp AND from gmgKokkos/apply.cpp and bench/gmg_vcycle_bench.cpp
+// (via vcycle.hpp) — both object libraries land in the same _blockamr.so, so an
+// AMREX_GPU_DEVICE lambda here would be an extended lambda instantiated in four
+// CUDA TUs of one binary, the exact nvcc trap T2 already hit. So this stays
+// declaration-only in the header; the single definition + explicit instantiation
+// lives in common/device_kernels.cpp.
 template<class FA>
-void fillDomainBcGhostsDevice(FA& mf, const amrex::Box& domain, const BcArray& bc)
-{
-    using T = typename FA::value_type;
-    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto a = mf.array(mfi);
-        for (int s = 0; s < 6; ++s)
-        {
-            BcGhostFill f;
-            if (!bcGhostFill(vbx, domain, bc, s, f))
-            {
-                continue;
-            }
-            const T sign = static_cast<T>(f.sign);
-            const int di = f.di, dj = f.dj, dk = f.dk;
-            amrex::ParallelFor(
-                f.gbx,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-                { a(i, j, k) = sign * a(i + di, j + dj, k + dk); }
-            );
-        }
-    }
-}
+void fillDomainBcGhostsDevice(FA& mf, const amrex::Box& domain, const BcArray& bc);
 
 // Host-loop twin of fillDomainBcGhostsDevice for the ReferenceExecutor path.
 template<class FA>
@@ -151,38 +136,18 @@ void fillDomainBcGhostsHost(FA& mf, const amrex::Box& domain, const BcArray& bc)
 // operator keep the homogeneous fill, because both solve for a CORRECTION, whose
 // boundary condition is homogeneous whatever the solution's is — see
 // FaceCoeffSolver::gmgSolve and FaceCoeffOpT::applyBcOffset.
-inline void fillDomainBcGhostsInhomDevice(
+//
+// Cross-TU (Class B, see T9 report), same as fillDomainBcGhostsDevice above:
+// reached from persistent.cpp AND face_coeff_op.cpp, so an inline definition
+// with an AMREX_GPU_DEVICE lambda would be an extended lambda emitted in two
+// CUDA TUs of one binary. Defined in common/device_kernels.cpp.
+void fillDomainBcGhostsInhomDevice(
     amrex::MultiFab& mf,
     const amrex::MultiFab& bcdata,
     const amrex::Box& domain,
     const BcArray& bc,
     const amrex::Real* dx
-)
-{
-    for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto a = mf.array(mfi);
-        const auto g = bcdata.const_array(mfi);
-        for (int s = 0; s < 6; ++s)
-        {
-            BcGhostFill f;
-            if (!bcGhostFill(vbx, domain, bc, s, f))
-            {
-                continue;
-            }
-            const amrex::Real sign = static_cast<amrex::Real>(f.sign);
-            const amrex::Real scale =
-                (bc[static_cast<std::size_t>(s)] == 1) ? amrex::Real(2.0) : dx[s / 2];
-            const int di = f.di, dj = f.dj, dk = f.dk;
-            amrex::ParallelFor(
-                f.gbx,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-                { a(i, j, k) = sign * a(i + di, j + dj, k + dk) + scale * g(i, j, k); }
-            );
-        }
-    }
-}
+);
 
 // Host-loop twin of fillDomainBcGhostsInhomDevice for the ReferenceExecutor path.
 inline void fillDomainBcGhostsInhomHost(
