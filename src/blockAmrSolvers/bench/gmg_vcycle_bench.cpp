@@ -71,7 +71,7 @@
 #include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
-#include "../../../blockAmrSolvers/gmgKokkos/vcycle.hpp"
+#include "../gmgKokkos/vcycle.hpp"
 
 namespace blockamr::bench
 {

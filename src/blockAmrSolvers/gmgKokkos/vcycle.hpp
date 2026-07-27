@@ -34,7 +34,7 @@
 #include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
-#include "../../bindings/blockAMR/bench/kokkos_bench.hpp"
+#include "../bench/kokkos_bench.hpp"
 #include "../common/bc.hpp"
 #include "../common/transfer.hpp"
 #include "../gmg/gmg_kernels.hpp"

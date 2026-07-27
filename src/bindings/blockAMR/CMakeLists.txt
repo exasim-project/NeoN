@@ -34,12 +34,12 @@ set(_blockamr_sources
 # being dropped), not because it needs to be one. Both backends' kernels belong in this target so
 # the comparison runs under identical compile flags.
 set(_blockamr_bench_sources
-    bench/kokkos_spike.cpp
+    ../../blockAmrSolvers/bench/kokkos_spike.cpp
     ../../blockAmrSolvers/kokkos/runtime.cpp
-    bench/operators.cpp
+    ../../blockAmrSolvers/bench/operators.cpp
     ../../blockAmrSolvers/gmgKokkos/kernels.cpp
     ../../blockAmrSolvers/gmgKokkos/apply.cpp
-    bench/gmg_vcycle_bench.cpp)
+    ../../blockAmrSolvers/bench/gmg_vcycle_bench.cpp)
 
 # Ginkgo-only sources: the matrix-free solver stack under solvers/, plus the
 # shared common/, operators/, krylov/ and solve/ seams that now live in
