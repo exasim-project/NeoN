@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <nanobind/nanobind.h>
-
 #include <ginkgo/ginkgo.hpp>
 
 #include <cmath>
@@ -15,9 +13,8 @@
 #include <vector>
 
 #include "logging.hpp"
+#include "result.hpp"
 #include "stop_norm_inf.hpp"
-
-namespace nb = nanobind;
 
 namespace blockamr::solvers
 {
@@ -103,20 +100,15 @@ std::shared_ptr<gko::LinOp> buildKrylov(
 // only the stationary path fills it in -- its thresholds are calibrated for a
 // V-cycle's roughly constant contraction and say nothing useful about a Krylov
 // method, whose rate varies over the run.
-inline nb::dict makeResultDict(
+inline SolveResult makeSolveResult(
     std::int64_t num_iters, double res_norm, bool converged, const std::vector<double>& res_history
 )
 {
-    nb::dict d;
-    d["num_iters"] = num_iters;
-    d["res_norm"] = res_norm;
-    d["converged"] = converged;
-    nb::list hist;
-    for (double v : res_history)
-    {
-        hist.append(v);
-    }
-    d["res_history"] = hist;
+    SolveResult r;
+    r.num_iters = num_iters;
+    r.res_norm = res_norm;
+    r.converged = converged;
+    r.res_history = res_history;
     // Geometric mean of the per-iteration residual reduction. The history holds
     // the initial residual plus one entry per iteration, so the number of
     // reductions is size() - 1.
@@ -128,21 +120,21 @@ inline nb::dict makeResultDict(
             1.0 / static_cast<double>(res_history.size() - 1)
         );
     }
-    d["contraction"] = contraction;
-    d["diagnostic"] = "";
-    return d;
+    r.contraction = contraction;
+    r.diagnostic = "";
+    return r;
 }
 
 // Overload for the common case: num_iters/converged come from a
 // gko::log::Convergence logger and res_history from a ResidualHistoryLogger,
 // both attached to the solver via add_logger before apply().
-inline nb::dict makeResultDict(
+inline SolveResult makeSolveResult(
     const gko::log::Convergence<double>& logger,
     const ResidualHistoryLogger& resLogger,
     double res_norm
 )
 {
-    return makeResultDict(
+    return makeSolveResult(
         static_cast<std::int64_t>(logger.get_num_iterations()),
         res_norm,
         logger.has_converged(),

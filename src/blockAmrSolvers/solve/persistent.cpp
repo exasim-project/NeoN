@@ -109,7 +109,7 @@ std::shared_ptr<gko::LinOp> makeGlobalVec(
     return gko::share(std::move(view));
 }
 
-nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
+SolveResult PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 {
     resLogger_->clear(); // per-call history
     {
@@ -185,7 +185,7 @@ nb::dict PersistentSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
     op_->apply(negOne, xGlobal_, one, res);
     const double resNorm = (norm_ == NormKind::linf) ? normInf(res.get()) : globalNorm2(res.get());
 
-    return makeResultDict(*logger_, *resLogger_, resNorm);
+    return makeSolveResult(*logger_, *resLogger_, resNorm);
 }
 
 PersistentSolver::PersistentSolver(
@@ -281,11 +281,11 @@ FaceCoeffSolver::FaceCoeffSolver(
     const amrex::MultiFab* bc_data
 )
     : PersistentSolver(
-        makeExecutor(executor),
-        static_cast<gko::size_type>(alpha->boxArray().numPts()),
-        localCount(*alpha),
-        solver != "gmg"
-    )
+          makeExecutor(executor),
+          static_cast<gko::size_type>(alpha->boxArray().numPts()),
+          localCount(*alpha),
+          solver != "gmg"
+      )
 {
     // A separate coefficient precision exists in the Kokkos hierarchy alone. Named
     // rather than ignored: the shipped GmgPrecondT stores one type per level, so
@@ -673,7 +673,7 @@ FaceCoeffSolver::FaceCoeffSolver(
     build(op, krylov, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
 }
 
-nb::dict FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
+SolveResult FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 {
     if (gmgStationary_)
     {
@@ -813,7 +813,7 @@ void FaceCoeffSolver::subtractMeanMf(amrex::MultiFab& mf) const
     mf.plus(-mean, 0, 1);
 }
 
-nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
+SolveResult FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 {
     // Warm start: x0 = incoming sol (do NOT zero — persistent-solver contract).
     amrex::MultiFab::Copy(*xWork_, sol, 0, 0, 1, 0);
@@ -879,10 +879,10 @@ nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 
     amrex::MultiFab::Copy(sol, *xWork_, 0, 0, 1, 0);
 
-    nb::dict out = makeResultDict(static_cast<std::int64_t>(cycles), rnorm, converged, history);
+    SolveResult out = makeSolveResult(static_cast<std::int64_t>(cycles), rnorm, converged, history);
 
     // Convergence diagnostic. A stationary V-cycle contracts the residual by a
-    // roughly CONSTANT factor per cycle, so makeResultDict's `contraction` (the
+    // roughly CONSTANT factor per cycle, so makeSolveResult's `contraction` (the
     // geometric mean of that factor) is the one number that says whether the
     // cycle is working -- and it says it even on a run that converged, which a
     // pass/fail flag cannot. Without it a caller sees only "did not converge in
@@ -906,7 +906,7 @@ nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
     // the smoother cannot solve (see gmg_bottom_solver), otherwise anisotropy or a
     // coefficient jump the hierarchy does not represent.
     constexpr double slowRho = 0.464; // 10^(-1/3), i.e. one decade per 3 cycles
-    const double rho = nb::cast<double>(out["contraction"]);
+    const double rho = out.contraction.value_or(0.0);
     const char* diagnostic = "";
     if (cycles > 0 && rho >= 1.0)
     {
@@ -920,7 +920,7 @@ nb::dict FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
                      "The usual cause is a bottom grid too large for gmg_coarsest_sweeps -- "
                      "try gmg_bottom_solver='cg' (or 'bicgstab' when symmetric=False).";
     }
-    out["diagnostic"] = diagnostic;
+    out.diagnostic = diagnostic;
     return out;
 }
 
@@ -963,10 +963,10 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const amrex::MultiFab* bc_data
 )
     : PersistentSolver(
-        makeExecutor(executor),
-        static_cast<gko::size_type>(alpha->boxArray().numPts()),
-        localCount(*alpha)
-    )
+          makeExecutor(executor),
+          static_cast<gko::size_type>(alpha->boxArray().numPts()),
+          localCount(*alpha)
+      )
 {
     // The assembly is single-box only (csr.cpp), which on >1 rank would mean one
     // rank holding every row while the others hold none.

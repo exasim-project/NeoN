@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <nanobind/nanobind.h>
-
 #include <AMReX_Geometry.H>
 #include <AMReX_MultiFab.H>
 
@@ -21,9 +19,8 @@
 #include "../krylov/executor.hpp"
 #include "../krylov/krylov.hpp"
 #include "../krylov/logging.hpp"
+#include "../krylov/result.hpp"
 #include "../operators/face_coeff_op.hpp"
-
-namespace nb = nanobind;
 
 namespace blockamr::solvers
 {
@@ -38,7 +35,7 @@ public:
 
     virtual ~PersistentSolver() = default;
 
-    virtual nb::dict solve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
+    virtual SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
 
 protected:
 
@@ -154,7 +151,7 @@ public:
     // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
     // every other solver keeps the base Krylov path. Dispatch here so the binding
     // (which calls S::solve on the concrete type) picks the right loop.
-    nb::dict solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) override;
+    SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) override;
 
 private:
 
@@ -208,7 +205,7 @@ private:
     // incoming sol, until ||r|| <= max(rtol*||b||, atol) or max_iter cycles. Runs
     // entirely on AMReX fabs — no Ginkgo Krylov object, no per-iteration
     // flat-vector pack/unpack, no per-iteration Ginkgo<->AMReX crossings.
-    nb::dict gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
+    SolveResult gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol);
 
     // Native stationary GMG solver state (only populated when solver="gmg").
     bool gmgStationary_ = false;

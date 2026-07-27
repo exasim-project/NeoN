@@ -52,6 +52,7 @@ set(_blockamr_ginkgo_sources
     ../../blockAmrSolvers/operators/csr.cpp
     ../../blockAmrSolvers/krylov/krylov.cpp
     ../../blockAmrSolvers/solve/persistent.cpp
+    ../../blockAmrSolvers/solve/oneshot.cpp
     ginkgo_solve.cpp)
 
 nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
