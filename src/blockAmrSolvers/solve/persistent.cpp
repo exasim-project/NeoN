@@ -252,46 +252,20 @@ FaceCoeffSolver::FaceCoeffSolver(
     const amrex::MultiFab* ly,
     const amrex::MultiFab* uz,
     const amrex::MultiFab* lz,
-    const std::string& solver,
-    int max_iter,
-    double rtol,
-    double atol,
-    bool project_nullspace,
-    MLMG* precond_mlmg,
-    int precond_cycles,
-    const std::vector<std::string>& bc,
-    const std::string& precond,
-    int gmg_pre_sweeps,
-    int gmg_post_sweeps,
-    int gmg_coarsest_sweeps,
-    int gmg_max_levels,
-    int gmg_min_bottom,
-    const std::string& gmg_smoother,
-    const std::string& gmg_precision,
-    const std::string& gmg_coeff_precision,
-    double gmg_omega,
-    int gmg_agg_l0_size,
-    bool symmetric,
-    const std::string& gmg_bottom_solver,
-    int gmg_bottom_max_iter,
-    double gmg_bottom_rtol,
-    double mp_inner_rtol,
-    int mp_inner_max_iter,
-    const std::string& norm,
-    const amrex::MultiFab* bc_data
+    const SolverConfig& config
 )
     : PersistentSolver(
           makeExecutor(executor),
           static_cast<gko::size_type>(alpha->boxArray().numPts()),
           localCount(*alpha),
-          solver != "gmg"
+          config.solver != "gmg"
       )
 {
     // A separate coefficient precision exists in the Kokkos hierarchy alone. Named
     // rather than ignored: the shipped GmgPrecondT stores one type per level, so
     // accepting the option there would report a narrowed-coefficient timing for a
     // hierarchy that never narrowed anything.
-    if (!gmg_coeff_precision.empty() && precond != "gmg_kokkos")
+    if (!config.gmg.coeffPrecision.empty() && config.precond != "gmg_kokkos")
     {
         throw std::runtime_error(
             "FaceCoeffSolver: gmg_coeff_precision needs precond='gmg_kokkos' (the shipped GMG "
@@ -305,26 +279,27 @@ FaceCoeffSolver::FaceCoeffSolver(
     // warn but allow (usable as a stationary/flexible-CG smoother). The native
     // stationary solver (solver="gmg") is NOT CG, so asymmetric sweeps there
     // are legitimate and never warn (this guard requires solver=="cg").
-    if (precond == "gmg" && solver == "cg" && gmg_pre_sweeps != gmg_post_sweeps)
+    if (config.precond == "gmg" && config.solver == "cg"
+        && config.gmg.preSweeps != config.gmg.postSweeps)
     {
-        std::cerr << "FaceCoeffSolver: warning — gmg_pre_sweeps (" << gmg_pre_sweeps
-                  << ") != gmg_post_sweeps (" << gmg_post_sweeps
+        std::cerr << "FaceCoeffSolver: warning — gmg_pre_sweeps (" << config.gmg.preSweeps
+                  << ") != gmg_post_sweeps (" << config.gmg.postSweeps
                   << ") makes the V-cycle non-symmetric; CG may stall or diverge. "
                      "Use equal counts for a CG-safe preconditioner.\n";
     }
-    const BcArray bcArr = parseBc(bc, geom, "FaceCoeffSolver");
-    if (bc_data != nullptr)
+    const BcArray bcArr = parseBc(config.bc, geom, "FaceCoeffSolver");
+    if (config.bcData != nullptr)
     {
-        checkBcData(*bc_data, *alpha, bcArr, "FaceCoeffSolver");
+        checkBcData(*config.bcData, *alpha, bcArr, "FaceCoeffSolver");
     }
 
     // solver="gmg": native stationary geometric-multigrid solver
     // (x <- x + V(b - A x) until tolerance). The GMG V-cycle IS the solver,
     // so `precond` is ignored; the hierarchy is built directly and the whole
     // iteration runs on AMReX fabs (see gmgSolve). No Ginkgo Krylov object.
-    if (solver == "gmg")
+    if (config.solver == "gmg")
     {
-        if (precond_mlmg != nullptr)
+        if (config.precondMlmg != nullptr)
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: solver='gmg' cannot be combined with precond_mlmg"
@@ -342,7 +317,7 @@ FaceCoeffSolver::FaceCoeffSolver(
             ly_ = ly;
             uz_ = uz;
             lz_ = lz;
-            bcData_ = bc_data;
+            bcData_ = config.bcData;
         }
         else
         {
@@ -364,45 +339,24 @@ FaceCoeffSolver::FaceCoeffSolver(
             ly_ = ownedCoeff_[4].get();
             uz_ = ownedCoeff_[5].get();
             lz_ = ownedCoeff_[6].get();
-            if (bc_data != nullptr)
+            if (config.bcData != nullptr)
             {
-                ownedBcData_ = pinnedCopy(*bc_data);
+                ownedBcData_ = pinnedCopy(*config.bcData);
                 bcData_ = ownedBcData_.get();
             }
         }
         geom_ = geom;
         bcArr_ = bcArr;
         hasPhysBc_ = std::any_of(bcArr.begin(), bcArr.end(), [](int b) { return b != 0; });
-        maxIter_ = max_iter;
-        rtol_ = rtol;
-        atol_ = atol;
+        maxIter_ = config.maxIter;
+        rtol_ = config.rtol;
+        atol_ = config.atol;
         // The stationary loop runs its own stopping test, so build() -- which is
         // where the Krylov path records the norm -- is never reached here.
-        norm_ = parseNorm(norm);
-        projectNull_ = project_nullspace;
+        norm_ = parseNorm(config.norm);
+        projectNull_ = config.projectNullspace;
         gmgOwner_ = buildGmgHierarchy(
-            alpha,
-            ux,
-            lx,
-            uy,
-            ly,
-            uz,
-            lz,
-            geom,
-            bcArr,
-            precond_cycles,
-            gmg_pre_sweeps,
-            gmg_post_sweeps,
-            gmg_coarsest_sweeps,
-            gmg_max_levels,
-            gmg_min_bottom,
-            gmg_smoother,
-            gmg_precision,
-            gmg_omega,
-            symmetric,
-            gmg_bottom_solver,
-            gmg_bottom_max_iter,
-            gmg_bottom_rtol
+            alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
         );
         const amrex::BoxArray& ba = alpha->boxArray();
         const amrex::DistributionMapping& dm = alpha->DistributionMap();
@@ -436,9 +390,9 @@ FaceCoeffSolver::FaceCoeffSolver(
         uz,
         lz,
         bcArr,
-        bc_data
+        config.bcData
     ));
-    if (bc_data != nullptr)
+    if (config.bcData != nullptr)
     {
         // The typed hook solve() calls to refresh c0, plus the vector to hold
         // it. op_ (set by build() below) keeps the operator alive.
@@ -453,85 +407,52 @@ FaceCoeffSolver::FaceCoeffSolver(
     // the loop runs through Ginkgo (Dense pack/unpack + Convergence logger kept),
     // so the measured overhead across the LinOp boundaries vs the native gmg loop
     // is part of the deliverable — this variant does NOT fuse across it.
-    if (solver == "ir")
+    if (config.solver == "ir")
     {
-        if (precond_mlmg != nullptr)
+        if (config.precondMlmg != nullptr)
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: solver='ir' cannot be combined with precond_mlmg"
             );
         }
         auto inner = buildGmgHierarchy(
-            alpha,
-            ux,
-            lx,
-            uy,
-            ly,
-            uz,
-            lz,
-            geom,
-            bcArr,
-            precond_cycles,
-            gmg_pre_sweeps,
-            gmg_post_sweeps,
-            gmg_coarsest_sweeps,
-            gmg_max_levels,
-            gmg_min_bottom,
-            gmg_smoother,
-            gmg_precision,
-            gmg_omega,
-            symmetric,
-            gmg_bottom_solver,
-            gmg_bottom_max_iter,
-            gmg_bottom_rtol
+            alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
         );
-        build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(inner), norm);
+        build(
+            op,
+            config.solver,
+            config.maxIter,
+            config.rtol,
+            config.atol,
+            config.projectNullspace,
+            std::move(inner),
+            config.norm
+        );
         return;
     }
 
     std::shared_ptr<const gko::LinOp> pc;
     // Set only by precond="gmg_kokkos"; solver="mpir" needs it and says so.
     std::shared_ptr<bench::KokkosGmgApply> vcycle;
-    if (precond == "gmg")
+    if (config.precond == "gmg")
     {
-        if (precond_mlmg != nullptr)
+        if (config.precondMlmg != nullptr)
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: precond='gmg' cannot be combined with precond_mlmg"
             );
         }
         pc = buildGmgHierarchy(
-            alpha,
-            ux,
-            lx,
-            uy,
-            ly,
-            uz,
-            lz,
-            geom,
-            bcArr,
-            precond_cycles,
-            gmg_pre_sweeps,
-            gmg_post_sweeps,
-            gmg_coarsest_sweeps,
-            gmg_max_levels,
-            gmg_min_bottom,
-            gmg_smoother,
-            gmg_precision,
-            gmg_omega,
-            symmetric,
-            gmg_bottom_solver,
-            gmg_bottom_max_iter,
-            gmg_bottom_rtol
+            alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
         );
     }
-    else if (precond == "gmg_kokkos")
+    else if (config.precond == "gmg_kokkos")
     {
         // The same V-cycle as precond="gmg", under the optimised Kokkos launchers
         // (gmgKokkos/apply.hpp). A separate object rather than a mode of GmgPrecondT:
         // that one is the shipped baseline and stays untouched, so both can run in
         // one process and be compared directly.
-        if (precond_mlmg != nullptr)
+        if (config.precondMlmg != nullptr)
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: precond='gmg_kokkos' cannot be combined with precond_mlmg"
@@ -543,12 +464,12 @@ FaceCoeffSolver::FaceCoeffSolver(
         // The ported V-cycle lives behind the bench fence and has no Ginkgo, so
         // GmgBottomOp cannot reach it; closing this means porting the bottom
         // solve to that side, not relaxing the check.
-        if (gmg_bottom_solver != "smoother")
+        if (config.gmg.bottomSolver != "smoother")
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: precond='gmg_kokkos' has no Krylov bottom solve, so "
                 "gmg_bottom_solver='"
-                + gmg_bottom_solver
+                + config.gmg.bottomSolver
                 + "' would silently run gmg_coarsest_sweeps sweeps. Use "
                   "precond='gmg' for a Krylov bottom."
             );
@@ -556,40 +477,40 @@ FaceCoeffSolver::FaceCoeffSolver(
         // The Kokkos V-cycle carries the same symmetry assumptions the shipped one
         // does (an over-relaxed red-black sweep, a self-adjoint cycle), and has no
         // path that would honour symmetric=False.
-        if (!symmetric)
+        if (!config.gmg.symmetric)
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: precond='gmg_kokkos' assumes a symmetric operator; "
                 "symmetric=False needs precond='gmg'"
             );
         }
-        if (gmg_smoother != "rbgs")
+        if (config.gmg.smoother != "rbgs")
         {
             throw std::runtime_error(
                 "FaceCoeffSolver: precond='gmg_kokkos' has only the red-black smoother, not '"
-                + gmg_smoother + "'"
+                + config.gmg.smoother + "'"
             );
         }
         bench::KokkosGmgOpts opts;
-        opts.cycles = precond_cycles;
-        opts.preSweeps = gmg_pre_sweeps;
-        opts.postSweeps = gmg_post_sweeps;
-        opts.coarsestSweeps = gmg_coarsest_sweeps;
-        opts.maxLevels = gmg_max_levels;
-        opts.minBottom = gmg_min_bottom;
-        opts.omega = gmg_omega;
+        opts.cycles = config.precondCycles;
+        opts.preSweeps = config.gmg.preSweeps;
+        opts.postSweeps = config.gmg.postSweeps;
+        opts.coarsestSweeps = config.gmg.coarsestSweeps;
+        opts.maxLevels = config.gmg.maxLevels;
+        opts.minBottom = config.gmg.minBottom;
+        opts.omega = config.gmg.omega;
         // Straight through, unvalidated here: makeKokkosGmgApply parses it and
         // throws on an unknown spelling, so a typo cannot quietly run fp64. This
         // is the only precond that has a bf16 hierarchy.
-        opts.precision = gmg_precision;
+        opts.precision = config.gmg.precision;
         // Likewise unvalidated here beyond the guard above: makeKokkosGmgApply
         // rejects an unknown spelling and a coefficient type wider than the fields.
-        opts.coeffPrecision = gmg_coeff_precision;
+        opts.coeffPrecision = config.gmg.coeffPrecision;
         // The parsed spec straight through: the ported V-cycle carries the same
         // homogeneous Dirichlet/Neumann reflection as precond="gmg", built once per
         // level as a device plan rather than as a per-box AMReX launch.
         opts.bc = bcArr;
-        opts.aggLevel0Size = gmg_agg_l0_size;
+        opts.aggLevel0Size = config.gmg.aggLevel0Size;
         // Held in a local as well: solver="mpir" wraps the SAME hierarchy in an fp32
         // LinOp, and building it twice would double the setup and the device memory
         // for two views of one V-cycle.
@@ -598,24 +519,29 @@ FaceCoeffSolver::FaceCoeffSolver(
         );
         pc = gko::share(GmgKokkosPrecond::create(exec_, n_, vcycle));
     }
-    else if (precond == "mlmg" || precond == "none")
+    else if (config.precond == "mlmg" || config.precond == "none")
     {
         // precond_mlmg alone implies "mlmg" (pre-existing behaviour).
-        if (precond == "mlmg" && precond_mlmg == nullptr)
+        if (config.precond == "mlmg" && config.precondMlmg == nullptr)
         {
             throw std::runtime_error("FaceCoeffSolver: precond='mlmg' requires precond_mlmg");
         }
-        if (precond_mlmg != nullptr)
+        if (config.precondMlmg != nullptr)
         {
             pc = gko::share(MlmgPrecond::create(
-                exec_, precond_mlmg, alpha->boxArray(), alpha->DistributionMap(), n_, precond_cycles
+                exec_,
+                config.precondMlmg,
+                alpha->boxArray(),
+                alpha->DistributionMap(),
+                n_,
+                config.precondCycles
             ));
         }
     }
     else
     {
         throw std::runtime_error(
-            "FaceCoeffSolver: unknown precond '" + precond
+            "FaceCoeffSolver: unknown precond '" + config.precond
             + "' (expected 'none', 'mlmg', 'gmg' or 'gmg_kokkos')"
         );
     }
@@ -625,8 +551,8 @@ FaceCoeffSolver::FaceCoeffSolver(
     // is a preconditioned Cg<float>. Expressed through the existing "ir" path
     // because Ir::with_generated_solver is exactly the hook needed: what changes is
     // only WHICH LinOp plays the inner solver.
-    std::string krylov = solver;
-    if (solver == "mpir")
+    std::string krylov = config.solver;
+    if (config.solver == "mpir")
     {
         if (!vcycle)
         {
@@ -655,11 +581,11 @@ FaceCoeffSolver::FaceCoeffSolver(
         // convergence claim, and ResidualNormInf is an fp64 criterion.
         std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> innerCriteria {
             gko::stop::Iteration::build()
-                .with_max_iters(static_cast<gko::size_type>(mp_inner_max_iter))
+                .with_max_iters(static_cast<gko::size_type>(config.mpInnerMaxIter))
                 .on(exec_),
             gko::stop::ResidualNorm<float>::build()
                 .with_baseline(gko::stop::mode::rhs_norm)
-                .with_reduction_factor(static_cast<float>(mp_inner_rtol))
+                .with_reduction_factor(static_cast<float>(config.mpInnerRtol))
                 .on(exec_)
         };
         auto cg32 = gko::share(gko::solver::Cg<float>::build()
@@ -670,7 +596,16 @@ FaceCoeffSolver::FaceCoeffSolver(
         pc = gko::share(MixedPrecisionSolve::create(exec_, n_, cg32));
         krylov = "ir";
     }
-    build(op, krylov, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
+    build(
+        op,
+        krylov,
+        config.maxIter,
+        config.rtol,
+        config.atol,
+        config.projectNullspace,
+        std::move(pc),
+        config.norm
+    );
 }
 
 SolveResult FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
@@ -705,34 +640,23 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
     const amrex::MultiFab* lz,
     const amrex::Geometry& geom,
     const BcArray& bcArr,
-    int precond_cycles,
-    int gmg_pre_sweeps,
-    int gmg_post_sweeps,
-    int gmg_coarsest_sweeps,
-    int gmg_max_levels,
-    int gmg_min_bottom,
-    const std::string& gmg_smoother,
-    const std::string& gmg_precision,
-    double gmg_omega,
-    bool symmetric,
-    const std::string& gmg_bottom_solver,
-    int gmg_bottom_max_iter,
-    double gmg_bottom_rtol
+    int precondCycles,
+    const GmgConfig& gmg
 )
 {
     // bf16 is named separately from an outright typo: it exists, but only for
     // precond='gmg_kokkos'. The shipped GmgPrecondT hierarchy is fp64/fp32, and
     // instantiating it for a storage-only type would mean porting its Chebyshev
     // smoother and lambda-max power iteration too.
-    if (gmg_precision == "bf16")
+    if (gmg.precision == "bf16")
     {
         throw std::runtime_error("FaceCoeffSolver: gmg_precision='bf16' needs precond='gmg_kokkos' "
                                  "(the shipped GMG hierarchy is fp64/fp32 only)");
     }
-    if (gmg_precision != "fp64" && gmg_precision != "fp32")
+    if (gmg.precision != "fp64" && gmg.precision != "fp32")
     {
         throw std::runtime_error(
-            "FaceCoeffSolver: unknown gmg_precision '" + gmg_precision
+            "FaceCoeffSolver: unknown gmg_precision '" + gmg.precision
             + "' (expected 'fp64' or 'fp32')"
         );
     }
@@ -753,23 +677,23 @@ std::shared_ptr<const gko::LinOp> FaceCoeffSolver::buildGmgHierarchy(
             uz,
             lz,
             bcArr,
-            precond_cycles,
-            gmg_pre_sweeps,
-            gmg_post_sweeps,
-            gmg_coarsest_sweeps,
-            gmg_max_levels,
-            gmg_min_bottom,
-            gmg_smoother,
-            gmg_omega,
-            symmetric,
-            gmg_bottom_solver,
-            gmg_bottom_max_iter,
-            gmg_bottom_rtol
+            precondCycles,
+            gmg.preSweeps,
+            gmg.postSweeps,
+            gmg.coarsestSweeps,
+            gmg.maxLevels,
+            gmg.minBottom,
+            gmg.smoother,
+            gmg.omega,
+            gmg.symmetric,
+            gmg.bottomSolver,
+            gmg.bottomMaxIter,
+            gmg.bottomRtol
         );
         gmgMf_ = p.get(); // GmgPrecondT<T>* -> const GmgApplyMf* (kept alive by the return)
         return gko::share(std::move(p));
     };
-    return (gmg_precision == "fp32") ? makeGmg(float {}) : makeGmg(double {});
+    return (gmg.precision == "fp32") ? makeGmg(float {}) : makeGmg(double {});
 }
 
 void FaceCoeffSolver::fillGmgGhosts(amrex::MultiFab& mf) const
@@ -924,6 +848,63 @@ SolveResult FaceCoeffSolver::gmgSolve(amrex::MultiFab& rhs, amrex::MultiFab& sol
     return out;
 }
 
+namespace
+{
+
+// FaceCoeffCsrSolver has no matrix-free GMG hierarchy and no fp32 inner solve, so
+// none of these 16 knobs do anything; the pre-refactor constructor accepted and
+// silently discarded them (persistent.hpp:266-281, commented-out parameter names).
+// Refused rather than ignored, for the same reason every other capability gap on
+// this path is (see bc.hpp's checkBcData, gmg_bottom_solver in the FaceCoeffSolver
+// ctor): accepting a knob that does nothing reports a configuration that was never
+// applied.
+void validateForCsr(const SolverConfig& config)
+{
+    static const GmgConfig kDefaultGmg {};
+    std::vector<std::string> offending;
+    if (config.gmg.preSweeps != kDefaultGmg.preSweeps) offending.push_back("gmg_pre_sweeps");
+    if (config.gmg.postSweeps != kDefaultGmg.postSweeps) offending.push_back("gmg_post_sweeps");
+    if (config.gmg.coarsestSweeps != kDefaultGmg.coarsestSweeps)
+        offending.push_back("gmg_coarsest_sweeps");
+    if (config.gmg.maxLevels != kDefaultGmg.maxLevels) offending.push_back("gmg_max_levels");
+    if (config.gmg.minBottom != kDefaultGmg.minBottom) offending.push_back("gmg_min_bottom");
+    if (config.gmg.smoother != kDefaultGmg.smoother) offending.push_back("gmg_smoother");
+    if (config.gmg.precision != kDefaultGmg.precision) offending.push_back("gmg_precision");
+    if (config.gmg.coeffPrecision != kDefaultGmg.coeffPrecision)
+        offending.push_back("gmg_coeff_precision");
+    if (config.gmg.omega != kDefaultGmg.omega) offending.push_back("gmg_omega");
+    if (config.gmg.aggLevel0Size != kDefaultGmg.aggLevel0Size)
+        offending.push_back("gmg_agg_l0_size");
+    if (config.gmg.symmetric != kDefaultGmg.symmetric) offending.push_back("symmetric");
+    if (config.gmg.bottomSolver != kDefaultGmg.bottomSolver)
+        offending.push_back("gmg_bottom_solver");
+    if (config.gmg.bottomMaxIter != kDefaultGmg.bottomMaxIter)
+        offending.push_back("gmg_bottom_max_iter");
+    if (config.gmg.bottomRtol != kDefaultGmg.bottomRtol) offending.push_back("gmg_bottom_rtol");
+    static constexpr double kDefaultMpInnerRtol = 1e-2;
+    static constexpr int kDefaultMpInnerMaxIter = 20;
+    if (config.mpInnerRtol != kDefaultMpInnerRtol) offending.push_back("mp_inner_rtol");
+    if (config.mpInnerMaxIter != kDefaultMpInnerMaxIter) offending.push_back("mp_inner_max_iter");
+    if (offending.empty())
+    {
+        return;
+    }
+    std::string joined;
+    for (std::size_t i = 0; i < offending.size(); ++i)
+    {
+        if (i) joined += ", ";
+        joined += offending[i];
+    }
+    throw std::runtime_error(
+        "FaceCoeffCsrSolver: " + joined
+        + " only apply to the matrix-free GMG hierarchy (precond='gmg'/'gmg_kokkos' or "
+          "solver='gmg'/'ir'/'mpir') and are not accepted by the assembled-CSR solver — use "
+          "FaceCoeffSolver, or omit them to keep the default."
+    );
+}
+
+} // namespace
+
 FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const NeoN::Executor& executor,
     amrex::Geometry geom,
@@ -934,33 +915,7 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const amrex::MultiFab* ly,
     const amrex::MultiFab* uz,
     const amrex::MultiFab* lz,
-    const std::string& solver,
-    int max_iter,
-    double rtol,
-    double atol,
-    bool project_nullspace,
-    MLMG* precond_mlmg,
-    int precond_cycles,
-    const std::vector<std::string>& bc,
-    const std::string& precond,
-    int /*gmg_pre_sweeps*/,
-    int /*gmg_post_sweeps*/,
-    int /*gmg_coarsest_sweeps*/,
-    int /*gmg_max_levels*/,
-    int /*gmg_min_bottom*/,
-    const std::string& /*gmg_smoother*/,
-    const std::string& /*gmg_precision*/,
-    const std::string& /*gmg_coeff_precision*/,
-    double /*gmg_omega*/,
-    int /*gmg_agg_l0_size*/,
-    bool /*symmetric*/,
-    const std::string& /*gmg_bottom_solver*/,
-    int /*gmg_bottom_max_iter*/,
-    double /*gmg_bottom_rtol*/,
-    double /*mp_inner_rtol*/,
-    int /*mp_inner_max_iter*/,
-    const std::string& norm,
-    const amrex::MultiFab* bc_data
+    const SolverConfig& config
 )
     : PersistentSolver(
           makeExecutor(executor),
@@ -968,12 +923,13 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
           localCount(*alpha)
       )
 {
+    validateForCsr(config);
     // The assembly is single-box only (csr.cpp), which on >1 rank would mean one
     // rank holding every row while the others hold none.
     requireSingleRank("FaceCoeffCsrSolver");
     // The CSR assembly wraps neighbour indices around the domain
     // (periodic-only); parseBc also rejects a non-periodic geometry.
-    const BcArray bcArr = parseBc(bc, geom, "FaceCoeffCsrSolver");
+    const BcArray bcArr = parseBc(config.bc, geom, "FaceCoeffCsrSolver");
     if (std::any_of(bcArr.begin(), bcArr.end(), [](int b) { return b != 0; }))
     {
         throw std::runtime_error(
@@ -984,37 +940,52 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     // Unreachable via a valid bc (bc_data needs a non-periodic side, which the
     // check above already refuses), but named rather than ignored so the message
     // stays the one the caller needs if that ever changes.
-    if (bc_data != nullptr)
+    if (config.bcData != nullptr)
     {
         throw std::runtime_error(
             "FaceCoeffCsrSolver: periodic boundaries only — bc_data needs FaceCoeffSolver"
         );
     }
-    if (precond == "gmg")
+    if (config.precond == "gmg")
     {
         throw std::runtime_error(
             "FaceCoeffCsrSolver: precond='gmg' is matrix-free only — use FaceCoeffSolver"
         );
     }
-    if (precond != "none" && precond != "mlmg")
+    if (config.precond != "none" && config.precond != "mlmg")
     {
         throw std::runtime_error(
-            "FaceCoeffCsrSolver: unknown precond '" + precond + "' (expected 'none' or 'mlmg')"
+            "FaceCoeffCsrSolver: unknown precond '" + config.precond
+            + "' (expected 'none' or 'mlmg')"
         );
     }
-    if (precond == "mlmg" && precond_mlmg == nullptr)
+    if (config.precond == "mlmg" && config.precondMlmg == nullptr)
     {
         throw std::runtime_error("FaceCoeffCsrSolver: precond='mlmg' requires precond_mlmg");
     }
     auto op = assembleFaceCoeffCsr(exec_, geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz);
     std::shared_ptr<const gko::LinOp> pc;
-    if (precond_mlmg != nullptr)
+    if (config.precondMlmg != nullptr)
     {
         pc = gko::share(MlmgPrecond::create(
-            exec_, precond_mlmg, alpha->boxArray(), alpha->DistributionMap(), n_, precond_cycles
+            exec_,
+            config.precondMlmg,
+            alpha->boxArray(),
+            alpha->DistributionMap(),
+            n_,
+            config.precondCycles
         ));
     }
-    build(op, solver, max_iter, rtol, atol, project_nullspace, std::move(pc), norm);
+    build(
+        op,
+        config.solver,
+        config.maxIter,
+        config.rtol,
+        config.atol,
+        config.projectNullspace,
+        std::move(pc),
+        config.norm
+    );
 }
 
 } // namespace blockamr::solvers

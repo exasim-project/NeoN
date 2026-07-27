@@ -21,6 +21,7 @@
 #include "../krylov/logging.hpp"
 #include "../krylov/result.hpp"
 #include "../operators/face_coeff_op.hpp"
+#include "solver_config.hpp"
 
 namespace blockamr::solvers
 {
@@ -119,33 +120,7 @@ public:
         const amrex::MultiFab* ly,
         const amrex::MultiFab* uz,
         const amrex::MultiFab* lz,
-        const std::string& solver,
-        int max_iter,
-        double rtol,
-        double atol,
-        bool project_nullspace,
-        MLMG* precond_mlmg,
-        int precond_cycles,
-        const std::vector<std::string>& bc,
-        const std::string& precond,
-        int gmg_pre_sweeps,
-        int gmg_post_sweeps,
-        int gmg_coarsest_sweeps,
-        int gmg_max_levels,
-        int gmg_min_bottom,
-        const std::string& gmg_smoother,
-        const std::string& gmg_precision,
-        const std::string& gmg_coeff_precision,
-        double gmg_omega,
-        int gmg_agg_l0_size,
-        bool symmetric,
-        const std::string& gmg_bottom_solver,
-        int gmg_bottom_max_iter,
-        double gmg_bottom_rtol,
-        double mp_inner_rtol,
-        int mp_inner_max_iter,
-        const std::string& norm,
-        const amrex::MultiFab* bc_data
+        const SolverConfig& config
     );
 
     // Native stationary GMG solver (solver="gmg") drives the V-cycle on MultiFabs;
@@ -169,19 +144,8 @@ private:
         const amrex::MultiFab* lz,
         const amrex::Geometry& geom,
         const BcArray& bcArr,
-        int precond_cycles,
-        int gmg_pre_sweeps,
-        int gmg_post_sweeps,
-        int gmg_coarsest_sweeps,
-        int gmg_max_levels,
-        int gmg_min_bottom,
-        const std::string& gmg_smoother,
-        const std::string& gmg_precision,
-        double gmg_omega,
-        bool symmetric,
-        const std::string& gmg_bottom_solver,
-        int gmg_bottom_max_iter,
-        double gmg_bottom_rtol
+        int precondCycles,
+        const GmgConfig& gmg
     );
 
     // Fill xWork_'s ghost layer for the FP64 residual: periodic/internal via
@@ -254,33 +218,7 @@ public:
         const amrex::MultiFab* ly,
         const amrex::MultiFab* uz,
         const amrex::MultiFab* lz,
-        const std::string& solver,
-        int max_iter,
-        double rtol,
-        double atol,
-        bool project_nullspace,
-        MLMG* precond_mlmg,
-        int precond_cycles,
-        const std::vector<std::string>& bc,
-        const std::string& precond,
-        int /*gmg_pre_sweeps*/,
-        int /*gmg_post_sweeps*/,
-        int /*gmg_coarsest_sweeps*/,
-        int /*gmg_max_levels*/,
-        int /*gmg_min_bottom*/,
-        const std::string& /*gmg_smoother*/,
-        const std::string& /*gmg_precision*/,
-        const std::string& /*gmg_coeff_precision*/,
-        double /*gmg_omega*/,
-        int /*gmg_agg_l0_size*/,
-        bool /*symmetric*/,
-        const std::string& /*gmg_bottom_solver*/,
-        int /*gmg_bottom_max_iter*/,
-        double /*gmg_bottom_rtol*/,
-        double /*mp_inner_rtol*/,
-        int /*mp_inner_max_iter*/,
-        const std::string& norm,
-        const amrex::MultiFab* bc_data
+        const SolverConfig& config
     );
 };
 

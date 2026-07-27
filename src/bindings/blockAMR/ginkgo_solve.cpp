@@ -42,6 +42,7 @@
 #include "../../blockAmrSolvers/krylov/result.hpp"
 #include "../../blockAmrSolvers/solve/oneshot.hpp"
 #include "../../blockAmrSolvers/solve/persistent.hpp"
+#include "../../blockAmrSolvers/solve/solver_config.hpp"
 
 namespace nb = nanobind;
 
@@ -83,6 +84,71 @@ nb::dict toDict(const SolveResult& r)
         d["diagnostic"] = *r.diagnostic;
     }
     return d;
+}
+
+// Repackages the 27 non-fixed __init__ arguments (36 nb::arg total minus the 9
+// fixed: executor, geom, alpha..lz) into one SolverConfig, built once here so
+// FaceCoeffSolver/FaceCoeffCsrSolver take `const SolverConfig&` instead of
+// spelling out all 27. Pure repackaging, zero validation, zero nanobind types.
+SolverConfig parseSolverConfig(
+    const std::string& solver,
+    int max_iter,
+    double rtol,
+    double atol,
+    bool project_nullspace,
+    MLMG* precond_mlmg,
+    int precond_cycles,
+    const std::vector<std::string>& bc,
+    const std::string& precond,
+    int gmg_pre_sweeps,
+    int gmg_post_sweeps,
+    int gmg_coarsest_sweeps,
+    int gmg_max_levels,
+    int gmg_min_bottom,
+    const std::string& gmg_smoother,
+    const std::string& gmg_precision,
+    const std::string& gmg_coeff_precision,
+    double gmg_omega,
+    int gmg_agg_l0_size,
+    bool symmetric,
+    const std::string& gmg_bottom_solver,
+    int gmg_bottom_max_iter,
+    double gmg_bottom_rtol,
+    double mp_inner_rtol,
+    int mp_inner_max_iter,
+    const std::string& norm,
+    const amrex::MultiFab* bc_data
+)
+{
+    SolverConfig config;
+    config.solver = solver;
+    config.maxIter = max_iter;
+    config.rtol = rtol;
+    config.atol = atol;
+    config.projectNullspace = project_nullspace;
+    config.precondMlmg = precond_mlmg;
+    config.precondCycles = precond_cycles;
+    config.bc = bc;
+    config.precond = precond;
+    config.gmg.preSweeps = gmg_pre_sweeps;
+    config.gmg.postSweeps = gmg_post_sweeps;
+    config.gmg.coarsestSweeps = gmg_coarsest_sweeps;
+    config.gmg.maxLevels = gmg_max_levels;
+    config.gmg.minBottom = gmg_min_bottom;
+    config.gmg.smoother = gmg_smoother;
+    config.gmg.precision = gmg_precision;
+    config.gmg.coeffPrecision = gmg_coeff_precision;
+    config.gmg.omega = gmg_omega;
+    config.gmg.aggLevel0Size = gmg_agg_l0_size;
+    config.gmg.symmetric = symmetric;
+    config.gmg.bottomSolver = gmg_bottom_solver;
+    config.gmg.bottomMaxIter = gmg_bottom_max_iter;
+    config.gmg.bottomRtol = gmg_bottom_rtol;
+    config.mpInnerRtol = mp_inner_rtol;
+    config.mpInnerMaxIter = mp_inner_max_iter;
+    config.norm = norm;
+    config.bcData = bc_data;
+    return config;
 }
 
 // Bind a persistent solver class S (constructor: coefficients + geom + config;
@@ -142,33 +208,35 @@ void bindPersistent(nb::module_& m, const char* name)
                       &ly,
                       &uz,
                       &lz,
-                      solver,
-                      max_iter,
-                      rtol,
-                      atol,
-                      project_nullspace,
-                      precond_mlmg,
-                      precond_cycles,
-                      bc,
-                      precond,
-                      gmg_pre_sweeps,
-                      gmg_post_sweeps,
-                      gmg_coarsest_sweeps,
-                      gmg_max_levels,
-                      gmg_min_bottom,
-                      gmg_smoother,
-                      gmg_precision,
-                      gmg_coeff_precision,
-                      gmg_omega,
-                      gmg_agg_l0_size,
-                      symmetric,
-                      gmg_bottom_solver,
-                      gmg_bottom_max_iter,
-                      gmg_bottom_rtol,
-                      mp_inner_rtol,
-                      mp_inner_max_iter,
-                      norm,
-                      bc_data);
+                      parseSolverConfig(
+                          solver,
+                          max_iter,
+                          rtol,
+                          atol,
+                          project_nullspace,
+                          precond_mlmg,
+                          precond_cycles,
+                          bc,
+                          precond,
+                          gmg_pre_sweeps,
+                          gmg_post_sweeps,
+                          gmg_coarsest_sweeps,
+                          gmg_max_levels,
+                          gmg_min_bottom,
+                          gmg_smoother,
+                          gmg_precision,
+                          gmg_coeff_precision,
+                          gmg_omega,
+                          gmg_agg_l0_size,
+                          symmetric,
+                          gmg_bottom_solver,
+                          gmg_bottom_max_iter,
+                          gmg_bottom_rtol,
+                          mp_inner_rtol,
+                          mp_inner_max_iter,
+                          norm,
+                          bc_data
+                      ));
             },
             nb::arg("alpha"),
             nb::arg("ux"),

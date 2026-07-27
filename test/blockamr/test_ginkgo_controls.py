@@ -221,6 +221,28 @@ def test_default_no_atol_unchanged(blockamr_session, executor):
     assert max_diff < 1e-6, f"Max |sol_mf - sol_csr| = {max_diff} exceeds 1e-6"
 
 
+def test_csr_rejects_gmg_only_knobs(blockamr_session):
+    """FaceCoeffCsrSolver refuses matrix-free-only GMG/mixed-precision knobs
+    instead of silently ignoring them (T8: the 16 previously-inert constructor
+    parameters became a validateForCsr(config) rejection).
+    """
+    N = 16
+    geom, ba, dm = _make_periodic_mesh(N)
+    coeffs = _helmholtz_coeffs(geom, ba, dm, N)
+
+    with pytest.raises(RuntimeError, match="gmg_pre_sweeps"):
+        _make_solver_or_skip(
+            "FaceCoeffCsrSolver", coeffs, geom, "reference", solver="cg", gmg_pre_sweeps=4
+        )
+    with pytest.raises(RuntimeError, match="mp_inner_max_iter"):
+        _make_solver_or_skip(
+            "FaceCoeffCsrSolver", coeffs, geom, "reference", solver="cg", mp_inner_max_iter=5
+        )
+    # All-default construction is unaffected (existing behaviour, no exception).
+    s = _make_solver_or_skip("FaceCoeffCsrSolver", coeffs, geom, "reference", solver="cg")
+    assert s is not None
+
+
 def test_ginkgo_solve_controls(blockamr_session):
     """One-shot ginkgo_solve: converged flag, res_history, and the atol stop.
 
