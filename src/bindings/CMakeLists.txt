@@ -116,6 +116,18 @@ if(DEFINED SKBUILD)
     COMPONENT python)
   # Install libNeoN.so so _neon.so can find it via RPATH ($ORIGIN/../lib/)
   install(TARGETS NeoN LIBRARY DESTINATION lib COMPONENT python)
+  # Kokkos and cpptrace belong next to it -- libNeoN.so names libkokkoscore.so.5.0 and
+  # libcpptrace.so.0 in DT_NEEDED, and neither is covered by an install(TARGETS) of ours.
+  # A bundled build ships them through the subproject's own install rules, but once a wheel
+  # has been installed its CMake configs sit in site-packages, which scikit-build-core puts
+  # on CMAKE_PREFIX_PATH -- so the next configure IMPORTS them instead, and imported targets
+  # carry no install rule at all. Copying the resolved files covers both cases: the SONAME
+  # file is what the loader looks for, the versioned file backs it.
+  install(
+    FILES $<TARGET_SONAME_FILE:Kokkos::kokkoscore> $<TARGET_FILE:Kokkos::kokkoscore>
+          $<TARGET_SONAME_FILE:cpptrace::cpptrace> $<TARGET_FILE:cpptrace::cpptrace>
+    DESTINATION lib
+    COMPONENT python)
 else()
   # Standalone installation
   install(TARGETS _neon LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
