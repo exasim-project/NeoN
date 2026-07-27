@@ -285,8 +285,7 @@ public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
         : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
-          l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
-          localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr")))
+          l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig))
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
         // configFile can name it (l1CriterionKey) in its "criteria" array. Only needed when
@@ -355,7 +354,6 @@ private:
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
-    std::string localMatrixFormat_;
     // L1-scaled residual criterion registered into the config registry (l1Control_ set).
     std::shared_ptr<gko::stop::CriterionFactory> l1CritFactory_;
     // True when config_ names the L1 criterion, so it is built into factory_'s solver and

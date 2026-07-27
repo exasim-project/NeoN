@@ -108,8 +108,7 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
-    const std::string& localMatrixFormat
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
 )
 {
     // commPattern is currently unused here: all the connectivity information needed to build
@@ -139,22 +138,10 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
     const auto matrixSize = gko::dim<2> {nrows, nrows};
 
-    std::shared_ptr<const gko::LinOp> localMtx;
-    if (localMatrixFormat == "Sellp")
-    {
-        auto sellp = gko::share(gko::matrix::Sellp<scalar, IndexType>::create(exec, matrixSize));
+    std::shared_ptr<const gko::LinOp> localMtx =
         gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-                       exec, matrixSize, std::move(vals), std::move(col), std::move(row)
-                   ))
-            ->convert_to(sellp);
-        localMtx = sellp;
-    }
-    else
-    {
-        localMtx = gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
             exec, matrixSize, std::move(vals), std::move(col), std::move(row)
         ));
-    }
 
     const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
 
@@ -459,8 +446,7 @@ void solveComponentDist(
     auto& stats,
     const L1ResidualControl* l1Control,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>& nonLocalMtxCache,
-    const std::string& localMatrixFormat
+    std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>& nonLocalMtxCache
 )
 {
     auto rhs = getComponent<I>(sys.rhs());
@@ -477,9 +463,8 @@ void solveComponentDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
-    auto gkoMtx = createGkoMtxDist(
-        exec, comm, mtx, nonLocalMtx, commPattern, imapCache, nonLocalMtxCache, localMatrixFormat
-    );
+    auto gkoMtx =
+        createGkoMtxDist(exec, comm, mtx, nonLocalMtx, commPattern, imapCache, nonLocalMtxCache);
     auto solver = gko::share(factory->generate(gkoMtx));
     stats.entries.push_back(solve_impl_dist(exec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
     setComponent<I>(xcopy, x);
@@ -549,8 +534,7 @@ SolverStats GinkgoSolver::solveDist(
         sys.offDiagonalMatrix(),
         commPattern,
         cachedImap_,
-        cachedNonLocalMtx_,
-        localMatrixFormat_
+        cachedNonLocalMtx_
     );
     auto solver = gko::share(factory_->generate(gkoMtx));
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
@@ -564,37 +548,13 @@ SolverStats GinkgoSolver::solveDist(
     auto stats = SolverStats {};
     const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     solveComponentDist<0>(
-        sys,
-        x,
-        gkoExec_,
-        factory_,
-        stats,
-        l1Control,
-        cachedImap_,
-        cachedNonLocalMtx_,
-        localMatrixFormat_
+        sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
     solveComponentDist<1>(
-        sys,
-        x,
-        gkoExec_,
-        factory_,
-        stats,
-        l1Control,
-        cachedImap_,
-        cachedNonLocalMtx_,
-        localMatrixFormat_
+        sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
     solveComponentDist<2>(
-        sys,
-        x,
-        gkoExec_,
-        factory_,
-        stats,
-        l1Control,
-        cachedImap_,
-        cachedNonLocalMtx_,
-        localMatrixFormat_
+        sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
     return stats;
 }
@@ -616,8 +576,7 @@ SolverStats GinkgoSolver::solveDist(
         sys.offDiagonalMatrix(),
         commPattern,
         cachedImap_,
-        cachedNonLocalMtx_,
-        localMatrixFormat_
+        cachedNonLocalMtx_
     );
 
     // Implicit transform-BC path: solve the three components segregated, applying each column's
@@ -689,7 +648,7 @@ SolverStats GinkgoSolver::solveDist(
 template std::
     shared_ptr<const gko::LinOp>
     createGkoMtxDist<
-        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, const std::string&);
+        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&);
 
 }
 
