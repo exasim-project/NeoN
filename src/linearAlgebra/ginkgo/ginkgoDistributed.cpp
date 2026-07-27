@@ -475,20 +475,29 @@ void solveComponentDist(
 // component's diagonal correction to the shared rank-local diagonal in place and reusing
 // solve_impl_dist (which honours the l1ScaledResidual criterion). The correction is rank-local, so
 // only the local diagonal entries are touched.
-template<unsigned int I>
+// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
+// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+template<
+    unsigned int I,
+    typename SystemType,
+    typename ExecType,
+    typename FactoryType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
 void solveImplicitTransformComponentDist(
-    const auto& sys,
+    const SystemType& sys,
     Vector<Vec3>& x,
-    const auto& exec,
+    const ExecType& exec,
     std::shared_ptr<const gko::Executor> gkoExec,
     const gko::experimental::mpi::communicator& comm,
     std::shared_ptr<const gko::LinOp> gkoMtx,
-    const auto& factory,
+    const FactoryType& factory,
     SolverStats& stats,
     const L1ResidualControl* l1Control,
-    auto values,
-    const auto& ma,
-    auto diagC,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
     localIdx nrows
 )
 {
