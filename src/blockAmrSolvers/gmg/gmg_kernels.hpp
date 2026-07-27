@@ -1118,39 +1118,18 @@ void gmgDinvApplyHost(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& f
 // Checkerboard seed (+-1 by cell parity) for the power iteration — close to the
 // top eigenvector of the 7-point operator, so few iterations suffice.
 template<class T>
-void gmgFillCheckerDevice(GmgFab<T>& v)
+void gmgFillChecker(GmgFab<T>& v, bool onDevice)
 {
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
     for (amrex::MFIter mfi(v); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto a = v.array(mfi);
-        amrex::ParallelFor(
+        amrex::HostDeviceParallelFor(
             vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
             { a(i, j, k) = (((i + j + k) & 1) == 0) ? T(1) : T(-1); }
         );
-    }
-}
-
-template<class T>
-void gmgFillCheckerHost(GmgFab<T>& v)
-{
-    for (amrex::MFIter mfi(v); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto a = v.array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    a(i, j, k) = (((i + j + k) & 1) == 0) ? T(1) : T(-1);
-                }
-            }
-        }
     }
 }
 

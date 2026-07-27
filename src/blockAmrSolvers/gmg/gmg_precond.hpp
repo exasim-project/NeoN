@@ -621,13 +621,9 @@ private:
         const FaceCoeffs<T> fc {
             L.alpha.get(), L.ux.get(), L.lx.get(), L.uy.get(), L.ly.get(), L.uz.get(), L.lz.get()
         };
-        if (onDevice_)
+        gmgFillChecker(v, onDevice_);
+        if (!onDevice_)
         {
-            gmgFillCheckerDevice(v);
-        }
-        else
-        {
-            gmgFillCheckerHost(v);
             amrex::Gpu::streamSynchronize();
         }
         double norm = gmgNorm2(v);
