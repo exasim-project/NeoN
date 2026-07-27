@@ -445,7 +445,7 @@ public:
     {
         if (aggL0_)
         {
-            solvers::gmgConvertCopyDevice(*iface_, rhs);
+            solvers::gmgConvertCopy(*iface_, rhs, /*onDevice=*/true);
             Backend::afterAmrexWrite();
             gmgCopyKokkos<T>(*levels_[0].rhs, *iface_, ifaceIn_);
             gmgZeroKokkos<T>(*levels_[0].sol);
@@ -453,7 +453,7 @@ public:
             return;
         }
         Backend::beforeAmrexRead(); // a previous cycle's kernels may still be in flight
-        solvers::gmgConvertCopyDevice(*levels_[0].rhs, rhs);
+        solvers::gmgConvertCopy(*levels_[0].rhs, rhs, /*onDevice=*/true);
         levels_[0].sol->setVal(T(0));
         amrex::Gpu::streamSynchronize();
     }
@@ -632,15 +632,15 @@ private:
     // The caller's fields into a level that shares their decomposition.
     static void copyCallerCoeffs(const GmgArgs& args, Level& L)
     {
-        solvers::gmgConvertCopyDevice(*L.alpha, *args.alpha);
-        solvers::gmgConvertCopyDevice(*L.ux, *args.ux);
-        solvers::gmgConvertCopyDevice(*L.uy, *args.uy);
-        solvers::gmgConvertCopyDevice(*L.uz, *args.uz);
+        solvers::gmgConvertCopy(*L.alpha, *args.alpha, /*onDevice=*/true);
+        solvers::gmgConvertCopy(*L.ux, *args.ux, /*onDevice=*/true);
+        solvers::gmgConvertCopy(*L.uy, *args.uy, /*onDevice=*/true);
+        solvers::gmgConvertCopy(*L.uz, *args.uz, /*onDevice=*/true);
         if (!L.shared())
         {
-            solvers::gmgConvertCopyDevice(*L.lx, *args.lx);
-            solvers::gmgConvertCopyDevice(*L.ly, *args.ly);
-            solvers::gmgConvertCopyDevice(*L.lz, *args.lz);
+            solvers::gmgConvertCopy(*L.lx, *args.lx, /*onDevice=*/true);
+            solvers::gmgConvertCopy(*L.ly, *args.ly, /*onDevice=*/true);
+            solvers::gmgConvertCopy(*L.lz, *args.lz, /*onDevice=*/true);
         }
     }
 
@@ -652,15 +652,15 @@ private:
     // preserved down the hierarchy and the pair never has to be re-formed.
     static void restrictCoeffs(const Level& f, Level& c)
     {
-        solvers::gmgRestrictDevice<TC>(*f.alpha, *c.alpha);
-        solvers::gmgCoarsenFaceDevice<TC>(*f.ux, *c.ux, 0, 4.0);
-        solvers::gmgCoarsenFaceDevice<TC>(*f.uy, *c.uy, 1, 4.0);
-        solvers::gmgCoarsenFaceDevice<TC>(*f.uz, *c.uz, 2, 4.0);
+        solvers::gmgRestrict<TC>(*f.alpha, *c.alpha, /*onDevice=*/true);
+        solvers::gmgCoarsenFace<TC>(*f.ux, *c.ux, 0, 4.0, /*onDevice=*/true);
+        solvers::gmgCoarsenFace<TC>(*f.uy, *c.uy, 1, 4.0, /*onDevice=*/true);
+        solvers::gmgCoarsenFace<TC>(*f.uz, *c.uz, 2, 4.0, /*onDevice=*/true);
         if (!c.shared())
         {
-            solvers::gmgCoarsenFaceDevice<TC>(f.lxf(), *c.lx, 0, 4.0);
-            solvers::gmgCoarsenFaceDevice<TC>(f.lyf(), *c.ly, 1, 4.0);
-            solvers::gmgCoarsenFaceDevice<TC>(f.lzf(), *c.lz, 2, 4.0);
+            solvers::gmgCoarsenFace<TC>(f.lxf(), *c.lx, 0, 4.0, /*onDevice=*/true);
+            solvers::gmgCoarsenFace<TC>(f.lyf(), *c.ly, 1, 4.0, /*onDevice=*/true);
+            solvers::gmgCoarsenFace<TC>(f.lzf(), *c.lz, 2, 4.0, /*onDevice=*/true);
         }
     }
 

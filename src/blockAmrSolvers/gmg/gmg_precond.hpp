@@ -227,26 +227,13 @@ public:
             levels_.push_back(makeLevel(cba, dm, cgeom));
             GmgLevelT<T>& c = levels_.back();
             const GmgLevelT<T>& fl = levels_[levels_.size() - 2];
-            if (onDevice_)
-            {
-                gmgRestrictDevice(*fl.alpha, *c.alpha);
-                gmgCoarsenFaceDevice(*fl.ux, *c.ux, 0, 4.0);
-                gmgCoarsenFaceDevice(*fl.lx, *c.lx, 0, 4.0);
-                gmgCoarsenFaceDevice(*fl.uy, *c.uy, 1, 4.0);
-                gmgCoarsenFaceDevice(*fl.ly, *c.ly, 1, 4.0);
-                gmgCoarsenFaceDevice(*fl.uz, *c.uz, 2, 4.0);
-                gmgCoarsenFaceDevice(*fl.lz, *c.lz, 2, 4.0);
-            }
-            else
-            {
-                gmgRestrictHost(*fl.alpha, *c.alpha);
-                gmgCoarsenFaceHost(*fl.ux, *c.ux, 0, 4.0);
-                gmgCoarsenFaceHost(*fl.lx, *c.lx, 0, 4.0);
-                gmgCoarsenFaceHost(*fl.uy, *c.uy, 1, 4.0);
-                gmgCoarsenFaceHost(*fl.ly, *c.ly, 1, 4.0);
-                gmgCoarsenFaceHost(*fl.uz, *c.uz, 2, 4.0);
-                gmgCoarsenFaceHost(*fl.lz, *c.lz, 2, 4.0);
-            }
+            gmgRestrict(*fl.alpha, *c.alpha, onDevice_);
+            gmgCoarsenFace(*fl.ux, *c.ux, 0, 4.0, onDevice_);
+            gmgCoarsenFace(*fl.lx, *c.lx, 0, 4.0, onDevice_);
+            gmgCoarsenFace(*fl.uy, *c.uy, 1, 4.0, onDevice_);
+            gmgCoarsenFace(*fl.ly, *c.ly, 1, 4.0, onDevice_);
+            gmgCoarsenFace(*fl.uz, *c.uz, 2, 4.0, onDevice_);
+            gmgCoarsenFace(*fl.lz, *c.lz, 2, 4.0, onDevice_);
         }
         amrex::Gpu::streamSynchronize();
 
@@ -464,13 +451,13 @@ private:
     {
         if (onDevice_)
         {
-            gmgConvertCopyDevice(dst, src);
+            gmgConvertCopy(dst, src, onDevice_);
         }
         else
         {
             auto tmp = pinnedCopy(src);
             amrex::Gpu::streamSynchronize();
-            gmgConvertCopyHost(dst, *tmp);
+            gmgConvertCopy(dst, *tmp, onDevice_);
         }
     }
 
@@ -648,13 +635,9 @@ private:
             {
                 break;
             }
-            if (onDevice_)
+            gmgConvertCopy(v, w, onDevice_); // v <- w
+            if (!onDevice_)
             {
-                gmgConvertCopyDevice(v, w); // v <- w
-            }
-            else
-            {
-                gmgConvertCopyHost(v, w);
                 amrex::Gpu::streamSynchronize();
             }
             v.mult(static_cast<T>(1.0 / lambda), 0, 1, 0);

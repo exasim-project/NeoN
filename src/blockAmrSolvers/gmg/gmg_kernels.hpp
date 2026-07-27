@@ -125,44 +125,17 @@ AMREX_GPU_HOST_DEVICE constexpr float gmgDiagFloor<float>()
 // fab) into the T-valued dst, converting per cell over dst's valid box. Replaces
 // MultiFab::Copy on the FP32 path (which requires matching value types); for
 // T=double it is an exact copy, so the FP64 path is numerically unchanged.
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp (via
+// gmg_precond.hpp) AND gmgKokkos/vcycle.hpp, instantiated both by apply.cpp's
+// production precond="gmg_kokkos" path and by bench/gmg_vcycle_bench.cpp's
+// harness for every backend (both object libraries land in the same
+// _blockamr.so) — an AMREX_GPU_HOST_DEVICE lambda here would be an extended
+// lambda instantiated in two CUDA TUs of one binary, the exact nvcc trap T2
+// already hit. So this stays declaration-only in the header; the single
+// definition + explicit instantiation lives in gmg_kernels.cpp.
 template<class T, class SRC>
-void gmgConvertCopyDevice(GmgFab<T>& dst, const SRC& src)
-{
-    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto d = dst.array(mfi);
-        const auto s = src.const_array(mfi);
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            { d(i, j, k) = static_cast<T>(s(i, j, k)); }
-        );
-    }
-}
-
-template<class T, class SRC>
-void gmgConvertCopyHost(GmgFab<T>& dst, const SRC& src)
-{
-    for (amrex::MFIter mfi(dst); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto d = dst.array(mfi);
-        const auto s = src.const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    d(i, j, k) = static_cast<T>(s(i, j, k));
-                }
-            }
-        }
-    }
-}
+void gmgConvertCopy(GmgFab<T>& dst, const SRC& src, bool onDevice);
 
 // dst += src, per cell over dst's valid box, converting through dst's value_type.
 // dst is any FabArray (the caller's FP64 MultiFab); src is a T-valued level fab.
@@ -427,145 +400,33 @@ void gmgGsColor(
 // 8 fine children. Also used to coarsen alpha (a per-volume density). Iterates
 // the coarse MF; the fine MF shares the DistributionMapping, so the same MFIter
 // index addresses the matching fine box (its BoxArray is refine(coarse, 2)).
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp (via
+// gmg_precond.hpp) AND gmgKokkos/vcycle.hpp, instantiated both by apply.cpp's
+// production precond="gmg_kokkos" path and by bench/gmg_vcycle_bench.cpp's
+// harness for every backend (both object libraries land in the same
+// _blockamr.so) — an AMREX_GPU_HOST_DEVICE lambda here would be an extended
+// lambda instantiated in two CUDA TUs of one binary, the exact nvcc trap T2
+// already hit. So this stays declaration-only in the header; the single
+// definition + explicit instantiation lives in gmg_kernels.cpp.
 template<class T>
-void gmgRestrictDevice(const GmgFab<T>& fine, GmgFab<T>& crse)
-{
-    for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto f = fine.const_array(mfi);
-        const auto c = crse.array(mfi);
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            {
-                const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                c(i, j, k) = static_cast<GmgComputeT<T>>(0.125)
-                           * (f(i2, j2, k2) + f(i2 + 1, j2, k2) + f(i2, j2 + 1, k2)
-                              + f(i2 + 1, j2 + 1, k2) + f(i2, j2, k2 + 1) + f(i2 + 1, j2, k2 + 1)
-                              + f(i2, j2 + 1, k2 + 1) + f(i2 + 1, j2 + 1, k2 + 1));
-            }
-        );
-    }
-}
-
-template<class T>
-void gmgRestrictHost(const GmgFab<T>& fine, GmgFab<T>& crse)
-{
-    for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto f = fine.const_array(mfi);
-        const auto c = crse.array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                    c(i, j, k) =
-                        static_cast<GmgComputeT<T>>(0.125)
-                        * (f(i2, j2, k2) + f(i2 + 1, j2, k2) + f(i2, j2 + 1, k2)
-                           + f(i2 + 1, j2 + 1, k2) + f(i2, j2, k2 + 1) + f(i2 + 1, j2, k2 + 1)
-                           + f(i2, j2 + 1, k2 + 1) + f(i2 + 1, j2 + 1, k2 + 1));
-                }
-            }
-        }
-    }
-}
+void gmgRestrict(const GmgFab<T>& fine, GmgFab<T>& crse, bool onDevice);
 
 // Coarsen a face-coefficient field in direction `dir`: coarse face i_c covers
 // fine face 2*i_c with the 2x2 transverse fine faces; a ~ -beta/dx^2, so the
 // coarse coefficient is the arithmetic average of those 4 fine coefficients
 // (beta averaged) divided by `scale` (dx doubled -> 4 for rediscretisation).
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp (via
+// gmg_precond.hpp) AND gmgKokkos/vcycle.hpp, instantiated both by apply.cpp's
+// production precond="gmg_kokkos" path and by bench/gmg_vcycle_bench.cpp's
+// harness for every backend (both object libraries land in the same
+// _blockamr.so) — an AMREX_GPU_HOST_DEVICE lambda here would be an extended
+// lambda instantiated in two CUDA TUs of one binary, the exact nvcc trap T2
+// already hit. So this stays declaration-only in the header; the single
+// definition + explicit instantiation lives in gmg_kernels.cpp.
 template<class T>
-void gmgCoarsenFaceDevice(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double scale)
-{
-    int u[3] = {0, 0, 0}, v[3] = {0, 0, 0};
-    // The two transverse (cell) directions of face-normal `dir`.
-    if (dir == 0)
-    {
-        u[1] = 1;
-        v[2] = 1;
-    }
-    else if (dir == 1)
-    {
-        u[0] = 1;
-        v[2] = 1;
-    }
-    else
-    {
-        u[0] = 1;
-        v[1] = 1;
-    }
-    const int u0 = u[0], u1 = u[1], u2 = u[2];
-    const int v0 = v[0], v1 = v[1], v2 = v[2];
-    const GmgComputeT<T> w = static_cast<GmgComputeT<T>>(0.25 / scale);
-    for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto f = fine.const_array(mfi);
-        const auto c = crse.array(mfi);
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
-            {
-                const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                c(i, j, k) =
-                    w
-                    * (f(i2, j2, k2) + f(i2 + u0, j2 + u1, k2 + u2) + f(i2 + v0, j2 + v1, k2 + v2)
-                       + f(i2 + u0 + v0, j2 + u1 + v1, k2 + u2 + v2));
-            }
-        );
-    }
-}
-
-template<class T>
-void gmgCoarsenFaceHost(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double scale)
-{
-    int u[3] = {0, 0, 0}, v[3] = {0, 0, 0};
-    if (dir == 0)
-    {
-        u[1] = 1;
-        v[2] = 1;
-    }
-    else if (dir == 1)
-    {
-        u[0] = 1;
-        v[2] = 1;
-    }
-    else
-    {
-        u[0] = 1;
-        v[1] = 1;
-    }
-    const GmgComputeT<T> w = static_cast<GmgComputeT<T>>(0.25 / scale);
-    for (amrex::MFIter mfi(crse); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto f = fine.const_array(mfi);
-        const auto c = crse.array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int k = lo.z; k <= hi.z; ++k)
-        {
-            for (int j = lo.y; j <= hi.y; ++j)
-            {
-                for (int i = lo.x; i <= hi.x; ++i)
-                {
-                    const int i2 = 2 * i, j2 = 2 * j, k2 = 2 * k;
-                    c(i, j, k) = w
-                               * (f(i2, j2, k2) + f(i2 + u[0], j2 + u[1], k2 + u[2])
-                                  + f(i2 + v[0], j2 + v[1], k2 + v[2])
-                                  + f(i2 + u[0] + v[0], j2 + u[1] + v[1], k2 + u[2] + v[2]));
-                }
-            }
-        }
-    }
-}
+void gmgCoarsenFace(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double scale, bool onDevice);
 
 // Piecewise-constant prolongation + correction: fine cell += coarse parent
 // value (the adjoint of the volume-average restriction, up to the 1/8 factor).
