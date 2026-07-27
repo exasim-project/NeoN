@@ -495,9 +495,7 @@ void solveImplicitTransformComponentDist(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
         "applyImplicitTransformDiagDist"
     );
     gkoExec->synchronize();
@@ -511,9 +509,7 @@ void solveImplicitTransformComponentDist(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
         "restoreImplicitTransformDiagDist"
     );
     gkoExec->synchronize();
@@ -537,7 +533,10 @@ SolverStats GinkgoSolver::solveDist(
         cachedNonLocalMtx_
     );
     auto solver = gko::share(factory_->generate(gkoMtx));
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
 }
 
@@ -546,7 +545,10 @@ SolverStats GinkgoSolver::solveDist(
 ) const
 {
     auto stats = SolverStats {};
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     solveComponentDist<0>(
         sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
@@ -568,7 +570,10 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     auto gkoMtx = createGkoMtxDist(
         gkoExec_,
         comm,

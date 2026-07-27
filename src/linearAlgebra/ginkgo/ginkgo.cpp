@@ -541,8 +541,8 @@ SolverStats GinkgoSolver::solve(
 // Solve one component of a scalar-matrix / Vec3-rhs system under an implicit transform BC
 // (slip/symmetry). The component's diagonal correction is temporarily subtracted from the shared
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
-// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The diag edits
-// use atomics because a corner cell may receive contributions from several boundary faces.
+// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
+// cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
 template<unsigned int I>
 void solveImplicitTransformComponent(
     const auto& sys,
@@ -562,9 +562,7 @@ void solveImplicitTransformComponent(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
         "applyImplicitTransformDiag"
     );
     gkoExec->synchronize();
@@ -579,9 +577,7 @@ void solveImplicitTransformComponent(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
         "restoreImplicitTransformDiag"
     );
     gkoExec->synchronize();
