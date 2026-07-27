@@ -104,16 +104,49 @@ struct AmrexGmgBackend
 
     static void beforeAmrexRead() {}
 
-    template<class... A>
-    static void gsColor(A&&... a)
+    // Not a variadic forward like the other two backends' twins below: the
+    // production kernel's signature bundles its coefficients into one
+    // FaceCoeffs<double>, so the flat 7-coefficient argument list vcycle.hpp's
+    // shared call site passes has to be repacked here.
+    static void gsColor(
+        solvers::GmgFab<double>& sol,
+        const solvers::GmgFab<double>& rhs,
+        const solvers::GmgFab<double>& ux,
+        const solvers::GmgFab<double>& lx,
+        const solvers::GmgFab<double>& uy,
+        const solvers::GmgFab<double>& ly,
+        const solvers::GmgFab<double>& uz,
+        const solvers::GmgFab<double>& lz,
+        const solvers::GmgFab<double>& alpha,
+        int parity,
+        double omega
+    )
     {
-        solvers::gmgGsColorDevice<double>(std::forward<A>(a)...);
+        solvers::gmgGsColorDevice<double>(
+            sol,
+            rhs,
+            solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
+            parity,
+            omega
+        );
     }
 
-    template<class... A>
-    static void residRestrict(A&&... a)
+    static void residRestrict(
+        const solvers::GmgFab<double>& sol,
+        const solvers::GmgFab<double>& rhs,
+        solvers::GmgFab<double>& crhs,
+        const solvers::GmgFab<double>& ux,
+        const solvers::GmgFab<double>& lx,
+        const solvers::GmgFab<double>& uy,
+        const solvers::GmgFab<double>& ly,
+        const solvers::GmgFab<double>& uz,
+        const solvers::GmgFab<double>& lz,
+        const solvers::GmgFab<double>& alpha
+    )
     {
-        solvers::gmgResidRestrictDevice<double>(std::forward<A>(a)...);
+        solvers::gmgResidRestrictDevice<double>(
+            sol, rhs, crhs, solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz}
+        );
     }
 
     template<class... A>

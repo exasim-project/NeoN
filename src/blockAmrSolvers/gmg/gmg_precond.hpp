@@ -528,6 +528,9 @@ private:
     void rbgsSmooth(std::size_t l, int sweeps, bool reversed) const
     {
         const GmgLevelT<T>& L = levels_[l];
+        const FaceCoeffs<T> fc {
+            L.alpha.get(), L.ux.get(), L.lx.get(), L.uy.get(), L.ly.get(), L.uz.get(), L.lz.get()
+        };
         for (int s = 0; s < sweeps; ++s)
         {
             for (int c = 0; c < 2; ++c)
@@ -537,35 +540,11 @@ private:
                 if (onDevice_)
                 {
                     prof::Timer t("gmg.gs", static_cast<int>(l));
-                    gmgGsColorDevice(
-                        *L.sol,
-                        *L.rhs,
-                        *L.ux,
-                        *L.lx,
-                        *L.uy,
-                        *L.ly,
-                        *L.uz,
-                        *L.lz,
-                        *L.alpha,
-                        parity,
-                        omega_
-                    );
+                    gmgGsColorDevice(*L.sol, *L.rhs, fc, parity, omega_);
                 }
                 else
                 {
-                    gmgGsColorHost(
-                        *L.sol,
-                        *L.rhs,
-                        *L.ux,
-                        *L.lx,
-                        *L.uy,
-                        *L.ly,
-                        *L.uz,
-                        *L.lz,
-                        *L.alpha,
-                        parity,
-                        omega_
-                    );
+                    gmgGsColorHost(*L.sol, *L.rhs, fc, parity, omega_);
                 }
             }
         }
@@ -582,6 +561,9 @@ private:
             return;
         }
         const GmgLevelT<T>& L = levels_[l];
+        const FaceCoeffs<T> fc {
+            L.alpha.get(), L.ux.get(), L.lx.get(), L.uy.get(), L.ly.get(), L.uz.get(), L.lz.get()
+        };
         const double b = L.lambdaMax;
         const double a = b / kChebEigRatio;
         const double theta = 0.5 * (b + a);
@@ -610,37 +592,13 @@ private:
             {
                 prof::Timer t("gmg.cheb", static_cast<int>(l));
                 gmgChebComputeDDevice(
-                    *L.sol,
-                    *L.rhs,
-                    *L.ux,
-                    *L.lx,
-                    *L.uy,
-                    *L.ly,
-                    *L.uz,
-                    *L.lz,
-                    *L.alpha,
-                    *L.chebD,
-                    static_cast<T>(ca),
-                    static_cast<T>(cb),
-                    readOld
+                    *L.sol, *L.rhs, fc, *L.chebD, static_cast<T>(ca), static_cast<T>(cb), readOld
                 );
             }
             else
             {
                 gmgChebComputeDHost(
-                    *L.sol,
-                    *L.rhs,
-                    *L.ux,
-                    *L.lx,
-                    *L.uy,
-                    *L.ly,
-                    *L.uz,
-                    *L.lz,
-                    *L.alpha,
-                    *L.chebD,
-                    static_cast<T>(ca),
-                    static_cast<T>(cb),
-                    readOld
+                    *L.sol, *L.rhs, fc, *L.chebD, static_cast<T>(ca), static_cast<T>(cb), readOld
                 );
                 amrex::Gpu::streamSynchronize();
             }
@@ -660,6 +618,9 @@ private:
         const GmgLevelT<T>& L = levels_[l];
         GmgFab<T>& v = *L.sol;   // scratch (1 ghost)
         GmgFab<T>& w = *L.chebD; // scratch (0 ghost)
+        const FaceCoeffs<T> fc {
+            L.alpha.get(), L.ux.get(), L.lx.get(), L.uy.get(), L.ly.get(), L.uz.get(), L.lz.get()
+        };
         if (onDevice_)
         {
             gmgFillCheckerDevice(v);
@@ -677,11 +638,11 @@ private:
             fillGhosts(L, static_cast<int>(l));
             if (onDevice_)
             {
-                gmgDinvApplyDevice(v, w, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha);
+                gmgDinvApplyDevice(v, w, fc);
             }
             else
             {
-                gmgDinvApplyHost(v, w, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha);
+                gmgDinvApplyHost(v, w, fc);
                 amrex::Gpu::streamSynchronize();
             }
             lambda = gmgNorm2(w); // v is unit-norm -> ||D^{-1}A v|| ~ lambda_max
@@ -763,17 +724,22 @@ private:
         // the fly, saving the separate fine-grid residual read+write (M4 item 3).
         {
             prof::Timer t("gmg.residrestrict", static_cast<int>(l));
+            const FaceCoeffs<T> fc {
+                L.alpha.get(),
+                L.ux.get(),
+                L.lx.get(),
+                L.uy.get(),
+                L.ly.get(),
+                L.uz.get(),
+                L.lz.get()
+            };
             if (onDevice_)
             {
-                gmgResidRestrictDevice(
-                    *L.sol, *L.rhs, *C.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
-                );
+                gmgResidRestrictDevice(*L.sol, *L.rhs, *C.rhs, fc);
             }
             else
             {
-                gmgResidRestrictHost(
-                    *L.sol, *L.rhs, *C.rhs, *L.ux, *L.lx, *L.uy, *L.ly, *L.uz, *L.lz, *L.alpha
-                );
+                gmgResidRestrictHost(*L.sol, *L.rhs, *C.rhs, fc);
             }
             C.sol->setVal(0.0);
         }

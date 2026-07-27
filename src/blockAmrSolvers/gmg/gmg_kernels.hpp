@@ -44,6 +44,66 @@ namespace blockamr::solvers
 template<class T>
 using GmgFab = amrex::FabArray<amrex::BaseFab<T>>;
 
+// Bundle of the 7 coefficient fields every stencil kernel takes positionally
+// today (report: "alpha last" in kernels, "alpha first" in constructors — a
+// silent uy/ly-swap-shaped hazard). A named struct removes the ordering
+// question outright; alpha is listed first to match every constructor
+// (gmg_bottom.hpp:73, gmg_precond.hpp:109) rather than the kernels' own
+// historical order.
+template<class T>
+struct FaceCoeffs
+{
+    const GmgFab<T>* alpha;
+    const GmgFab<T>* ux;
+    const GmgFab<T>* lx;
+    const GmgFab<T>* uy;
+    const GmgFab<T>* ly;
+    const GmgFab<T>* uz;
+    const GmgFab<T>* lz;
+};
+
+// The 6 face-coefficient VALUES at one cell, loaded from Array4s (not
+// FaceCoeffs<T> directly -- kernels already hold per-MFIter Array4 views,
+// not the FabArrays themselves, inside the ParallelFor/loop body).
+template<class T>
+struct FaceCoeffVals
+{
+    T aE, aW, aN, aS, aT, aB;
+};
+
+template<class T>
+AMREX_GPU_HOST_DEVICE FaceCoeffVals<T> loadFaceCoeffs(
+    const amrex::Array4<const T>& ux,
+    const amrex::Array4<const T>& lx,
+    const amrex::Array4<const T>& uy,
+    const amrex::Array4<const T>& ly,
+    const amrex::Array4<const T>& uz,
+    const amrex::Array4<const T>& lz,
+    int i,
+    int j,
+    int k
+) noexcept
+{
+    return {
+        ux(i + 1, j, k), lx(i, j, k), uy(i, j + 1, k), ly(i, j, k), uz(i, j, k + 1), lz(i, j, k)
+    };
+}
+
+// Same summation ORDER as every existing site (aE+aW+aN+aS+aT+aB) -- must
+// stay bit-for-bit, not just algebraically equivalent.
+template<class T>
+AMREX_GPU_HOST_DEVICE T stencilDiag(T alpha, const FaceCoeffVals<T>& c) noexcept
+{
+    return alpha - (c.aE + c.aW + c.aN + c.aS + c.aT + c.aB);
+}
+
+template<class T>
+AMREX_GPU_HOST_DEVICE T
+stencilOffDiag(const FaceCoeffVals<T>& c, T pE, T pW, T pN, T pS, T pT, T pB) noexcept
+{
+    return c.aE * pE + c.aW * pW + c.aN * pN + c.aS * pS + c.aT * pT + c.aB * pB;
+}
+
 // Tiny |diagonal| floor guarding the RB-GS in-place division (skip rather than
 // divide by ~0). Per value type so the double path keeps its 1e-300 floor
 // exactly while the float path uses a representable one (1e-300 is not a valid
@@ -235,16 +295,17 @@ ResidNorms faceCoeffResidScatterNormDevice(
                 vbx,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
                 {
-                    const double aE = ax(i + 1, j, k);
-                    const double aW = lxa(i, j, k);
-                    const double aN = ay(i, j + 1, k);
-                    const double aS = lya(i, j, k);
-                    const double aT = az(i, j, k + 1);
-                    const double aB = lza(i, j, k);
-                    const double offd = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                      + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                      + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = loadFaceCoeffs<double>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const double offd = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const double diag = stencilDiag(al(i, j, k), c);
                     const double r = bb(i, j, k) - (diag * psi(i, j, k) + offd) - shift;
                     o(i, j, k) = static_cast<T>(r);
                 }
@@ -309,16 +370,17 @@ ResidNorms faceCoeffResidScatterNormHost(
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    const double aE = ax(i + 1, j, k);
-                    const double aW = lxa(i, j, k);
-                    const double aN = ay(i, j + 1, k);
-                    const double aS = lya(i, j, k);
-                    const double aT = az(i, j, k + 1);
-                    const double aB = lza(i, j, k);
-                    const double offd = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                      + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                      + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = loadFaceCoeffs<double>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const double offd = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const double diag = stencilDiag(al(i, j, k), c);
                     const double r = bb(i, j, k) - (diag * psi(i, j, k) + offd) - shift;
                     o(i, j, k) = static_cast<T>(r);
                     // Reduce the STORED value (like the device twin's separate
@@ -383,17 +445,7 @@ double gmgNorm2(const GmgFab<T>& mf)
 // sol's ghosts must be refreshed before EACH colour pass.
 template<class T>
 void gmgGsColorDevice(
-    GmgFab<T>& sol,
-    const GmgFab<T>& rhs,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha,
-    int parity,
-    double omega
+    GmgFab<T>& sol, const GmgFab<T>& rhs, const FaceCoeffs<T>& fc, int parity, double omega
 )
 {
     const T om = static_cast<T>(omega);
@@ -402,13 +454,13 @@ void gmgGsColorDevice(
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = sol.array(mfi);
         const auto b = rhs.const_array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
@@ -417,15 +469,17 @@ void gmgGsColorDevice(
                 {
                     return;
                 }
-                const T aE = ax(i + 1, j, k);
-                const T aW = lxa(i, j, k);
-                const T aN = ay(i, j + 1, k);
-                const T aS = lya(i, j, k);
-                const T aT = az(i, j, k + 1);
-                const T aB = lza(i, j, k);
-                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
-                            + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                const T off = stencilOffDiag(
+                    c,
+                    psi(i + 1, j, k),
+                    psi(i - 1, j, k),
+                    psi(i, j + 1, k),
+                    psi(i, j - 1, k),
+                    psi(i, j, k + 1),
+                    psi(i, j, k - 1)
+                );
+                const T diag = stencilDiag(al(i, j, k), c);
                 if (amrex::Math::abs(diag) > gmgDiagFloor<T>())
                 {
                     const T gs = (b(i, j, k) - off) / diag;
@@ -438,17 +492,7 @@ void gmgGsColorDevice(
 
 template<class T>
 void gmgGsColorHost(
-    GmgFab<T>& sol,
-    const GmgFab<T>& rhs,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha,
-    int parity,
-    double omega
+    GmgFab<T>& sol, const GmgFab<T>& rhs, const FaceCoeffs<T>& fc, int parity, double omega
 )
 {
     const T om = static_cast<T>(omega);
@@ -457,13 +501,13 @@ void gmgGsColorHost(
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = sol.array(mfi);
         const auto b = rhs.const_array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         for (int k = lo.z; k <= hi.z; ++k)
@@ -476,16 +520,17 @@ void gmgGsColorHost(
                     {
                         continue;
                     }
-                    const T aE = ax(i + 1, j, k);
-                    const T aW = lxa(i, j, k);
-                    const T aN = ay(i, j + 1, k);
-                    const T aS = lya(i, j, k);
-                    const T aT = az(i, j, k + 1);
-                    const T aB = lza(i, j, k);
-                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const T off = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const T diag = stencilDiag(al(i, j, k), c);
                     if (std::abs(diag) > gmgDiagFloor<T>())
                     {
                         const T gs = (b(i, j, k) - off) / diag;
@@ -689,16 +734,7 @@ void gmgProlongAddHost(const GmgFab<T>& crse, GmgFab<T>& fine)
 // read+write of the separate residual + restriction passes (M4 item 3).
 template<class T>
 void gmgResidRestrictDevice(
-    const GmgFab<T>& sol,
-    const GmgFab<T>& rhs,
-    GmgFab<T>& crhs,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha
+    const GmgFab<T>& sol, const GmgFab<T>& rhs, GmgFab<T>& crhs, const FaceCoeffs<T>& fc
 )
 {
     for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
@@ -707,13 +743,13 @@ void gmgResidRestrictDevice(
         const auto psi = sol.const_array(mfi);
         const auto b = rhs.const_array(mfi);
         const auto cr = crhs.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int ic, int jc, int kc) noexcept
@@ -726,16 +762,17 @@ void gmgResidRestrictDevice(
                         for (int di = 0; di < 2; ++di)
                         {
                             const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                            const T aE = ax(i + 1, j, k);
-                            const T aW = lxa(i, j, k);
-                            const T aN = ay(i, j + 1, k);
-                            const T aS = lya(i, j, k);
-                            const T aT = az(i, j, k + 1);
-                            const T aB = lza(i, j, k);
-                            const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                        + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                        + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                            const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                            const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                            const T off = stencilOffDiag(
+                                c,
+                                psi(i + 1, j, k),
+                                psi(i - 1, j, k),
+                                psi(i, j + 1, k),
+                                psi(i, j - 1, k),
+                                psi(i, j, k + 1),
+                                psi(i, j, k - 1)
+                            );
+                            const T diag = stencilDiag(al(i, j, k), c);
                             acc += b(i, j, k) - (diag * psi(i, j, k) + off);
                         }
                     }
@@ -748,16 +785,7 @@ void gmgResidRestrictDevice(
 
 template<class T>
 void gmgResidRestrictHost(
-    const GmgFab<T>& sol,
-    const GmgFab<T>& rhs,
-    GmgFab<T>& crhs,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha
+    const GmgFab<T>& sol, const GmgFab<T>& rhs, GmgFab<T>& crhs, const FaceCoeffs<T>& fc
 )
 {
     for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
@@ -766,13 +794,13 @@ void gmgResidRestrictHost(
         const auto psi = sol.const_array(mfi);
         const auto b = rhs.const_array(mfi);
         const auto cr = crhs.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         for (int kc = lo.z; kc <= hi.z; ++kc)
@@ -789,16 +817,18 @@ void gmgResidRestrictHost(
                             for (int di = 0; di < 2; ++di)
                             {
                                 const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                                const T aE = ax(i + 1, j, k);
-                                const T aW = lxa(i, j, k);
-                                const T aN = ay(i, j + 1, k);
-                                const T aS = lya(i, j, k);
-                                const T aT = az(i, j, k + 1);
-                                const T aB = lza(i, j, k);
-                                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                            + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                            + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                                const auto c =
+                                    loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                                const T off = stencilOffDiag(
+                                    c,
+                                    psi(i + 1, j, k),
+                                    psi(i - 1, j, k),
+                                    psi(i, j + 1, k),
+                                    psi(i, j - 1, k),
+                                    psi(i, j, k + 1),
+                                    psi(i, j, k - 1)
+                                );
+                                const T diag = stencilDiag(al(i, j, k), c);
                                 acc += b(i, j, k) - (diag * psi(i, j, k) + off);
                             }
                         }
@@ -820,13 +850,7 @@ template<class T>
 void gmgChebComputeDDevice(
     const GmgFab<T>& sol,
     const GmgFab<T>& rhs,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha,
+    const FaceCoeffs<T>& fc,
     GmgFab<T>& d,
     T ca,
     T cb,
@@ -839,26 +863,28 @@ void gmgChebComputeDDevice(
         const auto psi = sol.const_array(mfi);
         const auto b = rhs.const_array(mfi);
         const auto dd = d.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
-                const T aE = ax(i + 1, j, k);
-                const T aW = lxa(i, j, k);
-                const T aN = ay(i, j + 1, k);
-                const T aS = lya(i, j, k);
-                const T aT = az(i, j, k + 1);
-                const T aB = lza(i, j, k);
-                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
-                            + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                const T off = stencilOffDiag(
+                    c,
+                    psi(i + 1, j, k),
+                    psi(i - 1, j, k),
+                    psi(i, j + 1, k),
+                    psi(i, j - 1, k),
+                    psi(i, j, k + 1),
+                    psi(i, j, k - 1)
+                );
+                const T diag = stencilDiag(al(i, j, k), c);
                 const T r = b(i, j, k) - (diag * psi(i, j, k) + off);
                 T dval = cb * (r / diag);
                 if (readOld)
@@ -875,13 +901,7 @@ template<class T>
 void gmgChebComputeDHost(
     const GmgFab<T>& sol,
     const GmgFab<T>& rhs,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha,
+    const FaceCoeffs<T>& fc,
     GmgFab<T>& d,
     T ca,
     T cb,
@@ -894,13 +914,13 @@ void gmgChebComputeDHost(
         const auto psi = sol.const_array(mfi);
         const auto b = rhs.const_array(mfi);
         const auto dd = d.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         for (int k = lo.z; k <= hi.z; ++k)
@@ -909,16 +929,17 @@ void gmgChebComputeDHost(
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    const T aE = ax(i + 1, j, k);
-                    const T aW = lxa(i, j, k);
-                    const T aN = ay(i, j + 1, k);
-                    const T aS = lya(i, j, k);
-                    const T aT = az(i, j, k + 1);
-                    const T aB = lza(i, j, k);
-                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const T off = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const T diag = stencilDiag(al(i, j, k), c);
                     const T r = b(i, j, k) - (diag * psi(i, j, k) + off);
                     T dval = cb * (r / diag);
                     if (readOld)
@@ -939,43 +960,35 @@ void gmgChebComputeDHost(
 // an asymmetric operator (ux(i+1) != lx(i+1)) is handled with no special case:
 // each direction reads its own upper and lower array.
 template<class T>
-void gmgApplyDevice(
-    const GmgFab<T>& v,
-    GmgFab<T>& out,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha
-)
+void gmgApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
 {
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = v.const_array(mfi);
         const auto o = out.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
-                const T aE = ax(i + 1, j, k);
-                const T aW = lxa(i, j, k);
-                const T aN = ay(i, j + 1, k);
-                const T aS = lya(i, j, k);
-                const T aT = az(i, j, k + 1);
-                const T aB = lza(i, j, k);
-                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
-                            + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                const T off = stencilOffDiag(
+                    c,
+                    psi(i + 1, j, k),
+                    psi(i - 1, j, k),
+                    psi(i, j + 1, k),
+                    psi(i, j - 1, k),
+                    psi(i, j, k + 1),
+                    psi(i, j, k - 1)
+                );
+                const T diag = stencilDiag(al(i, j, k), c);
                 o(i, j, k) = diag * psi(i, j, k) + off;
             }
         );
@@ -983,30 +996,20 @@ void gmgApplyDevice(
 }
 
 template<class T>
-void gmgApplyHost(
-    const GmgFab<T>& v,
-    GmgFab<T>& out,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha
-)
+void gmgApplyHost(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
 {
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = v.const_array(mfi);
         const auto o = out.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         for (int k = lo.z; k <= hi.z; ++k)
@@ -1015,16 +1018,17 @@ void gmgApplyHost(
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    const T aE = ax(i + 1, j, k);
-                    const T aW = lxa(i, j, k);
-                    const T aN = ay(i, j + 1, k);
-                    const T aS = lya(i, j, k);
-                    const T aT = az(i, j, k + 1);
-                    const T aB = lza(i, j, k);
-                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const T off = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const T diag = stencilDiag(al(i, j, k), c);
                     o(i, j, k) = diag * psi(i, j, k) + off;
                 }
             }
@@ -1035,43 +1039,35 @@ void gmgApplyHost(
 // out = D^{-1} A v (v's ghosts filled), used by the setup power iteration that
 // estimates lambda_max of D^{-1}A per level for the Chebyshev interval.
 template<class T>
-void gmgDinvApplyDevice(
-    const GmgFab<T>& v,
-    GmgFab<T>& out,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha
-)
+void gmgDinvApplyDevice(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
 {
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = v.const_array(mfi);
         const auto o = out.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         amrex::ParallelFor(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
-                const T aE = ax(i + 1, j, k);
-                const T aW = lxa(i, j, k);
-                const T aN = ay(i, j + 1, k);
-                const T aS = lya(i, j, k);
-                const T aT = az(i, j, k + 1);
-                const T aB = lza(i, j, k);
-                const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
-                            + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                const T off = stencilOffDiag(
+                    c,
+                    psi(i + 1, j, k),
+                    psi(i - 1, j, k),
+                    psi(i, j + 1, k),
+                    psi(i, j - 1, k),
+                    psi(i, j, k + 1),
+                    psi(i, j, k - 1)
+                );
+                const T diag = stencilDiag(al(i, j, k), c);
                 o(i, j, k) = (diag * psi(i, j, k) + off) / diag;
             }
         );
@@ -1079,30 +1075,20 @@ void gmgDinvApplyDevice(
 }
 
 template<class T>
-void gmgDinvApplyHost(
-    const GmgFab<T>& v,
-    GmgFab<T>& out,
-    const GmgFab<T>& ux,
-    const GmgFab<T>& lx,
-    const GmgFab<T>& uy,
-    const GmgFab<T>& ly,
-    const GmgFab<T>& uz,
-    const GmgFab<T>& lz,
-    const GmgFab<T>& alpha
-)
+void gmgDinvApplyHost(const GmgFab<T>& v, GmgFab<T>& out, const FaceCoeffs<T>& fc)
 {
     for (amrex::MFIter mfi(out); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = v.const_array(mfi);
         const auto o = out.array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         for (int k = lo.z; k <= hi.z; ++k)
@@ -1111,16 +1097,17 @@ void gmgDinvApplyHost(
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    const T aE = ax(i + 1, j, k);
-                    const T aW = lxa(i, j, k);
-                    const T aN = ay(i, j + 1, k);
-                    const T aS = lya(i, j, k);
-                    const T aT = az(i, j, k + 1);
-                    const T aB = lza(i, j, k);
-                    const T off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const T diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const T off = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const T diag = stencilDiag(al(i, j, k), c);
                     o(i, j, k) = (diag * psi(i, j, k) + off) / diag;
                 }
             }
