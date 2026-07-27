@@ -101,4 +101,71 @@ void gmgProlongAdd(const GmgFab<T>& crse, GmgFab<T>& fine, bool onDevice)
 template void gmgProlongAdd<double>(const GmgFab<double>&, GmgFab<double>&, bool);
 template void gmgProlongAdd<float>(const GmgFab<float>&, GmgFab<float>&, bool);
 
+// Fused residual + volume-average restriction: coarse rhs cell = mean of the 8
+// fine residuals r = rhs - A sol, each computed on the fly. Iterates the coarse
+// box (fine sol's ghosts must be filled). Saves the full fine-grid resid
+// read+write of the separate residual + restriction passes (M4 item 3).
+template<class T>
+void gmgResidRestrict(
+    const GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    GmgFab<T>& crhs,
+    const FaceCoeffs<T>& fc,
+    bool onDevice
+)
+{
+    amrex::Gpu::LaunchSafeGuard lsg(onDevice);
+    for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto psi = sol.const_array(mfi);
+        const auto b = rhs.const_array(mfi);
+        const auto cr = crhs.array(mfi);
+        const auto ax = fc.ux->const_array(mfi);
+        const auto lxa = fc.lx->const_array(mfi);
+        const auto ay = fc.uy->const_array(mfi);
+        const auto lya = fc.ly->const_array(mfi);
+        const auto az = fc.uz->const_array(mfi);
+        const auto lza = fc.lz->const_array(mfi);
+        const auto al = fc.alpha->const_array(mfi);
+        amrex::HostDeviceParallelFor(
+            vbx,
+            [=] AMREX_GPU_HOST_DEVICE(int ic, int jc, int kc) noexcept
+            {
+                T acc = 0;
+                for (int dk = 0; dk < 2; ++dk)
+                {
+                    for (int dj = 0; dj < 2; ++dj)
+                    {
+                        for (int di = 0; di < 2; ++di)
+                        {
+                            const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
+                            const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                            const T off = stencilOffDiag(
+                                c,
+                                psi(i + 1, j, k),
+                                psi(i - 1, j, k),
+                                psi(i, j + 1, k),
+                                psi(i, j - 1, k),
+                                psi(i, j, k + 1),
+                                psi(i, j, k - 1)
+                            );
+                            const T diag = stencilDiag(al(i, j, k), c);
+                            acc += b(i, j, k) - (diag * psi(i, j, k) + off);
+                        }
+                    }
+                }
+                cr(ic, jc, kc) = static_cast<T>(0.125) * acc;
+            }
+        );
+    }
+}
+
+template void gmgResidRestrict<double>(
+    const GmgFab<double>&, const GmgFab<double>&, GmgFab<double>&, const FaceCoeffs<double>&, bool
+);
+template void gmgResidRestrict<float>(
+    const GmgFab<float>&, const GmgFab<float>&, GmgFab<float>&, const FaceCoeffs<float>&, bool
+);
+
 } // namespace blockamr::solvers

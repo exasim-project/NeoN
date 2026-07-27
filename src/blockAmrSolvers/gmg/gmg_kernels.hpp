@@ -584,113 +584,22 @@ void gmgProlongAdd(const GmgFab<T>& crse, GmgFab<T>& fine, bool onDevice);
 // fine residuals r = rhs - A sol, each computed on the fly. Iterates the coarse
 // box (fine sol's ghosts must be filled). Saves the full fine-grid resid
 // read+write of the separate residual + restriction passes (M4 item 3).
+//
+// Cross-TU (Class B, see T9 report): reached from persistent.cpp (via
+// gmg_precond.hpp) AND bench/gmg_vcycle_bench.cpp's "amrex" baseline column
+// (both object libraries land in the same _blockamr.so) — an
+// AMREX_GPU_HOST_DEVICE lambda here would be an extended lambda instantiated
+// in two CUDA TUs of one binary, the exact nvcc trap T2 already hit. So this
+// stays declaration-only in the header; the single definition + explicit
+// instantiation lives in gmg_kernels.cpp.
 template<class T>
-void gmgResidRestrictDevice(
-    const GmgFab<T>& sol, const GmgFab<T>& rhs, GmgFab<T>& crhs, const FaceCoeffs<T>& fc
-)
-{
-    for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.const_array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto cr = crhs.array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        amrex::ParallelFor(
-            vbx,
-            [=] AMREX_GPU_DEVICE(int ic, int jc, int kc) noexcept
-            {
-                T acc = 0;
-                for (int dk = 0; dk < 2; ++dk)
-                {
-                    for (int dj = 0; dj < 2; ++dj)
-                    {
-                        for (int di = 0; di < 2; ++di)
-                        {
-                            const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                            const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                            const T off = stencilOffDiag(
-                                c,
-                                psi(i + 1, j, k),
-                                psi(i - 1, j, k),
-                                psi(i, j + 1, k),
-                                psi(i, j - 1, k),
-                                psi(i, j, k + 1),
-                                psi(i, j, k - 1)
-                            );
-                            const T diag = stencilDiag(al(i, j, k), c);
-                            acc += b(i, j, k) - (diag * psi(i, j, k) + off);
-                        }
-                    }
-                }
-                cr(ic, jc, kc) = static_cast<T>(0.125) * acc;
-            }
-        );
-    }
-}
-
-template<class T>
-void gmgResidRestrictHost(
-    const GmgFab<T>& sol, const GmgFab<T>& rhs, GmgFab<T>& crhs, const FaceCoeffs<T>& fc
-)
-{
-    for (amrex::MFIter mfi(crhs); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box& vbx = mfi.validbox();
-        const auto psi = sol.const_array(mfi);
-        const auto b = rhs.const_array(mfi);
-        const auto cr = crhs.array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
-        const auto al = fc.alpha->const_array(mfi);
-        const auto lo = amrex::lbound(vbx);
-        const auto hi = amrex::ubound(vbx);
-        for (int kc = lo.z; kc <= hi.z; ++kc)
-        {
-            for (int jc = lo.y; jc <= hi.y; ++jc)
-            {
-                for (int ic = lo.x; ic <= hi.x; ++ic)
-                {
-                    T acc = 0;
-                    for (int dk = 0; dk < 2; ++dk)
-                    {
-                        for (int dj = 0; dj < 2; ++dj)
-                        {
-                            for (int di = 0; di < 2; ++di)
-                            {
-                                const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                                const auto c =
-                                    loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
-                                const T off = stencilOffDiag(
-                                    c,
-                                    psi(i + 1, j, k),
-                                    psi(i - 1, j, k),
-                                    psi(i, j + 1, k),
-                                    psi(i, j - 1, k),
-                                    psi(i, j, k + 1),
-                                    psi(i, j, k - 1)
-                                );
-                                const T diag = stencilDiag(al(i, j, k), c);
-                                acc += b(i, j, k) - (diag * psi(i, j, k) + off);
-                            }
-                        }
-                    }
-                    cr(ic, jc, kc) = static_cast<T>(0.125) * acc;
-                }
-            }
-        }
-    }
-}
+void gmgResidRestrict(
+    const GmgFab<T>& sol,
+    const GmgFab<T>& rhs,
+    GmgFab<T>& crhs,
+    const FaceCoeffs<T>& fc,
+    bool onDevice
+);
 
 // One fused Jacobi-Chebyshev degree step: computes r = rhs - A sol on the fly
 // (sol's ghosts must be filled) and the polynomial increment

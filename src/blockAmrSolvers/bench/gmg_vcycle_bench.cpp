@@ -145,8 +145,12 @@ struct AmrexGmgBackend
         const solvers::GmgFab<double>& alpha
     )
     {
-        solvers::gmgResidRestrictDevice<double>(
-            sol, rhs, crhs, solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz}
+        solvers::gmgResidRestrict<double>(
+            sol,
+            rhs,
+            crhs,
+            solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
+            /*onDevice=*/true
         );
     }
 

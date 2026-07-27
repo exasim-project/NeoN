@@ -731,14 +731,7 @@ private:
                 L.uz.get(),
                 L.lz.get()
             };
-            if (onDevice_)
-            {
-                gmgResidRestrictDevice(*L.sol, *L.rhs, *C.rhs, fc);
-            }
-            else
-            {
-                gmgResidRestrictHost(*L.sol, *L.rhs, *C.rhs, fc);
-            }
+            gmgResidRestrict(*L.sol, *L.rhs, *C.rhs, fc, onDevice_);
             C.sol->setVal(0.0);
         }
         if (!onDevice_)

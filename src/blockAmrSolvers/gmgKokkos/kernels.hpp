@@ -21,7 +21,7 @@
 // reviewable side by side:
 //
 //   gmgGsColorKokkos       <- gmgGsColor              (gmg_kernels.hpp)
-//   gmgResidRestrictKokkos <- gmgResidRestrictDevice  (gmg_kernels.hpp:691)
+//   gmgResidRestrictKokkos <- gmgResidRestrict        (gmg_kernels.hpp)
 //   gmgProlongAddKokkos    <- gmgProlongAdd           (gmg_kernels.hpp)
 //
 // Each comes in two launch forms with identical signatures and one shared body:
@@ -228,7 +228,7 @@ void gmgGsColorKokkos(
     Kokkos::fence();
 }
 
-// Fused residual + volume-average restriction. Twin of gmgResidRestrictDevice.
+// Fused residual + volume-average restriction. Twin of gmgResidRestrict.
 template<class T, class TC>
 void gmgResidRestrictKokkos(
     const solvers::GmgFab<T>& sol,
