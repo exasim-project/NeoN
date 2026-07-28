@@ -181,14 +181,24 @@ inline void requireGeometryLayout(const IbmGeometryFab& g, const char* who)
 //! two-cell one is an ordinary sequence of user calls. The Python builder makes
 //! it not *happen* (it grows monotonically); this makes it not *silently*
 //! happen.
+//!
+//! The sentence states the PAIRING, not a read pattern, and that is B31-R's
+//! I-2 / review.md §4 Q37(ii), closed at B30a. It used to say "the immersed
+//! geometry is read over the marker's grown box" — true at `classifyDefault`
+//! and `validateCellType`, which do exactly that, and FALSE at
+//! `ghost_cell.cpp`'s `preprocess`, which reads the geometry at valid cells
+//! only and passes the marker's width as a proxy for "this marker came from
+//! this geometry" (see the call-site comment there). One guard with three
+//! callers cannot narrate one caller's read pattern, so it narrates the
+//! invariant all three share.
 inline void requireGeometryGhosts(const char* fn, const IbmGeometryFab& g, int needs)
 {
     const int has = g.nGrowVect().min();
     if (has >= needs) return;
     throw std::runtime_error(
         std::string(fn)
-        + ": the immersed geometry is read over the marker's grown box, so the geometry's "
-          "ghost width must be at least the marker's "
+        + ": the marker is classified against this geometry over the marker's whole fab box, so "
+          "the geometry's ghost width must be at least the marker's "
         + std::to_string(needs) + ", but the geometry MultiFab has " + std::to_string(has)
         + "; grow the geometry"
     );

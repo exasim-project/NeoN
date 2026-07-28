@@ -26,6 +26,7 @@ nanobind_add_module(
   stencil_kernels.cpp
   ibm/cell_type.cpp
   ibm/ghost_cell.cpp
+  schemes/boundary/wall_frame.cpp
   tile_layout.cpp
   wall_table.cpp
   band_table.cpp)
@@ -65,6 +66,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     stencil_kernels.cpp
     ibm/cell_type.cpp
     ibm/ghost_cell.cpp
+    schemes/boundary/wall_frame.cpp
     tile_layout.cpp
     wall_table.cpp
     band_table.cpp

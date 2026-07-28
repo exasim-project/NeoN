@@ -497,7 +497,10 @@ def test_a_geometry_narrower_than_the_marker_is_refused_naming_both_widths(block
     geom, ba, dm = _level()
     g = _geometry_fab(CYLINDER, ba, dm, N, PERIODIC, 1)
     ct = blockamr.CellTypeFab(ba, dm, 2)
-    with pytest.raises(RuntimeError, match=r"at least the marker's 2.*MultiFab has 1"):
+    with pytest.raises(
+        RuntimeError,
+        match=r"classified against this geometry.*at least the marker's 2.*MultiFab has 1",
+    ):
         blockamr.classify_default(ct, g, geom)
 
 
@@ -516,7 +519,10 @@ def test_validate_cell_type_refuses_a_geometry_narrower_than_the_marker(blockamr
     g = _geometry_fab(CYLINDER, ba, dm, N, PERIODIC, 1)
     wide = blockamr.CellTypeFab(ba, dm, 2)
     wide.set_val(FLUID)
-    with pytest.raises(RuntimeError, match=r"at least the marker's 2.*MultiFab has 1"):
+    with pytest.raises(
+        RuntimeError,
+        match=r"classified against this geometry.*at least the marker's 2.*MultiFab has 1",
+    ):
         blockamr.validate_cell_type(wide, g)
 
 
