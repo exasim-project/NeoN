@@ -36,13 +36,8 @@ building and distributing Python wheels. This workflow is defined in
 ``.github/workflows/python_wheels.yaml`` and is responsible for release packaging rather than for
 ordinary pull-request testing.
 
-The wheel pipeline is split into a local development part and a cloud release part:
-
-* **Local development** is managed with ``pixi``. Pixi provides the developer environment, including
-  Python, CMake, Ninja, compilers, and optional CUDA tooling for local builds and tests. Pixi is not
-  used to publish packages.
-* **Release builds** are managed by GitHub Actions and ``cibuildwheel``. The workflow creates Python
-  wheels inside controlled CI environments and uploads or publishes the resulting artifacts.
+Release builds are managed by GitHub Actions and ``cibuildwheel``. The workflow creates Python
+wheels inside controlled CI environments and uploads or publishes the resulting artifacts.
 
 The workflow supports both stable and development versions. For a tag such as ``v0.1.2``, the
 package version is derived from the tag and treated as a stable release. For manually triggered

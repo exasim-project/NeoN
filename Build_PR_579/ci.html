@@ -308,14 +308,8 @@ Developers interact only with GitHub — all LRZ GitLab pipelines are triggered 
 building and distributing Python wheels. This workflow is defined in
 <code class="docutils literal notranslate"><span class="pre">.github/workflows/python_wheels.yaml</span></code> and is responsible for release packaging rather than for
 ordinary pull-request testing.</p>
-<p>The wheel pipeline is split into a local development part and a cloud release part:</p>
-<ul class="simple">
-<li><p><strong>Local development</strong> is managed with <code class="docutils literal notranslate"><span class="pre">pixi</span></code>. Pixi provides the developer environment, including
-Python, CMake, Ninja, compilers, and optional CUDA tooling for local builds and tests. Pixi is not
-used to publish packages.</p></li>
-<li><p><strong>Release builds</strong> are managed by GitHub Actions and <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code>. The workflow creates Python
-wheels inside controlled CI environments and uploads or publishes the resulting artifacts.</p></li>
-</ul>
+<p>Release builds are managed by GitHub Actions and <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code>. The workflow creates Python
+wheels inside controlled CI environments and uploads or publishes the resulting artifacts.</p>
 <p>The workflow supports both stable and development versions. For a tag such as <code class="docutils literal notranslate"><span class="pre">v0.1.2</span></code>, the
 package version is derived from the tag and treated as a stable release. For manually triggered
 builds, the workflow generates a development version with a <code class="docutils literal notranslate"><span class="pre">.dev</span></code> suffix so that test artifacts

@@ -139,6 +139,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a832ecda24e344d7e34c79029d0d4827e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0de166fc56197b36ad0fc9ab59c59ddf" id="r_a0de166fc56197b36ad0fc9ab59c59ddf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a0de166fc56197b36ad0fc9ab59c59ddf">keepFaceFluxCorrection</a> (bool keep)</td></tr>
 <tr class="separator:a0de166fc56197b36ad0fc9ab59c59ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad60149f52ba110a7d12d3872a63122a5" id="r_ad60149f52ba110a7d12d3872a63122a5"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; RHSValueType &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#ad60149f52ba110a7d12d3872a63122a5">diagCmpt</a> () const</td></tr>
+<tr class="memdesc:ad60149f52ba110a7d12d3872a63122a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-component diagonal correction for implicit transform BCs (slip/symmetry). nullptr when no implicit transform patch is present (the fast multi-RHS path).  <br /></td></tr>
+<tr class="separator:ad60149f52ba110a7d12d3872a63122a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dd2794e3853a8508ab2c038bc793980" id="r_a6dd2794e3853a8508ab2c038bc793980"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; RHSValueType &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a6dd2794e3853a8508ab2c038bc793980">ensureDiagCmpt</a> ()</td></tr>
+<tr class="memdesc:a6dd2794e3853a8508ab2c038bc793980"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lazily allocate (zero-initialised, one RHSValueType per cell) and return the per-component diagonal-correction store, so the Laplacian assembly can accumulate the implicit transform-BC contribution into it.  <br /></td></tr>
+<tr class="separator:a6dd2794e3853a8508ab2c038bc793980"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a089b0c9827285096b29db2fdc8aa2106" id="r_a089b0c9827285096b29db2fdc8aa2106"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a089b0c9827285096b29db2fdc8aa2106">copyToExecutor</a> (<a class="el" href="namespaceNeoN.html#a84c514269c3ade9cf4103acb1210a65f">Executor</a> <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#abdfd64b78fd8b121e6de388edbb4ea4e">exec</a>) const override</td></tr>
 <tr class="separator:a089b0c9827285096b29db2fdc8aa2106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d8399bc213eb88da8a0d3fb927b5738" id="r_a4d8399bc213eb88da8a0d3fb927b5738"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a4d8399bc213eb88da8a0d3fb927b5738">reset</a> ()</td></tr>
@@ -403,7 +409,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00158">158</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00159">159</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -432,7 +438,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00160">160</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00161">161</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -461,7 +467,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00166">166</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00167">167</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -490,7 +496,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00168">168</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00169">169</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -522,7 +528,69 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 
 <p>Implements <a class="el" href="classNeoN_1_1SupportsCopyTo.html#ad54623a2d9533dc70f4d609714209967">NeoN::SupportsCopyTo&lt; HostType &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00196">196</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00218">218</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ad60149f52ba110a7d12d3872a63122a5" name="ad60149f52ba110a7d12d3872a63122a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad60149f52ba110a7d12d3872a63122a5">&#9670;&#160;</a></span>diagCmpt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType, typename SystemMatrixType  = CSRMatrix&lt;MatrixValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;MatrixValueType, localIdx&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::shared_ptr&lt; <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; RHSValueType &gt; &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;::diagCmpt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Per-component diagonal correction for implicit transform BCs (slip/symmetry). nullptr when no implicit transform patch is present (the fast multi-RHS path). </p>
+
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00198">198</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a6dd2794e3853a8508ab2c038bc793980" name="a6dd2794e3853a8508ab2c038bc793980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dd2794e3853a8508ab2c038bc793980">&#9670;&#160;</a></span>ensureDiagCmpt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType, typename SystemMatrixType  = CSRMatrix&lt;MatrixValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;MatrixValueType, localIdx&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; RHSValueType &gt; &amp; <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">NeoN::la::LinearSystem</a>&lt; MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;::ensureDiagCmpt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lazily allocate (zero-initialised, one RHSValueType per cell) and return the per-component diagonal-correction store, so the Laplacian assembly can accumulate the implicit transform-BC contribution into it. </p>
+
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00206">206</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -551,7 +619,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00269">269</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00296">296</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -580,7 +648,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00177">177</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00178">178</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -609,7 +677,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00182">182</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00183">183</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -638,7 +706,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00242">242</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00269">269</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -667,7 +735,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00260">260</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00287">287</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -696,7 +764,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00191">191</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00192">192</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -726,7 +794,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00193">193</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00194">194</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -755,7 +823,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00150">150</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00151">151</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -784,7 +852,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00152">152</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00153">153</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -813,7 +881,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00154">154</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00155">155</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -842,7 +910,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00156">156</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00157">157</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -871,7 +939,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00211">211</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00237">237</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -900,7 +968,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00162">162</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00163">163</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -929,7 +997,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00164">164</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00165">165</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -958,7 +1026,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00237">237</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00264">264</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1014,7 +1082,7 @@ template&lt;typename MatrixValueType , typename RHSValueType  = MatrixValueType,
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00255">255</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00282">282</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
