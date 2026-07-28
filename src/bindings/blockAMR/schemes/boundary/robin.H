@@ -95,10 +95,11 @@
 //     ANY TU THAT INCLUDES THIS HEADER AND CLAIMS PARITY WITH v1 MUST COMPILE
 //     WITH `-ffp-contract=off` / `--fmad=false`.
 //
-// Three TUs include it: `schemes/boundary/robin_closure.cpp` (B30b),
+// Four TUs include it: `schemes/boundary/robin_closure.cpp` (B30b),
 // `schemes/boundary/laplacian_ghost_cell.cpp` (B32, the `laplacian x ghostCell`
-// pair) and `schemes/boundary/div_ghost_cell.cpp` (B33, the `div x ghostCell`
-// pair). All three are on `src/bindings/blockAMR/CMakeLists.txt`'s per-file
+// pair), `schemes/boundary/div_ghost_cell.cpp` (B33, the `div x ghostCell`
+// pair) and `schemes/boundary/grad_ghost_cell.cpp` (B34, the `grad x ghostCell`
+// pair). All four are on `src/bindings/blockAMR/CMakeLists.txt`'s per-file
 // flags list, next to `ibm/ghost_cell.cpp`.
 //
 // **Q36 was RULED at B32: the per-file opt-in STAYS**, and the directory-level
@@ -171,8 +172,10 @@ struct WallClosure
     //! surface along the normal (v1 `WallClosure.at`), `phi(d) = phi_w + d
     //! dphi/dn|_w`. The same object read again, NOT a new approximation.
     //! `schemes/boundary/div_ghost_cell.cpp` (B33) is the first caller of both,
-    //! at `d_G = s_P + step*dx_d*n̂_d`; `grad` (B34) is the second. The
-    //! laplacian calls neither (W5, design §6, api §5.3).
+    //! at `d_G = s_P + step*dx_d*n̂_d`, and
+    //! `schemes/boundary/grad_ghost_cell.cpp` (B34) is the second, at the same
+    //! `d_G` on one axis. The laplacian calls neither (W5, design §6,
+    //! api §5.3).
     //!
     //! `value_linear + d * grad_linear` is itself a contraction site — see the
     //! floating-point note in the file header.

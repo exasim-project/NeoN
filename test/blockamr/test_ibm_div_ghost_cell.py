@@ -1451,3 +1451,100 @@ def test_the_v1_scheme_names_the_compiled_pair(blockamr_session):
     assert kernel.name == "wall_div_ghost_cell"
     assert hasattr(blockamr, kernel.name)
     assert callable(getattr(blockamr, kernel.name))
+
+
+# ===========================================================================
+# 5. D-1, D-2 — the I-1/S-3 rider (B33-R, executed at B34)
+#
+# `wall_stage.H::stageFaceBox` used to resolve its CELL index through
+# `localBoxOf`, which compares the index against the container's OWN boxes. For a
+# cell-centred container the valid boxes TILE the level, so the first match owns
+# the cell. For a FACE-centred one they OVERLAP on the shared face: a cell on a
+# box seam lies in the face valid box of its own box AND of the box below, and
+# the pass returned whichever `IndexArray()` reached first — measured at 32/32/20
+# of D5's 320 WALL cells per axis at `max_size = 8`.
+#
+# It was latent only because every shipped row builds its `FaceField` with
+# `ngrow = 1`: the wrong box's *fab* box still contained the cell's high face, so
+# the staged values happened to be right. At `ngrow = 0` it stops being latent —
+# 80 of 96 seam WALL cells raised. `localCellBoxOf` maps each candidate back to
+# its CELL box first, and cell boxes tile.
+#
+# The rider lands here and not in `test_ibm_grad_ghost_cell.py` because
+# `stageFaceBox` has **no grad caller** — a `grad` row reads no face field at all
+# — so div's row hook is the fix's only observable surface. Both rows below are
+# additive; no existing row in this file is touched.
+#
+# S-3's corrected sentence (the second throw named `stageMiss`'s "lies in no
+# local box", but at that point a box *was* found) gets no dedicated row, and
+# that is stated rather than papered over: after the I-1 fix the branch is
+# unreachable for a legal cell. D-1's **zero raises**, where 80 of 96 seam cells
+# raise today, is the honest non-vacuity statement.
+# ===========================================================================
+
+
+def _seam_case(name, ngrow, max_size=8):
+    """The same configuration, decomposed, with the face flux at `ngrow`."""
+    from blockamr.field import FaceField
+    from blockamr.mesh import Mesh
+
+    bodies, ibm_bc, lo, hi, velocity, scheme = CONFIGS[name]
+    box = blockamr.Box([0, 0, 0], [N - 1, N - 1, N - 1])
+    geom = blockamr.Geometry(box, blockamr.RealBox(list(lo), list(hi)), 0, [0, 0, 0])
+    ba = blockamr.BoxArray(box)
+    ba.max_size(max_size)
+    dm = blockamr.DistributionMapping(ba)
+    mesh = Mesh(ba, dm, geom)
+    mesh.bodies = bodies
+    field = CellField(mesh, ncomp=1, ngrow=1, name="T", ibm_bc=ibm_bc)
+    face = FaceField(mesh, ncomp=1, ngrow=ngrow, name="phi")
+    update_face_fluxes(face[0], velocity, geom, t=0.0)
+    eqn = Equation(exp.div(face, field), schemes={"Div": scheme})
+    _resolve_schemes(eqn.explicit_terms, eqn.schemes)
+    return mesh, eqn.explicit_terms[0], geom, ba, dm, face
+
+
+@pytest.mark.parametrize("ngrow", [0, 1])
+def test_the_row_hook_stages_the_owning_face_box_across_box_seams(blockamr_session, ngrow):
+    """**D-1 / D-2** — B33-R's I-1, fixed and pinned.
+
+    Every `WALL` cell of D5 at `max_size = 8`, with the face flux carried at
+    `ngrow = 0` and at `ngrow = 1`, reproduces v1's row bitwise — 320 of 320,
+    both times, and **raising nowhere**.
+
+    `ngrow = 0` is the discriminating half: under the old fab-box selection a
+    seam cell resolved a box whose fab box does not reach its high face, and 80
+    of the 96 seam `WALL` cells raised outright. `ngrow = 1` is the control: the
+    shipped configuration, which was already green, and which must stay bit-for-
+    bit unmoved — the fix changes which box is *selected*, never an answer.
+
+    The v1 oracle is the single-box case, compared **by cell**, so the compiled
+    side's decomposition and its flux ghost width are exactly and only what
+    varies.
+    """
+    name = "D5-cyl-mixed-skew-upwind"
+    mesh, term, geom, ba, dm, face = _seam_case(name, ngrow)
+    _bodies, ibm_bc, _lo, _hi, _vel, _scheme = CONFIGS[name]
+    ctx, rows, _arms, _flux, _central = _v1_side(name)
+    g, ct, data, robin = _v2(mesh, geom, ba, dm, ibm_bc)
+    mfs = _mfs(face)
+    face_value = _face_value(term)
+
+    nbox = sum(1 for _ in blockamr.MFIterator(blockamr.MultiFab(ba, dm, 1, 0)))
+    assert nbox == 8, f"vacuous: the level did not decompose ({nbox} boxes)"
+    assert all(mf.n_grow() == ngrow for mf in mfs), "the flux was not built at this ghost width"
+
+    seam = checked = 0
+    for r in range(ctx.nrows):
+        if not ctx.at_wall[r]:
+            continue
+        cell = tuple(int(v) for v in ctx.target[r])
+        # a seam cell: its high face in some direction is a box boundary.
+        seam += any((cell[d] + 1) % 8 == 0 for d in range(3))
+        ok, why = _same(
+            _compiled_row(ct, g, data, robin, geom, mfs, face_value, cell), _v1_row(rows, r)
+        )
+        assert ok, f"{name} (flux ngrow = {ngrow}): compiled row at {cell} differs from v1 — {why}"
+        checked += 1
+    assert checked == NWALL[name], checked
+    assert seam > 0, "vacuous: no WALL cell of this level sits on a box seam"

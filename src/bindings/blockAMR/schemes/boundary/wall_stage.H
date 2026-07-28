@@ -48,6 +48,16 @@
 // could not be called from inside a caller's own loop; these can. `ibm::rowAt`
 // (`ibm/ghost_cell.cpp`) is rewritten over the same idiom, for the same reason.
 //
+// **One exception, and it is the reason `localCellBoxOf` exists** (B34, B33-R's
+// I-1). `localBoxOf` compares `iv` against the container's OWN boxes. For a
+// cell-centred container the valid boxes TILE the level, so "the first box whose
+// valid box contains it" is the owner by construction. For a FACE-centred one
+// they OVERLAP on the shared face: a cell on a box seam lies in the face valid
+// box of its own box AND of the box below it, and the pass returns whichever
+// `IndexArray()` reaches first. `stageFaceBox` therefore resolves its cell
+// through `localCellBoxOf`, which maps each candidate back to its CELL box
+// first.
+//
 // The production sweep is unaffected by any of this — the frame resolves
 // `ct.const_array(mfi)` per box inside its own `MFIter` loop and never comes
 // here.
@@ -84,6 +94,33 @@ inline int localBoxOf(const FA& fa, const amrex::IntVect& iv)
         if (fa.boxArray()[fa.IndexArray()[li]].contains(iv)) return li;
     for (int li = 0; li < fa.local_size(); ++li)
         if (fa.atLocalIdx(li).box().contains(iv)) return li;
+    return -1;
+}
+
+//! The local index of the box that owns the CELL `iv`, in a container whose
+//! boxes may be FACE-centred (B34; B33-R's I-1).
+//!
+//! `localBoxOf` compares `iv` against the container's own boxes. For a
+//! cell-centred container the valid boxes TILE the level, so the first pass is
+//! the owner by construction. For a face-centred one in direction `dd` they
+//! OVERLAP on the shared face: a cell on a box seam is contained in the face
+//! valid box of its own box AND of the box below, and the pass returns whichever
+//! `IndexArray()` reaches first — measured at 32/32/20 of 320 WALL cells per
+//! axis on the D5 geometry at `max_size = 8`, with 80 of 96 seam cells refused
+//! outright when the flux carries `ngrow = 0`.
+//!
+//! `enclosedCells` maps each candidate back to its CELL box, and cell boxes
+//! tile, so the answer is the owning box — the same box the kernel's `MFIter`
+//! resolves there. On a cell-centred container `enclosedCells` is the identity,
+//! so this and `localBoxOf` agree; the two cell-centred stagers keep the
+//! simpler spelling rather than being respelled for symmetry.
+template<class FA>
+inline int localCellBoxOf(const FA& fa, const amrex::IntVect& iv)
+{
+    for (int li = 0; li < fa.local_size(); ++li)
+        if (amrex::enclosedCells(fa.boxArray()[fa.IndexArray()[li]]).contains(iv)) return li;
+    for (int li = 0; li < fa.local_size(); ++li)
+        if (amrex::enclosedCells(fa.atLocalIdx(li).box()).contains(iv)) return li;
     return -1;
 }
 
@@ -143,12 +180,16 @@ inline void stageMarkerBox(
 
 //! The same, for a FACE-centred field — `div`'s three face fluxes (B33).
 //!
-//! `iv` is a CELL index and the fab is face-centred in `dd`, so the box that is
-//! looked up is the cell's own LOW face `iv`. That is enough for both reads a
-//! width-1 face balance makes: a face fab's valid box runs from the cell box's
-//! low face to its high one, so it contains `iv` and `iv + e_dd` together for
-//! every cell of the cell box — there is no ghost width required of the flux,
-//! and none is asked for.
+//! `iv` is a CELL index and the fab is face-centred in `dd`. That is enough for
+//! both reads a width-1 face balance makes: a face fab's valid box runs from the
+//! cell box's low face to its high one, so it contains `iv` and `iv + e_dd`
+//! together for every cell of the cell box — there is no ghost width required of
+//! the flux, and none is asked for.
+//!
+//! The box is resolved through `localCellBoxOf` and NOT `localBoxOf` (B34;
+//! B33-R's I-1): face valid boxes overlap on the shared face, so a cell on a box
+//! seam is contained in two of them and the plain pass returns whichever comes
+//! first in `IndexArray()`. See that helper's note for the measurement.
 inline void stageFaceBox(
     const char* fn,
     const amrex::MultiFab& f,
@@ -157,13 +198,24 @@ inline void stageFaceBox(
     amrex::FArrayBox& out
 )
 {
-    const int li = localBoxOf(f, iv);
+    const int li = localCellBoxOf(f, iv);
     if (li < 0) throw stageMiss(fn, iv, "face flux");
 
     const amrex::FArrayBox& src = f.atLocalIdx(li);
     const amrex::Box fb = src.box();
+    // S-3 (B33-R): NOT `stageMiss`. A box WAS found here — its fab box simply
+    // does not reach the cell's high face — and `stageMiss`'s sentence ("lies in
+    // no local box of the face flux") states a different and wrong fact.
     if (!fb.contains(iv + amrex::IntVect::TheDimensionVector(dd)))
-        throw stageMiss(fn, iv, "face flux (the cell's high face is outside the local box)");
+        throw std::runtime_error(
+            std::string(fn) + ": cell [" + std::to_string(iv[0]) + ", " + std::to_string(iv[1])
+            + ", " + std::to_string(iv[2])
+            + "] is owned by a local box of the face flux whose fab box does not contain the "
+              "cell's HIGH face in direction "
+            + std::to_string(dd)
+            + "; a width-1 face balance reads both of the cell's faces, so the flux must be on "
+              "the marker's BoxArray converted to face centring in that direction"
+        );
 
     out.resize(fb, 1, amrex::The_Pinned_Arena());
     const std::size_t nelem = static_cast<std::size_t>(fb.numPts());

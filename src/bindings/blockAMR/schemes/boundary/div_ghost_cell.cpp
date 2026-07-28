@@ -142,10 +142,24 @@
 // per (cell, component), and its two `at` reads. `closure`, `atLinear` and
 // `atConstant` are CALLED, never re-derived: no `alpha`, no `beta`, no `1/d`
 // appears in this file.
+//
+// ===========================================================================
+// `HostGhostCell` — LIFTED AT B34 (api §10.4)
+// ===========================================================================
+// This file used to carry a second, byte-identical copy of
+// `laplacian_ghost_cell.cpp`'s host staging type, with a note that B34 — the
+// third copy — should move it into `wall_stage.H`. B34 lifted it, but NOT
+// there: `wall_frame.cpp` includes `wall_stage.H`, `HostGhostCell` needs
+// `ibm/ghost_cell.H`, and `test_ibm_laplacian_ghost_cell.py`'s pinned-header
+// row asserts `includers <= flagged` while asserting that `wall_frame.cpp` is
+// not flagged — so that destination turns a shipped row red before the build.
+// It lives in `host_ghost_cell.H`, whose includer set is exactly the three
+// flagged pair TUs; the reasoning is at the top of that header.
 
 #include "../../ibm/cell_type.H"
 #include "../../ibm/geometry_view.H"
 #include "../../ibm/ghost_cell.H"
+#include "host_ghost_cell.H"
 #include "robin.H"
 #include "robin_data.H"
 #include "wall_apply.H"
@@ -169,7 +183,6 @@
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace nb = nanobind;
 
@@ -431,51 +444,6 @@ struct MakeWallDivGhostCell
     }
 };
 
-//! A host-resident copy of `GhostCellData`'s flat arrays, so the functor above
-//! can be called ON THE HOST at one cell (api §10.6).
-//!
-//! The four arrays are `Gpu::DeviceVector`s — device memory, not managed — so
-//! unlike `RobinView` they cannot simply be pointed at from the host. The values
-//! are the real ones and the code that reads them is the same
-//! `AMREX_GPU_HOST_DEVICE` member the kernel calls; only the residence changes.
-//!
-//! **A SECOND COPY of `laplacian_ghost_cell.cpp`'s type, deliberately** (api
-//! §10.4 triggers at "a private helper that a second file copies"). This is that
-//! second file, so the note is owed and the lift is not: B34 is the third copy
-//! and the right moment to move it — into `wall_stage.H`, beside the other
-//! staging helpers. Recorded as owed at B34.
-struct HostGhostCell
-{
-    std::vector<amrex::Real> image_point;
-    std::vector<int> donor;
-    std::vector<amrex::Real> weight;
-    std::vector<amrex::Real> distance;
-    int nrows = 0;
-
-    explicit HostGhostCell(const ibm::GhostCellData& d)
-        : image_point(d.image_point.size()), donor(d.donor.size()), weight(d.weight.size()),
-          distance(d.distance.size()), nrows(d.nrows)
-    {
-        if (d.nrows == 0) return;
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, d.image_point.begin(), d.image_point.end(), image_point.data()
-        );
-        amrex::Gpu::copy(amrex::Gpu::deviceToHost, d.donor.begin(), d.donor.end(), donor.data());
-        amrex::Gpu::copy(amrex::Gpu::deviceToHost, d.weight.begin(), d.weight.end(), weight.data());
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, d.distance.begin(), d.distance.end(), distance.data()
-        );
-        amrex::Gpu::streamSynchronize();
-    }
-
-    ibm::GhostCellView view() const
-    {
-        return ibm::GhostCellView {
-            image_point.data(), donor.data(), weight.data(), distance.data(), nrows
-        };
-    }
-};
-
 } // namespace
 
 void registerDivGhostCell(nb::module_& m)
@@ -624,7 +592,7 @@ void registerDivGhostCell(nb::module_& m)
             amrex::FArrayBox hostF[3];
             for (int dd = 0; dd < 3; ++dd)
                 ibm::stageFaceBox(FN, *src[dd], dd, iv, hostF[dd]);
-            const HostGhostCell hostD(method_data);
+            const ibm::HostGhostCell hostD(method_data);
 
             const ibm::IbmGeometryView gv {hostG.const_array()};
             const int patch = gv.patch(i, j, k);

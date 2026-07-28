@@ -452,6 +452,26 @@ class GhostCellGrad:
             stride=self.stride,
         )
 
+    def build_cpp_kernel(self):
+        """The compiled peer of :meth:`rows` — ``grad x ghostCell`` (B34).
+
+        Nothing calls this yet, exactly as for the other two pairs:
+        :class:`~blockamr.ibm.driver.BandEvaluation` still goes through
+        :meth:`rows`, and flipping the driver over is B36.
+
+        ``wall_grad_ghost_cell`` takes **exactly** the canonical twelve — a
+        ``grad`` row is a one-axis face balance at ``flux = 1`` and
+        ``weight_self = 0.5``, so unlike ``div`` it needs no face field and no
+        face-value selector, and the interior scheme is not read at all.
+        **The ``ncomp > 1`` refusal is the pair's**, raised by ``validate``
+        before any launch, in v1's own sentence (see :func:`_check_grad_ncomp`);
+        the compiled side raises ``RuntimeError`` rather than
+        ``NotImplementedError``, which is a subclass of it.
+        """
+        from ...cpp_kernels import CppWallKernel
+
+        return CppWallKernel("wall_grad_ghost_cell")
+
 
 def _check_grad_ncomp(term, ncomp):
     """``grad`` is a row only for a one-component field.

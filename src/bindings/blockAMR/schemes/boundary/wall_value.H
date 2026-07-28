@@ -103,12 +103,19 @@ struct RecordSink
     //! per-arm alternative (api §5.3's original sketch) was measured to forfeit
     //! bitwise parity with v1 on every wall row of all eight acceptance
     //! configurations, because it accumulates the diagonal in a different
-    //! order. `div`/`grad` (B33/B34) are the same six arms with a different
-    //! weight and inherit the shape — `div x ghostCell` (B33) inherits it AND
-    //! adds an `arm[6]` register bank, because v1 accumulates each face
-    //! neighbour's coefficient into a zero-initialised slot and `0.0 + (-0.0)`
-    //! is `+0.0` (H-6, measured on 960 of 3 232 wall rows). Its row is still at
-    //! most `1 + 6 + 8 = 15` entries.
+    //! order. `div x ghostCell` (B33) inherits that shape over the same six
+    //! arms with a different weight, AND adds an `arm[6]` register bank, because
+    //! v1 accumulates each face neighbour's coefficient into a zero-initialised
+    //! slot and `0.0 + (-0.0)` is `+0.0` (H-6, measured on 960 of 3 232 wall
+    //! rows). Its row is still at most `1 + 6 + 8 = 15` entries.
+    //!
+    //! **`grad x ghostCell` (B34) is NOT six arms**, and the earlier wording
+    //! here said it was. v1 calls the same face balance with `axes = (0,)`
+    //! (`ghost_cell.py:438-453`), because the row format applies ONE coefficient
+    //! list to every component while the gradient's component `n` is the
+    //! difference along axis `n` (row-contract §2) — so only `n = 0` is
+    //! expressible and `ncomp > 1` is refused. Its bank is `arm[2]` and its row
+    //! is at most `1 + 2 + 8 = 11` entries.
     //!
     //! The headroom is kept rather than trimmed to 16: it costs one host-side
     //! POD in a test binding, and a row that did overflow sets the flag; it is

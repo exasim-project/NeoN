@@ -116,6 +116,7 @@
 #include "../../ibm/cell_type.H"
 #include "../../ibm/geometry_view.H"
 #include "../../ibm/ghost_cell.H"
+#include "host_ghost_cell.H"
 #include "robin.H"
 #include "robin_data.H"
 #include "wall_apply.H"
@@ -138,7 +139,6 @@
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 namespace nb = nanobind;
 
@@ -291,45 +291,6 @@ struct MakeWallLaplacianGhostCell
     }
 };
 
-//! A host-resident copy of `GhostCellData`'s flat arrays, so the functor above
-//! can be called ON THE HOST at one cell (api §10.6).
-//!
-//! The four arrays are `Gpu::DeviceVector`s — device memory, not managed — so
-//! unlike `RobinView` they cannot simply be pointed at from the host. The
-//! values are the real ones and the code that reads them is the same
-//! `AMREX_GPU_HOST_DEVICE` member the kernel calls; only the residence changes.
-struct HostGhostCell
-{
-    std::vector<amrex::Real> image_point;
-    std::vector<int> donor;
-    std::vector<amrex::Real> weight;
-    std::vector<amrex::Real> distance;
-    int nrows = 0;
-
-    explicit HostGhostCell(const ibm::GhostCellData& d)
-        : image_point(d.image_point.size()), donor(d.donor.size()), weight(d.weight.size()),
-          distance(d.distance.size()), nrows(d.nrows)
-    {
-        if (d.nrows == 0) return;
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, d.image_point.begin(), d.image_point.end(), image_point.data()
-        );
-        amrex::Gpu::copy(amrex::Gpu::deviceToHost, d.donor.begin(), d.donor.end(), donor.data());
-        amrex::Gpu::copy(amrex::Gpu::deviceToHost, d.weight.begin(), d.weight.end(), weight.data());
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, d.distance.begin(), d.distance.end(), distance.data()
-        );
-        amrex::Gpu::streamSynchronize();
-    }
-
-    ibm::GhostCellView view() const
-    {
-        return ibm::GhostCellView {
-            image_point.data(), donor.data(), weight.data(), distance.data(), nrows
-        };
-    }
-};
-
 } // namespace
 
 void registerLaplacianGhostCell(nb::module_& m)
@@ -441,7 +402,7 @@ void registerLaplacianGhostCell(nb::module_& m)
             ibm::stageGeometryBox(FN, geom_ibm, amrex::IntVect(i, j, k), hostG);
             amrex::BaseFab<std::uint8_t> hostM;
             ibm::stageMarkerBox(FN, cell_type, amrex::IntVect(i, j, k), hostM);
-            const HostGhostCell hostD(method_data);
+            const ibm::HostGhostCell hostD(method_data);
 
             const ibm::IbmGeometryView gv {hostG.const_array()};
             const int patch = gv.patch(i, j, k);

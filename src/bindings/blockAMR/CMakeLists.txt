@@ -30,6 +30,7 @@ nanobind_add_module(
   schemes/boundary/robin_closure.cpp
   schemes/boundary/laplacian_ghost_cell.cpp
   schemes/boundary/div_ghost_cell.cpp
+  schemes/boundary/grad_ghost_cell.cpp
   tile_layout.cpp
   wall_table.cpp
   band_table.cpp)
@@ -52,6 +53,10 @@ target_link_libraries(_blockamr PRIVATE amrex)
 #   B33). It is the FIRST caller of robin.H's atLinear/atConstant, whose `value + d*grad` is a
 #   contraction site of its own, and it adds `dG = sdf + step*dx*n`, a face-neighbour accumulator
 #   bank, the donor sums, the diagonal and the constant.
+# * schemes/boundary/grad_ghost_cell.cpp against the SAME _face_balance_rows in the same v1 module
+#   (tasks.md B34), reached from GhostCellGrad.rows with axes=(0,), flux=1 and weight_self=0.5. It
+#   is robin.H's FOURTH includer and atLinear/atConstant's second caller, and it carries the same
+#   accumulator shapes on one axis.
 #
 # GCC defaults to -ffp-contract=fast and nvcc to --fmad=true (re-asserted by AMReX's
 # --use_fast_math), so contraction is turned off here, scoped to these sources so no other
@@ -74,7 +79,8 @@ set(_ghost_cell_fp_flags
     "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
 set_source_files_properties(
   ibm/ghost_cell.cpp schemes/boundary/robin_closure.cpp schemes/boundary/laplacian_ghost_cell.cpp
-  schemes/boundary/div_ghost_cell.cpp PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
+  schemes/boundary/div_ghost_cell.cpp schemes/boundary/grad_ghost_cell.cpp
+  PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
@@ -101,6 +107,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     schemes/boundary/robin_closure.cpp
     schemes/boundary/laplacian_ghost_cell.cpp
     schemes/boundary/div_ghost_cell.cpp
+    schemes/boundary/grad_ghost_cell.cpp
     tile_layout.cpp
     wall_table.cpp
     band_table.cpp
