@@ -476,12 +476,18 @@ def test_stokes_layer_phase_lag_matches_the_analytic_solution(blockamr_session, 
     the *stage* structure — Forward Euler has one stage and cannot exhibit it,
     so a suite that only ran Euler would be reporting a null result as a pass.
     The scheme is named in the equation's ``schemes`` (fvSchemes), which is
-    where ``solve()`` looks a ddt scheme up; it is not a solver setting.
+    where ``solve()`` looks a ddt scheme up **when the ``solution`` dict does
+    not name one**: per decision Q8 a ``solution["ddt"]`` key wins over
+    ``schemes["ddt"]`` (see ``solve()``'s own docstring), and this test
+    deliberately takes the equation route — ``_sol()`` carries only ``"ibm"``
+    and ``"backend"``, no ``"ddt"``.
 
     Live for the whole parametrization since B15: ``solve()`` honours
     ``solution["ibm"]`` alongside ``solution["backend"]``, so the immersed wall
     is in the time loop, and ``RK2``/``RK4`` reach the stage schedule this test
-    is about instead of raising ``NotImplementedError``.
+    is about instead of raising ``NotImplementedError``. Green on all three
+    schemes since B42 made the wall datum time-dependent; the fitted amplitudes
+    and phases are recorded in ``plans/IBM/tasks.md`` §1 (*Measured, B27*).
     """
     mesh, u, eqn, dt, nsteps = _a4_case(ddt_scheme)
     shape = (N_A4, N_A4, N_A4)
@@ -712,9 +718,9 @@ def test_stokes_first_problem_profile_follows_erfc(blockamr_session):
     is the bulk's norm wearing the band's name.
 
     The wall datum is a constant here (``FixedValue(U0)``), so A5 needs nothing
-    A4 does not. It is red purely because ``solve()`` has no IBM path, which
-    lets the wall value diffuse away into the zero-seeded solid instead of
-    being held.
+    A4 does not — and nothing B42's time-dependent datum added either. Green
+    and unmarked since B15 put the IBM path into ``solve()``; before that the
+    wall value diffused away into the zero-seeded solid instead of being held.
     """
     mesh, u, eqn, dt, nsteps = _a5_case()
     shape = (N_A5, N_A5, N_A5)
@@ -926,9 +932,14 @@ def test_womersley_amplitude_and_phase_profiles(blockamr_session, alpha, n):
     the mesh is sized per ``alpha`` to keep ``delta`` at ``SCALE_CELLS`` cells,
     so the two points differ in physics and not in resolution.
 
-    Red for the same T15 reason as A4 and A5: with no IBM in ``solve()`` there
-    are no walls, the channel is not a channel, and the field relaxes to the
-    uniform ``u_p`` of an unbounded fluid.
+    T15 and the constant-datum blocker are both closed (B15, B42), so both
+    points run to completion. Measured at B27 (``plans/IBM/tasks.md`` §1):
+    ``alpha = 6`` meets both bounds; ``alpha = 3`` misses ``AMP_RTOL`` at the
+    **outermost station pair** — the amplitude there is 0.618 against an exact
+    0.558, a 10.9 % overshoot against the 5 % bound, while its phase error
+    (0.068 rad) still sits inside ``PHASE_ATOL``. That is why the marker is
+    carried by the ``alpha-3`` ``pytest.param`` alone. Nothing here is tuned:
+    the miss is a wall-accuracy result for the gate B18 to judge.
     """
     mesh, v, eqn, seed, cfg = _a6_case(alpha, n)
     shape = (n, n, n)
@@ -995,11 +1006,15 @@ CFL_A8 = 0.4
 #: The largest ``|T - T_exact|`` tolerated in the band after ten revolutions,
 #: as a fraction of the scalar's own range over the fluid. It is a
 #: **specification**, not a measurement: §10 requires a non-conservative
-#: method's drift to be characterized rather than asserted to be zero, and the
-#: measurement cannot be taken while T15 blocks the run. What *is* derivable is
-#: the shape of the budget — the bulk drift is exactly zero (see the test's
-#: docstring), so the whole of it belongs to the band. Whoever lands T15 must
-#: replace this number with the measured one.
+#: method's drift to be characterized rather than asserted to be zero. What was
+#: *derived* when it was written — that the bulk drift is exactly zero, so the
+#: whole budget belongs to the band — is **contradicted by measurement**: B27
+#: (2026-07-28) ran both rows and found the band well inside this bound (band
+#: ``L∞`` 2.13e-04 / 2.24e-04 against ``0.05 × 0.2139 = 1.07e-02``, a factor of
+#: 50) while the *bulk* carries a comparable 2.39e-04 / 2.38e-04. The rows are
+#: red on the bulk-exactness assertion below, not on this constant, so the
+#: value is left untouched (O4) and the numbers are recorded in
+#: ``plans/IBM/tasks.md`` §1 (*Measured, B27*) for the gate B18 to judge.
 DRIFT_FRACTION_A8 = 0.05
 
 
@@ -1038,12 +1053,24 @@ def test_rotating_wall_does_not_leak_a_radial_scalar(blockamr_session, ddt_schem
     range (:data:`DRIFT_FRACTION_A8`) rather than as zero, which §10 names as
     an anti-pattern.
 
+    **Measured at B27 (2026-07-28), and the two statements answered the wrong
+    way round.** The band — the half expected to drift — is comfortably inside
+    its bound (``L∞`` 2.13e-04 for ``RK2``, 2.24e-04 for ``RK4``, against
+    ``0.05 × 0.2139 = 1.07e-02``). The **bulk** — the half derived to be exact
+    to the last bit — is not: every one of its 3232 cells is nonzero, ``L∞``
+    2.39e-04 / 2.38e-04. So the "the discrete divergence cancels bitwise"
+    argument above is contradicted by its own contract test, exactly as B11
+    found for this row's rung-8 neighbour. The ``atol=1e-12`` is deliberately
+    **not** relaxed: it is the claim, and a refuted claim is recorded and
+    judged at the gate B18, never tuned (O3/O4). Numbers in
+    ``plans/IBM/tasks.md`` §1 (*Measured, B27*).
+
     Forward Euler is deliberately **not** in the parametrization: central
     differencing of pure advection is unconditionally unstable under it, so an
     Euler run would measure the amplification of the time scheme and blame it
     on the wall. The multi-stage schemes are the only stable drivers here,
-    which also makes A8 red on T15 immediately (``NotImplementedError``) rather
-    than after ten revolutions of wasted work.
+    which before B15 also made A8 red immediately (``NotImplementedError``)
+    rather than after ten revolutions of wasted work.
     """
     mesh = _make_mesh(
         N_A8, nz=NZ_A8, bodies={"cyl": Cylinder(centre=CENTRE_A8, radius=R_A8, axis=AXIS_A8)}

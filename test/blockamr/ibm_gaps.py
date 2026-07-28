@@ -101,12 +101,24 @@ B26_STEADY_VALIDATION_MEASUREMENT = _gap(
 
 B27_UNSTEADY_VALIDATION_MEASUREMENT = _gap(
     "B27",
-    "solve() applies solution['ibm'] since B15, and the callable wall datum "
-    "since B42 (2026-07-28), so every unsteady study now runs; the rows still "
-    "marked are the ones that still miss their accuracy bounds — A6 at "
-    "alpha = 3 and both A8 rows. A4's three rows and A6 at alpha = 6 x-passed "
-    "at B42 and lost this marker there, with no number recorded: B27 is the "
-    "Phase-2 session that measures and records the unsteady results",
+    "**the measurement is taken** — B27 ran on 2026-07-28 (cpp/CUDA) and every "
+    "number is in plans/IBM/tasks.md §1, *Measured, B27*: A4's phase error is "
+    "recorded (a common lag of -0.0246 rad = -3.69 timesteps, identical across "
+    "Euler/RK2/RK4, inside PHASE_ATOL = 0.08) and A6 at alpha = 6 is recorded "
+    "green. What is left under this marker is **not** an unrecorded number, it "
+    "is three measured misses, each of which is a wall-accuracy judgement for "
+    "the gate B18 and not a tolerance anyone may move (O3/O4). **A6 at "
+    "alpha = 3** overshoots the amplitude at the outermost station pair — "
+    "0.618431 against an exact 0.557549, +10.9 % against AMP_RTOL = 0.05 — "
+    "while its phase error there (0.068 rad) is still inside PHASE_ATOL; the "
+    "interior seven stations pass. **Both A8 rows** fail on the *bulk* "
+    "assertion, not the band: the band drift the row was built to characterize "
+    "comes in 50x inside DRIFT_FRACTION_A8 (2.13e-04 / 2.24e-04 against "
+    "1.07e-02), but the derived claim that the discrete divergence cancels "
+    "bitwise in the bulk is refuted — all 3232 bulk cells are nonzero, L-inf "
+    "2.39e-04 (RK2) / 2.38e-04 (RK4) against atol = 1e-12 — the same shape of "
+    "refutation B11 recorded for this row's rung-8 neighbour. A4's three rows "
+    "and A6 at alpha = 6 lost this marker at B42 and stay green",
 )
 
 # -- missing implementation -------------------------------------------------
