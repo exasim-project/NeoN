@@ -36,13 +36,8 @@ building and distributing Python wheels. This workflow is defined in
 ``.github/workflows/python_wheels.yaml`` and is responsible for release packaging rather than for
 ordinary pull-request testing.
 
-The wheel pipeline is split into a local development part and a cloud release part:
-
-* **Local development** is managed with ``pixi``. Pixi provides the developer environment, including
-  Python, CMake, Ninja, compilers, and optional CUDA tooling for local builds and tests. Pixi is not
-  used to publish packages.
-* **Release builds** are managed by GitHub Actions and ``cibuildwheel``. The workflow creates Python
-  wheels inside controlled CI environments and uploads or publishes the resulting artifacts.
+Release builds are managed by GitHub Actions and ``cibuildwheel``. The workflow creates Python
+wheels inside controlled CI environments and uploads or publishes the resulting artifacts.
 
 The workflow supports both stable and development versions. For a tag such as ``v0.1.2``, the
 package version is derived from the tag and treated as a stable release. For manually triggered
@@ -78,6 +73,12 @@ Publishing is separated by wheel type:
   Connect identity instead of storing a long-lived PyPI API token.
 * **CUDA wheels** are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
   This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package.
+
+To rehearse the publish flow before a real release, dispatch the workflow manually with
+``build_wheels``, ``build_cpu`` and ``publish_repository=testpypi``. This builds a unique ``.dev``
+version and uploads it to TestPyPI, so Trusted Publishing configuration and package metadata can be
+validated without touching the production index. TestPyPI needs its own trusted-publisher entry and a
+GitHub ``testpypi`` environment; ``publish_repository=pypi`` targets the production index instead.
 
 The workflow also includes recovery paths for already-built artifacts. If a build succeeds but a
 publish or release-upload step fails, existing wheel artifacts can be reused by providing the

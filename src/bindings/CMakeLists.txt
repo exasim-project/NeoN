@@ -57,8 +57,10 @@ nanobind_add_module(_neon NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
-if(NOT NeoN_ENABLE_CUDA)
-  # Stub generation imports _neon. CUDA wheels can be built without an NVIDIA driver present.
+if(NOT NeoN_ENABLE_CUDA AND NOT WIN32)
+  # Stub generation imports _neon. Skipped for CUDA (may build without an NVIDIA driver present) and
+  # on Windows (the extension's dependent DLLs are not on the loader search path at build time, so
+  # the import fails).
   add_custom_command(
     TARGET _neon
     POST_BUILD

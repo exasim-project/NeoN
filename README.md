@@ -26,6 +26,7 @@ NeoN has the following requirements
 
 For GPU support
 * NVIDIA: CUDA _12+_
+* AMD: ROCm _6.4.1_
 * Intel: oneAPI Base Toolkit _2024.2_
 
 For development it is required to use [pre-commit](https://pre-commit.com/).
@@ -62,29 +63,10 @@ We provide a set of unit tests which can be executed via ctest or
 
     cmake --build . --target test
 
-### Pixi Workspace
-
-For local development, NeoN can be driven via `pixi.toml`. Pixi provides the
-developer tools, such as Python, CMake, Ninja, a C++ compiler, nanobind, pytest,
-and optional CUDA compiler packages, in an isolated environment.
-
-Typical commands are:
-
-    pixi install
-    pixi shell
-    pixi run build
-    pixi run test
-    pixi run -e cuda build-cuda
-    pixi run -e cuda test-cuda
-
-Pixi is only the local development leg. It is not used to publish Python wheels
-or upload releases.
-
 ### Python Wheels
 
-The Python distribution name in this test repository is
-`andrei-maftei-testneon`, which produces wheel filenames starting with
-`andrei_maftei_testneon`. The import package remains `neon`.
+The Python distribution name is `neon_pde`, which produces wheel filenames
+starting with `neon_pde`. The import package remains `neon`.
 
 The package version in `pyproject.toml` is the source of truth. CMake reads that
 version during configuration, and the generated `neon.__version__` uses the same

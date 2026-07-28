@@ -2,7 +2,6 @@
 
 # SPDX-FileCopyrightText: 2026 NeoN authors
 #
-# SPDX-License-Identifier: MIT
 # SPDX-License-Identifier: Unlicense
 
 set -euo pipefail
