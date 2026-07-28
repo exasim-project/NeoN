@@ -436,10 +436,12 @@ def test_the_row_map_is_minus_one_at_every_cell_that_is_not_wall(blockamr_sessio
 
     wall = int(blockamr.CellType.WALL)
 
-    # The marker is materialised BEFORE any `row_at` call, deliberately:
-    # `row_at` opens an `MFIter` of its own, and AMReX refuses a nested one
-    # (`MFIter::Initialize` asserts). A readback loop that called it from
-    # inside `MFIterator` would abort rather than fail.
+    # The marker is materialised before any `row_at` call. That used to be
+    # mandatory — `row_at` opened an `MFIter` of its own and AMReX refuses a
+    # nested one with an abort rather than an exception — and since B33 it is
+    # merely tidy: `rowAt` resolves the box through `IndexArray()` +
+    # `atLocalIdx()` and opens nothing. The two rows at the end of this file
+    # pin that, so the workaround is not restored by habit.
     marker = {}
     probe = blockamr.MultiFab(ba, dm, 1, 0)
     for mfi in blockamr.MFIterator(probe):
@@ -486,3 +488,75 @@ def test_the_row_map_is_the_exclusive_scan_rank_across_eight_boxes(blockamr_sess
     for rank, cell in enumerate(expected):
         got = data.row_at(*(int(v) for v in cell))
         assert got == rank, f"cell {tuple(cell)} has rank {got}, expected {rank}"
+
+
+# ===========================================================================
+# 8. `row_at` from inside an `MFIter` (B33, rider D-2)
+# ===========================================================================
+
+
+def test_row_at_returns_the_same_ranks_after_the_mfiter_free_rewrite(blockamr_session):
+    """`rowAt`'s **answers** are unchanged by B33's rewrite — only its mechanism
+    is (review.md §4 Q52(f), rider D-2).
+
+    `row` carries `ngrow = 0`, so its valid box *is* its fab box and there is no
+    valid/fab distinction for this lookup to get wrong; the rewrite swaps an
+    `MFIter` loop for `boxArray()[IndexArray()[li]]` + `atLocalIdx(li)`, which
+    walks the same local boxes in the same order. On **eight boxes** a wrong
+    local-index resolution would read another box's fab and mismatch wholesale,
+    so this is the row that would catch it.
+
+    Deliberately independent of the map's *construction*: the expected ranks
+    come from `np.argwhere(depth == 1)`, exactly as the section-2 row above.
+    """
+    mesh, geom, ba, dm = _mesh(BODIES["cylinder"], max_size=8)
+    data, _ct, _g = _preprocessed(mesh, geom, ba, dm)
+
+    grids = box_grids(mesh, 0)
+    assert len(grids) == 8
+    expected = np.concatenate(
+        [
+            np.argwhere(geometry.depth == 1) + np.asarray(grid.lo)
+            for grid, geometry in zip(grids, mesh.ibm.geometry(0))
+        ]
+    )
+    assert len(expected) == data.nrows > 0
+    got = [data.row_at(*(int(v) for v in cell)) for cell in expected]
+    assert got == list(range(len(expected)))
+
+
+def test_row_at_is_callable_from_inside_an_mfiterator_loop(blockamr_session):
+    """The call that **aborted** at B32, made a passing row (rider D-2).
+
+    AMReX refuses a nested `MFIter` with an `Abort`, not an exception, so before
+    B33 this loop killed the interpreter rather than failing a test — which is
+    why B32 could only record the limitation in a comment. `rowAt` now opens no
+    `MFIter`, so a caller may ask per cell from inside its own iteration, and the
+    ranks it hands back are the same ones the materialise-first loop gets.
+
+    The comparison against the materialised answers is what stops this from
+    passing vacuously if the lookup ever silently returned `-1` everywhere.
+    """
+    mesh, geom, ba, dm = _mesh(BODIES["cylinder"], max_size=8)
+    data, ct, _g = _preprocessed(mesh, geom, ba, dm)
+
+    probe = blockamr.MultiFab(ba, dm, 1, 0)
+
+    outside = {}
+    for mfi in blockamr.MFIterator(probe):
+        lo = tuple(mfi.valid_box().small_end())
+        block = _cell_type_numpy(ct, mfi)
+        for local in np.ndindex(block.shape):
+            outside[tuple(lo[d] + local[d] for d in range(3))] = int(block[local])
+    materialised = {cell: data.row_at(*cell) for cell in outside}
+
+    inside = {}
+    for mfi in blockamr.MFIterator(probe):
+        lo = tuple(mfi.valid_box().small_end())
+        block = _cell_type_numpy(ct, mfi)
+        for local in np.ndindex(block.shape):
+            cell = tuple(lo[d] + local[d] for d in range(3))
+            inside[cell] = data.row_at(*cell)  # <- the nested call
+
+    assert inside == materialised
+    assert sum(1 for r in inside.values() if r >= 0) == data.nrows > 0

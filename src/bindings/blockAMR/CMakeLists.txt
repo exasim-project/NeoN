@@ -29,13 +29,14 @@ nanobind_add_module(
   schemes/boundary/wall_frame.cpp
   schemes/boundary/robin_closure.cpp
   schemes/boundary/laplacian_ghost_cell.cpp
+  schemes/boundary/div_ghost_cell.cpp
   tile_layout.cpp
   wall_table.cpp
   band_table.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
-# Three sources are pinned BITWISE against a numpy peer and therefore may not have a multiply-add
+# Four sources are pinned BITWISE against a numpy peer and therefore may not have a multiply-add
 # contracted into an fma -- one rounding where numpy does two:
 #
 # * ibm/ghost_cell.cpp against src/blockamr/ibm/ghost_cell.py (tasks.md B31, review.md Q29(d) -- the
@@ -47,6 +48,10 @@ target_link_libraries(_blockamr PRIVATE amrex)
 #   (tasks.md B32). It inlines robin.H's closure AND accumulates its own donor sums, diagonal and
 #   constant -- three multiply-accumulate shapes of its own -- so the flag is load-bearing for this
 #   TU's bar rather than merely inherited.
+# * schemes/boundary/div_ghost_cell.cpp against _face_balance_rows in the same v1 module (tasks.md
+#   B33). It is the FIRST caller of robin.H's atLinear/atConstant, whose `value + d*grad` is a
+#   contraction site of its own, and it adds `dG = sdf + step*dx*n`, a face-neighbour accumulator
+#   bank, the donor sums, the diagonal and the constant.
 #
 # GCC defaults to -ffp-contract=fast and nvcc to --fmad=true (re-asserted by AMReX's
 # --use_fast_math), so contraction is turned off here, scoped to these sources so no other
@@ -69,7 +74,7 @@ set(_ghost_cell_fp_flags
     "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
 set_source_files_properties(
   ibm/ghost_cell.cpp schemes/boundary/robin_closure.cpp schemes/boundary/laplacian_ghost_cell.cpp
-  PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
+  schemes/boundary/div_ghost_cell.cpp PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
@@ -95,6 +100,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     schemes/boundary/wall_frame.cpp
     schemes/boundary/robin_closure.cpp
     schemes/boundary/laplacian_ghost_cell.cpp
+    schemes/boundary/div_ghost_cell.cpp
     tile_layout.cpp
     wall_table.cpp
     band_table.cpp

@@ -146,10 +146,12 @@ void preprocess(
 //! `fn`, because "this level has no row there" and "you asked about a cell that
 //! is not on this level" are different answers and only one of them is a `-1`.
 //!
-//! Opens an `MFIter`, so it may not be called from inside one: AMReX refuses a
-//! nested `MFIter` with an assert rather than an exception (measured at B32 —
-//! a readback loop that called it per cell from inside `MFIterator` aborted).
-//! Materialise first, then ask.
+//! Opens **no** `MFIter` (B33), so it is callable from inside one: the box is
+//! found through `IndexArray()` + `atLocalIdx()`, which is `wall_stage.H`'s
+//! `localBoxOf` idiom. Until B33 it did open one, and AMReX refuses a nested
+//! `MFIter` with an abort rather than an exception — a readback loop that called
+//! this per cell from inside `MFIterator` aborted (measured at B32), and the
+//! workaround was to materialise the whole map first. That is no longer needed.
 int rowAt(const GhostCellData& d, const char* fn, int i, int j, int k);
 
 } // namespace ibm

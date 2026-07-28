@@ -104,7 +104,11 @@ struct RecordSink
     //! bitwise parity with v1 on every wall row of all eight acceptance
     //! configurations, because it accumulates the diagonal in a different
     //! order. `div`/`grad` (B33/B34) are the same six arms with a different
-    //! weight and inherit the shape.
+    //! weight and inherit the shape — `div x ghostCell` (B33) inherits it AND
+    //! adds an `arm[6]` register bank, because v1 accumulates each face
+    //! neighbour's coefficient into a zero-initialised slot and `0.0 + (-0.0)`
+    //! is `+0.0` (H-6, measured on 960 of 3 232 wall rows). Its row is still at
+    //! most `1 + 6 + 8 = 15` entries.
     //!
     //! The headroom is kept rather than trimmed to 16: it costs one host-side
     //! POD in a test binding, and a row that did overflow sets the flag; it is

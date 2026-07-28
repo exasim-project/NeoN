@@ -400,6 +400,28 @@ class GhostCellDiv:
             stride=self.stride,
         )
 
+    def build_cpp_kernel(self):
+        """The compiled peer of :meth:`rows` — ``div x ghostCell`` (B33).
+
+        Nothing calls this yet, exactly as for
+        :meth:`GhostCellLaplacian.build_cpp_kernel`:
+        :class:`~blockamr.ibm.driver.BandEvaluation` still uploads a
+        ``BandTable``, and flipping it over is B36. The compiled pair reaches
+        the same rows :meth:`rows` builds, bitwise, and it reaches them at the
+        cell instead of through a band table.
+
+        ``wall_div_ghost_cell`` takes four arguments past the canonical twelve
+        — ``flux_x, flux_y, flux_z, face_value`` — because a ``div`` row is a
+        *face* balance. **B36 owns the face-value mapping** at the call site:
+        ``self.interior.type`` selects ``DivFaceValue.Central`` for ``Linear``
+        and ``DivFaceValue.Upwind`` for ``Upwind``, ``VanLeer`` and ``QUICK``
+        — the last two being the D1 degrade, since a width-2 stencil reaches
+        through the solid inside the band.
+        """
+        from ...cpp_kernels import CppWallKernel
+
+        return CppWallKernel("wall_div_ghost_cell")
+
 
 @register
 class GhostCellGrad:

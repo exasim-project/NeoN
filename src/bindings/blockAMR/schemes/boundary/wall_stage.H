@@ -26,20 +26,31 @@
 // bindings' staging and no production sweep stages anything.
 //
 // ---------------------------------------------------------------------------
-// KNOWN LIMITATION — SINGLE-BOX LEVELS ONLY, OWED AT B33 (measured at B32)
+// HOW A BOX IS SELECTED — VALID BOX FIRST, FAB BOX ONLY AS A FALLBACK (B33)
 // ---------------------------------------------------------------------------
-// Both helpers below select the FIRST local box whose **fab** box contains the
-// cell. On a decomposed level that can be a box for which the cell is a GHOST,
-// and then a functor reading a face neighbour walks off the staged fab: at
-// `max_size = 8` the row hook returned rows with arms silently missing
-// (measured on `K5` at cells on a box seam). The production sweep is
-// unaffected — the frame resolves `ct.const_array(mfi)` per box inside its own
-// `MFIter` loop and never comes here — and B32's rows that use the hook all run
-// on single-box levels, where the selection is unambiguous.
+// Every helper below resolves the cell through `localBoxOf`: a pass over the
+// local boxes selecting the one whose **valid** box contains it, and only then
+// a second pass over the **fab** boxes. Until B33 there was only the second
+// pass, and on a decomposed level it could pick a box for which the cell is a
+// GHOST — a functor reading a face neighbour then walked off the staged fab and
+// the row hook returned rows with arms silently missing (measured at B32 on
+// `K5`, `max_size = 8`, at cells on a box seam).
 //
-// The fix is three lines and needs a build slot, which B32 had already spent
-// when this was found: pass 1 over the boxes selecting `mfi.validbox()`, and
-// only then fall back to the fab box. B33 owns it.
+// The fab-box fallback is KEPT, and it is not a leftover: a host row at a cell
+// on the edge of a box must still be able to read the marker's ghosts, which is
+// the `stageMarkerBox` argument below, unchanged. What the two passes add is an
+// ORDER — the box that owns the cell wins over a box that merely sees it — so
+// the staged fab is the same fab the kernel would resolve there.
+//
+// The selection is spelled WITHOUT an `MFIter` (`local_size()`, `IndexArray()`,
+// `atLocalIdx()` — `AMReX_FabArray.H:535-536`). AMReX refuses a nested `MFIter`
+// with an abort rather than an exception, so a staging helper that opened one
+// could not be called from inside a caller's own loop; these can. `ibm::rowAt`
+// (`ibm/ghost_cell.cpp`) is rewritten over the same idiom, for the same reason.
+//
+// The production sweep is unaffected by any of this — the frame resolves
+// `ct.const_array(mfi)` per box inside its own `MFIter` loop and never comes
+// here.
 
 #include "../../ibm/cell_type.H"
 #include "../../ibm/geometry_view.H"
@@ -50,7 +61,7 @@
 #include <AMReX_FArrayBox.H>
 #include <AMReX_GpuContainers.H>
 #include <AMReX_IntVect.H>
-#include <AMReX_MFIter.H>
+#include <AMReX_MultiFab.H>
 
 #include <cstddef>
 #include <cstdint>
@@ -59,6 +70,22 @@
 
 namespace ibm
 {
+
+//! The local index of the box that owns `iv`: a VALID box first, and only then
+//! a fab box (the ghost of some other box). `-1` if no local box has it.
+//!
+//! No `MFIter`, deliberately — see the header note. The two passes are separate
+//! loops rather than one loop with a remembered fallback because "some box owns
+//! it" must beat "an earlier box sees it", whatever order the boxes come in.
+template<class FA>
+inline int localBoxOf(const FA& fa, const amrex::IntVect& iv)
+{
+    for (int li = 0; li < fa.local_size(); ++li)
+        if (fa.boxArray()[fa.IndexArray()[li]].contains(iv)) return li;
+    for (int li = 0; li < fa.local_size(); ++li)
+        if (fa.atLocalIdx(li).box().contains(iv)) return li;
+    return -1;
+}
 
 //! The sentence a stage helper raises when no local box owns the cell.
 //!
@@ -80,29 +107,23 @@ inline void stageGeometryBox(
     const char* fn, const IbmGeometryFab& g, const amrex::IntVect& iv, amrex::FArrayBox& out
 )
 {
-    for (amrex::MFIter mfi(g); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box fb = mfi.fabbox();
-        if (!fb.contains(iv)) continue;
+    const int li = localBoxOf(g, iv);
+    if (li < 0) throw stageMiss(fn, iv, "geometry");
 
-        const amrex::FArrayBox& src = g[mfi];
-        out.resize(fb, GEOM_NCOMP, amrex::The_Pinned_Arena());
-        const std::size_t nelem = static_cast<std::size_t>(fb.numPts()) * GEOM_NCOMP;
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, src.dataPtr(), src.dataPtr() + nelem, out.dataPtr()
-        );
-        return;
-    }
-
-    throw stageMiss(fn, iv, "geometry");
+    const amrex::FArrayBox& src = g.atLocalIdx(li);
+    const amrex::Box fb = src.box();
+    out.resize(fb, GEOM_NCOMP, amrex::The_Pinned_Arena());
+    const std::size_t nelem = static_cast<std::size_t>(fb.numPts()) * GEOM_NCOMP;
+    amrex::Gpu::copy(amrex::Gpu::deviceToHost, src.dataPtr(), src.dataPtr() + nelem, out.dataPtr());
 }
 
 //! The same, for the marker — GHOSTS INCLUDED, and that is the point.
 //!
 //! A real pair gates each of its six arms on `m(i +- 1, ...)`, so a host-side
 //! row at a cell on the edge of a box reads the marker's ghost region. Staging
-//! `mfi.fabbox()` rather than the valid box is what makes the host row the same
-//! row the kernel computes there.
+//! the whole FAB box rather than the valid box is what makes the host row the
+//! same row the kernel computes there — `localBoxOf` chooses *which* box, and
+//! this copies all of it, ghosts and all.
 inline void stageMarkerBox(
     const char* fn,
     const CellTypeFab& ct,
@@ -110,21 +131,43 @@ inline void stageMarkerBox(
     amrex::BaseFab<std::uint8_t>& out
 )
 {
-    for (amrex::MFIter mfi(ct); mfi.isValid(); ++mfi)
-    {
-        const amrex::Box fb = mfi.fabbox();
-        if (!fb.contains(iv)) continue;
+    const int li = localBoxOf(ct, iv);
+    if (li < 0) throw stageMiss(fn, iv, "cell_type marker");
 
-        const amrex::BaseFab<std::uint8_t>& src = ct[mfi];
-        out.resize(fb, 1, amrex::The_Pinned_Arena());
-        const std::size_t nelem = static_cast<std::size_t>(fb.numPts());
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, src.dataPtr(), src.dataPtr() + nelem, out.dataPtr()
-        );
-        return;
-    }
+    const amrex::BaseFab<std::uint8_t>& src = ct.atLocalIdx(li);
+    const amrex::Box fb = src.box();
+    out.resize(fb, 1, amrex::The_Pinned_Arena());
+    const std::size_t nelem = static_cast<std::size_t>(fb.numPts());
+    amrex::Gpu::copy(amrex::Gpu::deviceToHost, src.dataPtr(), src.dataPtr() + nelem, out.dataPtr());
+}
 
-    throw stageMiss(fn, iv, "cell_type marker");
+//! The same, for a FACE-centred field — `div`'s three face fluxes (B33).
+//!
+//! `iv` is a CELL index and the fab is face-centred in `dd`, so the box that is
+//! looked up is the cell's own LOW face `iv`. That is enough for both reads a
+//! width-1 face balance makes: a face fab's valid box runs from the cell box's
+//! low face to its high one, so it contains `iv` and `iv + e_dd` together for
+//! every cell of the cell box — there is no ghost width required of the flux,
+//! and none is asked for.
+inline void stageFaceBox(
+    const char* fn,
+    const amrex::MultiFab& f,
+    int dd,
+    const amrex::IntVect& iv,
+    amrex::FArrayBox& out
+)
+{
+    const int li = localBoxOf(f, iv);
+    if (li < 0) throw stageMiss(fn, iv, "face flux");
+
+    const amrex::FArrayBox& src = f.atLocalIdx(li);
+    const amrex::Box fb = src.box();
+    if (!fb.contains(iv + amrex::IntVect::TheDimensionVector(dd)))
+        throw stageMiss(fn, iv, "face flux (the cell's high face is outside the local box)");
+
+    out.resize(fb, 1, amrex::The_Pinned_Arena());
+    const std::size_t nelem = static_cast<std::size_t>(fb.numPts());
+    amrex::Gpu::copy(amrex::Gpu::deviceToHost, src.dataPtr(), src.dataPtr() + nelem, out.dataPtr());
 }
 
 } // namespace ibm

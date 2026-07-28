@@ -372,12 +372,20 @@ void preprocess(
 
 int rowAt(const GhostCellData& d, const char* fn, int i, int j, int k)
 {
+    // No `MFIter` (B33): AMReX refuses a NESTED one with an abort rather than an
+    // exception, and this is a test-side readback a caller naturally wants per
+    // cell from inside its own loop. `IndexArray()` + `atLocalIdx()` is the same
+    // idiom `wall_stage.H`'s `localBoxOf` uses, and it opens nothing.
+    //
+    // The selection semantics are UNCHANGED: `row` carries `ngrow = 0`, so its
+    // valid box *is* its fab box and there is no valid/fab distinction to make
+    // here — this rider is about not nesting and nothing else.
     const amrex::IntVect iv(i, j, k);
-    for (amrex::MFIter mfi(d.row); mfi.isValid(); ++mfi)
+    for (int li = 0; li < d.row.local_size(); ++li)
     {
-        const amrex::Box bx = mfi.validbox();
+        const amrex::Box bx = d.row.boxArray()[d.row.IndexArray()[li]];
         if (!bx.contains(iv)) continue;
-        const amrex::IArrayBox& fab = d.row[mfi];
+        const amrex::IArrayBox& fab = d.row.atLocalIdx(li);
         const int* p = fab.dataPtr() + fab.box().index(iv);
         int value = -1;
         amrex::Gpu::copy(amrex::Gpu::deviceToHost, p, p + 1, &value);

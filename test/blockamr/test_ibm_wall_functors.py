@@ -1432,3 +1432,562 @@ def test_each_disagreement_between_the_pairs_arguments_is_refused_by_name(blocka
     other = _ghost_data(ct8, g8, geom, ONE_BODY)
     with pytest.raises(RuntimeError, match=r"wall_laplacian_ghost_cell: the ghostCell data"):
         call(out, phi, ct, other, _constant(0.5))
+
+
+# ===========================================================================
+# 7. `div x ghostCell` — the second real pair, per cell (B33)
+#
+# **Conformance, not acceptance**, exactly as section 6 is. v1<->v2 bitwise row
+# parity over ten configurations, the falsification matrix, the sweep and the
+# argument contract live in `test_ibm_div_ghost_cell.py`, which has the heavy
+# fixtures and a different vocabulary. What is here is what the shipped frame
+# file is the natural home for: which cells a row may name (S3), how the BC datum
+# reaches it (S2), where the geometry is read (Q34), what the row's shape is, the
+# error surface — and the two things `div` adds to that list, H-6's signed zero
+# and the `DivFaceValue` mapping.
+# ===========================================================================
+
+_wall_row_dgc = blockamr._blockamr._wall_row_div_ghost_cell
+
+#: `u = omega x r` about the cylinder axis. Rung 8's own velocity shape, and the
+#: only thing in the repertoire that produces **exactly zero face fluxes**: `u_z`
+#: is identically zero and `u_x`/`u_y` vanish on the two centre lines. Those
+#: faces are what H-6 lives on.
+DIV_OMEGA = 5.0
+
+
+def _rotation_velocity(x, y, z, t):
+    return -DIV_OMEGA * (y - 0.5), DIV_OMEGA * (x - 0.5), np.zeros_like(z)
+
+
+def _uniform_velocity(x, y, z, t):
+    """Exactly `1.0` on every face, so `f / dx` is exactly `16` on this grid and
+    `DivFaceValue`'s two branches have exactly representable answers."""
+    return np.ones_like(x), np.ones_like(y), np.ones_like(z)
+
+
+def _div_case(bodies, velocity=_rotation_velocity, max_size=None, ngrow=1):
+    """`(mesh, g, ct, data, geom, ba, dm, mfs)` — a level with face fluxes."""
+    from blockamr.operators.div import update_face_fluxes
+
+    mesh, geom, ba, dm = _level(bodies, max_size)
+    g = mesh.ibm.geometry_fab(0, ngrow=ngrow)
+    ct = blockamr.CellTypeFab(ba, dm, ngrow)
+    blockamr.classify_default(ct, g, geom)
+    data = _ghost_data(ct, g, geom, bodies)
+    from blockamr.field import FaceField
+
+    ff = FaceField(mesh, ncomp=1, ngrow=ngrow, name="phi")
+    update_face_fluxes(ff[0], velocity, geom, t=0.0)
+    return mesh, g, ct, data, geom, ba, dm, tuple(ff[0][d].mf for d in range(3))
+
+
+def _div_row(ct, g, data, robin, geom, mfs, cell, face_value=None, n=0, t=0.0):
+    """The div pair's row at one cell as `([(index, a)], c)`."""
+    if face_value is None:
+        face_value = blockamr.DivFaceValue.Upwind
+    entries, c = _wall_row_dgc(ct, g, data, robin, geom, t, *mfs, face_value, *cell, n)
+    return [((i, j, k), a) for i, j, k, a in entries], c
+
+
+def _raw(value):
+    """The raw `int64` of one f64 — `==` on floats cannot see `-0.0`."""
+    return np.float64(value).view(np.int64)
+
+
+def test_the_div_pair_row_is_callable_host_side_on_one_wall_cell(blockamr_session):
+    """**F-1** — tasks.md §3's verify column, for the second pair.
+
+    The same `AMREX_GPU_HOST_DEVICE` functor the kernel launches, called from the
+    host at one cell against a `RecordSink`, with the three face fluxes staged
+    beside the marker and the geometry.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY)
+    phi = _field(ba, dm)
+    cell = _a_wall_cell(ct, phi)
+
+    entries, c = _div_row(ct, g, data, _constant(0.5), geom, mfs, cell)
+
+    assert data.nrows == len(_wall_cells(ct, phi)) > 0
+    assert isinstance(c, float)
+    assert entries and all(len(index) == 3 for index, _a in entries)
+    assert entries[0][0] == cell, "the first linear entry is the diagonal, at the row's own cell"
+
+
+def test_the_bc_datum_reaches_the_div_row_through_constant_and_nothing_else(blockamr_session):
+    """**F-2 / S2**, and stronger than "the number is not in the list".
+
+    Two Robin tables differing in `gamma` and in nothing else: the linear entries
+    must be **bitwise identical** and only `c` may move. `Mixed`-shaped
+    `(alpha, beta)` on purpose, so `atConstant` is non-zero and the datum
+    genuinely reaches the row.
+
+    A **uniform** flux and `DivFaceValue.Central` are used so the wall face is
+    guaranteed to contribute: under `Upwind` a wall face that is an *outflow*
+    face has `weight_self = 1`, so `nb_part` is exactly `0.0` and the wall enters
+    neither the donors nor the constant of that row. That is the operator's real
+    behaviour (v1 agrees cell for cell, and it is pinned as a count by
+    `test_ibm_div_ghost_cell.py`'s `DATUM_ROWS`) — but it would make *this* row
+    vacuous at the wrong cell, and this row is about the datum's ROUTE.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY, velocity=_uniform_velocity)
+    phi = _field(ba, dm)
+    cell = _a_wall_cell(ct, phi)
+
+    def at(datum):
+        robin = _robin([[(CONSTANT, datum, 0.0, 0.0, 0.0)]], alpha=0.6, beta=0.4)
+        return _div_row(ct, g, data, robin, geom, mfs, cell, blockamr.DivFaceValue.Central)
+
+    first_entries, first_c = at(0.3)
+    second_entries, second_c = at(-1.25)
+
+    assert first_c != second_c, "vacuous: the datum does not reach this row at all"
+    assert [i for i, _a in first_entries] == [i for i, _a in second_entries]
+    lhs = np.array([a for _i, a in first_entries])
+    rhs = np.array([a for _i, a in second_entries])
+    np.testing.assert_array_equal(lhs.view(np.int64), rhs.view(np.int64))
+
+
+def test_no_entry_of_a_div_row_ever_names_a_solid_cell(blockamr_session):
+    """**F-3 / S3 / Invariant F**, over *every* `WALL` cell of the level.
+
+    A `SOLID` cell holds the pin and not data. Each face is gated on
+    `m(ii, jj, kk) != SOLID` and every live trilinear donor was validated fluid
+    by `preprocess`'s Invariant-F pass. Both body sets, in one row.
+    """
+    for bodies in (ONE_BODY, TWO_BODIES):
+        _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(bodies)
+        phi = _field(ba, dm)
+        marker = _marker_grown(ct, phi)
+        robin = _robin([[(CONSTANT, 0.3, 0.0, 0.0, 0.0)]] * len(bodies), alpha=0.6, beta=0.4)
+
+        cells = _wall_cells(ct, phi)
+        assert cells, "vacuous: no WALL cell"
+        named = solid_seen = 0
+        for cell in cells:
+            entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell)
+            for index, _a in entries:
+                assert index in marker, f"row at {cell} names {index}, outside the fab box"
+                assert marker[index] != SOLID, f"row at {cell} names the SOLID cell {index}"
+                named += 1
+            solid_seen += 6 - _fluid_arm_count(marker, cell)
+        assert named > 0
+        assert solid_seen > 0, "vacuous: no WALL cell here has a SOLID face neighbour"
+
+
+def test_a_solid_face_neighbour_is_named_by_the_probe_and_not_by_the_div_pair(blockamr_session):
+    """**F-4** — the pair is not the probe, measured at the same cell.
+
+    `WallFrameProbe` emits its `i +- 1` donors unconditionally; a real pair gates
+    each face. Asserted where it bites: a `WALL` cell with a `SOLID` face
+    neighbour on the x axis.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY)
+    phi = _field(ba, dm)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    straddling = [
+        (cell, off)
+        for cell in _wall_cells(ct, phi)
+        for off in ((-1, 0, 0), (1, 0, 0))
+        if marker[_shifted(cell, off)] == SOLID
+    ]
+    assert straddling, "vacuous: no WALL cell here has a SOLID neighbour on the x axis"
+
+    cell, off = straddling[0]
+    neighbour = _shifted(cell, off)
+    pair, _c = _div_row(ct, g, data, robin, geom, mfs, cell)
+    probe, _pc = _wall_frame_record(g, robin, geom, 0.0, *cell, 0)
+
+    assert neighbour not in [index for index, _a in pair]
+    assert neighbour in [(i, j, k) for i, j, k, _a in probe], (
+        "vacuous: the probe no longer emits its unconditional arms"
+    )
+
+
+def test_the_div_row_is_one_diagonal_plus_its_fluid_faces_plus_eight_donors(blockamr_session):
+    """**F-5** — the accumulate-then-emit shape, stated as a count.
+
+    `1 + (6 - #solid faces) + 8` entries, at most 15, which is exactly v1's
+    `STRIDE`. The `arm[6]` register bank H-6 forces (see F-7) does not widen the
+    row: it is where the six coefficients are *accumulated*, not a second
+    emission.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY)
+    phi = _field(ba, dm)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    widths = set()
+    for cell in _wall_cells(ct, phi):
+        entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell)
+        fluid_faces = _fluid_arm_count(marker, cell)
+        assert len(entries) == 1 + fluid_faces + blockamr.GHOST_CELL_K, cell
+        assert len(entries) <= 15
+        widths.add(fluid_faces)
+    assert len(widths) > 1, "vacuous: every WALL cell here has the same number of solid faces"
+
+
+def test_the_div_diagonal_sums_over_all_six_faces_including_the_solid_ones(blockamr_session):
+    """**F-6 / H-3'** — the single most likely copy-paste defect in the pair.
+
+    v1's mask on the diagonal is `ctx.fluid`, a property of the **row** — which
+    the frame has already established by calling the functor at a `WALL` cell —
+    and *not* of the face. So `scale * weight_self` is accumulated over **all six
+    faces**, the ones whose neighbour is SOLID included, unlike
+    `laplacian x ghostCell`, whose diagonal really is gated on the arm.
+
+    Measured on a uniform flux, where the expected value is exactly
+    representable: `f = 1.0` and `dx = 1/16` make `scale` exactly `+-16`, so the
+    `Upwind` diagonal is exactly `3 * 16 = 48` and the `Central` one exactly
+    `0.0` — **at every WALL cell, whatever its solid faces are**, which is the
+    whole point. Gating on the face would make it cell-dependent.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY, velocity=_uniform_velocity)
+    phi = _field(ba, dm)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    solid_faces = set()
+    for cell in _wall_cells(ct, phi):
+        for face_value, want in (
+            (blockamr.DivFaceValue.Upwind, 48.0),
+            (blockamr.DivFaceValue.Central, 0.0),
+        ):
+            entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell, face_value)
+            index, a = entries[0]
+            assert index == cell
+            assert _raw(a) == _raw(want), f"{cell} ({face_value}): diagonal {a!r} != {want!r}"
+        solid_faces.add(6 - _fluid_arm_count(marker, cell))
+    assert len(solid_faces) > 1 and max(solid_faces) > 0, (
+        "vacuous: the diagonal cannot be shown ungated unless the solid-face count varies"
+    )
+
+
+def test_a_zero_face_flux_reaches_the_row_as_positive_zero_and_not_negative_zero(
+    blockamr_session,
+):
+    """**F-7 / H-6** — the finding this session paid for, pinned where a reader
+    will look for it.
+
+    v1's `_blank` allocates `a = np.zeros(...)` and writes each face-neighbour
+    slot **once**, so the coefficient it ships is `0.0 + nb_part`, and IEEE says
+    `0.0 + (-0.0)` is `+0.0`. A functor that emitted `nb_part` raw would ship
+    `-0.0`.
+
+    `nb_part` is `-0.0` exactly when the face flux is `+-0.0` and the face-value
+    rule puts the whole weight on the neighbour at `step = -1`: `scale` is
+    `(-1) * 0.0 / dx = -0.0` and `scale * (1 - w)` keeps its sign. The rotation
+    flux has `u_z` identically zero, so **every** z face is such a face.
+
+    Measured over the whole level and on the raw bits, because `a == 0.0` is true
+    of `-0.0` too and would assert nothing. 960 of 3 232 wall rows in
+    `test_ibm_div_ghost_cell.py` break if this is got wrong; here it is one cell,
+    named, with the mechanism spelled out.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY, velocity=_rotation_velocity)
+    phi = _field(ba, dm)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    # the LOW z face (step = -1) of a WALL cell whose -z neighbour is fluid
+    cells = [c for c in _wall_cells(ct, phi) if marker[_shifted(c, (0, 0, -1))] != SOLID]
+    assert cells, "vacuous: no WALL cell here has a fluid -z neighbour"
+
+    checked = 0
+    for cell in cells:
+        for face_value in (blockamr.DivFaceValue.Upwind, blockamr.DivFaceValue.Central):
+            entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell, face_value)
+            at = dict(entries[1:-blockamr.GHOST_CELL_K])
+            below = _shifted(cell, (0, 0, -1))
+            assert below in at, f"{cell}: the fluid -z face emitted no entry"
+            assert _raw(at[below]) == _raw(0.0), (
+                f"{cell} ({face_value}): the -z coefficient is {at[below]!r} with raw bits "
+                f"{_raw(at[below])}, but v1 accumulates it into a zero slot and ships +0.0 "
+                "(H-6) — the functor emitted the raw value instead of `arm[slot] += nbp`"
+            )
+            assert _raw(at[below]) != _raw(-0.0), "the two zeros must be distinguishable here"
+            checked += 1
+    assert checked > 0
+
+
+def test_the_eight_div_donor_entries_are_the_methods_own_stencil(blockamr_session):
+    """**F-8** — the §4 row map lands on the right row.
+
+    The last eight entries must be `GhostCellData.donor[r]` for that cell's rank
+    `r`, in slot order, with a dead slot (weight exactly `0.0`) at the row's own
+    cell. `PLANE_X` is used because its image point lands on a cell face, so half
+    the weights are exactly zero and the dead-slot rule is exercised instead of
+    assumed.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(PLANE_X)
+    phi = _field(ba, dm)
+    _ip, donor, weight, _distance = _ghost_cell_numpy(ct, g, geom, ["wall"])
+    robin = _constant(0.5)
+
+    assert (weight == 0.0).any(), "vacuous: this geometry has no dead donor slot"
+    for cell in _wall_cells(ct, phi):
+        rank = data.row_at(*cell)
+        assert rank >= 0
+        entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell)
+        got = [index for index, _a in entries[-blockamr.GHOST_CELL_K :]]
+        want = [
+            cell if weight[rank, q] == 0.0 else tuple(int(v) for v in donor[rank, q])
+            for q in range(blockamr.GHOST_CELL_K)
+        ]
+        assert got == want, f"{cell} (rank {rank})"
+
+
+def test_the_div_pair_reads_the_geometry_at_its_own_cell_and_not_at_a_neighbour(blockamr_session):
+    """**F-9 / Q34**, made falsifiable (B30a-R's I-1).
+
+    The functor's only geometry reads are `patch(i, j, k)`, `sdf(i, j, k)` and
+    `normal(i, j, k, d)`. Reading `f[dd](i + 1, ...)` is a *face* array at the
+    cell's own high face, not a neighbour's geometry — which is why
+    `stencil_reach = 1` stays honest.
+
+    B30a-R measured that comparing two *builders* cannot catch a neighbour read,
+    so this perturbs one fab at one index instead: moving the normal at a **face
+    neighbour** must leave the row bitwise identical, and moving it at the row's
+    **own cell** must change it. `_slab` is used so the perturbed neighbour is on
+    the *other* patch, which is where a neighbour read would also pick up the
+    wrong `alpha`/`beta`.
+    """
+    bodies = _slab(0)
+    mesh, g, ct, data, geom, ba, dm, mfs = _div_case(bodies)
+    phi = _field(ba, dm)
+    patch_of = _patch_of(g, phi)
+    robin = _robin([[(CONSTANT, 0.5, 0.0, 0.0, 0.0)], [(CONSTANT, -0.25, 0.0, 0.0, 0.0)]])
+
+    straddling = [
+        (cell, _shifted(cell, off))
+        for cell in _wall_cells(ct, phi)
+        for off in ((1, 0, 0), (-1, 0, 0))
+        if patch_of.get(_shifted(cell, off), patch_of[cell]) != patch_of[cell]
+    ]
+    assert straddling, "vacuous: no WALL cell straddles a patch boundary"
+    cell, neighbour = straddling[0]
+
+    base = _div_row(ct, g, data, robin, geom, mfs, cell)
+    at_neighbour = _perturbed_geometry(mesh, ba, dm, neighbour, 0.125)
+    at_self = _perturbed_geometry(mesh, ba, dm, cell, 0.125)
+
+    assert _div_row(ct, at_neighbour, data, robin, geom, mfs, cell) == base, (
+        f"the row at {cell} moved when the geometry at {neighbour} did — Q34 is tripped"
+    )
+    assert _div_row(ct, at_self, data, robin, geom, mfs, cell) != base, (
+        "vacuous: perturbing the geometry at the row's own cell changed nothing"
+    )
+
+
+def test_the_div_closures_pole_reaches_the_row_as_infinity_and_raises_nothing(blockamr_session):
+    """**F-10 / Q46**, inherited and unchanged: the guard is DEFERRED and the
+    behaviour is PINNED — **with the signs**, not merely `isinf` (B32-R's S-2).
+
+    `robin.H`'s `den = beta - alpha*d` is exactly zero for the reachable
+    `Mixed(f)` with `d = (1 - f)/f`, and v1 divides anyway and returns `+-inf`. A
+    raise here would be a behaviour change against v1 in a session whose whole
+    claim is that nothing changed, and it would fail the parity bar by design.
+
+    A uniform flux and `DivFaceValue.Central` are used so the sign of `nb_part`
+    at the one wall face is decided rather than incidental — and so that it is
+    non-zero at all: under `Upwind` an outflow wall face has `nb_part` exactly
+    `0.0`, and `0.0 * inf` is a NaN, which would turn the pole into a
+    classification question instead of the signed one B32-R's S-2 asks for. A
+    cell with exactly one solid face is chosen so there is no `inf - inf`
+    anywhere in the row: every value below is a single signed infinity or a
+    single `inf * 0`.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY, velocity=_uniform_velocity)
+    phi = _field(ba, dm)
+    _ip, _donor, weight, distance = _ghost_cell_numpy(ct, g, geom, ["cyl"])
+    marker = _marker_grown(ct, phi)
+
+    chosen = None
+    for cell in _wall_cells(ct, phi):
+        if _fluid_arm_count(marker, cell) == 5:
+            chosen = (cell, data.row_at(*cell))
+            break
+    assert chosen is not None, "vacuous: no WALL cell here has exactly one SOLID face"
+    cell, rank = chosen
+
+    # alpha = 1, beta = d  =>  den = beta - alpha*d = 0 exactly, on this row.
+    d = float(distance[rank])
+    robin = _robin([[(CONSTANT, 0.5, 0.0, 0.0, 0.0)]], alpha=1.0, beta=d)
+
+    entries, c = _div_row(
+        ct, g, data, robin, geom, mfs, cell, blockamr.DivFaceValue.Central
+    )  # must not raise
+
+    donors = [a for _i, a in entries[-blockamr.GHOST_CELL_K :]]
+    live = [a for a, w in zip(donors, weight[rank]) if w != 0.0]
+    dead = [a for a, w in zip(donors, weight[rank]) if w == 0.0]
+    assert live and dead, f"vacuous: {cell} has no live or no dead donor slot"
+    # A live donor carries `(nb_part * atLinear(dG)) * w`, and with one wall face
+    # and a fixed flux its sign is determined: all live donors share it, the
+    # constant carries the opposite one, and both are pinned rather than merely
+    # asserted infinite.
+    assert all(np.isinf(a) for a in live), live
+    assert len(set(np.sign(live))) == 1, live
+    sign = float(np.sign(live[0]))
+    assert all(np.isnan(a) for a in dead), dead
+    assert np.isinf(c) and np.sign(c) == -sign, (c, sign)
+    # the finite half of the row is untouched: the closure never reaches it.
+    assert all(np.isfinite(a) for _i, a in entries[: -blockamr.GHOST_CELL_K]), entries
+
+
+def test_a_field_narrower_than_the_div_pairs_reach_is_refused_naming_the_pair(blockamr_session):
+    """**F-11 / S8**, and api §9: the sentence names `wall_div_ghost_cell` and
+    not `applyWall`, because "applyWall" names nothing a caller can see.
+
+    `stencil_reach = 1` is the *field* and *marker* reach. The three face fluxes
+    are deliberately **not** covered by it and need no ghosts at all: the functor
+    reads only the cell's own two faces in each direction, both inside the face
+    fab's valid box for every cell of `validbox`.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY)
+    phi = _field(ba, dm, ngrow=0)
+    out = _out(ba, dm)
+    with pytest.raises(
+        RuntimeError, match=r"wall_div_ghost_cell: the functor declares stencil_reach = 1"
+    ):
+        blockamr.wall_div_ghost_cell(
+            out,
+            phi,
+            ct,
+            g,
+            data,
+            _constant(0.5),
+            geom,
+            0.0,
+            1.0,
+            1,
+            blockamr.WallMode.Overwrite,
+            1.0,
+            *mfs,
+            blockamr.DivFaceValue.Upwind,
+        )
+
+
+def test_each_disagreement_between_the_div_pairs_arguments_is_refused_by_name(blockamr_session):
+    """**F-12** — guard 0 and `Maker::validate` (B30a-R's S-5), together, plus
+    the guard this pair adds.
+
+    Each of these is a silently wrong answer rather than a crash in a release
+    build, and each is named by the entry point:
+
+    * `WallMode.Assemble` — declared and not implemented (S6);
+    * `out is phi` — a row would read cells another row had already written;
+    * a mismatched `BoxArray` — the sweep pairs fabs by `MFIter` local index;
+    * a Robin table narrower than the field — an out-of-bounds `gammaAt`;
+    * method data preprocessed on other grids — invisible to the frame;
+    * **a face flux on the wrong grids** — the same defect class, and `div`'s
+      own: the three face fabs are resolved by local index beside phi/out/ct, so
+      they must be the marker's `BoxArray` converted to face centring **in their
+      own direction**. Passing `flux_y` where `flux_x` belongs is the cheapest
+      real instance of it, and it must name the direction.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY)
+    phi = _field(ba, dm)
+    out = _out(ba, dm)
+
+    def call(out_mf, phi_mf, ct_fab, data_obj, robin, flux=None, ncomp=1, mode=None):
+        blockamr.wall_div_ghost_cell(
+            out_mf,
+            phi_mf,
+            ct_fab,
+            g,
+            data_obj,
+            robin,
+            geom,
+            0.0,
+            1.0,
+            ncomp,
+            blockamr.WallMode.Overwrite if mode is None else mode,
+            1.0,
+            *(mfs if flux is None else flux),
+            blockamr.DivFaceValue.Upwind,
+        )
+
+    with pytest.raises(RuntimeError, match=r"wall_div_ghost_cell: WallMode.Assemble"):
+        call(out, phi, ct, data, _constant(0.5), mode=blockamr.WallMode.Assemble)
+    assert all(v == SENTINEL for v in _readback(out).values())
+
+    with pytest.raises(RuntimeError, match=r"wall_div_ghost_cell: .*different MultiFabs"):
+        call(phi, phi, ct, data, _constant(0.5))
+
+    ba8 = blockamr.BoxArray(blockamr.Box([0, 0, 0], [N - 1, N - 1, N - 1]))
+    ba8.max_size(8)
+    dm8 = blockamr.DistributionMapping(ba8)
+    with pytest.raises(RuntimeError, match=r"wall_div_ghost_cell: out, phi and the"):
+        call(_out(ba8, dm8), phi, ct, data, _constant(0.5))
+
+    phi2 = _field(ba, dm, ncomp=2)
+    with pytest.raises(RuntimeError, match=r"the field has 2 but the table has 1"):
+        call(_out(ba, dm, ncomp=2), phi2, ct, data, _constant(0.5), ncomp=2)
+
+    g8 = _level(ONE_BODY, max_size=8)[0].ibm.geometry_fab(0, ngrow=1)
+    ct8 = blockamr.CellTypeFab(ba8, dm8, 1)
+    blockamr.classify_default(ct8, g8, geom)
+    other = _ghost_data(ct8, g8, geom, ONE_BODY)
+    with pytest.raises(RuntimeError, match=r"wall_div_ghost_cell: the ghostCell data"):
+        call(out, phi, ct, other, _constant(0.5))
+
+    with pytest.raises(
+        RuntimeError, match=r"wall_div_ghost_cell: the face flux in direction 0"
+    ):
+        call(out, phi, ct, data, _constant(0.5), flux=(mfs[1], mfs[1], mfs[2]))
+
+
+def test_the_two_div_face_value_rules_are_exactly_the_v1_face_weights(blockamr_session):
+    """**F-13** — the `DivFaceValue` mapping, as a **partition/exactness** row.
+
+    Q44's caution is live for this pair (B35 measured that van Leer's limiter
+    *absorbs* a `1e30` solid pin and returns a finite number with no NaN), so
+    nothing here is pin-and-watch: the configuration is fixed, the flux is
+    exactly `1.0`, and the weights the two branches produce are exactly
+    representable and asserted on the bits.
+
+    On this grid `dx = 1/16`, so `scale = step * 1.0 / dx` is exactly `+-16`:
+
+    * `Central` — `w = 0.5` at both faces, so the neighbour's coefficient is
+      `+8` at the high face and `-8` at the low one;
+    * `Upwind` with `f >= 0` — the whole weight is on the **target** at the high
+      face (neighbour coefficient `+0.0`, and `+0.0` and not `-0.0`, which is
+      H-6 again) and on the **neighbour** at the low face (coefficient `-16`).
+
+    That is v1's `_face_weights` and the D1 degrade in one statement:
+    `linear` maps to `Central`, and `upwind`, `vanLeer` and `quick` all map to
+    `Upwind` — the last two because a width-2 stencil reaches through the solid
+    inside the band and degrades to first-order upwind there.
+    """
+    _mesh, g, ct, data, geom, ba, dm, mfs = _div_case(ONE_BODY, velocity=_uniform_velocity)
+    phi = _field(ba, dm)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    want = {
+        blockamr.DivFaceValue.Central: {(1, 0, 0): 8.0, (-1, 0, 0): -8.0},
+        blockamr.DivFaceValue.Upwind: {(1, 0, 0): 0.0, (-1, 0, 0): -16.0},
+    }
+
+    # one named cell with BOTH x neighbours fluid, so the two faces are both
+    # observable in the same row.
+    cells = [
+        c
+        for c in _wall_cells(ct, phi)
+        if marker[_shifted(c, (1, 0, 0))] != SOLID and marker[_shifted(c, (-1, 0, 0))] != SOLID
+    ]
+    assert cells, "vacuous: no WALL cell here has both x neighbours fluid"
+    cell = cells[0]
+
+    for face_value, expected in want.items():
+        entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell, face_value)
+        at = dict(entries[1:-blockamr.GHOST_CELL_K])
+        for off, value in expected.items():
+            index = _shifted(cell, off)
+            assert index in at, f"{cell}: no entry at {index}"
+            assert _raw(at[index]) == _raw(value), (
+                f"{cell} ({face_value}) at {off}: {at[index]!r}, expected {value!r}"
+            )
