@@ -203,7 +203,7 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
-            auditwheel -v repair --plat manylinux_2_39_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
+            auditwheel -v repair --plat manylinux_2_34_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
           CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_ENVIRONMENT_LINUX: >
             PATH=/usr/local/cuda/bin:$PATH
@@ -247,7 +247,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     environment:
       name: pypi
-      url: https://pypi.org/project/andrei-maftei-testneon/
+      url: https://pypi.org/project/neon_pde/
     permissions:
       contents: read
       id-token: write
@@ -270,7 +270,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.publish_existing_run_id != ''
     environment:
       name: pypi
-      url: https://pypi.org/project/andrei-maftei-testneon/
+      url: https://pypi.org/project/neon_pde/
     permissions:
       contents: read
       actions: read
