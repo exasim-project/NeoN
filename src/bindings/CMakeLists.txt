@@ -103,9 +103,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
 if(DEFINED SKBUILD)
   # Install for scikit-build (into neon/ package)
   install(TARGETS _neon LIBRARY DESTINATION neon COMPONENT python)
-  # Use CMAKE_CURRENT_SOURCE_DIR (this bindings dir) not CMAKE_SOURCE_DIR: when
-  # NeoN is add_subdirectory()'d into neofoam, CMAKE_SOURCE_DIR is the neofoam
-  # root, so ${CMAKE_SOURCE_DIR}/src/neon/__init__.py does not exist.
+  # Use CMAKE_CURRENT_SOURCE_DIR (this bindings dir) not CMAKE_SOURCE_DIR: when NeoN is
+  # add_subdirectory()'d into neofoam, CMAKE_SOURCE_DIR is the neofoam root, so
+  # ${CMAKE_SOURCE_DIR}/src/neon/__init__.py does not exist.
   install(
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/__init__.py
     DESTINATION neon
@@ -117,12 +117,12 @@ if(DEFINED SKBUILD)
   # Install libNeoN.so so _neon.so can find it via RPATH ($ORIGIN/../lib/)
   install(TARGETS NeoN LIBRARY DESTINATION lib COMPONENT python)
   # Kokkos and cpptrace belong next to it -- libNeoN.so names libkokkoscore.so.5.0 and
-  # libcpptrace.so.0 in DT_NEEDED, and neither is covered by an install(TARGETS) of ours.
-  # A bundled build ships them through the subproject's own install rules, but once a wheel
-  # has been installed its CMake configs sit in site-packages, which scikit-build-core puts
-  # on CMAKE_PREFIX_PATH -- so the next configure IMPORTS them instead, and imported targets
-  # carry no install rule at all. Copying the resolved files covers both cases: the SONAME
-  # file is what the loader looks for, the versioned file backs it.
+  # libcpptrace.so.0 in DT_NEEDED, and neither is covered by an install(TARGETS) of ours. A bundled
+  # build ships them through the subproject's own install rules, but once a wheel has been installed
+  # its CMake configs sit in site-packages, which scikit-build-core puts on CMAKE_PREFIX_PATH -- so
+  # the next configure IMPORTS them instead, and imported targets carry no install rule at all.
+  # Copying the resolved files covers both cases: the SONAME file is what the loader looks for, the
+  # versioned file backs it.
   install(
     FILES $<TARGET_SONAME_FILE:Kokkos::kokkoscore> $<TARGET_FILE:Kokkos::kokkoscore>
           $<TARGET_SONAME_FILE:cpptrace::cpptrace> $<TARGET_FILE:cpptrace::cpptrace>
@@ -135,8 +135,4 @@ else()
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../neon/py.typed
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/python/neon)
-endif()
-
-if(NeoN_WITH_AMREX)
-  add_subdirectory(blockAMR)
 endif()

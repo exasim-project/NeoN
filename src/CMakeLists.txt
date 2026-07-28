@@ -83,15 +83,15 @@ if(NeoN_WITH_MPI)
             "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
 endif()
 
-if(NeoN_WITH_AMREX AND NeoN_BUILD_PYTHON_BINDINGS)
-  # blockAmrSolvers/ defines blockamr_solvers and blockamr_kokkos, which
-  # bindings/blockAMR/CMakeLists.txt links -- must be added before bindings/ so those
-  # targets exist by the time it does.
-  add_subdirectory(blockAmrSolvers)
-endif()
-
 if(NeoN_BUILD_PYTHON_BINDINGS)
   add_subdirectory(bindings)
+endif()
+
+# The blockAmr component's single entry point. It defines its own object libraries and the _blockamr
+# module in one file, so the ordering constraint against bindings/ that the split layout needed is
+# gone -- nothing here defines a target the other side links.
+if(NeoN_WITH_BLOCKAMR)
+  add_subdirectory(blockAmr)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Sanitizer.cmake)
