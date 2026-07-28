@@ -16,6 +16,10 @@ would test the laplacian, and would not distinguish "no violation" from "no
 stencil". Every expectation below is a literal or an analytic formula in the
 cell index; nothing is read back from the implementation.
 
+The last section is the method's other pure-numpy input, the wall datum in its
+row-shaped form (``gamma_rows``, B42): a shape rule and a broadcast, which is
+the same kind of statement as the rest of this file and not physics either.
+
 Plain numpy on explicit per-box index ranges, so none of it needs the compiled
 extension. The mesh is the unit cube at ``n = 16``.
 """
@@ -25,6 +29,7 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
+from blockamr.ibm.bc import gamma_rows
 from blockamr.ibm.body import Cylinder, Plane
 from blockamr.ibm.classify import BoxGrid, _patches
 from blockamr.ibm.geometry import geometry_on_grids
@@ -252,3 +257,55 @@ def test_a_body_the_mesh_never_meets_leaves_the_data_empty():
     assert (geometry.depth == 1).sum() == 0
     assert data.nrows == 0
     assert data.donor.shape == (0, K, 3)
+
+
+# ---------------------------------------------------------------------------
+# The wall datum at the rows (B42)
+# ---------------------------------------------------------------------------
+
+
+def test_a_callable_wall_datum_of_the_wrong_shape_names_both_accepted_shapes():
+    """The one branch of :func:`gamma_rows` the behavioural rows cannot reach.
+
+    A callable datum is evaluated at the patch's ``n`` wall points, so its
+    result is ``(n,)`` or ``(n, ncomp)`` and nothing else: numpy would
+    broadcast a ``(1,)`` or a ``(n + 1,)`` result into something plausible in
+    some of those cases and raise an opaque shape error in the rest, and both
+    are worse than a message that names what was expected (S6).
+    """
+    points = np.zeros((4, 3))
+
+    with pytest.raises(ValueError, match=r"shape \(4,\) or \(4, 2\), got \(5,\)"):
+        gamma_rows(lambda x, y, z, t: np.zeros(5), points, 0.0, 2)
+
+
+def test_a_constant_wall_datum_is_the_same_bits_in_every_row():
+    """The constant path is :func:`broadcast_gamma` repeated, not re-derived —
+    which is what keeps every pre-B42 result bitwise what it was."""
+    points = np.zeros((3, 3))
+
+    rows = gamma_rows([0.25, -1.5], points, 0.0, 2)
+
+    np.testing.assert_array_equal(rows, np.broadcast_to(np.array([0.25, -1.5]), (3, 2)))
+
+
+def test_a_callable_wall_datum_accepts_both_documented_shapes():
+    """The two *accepting* branches of :func:`gamma_rows`, at ``ncomp > 1``
+    where they actually differ (B42 review): an ``(n,)`` result is one datum
+    per row repeated across components; an ``(n, ncomp)`` result is taken as
+    is. The behavioural rows are all scalar fields, so only this row exercises
+    the shape rule the docstring promises.
+    """
+    points = np.zeros((3, 3))
+
+    per_row = gamma_rows(lambda x, y, z, t: np.array([1.0, 2.0, 3.0]), points, 0.0, 2)
+    np.testing.assert_array_equal(
+        per_row, np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+    )
+
+    per_component = gamma_rows(
+        lambda x, y, z, t: np.array([[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]), points, 0.0, 2
+    )
+    np.testing.assert_array_equal(
+        per_component, np.array([[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]])
+    )

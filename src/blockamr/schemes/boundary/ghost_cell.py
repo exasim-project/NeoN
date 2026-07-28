@@ -93,7 +93,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from ...ibm.band_rows import BandRows
-from ...ibm.bc import broadcast_gamma
+from ...ibm.bc import gamma_rows
 from ...ibm.classify import _fluid_at_index, _patches, box_grids
 from ...ibm.ghost_cell import GhostCell
 from . import register
@@ -209,8 +209,13 @@ class _BandContext:
         return int(self.target.shape[0])
 
 
-def _context(term, ibm, lev, ncomp, width):
-    """The band context of one term on one level, at the equation's ``width``."""
+def _context(term, ibm, lev, ncomp, t, width):
+    """The band context of one term on one level, at the equation's ``width``.
+
+    ``t`` is the evaluation time the rows are being built at — a stage time on
+    the ``solve()`` path — and reaches the context only through the wall datum,
+    which may be a schedule (:func:`~blockamr.ibm.bc.gamma_rows`).
+    """
     band = ibm.band(lev, width)
     names, body_list = _patches(ibm.bodies)
     geometries = ibm.geometry(lev)
@@ -229,9 +234,10 @@ def _context(term, ibm, lev, ncomp, width):
         closure=_band_closure(
             band,
             data,
-            _gammas(ibm_bc, names, ncomp),
             [ibm_bc[name].robin() for name in names],
             ncomp,
+            _band_field(geometries, width, "wall_point", (0, 3)),
+            t,
         ),
         donor=donor,
         weight=weight,
@@ -320,7 +326,7 @@ class GhostCellLaplacian:
 
     def rows(self, term, ibm, lev, ncomp, t, width):
         """The affine rows of one term on one level."""
-        ctx = _context(term, ibm, lev, ncomp, width)
+        ctx = _context(term, ibm, lev, ncomp, t, width)
         return _closed_flux_rows(ctx, _coefficient(term, t), ncomp, self.stride)
 
 
@@ -367,7 +373,7 @@ class GhostCellDiv:
         self.interior = interior_scheme
 
     def rows(self, term, ibm, lev, ncomp, t, width):
-        ctx = _context(term, ibm, lev, ncomp, width)
+        ctx = _context(term, ibm, lev, ncomp, t, width)
         flux = _band_face_flux(term.coefficient, lev, ctx.band)
         return _face_balance_rows(
             ctx,
@@ -394,7 +400,7 @@ class GhostCellGrad:
 
     def rows(self, term, ibm, lev, ncomp, t, width):
         _check_grad_ncomp(term, ncomp)
-        ctx = _context(term, ibm, lev, ncomp, width)
+        ctx = _context(term, ibm, lev, ncomp, t, width)
         ones = np.ones((ctx.nrows, 3, 2))
         return _face_balance_rows(
             ctx,
@@ -595,7 +601,7 @@ def _band_cell_values(field, lev, band, ncomp):
 # ---------------------------------------------------------------------------
 
 
-def _band_closure(band, data, gammas, robin, ncomp):
+def _band_closure(band, data, robin, ncomp, wall_point, t):
     """:func:`wall_closure` at every band row, padded where it is not used.
 
     Only a ``depth == 1`` row can have a wall arm, and only those rows have an
@@ -603,6 +609,12 @@ def _band_closure(band, data, gammas, robin, ncomp):
     inside a wider equation's band) are plain interior rows and never read
     this; the padding is the identity closure, so reading it would be visible
     rather than silently plausible.
+
+    The datum ``gamma`` is read **per row**, at that row's own wall foot point
+    and at the evaluation time ``t``, so a callable datum is a schedule the
+    rows follow (Q22). This is v1's host-side form of what design §8 moves into
+    the kernel later; it costs nothing extra because v1 rebuilds these rows on
+    every evaluate anyway.
     """
     nrows = band.nrows
     alpha = np.zeros(nrows)
@@ -615,9 +627,24 @@ def _band_closure(band, data, gammas, robin, ncomp):
         own = band.patch[at_wall].astype(np.int64)
         alpha[at_wall] = np.array([r[0] for r in robin])[own]
         beta[at_wall] = np.array([r[1] for r in robin])[own]
-        gamma[at_wall] = gammas[own]
+        gamma[at_wall] = _wall_gamma(robin, own, wall_point[at_wall], t, ncomp)
         distance[at_wall] = data.distance
     return wall_closure(alpha, beta, gamma, distance)
+
+
+def _wall_gamma(robin, own, points, t, ncomp):
+    """Every wall row's datum, evaluated per patch at that patch's own rows.
+
+    Per patch and not per row because a callable datum is handed its whole
+    patch at once (``f(x, y, z, t)`` on ``(n,)`` arrays), which is both the
+    repo's coefficient convention and the reason the evaluation is cheap.
+    """
+    out = np.zeros((points.shape[0], ncomp))
+    for patch, (_alpha, _beta, datum) in enumerate(robin):
+        sel = own == patch
+        if sel.any():
+            out[sel] = gamma_rows(datum, points[sel], t, ncomp)
+    return out
 
 
 def _data_row(band, data):
@@ -643,13 +670,6 @@ def _band_field(geometries, width, name, empty_shape):
     """One per-cell geometry array of every band row, flattened in band order."""
     blocks = [getattr(g, name)[g.depth <= width] for g in geometries]
     return np.concatenate(blocks) if blocks else np.zeros(empty_shape)
-
-
-def _gammas(ibm_bc, names, ncomp):
-    """The wall data of every patch, broadcast to ``(npatch, ncomp)``."""
-    if not names:
-        return np.zeros((0, ncomp))
-    return np.stack([broadcast_gamma(ibm_bc[name].robin()[2], ncomp) for name in names])
 
 
 def _coefficient(term, t):

@@ -469,6 +469,67 @@ def test_wall_is_held_after_every_rk_stage(blockamr_session, ddt):
         )
 
 
+#: The stage times of one step started at ``t``, per ddt scheme — the schedule
+#: ``solve()`` is built from (``_rk4_step``'s ``stages`` table, ``_rk2_step``'s
+#: pairs, ``ForwardEuler``'s single call), written out independently here so the
+#: assertion is against the method's definition and not against the code.
+STAGE_TIMES = {
+    "Euler": (0.0,),
+    "RK2": (0.0, 0.5),
+    "RK4": (0.0, 0.5, 0.5, 1.0),
+}
+
+
+@pytest.mark.parametrize("ddt", ["Euler", "RK2", "RK4"])
+def test_a_time_dependent_wall_datum_is_re_evaluated_at_every_stage(blockamr_session, ddt):
+    """B42. The wall datum is a *schedule*, and the schedule is per **stage**.
+
+    A datum refreshed once per step instead of once per stage is exactly the
+    defect A4 exists to catch — it collapses the RK rows to first order — and
+    it is invisible with a constant datum, because then the two refreshes
+    produce identical numbers. Here the datum records the times it is asked
+    for, so the schedule is asserted directly and in one step, with no order
+    study and no fit.
+
+    The equation carries exactly **one** spatial term on purpose: the band rows
+    are rebuilt per term per apply, so with ``div + laplacian`` the recorded
+    times would be each stage time twice and the row would be asserting the
+    term count as much as the schedule.
+
+    Also asserts the datum is evaluated at the **wall foot points**: every
+    recorded point lies on the cylinder to roundoff, which an evaluation at the
+    band cells' centres would miss by up to half a cell.
+    """
+    calls = []
+
+    def datum(x, y, z, t):
+        calls.append((float(t), np.asarray(x).copy(), np.asarray(y).copy()))
+        return np.full(np.shape(x), T_BODY)
+
+    bodies = {"cyl": Cylinder(centre=CENTRE, radius=R, axis=AXIS)}
+    mesh = _make_mesh(BODY_SHAPE, bodies=bodies)
+    T = CellField(mesh, ncomp=1, ngrow=1, name="T", ibm_bc={"cyl": FixedValue(datum)})
+    _fill(T, mesh, lambda X, Y, Z: T_BODY + T_AMP * np.sin(K * X) * np.sin(K * Y))
+    eqn = Equation(exp.ddt(T) - exp.laplacian(NU, T), schemes={"ddt": ddt})
+
+    t0 = 0.4  # not zero: a datum asked for at the *step* time only would still
+    # produce 0.4 for the first stage, so a nonzero start is what makes the
+    # later stage times distinguishable from a repeated t0.
+    solve(eqn, dt=DT, t=t0, solution=_sol("ghostCell"))
+
+    expected = [t0 + c * DT for c in STAGE_TIMES[ddt]]
+    assert [c[0] for c in calls] == pytest.approx(expected), (
+        f"{ddt}: the wall datum was asked for at {[c[0] for c in calls]}, "
+        f"not at the stage times {expected}"
+    )
+    for _t, x, y in calls:
+        assert x.size > 0, f"{ddt}: the datum was called with no wall points"
+        radius = np.hypot(x - CENTRE[0], y - CENTRE[1])
+        np.testing.assert_allclose(
+            radius, R, atol=1e-12, err_msg=f"{ddt}: the datum was not evaluated on the surface"
+        )
+
+
 # ---------------------------------------------------------------------------
 # Temporal order — without a body, then with one
 # ---------------------------------------------------------------------------

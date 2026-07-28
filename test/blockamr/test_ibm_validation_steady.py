@@ -649,14 +649,14 @@ def _a3_exact(X, Y, Z):
 def _a3_wall_velocity(x, y, z):
     """``u = omega x r`` on the inner cylinder — **not** constant on the surface.
 
-    This is the second unmarked gap: ``FixedValue`` broadcasts a scalar or a
-    per-component constant to every row of a patch (``ibm.bc.broadcast_gamma``),
-    so today a patch can only carry a uniform datum, and a rotating wall is not
-    uniform — its direction turns with theta. The minimal extension this file
-    proposes is to let the datum be a callable evaluated at each row's surface
-    point, ``FixedValue(f)`` with ``f(x, y, z) -> (..., ncomp)``, leaving the
-    scalar and sequence spellings exactly as they are. Without it A3 cannot be
-    posed at all — and neither can any rotating or translating body.
+    This is the second capability gap: a rotating wall's datum is not uniform —
+    its direction turns with theta — so it must be a *spatial* function of the
+    row's surface point. B42 built the callable datum, but deliberately as a
+    function **of time only** — ``f(x, y, z, t)`` evaluated at the wall foot
+    points, where A4/A6's oscillating walls need the ``t`` and ignore the
+    coordinates (Q25 OP-1, review.md §4). This spelling, ``f(x, y, z)``, now
+    raises on its arity; whether A3 is served by widening the datum or by
+    respelling this helper is decided at the session that schedules A3.
     """
     out = np.zeros(np.shape(x) + (3,))
     out[..., 0] = -A3_OMEGA * (y - A3_CENTRE[1])

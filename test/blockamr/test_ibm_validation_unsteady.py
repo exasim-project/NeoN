@@ -86,7 +86,6 @@ from blockamr.operators.div import update_face_fluxes
 
 from .ibm_gaps import (
     B27_UNSTEADY_VALIDATION_MEASUREMENT,
-    T17_MOVING_BODIES,
     T18_FORCES,
 )
 
@@ -457,7 +456,6 @@ def _a4_case(ddt_scheme):
 
 
 @pytest.mark.slow
-@B27_UNSTEADY_VALIDATION_MEASUREMENT
 @pytest.mark.parametrize("ddt_scheme", ["Euler", "RK2", "RK4"])
 def test_stokes_layer_phase_lag_matches_the_analytic_solution(blockamr_session, ddt_scheme):
     """A4. ``u = U0 exp(-y/delta) cos(omega t - y/delta)`` on an inclined wall.
@@ -606,7 +604,6 @@ def _a4_wall_probe(mesh, shape, bc, t):
     return _assemble_result(T, out, shape)
 
 
-@T17_MOVING_BODIES
 def test_a_time_dependent_wall_datum_is_evaluated_at_the_evaluation_time(blockamr_session):
     """The one piece of A4 that is testable *today*, at operator level.
 
@@ -618,15 +615,20 @@ def test_a_time_dependent_wall_datum_is_evaluated_at_the_evaluation_time(blockam
     the equivalent *constant* datum at that instant bit for bit — a callable is
     a schedule for the datum, not a different wall condition.
 
-    Marked T17: a wall whose prescribed surface velocity is nonzero is the
-    stationary-geometry half of moving bodies (no fresh cells, because the body
-    itself does not move), and it is the half A4 needs.
+    Unmarked since B42, which built exactly this: the wall datum is read **per
+    row**, at that row's own wall foot point and at the ``t`` the rows are being
+    built with (``ibm.bc.gamma_rows``, reached from ``_band_closure``). It costs
+    nothing extra because v1 rebuilds the rows on every evaluate anyway (design
+    §8), and it is why the two spellings agree bitwise: a constant datum is the
+    same ``broadcast_gamma`` value repeated over the rows, and a callable one is
+    that value computed instead of written down.
 
-    This is a cheap, every-commit-tier test, not a nightly one: it is one
-    ``evaluate`` on a 24^3 box, and it fails today for a crisp, local reason —
-    ``ibm_bc`` data reach the row builder through ``robin()``, whose ``gamma``
-    goes straight into ``broadcast_gamma`` -> ``np.asarray(..., dtype=float)``,
-    and the tables are built once per ``evaluate`` with no ``t`` in sight.
+    This is a stationary body with a time-dependent surface value, which is the
+    half of moving bodies A4 needs and the half that has no fresh cells — the
+    other half is still T17 (``test_ibm_api_surface.py``'s fresh-cell row).
+
+    A cheap, every-commit-tier test, not a nightly one: one ``evaluate`` on a
+    24^3 box.
     """
     n = 24
     mesh = _make_mesh(n, bodies={"wall": Plane(point=WALL_POINT_A4, normal=tuple(N_HAT))})
@@ -896,8 +898,17 @@ def _a6_case(alpha, n):
 
 
 @pytest.mark.slow
-@B27_UNSTEADY_VALIDATION_MEASUREMENT
-@pytest.mark.parametrize("alpha, n", WOMERSLEY_CASES, ids=["alpha-3", "alpha-6"])
+@pytest.mark.parametrize(
+    "alpha, n",
+    [
+        # alpha = 3 still misses the bounds; alpha = 6 meets them since the
+        # wall datum became time-dependent (B42), so the marker is carried by
+        # the case that is still red and not by the pair.
+        pytest.param(*WOMERSLEY_CASES[0], marks=B27_UNSTEADY_VALIDATION_MEASUREMENT),
+        pytest.param(*WOMERSLEY_CASES[1]),
+    ],
+    ids=["alpha-3", "alpha-6"],
+)
 def test_womersley_amplitude_and_phase_profiles(blockamr_session, alpha, n):
     """A6. Two immersed walls, driven by an oscillating pressure gradient.
 

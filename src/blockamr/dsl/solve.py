@@ -304,6 +304,13 @@ def _apply_step_method(method, cell_field, dt, t):
             f"FixedValue ibm_bc datum only; patch {patch!r} carries "
             f"{type(bc).__name__}."
         )
+    if callable(bc.value):
+        raise NotImplementedError(
+            f"step-kind IBM '{method.__name__}' pins one constant per body, so it has no "
+            f"wall rows and no surface points to evaluate a datum at; patch {patch!r} "
+            "carries a callable (time-dependent) datum, which the operator methods' wall "
+            "rows support (ghostCell) and this one does not (B42)."
+        )
     u_body = broadcast_gamma(bc.value, cell_field.ncomp)
     method.apply(cell_field, dt, t, data, u_body=u_body)
 

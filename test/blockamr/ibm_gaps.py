@@ -89,19 +89,24 @@ B26_STEADY_VALIDATION_MEASUREMENT = _gap(
     "at term construction before any wall arithmetic (the same shape of "
     "blocker as B41_EXPLICIT_SOURCE_TERM; whether it folds into B41 is open — "
     "B41 wires a compiled source_acc kernel, A2 wants a callable per-component "
-    "drive). **A3** needs FixedValue to accept a callable surface datum for "
-    "the rotating wall u = omega x r: bc.py declares `value: float` and "
-    "robin()[2] flows into broadcast_gamma -> np.asarray(value, dtype=float), "
-    "which raises on a function object. That capability is scheduled as **B42** "
-    "(review.md §4 Q22 — the same blocker gates A4/A6 and thus half of gate "
-    "G1); A3's row measures after it",
+    "drive). **A3** needs a *spatial* surface datum for the rotating wall "
+    "u = omega x r, and that is **not** what B42 built: B42 (2026-07-28) made "
+    "FixedValue accept a callable of the evaluation time, spelled f(x, y, z, t) "
+    "and evaluated at the wall foot points, which is what A4/A6 need; A3's row "
+    "spells its datum f(x, y, z) — three arguments — so it now raises a "
+    "TypeError on the arity instead of inside broadcast_gamma, and is no closer "
+    "to measurable. Whether A3 is respelled or the datum is widened is decided "
+    "by the session that next schedules A3 (review.md §4 Q25 OP-1)",
 )
 
 B27_UNSTEADY_VALIDATION_MEASUREMENT = _gap(
     "B27",
-    "solve() applies solution['ibm'] since B15, but the unsteady validation "
-    "studies (A4/A6/A8) still miss their accuracy bounds; B27 is the Phase-2 "
-    "session that measures and records the unsteady (Stokes A4) results",
+    "solve() applies solution['ibm'] since B15, and the callable wall datum "
+    "since B42 (2026-07-28), so every unsteady study now runs; the rows still "
+    "marked are the ones that still miss their accuracy bounds — A6 at "
+    "alpha = 3 and both A8 rows. A4's three rows and A6 at alpha = 6 x-passed "
+    "at B42 and lost this marker there, with no number recorded: B27 is the "
+    "Phase-2 session that measures and records the unsteady results",
 )
 
 # -- missing implementation -------------------------------------------------
