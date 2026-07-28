@@ -65,3 +65,51 @@ Currently, the following boundary conditions are implemented for volVector for s
 - fixedValue
 - zeroGradient
 - calculated
+
+
+Slip / Symmetry boundary conditions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``slip`` and ``symmetry`` share a single implementation. They differ only in their
+registered name and in where they may be applied (``slip`` on a wall/regular patch,
+``symmetry`` on a symmetry plane). Per face the operator is:
+
+- **scalar field** => zero-gradient (there is no normal component, so the mode below is
+  irrelevant).
+- **vector field** => the boundary value is the *tangential projection* of the cell value
+  (the wall-normal component is removed), plus a **normal-damping** term
+  :math:`-\Delta\,(\mathbf{v}\cdot\mathbf{n})\,\mathbf{n}` that drives the normal component
+  of the cell value towards zero.
+
+The velocity vector field is assembled as a single shared scalar matrix and solved with a
+Vec3 (multi-RHS) solve, so the same matrix diagonal is used for all three components. The
+normal-damping coefficient :math:`\gamma\,|S|\,\Delta\,|n_c|` is **direction dependent**
+(it carries a per-component :math:`|n_c|` factor) and therefore cannot be held by the shared
+scalar diagonal. NeoN offers two ways to realise it, selected per patch by the ``implicit``
+key:
+
+Deferred (``implicit no``)
+    The damping is written into ``refGrad`` as
+    :math:`-\Delta\,(\mathbf{v}\cdot\mathbf{n})\,\mathbf{n}` and enters the per-component
+    **RHS** through the existing fixed-gradient assembly. This keeps the shared scalar matrix
+    and the fast multi-RHS solve intact. Because the term uses the previous iteration's
+    velocity, the normal coupling **lags by one outer iteration**; on a developed field this
+    can be too weak to hold the normal component and lets it diverge in the momentum solve.
+
+Implicit (``implicit yes``, the default)
+    ``refGrad`` is left zero; instead the ``BoundaryAttributes::transformImplicit`` flag tells
+    the Laplacian assembly to accumulate the per-component diagonal correction
+    :math:`\gamma\,|S|\,\Delta\,|n_c|` into the linear system's ``diagCmpt`` store. Since this
+    correction differs per column, the solver drops the multi-RHS solve and runs the three
+    components **segregated**, temporarily subtracting each column's correction from the shared
+    diagonal in place (no matrix copy). The constraint is applied *inside* the solve, so it does
+    not lag — at the cost of three solves instead of one multi-RHS solve.
+
+The default is **implicit**: the deferred variant was observed to let the wall-normal velocity
+run away at slip/symmetry boundaries on developed external-aerodynamics cases. Set
+``implicit no`` on a patch to opt back into the deferred, multi-RHS-friendly treatment.
+
+.. note::
+    A future ``Tensor`` specialisation (e.g. a transported Reynolds-stress field) must use the
+    full reflective transform :math:`(T + H\,T\,H)/2` with :math:`H = I - 2\,\mathbf{n}\otimes\mathbf{n}`,
+    **not** the per-component projection used for vectors.

@@ -11,6 +11,7 @@
 
 #include "NeoN/linearAlgebra/ginkgo.hpp"
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
 {
@@ -456,7 +457,11 @@ SolverStats GinkgoSolver::solve(
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     return {solve_impl(gkoExec_, sys.rhs(), x, gkoMtx, factory_->generate(gkoMtx), l1Control)};
 }
 
@@ -505,7 +510,11 @@ SolverStats GinkgoSolver::solve(
     const LinearSystem<Vec3, Vec3, CSRMatrix<Vec3, localIdx>>& sys, Vector<Vec3>& x
 ) const
 {
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     if (coupled_)
     {
         const auto gkoMtx = createGkoMtx(sys.matrix());
@@ -529,13 +538,99 @@ SolverStats GinkgoSolver::solve(
 }
 
 
+// Solve one component of a scalar-matrix / Vec3-rhs system under an implicit transform BC
+// (slip/symmetry). The component's diagonal correction is temporarily subtracted from the shared
+// scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
+// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
+// cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
+// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
+// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+template<
+    unsigned int I,
+    typename SystemType,
+    typename ExecType,
+    typename FactoryType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
+void solveImplicitTransformComponent(
+    const SystemType& sys,
+    Vector<Vec3>& x,
+    const ExecType& exec,
+    std::shared_ptr<const gko::Executor> gkoExec,
+    std::shared_ptr<const gko::LinOp> gkoMtx,
+    const FactoryType& factory,
+    SolverStats& stats,
+    const L1ResidualControl* l1Control,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
+    localIdx nrows
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
+        "applyImplicitTransformDiag"
+    );
+    gkoExec->synchronize();
+
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+    stats.entries.push_back(
+        solve_impl(gkoExec, rhs, xcopy, gkoMtx, factory->generate(gkoMtx), l1Control)
+    );
+    setComponent<I>(xcopy, x);
+
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
+        "restoreImplicitTransformDiag"
+    );
+    gkoExec->synchronize();
+}
+
 SolverStats GinkgoSolver::solve(
     const LinearSystem<scalar, Vec3, CSRMatrix<scalar, localIdx>, COOMatrix<scalar, localIdx>>& sys,
     Vector<Vec3>& x
 ) const
 {
     auto gkoMtx = createGkoMtx(sys.matrix());
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+
+    // When the configFile names the L1 criterion it is already built into the solver and
+    // governs convergence (l1InConfig_); suppress the post-hoc attach so it is not applied
+    // twice. The flag-only case (criterion not in the config) still attaches it here.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
+
+    // Implicit transform-BC path (slip/symmetry with "implicit"): the per-component diagonal
+    // correction differs per column, so solve the three components segregated, reusing solve_impl
+    // (which honours the l1ScaledResidual criterion). Each column's correction is temporarily
+    // subtracted from the shared scalar diagonal in place — no matrix copy — and restored after;
+    // createGkoMtx only views the matrix, so the edits are seen at generate()/apply() time, and the
+    // const_cast is safe because the storage is owned mutably by the caller.
+    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    {
+        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+        auto diagC = sys.diagCmpt()->view();
+        const localIdx nrows = sys.rhs().size();
+        gkoExec_->synchronize();
+
+        SolverStats stats;
+        solveImplicitTransformComponent<0>(
+            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+        );
+        solveImplicitTransformComponent<1>(
+            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+        );
+        solveImplicitTransformComponent<2>(
+            sys, x, exec_, gkoExec_, gkoMtx, factory_, stats, l1Control, values, ma, diagC, nrows
+        );
+        return stats;
+    }
     if (l1Control)
     {
         gkoExec_->synchronize();
