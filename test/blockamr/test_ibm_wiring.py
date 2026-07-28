@@ -449,6 +449,88 @@ def test_an_empty_band_leaves_the_field_unpinned(blockamr_session, registered):
 
 
 # ---------------------------------------------------------------------------
+# a pointwise term in the band (B41) — the composition rule's degenerate case
+# ---------------------------------------------------------------------------
+
+# These two run on the *real* ``ghostCell`` method rather than the hand-built
+# rows above: the claim is about what ``source x ghostCell`` emits, and the row
+# is derived from the two general rules rather than invented (decision Q23/P1,
+# ``plans/IBM/review.md`` §4). A pointwise term has no stencil and so no band of
+# its own; by the composition rule its row everywhere is its plain interior
+# formula, and by the non-fluid convention a solid cell is ``nnz = 0, c = 0``.
+
+
+def _source_field(mesh):
+    """``S = y`` — exact in binary64 at every cell centre, and nonzero in every
+    solid column, so 'the source wrote nothing' and 'the source wrote 0' are
+    not the same observation."""
+    S = CellField(mesh, ncomp=1, ngrow=1, name="S")
+    mf = S.mf[0]
+    for mfi in blockamr.MFIterator(mf):
+        arr = mf.copy_to_host(mfi)
+        lo = mfi.valid_box().small_end()
+        j = np.arange(arr.shape[1])[None, :, None] + lo[1]
+        arr[:, :, :, :] = ((j + 0.5) / N)[..., None]
+        mf.copy_from(mfi, arr)
+    S.fill_patch(0, 0.0)
+    return S
+
+
+def test_a_source_terms_band_row_is_its_plain_interior_value(blockamr_session):
+    """In the band the source contributes exactly ``coeff * S`` — the same value
+    its interior sweep writes everywhere else.
+
+    The band cells' result is *overwritten* by the first term's rows and added
+    to by the rest, so a source term that emitted no rows would have its sweep
+    contribution silently erased on precisely the cells the accuracy study
+    measures. Comparing a ``laplacian`` evaluate with a ``laplacian + source``
+    one isolates that contribution, and the two are compared bitwise: the row's
+    ``c`` is ``S`` to the last bit and the apply adds it once.
+    """
+    mesh = _mesh(bodies=_cylinder())
+    T = _quadratic_field(mesh)
+    S = _source_field(mesh)
+
+    plain = _result(evaluate(Equation(exp.laplacian(1.0, T)), t=0.0, solution=_sol("ghostCell")))
+    with_source = _result(
+        evaluate(
+            Equation(exp.laplacian(1.0, T) + exp.source(S)),
+            t=0.0,
+            solution=_sol("ghostCell"),
+        )
+    )
+
+    band = _reads_a_pinned_cell() & ~_solid_columns()
+    assert band.any(), "the probe would be blind"
+    s = _valid_cells(S)[..., 0]
+    np.testing.assert_array_equal(with_source[band], plain[band] + s[band])
+
+
+def test_a_source_term_writes_nothing_into_a_non_fluid_cell(blockamr_session):
+    """The non-fluid convention (design §7), unchanged by a pointwise term: a
+    ``depth <= 0`` cell is a row with ``nnz = 0, c = 0``.
+
+    ``S`` is nonzero in every solid column, so a source that ignored the
+    classification would leave its own value there — read by nothing and
+    plotted by everything."""
+    mesh = _mesh(bodies=_cylinder())
+    T = _quadratic_field(mesh)
+    S = _source_field(mesh)
+    solid = _solid_columns()
+    assert (_valid_cells(S)[..., 0][solid] != 0.0).all(), "the probe would be blind"
+
+    with_source = _result(
+        evaluate(
+            Equation(exp.laplacian(1.0, T) + exp.source(S)),
+            t=0.0,
+            solution=_sol("ghostCell"),
+        )
+    )
+
+    np.testing.assert_array_equal(with_source[solid], 0.0)
+
+
+# ---------------------------------------------------------------------------
 # the non-fluid pin (B7)
 # ---------------------------------------------------------------------------
 

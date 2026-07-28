@@ -20,6 +20,7 @@ Mirrors AMReX ParallelFor + Array4 pattern:
 
 import equinox as eqx
 import jax.numpy as jnp
+from jax.experimental.pallas import triton as plt
 
 from .array_types import Axis, CellArray, FaceArray
 
@@ -68,6 +69,37 @@ class VariableGammaLaplacian3D(eqx.Module):
                                - phi[i-d[0], j-d[1], k-d[2], 0])
                       ) / self.dh[ax]**2
         return self.coeff * total
+
+
+# ------------------------------------------------------------------
+# Explicit (Su) source
+# ------------------------------------------------------------------
+
+class Source3D(eqx.Module):
+    """Explicit source: ``coeff * S(i, j, k)`` — ``phi`` is not read at all.
+
+    ``S`` lives in its own flat buffer, indexed by the tile's ``box_id`` exactly
+    the way :class:`~blockamr.flat_refs._FaceAxisBoxed` indexes a face buffer:
+    ``offsets[box_id]`` is that box's first *valid* cell and ``strides[box_id]``
+    its ``(1, Nx, Nx*Ny)``. ``box_id`` arrives as a call argument, so nothing
+    has to be rebound inside the Pallas kernel.
+
+    One component only — see ``ExplicitSource.build_kernel_3d``, which refuses
+    a wider source rather than reading component 0 into every component.
+    """
+
+    buf: jnp.ndarray  # the source field's contiguous buffer (traced leaf)
+    offsets: jnp.ndarray  # (n_boxes_padded,) int32 (traced leaf)
+    strides: jnp.ndarray  # (n_boxes_padded, 3) int32 (traced leaf)
+    coeff: float = eqx.field(static=True, default=1.0)
+    ng: int = eqx.field(static=True, default=0)
+
+    def __call__(self, box_id, i, j, k, phi):
+        off = self.offsets[box_id]
+        sx = self.strides[box_id, 0]
+        sy = self.strides[box_id, 1]
+        sz = self.strides[box_id, 2]
+        return self.coeff * plt.load(self.buf.at[off + i * sx + j * sy + k * sz])
 
 
 # ------------------------------------------------------------------
@@ -251,5 +283,3 @@ class CombinedSource(eqx.Module):
         for idx in range(self._n):
             total = total + self.spatial_kernels[idx](box_id, i, j, k, phi)
         return total
-
-

@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""``ghostCell``'s boundary schemes — laplacian, div and grad (B9-B12).
+"""``ghostCell``'s boundary schemes — laplacian, div, grad (B9-B12) and the
+explicit source (B41).
 
 The one place an operator and the ``ghostCell`` method meet
 (``plans/IBM/design.md`` §6). Each scheme reads the mesh's classification and
@@ -54,6 +55,19 @@ so replacing it by the surface value ``phi_w`` (the literal reading of design
 halve the gradient at the wall — measured ``B/2`` instead of ``B`` on
 ``test_every_div_scheme_is_exact_on_a_linear_field_at_a_plane_wall``. For a
 central (``linear``) face value the two readings coincide.
+
+``source`` is the degenerate case of the same two rules, and the only one whose
+row touches no wall at all::
+
+    coeff * S|_P
+
+A pointwise term reads no neighbour, so it has no band of its own and — by the
+composition rule below — its row at *every* cell of the equation's band is its
+plain interior formula. It is emitted all the same, and must be: the band is
+overwritten by the first term's rows and added to by the rest, so a source term
+that emitted nothing would have its interior sweep erased on exactly the cells
+the wall owns. Hence ``nnz = 0`` (it reads no cell, not even its own — ``S`` is
+a coefficient, not the unknown) with the value wholly in ``c``.
 
 A non-fluid cell is a row with ``nnz = 0, c = 0``: the operator has no value
 there, and a leaked one would be read by nothing and plotted by everything.
@@ -501,6 +515,79 @@ def _band_face_flux(face_field, lev, band):
             flux[span, d, 0] = arr[low[:, 0], low[:, 1], low[:, 2], 0]
             flux[span, d, 1] = arr[high[:, 0], high[:, 1], high[:, 2], 0]
     return flux
+
+
+# ---------------------------------------------------------------------------
+# the explicit (Su) source — a row with no wall in it
+# ---------------------------------------------------------------------------
+
+
+@register
+class GhostCellSource:
+    """``source x ghostCell``: the term's plain interior value, over the band.
+
+    The only boundary scheme here that never builds a :func:`_context`: it needs
+    no wall closure, no image point and no ``ibm_bc``, because the source field
+    is a coefficient and carries no boundary condition of its own. What it needs
+    is the band (to know which cells to write) and the classification's depth
+    (to write nothing inside the body).
+    """
+
+    operator = "source"
+    method = "ghostCell"
+    #: One dead slot, pointed at the row's own target — the ``nnz = 0`` shape
+    #: :func:`~blockamr.ibm.band_rows.pin_rows` already uses.
+    stride = 1
+
+    def __init__(self, interior_scheme):
+        self.interior = interior_scheme
+
+    def rows(self, term, ibm, lev, ncomp, t, width):
+        band = ibm.band(lev, width)
+        target = np.ascontiguousarray(band.cell, dtype=np.int32)
+        nrows = band.nrows
+        c = float(term.coeff) * _band_cell_values(term.field, lev, band, ncomp)
+        c[band.depth <= 0] = 0.0
+        return BandRows(
+            target=target,
+            stencil=np.ascontiguousarray(target[:, np.newaxis, :]),
+            a=np.zeros((nrows, 1)),
+            nnz=np.zeros(nrows, dtype=np.int32),
+            c=np.ascontiguousarray(c, dtype=np.float64),
+            patch=np.ascontiguousarray(band.patch, dtype=np.int32),
+            box_offset=band.box_offset,
+            stride=self.stride,
+        )
+
+
+def _band_cell_values(field, lev, band, ncomp):
+    """The source field's value at each band cell, ``(n, ncomp)``.
+
+    The sibling of :func:`_band_face_flux`, one axis simpler: a source row
+    depends on the source field, so it is a per-evaluate device-to-host read
+    until the assembly moves to the device (design §8).
+    """
+    import blockamr
+
+    if field.ncomp != ncomp:
+        raise NotImplementedError(
+            f"the source field '{field.name}' has ncomp = {field.ncomp} but the equation's "
+            f"field has {ncomp}; a band row carries one constant per component of the "
+            "solved field, so the two must agree."
+        )
+    values = np.zeros((band.nrows, ncomp))
+    if band.nrows == 0:
+        return values
+    mf = field.mf[lev]
+    for bi, mfi in enumerate(blockamr.MFIterator(mf)):
+        span = slice(int(band.box_offset[bi]), int(band.box_offset[bi + 1]))
+        if span.start == span.stop:
+            continue
+        arr = np.asarray(mf.copy_to_host(mfi))
+        lo = np.asarray([int(v) for v in mfi.valid_box().small_end()])
+        index = band.cell[span].astype(np.int64) - lo
+        values[span] = arr[index[:, 0], index[:, 1], index[:, 2], :ncomp]
+    return values
 
 
 # ---------------------------------------------------------------------------

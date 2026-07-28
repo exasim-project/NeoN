@@ -45,26 +45,47 @@ the analytic body — with no access to the implementation's classification that
 is an *independent* oracle, and §4/§10 prefer it to asking the code which cells
 it believes are near the wall.
 
-**Why these rows are red, and under which name.** A sourced manufactured
-solution needs a way to *state* its source, and the Python DSL has no explicit
-(Su) source term: ``exp.source(coeff_func, phi)`` is the implicit (Sp) form
-``coeff * phi``, and it has no ``cpp`` kernel either. NeoN's own C++ DSL already
-draws exactly this distinction — ``dsl::exp::source(coeff, phi)`` is Sp,
+**These rows ran for the first time at B41** (2026-07-28). A sourced
+manufactured solution needs a way to *state* its source, and until B41 the
+Python DSL had no explicit (Su) source term: ``exp.source(coeff_func, phi)`` was
+the implicit (Sp) form ``coeff * phi`` alone, with no ``cpp`` kernel. NeoN's own
+C++ DSL draws exactly this distinction — ``dsl::exp::source(coeff, phi)`` is Sp,
 ``dsl::exp::source(coeff)`` is Su, "the field IS the coefficient"
-(``sourceTerm.cpp``) — so the spelling used below is the same arity overload,
-``exp.source(S)`` with one ``CellField`` operand. These tests hit that
-prerequisite *before* they can hit any wall arithmetic: they fail at term
-construction. Since B16 the marker names it — ``B41_EXPLICIT_SOURCE_TERM``, the
-task that wires the already-compiled ``source_acc`` kernel through the DSL
-(decision Q15). The former ``D2`` marker under-reported this, and D2's own
-judgement is no longer pending on these rows: the ``ln r`` half of the §4 table
-is measured, recorded and green next door in ``test_ibm_solution_error.py``.
+(``sourceTerm.cpp``) — and B41 built the same arity overload here:
+``exp.source(S)`` with one ``CellField`` operand, schemed (``PointwiseSource``),
+on both backends, and emitting band rows through ``source x ghostCell``. So
+these rows now measure wall arithmetic rather than failing at term construction.
+
+**What they measured** (six meshes 32..80, `cpp`/CUDA; full error rows in
+``plans/IBM/tasks.md`` §1, *Measured, B41*):
+
+===============  ============  ============  ==========================
+case             band order    bulk order    vs ``MIN_ORDER = 1.0``
+===============  ============  ============  ==========================
+``r2-value``     1.885         1.708         both clear it
+``r4-value``     1.944         1.763         both clear it
+``r2-gradient``  0.582         0.175         **both fail — refuted**
+===============  ============  ============  ==========================
+
+Two findings, and neither was patched around:
+
+* the **Neumann** row does not converge — the same refutation B16 measured on
+  ``ln r`` × ``FixedGradient(1/R)`` (1.073 / 0.851), reproduced here on a
+  different solution with the same body, meshes, driver and masks. Its band
+  ``L∞`` *rises* from ``n = 32`` to ``n = 48`` before falling back. Both of its
+  rows carry ``B18_NEUMANN_WALL_ACCURACY``, the marker B16 created, and the
+  judgement is the accuracy gate's (B18/G1).
+* ``r2-value``'s band order is **1.885**, above :data:`WALL_ORDER_SECOND`. The
+  two order tests at the bottom of this file were built to be mutually
+  exclusive; on this measurement the *second-order* one passes and the
+  *first-order* one fails, on the trilinear reconstruction the design says can
+  only be first order. That is a finding about the claim, not a threshold to
+  move — see ``WALL_ORDER_CLAIM`` and ``plans/IBM/review.md`` §3.
 
 Tier: **nightly** (§10; decision Q16). Three cases x six meshes of
-forward-Euler pseudo-time is roughly three times the cost of the ``ln r`` file
-next door, which measures 618 s for two cases — so ~15.5 min once B41 makes these
-rows runnable, far outside §10's ~10 minute pre-merge budget. Hence the
-module-level ``slow`` marker; today only rung 6 actually runs.
+forward-Euler pseudo-time; measured at B41 as **837 s** of solves (18 solves,
+7.5 s at ``n = 32`` rising to 131 s at ``n = 80``), far outside §10's ~10 minute
+pre-merge budget. Hence the module-level ``slow`` marker.
 """
 
 from typing import Callable, NamedTuple
@@ -78,7 +99,7 @@ from blockamr.field import CellField
 from blockamr.ibm import Cylinder, FixedGradient, FixedValue
 from blockamr.mesh import Mesh
 
-from .ibm_gaps import B41_EXPLICIT_SOURCE_TERM, RECONSTRUCTION_ORDER
+from .ibm_gaps import B18_NEUMANN_WALL_ACCURACY, WALL_ORDER_CLAIM
 
 pytestmark = pytest.mark.slow
 
@@ -173,6 +194,19 @@ CASES = {
     "r2-gradient": _Case(_r2, _lap_r2, FixedGradient(2.0 * R)),
     "r4-value": _Case(_r4, _lap_r4, FixedValue(R**4)),
 }
+
+#: ``sorted(CASES)``, with the Neumann case expected-red since B41 measured it.
+#: Band 0.582 / bulk 0.175 against ``MIN_ORDER = 1.0`` — the same refutation B16
+#: recorded on ``ln r`` × ``FixedGradient``, reproduced on a second solution with
+#: the same body, meshes, driver and masks. This is marker **placement**, not
+#: weakening: the assertions, the floor and the case list are untouched, the
+#: refuted numbers are in the ledger, and the judgement stays the accuracy
+#: gate's (B18/G1) exactly as at B16.
+CASE_PARAMS = [
+    pytest.param("r2-gradient", marks=B18_NEUMANN_WALL_ACCURACY),
+    "r2-value",
+    "r4-value",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -409,8 +443,10 @@ def test_bulk_laplacian_of_a_quadratic_is_exactly_four(blockamr_session, n, bc):
     are different algebra on the same solution (the §4 table's ``r2-value`` and
     ``r2-gradient`` rows), and bulk exactness must hold for both — a Neumann row
     that contaminated the bulk would otherwise only be visible through the
-    rung-7 solution-error tests, all of which are strict-xfail under
-    ``B41_EXPLICIT_SOURCE_TERM``.
+    rung-7 solution-error tests, which were all strict-xfail until B41 made them
+    runnable — and whose ``r2-gradient`` rows are now the recorded Neumann
+    refutation, so this exactness check is what separates "the Neumann wall is
+    inaccurate" from "the Neumann wall leaks into the bulk". It does not leak.
     This is ``test_mms_fixed_gradient_bulk_exact``, transferred from
     ``test_ibm_laplacian.py`` at B23 and landing on rung 6's tighter mask and
     tolerance.
@@ -438,8 +474,7 @@ def test_bulk_laplacian_of_a_quadratic_is_exactly_four(blockamr_session, n, bc):
 # ---------------------------------------------------------------------------
 
 
-@B41_EXPLICIT_SOURCE_TERM
-@pytest.mark.parametrize("case_name", sorted(CASES))
+@pytest.mark.parametrize("case_name", CASE_PARAMS)
 def test_steady_solution_error_converges_in_the_band(blockamr_session, case_name):
     """The band contract for ``r²`` and ``r⁴``, stated on the solution (D2).
 
@@ -463,15 +498,20 @@ def test_steady_solution_error_converges_in_the_band(blockamr_session, case_name
 
     Live since B15: ``solve()`` honours ``solution["ibm"]`` as well as
     ``solution["backend"]``, so the immersed wall is applied inside the time
-    loop and this row measures the wall's own order.
+    loop and this row measures the wall's own order. Drivable since B41, which
+    built the ``exp.source(S)`` the manufactured source needs.
+
+    **Measured at B41** (2026-07-28): ``r2-value`` 1.885, ``r4-value`` 1.944 —
+    both clear the floor. ``r2-gradient`` fits **0.582** and is expected-red
+    under ``B18_NEUMANN_WALL_ACCURACY``; it is the second solution on which the
+    Neumann datum fails to converge, after B16's ``ln r`` row.
     """
     errors = [_steady_errors(case_name, n)[0] for n in RESOLUTIONS]
     order = _observed_order(errors)
     assert order > MIN_ORDER, _report(case_name, "band Linf", order)
 
 
-@B41_EXPLICIT_SOURCE_TERM
-@pytest.mark.parametrize("case_name", sorted(CASES))
+@pytest.mark.parametrize("case_name", CASE_PARAMS)
 def test_steady_solution_error_converges_in_the_bulk(blockamr_session, case_name):
     """The bulk half of the same contract, on its own cells and its own norm.
 
@@ -483,8 +523,11 @@ def test_steady_solution_error_converges_in_the_bulk(blockamr_session, case_name
     order that came out at 2 while the band sat at 1 would mean the two regions
     had decoupled, which for an elliptic problem is itself a defect.
 
-    Red today for the same reason as the band: the source term these two
-    solutions need cannot be stated in the DSL yet (B41).
+    **Measured at B41** (2026-07-28): ``r2-value`` 1.708, ``r4-value`` 1.763,
+    against band orders of 1.885 and 1.944 — the bulk tracks the band a little
+    below it, which is the coupling this row exists to check. ``r2-gradient``
+    fits **0.175**, its band **0.582**: the Neumann row fails here too, and
+    carries ``B18_NEUMANN_WALL_ACCURACY`` for the same reason as the band's.
     """
     errors = [_steady_errors(case_name, n)[1] for n in RESOLUTIONS]
     order = _observed_order(errors)
@@ -500,9 +543,18 @@ def test_steady_solution_error_converges_in_the_bulk(blockamr_session, case_name
 # fitted order is the order of the reconstruction and of nothing else. They sit
 # on opposite sides of :data:`WALL_ORDER_SECOND` on purpose — exactly one of
 # them can pass, so the pair records which design is installed.
+#
+# **B41 measured 1.885, and the pair answered the other way round** (2026-07-28).
+# The design predicted the *first-order* row; the *second-order* row is the one
+# that passes, on the trilinear reconstruction, with no quadratic/MLS anywhere in
+# the tree. Both halves therefore moved, which is exactly the outcome the pair
+# was built to make visible — and it is a finding about the design claim, not a
+# threshold to retune. :data:`WALL_ORDER_SECOND` and :data:`MIN_ORDER` are
+# untouched; the escalation is ``plans/IBM/review.md`` §3, decided with the
+# accuracy gate B18 (``WALL_ORDER_CLAIM``).
 
 
-@B41_EXPLICIT_SOURCE_TERM
+@WALL_ORDER_CLAIM
 def test_observed_order_at_the_wall_is_first_order_today(blockamr_session):
     """The order the **current** design claims: first, and not yet second.
 
@@ -510,42 +562,47 @@ def test_observed_order_at_the_wall_is_first_order_today(blockamr_session):
     one solid layer. Trilinear is linear-exact, so it reproduces a linear field
     to machine precision (rung 5) but leaves an ``O(dx²)`` error on a curved
     wall, which the steady solve turns into an ``O(dx)`` solution error at the
-    surface. First order is what this method actually owes.
+    surface. First order is what this method was argued to owe.
 
     The assertion is **two-sided**, which is the point: the lower bound is the
     contract (the wall converges at all), and the upper bound records that it
-    converges at the *trilinear* rate. When quadratic/MLS reconstruction lands,
-    this test must fail and be deleted, and the ``RECONSTRUCTION_ORDER`` marker
-    on its sibling must come off. That is the whole reason both exist.
+    converges at the *trilinear* rate.
 
-    Red today for B41 — the sourced solution cannot be stated, so there is no
-    steady state to fit an order to. The measured ``ln r`` orders next door
-    (B16, ``test_ibm_solution_error.py``) are the reference for what this row
-    is expected to say once B41 lands.
+    **Refuted at B41** (2026-07-28), on its own terms: the fitted band order is
+    **1.885**, so the lower bound holds and the upper one does not. That is not
+    a mesh artefact of one case — ``r4-value`` fits 1.944 on the same body and
+    driver, and B16's ``ln r`` × ``FixedValue`` row fits 1.768 next door. The
+    row keeps its assertion and its numbers, and carries a strict xfail naming
+    the pending decision (O5). Nothing about the reconstruction changed to make
+    this happen: the trilinear-implies-first-order *argument* above is what the
+    measurement contradicts, and choosing between the argument and the row is
+    the accuracy gate's business (B18/G1, ``plans/IBM/review.md`` §3).
     """
     errors = [_steady_errors("r2-value", n)[0] for n in RESOLUTIONS]
     order = _observed_order(errors)
     assert MIN_ORDER < order < WALL_ORDER_SECOND, _report("r2-value", "band Linf", order)
 
 
-@RECONSTRUCTION_ORDER
 def test_observed_order_at_the_wall_is_second_order_with_higher_order_reconstruction(
     blockamr_session,
 ):
-    """The order the **intended** design claims: second, at the wall.
+    """Second order at the wall — measured, on the reconstruction we already have.
 
-    A quadratic (or moving-least-squares) reconstruction is quadratic-exact, so
-    its ghost error drops to ``O(dx³)`` on a curved surface and the steady
-    solution error at the wall to ``O(dx²)`` — the same order the bulk scheme
-    already has, which is the point of doing it: the wall stops being the
-    accuracy bottleneck of the whole solve.
+    Written as the *intended* design's row: a quadratic (or moving-least-squares)
+    reconstruction is quadratic-exact, so its ghost error drops to ``O(dx³)`` on
+    a curved surface and the steady solution error at the wall to ``O(dx²)`` —
+    the same order the bulk scheme has, which is the point of doing it.
 
-    Written today so that the improvement is *measurable* rather than asserted
-    in a commit message. It fails on two counts at once, and both are named:
-    B41 (no explicit source term) blocks the measurement, and T14 (trilinear
-    only) blocks the result. ``RECONSTRUCTION_ORDER`` is the marker because it
-    is the one that outlives the other — closing B41 alone will not turn this
-    green.
+    **It passes at B41 (order 1.885) without that reconstruction ever landing.**
+    ``RECONSTRUCTION_ORDER`` came off because it x-passed and the house rule for
+    a strict xfail is that a row which greens loses its marker (O4; the Q21/A1
+    precedent) — nothing here was weakened, the row goes from expected-red to
+    enforced-green on an untouched assertion. But its *premise* is now false: T14
+    is still open and the reconstruction is still trilinear, so whatever this row
+    is measuring, it is not the arrival of quadratic/MLS. Its name and its
+    continued existence are part of the question escalated to
+    ``plans/IBM/review.md`` §3 (see ``WALL_ORDER_CLAIM`` on its sibling); B41 left
+    both to the reviewer rather than deciding them inside a measurement session.
     """
     errors = [_steady_errors("r2-value", n)[0] for n in RESOLUTIONS]
     order = _observed_order(errors)

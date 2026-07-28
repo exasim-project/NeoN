@@ -11,7 +11,7 @@ from ..operators.ddt import Ddt
 from ..operators.div import Div
 from ..operators.grad import Grad
 from ..operators.laplacian import Laplacian
-from ..operators.source import Source
+from ..operators.source import ExplicitSource, Source
 from .eqterm import EqTerm
 
 
@@ -52,8 +52,20 @@ def laplacian(gamma_func, field):
     return Laplacian(gamma_func, field)
 
 
-def source(coeff_func, field):
-    return Source(coeff_func, field)
+def source(coeff_func_or_field, field=None):
+    """Source term, in the same two arities NeoN's C++ DSL uses.
+
+    Two forms:
+      exp.source(coeff_func, phi)  — implicit (Sp): ``coeff_func(x,y,z,t)*phi``,
+        the callable coefficient times the solved field (jax only; the cpp
+        backend raises naming the term).
+      exp.source(S)               — explicit (Su): the single ``CellField``
+        operand *is* the coefficient (``dsl::exp::source(coeff)``,
+        "the field IS the coefficient"). Schemed, so both backends run it.
+    """
+    if field is None:
+        return ExplicitSource(coeff_func_or_field)
+    return Source(coeff_func_or_field, field)
 
 
 # ---------------------------------------------------------------------------

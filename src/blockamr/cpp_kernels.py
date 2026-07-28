@@ -63,3 +63,31 @@ class CppGradAcc:
 
     def add_to(self, src, op, cell_field, lev, geom):
         _bindings().grad_acc(src, cell_field.mf[lev], geom, op.coeff)
+
+
+class CppSourceAcc:
+    """Accumulate ``coeff * S`` — the explicit (Su) source, whose operand *is*
+    the coefficient.
+
+    The only wrapper that reads a field other than the equation's solved one, so
+    it is also the only one that has to check they are laid out alike:
+    ``sourceAcc`` iterates ``MFIter(S)`` and indexes the destination by the same
+    ``mfi``, which on a different box array is undefined behaviour rather than
+    an error.
+    """
+
+    def add_to(self, src, op, cell_field, lev, geom):
+        source = op.field
+        if source.mesh is not cell_field.mesh:
+            raise ValueError(
+                f"cpp backend: the source field '{source.name}' is on a different mesh "
+                f"than '{cell_field.name}'; a source term is accumulated box by box and "
+                "the two must share a box array."
+            )
+        if source.ncomp != cell_field.ncomp:
+            raise ValueError(
+                f"cpp backend: the source field '{source.name}' has ncomp = {source.ncomp} "
+                f"but '{cell_field.name}' has {cell_field.ncomp}; the accumulate writes "
+                "component for component."
+            )
+        _bindings().source_acc(src, source.mf[lev], float(op.coeff), cell_field.ncomp)

@@ -22,6 +22,12 @@ pressure solve ever becomes necessary here, the case has been mis-set.
     A6  Womersley channel     two planes       closed form in alpha = h sqrt(w/nu)
     A8  Rotating-wall scalar  cylinder         dT/dt == 0 on a tangential field
 
+**The ``A`` here means a validation case, never a design decision**: `design.md`
+numbers its *decisions* ``A1``-``A15`` while this file and `verification.md` §9
+number the *validation cases* ``A1``-``A8``, so a bare ``A4`` resolves only
+against the note it sits in (review.md F13). Renaming the validation cases
+``V1``-``V8`` is decided but deferred to **B43**, post-gate-G1 (review.md §4 Q6).
+
 **A4 is the case this file is built around.** Its discriminating metric is a
 *phase*, not a magnitude, which is exactly the signature of a wall
 reconstruction refreshed once per step instead of once per stage: a method can

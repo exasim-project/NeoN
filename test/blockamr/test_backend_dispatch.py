@@ -128,6 +128,15 @@ def test_variable_gamma_laplacian_on_cpp_raises_naming_term_and_scheme(blockamr_
 
 
 def test_source_term_on_cpp_raises_naming_term(blockamr_session):
+    """The **Sp** overload specifically: ``exp.source(coeff_func, phi)``.
+
+    Unchanged by B41, which built the *Su* overload — ``exp.source(S)``, a
+    separate term class (``ExplicitSource``) with its own ``PointwiseSource``
+    scheme and therefore its own cpp kernel. The Sp ``Source`` still carries
+    ``scheme = None``, so this raise is still the cpp backend refusing a term
+    with no kernel, still naming ``'Source'`` (decision Q23, ``plans/IBM/review.md``
+    §4). A cpp kernel for the callable-coefficient form is not in B41's scope.
+    """
     mesh, geom = _make_mesh()
     phi = CellField(mesh, ncomp=1, ngrow=1, name="phi")
     phi.fill_patch(0, 0.0)

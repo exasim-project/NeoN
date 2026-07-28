@@ -54,29 +54,47 @@ B18_NEUMANN_WALL_ACCURACY = _gap(
     "cutCell is a restart of the numerics, not an extension)",
 )
 
-# -- decided, not yet built -------------------------------------------------
-
-B41_EXPLICIT_SOURCE_TERM = _gap(
-    "B41",
-    "the DSL has no explicit (Su) source term: exp.source(coeff, phi) is the "
-    "implicit (Sp) form, Source carries no scheme and no cpp kernel (the cpp "
-    "backend raises for it, pinned by a green test), and the band driver "
-    "resolves a boundary scheme per spatial term. A sourced manufactured "
-    "solution therefore cannot be stated, let alone driven — these rows fail at "
-    "term construction, before any wall arithmetic. B41 wires the already "
-    "compiled source_acc kernel through an explicit source term; the wall orders "
-    "of the r²/r⁴ rows are then a short measurement session (decision Q15). The "
-    "ln r half of the same §4 table is measured and recorded next door in "
-    "test_ibm_solution_error.py (B16) — Dirichlet green, the Neumann interior "
-    "row a recorded refutation awaiting the gate (B18)",
+WALL_ORDER_CLAIM = _gap(
+    "Q24",
+    "measured refutation of a *design claim*, not of the contract (B41, "
+    "2026-07-28, cpp/CUDA): the steady band L-inf on T = r² with FixedValue(R²) "
+    "— the pure-wall row, whose bulk operator is exact — fits an observed order "
+    "of **1.885** over the six meshes 32..80, and T = r⁴ fits 1.944. Both are "
+    "above WALL_ORDER_SECOND = 1.8, so the wall does *not* behave as the "
+    "'trilinear reconstruction is linear-exact, therefore the wall is first "
+    "order' argument this row states; its sibling "
+    "test_observed_order_at_the_wall_is_second_order_with_higher_order_reconstruction "
+    "x-passes on the same numbers, on the *trilinear* reconstruction, with no "
+    "quadratic/MLS anywhere in the tree. The pair was built to be mutually "
+    "exclusive, so both halves moving is a finding about the claim. Nothing was "
+    "patched around it: WALL_ORDER_SECOND, MIN_ORDER, T_END, DT_SAFETY, "
+    "RESOLUTIONS and the masks are untouched (O3/O4). Which half survives — and "
+    "whether 'first order at the wall' was ever this method's ceiling — is a "
+    "contract question escalated to plans/IBM/review.md §3 and decided with the "
+    "accuracy gate B18",
 )
+
+# -- decided, not yet built -------------------------------------------------
 
 B26_STEADY_VALIDATION_MEASUREMENT = _gap(
     "B26",
-    "solve() applies solution['ibm'] since B15, but the steady validation "
-    "studies (A2/A3) still miss their accuracy bounds; B26 is the Phase-2 "
-    "session that measures and records the steady validation orders (after "
-    "the B16/D2 accuracy contract)",
+    "**not a missing measurement — a missing capability.** B26 ran "
+    "(2026-07-28) and measured what solve() can drive: the A1 annulus field "
+    "row, band 1.768 / bulk 1.439 over the six meshes, recorded in "
+    "plans/IBM/tasks.md §1. A1 is therefore no longer among this marker's "
+    "users. The two rows still here cannot be posed at all through the public "
+    "API, so no session can measure them until each gap is built: **A2** needs "
+    "a field-independent (Su) drive — the row spells it exp.body_force(f, U) "
+    "and `grep -r body_force src/blockamr/` returns nothing, so the row raises "
+    "at term construction before any wall arithmetic (the same shape of "
+    "blocker as B41_EXPLICIT_SOURCE_TERM; whether it folds into B41 is open — "
+    "B41 wires a compiled source_acc kernel, A2 wants a callable per-component "
+    "drive). **A3** needs FixedValue to accept a callable surface datum for "
+    "the rotating wall u = omega x r: bc.py declares `value: float` and "
+    "robin()[2] flows into broadcast_gamma -> np.asarray(value, dtype=float), "
+    "which raises on a function object. That capability is scheduled as **B42** "
+    "(review.md §4 Q22 — the same blocker gates A4/A6 and thus half of gate "
+    "G1); A3's row measures after it",
 )
 
 B27_UNSTEADY_VALIDATION_MEASUREMENT = _gap(

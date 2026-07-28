@@ -36,12 +36,33 @@ def set_tile_size(bf):
     BF = bf
 
 
+def _validate_foreign_operands(terms, cell_field):
+    """The jax twin of ``cpp_kernels``' loud source checks (B41 review).
+
+    A term whose operand is not the solved field (the explicit source) has its
+    buffer indexed by the *solved field's* tile table, and Pallas does not
+    bounds-check — a different mesh would read wrong cells silently, which the
+    cpp path calls "UB, not an error". Raise here instead.
+    """
+    for op in terms:
+        f = getattr(op, "field", None)
+        if f is None or f is cell_field:
+            continue
+        if f.mesh is not cell_field.mesh:
+            raise ValueError(
+                f"jax backend: operand '{f.name}' lives on a different mesh than "
+                f"the solved field '{cell_field.name}' — the per-box gather would "
+                "read wrong cells (no bounds check inside the kernel)."
+            )
+
+
 def _forward_euler_level(expr, cell_field, lev, t, dt, ddt_coeff):
     """One forward Euler step for all boxes on one AMR level."""
     dh = tuple(float(d) for d in cell_field.mesh.geom(lev).cell_size())
     ng = cell_field.mf[lev].n_grow()
     dt_over_coeff = dt / ddt_coeff
 
+    _validate_foreign_operands(expr.spatial_ops, cell_field)
     ctx = TiledContext(dh=dh, ng=ng, lev=lev)
     spatial_kernels = tuple(op.build_kernel_3d(ctx, t) for op in expr.spatial_ops)
     kernel = FusedEulerKernel(spatial_kernels, dt_over_coeff)
@@ -298,6 +319,7 @@ class JaxBackend:
         dh = tuple(float(d) for d in mesh.geom(lev).cell_size())
         ng = mf.n_grow()
 
+        _validate_foreign_operands(terms, cell_field)
         ctx = TiledContext(dh=dh, ng=ng, lev=lev)
         spatial_kernels = tuple(op.build_kernel_3d(ctx, t) for op in terms)
         kernel = CombinedSource(spatial_kernels)

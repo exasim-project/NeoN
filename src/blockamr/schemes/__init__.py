@@ -6,4 +6,5 @@ from .div_schemes import DivScheme, Linear, QUICK, Upwind, VanLeer
 from .laplacian_schemes import CentralDiffLaplacian, LaplacianScheme
 from .grad_schemes import CentralDiffGrad, GradScheme
 from .ddt_schemes import DdtScheme, ForwardEuler, RungeKutta2, RungeKutta4
+from .source_schemes import PointwiseSource, SourceScheme
 from .schemes_dict import SchemesDict

@@ -13,6 +13,12 @@ norm and an **observed order**, never a citation or a magic tolerance:
     A3  Taylor-Couette                  cylinder        u_theta(r) = A r + B/r
     A7  transient annulus conduction    two cylinders   Bessel series (optional)
 
+**The ``A`` here means a validation case, never a design decision**: `design.md`
+numbers its *decisions* ``A1``-``A15`` while this file and `verification.md` §9
+number the *validation cases* ``A1``-``A8``, so a bare ``A1`` resolves only
+against the note it sits in (review.md F13). Renaming the validation cases
+``V1``-``V8`` is decided but deferred to **B43**, post-gate-G1 (review.md §4 Q6).
+
 **Every case is projection-free** (§9.1): A1/A3/A7 transport a scalar or solve
 a vector *Laplace* problem, A2 is a unidirectional body-force-driven flow whose
 exact solution is divergence-free by construction. No pressure solve appears
@@ -27,17 +33,19 @@ flux rows (T19) are not an extension of the design but a restart of it.
 
 Red by construction, for three named reasons:
 
-1. The accuracy bounds these cases assert have never been measured. ``solve()``
-   has applied ``solution["ibm"]`` since B15, so the fields here are runs
-   *with* a wall, but the A2/A3 rows still assert orders nobody has recorded
-   (``B26_STEADY_VALIDATION_MEASUREMENT`` — the Phase-2 session that measures
-   them). The A1 annulus field row is **no longer among them**: it was
-   re-pointed away from the retired ``D2_SOLUTION_ERROR_CONTRACT`` at B16
-   (review.md §4 Q18) and immediately x-passed, so it is unmarked and green —
-   the same manufactured solution B16 measures next door in
-   ``test_ibm_solution_error.py`` (``ln r``, ``FixedValue(ln R)``, cylinder,
-   ``cpp``), which is exactly what should have been expected. Forward Euler is
-   the
+1. The A2 and A3 cases cannot be *posed* at all. ``solve()`` has applied
+   ``solution["ibm"]`` since B15, so the fields here are runs *with* a wall,
+   but those two rows keep ``B26_STEADY_VALIDATION_MEASUREMENT`` after B26 ran
+   (2026-07-28) precisely because no measurement reaches them: A2 needs a
+   field-independent source term and A3 a callable wall datum (**B42**), and
+   both rows raise before any wall arithmetic. The A1 annulus field row is
+   **no longer among them**: it was re-pointed away from the retired
+   ``D2_SOLUTION_ERROR_CONTRACT`` at B16 (review.md §4 Q18) and immediately
+   x-passed, so it is unmarked and green — the same manufactured solution B16
+   measures next door in ``test_ibm_solution_error.py`` (``ln r``,
+   ``FixedValue(ln R)``, cylinder, ``cpp``), which is exactly what should have
+   been expected, and B26 measured the two orders to prove it (band 1.768 /
+   bulk 1.439; ``plans/IBM/tasks.md`` §1). Forward Euler is the
    pseudo-time driver throughout — it is the *driver*, not the object of study,
    and the answer must be independent of ``dt`` and of :data:`T_END`.
 2. There is no surface-diagnostic API. The wall flux, the wall shear and the
@@ -365,9 +373,15 @@ def test_a1_annulus_temperature_converges_in_band_and_bulk(blockamr_session):
     stale marker showed up as a failure), reproduced isolated and in-group. The
     marker is therefore removed under the rule its own module states — a row
     that x-passes loses its marker (review.md §4 Q7/Q10) — and both orders are
-    now enforced rather than expected-red. The pass predates B16 (nothing this
-    session touched runs in this file); B26 owns re-measuring and recording the
-    two orders, with B16's ``ln r`` reference numbers next door.
+    now enforced rather than expected-red. The pass predates B16 (nothing that
+    session touched runs in this file).
+
+    **Measured by B26, 2026-07-28** (``plans/IBM/tasks.md`` §1): band ``L-inf``
+    order **1.768**, bulk **1.439**, both against :data:`MIN_ORDER` = 1.0, on
+    the six meshes of :data:`RESOLUTIONS`, cpp backend. All twelve error values
+    are **bit-identical** to B16's ``lnr-value`` wall/interior columns next
+    door — this row and that one are the same numerical experiment, so A1's
+    field half reproduces B16 rather than adding independent evidence.
 
     ``L-inf(T - T_exact)`` of the converged solution, asserted **separately**
     over the band and the bulk: the band is ``O(n)`` cells against the bulk's

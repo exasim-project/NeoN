@@ -36,10 +36,13 @@ its smallest honest form — and its Dirichlet rows are green, unmarked, since
 file: the ``ln r`` half of verification §4's manufactured-solution table, both
 wall data, six meshes, wall and interior norms fitted separately, plus the
 recorded order table of :data:`RECORDED_ORDERS`. The ``r²``/``r⁴`` half of the
-table lives next door in ``test_ibm_convergence.py`` and is still red — not for
-a wall-accuracy reason, but because a sourced manufactured solution needs an
-explicit (Su) source term the Python DSL does not have yet (**B41**; decision
-Q15 in ``plans/IBM/review.md`` §4).
+table lives next door in ``test_ibm_convergence.py``; it was red for a
+*capability* reason rather than a wall-accuracy one — a sourced manufactured
+solution needs an explicit (Su) source term the Python DSL did not have — and
+**B41** built it and measured those rows (2026-07-28; decision Q15 in
+``plans/IBM/review.md`` §4). Its ``r²`` × ``FixedGradient`` row reproduces this
+file's Neumann refutation on a second solution, and its ``FixedValue`` rows fit
+1.885/1.944 against the 1.768 below.
 
 **B16 refuted the Neumann row, and the refutation is recorded, not repaired.**
 ``FixedValue(ln R)`` converges cleanly (wall 1.768, interior 1.439);
@@ -138,8 +141,8 @@ class _Case(NamedTuple):
     No manufactured source appears here, and that is the property that selects
     these two rows for this file: ``laplacian(ln r) == 0`` identically, so the
     steady problem is Laplace's and the whole residual is wall error. The §4
-    rows whose Laplacian is nonzero pose a *Poisson* problem and need an
-    explicit source term (``test_ibm_convergence.py``, B41).
+    rows whose Laplacian is nonzero pose a *Poisson* problem and need the
+    explicit source term B41 built (``test_ibm_convergence.py``).
     """
 
     exact: Callable  # T_exact(X, Y, Z)
