@@ -74,6 +74,12 @@ Publishing is separated by wheel type:
 * **CUDA wheels** are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
   This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package.
 
+To rehearse the publish flow before a real release, dispatch the workflow manually with
+``build_wheels``, ``build_cpu`` and ``publish_repository=testpypi``. This builds a unique ``.dev``
+version and uploads it to TestPyPI, so Trusted Publishing configuration and package metadata can be
+validated without touching the production index. TestPyPI needs its own trusted-publisher entry and a
+GitHub ``testpypi`` environment; ``publish_repository=pypi`` targets the production index instead.
+
 The workflow also includes recovery paths for already-built artifacts. If a build succeeds but a
 publish or release-upload step fails, existing wheel artifacts can be reused by providing the
 original GitHub Actions run ID. This avoids rebuilding expensive CPU or CUDA wheels only to repeat an

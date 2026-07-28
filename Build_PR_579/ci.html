@@ -342,6 +342,11 @@ Connect identity instead of storing a long-lived PyPI API token.</p></li>
 <li><p><strong>CUDA wheels</strong> are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
 This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package.</p></li>
 </ul>
+<p>To rehearse the publish flow before a real release, dispatch the workflow manually with
+<code class="docutils literal notranslate"><span class="pre">build_wheels</span></code>, <code class="docutils literal notranslate"><span class="pre">build_cpu</span></code> and <code class="docutils literal notranslate"><span class="pre">publish_repository=testpypi</span></code>. This builds a unique <code class="docutils literal notranslate"><span class="pre">.dev</span></code>
+version and uploads it to TestPyPI, so Trusted Publishing configuration and package metadata can be
+validated without touching the production index. TestPyPI needs its own trusted-publisher entry and a
+GitHub <code class="docutils literal notranslate"><span class="pre">testpypi</span></code> environment; <code class="docutils literal notranslate"><span class="pre">publish_repository=pypi</span></code> targets the production index instead.</p>
 <p>The workflow also includes recovery paths for already-built artifacts. If a build succeeds but a
 publish or release-upload step fails, existing wheel artifacts can be reused by providing the
 original GitHub Actions run ID. This avoids rebuilding expensive CPU or CUDA wheels only to repeat an
