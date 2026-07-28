@@ -760,6 +760,67 @@ def test_out_and_phi_must_be_different_multifabs(blockamr_session):
         )
 
 
+def test_fabs_on_different_grids_are_refused_naming_the_entry_point(blockamr_session):
+    """B30a-R's **I-2**, closed here (carried by B30b's build).
+
+    ``applyWall`` resolves ``out``, ``phi`` and the marker by ``MFIter`` **local
+    index**, so three fabs on different ``BoxArray``\\ s are paired by position
+    and not by box. In a ``-DNDEBUG`` build that is a segfault (measured, exit
+    11) or, at equal box counts, a silently wrong answer — the two cases the
+    next row covers. The guard runs before the loop, so nothing is launched.
+
+    A ``DistributionMapping`` mismatch is **not constructible on one rank** (one
+    rank owns every box either way), so it is checked in the same condition and
+    recorded here rather than given a row that could never fail.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+
+    # a different max_grid_size: same domain, more boxes
+    ba8 = blockamr.BoxArray(blockamr.Box([0, 0, 0], [N - 1, N - 1, N - 1]))
+    ba8.max_size(8)
+    out = _out(ba8, blockamr.DistributionMapping(ba8))
+
+    with pytest.raises(RuntimeError, match=r"_wall_frame_apply: out, phi and the cell_type"):
+        _wall_frame_apply(
+            out, phi, ct, g, _constant(0.5), geom, 0.0, 1.0, 1, blockamr.WallMode.Overwrite, 1.0
+        )
+
+
+def test_a_marker_of_the_same_box_count_but_a_different_extent_is_refused(blockamr_session):
+    """The quiet half of I-2: equal box counts pass any count-based check and
+    still pair box 0 with a fab of a different extent, which reads past the end
+    of it. ``ct`` here is one box like ``phi``, on a quarter of the domain."""
+    g, _ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    out = _out(ba, dm)
+
+    small = blockamr.BoxArray(blockamr.Box([0, 0, 0], [N // 2 - 1, N // 2 - 1, N // 2 - 1]))
+    small.max_size(N)
+    dm_small = blockamr.DistributionMapping(small)
+    ct_small = blockamr.CellTypeFab(small, dm_small, 1)
+
+    probe = blockamr.MultiFab(small, dm_small, 1, 0)
+    assert sum(1 for _ in _boxes(probe)) == sum(1 for _ in _boxes(phi)), (
+        "vacuous: the two BoxArrays must have the same box count for this to be the quiet case"
+    )
+
+    with pytest.raises(RuntimeError, match=r"must share one BoxArray and one DistributionMapping"):
+        _wall_frame_apply(
+            out,
+            phi,
+            ct_small,
+            g,
+            _constant(0.5),
+            geom,
+            0.0,
+            1.0,
+            1,
+            blockamr.WallMode.Overwrite,
+            1.0,
+        )
+
+
 def test_a_robin_table_with_the_wrong_component_count_is_refused(blockamr_session):
     """A ``robin`` narrower than the field is a silent out-of-bounds read of
     ``gamma``, not a wrong number — exactly the class api §9 exists to turn

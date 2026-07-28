@@ -41,9 +41,11 @@
 // staleness, local box count, targets inside the valid box, CSR monotonicity,
 // stencils inside the fab box. The marker is a `FabArray` on the same
 // `BoxArray` and `DistributionMapping`, rebuilt by the same invalidation, so
-// four of those five cannot arise. What survives is the one that was never
-// about the table — a stencil must fit inside the ghost region — and it is now
-// declared by the functor as `stencil_reach` instead of by a registry.
+// four of those five cannot arise *once the fabs really are on one set of
+// grids* — and that they are is no longer assumed: it is CHECKED HERE, at the
+// top of the sweep (B30a-R's I-2). What survives beyond it is the one that was
+// never about the table — a stencil must fit inside the ghost region — and it
+// is now declared by the functor as `stencil_reach` instead of by a registry.
 //
 // The frame makes for itself every check it has the arguments to make: the
 // ghost widths, `out != phi`, and the refusal of `WallMode::Assemble`. The one
@@ -148,6 +150,28 @@ void applyWall(
             std::string(fn)
             + ": the wall sweep reads phi and writes out, so they must be different MultiFabs — "
               "in place, a row would read values another cell's row had already overwritten"
+        );
+
+    // B30a-R, I-2: the loop below resolves `out`, `phi` and `ct` by MFIter
+    // LOCAL INDEX, so three fabs on different grids are paired by position and
+    // not by box. In a `-DNDEBUG` build a different box count reads another
+    // box's cells and a different extent runs past the end of a fab (measured:
+    // exit 11). Precedent for the check and its shape: `ibm/cell_type.cpp`'s
+    // `requireMarkerGhostWidth`.
+    //
+    // It can only cover the three fabs THIS function holds. `geom_ibm` and the
+    // method's data live inside the Maker, which the frame cannot see, so the
+    // rest of the agreement is B30a-R's S-5 (a `Maker::validate(fn, ncomp)`
+    // hook) and still owed. Do not read this guard as complete.
+    if (out.boxArray() != phi.boxArray() || ct.boxArray() != phi.boxArray()
+        || out.DistributionMap() != phi.DistributionMap()
+        || ct.DistributionMap() != phi.DistributionMap())
+        throw std::runtime_error(
+            std::string(fn)
+            + ": out, phi and the cell_type marker must share one BoxArray and one "
+              "DistributionMapping — this sweep pairs them by MFIter local index, so a mismatch "
+              "reads another box's cells (or, at different extents, past the end of a fab); "
+              "rebuild them on this level's grids"
         );
 
     const int reach = functor_type::stencil_reach;

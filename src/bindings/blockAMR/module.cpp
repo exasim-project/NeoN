@@ -26,6 +26,7 @@ NB_MODULE(_blockamr, m)
     registerCellType(m);
     registerGhostCell(m);
     registerWallFrame(m);
+    registerRobinClosure(m);
     registerTileLayout(m);
     registerWallTable(m);
     registerBandTable(m);

@@ -27,23 +27,34 @@ nanobind_add_module(
   ibm/cell_type.cpp
   ibm/ghost_cell.cpp
   schemes/boundary/wall_frame.cpp
+  schemes/boundary/robin_closure.cpp
   tile_layout.cpp
   wall_table.cpp
   band_table.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
-# ibm/ghost_cell.cpp is pinned BITWISE against its numpy peer (src/blockamr/ibm/ghost_cell.py;
-# plans/IBM/tasks.md B31, review.md Q29(d) -- the ULP fallback is refused). Its arithmetic is + - *
-# / fabs floor max only, so the only way the compiler can change the result is by contracting a
-# multiply-add into an fma: one rounding where numpy does two. GCC defaults to -ffp-contract=fast
-# and nvcc to --fmad=true (re-asserted by AMReX's --use_fast_math), so contraction is turned off
-# here, scoped to this ONE source so no other translation unit's numerics move. See the file header
-# for the rejected alternatives.
+# Two sources are pinned BITWISE against a numpy peer and therefore may not have a multiply-add
+# contracted into an fma -- one rounding where numpy does two:
+#
+# * ibm/ghost_cell.cpp against src/blockamr/ibm/ghost_cell.py (tasks.md B31, review.md Q29(d) -- the
+#   ULP fallback is refused). Its arithmetic is + - * / fabs floor max only.
+# * schemes/boundary/robin_closure.cpp against wall_closure in
+#   src/blockamr/schemes/boundary/ghost_cell.py (tasks.md B30b, review.md Q41/Q43). The contraction
+#   site is `beta - alpha * distance`, and it moves bits wherever beta ~ alpha*d.
+#
+# GCC defaults to -ffp-contract=fast and nvcc to --fmad=true (re-asserted by AMReX's
+# --use_fast_math), so contraction is turned off here, scoped to these sources so no other
+# translation unit's numerics move. See each file header for the rejected alternatives.
+#
+# NOTE: schemes/boundary/robin.H is a HEADER -- its arithmetic is inlined with the INCLUDING TU's
+# flags. Any further TU that includes it and claims v1 parity must be added to this list (B32's
+# pair; review.md Q36 may replace the list with a directory-level posture).
 set(_ghost_cell_fp_flags
     "$<$<COMPILE_LANGUAGE:CXX>:-ffp-contract=off>" "$<$<COMPILE_LANGUAGE:CUDA>:--fmad=false>"
     "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
-set_source_files_properties(ibm/ghost_cell.cpp PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
+set_source_files_properties(ibm/ghost_cell.cpp schemes/boundary/robin_closure.cpp
+                            PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
@@ -67,6 +78,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     ibm/cell_type.cpp
     ibm/ghost_cell.cpp
     schemes/boundary/wall_frame.cpp
+    schemes/boundary/robin_closure.cpp
     tile_layout.cpp
     wall_table.cpp
     band_table.cpp
