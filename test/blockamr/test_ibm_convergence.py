@@ -77,10 +77,16 @@ Two findings, and neither was patched around:
   judgement is the accuracy gate's (B18/G1).
 * ``r2-value``'s band order is **1.885**, above :data:`WALL_ORDER_SECOND`. The
   two order tests at the bottom of this file were built to be mutually
-  exclusive; on this measurement the *second-order* one passes and the
-  *first-order* one fails, on the trilinear reconstruction the design says can
-  only be first order. That is a finding about the claim, not a threshold to
-  move — see ``WALL_ORDER_CLAIM`` and ``plans/IBM/review.md`` §3.
+  exclusive; on this measurement the *second-order* one passed and the
+  *first-order* one failed, on the trilinear reconstruction the design said
+  could only be first order. That was a finding about the claim, not a threshold
+  to move, and it was **decided at B18 (Q24, 2026-07-28,**
+  ``plans/IBM/review.md`` **§4)**: the design conflated the *local* ghost-value
+  error of the reconstruction (``O(dx²)``, measured at B11, intact) with the
+  *steady solution error at the wall* it was argued to produce (``O(dx)``,
+  refuted three times over). The first-order row is deleted with that decision
+  as its stated reason and the second-order row's assertion is the contract —
+  executed at **B45**, see the section at the bottom of this file.
 
 Tier: **nightly** (§10; decision Q16). Three cases x six meshes of
 forward-Euler pseudo-time; measured at B41 as **837 s** of solves (18 solves,
@@ -99,7 +105,7 @@ from blockamr.field import CellField
 from blockamr.ibm import Cylinder, FixedGradient, FixedValue
 from blockamr.mesh import Mesh
 
-from .ibm_gaps import B18_NEUMANN_WALL_ACCURACY, WALL_ORDER_CLAIM
+from .ibm_gaps import B18_NEUMANN_WALL_ACCURACY
 
 pytestmark = pytest.mark.slow
 
@@ -538,71 +544,79 @@ def test_steady_solution_error_converges_in_the_bulk(blockamr_session, case_name
 # The order of the wall itself — the before and the after
 # ---------------------------------------------------------------------------
 
-# Both tests below measure the same thing on ``r2-value``: the bulk operator is
-# exact on ``r²``, so the band's solution error is *pure wall error* and its
-# fitted order is the order of the reconstruction and of nothing else. They sit
-# on opposite sides of :data:`WALL_ORDER_SECOND` on purpose — exactly one of
-# them can pass, so the pair records which design is installed.
+# The row below measures the wall on ``r2-value``: the bulk operator is exact on
+# ``r²``, so the band's solution error is *pure wall error* and its fitted order
+# is the order of the wall closure and of nothing else. This is the sharpest
+# measurement of the wall the scalar-datum API allows.
 #
-# **B41 measured 1.885, and the pair answered the other way round** (2026-07-28).
-# The design predicted the *first-order* row; the *second-order* row is the one
-# that passes, on the trilinear reconstruction, with no quadratic/MLS anywhere in
-# the tree. Both halves therefore moved, which is exactly the outcome the pair
-# was built to make visible — and it is a finding about the design claim, not a
-# threshold to retune. :data:`WALL_ORDER_SECOND` and :data:`MIN_ORDER` are
-# untouched; the escalation is ``plans/IBM/review.md`` §3, decided with the
-# accuracy gate B18 (``WALL_ORDER_CLAIM``).
+# **It was a mutually-exclusive pair until B45** (2026-07-28). A sibling,
+# ``test_observed_order_at_the_wall_is_first_order_today``, asserted
+# ``MIN_ORDER < order < WALL_ORDER_SECOND`` from the other side, so exactly one
+# of the two could be green and the pair recorded which design was installed.
+# B41 measured **1.885** and the pair answered the other way round: the
+# *second-order* row passed and the *first-order* row failed, on the trilinear
+# reconstruction the design said could only be first order.
+#
+# **Q24, decided at B18 (2026-07-28; ``plans/IBM/review.md`` §4, and *Judged,
+# B18* in ``plans/IBM/tasks.md`` §1).** The design conflated two quantities:
+#
+# * the *local ghost-value error* of a trilinear reconstruction on a curved wall
+#   — ``O(dx²)``, and measured (B11: 2.87e-3 over 160 of 4096 cells at
+#   ``n = 32``, against 5.1e-15 away from the wall). **Intact**, and it is still
+#   what ``RECONSTRUCTION_ORDER``/T14 marks on rung 8.
+# * the *steady solution error at the wall* it was argued to produce — asserted
+#   ``O(dx)``, measured ``O(dx^1.77…1.94)``. **Refuted.** The inference between
+#   the two was never measured and is wrong for a Dirichlet wall: an
+#   inconsistency confined to a band of thickness ``O(dx)`` does not reach the
+#   solution at its own order when the datum pins a *value*.
+#
+# So the first-order row is **deleted with that decision as its stated reason**
+# (O4; the reason is recorded in ``plans/IBM/verification.md`` §1 with the other
+# stated deletions). Its ``order > MIN_ORDER`` floor is not lost — it is asserted
+# for ``r2-value`` next door by ``test_steady_solution_error_converges_in_the_band``.
+# :data:`WALL_ORDER_SECOND` and :data:`MIN_ORDER` are **not moved**, and the
+# surviving row stays scoped to ``r2-value``.
 
 
-@WALL_ORDER_CLAIM
-def test_observed_order_at_the_wall_is_first_order_today(blockamr_session):
-    """The order the **current** design claims: first, and not yet second.
-
-    ``ghostCell`` reconstructs the ghost value by trilinear interpolation over
-    one solid layer. Trilinear is linear-exact, so it reproduces a linear field
-    to machine precision (rung 5) but leaves an ``O(dx²)`` error on a curved
-    wall, which the steady solve turns into an ``O(dx)`` solution error at the
-    surface. First order is what this method was argued to owe.
-
-    The assertion is **two-sided**, which is the point: the lower bound is the
-    contract (the wall converges at all), and the upper bound records that it
-    converges at the *trilinear* rate.
-
-    **Refuted at B41** (2026-07-28), on its own terms: the fitted band order is
-    **1.885**, so the lower bound holds and the upper one does not. That is not
-    a mesh artefact of one case — ``r4-value`` fits 1.944 on the same body and
-    driver, and B16's ``ln r`` × ``FixedValue`` row fits 1.768 next door. The
-    row keeps its assertion and its numbers, and carries a strict xfail naming
-    the pending decision (O5). Nothing about the reconstruction changed to make
-    this happen: the trilinear-implies-first-order *argument* above is what the
-    measurement contradicts, and choosing between the argument and the row is
-    the accuracy gate's business (B18/G1, ``plans/IBM/review.md`` §3).
-    """
-    errors = [_steady_errors("r2-value", n)[0] for n in RESOLUTIONS]
-    order = _observed_order(errors)
-    assert MIN_ORDER < order < WALL_ORDER_SECOND, _report("r2-value", "band Linf", order)
-
-
-def test_observed_order_at_the_wall_is_second_order_with_higher_order_reconstruction(
+def test_observed_order_at_the_wall_is_second_order_on_the_trilinear_reconstruction(
     blockamr_session,
 ):
-    """Second order at the wall — measured, on the reconstruction we already have.
+    """The wall's measured order: ~second, on the reconstruction we already have.
 
-    Written as the *intended* design's row: a quadratic (or moving-least-squares)
-    reconstruction is quadratic-exact, so its ghost error drops to ``O(dx³)`` on
-    a curved surface and the steady solution error at the wall to ``O(dx²)`` —
-    the same order the bulk scheme has, which is the point of doing it.
+    This is a **measured lower bound on the trilinear closure as it stands**, and
+    it is the accuracy contract for the wall (Q24, B18). It is *not* a prediction
+    about a quadratic/MLS reconstruction: T14 is open, nothing in the tree
+    reconstructs above trilinear, and the order below is what that trilinear
+    closure produces under a Dirichlet datum.
 
-    **It passes at B41 (order 1.885) without that reconstruction ever landing.**
-    ``RECONSTRUCTION_ORDER`` came off because it x-passed and the house rule for
-    a strict xfail is that a row which greens loses its marker (O4; the Q21/A1
-    precedent) — nothing here was weakened, the row goes from expected-red to
-    enforced-green on an untouched assertion. But its *premise* is now false: T14
-    is still open and the reconstruction is still trilinear, so whatever this row
-    is measuring, it is not the arrival of quadratic/MLS. Its name and its
-    continued existence are part of the question escalated to
-    ``plans/IBM/review.md`` §3 (see ``WALL_ORDER_CLAIM`` on its sibling); B41 left
-    both to the reviewer rather than deciding them inside a measurement session.
+    Three independent manufactured solutions, six meshes each, same body, driver,
+    masks and band width:
+
+    ==============  =============  ==========================================
+    case            band order     source
+    ==============  =============  ==========================================
+    ``r2-value``    **1.885**      B41 — the *pure wall* row, bulk exact
+    ``r4-value``    1.944          B41 — plus interior ``O(dx²)`` truncation
+    ``ln r``-value  1.768          B16 (``test_ibm_solution_error.py``)
+    ==============  =============  ==========================================
+
+    The threshold is asserted **only on** ``r2-value`` and that is deliberate:
+    ``∇²r² = 4`` is constant, so the 7-point operator is exact on it and the band
+    error is wall error alone. ``ln r``'s 1.768 is therefore not a counterexample
+    to :data:`WALL_ORDER_SECOND` — it carries interior truncation
+    (``∇⁴ ln r ≠ 0``) that ``r²`` does not, which is exactly why it sits below.
+
+    The design's argument for first order — "trilinear is linear-exact, therefore
+    the wall is first order" — is retired by these three measurements (B18/Q24,
+    ``plans/IBM/review.md`` §4; ``design.md`` §9). What survives of it is the
+    *pointwise* claim, which is a different quantity: the ghost value of a
+    quadratic field does carry ``O(dx²)`` (B11), and B9's near-wall *residual*
+    does not converge (0.9309/0.9943 → 1.7796/1.8223, both flat in ``n``) while
+    the solution error converges at ~1.9. Both facts fit the same picture — the
+    value datum pins the solution near the wall, so a band-confined
+    inconsistency does not propagate at its own order. Remove that constraint
+    (a ``FixedGradient`` datum) and the gain vanishes entirely, which is what the
+    two Neumann rows in this file measure.
     """
     errors = [_steady_errors("r2-value", n)[0] for n in RESOLUTIONS]
     order = _observed_order(errors)

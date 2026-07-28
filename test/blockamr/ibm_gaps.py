@@ -54,26 +54,6 @@ B18_NEUMANN_WALL_ACCURACY = _gap(
     "cutCell is a restart of the numerics, not an extension)",
 )
 
-WALL_ORDER_CLAIM = _gap(
-    "Q24",
-    "measured refutation of a *design claim*, not of the contract (B41, "
-    "2026-07-28, cpp/CUDA): the steady band L-inf on T = r² with FixedValue(R²) "
-    "— the pure-wall row, whose bulk operator is exact — fits an observed order "
-    "of **1.885** over the six meshes 32..80, and T = r⁴ fits 1.944. Both are "
-    "above WALL_ORDER_SECOND = 1.8, so the wall does *not* behave as the "
-    "'trilinear reconstruction is linear-exact, therefore the wall is first "
-    "order' argument this row states; its sibling "
-    "test_observed_order_at_the_wall_is_second_order_with_higher_order_reconstruction "
-    "x-passes on the same numbers, on the *trilinear* reconstruction, with no "
-    "quadratic/MLS anywhere in the tree. The pair was built to be mutually "
-    "exclusive, so both halves moving is a finding about the claim. Nothing was "
-    "patched around it: WALL_ORDER_SECOND, MIN_ORDER, T_END, DT_SAFETY, "
-    "RESOLUTIONS and the masks are untouched (O3/O4). Which half survives — and "
-    "whether 'first order at the wall' was ever this method's ceiling — is a "
-    "contract question escalated to plans/IBM/review.md §3 and decided with the "
-    "accuracy gate B18",
-)
-
 # -- decided, not yet built -------------------------------------------------
 
 B26_STEADY_VALIDATION_MEASUREMENT = _gap(
@@ -105,20 +85,30 @@ B27_UNSTEADY_VALIDATION_MEASUREMENT = _gap(
     "number is in plans/IBM/tasks.md §1, *Measured, B27*: A4's phase error is "
     "recorded (a common lag of -0.0246 rad = -3.69 timesteps, identical across "
     "Euler/RK2/RK4, inside PHASE_ATOL = 0.08) and A6 at alpha = 6 is recorded "
-    "green. What is left under this marker is **not** an unrecorded number, it "
-    "is three measured misses, each of which is a wall-accuracy judgement for "
-    "the gate B18 and not a tolerance anyone may move (O3/O4). **A6 at "
-    "alpha = 3** overshoots the amplitude at the outermost station pair — "
-    "0.618431 against an exact 0.557549, +10.9 % against AMP_RTOL = 0.05 — "
-    "while its phase error there (0.068 rad) is still inside PHASE_ATOL; the "
-    "interior seven stations pass. **Both A8 rows** fail on the *bulk* "
-    "assertion, not the band: the band drift the row was built to characterize "
-    "comes in 50x inside DRIFT_FRACTION_A8 (2.13e-04 / 2.24e-04 against "
-    "1.07e-02), but the derived claim that the discrete divergence cancels "
-    "bitwise in the bulk is refuted — all 3232 bulk cells are nonzero, L-inf "
-    "2.39e-04 (RK2) / 2.38e-04 (RK4) against atol = 1e-12 — the same shape of "
-    "refutation B11 recorded for this row's rung-8 neighbour. A4's three rows "
-    "and A6 at alpha = 6 lost this marker at B42 and stay green",
+    "green. **One user is left: A6 at alpha = 3**, and what it carries is not an "
+    "unrecorded number but a measured miss that no one may tune away (O3/O4). It "
+    "overshoots the amplitude at the outermost station pair — 0.618431 against "
+    "an exact 0.557549, +10.9 % against AMP_RTOL = 0.05 — while its phase error "
+    "there (0.068 rad) is still inside PHASE_ATOL; the interior seven stations "
+    "pass. **B47 diagnosed it (2026-07-28): mesh under-resolution, not a formula "
+    "deficit.** Holding alpha = 3 and resolving delta with 7 and then 10 cells "
+    "instead of SCALE_CELLS = 5 (mesh scaled, no test edited, no constant moved) "
+    "takes the outermost amplitude error 10.920 % -> 5.018 % -> 2.342 % and the "
+    "phase error 0.0677 -> 0.0362 -> 0.0183 rad — both monotone, both at "
+    "O(dx^2) (fitted 2.22 and 1.89 over the 5 -> 10 factor of two), which is the "
+    "(dx/delta)^2 scaling this file's own Resolution paragraph derives. So the "
+    "row is red **waiting on a finer-mesh budget decision**, not on the wall "
+    "formula: it clears AMP_RTOL at SCALE_CELLS = 10 and sits on the bound at 7, "
+    "and SCALE_CELLS is shared with A4/A5 at a cost of SCALE_CELLS^2 steps on "
+    "n^3 cells. Nothing here bears on B44/W6 — A6's walls are FixedValue. "
+    "Numbers in plans/IBM/tasks.md §1, *Measured, B47*. A4's three rows and A6 "
+    "at alpha = 6 lost this marker at B42 and stay "
+    "green. **Both A8 rows lost it at B46** (2026-07-28) and are green: their "
+    "bulk-*exactness* assertion was the mis-posed half, not the measurement, and "
+    "the gate re-posed it as a characterization (*Judged, B18* item 5, review.md "
+    "§4 Q27a) — the band drift the row was built to characterize was always 50x "
+    "inside DRIFT_FRACTION_A8, and the bulk now asserts the measured 2.3941e-04 "
+    "(RK2) / 2.3777e-04 (RK4) instead of bitwise zero",
 )
 
 # -- missing implementation -------------------------------------------------
@@ -136,7 +126,14 @@ T19_FLUX_ROWS = _gap("T19", "flux rows / cutCell are gated on the T16 accuracy g
 RECONSTRUCTION_ORDER = _gap(
     "T14",
     "reconstruction is trilinear (linear-exact) over one solid layer, so the "
-    "wall is first order; quadratic/MLS is not implemented",
+    "ghost value of a *quadratic* field carries O(dx^2) and the exact discrete "
+    "cancellation this row asserts breaks in the band (B11: 2.87e-3 over 160 of "
+    "4096 cells at n = 32, against 5.1e-15 away from the wall); quadratic/MLS is "
+    "not implemented. This is a *pointwise reconstruction* claim and nothing "
+    "more. The clause 'so the wall is first order' was retired at B18/Q24 "
+    "(2026-07-28): the steady solution error at the wall is measured at 1.885 "
+    "(r2-value, pure wall), 1.944 (r4-value) and 1.768 (ln r) — ~second order, "
+    "not first — and the local reconstruction order does not set it",
 )
 
 PENALIZATION = _gap("method", "the penalization method is not implemented")

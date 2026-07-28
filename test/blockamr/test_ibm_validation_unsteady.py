@@ -907,9 +907,12 @@ def _a6_case(alpha, n):
 @pytest.mark.parametrize(
     "alpha, n",
     [
-        # alpha = 3 still misses the bounds; alpha = 6 meets them since the
+        # alpha = 3 still misses AMP_RTOL; alpha = 6 meets both bounds since the
         # wall datum became time-dependent (B42), so the marker is carried by
-        # the case that is still red and not by the pair.
+        # the case that is still red and not by the pair. B47 measured *why*
+        # alpha-3 misses — delta is resolved by 5 cells and the error is
+        # O((dx/delta)^2) — so what it waits on is a resolution budget, not the
+        # wall formula. SCALE_CELLS is deliberately not raised here (O3).
         pytest.param(*WOMERSLEY_CASES[0], marks=B27_UNSTEADY_VALIDATION_MEASUREMENT),
         pytest.param(*WOMERSLEY_CASES[1]),
     ],
@@ -938,8 +941,21 @@ def test_womersley_amplitude_and_phase_profiles(blockamr_session, alpha, n):
     **outermost station pair** — the amplitude there is 0.618 against an exact
     0.558, a 10.9 % overshoot against the 5 % bound, while its phase error
     (0.068 rad) still sits inside ``PHASE_ATOL``. That is why the marker is
-    carried by the ``alpha-3`` ``pytest.param`` alone. Nothing here is tuned:
-    the miss is a wall-accuracy result for the gate B18 to judge.
+    carried by the ``alpha-3`` ``pytest.param`` alone. Nothing here is tuned.
+
+    **Diagnosed at B47** (2026-07-28, *Measured, B47* in ``plans/IBM/tasks.md``
+    §1): the ``alpha = 3`` miss is **mesh under-resolution, not a wall-formula
+    deficit**. Holding ``alpha`` and resolving ``delta`` with 7 and then 10 cells
+    instead of :data:`SCALE_CELLS` = 5 — a diagnostic run that edited nothing
+    here — takes the outermost amplitude error 10.920 % → 5.018 % → 2.342 % and
+    the phase error 0.0677 → 0.0362 → 0.0183 rad, both monotone and both at
+    ``O(dx²)`` (fitted 2.22 and 1.89 over the 5 → 10 factor of two). That is
+    precisely the ``(dx/delta)²`` scaling the **Resolution** paragraph of this
+    module's docstring derives from the trilinear closure, with a prefactor of
+    ~2.5 the derivation never claimed to fix. So the row stays red **waiting on
+    a finer-mesh budget decision**, not on `B44`/W6: :data:`SCALE_CELLS` is the
+    one resolution knob A4, A5 and A6 share, and raising it costs
+    ``SCALE_CELLS²`` steps on ``n³`` cells. That trade is not taken here (O3).
     """
     mesh, v, eqn, seed, cfg = _a6_case(alpha, n)
     shape = (n, n, n)
@@ -1011,11 +1027,54 @@ CFL_A8 = 0.4
 #: whole budget belongs to the band — is **contradicted by measurement**: B27
 #: (2026-07-28) ran both rows and found the band well inside this bound (band
 #: ``L∞`` 2.13e-04 / 2.24e-04 against ``0.05 × 0.2139 = 1.07e-02``, a factor of
-#: 50) while the *bulk* carries a comparable 2.39e-04 / 2.38e-04. The rows are
-#: red on the bulk-exactness assertion below, not on this constant, so the
-#: value is left untouched (O4) and the numbers are recorded in
-#: ``plans/IBM/tasks.md`` §1 (*Measured, B27*) for the gate B18 to judge.
+#: 50) while the *bulk* carries a comparable 2.39e-04 / 2.38e-04. The rows were
+#: red on the bulk-exactness assertion below, not on this constant.
+#:
+#: **The gate judged it** (*Judged, B18*, 2026-07-28; ``review.md`` §4 Q27a):
+#: this constant is **deliberately not filled** with the measured band value.
+#: It is a *pre-set specification* that the run clears by a factor of 50, and
+#: replacing it with the number that happened to come out would tighten a
+#: passing bound to its own measurement — a spec change nobody asked for. So it
+#: stays exactly as written (O4), and the band assertion below stays
+#: byte-identical. The re-posing at B46 touched the *bulk* half only.
 DRIFT_FRACTION_A8 = 0.05
+
+#: The **characterized** bulk drift, per time scheme: ``L∞|T - T_exact|`` over
+#: the bulk cells after ten revolutions, measured 2026-07-28 at **B46**
+#: (``cpp``/CUDA, quiet GPU) and reproducing B27 to every printed digit.
+#:
+#: This replaces an ``atol = 1e-12`` bulk-*exactness* assertion, and the
+#: replacement is a **deletion with a stated reason** (O4). The reason is the
+#: gate's: *Judged, B18* (``plans/IBM/tasks.md`` §1 item 5; ``review.md`` §4
+#: Q27a/Q28, 2026-07-28). The old assertion's derivation — "the discrete
+#: divergence of this configuration cancels to the last bit, so the bulk drift is
+#: not small, it is zero" — assumed a cancellation **B11 had already refuted**
+#: (trilinear reconstruction of a quadratic field leaves ``O(dx²)`` in the ghost
+#: value, so rung 8's exact cancellation breaks), and **B27 measured the
+#: consequence**: every one of the 3232 bulk cells is nonzero at ``L∞ ≈ 2.4e-04``
+#: on *both* multi-stage schemes. Asserting bitwise zero on the bulk of a
+#: configuration whose reconstruction is known non-exact is verification §10's
+#: own third anti-pattern; §10's own remedy is to *characterize with the measured
+#: number and a comment*, which is what this is.
+#:
+#: Recorded in the :data:`RECORDED_ORDERS` house style of
+#: ``test_ibm_solution_error.py``: one measured number, asserted to a generous
+#: relative tolerance, so that a change of mechanism moves a *recorded* number
+#: rather than nothing. To re-measure when the wall formula deliberately changes
+#: (**B44/W6** is the scheduled one): run the two node ids, read the numbers out
+#: of the assertion message, paste them back with the new date and ledger ID.
+RECORDED_BULK_LINF_A8 = {
+    "RK2": 2.3941e-04,
+    "RK4": 2.3777e-04,
+}
+
+#: Relative tolerance on each entry of :data:`RECORDED_BULK_LINF_A8`, and the
+#: same 25 % the sibling magnitude guard uses (``MAGNITUDE_RTOL`` in
+#: ``test_ibm_solution_error.py``). Wide enough that another machine — or the
+#: 0.7 % the two schemes already differ by — cannot fail it on a last digit;
+#: far too narrow for the leak to grow or vanish by an order of magnitude, which
+#: is the only thing this row can honestly claim to police.
+BULK_DRIFT_RTOL = 0.25
 
 
 def _t_exact_a8(X, Y, _Z):
@@ -1030,7 +1089,6 @@ def _rotation_velocity(x, y, z, t):
 
 
 @pytest.mark.slow
-@B27_UNSTEADY_VALIDATION_MEASUREMENT
 @pytest.mark.parametrize("ddt_scheme", ["RK2", "RK4"])
 def test_rotating_wall_does_not_leak_a_radial_scalar(blockamr_session, ddt_scheme):
     """A8. A curved wall under a large tangential velocity, for many revolutions.
@@ -1044,26 +1102,45 @@ def test_rotating_wall_does_not_leak_a_radial_scalar(blockamr_session, ddt_schem
     surface for ten revolutions, and a reconstruction that leaks a little of
     the wall value into the tangential flux each step accumulates it.
 
-    Two different statements, both derivable, asserted separately. In the
-    **bulk** the discrete divergence of this configuration cancels to the last
-    bit, so the bulk drift is not "small", it is *zero*. In the **band** the
-    trilinear reconstruction of a quadratic ``T`` carries an ``O(dx^2)`` ghost
-    error and ``ghostCell`` is not conservative, so the honest expectation is a
-    small nonzero drift — asserted as a characterized fraction of the field's
-    range (:data:`DRIFT_FRACTION_A8`) rather than as zero, which §10 names as
-    an anti-pattern.
+    Two statements about two regions, asserted separately.
 
-    **Measured at B27 (2026-07-28), and the two statements answered the wrong
-    way round.** The band — the half expected to drift — is comfortably inside
-    its bound (``L∞`` 2.13e-04 for ``RK2``, 2.24e-04 for ``RK4``, against
-    ``0.05 × 0.2139 = 1.07e-02``). The **bulk** — the half derived to be exact
-    to the last bit — is not: every one of its 3232 cells is nonzero, ``L∞``
-    2.39e-04 / 2.38e-04. So the "the discrete divergence cancels bitwise"
-    argument above is contradicted by its own contract test, exactly as B11
-    found for this row's rung-8 neighbour. The ``atol=1e-12`` is deliberately
-    **not** relaxed: it is the claim, and a refuted claim is recorded and
-    judged at the gate B18, never tuned (O3/O4). Numbers in
-    ``plans/IBM/tasks.md`` §1 (*Measured, B27*).
+    In the **band** the trilinear reconstruction of a quadratic ``T`` carries an
+    ``O(dx^2)`` ghost error and ``ghostCell`` is not conservative, so the honest
+    expectation is a small nonzero drift — asserted as a characterized fraction
+    of the field's range (:data:`DRIFT_FRACTION_A8`) rather than as zero, which
+    §10 names as an anti-pattern. **This is the quantity verification §9 names
+    for A8** ("drift over many revolutions"), it is byte-identical to what B27
+    ran, and it passes with a factor of **50** to spare: ``L∞`` 2.1295e-04
+    (``RK2``) / 2.2432e-04 (``RK4``) against ``0.05 × 0.2139 = 1.07e-02``.
+
+    In the **bulk** this row used to assert *exactness* — ``atol=1e-12``, on the
+    derivation that the discrete divergence of this configuration cancels to the
+    last bit. **That derivation was mis-posed and the assertion is deleted, with
+    the gate's judgement as its stated reason** (O4; *Judged, B18* item 5,
+    2026-07-28, ``plans/IBM/tasks.md`` §1 and ``review.md`` §4 Q27a — executed
+    here as **B46**). Two measurements sit behind that:
+
+    * **B11** already refuted the cancellation itself, pointwise, on this row's
+      rung-8 neighbour: the closure reaches a ``SOLID`` neighbour's value through
+      a trilinear interpolation of a *quadratic* field, so it carries
+      ``O(dx^2)``, and the flux balance then divides by ``dx``. That finding is
+      recorded in ``design.md`` §9 and accepted — "it is not exact, and the
+      earlier claim that it is was wrong".
+    * **B27** measured the consequence after 3554 steps: **all 3232** bulk cells
+      nonzero, ``L∞`` 2.39e-04 / 2.38e-04 — a magnitude *indistinguishable from
+      the band's*, on both multi-stage schemes.
+
+    So the bulk half is now what §10 asks for on a non-conservative method: one
+    **characterized** drift carrying its measured number
+    (:data:`RECORDED_BULK_LINF_A8`, re-measured at B46) and a tolerance wide
+    enough to be portable and narrow enough to catch an order of magnitude
+    (:data:`BULK_DRIFT_RTOL`). What it now says is the true and useful statement:
+    *the leak reaches the bulk, it does not grow there, and it is this big*. The
+    integral drift over the whole fluid stays ``O(1e-05)`` and does not grow with
+    the revolution count (-1.3179e-05 / -1.1105e-05 over 10 revolutions).
+
+    :data:`DRIFT_FRACTION_A8` is deliberately **not** filled with the band
+    measurement — see its own comment.
 
     Forward Euler is deliberately **not** in the parametrization: central
     differencing of pure advection is unconditionally unstable under it, so an
@@ -1108,7 +1185,9 @@ def test_rotating_wall_does_not_leak_a_radial_scalar(blockamr_session, ddt_schem
         f"  band Linf={err[band].max():.4e}  bulk Linf={err[bulk].max():.4e}  "
         f"(range {scalar_range:.4f}, integral drift {integral:+.4e})"
     )
-    np.testing.assert_allclose(err[bulk], 0.0, atol=1e-12, err_msg=report)
+    assert err[bulk].max() == pytest.approx(
+        RECORDED_BULK_LINF_A8[ddt_scheme], rel=BULK_DRIFT_RTOL
+    ), report
     assert err[band].max() < DRIFT_FRACTION_A8 * scalar_range, report
 
 
