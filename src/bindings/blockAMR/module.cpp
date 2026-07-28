@@ -23,6 +23,7 @@ NB_MODULE(_blockamr, m)
     registerAmrCore(m);
     registerLinOp(m);
     registerStencilKernels(m);
+    registerCellType(m);
     registerTileLayout(m);
     registerWallTable(m);
     registerBandTable(m);

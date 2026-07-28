@@ -24,6 +24,7 @@ nanobind_add_module(
   fillpatch.cpp
   linop.cpp
   stencil_kernels.cpp
+  ibm/cell_type.cpp
   tile_layout.cpp
   wall_table.cpp
   band_table.cpp)
@@ -49,6 +50,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     fillpatch.cpp
     linop.cpp
     stencil_kernels.cpp
+    ibm/cell_type.cpp
     tile_layout.cpp
     wall_table.cpp
     band_table.cpp
