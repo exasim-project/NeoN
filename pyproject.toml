@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Unlicense
 
 [project]
-name = "andrei-maftei-testneon"
+name = "neon_pde"
 version = "0.1.0"
 authors = [
     {name = "NeoN authors", email = "neon@example.com"}
@@ -40,7 +40,7 @@ test = [
     "pytest>=6.0",
 ]
 all = [
-    "andrei-maftei-testneon[dev,test]",
+    "neon_pde[dev,test]",
 ]
 
 [build-system]
@@ -68,6 +68,11 @@ NeoN_BUILD_PYTHON_BINDINGS = "ON"
 build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
 skip = "pp* *-musllinux* *-win32 *-manylinux_i686"
 test-command = "python {project}/ci/check_installed_wheel.py"
+
+[tool.cibuildwheel.macos.environment]
+# Kokkos uses C++17/20 aligned new/delete, which needs macOS 10.13+. Match the
+# arm64 floor so the x86_64 default (below 10.13) does not fail to compile.
+MACOSX_DEPLOYMENT_TARGET = "11.0"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]

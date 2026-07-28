@@ -4,6 +4,13 @@
 
 cmake_minimum_required(VERSION 3.22.0)
 
+# Re-run configuration when the version source of truth changes, otherwise the CMake project version
+# and generated neon.__version__ would go stale.
+set_property(
+  DIRECTORY
+  APPEND
+  PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml")
+
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/pyproject.toml" NeoN_PACKAGE_VERSION_LINE
      REGEX "^version = \"[^\"]+\"")
 if(NOT NeoN_PACKAGE_VERSION_LINE)

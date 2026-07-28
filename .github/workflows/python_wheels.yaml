@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - "v*.*.*"
+  # TEMPORARY: exercise the CPU wheel build on PRs while the pipeline is being
+  # validated. Remove before merge — release builds run from tags/dispatch only.
+  pull_request:
   workflow_dispatch:
     inputs:
       publish_existing_run_id:
@@ -46,6 +49,15 @@ on:
         required: false
         default: ""
         type: string
+      publish_repository:
+        description: "Publish freshly built CPU wheels to this index (use testpypi to rehearse a release)"
+        required: false
+        default: "none"
+        type: choice
+        options:
+          - none
+          - testpypi
+          - pypi
 
 permissions:
   contents: read
@@ -58,7 +70,9 @@ jobs:
   version:
     name: Resolve package version
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch' || inputs.build_wheels
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'workflow_dispatch' || inputs.build_wheels)
     outputs:
       channel: ${{ steps.version.outputs.channel }}
       version: ${{ steps.version.outputs.version }}
@@ -85,13 +99,19 @@ jobs:
           echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
 
   build-cpu-wheels:
-    name: CPU wheels ${{ matrix.os }}
+    name: CPU ${{ matrix.python }} ${{ matrix.os }}
     needs: version
     runs-on: ${{ matrix.os }}
-    if: github.event_name != 'workflow_dispatch' || (inputs.build_wheels && inputs.build_cpu)
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'workflow_dispatch' || (inputs.build_wheels && inputs.build_cpu))
     strategy:
       fail-fast: false
       matrix:
+        # One job per (platform x Python version) so each wheel builds in
+        # parallel with its own status and log. archs is attached per os below.
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-14, macos-15-intel]
+        python: ["cp39", "cp310", "cp311", "cp312", "cp313"]
         include:
           - os: ubuntu-latest
             archs: x86_64
@@ -121,13 +141,35 @@ jobs:
       - name: Install cibuildwheel
         run: python -m pip install "cibuildwheel>=3,<4"
 
+      # scikit-build-core uses the Ninja generator, which needs cl.exe on PATH.
+      # cibuildwheel does not activate MSVC, so set up the dev environment here.
+      - name: Set up MSVC developer environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Build CPU wheels
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_ARCHS: ${{ matrix.archs }}
+          # Build only this job's Python version (overrides the pyproject build list).
+          CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:${LD_LIBRARY_PATH:-}"
             auditwheel repair -w {dest_dir} {wheel}
+          # delocate must find the build-tree dylibs (libNeoN, libkokkos*, libginkgo*)
+          # that _neon.so references via @rpath. The build persists in _skbuild.
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            DYLD_LIBRARY_PATH="$GITHUB_WORKSPACE/_skbuild/lib:$GITHUB_WORKSPACE/_skbuild/_deps/ginkgo-build/lib:${DYLD_LIBRARY_PATH:-}"
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
+          # _neon.pyd depends on NeoN/Kokkos/umpire DLLs in _skbuild/bin; delvewheel
+          # vendors them into the wheel. cibuildwheel runs repair from the repo root.
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            delvewheel repair --add-path _skbuild/bin -w {dest_dir} {wheel}
+          # The production preset uses Ninja, but scikit-build-core does not read the
+          # preset and injects a Visual Studio "-A x64" platform that Ninja rejects.
+          # Declaring the generator here keeps scikit-build-core from adding it.
+          CIBW_ENVIRONMENT_WINDOWS: CMAKE_GENERATOR=Ninja
           CIBW_CONFIG_SETTINGS: >
             cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
             cmake.define.NeoN_BUILD_TESTS=OFF
@@ -138,18 +180,35 @@ jobs:
             cmake.define.Kokkos_ENABLE_SERIAL=ON
             cmake.define.Kokkos_ENABLE_CUDA=OFF
             cmake.define.Kokkos_ENABLE_HIP=OFF
+          # Windows overrides (this replaces, not merges, the settings above): Ginkgo
+          # 2.0 uses std::result_of, removed in C++20, which MSVC rejects. NeoN does
+          # not support Ginkgo on Windows (see build_on_windows.yaml), so disable it.
+          CIBW_CONFIG_SETTINGS_WINDOWS: >
+            cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+            cmake.define.NeoN_BUILD_TESTS=OFF
+            cmake.define.NeoN_WITH_MPI=OFF
+            cmake.define.NeoN_WITH_PETSC=OFF
+            cmake.define.NeoN_WITH_ADIOS2=OFF
+            cmake.define.NeoN_WITH_SUNDIALS=OFF
+            cmake.define.NeoN_WITH_GINKGO=OFF
+            cmake.define.Kokkos_ENABLE_SERIAL=ON
+            cmake.define.Kokkos_ENABLE_CUDA=OFF
+            cmake.define.Kokkos_ENABLE_HIP=OFF
 
       - name: Upload CPU wheel artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: cpu-wheels-${{ matrix.os }}-${{ matrix.archs }}
+          name: cpu-wheels-${{ matrix.os }}-${{ matrix.archs }}-${{ matrix.python }}
           path: wheelhouse/*.whl
 
   build-gpu-wheels:
     name: ${{ matrix.label }} wheels
     needs: version
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.build_wheels && inputs.build_gpu)
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.build_wheels && inputs.build_gpu))
     strategy:
       fail-fast: false
       matrix:
@@ -203,7 +262,7 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
-            auditwheel -v repair --plat manylinux_2_39_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
+            auditwheel -v repair --plat manylinux_2_34_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
           CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_ENVIRONMENT_LINUX: >
             PATH=/usr/local/cuda/bin:$PATH
@@ -244,10 +303,13 @@ jobs:
     name: Publish CPU wheels to PyPI
     needs: build-cpu-wheels
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish_repository != 'none'))
     environment:
-      name: pypi
-      url: https://pypi.org/project/andrei-maftei-testneon/
+      name: ${{ inputs.publish_repository == 'testpypi' && 'testpypi' || 'pypi' }}
+      url: ${{ inputs.publish_repository == 'testpypi' && 'https://test.pypi.org/project/neon_pde/' || 'https://pypi.org/project/neon_pde/' }}
     permissions:
       contents: read
       id-token: write
@@ -263,14 +325,17 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: wheelhouse
+          repository-url: ${{ inputs.publish_repository == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
 
   publish-existing-cpu-pypi:
     name: Publish existing CPU wheel artifacts to PyPI
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_existing_run_id != ''
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      github.event_name == 'workflow_dispatch' && inputs.publish_existing_run_id != ''
     environment:
       name: pypi
-      url: https://pypi.org/project/andrei-maftei-testneon/
+      url: https://pypi.org/project/neon_pde/
     permissions:
       contents: read
       actions: read
@@ -320,7 +385,9 @@ jobs:
   publish-existing-gpu-github-release:
     name: Attach existing GPU wheel artifacts to GitHub Release
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_existing_gpu_run_id != ''
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      github.event_name == 'workflow_dispatch' && inputs.publish_existing_gpu_run_id != ''
     permissions:
       contents: write
       actions: read
@@ -376,7 +443,9 @@ jobs:
     name: Attach GPU wheels to GitHub Release
     needs: build-gpu-wheels
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: write
     steps:
