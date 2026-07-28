@@ -12,7 +12,12 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_Geometry.H>
 
-#include "bindings.hpp"
+#include "../bindings.hpp"
+#include "../ibm/cell_type.H"
+
+#include <cstdint>
+#include <stdexcept>
+#include <string>
 
 namespace nb = nanobind;
 
@@ -221,6 +226,89 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real laplacianCell(
          + (phi(i, j, k + 1, n) - 2.0 * c + phi(i, j, k - 1, n)) / (dz * dz);
 }
 
+// ---------------------------------------------------------------------------
+// W1 — the immersed-boundary degrade (design §5, review.md §4 Q42(a)).
+//
+// A width-w > 1 interior scheme falls back to its width-1 formula at any cell
+// whose stencil would read a SOLID cell. The test is PER CELL, on the stencil's
+// own offsets — NOT per face. A per-face degrade mixes an upwind face (a cell
+// centre) with a van Leer face (a face centre) and returns 1.5*B instead of B
+// on a linear field at the cell two out from a plane wall, which breaks D1.
+// Both arms of the branch below are calls to the parents' own device functions,
+// so no formula is written twice and "bitwise the parent wherever nothing
+// reaches SOLID" is a property of the code rather than a bet on the compiler.
+// ---------------------------------------------------------------------------
+
+using CtArr4c = amrex::Array4<const std::uint8_t>;
+
+// The twelve axis cells a width-2 div stencil reads. There are no diagonals in
+// it, which is why the "exact for any stencil shape" claim holds by inspection.
+//
+// Spelled as a SOLID comparison on each offset, not as `m(i, j, k) == ibm::WALL`
+// at the centre: the two agree only under `classifyDefault`, and the short form
+// would couple the scheme to the method's marker rule (design §5 — the marker
+// is geometry; the stencil is the scheme's business). The +-1 offsets are in
+// fact redundant for a FLUID centre — by the definition of WALL no FLUID cell
+// has a SOLID face neighbour — so they fire only at WALL cells, which the wall
+// sweep overwrites anyway. They stay because the rule is "the stencil's own
+// offsets"; this note is here so a later reader does not remove them as dead.
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool solidWithinTwo(CtArr4c const& m, int i, int j, int k)
+{
+    return m(i - 2, j, k) == ibm::SOLID || m(i - 1, j, k) == ibm::SOLID
+        || m(i + 1, j, k) == ibm::SOLID || m(i + 2, j, k) == ibm::SOLID
+        || m(i, j - 2, k) == ibm::SOLID || m(i, j - 1, k) == ibm::SOLID
+        || m(i, j + 1, k) == ibm::SOLID || m(i, j + 2, k) == ibm::SOLID
+        || m(i, j, k - 2) == ibm::SOLID || m(i, j, k - 1) == ibm::SOLID
+        || m(i, j, k + 1) == ibm::SOLID || m(i, j, k + 2) == ibm::SOLID;
+}
+
+// The ghost contract of the degrade, on the field and on the marker. The message
+// shape is the compiled surface's standard (api §8) — the width it needs and the
+// width it has — but the sentence is this caller's own: `wall_apply.H`'s
+// `requireGhostWidth` says "the functor declares stencil_reach = N", and an
+// interior kernel has no functor. Shipping a guard whose message narrates a call
+// pattern the caller does not have is the defect class found at B29-R I-1 and
+// B31-R I-2, so the guard is duplicated rather than reused.
+//
+// Called OUTSIDE the MFIter loop, unlike `applyWall`'s (B30a D5): the width is a
+// property of the fab, an interior kernel has no per-box narration to add, and
+// out here the check fires on every rank on every call even when a rank owns no
+// local box. `Array4`'s own index assert is compiled out of a release build, so
+// this is the only thing between a narrow marker and an illegal address.
+template<class FA>
+void requireStencilGhosts(const char* fn, const char* what, const FA& fa, int reach)
+{
+    const int has = fa.nGrowVect().min();
+    if (has >= reach) return;
+    throw std::runtime_error(
+        std::string(fn)
+        + ": the W1 degrade tests the marker on the stencil's own offsets, so it "
+          "reads "
+        + std::to_string(reach) + " cells outside the valid box, but " + what
+        + " has ngrow = " + std::to_string(has) + "; grow the field and the marker to "
+        + std::to_string(reach) + ", or use a width-1 div scheme"
+    );
+}
+
+// `ct.const_array(mfi)` with an MFIter over a foreign BoxArray or a foreign
+// DistributionMapping indexes another box's memory: a segfault when the counts
+// differ (measured at B30a-R, I-2) and a plausible wrong answer when the counts
+// agree and the extents do not. Precedent: `ibm/cell_type.cpp`'s own BoxArray
+// guards on `classify_default` and `pin_solid`.
+void requireSameLayout(const char* fn, const amrex::MultiFab& phi_mf, const ibm::CellTypeFab& ct)
+{
+    if (phi_mf.boxArray() == ct.boxArray() && phi_mf.DistributionMap() == ct.DistributionMap())
+        return;
+    throw std::runtime_error(
+        std::string(fn)
+        + ": the marker must share the field's BoxArray and DistributionMapping — the marker is a "
+          "field with the same decomposition as the fields it accompanies; the field's BoxArray "
+          "has "
+        + std::to_string(phi_mf.boxArray().size()) + " boxes and the marker's has "
+        + std::to_string(ct.boxArray().size())
+    );
+}
+
 } // namespace
 
 
@@ -352,6 +440,105 @@ static void divQuickAcc(
             ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
             { out(i, j, k, n) += coeff * divQuickCell(phi, fx, fy, fz, i, j, k, n, dhx, dhy, dhz); }
+        );
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The W1 siblings (design §5, Q42(a)). Each is its parent above with three
+// additions and nothing else: the marker argument, the three host-side guards,
+// and the one `if` in the lambda. The accumulate statement in the `else` arm is
+// the parent's, token for token — hoisting `coeff *` out, computing into a temp
+// or reordering the call would make "bitwise the parent" a claim about the
+// compiler instead of a claim about the code.
+//
+// No early-out at a SOLID centre cell: the parents do not skip, v2 leaves the
+// interior sweep's value at SOLID cells (the wall sweep writes WALL only), and
+// the all-SOLID row that pins the fallback needs every cell written.
+// ---------------------------------------------------------------------------
+
+static void divVanLeerIbmAcc(
+    amrex::MultiFab& out_mf,
+    const amrex::MultiFab& phi_mf,
+    const ibm::CellTypeFab& ct,
+    const amrex::MultiFab& fx_mf,
+    const amrex::MultiFab& fy_mf,
+    const amrex::MultiFab& fz_mf,
+    const amrex::Geometry& geom,
+    amrex::Real coeff,
+    int ncomp
+)
+{
+    requireStencilGhosts("div_vanleer_acc_ibm", "the field", phi_mf, 2);
+    requireStencilGhosts("div_vanleer_acc_ibm", "the cell_type marker", ct, 2);
+    requireSameLayout("div_vanleer_acc_ibm", phi_mf, ct);
+
+    const auto dx = geom.CellSizeArray();
+    const amrex::Real dhx = dx[0], dhy = dx[1], dhz = dx[2];
+    for (amrex::MFIter mfi(phi_mf); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& bx = mfi.validbox();
+        auto const& phi = phi_mf.const_array(mfi);
+        auto const& out = out_mf.array(mfi);
+        auto const& m = ct.const_array(mfi);
+        auto const& fx = fx_mf.const_array(mfi);
+        auto const& fy = fy_mf.const_array(mfi);
+        auto const& fz = fz_mf.const_array(mfi);
+        amrex::ParallelFor(
+            bx,
+            ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
+            {
+                if (solidWithinTwo(m, i, j, k))
+                    out(i, j, k, n) +=
+                        coeff * divUpwindCell(phi, fx, fy, fz, i, j, k, n, dhx, dhy, dhz);
+                else
+                    out(i, j, k, n) +=
+                        coeff * divVanLeerCell(phi, fx, fy, fz, i, j, k, n, dhx, dhy, dhz);
+            }
+        );
+    }
+}
+
+static void divQuickIbmAcc(
+    amrex::MultiFab& out_mf,
+    const amrex::MultiFab& phi_mf,
+    const ibm::CellTypeFab& ct,
+    const amrex::MultiFab& fx_mf,
+    const amrex::MultiFab& fy_mf,
+    const amrex::MultiFab& fz_mf,
+    const amrex::Geometry& geom,
+    amrex::Real coeff,
+    int ncomp
+)
+{
+    requireStencilGhosts("div_quick_acc_ibm", "the field", phi_mf, 2);
+    requireStencilGhosts("div_quick_acc_ibm", "the cell_type marker", ct, 2);
+    requireSameLayout("div_quick_acc_ibm", phi_mf, ct);
+
+    const auto dx = geom.CellSizeArray();
+    const amrex::Real dhx = dx[0], dhy = dx[1], dhz = dx[2];
+    for (amrex::MFIter mfi(phi_mf); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& bx = mfi.validbox();
+        auto const& phi = phi_mf.const_array(mfi);
+        auto const& out = out_mf.array(mfi);
+        auto const& m = ct.const_array(mfi);
+        auto const& fx = fx_mf.const_array(mfi);
+        auto const& fy = fy_mf.const_array(mfi);
+        auto const& fz = fz_mf.const_array(mfi);
+        amrex::ParallelFor(
+            bx,
+            ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n)
+            {
+                if (solidWithinTwo(m, i, j, k))
+                    out(i, j, k, n) +=
+                        coeff * divUpwindCell(phi, fx, fy, fz, i, j, k, n, dhx, dhy, dhz);
+                else
+                    out(i, j, k, n) +=
+                        coeff * divQuickCell(phi, fx, fy, fz, i, j, k, n, dhx, dhy, dhz);
+            }
         );
     }
 }
@@ -1527,6 +1714,62 @@ void registerStencilKernels(nb::module_& m)
         nb::arg("coeff") = 1.0,
         nb::arg("ncomp") = 1,
         "Accumulate coeff*div_quick(phi) into out (out +=), ncomp-general."
+    );
+
+    // ---- The W1 siblings (design §5, Q42(a)) ----
+    //
+    // The same two kernels with the marker as an extra argument. Nothing routes
+    // through them on any evaluate path: the scheme dispatch, the marker's
+    // production allocation and the noIbm / absent-key routing are B36's. Those
+    // two paths carry no marker at all and must keep using the plain kernels,
+    // which the guards below would otherwise refuse.
+
+    m.def(
+        "div_vanleer_acc_ibm",
+        [](amrex::MultiFab& out,
+           const amrex::MultiFab& phi,
+           const ibm::CellTypeFab& cell_type,
+           const amrex::MultiFab& fx,
+           const amrex::MultiFab& fy,
+           const amrex::MultiFab& fz,
+           const amrex::Geometry& geom,
+           double coeff,
+           int ncomp) { divVanLeerIbmAcc(out, phi, cell_type, fx, fy, fz, geom, coeff, ncomp); },
+        nb::arg("out"),
+        nb::arg("phi"),
+        nb::arg("cell_type"),
+        nb::arg("fx"),
+        nb::arg("fy"),
+        nb::arg("fz"),
+        nb::arg("geom"),
+        nb::arg("coeff") = 1.0,
+        nb::arg("ncomp") = 1,
+        "Accumulate coeff*div_vanleer(phi) into out (out +=), degraded to div_upwind at every "
+        "cell whose width-2 stencil reads a SOLID marker (W1)."
+    );
+
+    m.def(
+        "div_quick_acc_ibm",
+        [](amrex::MultiFab& out,
+           const amrex::MultiFab& phi,
+           const ibm::CellTypeFab& cell_type,
+           const amrex::MultiFab& fx,
+           const amrex::MultiFab& fy,
+           const amrex::MultiFab& fz,
+           const amrex::Geometry& geom,
+           double coeff,
+           int ncomp) { divQuickIbmAcc(out, phi, cell_type, fx, fy, fz, geom, coeff, ncomp); },
+        nb::arg("out"),
+        nb::arg("phi"),
+        nb::arg("cell_type"),
+        nb::arg("fx"),
+        nb::arg("fy"),
+        nb::arg("fz"),
+        nb::arg("geom"),
+        nb::arg("coeff") = 1.0,
+        nb::arg("ncomp") = 1,
+        "Accumulate coeff*div_quick(phi) into out (out +=), degraded to div_upwind at every "
+        "cell whose width-2 stencil reads a SOLID marker (W1)."
     );
 
     m.def(

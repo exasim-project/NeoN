@@ -23,7 +23,7 @@ nanobind_add_module(
   tagbox.cpp
   fillpatch.cpp
   linop.cpp
-  stencil_kernels.cpp
+  schemes/stencil_kernels.cpp
   ibm/cell_type.cpp
   ibm/ghost_cell.cpp
   schemes/boundary/wall_frame.cpp
@@ -63,7 +63,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     tagbox.cpp
     fillpatch.cpp
     linop.cpp
-    stencil_kernels.cpp
+    schemes/stencil_kernels.cpp
     ibm/cell_type.cpp
     ibm/ghost_cell.cpp
     schemes/boundary/wall_frame.cpp
