@@ -91,13 +91,24 @@ struct ApplySink
 //! kernel is called on the host for one cell, and the sink is read back.
 struct RecordSink
 {
-    //! Sized from the widest row the ported functors emit, not from v1's
-    //! `STRIDE`. `laplacian x ghostCell` (api §5.3) walks six arms; a wall arm
-    //! emits one entry per trilinear donor, so a cell whose six face
-    //! neighbours are all SOLID emits 6 * 8 = 48 linear entries. 64 is the
-    //! next power of two above that, and `div`/`grad` (B33/B34) are the same
-    //! six arms with a different weight. A row that does overflow sets the
-    //! flag; it is never silently truncated.
+    //! Sized for the widest row a *per-arm* emission shape could produce: six
+    //! arms, one entry per trilinear donor at each, `6 * 8 = 48`, rounded up to
+    //! the next power of two.
+    //!
+    //! **The pair that shipped is narrower than that, deliberately** (B32,
+    //! review.md §4 Q49(e)). `laplacian x ghostCell` accumulates the six arms
+    //! in registers and emits once — the constant, one diagonal, the fluid arms
+    //! and the eight donors, at most `1 + 6 + 8 = 15` linear entries, which is
+    //! exactly v1's `STRIDE`. That shape is not a size optimisation: the
+    //! per-arm alternative (api §5.3's original sketch) was measured to forfeit
+    //! bitwise parity with v1 on every wall row of all eight acceptance
+    //! configurations, because it accumulates the diagonal in a different
+    //! order. `div`/`grad` (B33/B34) are the same six arms with a different
+    //! weight and inherit the shape.
+    //!
+    //! The headroom is kept rather than trimmed to 16: it costs one host-side
+    //! POD in a test binding, and a row that did overflow sets the flag; it is
+    //! never silently truncated.
     static constexpr int capacity = 64;
 
     struct Entry

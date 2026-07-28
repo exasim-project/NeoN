@@ -53,6 +53,9 @@ from blockamr.mesh import Mesh
 _wall_frame_record = blockamr._blockamr._wall_frame_record
 _wall_frame_apply = blockamr._blockamr._wall_frame_apply
 _cell_type_numpy = blockamr._blockamr._cell_type_numpy
+#: B32's pair, whose per-cell rows this file's docstring already promised.
+_wall_row_lgc = blockamr._blockamr._wall_row_laplacian_ghost_cell
+_ghost_cell_numpy = blockamr._blockamr._ghost_cell_numpy
 
 SOLID = int(blockamr.CellType.SOLID)
 WALL = int(blockamr.CellType.WALL)
@@ -917,3 +920,515 @@ def test_the_record_sink_capacity_covers_the_widest_ported_row(blockamr_session)
 
 def test_the_gamma_form_tags_are_exported(blockamr_session):
     assert (blockamr.GAMMA_CONSTANT, blockamr.GAMMA_HARMONIC) == (0, 1)
+
+
+# ===========================================================================
+# 6. `laplacian x ghostCell` — the first real pair, per cell (B32)
+#
+# The docstring above promised this section: "B32's real per-cell rows (S2 and
+# S3 on `laplacian x ghostCell`) land in this same file and reuse this same
+# `RecordSink` readback shape."
+#
+# **Conformance, not acceptance.** v1<->v2 bitwise row parity, the falsification
+# matrix and the sweep live in `test_ibm_laplacian_ghost_cell.py`, which has the
+# heavy fixtures and a different vocabulary. What is here is what the shipped
+# frame file is the natural home for: which cells a row may name (S3), how the
+# BC datum reaches it (S2), where the geometry is read (Q34), what the row's
+# shape is, and the error surface.
+# ===========================================================================
+
+#: A wall normal to x: its image point lands exactly on a cell face, so four of
+#: the eight trilinear weights are exactly ``0.0`` and the dead-slot rule (a
+#: dead donor points at the row's own cell) is exercised rather than assumed.
+PLANE_X = {"wall": Plane(point=(0.5, 0.0, 0.0), normal=(1.0, 0.0, 0.0))}
+
+#: The six face offsets, in the pair's own loop order: d ascending, +1 then -1.
+ARMS = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+
+
+def _ghost_data(ct, g, geom, bodies):
+    """The method's own preprocessed rows, as the opaque ``GhostCellData``."""
+    return blockamr.ghost_cell_preprocess(ct, g, geom, sorted(bodies))
+
+
+def _row(ct, g, data, robin, geom, cell, n=0, t=0.0):
+    """The pair's row at one cell as ``([(index, a)], c)``."""
+    entries, c = _wall_row_lgc(ct, g, data, robin, geom, t, *cell, n)
+    return [((i, j, k), a) for i, j, k, a in entries], c
+
+
+def _wall_cells(ct, mf):
+    """Every global ``WALL`` index, in sorted order."""
+    return [cell for cell, value in sorted(_marker(ct, mf).items()) if value == WALL]
+
+
+def _marker_grown(ct, mf, ngrow=1):
+    """``{global (i, j, k): marker}`` over each box's **fab** box, ghosts included.
+
+    This is what the functor reads. A ``WALL`` cell on the edge of the domain
+    has a face neighbour in the ghost region, and outside a non-periodic face
+    that ghost is classified from the *analytic* body — ``FLUID`` where the body
+    is not — so its arm is a live one. v1 does the same thing by evaluating
+    ``_fluid_at_index`` at the same index, which is why the parity rows agree
+    there; a map over valid cells only would report a hole that neither side
+    has.
+    """
+    out = {}
+    for mfi, lo in _boxes(mf):
+        block = _cell_type_numpy(ct, mfi, True)
+        base = tuple(v - ngrow for v in lo)
+        for local in np.ndindex(block.shape):
+            out[tuple(base[d] + local[d] for d in range(3))] = int(block[local])
+    return out
+
+
+def _fluid_arm_count(marker, cell):
+    """How many of the six face neighbours are **not** ``SOLID``."""
+    return sum(1 for off in ARMS if marker[_shifted(cell, off)] != SOLID)
+
+
+def _perturbed_geometry(mesh, ba, dm, cell, delta, ngrow=1):
+    """The packed geometry rebuilt with ``normal_x`` moved at ONE index.
+
+    Built through v1's own ``packed_geometry_on_grids`` — the grown blocks the
+    uploader expects — because the perturbation has to survive into the ghost
+    region as well: the point of the row that uses this is to move a value the
+    functor *could* read and show that it does not.
+    """
+    from blockamr.ibm.classify import box_grids
+    from blockamr.ibm.geometry import packed_geometry_on_grids
+
+    grids = box_grids(mesh, 0)
+    blocks = packed_geometry_on_grids(grids, mesh.bodies, ngrow)
+    out = blockamr.MultiFab(ba, dm, blockamr.IBM_GEOM_NCOMP, ngrow)
+    moved = 0
+    for mfi, block, grid in zip(blockamr.MFIterator(out), blocks, grids):
+        block = np.array(block, copy=True)
+        local = tuple(cell[d] - (grid.lo[d] - ngrow) for d in range(3))
+        if all(0 <= local[d] < block.shape[d] for d in range(3)):
+            block[local + (blockamr.GEOM_NORMAL,)] += delta
+            moved += 1
+        out.copy_grown_from(mfi, np.asfortranarray(block))
+    assert moved > 0, f"vacuous: {cell} is in no block, so nothing was perturbed"
+    return out
+
+
+def test_the_pair_row_is_callable_host_side_on_one_wall_cell(blockamr_session):
+    """**F-1** — tasks.md §3's verify column, for a pair that computes a wall.
+
+    The same ``AMREX_GPU_HOST_DEVICE`` functor the kernel launches, called from
+    the host at one cell against a ``RecordSink``: ``([(i, j, k, a), ...], c)``
+    is exactly the shape v1's deleted row objects carried, recovered from the
+    shipped device code rather than from a numpy builder written beside it.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    cell = _a_wall_cell(ct, phi)
+
+    entries, c = _row(ct, g, data, _constant(0.5), geom, cell)
+
+    assert data.nrows == len(_wall_cells(ct, phi)) > 0
+    assert isinstance(c, float)
+    assert entries and all(len(index) == 3 for index, _a in entries)
+    assert entries[0][0] == cell, "the first linear entry is the diagonal, at the row's own cell"
+
+
+def test_the_bc_datum_reaches_the_pair_row_through_constant_and_nothing_else(blockamr_session):
+    """**F-2 / S2**, and stronger than "the number is not in the list".
+
+    Two Robin tables differing in ``gamma`` and in nothing else: the linear
+    entries must be **bitwise identical** and only ``c`` may move. That is the
+    affine split (R1) as a measurement — a functor that leaked the datum into
+    any coefficient, however small, moves a bit here.
+
+    ``Mixed``-shaped ``(alpha, beta)`` on purpose, so ``grad_constant`` is
+    non-zero and the datum genuinely reaches the row; with ``gamma = 0`` on both
+    tables the row would be vacuous.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    cell = _a_wall_cell(ct, phi)
+
+    def at(datum):
+        robin = _robin([[(CONSTANT, datum, 0.0, 0.0, 0.0)]], alpha=0.6, beta=0.4)
+        return _row(ct, g, data, robin, geom, cell)
+
+    first_entries, first_c = at(0.3)
+    second_entries, second_c = at(-1.25)
+
+    assert first_c != second_c, "vacuous: the datum does not reach this row at all"
+    assert [i for i, _a in first_entries] == [i for i, _a in second_entries]
+    lhs = np.array([a for _i, a in first_entries])
+    rhs = np.array([a for _i, a in second_entries])
+    np.testing.assert_array_equal(lhs.view(np.int64), rhs.view(np.int64))
+
+
+def test_no_entry_of_a_pair_row_ever_names_a_solid_cell(blockamr_session):
+    """**F-3 / S3 / Invariant F**, over *every* ``WALL`` cell of the level.
+
+    A ``SOLID`` cell holds the pin and not data, so a row that named one would
+    read a pinned value and return a plausible wrong number. Two things make
+    that impossible here and both are exercised: each arm is gated on
+    ``m(ii, jj, kk) != SOLID``, and every live trilinear donor was validated
+    fluid by ``preprocess``'s Invariant-F pass.
+
+    Both body sets, in one row: one cylinder, and two cylinders with a patch
+    boundary running between them.
+
+    The marker is read over each box's **fab** box. A ``WALL`` cell on the edge
+    of the domain has a face neighbour in the ghost region, and outside a
+    non-periodic face that ghost is classified from the analytic body — so its
+    arm is a live one, and v1 emits the same entry there (its ``_neighbour``
+    evaluates the same analytic test at the same index). A map over valid cells
+    only would report a hole that neither side has.
+    """
+    for bodies in (ONE_BODY, TWO_BODIES):
+        g, ct, geom, ba, dm = _classified(bodies)
+        phi = _field(ba, dm)
+        data = _ghost_data(ct, g, geom, bodies)
+        marker = _marker_grown(ct, phi)
+        robin = _robin([[(CONSTANT, 0.3, 0.0, 0.0, 0.0)]] * len(bodies), alpha=0.6, beta=0.4)
+
+        cells = _wall_cells(ct, phi)
+        assert cells, "vacuous: no WALL cell"
+        named = solid_seen = 0
+        for cell in cells:
+            entries, _c = _row(ct, g, data, robin, geom, cell)
+            for index, _a in entries:
+                assert index in marker, f"row at {cell} names {index}, outside the fab box"
+                assert marker[index] != SOLID, f"row at {cell} names the SOLID cell {index}"
+                named += 1
+            solid_seen += 6 - _fluid_arm_count(marker, cell)
+        assert named > 0
+        assert solid_seen > 0, "vacuous: no WALL cell here has a SOLID face neighbour"
+
+
+def test_a_solid_face_neighbour_is_named_by_the_probe_and_not_by_the_pair(blockamr_session):
+    """**F-4** — the pair is not the probe, measured at the same cell.
+
+    ``WallFrameProbe`` emits its ``i +- 1`` donors unconditionally and says so
+    in its own docstring; a real pair gates each arm. Asserting that difference
+    where it actually bites — a ``WALL`` cell with a ``SOLID`` face neighbour on
+    the x axis — is what keeps "B32 must not copy that aspect of it" from being
+    a comment nobody can fail.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    straddling = [
+        (cell, off)
+        for cell in _wall_cells(ct, phi)
+        for off in ((-1, 0, 0), (1, 0, 0))
+        if marker[_shifted(cell, off)] == SOLID
+    ]
+    assert straddling, "vacuous: no WALL cell here has a SOLID neighbour on the x axis"
+
+    cell, off = straddling[0]
+    neighbour = _shifted(cell, off)
+    pair, _c = _row(ct, g, data, robin, geom, cell)
+    probe, _pc = _wall_frame_record(g, robin, geom, 0.0, *cell, 0)
+
+    assert neighbour not in [index for index, _a in pair]
+    assert neighbour in [(i, j, k) for i, j, k, _a in probe], (
+        "vacuous: the probe no longer emits its unconditional arms"
+    )
+
+
+def test_the_pair_row_is_one_diagonal_plus_its_fluid_arms_plus_eight_donors(blockamr_session):
+    """**F-5** — the accumulate-then-emit shape, stated as a count.
+
+    ``1 + (6 - #solid arms) + 8`` entries, at most 15, which is exactly v1's
+    ``STRIDE``. The rejected alternative — emitting ``+1/h^2`` and ``-1/h^2``
+    per arm and eight donors per wall arm — reaches 54 entries *and* forfeits
+    bitwise parity with v1 on every wall row, because it accumulates the
+    diagonal in a different order (review.md §4 Q49(e)).
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    widths = set()
+    for cell in _wall_cells(ct, phi):
+        entries, _c = _row(ct, g, data, robin, geom, cell)
+        fluid_arms = _fluid_arm_count(marker, cell)
+        assert len(entries) == 1 + fluid_arms + blockamr.GHOST_CELL_K, cell
+        assert len(entries) <= 15
+        widths.add(fluid_arms)
+    assert len(widths) > 1, "vacuous: every WALL cell here has the same number of solid arms"
+
+
+def test_the_diagonal_is_the_accumulated_sum_over_the_fluid_arms(blockamr_session):
+    """**F-6** — H-2 and H-3 together.
+
+    The diagonal is ``-sum_{fluid arms} 1/dx_d^2``, accumulated in one register
+    over ``d`` ascending and emitted **once**. On this grid ``1/dx^2`` is
+    exactly ``256``, so the expected value is exactly representable and the
+    assertion is on the bits: a saved divide (``(1/dx)*(1/dx)``), a wrong power,
+    or a per-arm emission each shows up.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    marker = _marker_grown(ct, phi)
+    robin = _constant(0.5)
+
+    for cell in _wall_cells(ct, phi):
+        entries, _c = _row(ct, g, data, robin, geom, cell)
+        want = 0.0
+        for _ in range(_fluid_arm_count(marker, cell)):
+            want -= INV_H2
+        index, a = entries[0]
+        assert index == cell
+        assert a == want, f"{cell}: diagonal {a} != {want}"
+        arms = entries[1 : 1 + _fluid_arm_count(marker, cell)]
+        assert all(value == INV_H2 for _i, value in arms), cell
+
+
+def test_the_eight_donor_entries_are_the_methods_own_stencil(blockamr_session):
+    """**F-7** — the §4 row map lands on the right row.
+
+    The last eight entries must be ``GhostCellData.donor[r]`` for that cell's
+    rank ``r``, in slot order, with a dead slot (weight exactly ``0.0``) at the
+    row's own cell. ``PLANE_X`` is used because its image point lands on a cell
+    face, so half the weights are exactly zero and the dead-slot rule is
+    exercised instead of assumed — the wrong rank would name another cell's
+    donors, which is the failure mode the map introduces.
+    """
+    g, ct, geom, ba, dm = _classified(PLANE_X)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, PLANE_X)
+    _ip, donor, weight, _distance = _ghost_cell_numpy(ct, g, geom, ["wall"])
+    robin = _constant(0.5)
+
+    assert (weight == 0.0).any(), "vacuous: this geometry has no dead donor slot"
+    for cell in _wall_cells(ct, phi):
+        rank = data.row_at(*cell)
+        assert rank >= 0
+        entries, _c = _row(ct, g, data, robin, geom, cell)
+        got = [index for index, _a in entries[-blockamr.GHOST_CELL_K :]]
+        want = [
+            cell if weight[rank, q] == 0.0 else tuple(int(v) for v in donor[rank, q])
+            for q in range(blockamr.GHOST_CELL_K)
+        ]
+        assert got == want, f"{cell} (rank {rank})"
+
+
+def test_a_field_narrower_than_the_pairs_reach_is_refused_naming_the_pair(blockamr_session):
+    """**F-8 / S8**, and api §9: the sentence names ``wall_laplacian_ghost_cell``
+    and not ``applyWall``, because "applyWall" names nothing a caller can see."""
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    phi = _field(ba, dm, ngrow=0)
+    out = _out(ba, dm)
+    with pytest.raises(
+        RuntimeError, match=r"wall_laplacian_ghost_cell: the functor declares stencil_reach = 1"
+    ):
+        blockamr.wall_laplacian_ghost_cell(
+            out,
+            phi,
+            ct,
+            g,
+            data,
+            _constant(0.5),
+            geom,
+            0.0,
+            1.0,
+            1,
+            blockamr.WallMode.Overwrite,
+            1.0,
+        )
+
+
+def test_the_pair_reads_the_geometry_at_its_own_cell_and_not_at_a_neighbour(blockamr_session):
+    """**F-9 / Q34**, made falsifiable (B30a-R's I-1).
+
+    The functor's only geometry reads are ``patch(i, j, k)`` and
+    ``normal(i, j, k, d)``. B30a-R measured that comparing two *builders* cannot
+    catch a neighbour read — both fabs agree at every shared index — so this row
+    perturbs one fab at one index instead: moving the normal at a **face
+    neighbour** must leave the row bitwise identical, and moving it at the
+    row's **own cell** must change it. The second half is what stops the first
+    from being vacuous.
+
+    ``_slab`` is used so the perturbed neighbour is on the *other* patch, which
+    is where a neighbour read would also pick up the wrong ``alpha``/``beta``.
+    """
+    bodies = _slab(0)
+    mesh, geom, ba, dm = _level(bodies)
+    g = mesh.ibm.geometry_fab(0, ngrow=1)
+    ct = blockamr.CellTypeFab(ba, dm, 1)
+    blockamr.classify_default(ct, g, geom)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, bodies)
+    patch_of = _patch_of(g, phi)
+    robin = _robin([[(CONSTANT, 0.5, 0.0, 0.0, 0.0)], [(CONSTANT, -0.25, 0.0, 0.0, 0.0)]])
+
+    straddling = [
+        (cell, _shifted(cell, off))
+        for cell in _wall_cells(ct, phi)
+        for off in ((1, 0, 0), (-1, 0, 0))
+        if patch_of.get(_shifted(cell, off), patch_of[cell]) != patch_of[cell]
+    ]
+    assert straddling, "vacuous: no WALL cell straddles a patch boundary"
+    cell, neighbour = straddling[0]
+
+    base = _row(ct, g, data, robin, geom, cell)
+    at_neighbour = _perturbed_geometry(mesh, ba, dm, neighbour, 0.125)
+    at_self = _perturbed_geometry(mesh, ba, dm, cell, 0.125)
+
+    assert _row(ct, at_neighbour, data, robin, geom, cell) == base, (
+        f"the row at {cell} moved when the geometry at {neighbour} did — Q34 is tripped"
+    )
+    assert _row(ct, at_self, data, robin, geom, cell) != base, (
+        "vacuous: perturbing the geometry at the row's own cell changed nothing"
+    )
+
+
+def test_the_closures_pole_reaches_the_row_as_infinity_and_raises_nothing(blockamr_session):
+    """**F-10 / Q46**, ruled at B32: the guard is DEFERRED and the behaviour is
+    PINNED.
+
+    ``robin.H``'s ``den = beta - alpha*d`` is exactly zero for the reachable
+    ``Mixed(f)`` with ``d = (1 - f)/f``, and v1 divides anyway and returns
+    ``+-inf``; nothing in v1 warns, checks or documents it. A raise here would
+    be a behaviour change against v1 in the one session whose whole claim is
+    that nothing changed, and it would fail the parity bar by design.
+
+    So the configuration is driven through the pair and the ``+-inf`` is
+    asserted — in an entry **and** in the constant — together with the fact that
+    nothing was raised. A later well-meaning guard turns this green row red and
+    is read as the behaviour change it is.
+
+    The consequence is recorded rather than fixed: such a row reaching a real
+    sweep makes ``ApplySink::acc`` non-finite and the frame writes it into
+    ``out`` for the whole cell, silently. That is the post-G2 note, beside the
+    fallback.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    _ip, _donor, weight, distance = _ghost_cell_numpy(ct, g, geom, ["cyl"])
+    marker = _marker_grown(ct, phi)
+
+    # Exactly ONE solid arm, so there is one wall arm and no `inf - inf`: every
+    # value below is then a single signed infinity or a single `inf * 0`, and
+    # the expected bits are decided rather than incidental.
+    chosen = None
+    for cell in _wall_cells(ct, phi):
+        if _fluid_arm_count(marker, cell) == 5:
+            chosen = (cell, data.row_at(*cell))
+            break
+    assert chosen is not None, "vacuous: no WALL cell here has exactly one SOLID arm"
+    cell, rank = chosen
+
+    # alpha = 1, beta = d  =>  den = beta - alpha*d = 0 exactly, on this row.
+    d = float(distance[rank])
+    robin = _robin([[(CONSTANT, 0.5, 0.0, 0.0, 0.0)]], alpha=1.0, beta=d)
+
+    entries, c = _row(ct, g, data, robin, geom, cell)  # must not raise
+
+    donors = [a for _i, a in entries[-blockamr.GHOST_CELL_K :]]
+    live = [a for a, w in zip(donors, weight[rank]) if w != 0.0]
+    dead = [a for a, w in zip(donors, weight[rank]) if w == 0.0]
+    assert live and dead, f"vacuous: {cell} has no live or no dead donor slot"
+    # a live donor carries `(scale * grad_linear) * w` = a signed infinity, and
+    # the SIGN is determined, not incidental (B32-R S-2): den = d - 1.0*d is
+    # +0.0 exactly, so grad_linear = -1/den is -inf and the arm's negative scale
+    # lands every live donor at +inf, the constant at -inf. Pinned as measured.
+    assert all(np.isinf(a) and a > 0.0 for a in live), live
+    # ...and a dead one carries `inf * 0.0`, which is a NaN, exactly as v1's
+    # numpy `(scale * grad_linear)[:, None] * weight` produces there. NaN stays
+    # classification-only: payloads are not contractual.
+    assert all(np.isnan(a) for a in dead), dead
+    assert np.isinf(c) and c < 0.0, c
+    # the finite half of the row is untouched: the closure never reaches it.
+    assert all(np.isfinite(a) for _i, a in entries[: -blockamr.GHOST_CELL_K]), entries
+
+
+def test_assemble_mode_names_the_pair(blockamr_session):
+    """**F-11 / S6** — a declared-but-unimplemented capability raises naming
+    itself, and the sentence carries the pair's own entry-point name."""
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    phi = _field(ba, dm)
+    out = _out(ba, dm)
+    with pytest.raises(RuntimeError, match=r"wall_laplacian_ghost_cell: WallMode.Assemble"):
+        blockamr.wall_laplacian_ghost_cell(
+            out,
+            phi,
+            ct,
+            g,
+            data,
+            _constant(0.5),
+            geom,
+            0.0,
+            1.0,
+            1,
+            blockamr.WallMode.Assemble,
+            1.0,
+        )
+    assert all(v == SENTINEL for v in _readback(out).values())
+
+
+def test_each_disagreement_between_the_pairs_arguments_is_refused_by_name(blockamr_session):
+    """**F-12** — guard 0 and ``Maker::validate`` (B30a-R's S-5), together.
+
+    Four disagreements, each of which is a silently wrong answer rather than a
+    crash in a release build, and each named by the entry point:
+
+    * ``out is phi`` — a row would read cells another row had already written;
+    * a mismatched ``BoxArray`` — the sweep pairs fabs by ``MFIter`` local
+      index, so a mismatch reads another box's cells;
+    * a Robin table narrower than the field — an out-of-bounds ``gammaAt``;
+    * **method data preprocessed on other grids** — the one the frame cannot
+      see at all, because ``GhostCellData`` lives inside the Maker. That is
+      exactly why ``validate`` is a hook on the concept and not four calls
+      copied into every pair's binding.
+    """
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    data = _ghost_data(ct, g, geom, ONE_BODY)
+    phi = _field(ba, dm)
+    out = _out(ba, dm)
+
+    def call(out_mf, phi_mf, ct_fab, data_obj, robin, ncomp=1):
+        blockamr.wall_laplacian_ghost_cell(
+            out_mf,
+            phi_mf,
+            ct_fab,
+            g,
+            data_obj,
+            robin,
+            geom,
+            0.0,
+            1.0,
+            ncomp,
+            blockamr.WallMode.Overwrite,
+            1.0,
+        )
+
+    with pytest.raises(RuntimeError, match=r"wall_laplacian_ghost_cell: .*different MultiFabs"):
+        call(phi, phi, ct, data, _constant(0.5))
+
+    ba8 = blockamr.BoxArray(blockamr.Box([0, 0, 0], [N - 1, N - 1, N - 1]))
+    ba8.max_size(8)
+    dm8 = blockamr.DistributionMapping(ba8)
+    with pytest.raises(RuntimeError, match=r"wall_laplacian_ghost_cell: out, phi and the"):
+        call(_out(ba8, dm8), phi, ct, data, _constant(0.5))
+
+    phi2 = _field(ba, dm, ncomp=2)
+    with pytest.raises(RuntimeError, match=r"the field has 2 but the table has 1"):
+        call(_out(ba, dm, ncomp=2), phi2, ct, data, _constant(0.5), ncomp=2)
+
+    g8 = _level(ONE_BODY, max_size=8)[0].ibm.geometry_fab(0, ngrow=1)
+    ct8 = blockamr.CellTypeFab(ba8, dm8, 1)
+    blockamr.classify_default(ct8, g8, geom)
+    other = _ghost_data(ct8, g8, geom, ONE_BODY)
+    with pytest.raises(RuntimeError, match=r"wall_laplacian_ghost_cell: the ghostCell data"):
+        call(out, phi, ct, other, _constant(0.5))

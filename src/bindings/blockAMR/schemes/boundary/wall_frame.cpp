@@ -18,12 +18,14 @@
 // verify column of tasks.md §3, "a functor frame is callable host-side against
 // a RecordSink on one cell".
 //
-// The wall FORMULA is `robin.H`'s `closure(alpha, beta, gamma, d)` and it is
-// **B30b**, blocked on the G1 re-judgement (review.md §4 Q30/Q31/Q32): B44
-// measured a second refutation of the `beta != 0` arm and accepted no formula.
-// The hole stays a hole. Nothing in this file may be mistaken for filling it:
-// the probe is never registered in `WALL_SCHEMES`, never becomes a pair, and
-// its name cannot be read as `wall_<operator>_<method>`.
+// The wall FORMULA is `robin.H`'s `closure(alpha, beta, gamma, d)` and it
+// SHIPPED at **B30b** (review.md §4 Q41, the user decision: v1's `wall_closure`
+// transcribed verbatim, 42/42 bitwise). The first `(operator, method)` pair to
+// use it is `schemes/boundary/laplacian_ghost_cell.cpp` — `laplacian x
+// ghostCell`, B32 — and that is where a wall treatment lives. Nothing in THIS
+// file may be mistaken for one: the probe is never registered in
+// `WALL_SCHEMES`, never becomes a pair, and its name cannot be read as
+// `wall_<operator>_<method>`.
 //
 // ---------------------------------------------------------------------------
 // FLOATING POINT (review.md §4 Q36)
@@ -41,6 +43,7 @@
 
 #include "robin_data.H"
 #include "wall_apply.H"
+#include "wall_stage.H"
 #include "wall_value.H"
 
 #include "../../ibm/cell_type.H"
@@ -49,7 +52,6 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
-#include <AMReX_Arena.H>
 #include <AMReX_FArrayBox.H>
 #include <AMReX_Geometry.H>
 #include <AMReX_GpuContainers.H>
@@ -86,12 +88,15 @@ namespace
 //! nothing else. No `normal` or `wall_point` at a neighbour or a ghost index,
 //! which is the question B29's freeze left open.
 //!
-//! S3 / Invariant F: this probe deliberately does NOT conform, and B32 must not
-//! copy that aspect of it — its `i +- 1` donors are emitted unconditionally, so
-//! at a WALL cell with a SOLID face neighbour `ApplySink` reads a pinned cell. A
-//! real pair gates each arm on `m(ii, jj, kk) != SOLID`; this one does not,
-//! because it asserts nothing about the answer. What it exercises is the frame,
-//! and the frame is indifferent to which cells a row names.
+//! S3 / Invariant F: this probe deliberately does NOT conform — its `i +- 1`
+//! donors are emitted unconditionally, so at a WALL cell with a SOLID face
+//! neighbour `ApplySink` reads a pinned cell. `laplacian x ghostCell`
+//! (`laplacian_ghost_cell.cpp`, B32) gates each arm on
+//! `m(ii, jj, kk) != ibm::SOLID`; this one does not, because it asserts nothing
+//! about the answer, and `test_ibm_wall_functors.py`'s F-4 row holds the two
+//! side by side at the same cell so the difference is measured rather than
+//! narrated. What this probe exercises is the frame, and the frame is
+//! indifferent to which cells a row names.
 struct WallFrameProbe
 {
     static constexpr int stencil_reach = 1;
@@ -126,40 +131,16 @@ struct MakeWallFrameProbe
     {
         return WallFrameProbe {ibm::makeGeometryView(*g, mfi), robin, t, dx};
     }
-};
 
-//! A host-resident copy of the packed geometry fab that owns `iv`, so the probe
-//! can be called ON THE HOST for one cell.
-//!
-//! The geometry lives in device memory on this build (`ibm/cell_type.cpp`'s
-//! readback branches on exactly that), so "callable host-side" is a claim about
-//! the FUNCTOR, not about where its inputs happen to sit: the values are the
-//! real ones, staged into pinned host memory, and the code that reads them is
-//! the same `AMREX_GPU_HOST_DEVICE` member the kernel calls. `RobinView` needs
-//! no staging — its tables are managed memory, which is why they are.
-void stageGeometryBox(const ibm::IbmGeometryFab& g, const amrex::IntVect& iv, amrex::FArrayBox& out)
-{
-    for (amrex::MFIter mfi(g); mfi.isValid(); ++mfi)
+    //! S-5 (B30a-R): the two checks the frame has no types for. They used to
+    //! sit in `_wall_frame_apply`'s lambda; here the frame makes them on every
+    //! path that reaches `applyWall`, which is what the hook is for.
+    void validate(const char* fn, int ncomp) const
     {
-        const amrex::Box fb = mfi.fabbox();
-        if (!fb.contains(iv)) continue;
-
-        const amrex::FArrayBox& src = g[mfi];
-        out.resize(fb, ibm::GEOM_NCOMP, amrex::The_Pinned_Arena());
-        const std::size_t nelem = static_cast<std::size_t>(fb.numPts()) * ibm::GEOM_NCOMP;
-        amrex::Gpu::copy(
-            amrex::Gpu::deviceToHost, src.dataPtr(), src.dataPtr() + nelem, out.dataPtr()
-        );
-        return;
+        ibm::requireGeometryLayout(*g, fn);
+        ibm::requireRobinComponents(fn, robin.ncomp, ncomp);
     }
-
-    throw std::runtime_error(
-        "_wall_frame_record: cell [" + std::to_string(iv[0]) + ", " + std::to_string(iv[1]) + ", "
-        + std::to_string(iv[2])
-        + "] lies in no local box of the geometry (ghosts included); there is nothing to read a "
-          "row at"
-    );
-}
+};
 
 } // namespace
 
@@ -254,7 +235,7 @@ void registerWallFrame(nb::module_& m)
                 );
 
             amrex::FArrayBox host;
-            stageGeometryBox(g, amrex::IntVect(i, j, k), host);
+            ibm::stageGeometryBox("_wall_frame_record", g, amrex::IntVect(i, j, k), host);
             const ibm::IbmGeometryView gv {host.const_array()};
 
             const int patch = gv.patch(i, j, k);
@@ -316,8 +297,11 @@ void registerWallFrame(nb::module_& m)
            ibm::WallMode mode,
            double constant_scale)
         {
-            ibm::requireGeometryLayout(g, "_wall_frame_apply");
-            ibm::requireRobinComponents("_wall_frame_apply", robin.ncomp(), ncomp);
+            // No guard calls here: they are `MakeWallFrameProbe::validate`,
+            // which `applyWall` calls once for every path into the sweep
+            // (S-5). A binding that made them itself would be making them
+            // twice, or — the failure mode S-5 exists for — in only one of the
+            // several bindings a pair grows.
             ibm::applyWall(
                 "_wall_frame_apply",
                 out,

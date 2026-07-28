@@ -25,6 +25,8 @@
 // ---------------------------------------------------------------------------
 //     Maker::functor_type                                       // the pair's functor
 //     functor_type Maker::operator()(const amrex::MFIter&) const   // built per box, by value
+//     void Maker::validate(const char* fn, int ncomp) const     // B30a-R's S-5: the guards
+//                                                               // the frame has no types for
 //     functor_type::stencil_reach                               // static constexpr int
 //     functor_type::operator()(i, j, k, n, Sink&) const         // AMREX_GPU_HOST_DEVICE,
 //                                                               // template<class Sink>
@@ -48,17 +50,20 @@
 // is now declared by the functor as `stencil_reach` instead of by a registry.
 //
 // The frame makes for itself every check it has the arguments to make: the
-// ghost widths, `out != phi`, and the refusal of `WallMode::Assemble`. The one
-// remaining guard, that the Robin table carries one gamma per field component,
-// needs a type this header refuses to know, so it is `requireRobinComponents`
-// in `robin_data.H` and a pair's binding calls it.
+// ghost widths, `out != phi`, and the refusal of `WallMode::Assemble`. What is
+// left needs types this header refuses to know — the Robin table's component
+// count, the geometry's layout and ghost width, the method data's grids — so it
+// is `Maker::validate(fn, ncomp)`, called once per sweep, below. The frame
+// invokes it without knowing what it checks, which is exactly how the
+// formula-independence claim survives having the check at all.
 //
 // Read that as a per-box statement, not as a call-level guarantee: the two
 // `requireGhostWidth` calls sit INSIDE the `MFIter` loop (D5, so the guard
 // narrates itself the way `geometry_view.H` and api §8 already say it does), so
 // on a rank that owns no local box neither of them runs — and neither does any
-// launch. Only the `mode` and `&out != &phi` guards are outside the loop and
-// therefore fire on every rank, every call.
+// launch. The `mode` and `&out != &phi` guards, the grid agreement and
+// `Maker::validate` are outside the loop and therefore fire on every rank,
+// every call.
 
 #include "wall_value.H"
 
@@ -160,9 +165,9 @@ void applyWall(
     // `requireMarkerGhostWidth`.
     //
     // It can only cover the three fabs THIS function holds. `geom_ibm` and the
-    // method's data live inside the Maker, which the frame cannot see, so the
-    // rest of the agreement is B30a-R's S-5 (a `Maker::validate(fn, ncomp)`
-    // hook) and still owed. Do not read this guard as complete.
+    // method's data live inside the Maker, which the frame cannot see — so the
+    // rest of the agreement is `maker.validate` immediately below (B30a-R's
+    // S-5, closed at B32). Read the two together, not this one alone.
     if (out.boxArray() != phi.boxArray() || ct.boxArray() != phi.boxArray()
         || out.DistributionMap() != phi.DistributionMap()
         || ct.DistributionMap() != phi.DistributionMap())
@@ -173,6 +178,14 @@ void applyWall(
               "reads another box's cells (or, at different extents, past the end of a fab); "
               "rebuild them on this level's grids"
         );
+
+    // S-5 (B30a-R), and the reason it is a hook rather than four calls in every
+    // pair's `m.def`: three pairs land in this run (B32/B33/B34) plus B48, and
+    // one omission among them is a silent out-of-bounds `gammaAt` (Q38) or a
+    // cross-box row read, not a wrong number. Once, unconditionally, outside
+    // the loop — so it fires on a rank that owns no local box too, which is
+    // where a per-box guard would say nothing at all.
+    maker.validate(fn, ncomp);
 
     const int reach = functor_type::stencil_reach;
     const bool add = (mode == WallMode::Add);

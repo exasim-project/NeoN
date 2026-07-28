@@ -95,14 +95,29 @@
 //     ANY TU THAT INCLUDES THIS HEADER AND CLAIMS PARITY WITH v1 MUST COMPILE
 //     WITH `-ffp-contract=off` / `--fmad=false`.
 //
-// Today exactly one TU includes it, `schemes/boundary/robin_closure.cpp`, and
-// `src/bindings/blockAMR/CMakeLists.txt` gives it those flags per file, next to
-// `ibm/ghost_cell.cpp`'s. B32 adds the second includer (the real
-// `laplacian x ghostCell` pair) and MUST take the same flag or the bitwise
-// result B30b proved is not the result B32 ships — review.md §4 Q36, still
-// B32's call, with B30b's recommendation being the directory-level IEEE
-// posture (three TUs out of three now want it, and a per-file list is one
-// CMakeLists edit away from being silently incomplete).
+// Two TUs include it: `schemes/boundary/robin_closure.cpp` (B30b) and
+// `schemes/boundary/laplacian_ghost_cell.cpp` (B32, the `laplacian x ghostCell`
+// pair). Both are on `src/bindings/blockAMR/CMakeLists.txt`'s per-file flags
+// list, next to `ibm/ghost_cell.cpp`.
+//
+// **Q36 was RULED at B32: the per-file opt-in STAYS**, and the directory-level
+// IEEE posture B30b recommended is refuted in part. A directory posture is
+// really directory-wide flags plus an exclusion list, and the two lists fail in
+// opposite directions: `schemes/stencil_kernels.cpp` must NOT take the flags
+// (Q42 — they move A1/B41/A4/A8's recorded accuracy digits) and
+// `schemes/boundary/wall_frame.cpp` shipped without them by its own recorded
+// decision, its `GammaExpr::Harmonic` being a real contraction site. Forgetting
+// an entry on an OPT-IN list turns that TU's own bitwise rows red — loud and
+// immediate. Forgetting one on an opt-out list moves a tolerance row's digits
+// and nothing notices.
+//
+// The opt-in list's known weakness — one CMakeLists edit away from being
+// silently incomplete — is closed MECHANICALLY rather than by inverting it:
+// `test_ibm_laplacian_ghost_cell.py`'s conformance row parses that
+// `set_source_files_properties` call and asserts that every `.cpp` under
+// `src/bindings/blockAMR/` including this header is on the list. B33, B34 and
+// B48 therefore discover a missing flag as a red row, not as a last-bit
+// mystery.
 //
 // ---------------------------------------------------------------------------
 // WHAT IS NOT HERE

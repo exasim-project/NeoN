@@ -34,6 +34,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/unique_ptr.h>
 #include <nanobind/stl/vector.h>
 
 #include <AMReX_BoxArray.H>
@@ -47,8 +48,8 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -118,19 +119,31 @@ void preprocess(
     // WALL cell gets a deterministic rank from an exclusive scan over the box's
     // k-fastest linear index. The row order is a contract (B32 indexes this
     // data by the same rank), so the parity test below is also the order test.
+    //
+    // B32: the rank is SCATTERED INTO `out.row` here rather than kept in a
+    // per-box scratch vector that this function frees on return. A wall functor
+    // is called at a cell and indexes this data by rank; the map is the only
+    // thing that joins the two (`ghost_cell.H`, review.md §4 Q49(d)). The
+    // working set during this pass is unchanged — one box's scan, not the
+    // level's — and what is new is that the level-sized `int` array is
+    // retained rather than discarded.
     // -----------------------------------------------------------------------
-    std::vector<amrex::Gpu::DeviceVector<int>> offsets;
-    std::vector<int> rowBase;
+    out.row.define(ct.boxArray(), ct.DistributionMap(), 1, 0);
     int total = 0;
     for (amrex::MFIter mfi(ct); mfi.isValid(); ++mfi)
     {
         const amrex::Box bx = mfi.validbox();
+        // S-1 (B31-R): the scan, the flag vector and the rank are `int`, so a
+        // box with more than 2^31 cells would silently wrap into a negative
+        // rank. `Long` is what `numPts` returns and this is where the width is
+        // lost; the assert names the narrowing at the line that makes it.
+        AMREX_ASSERT(bx.numPts() <= static_cast<amrex::Long>(std::numeric_limits<int>::max()));
         const int n = static_cast<int>(bx.numPts());
         const auto blo = amrex::lbound(bx);
         const auto blen = amrex::length(bx);
 
         amrex::Gpu::DeviceVector<int> flag(static_cast<std::size_t>(n));
-        amrex::Gpu::DeviceVector<int> offs(static_cast<std::size_t>(n));
+        amrex::Gpu::DeviceVector<int> rank(static_cast<std::size_t>(n));
         int* fp = flag.data();
         auto const& m = ct.const_array(mfi);
         amrex::ParallelFor(
@@ -143,9 +156,23 @@ void preprocess(
         );
         amrex::Gpu::streamSynchronize();
 
-        const int count = amrex::Scan::ExclusiveSum(n, flag.data(), offs.data());
-        rowBase.push_back(total);
-        offsets.push_back(std::move(offs));
+        const int count = amrex::Scan::ExclusiveSum(n, flag.data(), rank.data());
+        const int base = total;
+        const int* rp = rank.data();
+        auto const& rw = out.row.array(mfi);
+        amrex::ParallelFor(
+            bx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k)
+            {
+                const int lin = ((i - blo.x) * blen.y + (j - blo.y)) * blen.z + (k - blo.z);
+                // -1, not 0: a non-WALL cell has NO row, and a functor that
+                // reached one would otherwise read row 0's donors — another
+                // cell's, and possibly another box's.
+                rw(i, j, k) = (m(i, j, k) == ibm::WALL) ? (base + rp[lin]) : -1;
+            }
+        );
+        amrex::Gpu::streamSynchronize();
+
         total += count;
     }
 
@@ -182,15 +209,11 @@ void preprocess(
     // -----------------------------------------------------------------------
     // Pass 2 — one row per WALL cell. §3 of the plan, step by step.
     // -----------------------------------------------------------------------
-    int b = 0;
-    for (amrex::MFIter mfi(ct); mfi.isValid(); ++mfi, ++b)
+    for (amrex::MFIter mfi(ct); mfi.isValid(); ++mfi)
     {
         const amrex::Box bx = mfi.validbox();
-        const auto blo = amrex::lbound(bx);
-        const auto blen = amrex::length(bx);
-        const int base = rowBase[b];
-        const int* offp = offsets[b].data();
         auto const& m = ct.const_array(mfi);
+        auto const& rw = out.row.const_array(mfi);
         const IbmGeometryView gv = makeGeometryView(g, mfi);
 
         amrex::ParallelFor(
@@ -198,8 +221,7 @@ void preprocess(
             [=] AMREX_GPU_DEVICE(int i, int j, int k)
             {
                 if (m(i, j, k) != ibm::WALL) return;
-                const int lin = ((i - blo.x) * blen.y + (j - blo.y)) * blen.z + (k - blo.z);
-                const int r = base + offp[lin];
+                const int r = rw(i, j, k);
 
                 // Step 1 — the normal is READ out of the geometry, never
                 // recomputed. No body sdf, no hypot, no sqrt, no atan2 is
@@ -213,6 +235,11 @@ void preprocess(
                 // H-d: divide PER COMPONENT, then max, then `0.5 / reach`. The
                 // algebraically equal `0.5 * min_d(dx_d / |n_d|)` rounds
                 // differently and loses the bit.
+                // S-4 (B31-R): the two `if (a1 > reach)` lines below are the
+                // maximum spelled the way numpy's `np.max` reduces, and they
+                // are deliberate. `amrex::max` / `fmax` / a `max.f64` a tidying
+                // author would reach for differ from `>` on a NaN operand, and
+                // the parity bar is over the bits, so leave the branch alone.
                 const amrex::Real a0 = amrex::Math::abs(n0) / dx[0];
                 const amrex::Real a1 = amrex::Math::abs(n1) / dx[1];
                 const amrex::Real a2 = amrex::Math::abs(n2) / dx[2];
@@ -343,6 +370,25 @@ void preprocess(
     );
 }
 
+int rowAt(const GhostCellData& d, const char* fn, int i, int j, int k)
+{
+    const amrex::IntVect iv(i, j, k);
+    for (amrex::MFIter mfi(d.row); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box bx = mfi.validbox();
+        if (!bx.contains(iv)) continue;
+        const amrex::IArrayBox& fab = d.row[mfi];
+        const int* p = fab.dataPtr() + fab.box().index(iv);
+        int value = -1;
+        amrex::Gpu::copy(amrex::Gpu::deviceToHost, p, p + 1, &value);
+        return value;
+    }
+    throw std::runtime_error(
+        std::string(fn) + ": cell " + cellName(i, j, k)
+        + " lies in no local box of this level's row map; there is no rank to read there"
+    );
+}
+
 } // namespace ibm
 
 namespace
@@ -368,15 +414,19 @@ nb::object toNumpyReal(
 nb::object
 toNumpyInt(const amrex::Gpu::DeviceVector<int>& v, std::size_t ndim, const std::size_t* shape)
 {
+    static_assert(
+        std::is_same_v<std::int32_t, int>,
+        "the donor table is device-side `int` and is exported as numpy int32; on a platform "
+        "where the two are different types the copy below would reinterpret it"
+    );
     const std::size_t n = v.size();
     auto* buf = new std::int32_t[n ? n : 1];
     auto owner = nb::capsule(buf, [](void* p) noexcept { delete[] static_cast<std::int32_t*>(p); });
-    if (n)
-    {
-        std::vector<int> host(n);
-        amrex::Gpu::copy(amrex::Gpu::deviceToHost, v.begin(), v.end(), host.data());
-        std::memcpy(buf, host.data(), n * sizeof(int));
-    }
+    // S-2 (B31-R): copied straight into the capsule's buffer. The staging
+    // `std::vector<int>` this used to go through bought nothing — it was a
+    // host copy of a host copy — and `Gpu::copy` itself requires the two
+    // value types to be the same, which the assert above states.
+    if (n) amrex::Gpu::copy(amrex::Gpu::deviceToHost, v.begin(), v.end(), buf);
     return nb::cast(nb::ndarray<nb::numpy, std::int32_t>(
         buf, ndim, shape, owner, nullptr, nb::dtype<std::int32_t>(), nb::device::cpu::value, 0, 'C'
     ));
@@ -388,14 +438,70 @@ void registerGhostCell(nb::module_& m)
 {
     m.attr("GHOST_CELL_K") = ibm::K;
 
+    // The method's own data type, OPAQUE (design §2.3, api §10.3 item 4): the
+    // rows themselves are never exposed. What Python may ask is how many there
+    // are, and — for `test_ibm_ghost_cell_cpp.py`'s two row-map rows — what
+    // rank a given cell holds. Everything else about this object is read
+    // inside `schemes/boundary/*_ghost_cell.cpp`, by the pair that owns it.
+    nb::class_<ibm::GhostCellData>(
+        m,
+        "GhostCellData",
+        "ghostCell's preprocessed per-level data (B31): one row per WALL cell, with the image "
+        "point, its trilinear donors and weights, and the distance to the surface. Opaque — it "
+        "is built by ghost_cell_preprocess and handed straight to a wall pair as 'method_data'."
+    )
+        .def_prop_ro(
+            "nrows",
+            [](const ibm::GhostCellData& d) { return d.nrows; },
+            "Rows in the data: the level's WALL cells, over every local box."
+        )
+        .def(
+            "row_at",
+            [](const ibm::GhostCellData& d, int i, int j, int k)
+            { return ibm::rowAt(d, "GhostCellData.row_at", i, j, k); },
+            nb::arg("i"),
+            nb::arg("j"),
+            nb::arg("k"),
+            "The rank of cell (i, j, k) in this data, or -1 where the marker is not WALL. "
+            "This is the map a wall functor uses to go from the cell it is called on to the "
+            "row it must read."
+        );
+
+    // The production factory. Without it `GhostCellData` is unconstructible
+    // from Python and the pair below is not callable at all.
+    m.def(
+        "ghost_cell_preprocess",
+        [](const ibm::CellTypeFab& ct,
+           const ibm::IbmGeometryFab& g,
+           const amrex::Geometry& geom,
+           const std::vector<std::string>& patch_names)
+        {
+            auto d = std::make_unique<ibm::GhostCellData>();
+            ibm::preprocess(*d, ct, g, geom, patch_names);
+            return d;
+        },
+        nb::arg("ct"),
+        nb::arg("geom_ibm"),
+        nb::arg("geom"),
+        nb::arg("patch_names"),
+        "ghostCell's preprocessing (v1: GhostCell.preprocess), once per (method, lev, "
+        "grid_version) and pure geometry — it reads no field value. Returns the opaque "
+        "GhostCellData a wall pair takes as 'method_data'. 'patch_names' is "
+        "sorted(mesh.bodies); it names the patch in the Invariant-F raise and is otherwise "
+        "unused."
+    );
+
     // TEST binding (api §4) — read by `test_ibm_ghost_cell_cpp.py`'s bitwise
     // parity section and by nothing on an evaluate path. Underscore-private and
     // a free function, so it never enters a bound class' vocabulary. Production
-    // reaches the same rows as an opaque `GhostCellData` (api §10.3 item 4),
-    // which is B36's wiring, not this task's.
+    // reaches the same rows as the opaque `GhostCellData` above, which B32's
+    // `wall_laplacian_ghost_cell` is the first consumer of.
     m.def(
         "_ghost_cell_numpy",
-        [](ibm::CellTypeFab& ct,
+        // S-3 (B31-R): `const`, like every other reader of a marker in this
+        // tree. `preprocess` takes it by const reference and writes nothing to
+        // it; a mutable binding parameter said otherwise.
+        [](const ibm::CellTypeFab& ct,
            const ibm::IbmGeometryFab& g,
            const amrex::Geometry& geom,
            const std::vector<std::string>& patch_names)

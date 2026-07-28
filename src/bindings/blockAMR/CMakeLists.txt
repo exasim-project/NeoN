@@ -28,13 +28,14 @@ nanobind_add_module(
   ibm/ghost_cell.cpp
   schemes/boundary/wall_frame.cpp
   schemes/boundary/robin_closure.cpp
+  schemes/boundary/laplacian_ghost_cell.cpp
   tile_layout.cpp
   wall_table.cpp
   band_table.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
-# Two sources are pinned BITWISE against a numpy peer and therefore may not have a multiply-add
+# Three sources are pinned BITWISE against a numpy peer and therefore may not have a multiply-add
 # contracted into an fma -- one rounding where numpy does two:
 #
 # * ibm/ghost_cell.cpp against src/blockamr/ibm/ghost_cell.py (tasks.md B31, review.md Q29(d) -- the
@@ -42,19 +43,33 @@ target_link_libraries(_blockamr PRIVATE amrex)
 # * schemes/boundary/robin_closure.cpp against wall_closure in
 #   src/blockamr/schemes/boundary/ghost_cell.py (tasks.md B30b, review.md Q41/Q43). The contraction
 #   site is `beta - alpha * distance`, and it moves bits wherever beta ~ alpha*d.
+# * schemes/boundary/laplacian_ghost_cell.cpp against _closed_flux_rows in the same v1 module
+#   (tasks.md B32). It inlines robin.H's closure AND accumulates its own donor sums, diagonal and
+#   constant -- three multiply-accumulate shapes of its own -- so the flag is load-bearing for this
+#   TU's bar rather than merely inherited.
 #
 # GCC defaults to -ffp-contract=fast and nvcc to --fmad=true (re-asserted by AMReX's
 # --use_fast_math), so contraction is turned off here, scoped to these sources so no other
 # translation unit's numerics move. See each file header for the rejected alternatives.
 #
 # NOTE: schemes/boundary/robin.H is a HEADER -- its arithmetic is inlined with the INCLUDING TU's
-# flags. Any further TU that includes it and claims v1 parity must be added to this list (B32's
-# pair; review.md Q36 may replace the list with a directory-level posture).
+# flags. Any further TU that includes it and claims v1 parity must be added to this list.
+#
+# review.md Q36, RULED at B32: the list stays PER-FILE OPT-IN and the directory-level IEEE posture
+# is refuted in part. schemes/stencil_kernels.cpp must NOT take these flags (Q42 -- they move
+# A1/B41/A4/A8's recorded accuracy digits) and schemes/boundary/wall_frame.cpp shipped without them
+# by its own recorded decision, so a directory posture is really directory-wide flags plus an
+# exclusion list -- and the two fail in opposite directions. Forgetting an entry HERE turns that
+# TU's own bitwise rows red, loudly; forgetting one on an exclusion list moves a tolerance row's
+# digits and nothing notices. The list's known weakness -- one edit away from being silently
+# incomplete -- is closed mechanically instead: test_ibm_laplacian_ghost_cell.py parses the call
+# below and asserts that every includer of robin.H or ibm/ghost_cell.H appears in it.
 set(_ghost_cell_fp_flags
     "$<$<COMPILE_LANGUAGE:CXX>:-ffp-contract=off>" "$<$<COMPILE_LANGUAGE:CUDA>:--fmad=false>"
     "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-ffp-contract=off>")
-set_source_files_properties(ibm/ghost_cell.cpp schemes/boundary/robin_closure.cpp
-                            PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
+set_source_files_properties(
+  ibm/ghost_cell.cpp schemes/boundary/robin_closure.cpp schemes/boundary/laplacian_ghost_cell.cpp
+  PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
@@ -79,6 +94,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     ibm/ghost_cell.cpp
     schemes/boundary/wall_frame.cpp
     schemes/boundary/robin_closure.cpp
+    schemes/boundary/laplacian_ghost_cell.cpp
     tile_layout.cpp
     wall_table.cpp
     band_table.cpp

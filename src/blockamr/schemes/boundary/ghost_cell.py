@@ -329,6 +329,21 @@ class GhostCellLaplacian:
         ctx = _context(term, ibm, lev, ncomp, t, width)
         return _closed_flux_rows(ctx, _coefficient(term, t), ncomp, self.stride)
 
+    def build_cpp_kernel(self):
+        """The compiled peer of :meth:`rows` — ``laplacian x ghostCell`` (B32).
+
+        Mirrors how an interior scheme's ``build_cpp_kernel()`` returns the
+        wrapper for its accumulate binding. The compiled pair reaches the same
+        rows this method builds, bitwise, and it reaches them at the cell
+        instead of through a band table.
+
+        Nothing calls this yet: :class:`~blockamr.ibm.driver.BandEvaluation`
+        still goes through :meth:`rows`, and flipping the driver over is B36.
+        """
+        from ...cpp_kernels import CppWallKernel
+
+        return CppWallKernel("wall_laplacian_ghost_cell")
+
 
 def _closed_flux_rows(ctx, coeff, ncomp, stride):
     """``coeff * sum_d (G_d^+ - G_d^-) / dx_d`` — pure numpy, band-length."""

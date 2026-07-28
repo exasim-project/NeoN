@@ -65,6 +65,27 @@ class CppGradAcc:
         _bindings().grad_acc(src, cell_field.mf[lev], geom, op.coeff)
 
 
+class CppWallKernel:
+    """The compiled ``(operator, method)`` wall pair a boundary scheme names.
+
+    Peer of the four interior ``*Acc`` wrappers above, one level out: those bind
+    an interior accumulate, this one names a ``wall_<operator>_<method>``
+    binding — the v2 entry point that replaces the scheme's own ``rows()`` plus
+    a ``BandTable`` upload.
+
+    It carries the name and nothing else on purpose. Resolving the attribute
+    lazily keeps this module import-safe during package init, and the driver
+    rewire that will *call* it — with the canonical twelve arguments, by
+    keyword, from one call site — is B36's.
+    """
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, *args, **kwargs):
+        return getattr(_bindings(), self.name)(*args, **kwargs)
+
+
 class CppSourceAcc:
     """Accumulate ``coeff * S`` — the explicit (Su) source, whose operand *is*
     the coefficient.

@@ -23,6 +23,7 @@ void registerCellType(nb::module_& m);
 void registerGhostCell(nb::module_& m);
 void registerWallFrame(nb::module_& m);
 void registerRobinClosure(nb::module_& m);
+void registerLaplacianGhostCell(nb::module_& m);
 void registerTileLayout(nb::module_& m);
 void registerWallTable(nb::module_& m);
 void registerBandTable(nb::module_& m);

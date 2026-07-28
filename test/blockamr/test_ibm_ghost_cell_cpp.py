@@ -394,3 +394,95 @@ def test_a_geometry_with_the_wrong_component_count_is_refused(blockamr_session):
 def test_the_trilinear_stencil_size_is_the_one_the_compiled_side_expects(blockamr_session):
     """``K`` is declared on both sides; this is where they are held together."""
     assert K == blockamr.GHOST_CELL_K == 8
+
+
+# ---------------------------------------------------------------------------
+# 6. The cell -> row map (B32)
+#
+# `GhostCellData` gained one member, `iMultiFab row`: the rank per cell, `-1`
+# where the marker is not `WALL`. A wall functor is called at a *cell* and this
+# data is indexed by *rank*, so without the map the two cannot meet — the
+# exclusive scan that produces the ranks used to be a transient per-box vector
+# that `preprocess` freed on return (review.md §4 Q49(d)).
+#
+# The rows below pin the map against the same contract section 2 above pins the
+# arrays against, and against nothing else: this file's subject is still the
+# preprocessing, and what a pair *does* with a rank is B32's own file.
+# ---------------------------------------------------------------------------
+
+_cell_type_numpy = blockamr._blockamr._cell_type_numpy
+
+
+def _preprocessed(mesh, geom, ba, dm, ngrow=1):
+    """``(data, ct, g)`` — the opaque `GhostCellData` and what it was built from."""
+    names, _bodies = _patches(mesh.bodies)
+    g = mesh.ibm.geometry_fab(0, ngrow=ngrow)
+    ct = blockamr.CellTypeFab(ba, dm, ngrow)
+    blockamr.classify_default(ct, g, geom)
+    return blockamr.ghost_cell_preprocess(ct, g, geom, names), ct, g
+
+
+def test_the_row_map_is_minus_one_at_every_cell_that_is_not_wall(blockamr_session):
+    """``-1``, not ``0``, and that is the whole point of the sentinel.
+
+    A non-``WALL`` cell has no row. Were the map zero-filled there, a functor
+    that reached such a cell would read **row 0's** donors — another cell's, and
+    on a decomposed level possibly another box's — which is a plausible wrong
+    answer rather than a crash. The marker is read back independently, so this
+    is a comparison against the classification and not against the map itself.
+    """
+    mesh, geom, ba, dm = _mesh(BODIES["cylinder"], max_size=8)
+    data, ct, _g = _preprocessed(mesh, geom, ba, dm)
+
+    wall = int(blockamr.CellType.WALL)
+
+    # The marker is materialised BEFORE any `row_at` call, deliberately:
+    # `row_at` opens an `MFIter` of its own, and AMReX refuses a nested one
+    # (`MFIter::Initialize` asserts). A readback loop that called it from
+    # inside `MFIterator` would abort rather than fail.
+    marker = {}
+    probe = blockamr.MultiFab(ba, dm, 1, 0)
+    for mfi in blockamr.MFIterator(probe):
+        lo = tuple(mfi.valid_box().small_end())
+        block = _cell_type_numpy(ct, mfi)
+        for local in np.ndindex(block.shape):
+            marker[tuple(lo[d] + local[d] for d in range(3))] = int(block[local])
+
+    counts = {"wall": 0, "other": 0}
+    for cell, value in marker.items():
+        rank = data.row_at(*cell)
+        if value == wall:
+            counts["wall"] += 1
+            assert 0 <= rank < data.nrows, f"{cell} is WALL but its rank is {rank}"
+        else:
+            counts["other"] += 1
+            assert rank == -1, f"{cell} is not WALL but carries rank {rank}"
+    assert counts["wall"] == data.nrows > 0
+    assert counts["other"] > 0
+
+
+def test_the_row_map_is_the_exclusive_scan_rank_across_eight_boxes(blockamr_session):
+    """The map is the row ORDER of section 2, published per cell.
+
+    Per local box in ``MFIterator`` order and, within a box, by ``i`` then ``j``
+    then ``k``. On eight boxes a wrong cross-box concatenation — the offset that
+    used to be a host-side running total — is a total mismatch rather than an
+    off-by-one, and it is asserted against ``np.argwhere(depth == 1)`` directly
+    rather than against the compiled arrays it is supposed to index.
+    """
+    mesh, geom, ba, dm = _mesh(BODIES["cylinder"], max_size=8)
+    data, _ct, _g = _preprocessed(mesh, geom, ba, dm)
+
+    grids = box_grids(mesh, 0)
+    assert len(grids) == 8
+    expected = np.concatenate(
+        [
+            np.argwhere(geometry.depth == 1) + np.asarray(grid.lo)
+            for grid, geometry in zip(grids, mesh.ibm.geometry(0))
+        ]
+    )
+    assert len(expected) == data.nrows > 0
+
+    for rank, cell in enumerate(expected):
+        got = data.row_at(*(int(v) for v in cell))
+        assert got == rank, f"cell {tuple(cell)} has rank {got}, expected {rank}"
