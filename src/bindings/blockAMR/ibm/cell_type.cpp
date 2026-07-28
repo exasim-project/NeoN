@@ -48,7 +48,9 @@ std::string realName(amrex::Real v)
 //! Pass 2 reads a face neighbour of every valid cell, and pass 1 evaluates the
 //! marker on the grown box, reading the geometry there. Both are requirements,
 //! not conveniences; the message shape is the compiled surface's standard (api
-//! §8) — the width it needs and the width it has.
+//! §8) — the width it needs and the width it has. The geometry half lives in
+//! `geometry_view.H` as `requireGeometryGhosts`, because `validateCellType`
+//! needs exactly the same check for exactly the same reason (B28-R, I1).
 void requireMarkerGhostWidth(const CellTypeFab& ct, const IbmGeometryFab& g)
 {
     requireGeometryLayout(g, "classify_default");
@@ -68,14 +70,7 @@ void requireMarkerGhostWidth(const CellTypeFab& ct, const IbmGeometryFab& g)
             + "; grow the marker"
         );
 
-    const int gNGrow = g.nGrowVect().min();
-    if (gNGrow < ctNGrow)
-        throw std::runtime_error(
-            "classify_default: the first pass evaluates the marker on the grown box and reads "
-            "sdf there, so the geometry's ghost width must be at least the marker's "
-            + std::to_string(ctNGrow) + ", but the geometry MultiFab has " + std::to_string(gNGrow)
-            + "; grow the geometry"
-        );
+    requireGeometryGhosts("classify_default", g, ctNGrow);
 }
 
 } // namespace
@@ -131,6 +126,21 @@ void validateCellType(const CellTypeFab& ct, const IbmGeometryFab& g)
         throw std::runtime_error(
             "validate_cell_type: the marker and the immersed-body geometry must share a BoxArray"
         );
+
+    // The pass below runs over the MARKER's fab box and reads the GEOMETRY's
+    // Array4 at the same indices, so a marker wider than the geometry is an
+    // out-of-bounds read — silent garbage in a release build, i.e. a spurious
+    // M5 sentence or a segfault (B28-R, I1). `classifyDefault` is safe because
+    // `requireMarkerGhostWidth` runs first; this entry point is bound
+    // standalone (`blockamr.validate_cell_type`) precisely so the M4/M5 red
+    // paths are reachable, so it has to check for itself.
+    //
+    // Only the geometry-vs-marker half is checked here, not `MARKER_NGROW`:
+    // validation of a zero-ghost marker is a legitimate call (its fab box is
+    // then its valid box and nothing is read out of bounds), whereas the
+    // MARKER_NGROW floor is a requirement of the *classification*'s second
+    // pass, which this function does not perform.
+    requireGeometryGhosts("validate_cell_type", g, ct.nGrowVect().min());
 
     // A device lambda cannot throw, so the first bad cell is captured device-side
     // — an atomicCAS claim on slot 4 makes the report singular — and the sentence

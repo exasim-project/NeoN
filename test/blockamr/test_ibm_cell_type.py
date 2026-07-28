@@ -49,6 +49,11 @@ TWO_CYLINDERS = [
     Cylinder(centre=(0.78, 0.78), radius=0.12, axis=2),
 ]
 FAR_AWAY = [Cylinder(centre=(5.0, 5.0), radius=0.2, axis=2)]
+#: A body that cuts the x-lo domain face, for the non-periodic F10 row: its
+#: solid region reaches into ghost cells that lie OUTSIDE the domain, where
+#: ``FillBoundary`` has nothing to copy from and only an analytic geometry fill
+#: puts a meaningful sdf.
+X_FACE_CYLINDER = [Cylinder(centre=(0.0, 0.5), radius=0.25, axis=2)]
 
 BODIES = {"cylinder": CYLINDER, "plane": PLANE, "two-cylinders": TWO_CYLINDERS}
 
@@ -324,6 +329,126 @@ def test_classification_is_deterministic(blockamr_session):
 
 
 # --------------------------------------------------------------------------
+# B29 — the frozen geometry view, the honoured ngrow contract (review F10)
+# --------------------------------------------------------------------------
+
+
+def test_the_ghost_outside_a_non_periodic_face_follows_the_analytic_sdf(blockamr_session):
+    """F10's *value* half, and it is invisible in a periodic test.
+
+    A body cutting the x-lo domain face with ``is_periodic = (0, 1, 1)``. The
+    ghost plane at ``i = -1`` lies outside the domain, so ``FillBoundary`` has
+    no neighbour and no periodic image to copy from: the marker there is pass
+    1's answer and nothing else, and it is right only because the *geometry*
+    fab's ghost carries the analytically extended sdf. A ``FillBoundary``-based
+    geometry fill cannot satisfy this row at all.
+    """
+    flat = (0, 1, 1)
+    ct, g, _ = _classified(X_FACE_CYLINDER, periodic=flat)
+    assert _nboxes(g) == 1
+    for mfi, lo, hi in _boxes(g):
+        grown = _cell_type_numpy(ct, mfi, grown=True)
+        sdf = _sdf_block(
+            X_FACE_CYLINDER, tuple(v - 1 for v in lo), tuple(v + 1 for v in hi), N, flat
+        )
+        outside = grown[0]  # the i = -1 plane: outside a non-periodic face
+        want_solid = (sdf <= 0.0)[0]
+        assert np.array_equal(outside == SOLID, want_solid)
+        assert not (outside == WALL).any()
+        # non-vacuous: that ghost plane really straddles the surface
+        assert want_solid.any() and (~want_solid).any()
+
+
+def test_the_classification_runs_at_a_wider_marker(blockamr_session):
+    """A green ``ngrow = 2`` row — ``MARKER_NGROW`` is a floor, not a size.
+
+    ``MARKER_NGROW = 1`` is the default rule's requirement; W1's degrade (B35)
+    reads ``m(i +- 2s)`` and will allocate a two-cell marker. Nothing proved a
+    wider marker worked, and the guard only enforces ``>= 1``, so a marker
+    widened at B35 would have been the first one ever tried (B28-R, I3). Here it
+    is exercised end to end: two ghost layers, eight boxes, classified against a
+    two-cell geometry and validated by M4/M5 over the whole grown box.
+    """
+    ct, g, _ = _classified(CYLINDER, max_size=8, ngrow=2)
+    assert _nboxes(g) == 8
+    assert g.n_grow() == 2
+    blockamr.validate_cell_type(ct, g)  # always-on inside classify; explicit here too
+    for mfi, lo, hi in _boxes(g):
+        got = _cell_type_numpy(ct, mfi, grown=True)
+        assert got.shape == (8 + 4,) * 3
+        assert np.array_equal(got, _expected_grown(CYLINDER, lo, hi, N, PERIODIC, ngrow=2))
+
+
+def test_the_mesh_built_geometry_classifies_a_grown_box_in_one_pass(blockamr_session):
+    """B29's verify column, on the geometry the **production builder** makes.
+
+    ``IbmMesh.geometry_fab`` is the v2 path Q29(d) rules on: the packed fab is
+    uploaded from the v1 numpy analytic evaluation through ``copy_grown_from``.
+    Because that fill is analytic and grown, ``classify_default``'s first pass
+    writes correct markers into the ghost region directly — there is no second
+    classification pass and no marker exchange needed to obtain them, which is
+    exactly what "classification runs on grown boxes" asserts. The expectation
+    is still the numpy oracle above, never the builder's own output.
+    """
+    from blockamr.mesh import Mesh
+
+    geom, ba, dm = _level(max_size=8)
+    mesh = Mesh(ba, dm, geom)
+    mesh.bodies = {"cyl": CYLINDER[0]}
+
+    g = mesh.ibm.geometry_fab(0, ngrow=1)
+    assert g.num_comp() == blockamr.IBM_GEOM_NCOMP
+    assert g.n_grow() == 1
+
+    ct = blockamr.CellTypeFab(ba, dm, 1)
+    blockamr.classify_default(ct, g, geom)
+
+    assert _nboxes(g) == 8
+    for mfi, lo, hi in _boxes(g):
+        got = _cell_type_numpy(ct, mfi, grown=True)
+        assert np.array_equal(got, _expected_grown(CYLINDER, lo, hi, N, PERIODIC, ngrow=1))
+
+
+def test_the_mesh_built_geometry_classifies_a_non_periodic_grown_box(blockamr_session):
+    """The production builder and the classification, on a NON-periodic domain.
+
+    The two halves of F10 are proved separately above and this row joins them.
+    ``…_classifies_a_grown_box_in_one_pass`` runs the production builder, but on
+    a fully periodic level where every ghost also has a ``FillBoundary`` source,
+    so nothing there depends on the builder having filled the ghosts;
+    ``…_ghost_outside_a_non_periodic_face_follows_the_analytic_sdf`` does depend
+    on it, but its geometry is this file's ``_geometry_fab`` fixture rather than
+    ``IbmMesh.geometry_fab``.
+
+    Here the geometry is the **builder's** and the domain is non-periodic in
+    every direction, with a body cutting the x-lo face: the whole ghost shell
+    lies outside the domain, ``FillBoundary`` has nothing to copy from anywhere
+    on it, and the marker there is pass 1's answer read off the geometry fab. A
+    builder that filled only the valid box would leave that shell at whatever
+    the fab was allocated with, and the grown comparison would fail.
+    """
+    from blockamr.mesh import Mesh
+
+    flat = (0, 0, 0)
+    geom, ba, dm = _level(periodic=flat)
+    mesh = Mesh(ba, dm, geom)
+    mesh.bodies = {"cyl": X_FACE_CYLINDER[0]}
+
+    g = mesh.ibm.geometry_fab(0, ngrow=1)
+    ct = blockamr.CellTypeFab(ba, dm, 1)
+    blockamr.classify_default(ct, g, geom)
+
+    assert _nboxes(g) == 1
+    for mfi, lo, hi in _boxes(g):
+        grown = _cell_type_numpy(ct, mfi, grown=True)
+        assert np.array_equal(grown, _expected_grown(X_FACE_CYLINDER, lo, hi, N, flat, ngrow=1))
+        # non-vacuous: the ghost plane outside the x-lo face really does
+        # straddle the surface, so both SOLID and FLUID are asserted there
+        outside = grown[0]
+        assert (outside == SOLID).any() and (outside == FLUID).any()
+
+
+# --------------------------------------------------------------------------
 # 9-13 — the error surface (design §10: a sentence naming the offending object)
 # --------------------------------------------------------------------------
 
@@ -372,6 +497,25 @@ def test_a_geometry_narrower_than_the_marker_is_refused_naming_both_widths(block
     ct = blockamr.CellTypeFab(ba, dm, 2)
     with pytest.raises(RuntimeError, match=r"at least the marker's 2.*MultiFab has 1"):
         blockamr.classify_default(ct, g, geom)
+
+
+def test_validate_cell_type_refuses_a_geometry_narrower_than_the_marker(blockamr_session):
+    """The F10 host guard on the **standalone** validation entry point.
+
+    ``validate_cell_type`` is bound on its own so the M4/M5 red paths are
+    reachable, and it iterates the *marker's* fab box while reading the
+    *geometry's* ``Array4`` at the same indices. A marker wider than the
+    geometry is therefore an out-of-bounds read — silent garbage in a release
+    build, i.e. a spurious M5 sentence or a segfault, which is precisely what
+    design §10's error surface exists to prevent (B28-R, I1). It must raise, and
+    name both widths, exactly as ``classify_default`` already does.
+    """
+    _geom, ba, dm = _level()
+    g = _geometry_fab(CYLINDER, ba, dm, N, PERIODIC, 1)
+    wide = blockamr.CellTypeFab(ba, dm, 2)
+    wide.set_val(FLUID)
+    with pytest.raises(RuntimeError, match=r"at least the marker's 2.*MultiFab has 1"):
+        blockamr.validate_cell_type(wide, g)
 
 
 def test_a_geometry_with_the_wrong_component_count_is_refused(blockamr_session):

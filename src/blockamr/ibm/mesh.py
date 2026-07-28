@@ -23,7 +23,7 @@ import weakref
 from .band import CROSS, band_on_grids
 from .band_rows import band_table, pin_rows
 from .classify import box_grids
-from .geometry import geometry_on_grids
+from .geometry import GEOM_NCOMP, geometry_on_grids, packed_geometry_on_grids
 
 
 class IbmMesh:
@@ -40,6 +40,7 @@ class IbmMesh:
         self._mesh = mesh
         self._grids = {}
         self._geometry = {}
+        self._geometry_fabs = {}
         self._bands = {}
         self._method_data = {}
         self._pin_tables = {}
@@ -70,6 +71,42 @@ class IbmMesh:
         if key not in self._geometry:
             self._geometry[key] = geometry_on_grids(self._boxes(lev), self.bodies)
         return self._geometry[key]
+
+    def geometry_fab(self, lev, ngrow):
+        """The v2 packed geometry ``MultiFab`` of ``lev`` (B29, design §2.1).
+
+        The compiled side's ``IbmGeometryFab``: one ``MultiFab`` of
+        :data:`~blockamr.ibm.geometry.GEOM_NCOMP` components, filled over the
+        **grown** box so that ``blockamr.classify_default`` can classify a grown
+        box in a single pass (review F10 — see
+        :func:`~blockamr.ibm.geometry.packed_box_geometry` for the two halves of
+        the ghost contract this honours).
+
+        Separate from :meth:`geometry`, which keeps returning v1's per-box
+        :class:`~blockamr.ibm.geometry.IbmGeometry` dataclasses — ``depth`` and
+        all — until B36/B37 rewire their readers. Nothing on a v1 evaluate path
+        calls this yet.
+
+        Cached on ``(lev, grid_version)``, i.e. design §8's key with **no
+        ``ngrow``** in it, and grown **monotonically**: a wider request rebuilds
+        the fab, a narrower one is served the wider fab it already has. That is
+        what lets the documented cache key stand while callers with different
+        stencil reaches share one geometry — a fab is never shrunk under a
+        caller that asked for more.
+        """
+        import blockamr
+
+        ngrow = int(ngrow)
+        key = (lev, self.grid_version)
+        have = self._geometry_fabs.get(key)
+        if have is None or have[0] < ngrow:
+            grids = self._boxes(lev)
+            blocks = packed_geometry_on_grids(grids, self.bodies, ngrow)
+            mf = blockamr.MultiFab(self._mesh.box_array(lev), self._mesh.dm(lev), GEOM_NCOMP, ngrow)
+            for mfi, block in zip(blockamr.MFIterator(mf), blocks):
+                mf.copy_grown_from(mfi, block)
+            self._geometry_fabs[key] = (ngrow, mf)
+        return self._geometry_fabs[key][1]
 
     def band(self, lev, width, shape=CROSS):
         """The boundary cells of a width-``width`` scheme on ``lev``."""
@@ -172,6 +209,7 @@ class IbmMesh:
         """Drop the cached objects (the mesh has already bumped the version)."""
         self._grids.clear()
         self._geometry.clear()
+        self._geometry_fabs.clear()
         self._bands.clear()
         self._method_data.clear()
         self._pin_tables.clear()

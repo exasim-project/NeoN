@@ -29,7 +29,10 @@ import numpy as np
 
 from .classify import (
     _index_coords,
+    _index_grid,
+    _owner,
     _patches,
+    _sdf_stack,
     _valid_index,
     box_grids,
     classify_box,
@@ -37,6 +40,87 @@ from .classify import (
 
 #: The eight trilinear corner offsets, in donor-slot order.
 _OFFSETS = np.array([[i, j, k] for i in (0, 1) for j in (0, 1) for k in (0, 1)], dtype=np.int64)
+
+# ---------------------------------------------------------------------------
+# the v2 packed geometry (B29) — additive; nothing above changes
+# ---------------------------------------------------------------------------
+
+#: Component offsets of the packed v2 geometry fab. These mirror ``ibm::GEOM_*``
+#: in ``src/bindings/blockAMR/ibm/geometry_view.H``. What the test suite pins
+#: today is the component *count*, against the compiled
+#: ``blockamr.IBM_GEOM_NCOMP``; the offsets are declared independently on each
+#: side, and their cross-language pin arrives when the compiled side exports
+#: them beside ``IBM_GEOM_NCOMP`` (B31).
+GEOM_SDF = 0
+GEOM_NORMAL = 1
+GEOM_WALL_POINT = 4
+GEOM_PATCH = 7
+GEOM_NCOMP = 8
+
+
+def packed_box_geometry(grid, body_list, ngrow):
+    """The packed 8-component v2 geometry of one box, GROWN by ``ngrow``.
+
+    The Fortran-ordered ``(nx, ny, nz, 8)`` block that
+    :meth:`~blockamr.ibm.mesh.IbmMesh.geometry_fab` uploads with
+    ``MultiFab.copy_grown_from`` (review.md §4, Q29(d): the v2 geometry is
+    *uploaded* from this numpy evaluation, so B31's parity bar tests its own
+    arithmetic and not a second geometry implementation).
+
+    **The ghost contract (review F10), honoured here.** The evaluation runs on
+    the valid box grown by ``ngrow`` — never read back from a MultiFab and never
+    filled by ``FillBoundary`` — and it takes coordinates from
+    :func:`~blockamr.ibm.classify._index_coords`, which **wraps** in a periodic
+    direction and extends in a non-periodic one. Both halves are load-bearing:
+
+    * across a periodic seam the ghost must carry the *wrapped* cell's geometry,
+      because ``classify_default`` fills the marker's ghosts by ``FillBoundary``
+      from that same wrapped valid cell and the always-on M5 check compares the
+      two at one index. Evaluating the body at the unwrapped coordinate makes
+      every classification of a body near a periodic boundary throw M5.
+    * outside a non-periodic domain face there is no neighbour to copy from at
+      all, so only an analytic evaluation puts a meaningful value there — which
+      is what lets the classification produce correct ghost markers in its first
+      pass, with no second pass and no marker exchange.
+
+    ``wall_point`` therefore also uses the wrapped position: a ghost cell *is*
+    the wrapped cell, geometry and all. That is the opposite convention from
+    :func:`_donor_coords`, which describes an interpolation stencil rather than
+    a cell.
+
+    Unlike :func:`box_geometry` this computes **no** ``depth`` (design §2.1: the
+    v2 marker answers what depth answered), and it runs none of v1's band-time
+    validity checks — ``classify_box``'s ``_check_adjacent`` and
+    ``_check_resolvable_gap`` are statements about the v1 band, and the v2 path's
+    conformance checks are M4/M5 in ``validate_cell_type``. Whether the thin-gap
+    check gets a v2 home is B36's to decide.
+    """
+    coords = _index_coords(_index_grid(grid, int(ngrow)), grid)
+    out = np.zeros(coords.shape[:-1] + (GEOM_NCOMP,), dtype=float)
+    if not body_list:
+        # no bodies: every cell is fluid, exactly as ``classify_box`` reports it
+        out[..., GEOM_SDF] = np.inf
+        out[..., GEOM_WALL_POINT : GEOM_WALL_POINT + 3] = coords
+        return np.asfortranarray(out)
+
+    s_all = _sdf_stack(body_list, coords[..., 0], coords[..., 1], coords[..., 2])
+    owner, _s_owner = _owner(s_all)
+    sdf = s_all.min(axis=0)
+    normal = _normals(coords.reshape(-1, 3), owner.ravel(), body_list).reshape(coords.shape)
+
+    out[..., GEOM_SDF] = sdf
+    out[..., GEOM_NORMAL : GEOM_NORMAL + 3] = normal
+    # the same intercept ``box_geometry`` builds, from the same union sdf
+    out[..., GEOM_WALL_POINT : GEOM_WALL_POINT + 3] = coords - sdf[..., np.newaxis] * normal
+    out[..., GEOM_PATCH] = owner
+    return np.asfortranarray(out)
+
+
+def packed_geometry_on_grids(grids, bodies, ngrow):
+    """:func:`packed_box_geometry` per box, in ``MFIterator`` order."""
+    # patch ids are indices into ``sorted(bodies)`` — the same order v1 uses
+    _names, body_list = _patches(bodies)
+    return [packed_box_geometry(grid, body_list, ngrow) for grid in grids]
 
 
 @dataclass(frozen=True)

@@ -46,11 +46,19 @@ static_assert(
     "a uint8_t that is not unsigned char has no typemap"
 );
 
-//! The marker's stated ghost width (design §2.1, review F10). Pass 2 of
-//! `classifyDefault` reads a face neighbour of every valid cell, so the marker
-//! needs at least one ghost cell and the geometry at least as many as the
-//! marker. This header states the number and `classifyDefault` checks it; B29
-//! provisions the geometry against it.
+//! The marker's ghost-width FLOOR (design §2.1, review F10) — **not** an
+//! allocation size, and never a value to allocate a `CellTypeFab` at.
+//!
+//! Pass 2 of `classifyDefault` reads a face neighbour of every valid cell, so
+//! the default rule cannot work with fewer than one ghost cell. That is all
+//! this constant says. A method whose stencil reaches further needs a wider
+//! marker and is entitled to one: `requireMarkerGhostWidth` compares against
+//! `ct.nGrowVect().min()` rather than against this number, so a wider marker is
+//! already legal and already forces a proportionally wider geometry through
+//! `requireGeometryGhosts`. W1's degrade (B35) reads `m(i +- 2s)` and will want
+//! **2** — allocate the marker at the width the method that owns it needs, and
+//! nothing here has to move when B35 lands. Exercised green at ngrow = 2 by
+//! `test_ibm_cell_type.py` so the wide-marker path is not first tried at B35.
 inline constexpr int MARKER_NGROW = 1;
 
 //! The default classification (design §2.2), shared by every method that does
