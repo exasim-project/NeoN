@@ -78,7 +78,11 @@ if(NeoN_WITH_MPI)
        "linearAlgebra/ginkgo/ginkgoDistributed.cpp")
 endif()
 
-if(NeoN_ENABLE_CUDA)
+# Only mark sources as the CUDA language in cmake-language mode. In traditional Kokkos mode
+# (nvcc_wrapper) these compile as C++ and Kokkos supplies the CUDA flags (--expt-extended-lambda,
+# --expt-relaxed-constexpr); forcing LANGUAGE CUDA there bypasses the CUDA language setup and those
+# flags.
+if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
   set_source_files_properties(${NeoN_SRCS} PROPERTIES LANGUAGE CUDA)
 endif()
 

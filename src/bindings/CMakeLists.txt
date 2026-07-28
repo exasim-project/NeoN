@@ -47,8 +47,9 @@ set(NeoN_PYTHON_BINDING_SRCS
     database/collection.cpp
     database/database.cpp)
 
-if(NeoN_ENABLE_CUDA)
-  # CUDA-enabled Kokkos headers require translation units that include them to use CUDA mode.
+if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
+  # CUDA-enabled Kokkos headers require translation units that include them to use CUDA mode. Only
+  # in cmake-language mode; traditional mode compiles these as C++ via nvcc_wrapper.
   set_source_files_properties(${NeoN_PYTHON_BINDING_SRCS} PROPERTIES LANGUAGE CUDA)
 endif()
 

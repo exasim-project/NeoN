@@ -43,7 +43,12 @@ endif()
 if(NOT DEFINED Kokkos_ENABLE_CUDA)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
+    # Only enable CUDA as a first-class CMake language when Kokkos compiles as a CMake language. In
+    # traditional mode (nvcc_wrapper) Kokkos enables it itself and injects --expt-extended-lambda;
+    # enabling it here first suppresses that.
+    if(Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
+      enable_language(CUDA)
+    endif()
     set(NeoN_ENABLE_CUDA
         ON
         CACHE INTERNAL "")
@@ -67,7 +72,10 @@ else()
     if(NOT CMAKE_CUDA_COMPILER)
       message(FATAL_ERROR "Kokkos_ENABLE_CUDA=ON but no CUDA compiler was found")
     endif()
-    enable_language(CUDA)
+    # See note above: only take over the CUDA language in cmake-language mode.
+    if(Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
+      enable_language(CUDA)
+    endif()
     set(NeoN_ENABLE_CUDA
         ON
         CACHE INTERNAL "")
