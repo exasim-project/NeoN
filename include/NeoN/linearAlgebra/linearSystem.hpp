@@ -136,6 +136,7 @@ public:
           // TODO move to a different location since this seems to be unrelated to linearSystem
           faceFluxCorrection_(ls.faceFluxCorrection_),
           keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
+          diagCmpt_(ls.diagCmpt_ ? std::make_shared<Vector<RHSValueType>>(*ls.diagCmpt_) : nullptr),
           meshIteratorContext_(ls.meshIteratorContext_)
 #ifdef NF_WITH_MPI_SUPPORT
           ,
@@ -192,6 +193,27 @@ public:
 
     void keepFaceFluxCorrection(bool keep) { keepFaceFluxCorrection_ = keep; }
 
+    /// @brief Per-component diagonal correction for implicit transform BCs (slip/symmetry).
+    ///        nullptr when no implicit transform patch is present (the fast multi-RHS path).
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& diagCmpt() const
+    {
+        return diagCmpt_;
+    }
+
+    /// @brief Lazily allocate (zero-initialised, one RHSValueType per cell) and return the
+    ///        per-component diagonal-correction store, so the Laplacian assembly can accumulate
+    ///        the implicit transform-BC contribution into it.
+    [[nodiscard]] Vector<RHSValueType>& ensureDiagCmpt()
+    {
+        if (!diagCmpt_)
+        {
+            diagCmpt_ =
+                std::make_shared<Vector<RHSValueType>>(exec(), rhs_.size(), zero<RHSValueType>());
+        }
+        return *diagCmpt_;
+    }
+
+
     [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
     copyToExecutor(Executor exec) const override
     {
@@ -202,6 +224,10 @@ public:
             boundaryMatrix_.copyToExecutor(exec),
             boundaryRhs_.copyToExecutor(exec)
         };
+        if (diagCmpt_)
+        {
+            ls.diagCmpt_ = std::make_shared<Vector<RHSValueType>>(diagCmpt_->copyToExecutor(exec));
+        }
 #ifdef NF_WITH_MPI_SUPPORT
         ls.commPattern_ = commPattern_;
 #endif
@@ -215,6 +241,7 @@ public:
         fill(boundaryMatrix_.values(), zero<MatrixValueType>());
         fill(boundaryRhs_, zero<RHSValueType>());
         fill(offDiagonalMatrix_.values(), zero<MatrixValueType>());
+        if (diagCmpt_) fill(*diagCmpt_, zero<RHSValueType>());
     }
 
     [[nodiscard]] LinearSystemView<
@@ -302,6 +329,13 @@ private:
 
     Dictionary auxiliaryCoefficients_;
 
+    // Optional per-component diagonal correction for direction-dependent (transform) boundary
+    // conditions in implicit mode (slip/symmetry). One RHSValueType (e.g. Vec3) per cell; component
+    // c holds the diagonal contribution γ|S|·Δ·|n_c| applied for solve-component c on cells
+    // adjacent to an implicit transform patch. Lazily allocated by ensureDiagCmpt(); stays nullptr
+    // (and the shared scalar matrix / multi-RHS fast path is used) whenever no such patch exists.
+    std::shared_ptr<Vector<RHSValueType>> diagCmpt_ = nullptr;
+
     std::shared_ptr<MeshIteratorContext> meshIteratorContext_ = nullptr;
 
 #ifdef NF_WITH_MPI_SUPPORT
@@ -321,16 +355,22 @@ LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> crea
     std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
 )
 {
-    auto [sp, mi] =
-        createSparsityPatternFaceToMatrixAddress<typename SystemMatrixType::MatrixSparsityType>(mesh
-        );
-    auto bSp =
-        createBoundarySparsityPattern<typename BoundaryMatrixType::MatrixSparsityType>(mesh, *mi);
+    // Consume the per-mesh cached, immutable topology bundle (CSR system sparsity +
+    // FaceToMatrixAddress + boundary sparsity). These arrays depend only on mesh topology, so they
+    // are shared by every LinearSystem built on this mesh; only the per-system value/RHS vectors
+    // below are allocated fresh.
+    auto bundle = readOrCreateSparsityBundle<
+        typename SystemMatrixType::MatrixSparsityType,
+        typename BoundaryMatrixType::MatrixSparsityType>(mesh);
+    const auto& sp = bundle.systemSparsity;
+    const auto& mi = bundle.faceToMatrixAddress;
+    const auto& bSp = bundle.boundarySparsity;
     const auto exec = sp->exec();
     const auto nCells = static_cast<localIdx>(mesh.nCells());
     const auto nProcFaces = static_cast<localIdx>(mesh.nProcBoundaryFaces());
     using IndexType = typename BoundaryMatrixType::MatrixSparsityType::SparsityIndexType;
 
+    // Off-diagonal / proc-face sparsity stays per-system (comm-pattern-derived); not shared in v1.
     Vector<IndexType> offDiagColIdxs(exec, nProcFaces, 0);
     Vector<IndexType> offDiagRowIdxs(exec, nProcFaces, 0);
 

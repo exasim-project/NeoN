@@ -14,16 +14,13 @@ namespace NeoN
 
 template<typename ValueType>
 Vector<ValueType>::Vector(const Executor& exec, localIdx size)
-    : size_(size), data_(nullptr), exec_(exec)
-{
-    void* ptr = nullptr;
-    std::visit(
-        [&ptr, size](const auto& concreteExec)
-        { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
-        exec_
-    );
-    data_ = static_cast<ValueType*>(ptr);
-}
+    // Delegate to the value ctor so a freshly allocated Vector is zero-initialized rather than
+    // holding uninitialized pool memory. The pool's alloc<>() does not clear memory, so without
+    // this a field read before its first write returns garbage (huge/NaN), which silently poisons
+    // any consumer (e.g. surface interpolation reading a not-yet-written boundary). Same zero
+    // (ValueType {}) that BoundaryData uses for its members.
+    : Vector(exec, size, ValueType {})
+{}
 
 template<typename ValueType>
 Vector<ValueType>::Vector(
@@ -81,10 +78,9 @@ Vector<ValueType>::Vector(Vector<ValueType>&& rhs) noexcept
 template<typename ValueType>
 Vector<ValueType>::~Vector()
 {
-    // Fence before freeing: any in-flight GPU kernel (fill, setContainer, parallelFor) that
-    // captured a View of data_ must complete before the memory is returned to the allocator.
-    // Without this, async kernels dispatched on *this race with the destructor.
-    fence(exec_);
+    // No fence before free: kernels touching data_ and the allocator free run on the same Kokkos
+    // execution-space stream, so the free is already ordered after any in-flight kernel on *this.
+    // A device-wide fence here would needlessly serialize every temporary-Vector destruction.
     // Guard against nullptr: move-constructed-from Vectors have data_==nullptr.
     // kokkos_free(nullptr) is implementation-defined (may throw); skip the call.
     if (data_ != nullptr)
@@ -143,8 +139,7 @@ Vector<ValueType>& Vector<ValueType>::operator=(Vector<ValueType>&& rhs) noexcep
     if (this != &rhs)
     {
         NF_ASSERT(exec_ == rhs.exec_, "Executors are not the same");
-        // Fence before freeing data_: same reasoning as the destructor.
-        fence(exec_);
+        // No fence before free: stream-ordered, same reasoning as the destructor.
         if (data_ != nullptr)
         {
             std::visit([this](const auto& exec) { exec.free(data_); }, exec_);
@@ -222,7 +217,7 @@ void Vector<ValueType>::resize(const localIdx size)
     void* ptr = nullptr;
     if (!empty())
     {
-        fence(exec_); // same as destructor: pending kernels on data_ must finish before realloc
+        // No fence before realloc: stream-ordered, same reasoning as the destructor.
         std::visit(
             [this, &ptr, size](const auto& exec)
             { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },

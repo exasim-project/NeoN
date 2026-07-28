@@ -12,9 +12,9 @@ template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
     localIdx nInternalFaces,
-    View<const int> neighbors,
-    View<const int> owners,
-    View<const int> faceOwners,
+    View<const label> internalFaceNeighbors,
+    View<const label> internalFaceOwners,
+    View<const label> boundaryFaceOwners,
     View<const ValueType> flux,
     View<const ValueType> bFlux,
     View<const scalar> v,
@@ -23,13 +23,13 @@ void surfaceIntegrate(
 )
 {
     auto nCells = v.size();
-    const auto nBoundaryFaces = faceOwners.size();
+    const auto nBoundaryFaces = boundaryFaceOwners.size();
     parallelFor(
         exec,
         {0, nInternalFaces},
         NEON_LAMBDA(const localIdx i) {
-            Kokkos::atomic_add(&res[owners[i]], flux[i]);
-            Kokkos::atomic_sub(&res[neighbors[i]], flux[i]);
+            Kokkos::atomic_add(&res[internalFaceOwners[i]], flux[i]);
+            Kokkos::atomic_sub(&res[internalFaceNeighbors[i]], flux[i]);
         },
         "surfaceIntegrateInternalFaces"
     );
@@ -38,7 +38,7 @@ void surfaceIntegrate(
         exec,
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
-            auto own = faceOwners[bfi];
+            auto own = boundaryFaceOwners[bfi];
             Kokkos::atomic_add(&res[own], bFlux[bfi]);
         },
         "surfaceIntegrateBoundaryFaces"
@@ -56,9 +56,9 @@ void surfaceIntegrate(
     template void surfaceIntegrate<TYPENAME>(                                                      \
         const Executor&,                                                                           \
         localIdx,                                                                                  \
-        View<const int>,                                                                           \
-        View<const int>,                                                                           \
-        View<const int>,                                                                           \
+        View<const label>,                                                                         \
+        View<const label>,                                                                         \
+        View<const label>,                                                                         \
         View<const TYPENAME>,                                                                      \
         View<const TYPENAME>,                                                                      \
         View<const scalar>,                                                                        \

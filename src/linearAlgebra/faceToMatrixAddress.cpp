@@ -9,6 +9,10 @@
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 
+#include <memory>
+#include <string>
+#include <typeinfo>
+
 #ifdef NF_WITH_MPI_SUPPORT
 #include "NeoN/distributed/communicationPattern.hpp"
 #endif
@@ -53,9 +57,9 @@ FaceToMatrixAddress FaceToMatrixAddress::copyToExecutor(Executor dstExec) const
 
 FaceToMatrixView FaceToMatrixAddress::view(View<const localIdx> rowOffsView) const
 {
-    return FaceToMatrixView(
+    return FaceToMatrixView {
         ownerOffset_.view(), neighbourOffset_.view(), diagOffset_.view(), rowOffsView
-    );
+    };
 }
 
 const NeoN::Array<uint8_t>& FaceToMatrixAddress::ownerOffset() const { return ownerOffset_; }
@@ -444,10 +448,61 @@ createOffDiagonalSparsityPattern<CsrSparsityPattern<localIdx>>(
     );
 }
 
+template<typename SystemSparsityType, typename BoundarySparsityType>
+SharedSparsityBundle<SystemSparsityType, BoundarySparsityType>
+readOrCreateSparsityBundle(const UnstructuredMesh& mesh)
+{
+    using Bundle = SharedSparsityBundle<SystemSparsityType, BoundarySparsityType>;
+
+    // Type-specific cache key so different sparsity-type combinations (CSR system vs COO boundary,
+    // and the index type) cache separately and never collide. typeid().name() disambiguates them.
+    const std::string key = std::string("SharedSparsityBundle<") + typeid(SystemSparsityType).name()
+                          + "," + typeid(BoundarySparsityType).name() + ">";
+
+    // NOTE mesh.stencilDB() is mutable and not thread-safe; this matches the GeometryScheme cache
+    // and is acceptable for CPU-serial v1. No locking is added here.
+    auto& db = mesh.stencilDB();
+    if (!db.contains(key))
+    {
+        auto [systemSparsity, faceToMatrixAddress] =
+            createSparsityPatternFaceToMatrixAddress<SystemSparsityType>(mesh);
+        auto boundarySparsity =
+            createBoundarySparsityPattern<BoundarySparsityType>(mesh, *faceToMatrixAddress);
+        db.insert(
+            key,
+            std::make_shared<const Bundle>(
+                std::move(systemSparsity),
+                std::move(faceToMatrixAddress),
+                std::move(boundarySparsity)
+            )
+        );
+    }
+    // Return a (cheap) copy of the cached bundle: three shared_ptrs to immutable topology.
+    return *db.get<std::shared_ptr<const Bundle>>(key);
+}
+
 // TODO currently CSR is hardcoded here
 template std::pair<
     std::shared_ptr<const CsrSparsityPattern<localIdx>>,
     std::shared_ptr<const FaceToMatrixAddress>>
 createSparsityPatternFaceToMatrixAddress<CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
+
+// Production combination: CSR system sparsity + COO boundary sparsity (used by every solver via
+// the default createEmptyLinearSystem<ValueType>). The remaining two combinations are exercised by
+// the createEmptyLinearSystem<...,CSRMatrix,CSRMatrix> / <...,COOMatrix,COOMatrix> test overloads.
+template SharedSparsityBundle<CsrSparsityPattern<localIdx>, CooSparsityPattern<localIdx>>
+readOrCreateSparsityBundle<
+    CsrSparsityPattern<localIdx>,
+    CooSparsityPattern<localIdx>>(const UnstructuredMesh&);
+
+template SharedSparsityBundle<CsrSparsityPattern<localIdx>, CsrSparsityPattern<localIdx>>
+readOrCreateSparsityBundle<
+    CsrSparsityPattern<localIdx>,
+    CsrSparsityPattern<localIdx>>(const UnstructuredMesh&);
+
+template SharedSparsityBundle<CooSparsityPattern<localIdx>, CooSparsityPattern<localIdx>>
+readOrCreateSparsityBundle<
+    CooSparsityPattern<localIdx>,
+    CooSparsityPattern<localIdx>>(const UnstructuredMesh&);
 
 }

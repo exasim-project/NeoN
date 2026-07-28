@@ -15,6 +15,14 @@ namespace NeoN::la
 
 struct FaceToMatrixView
 {
+    FaceToMatrixView(
+        View<const uint8_t> ownerOffsetView,
+        View<const uint8_t> neighbourOffsetView,
+        View<const uint8_t> diagOffsetView,
+        View<const localIdx> rowOffsView
+    )
+        : ownerOffset(ownerOffsetView), neighbourOffset(neighbourOffsetView),
+          diagOffset(diagOffsetView), rowOffs(rowOffsView) {};
 
     // TODO check performance
     /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
@@ -168,5 +176,53 @@ template<typename SparsityType>
 std::shared_ptr<const SparsityType> createOffDiagonalSparsityPattern(
     const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
 );
+
+/* @brief Immutable, topology-only bundle shared across every LinearSystem built on a mesh.
+ *
+ * The CSR system sparsity (colIdxs/rowOffs), its FaceToMatrixAddress (diag/owner/neighbour
+ * offsets), and the boundary COO sparsity depend ONLY on mesh topology — they are byte-identical
+ * for every equation (U, p, nuTilda, ...) on the same mesh. Only the per-system value/RHS vectors
+ * legitimately differ. Caching this bundle once per mesh removes the per-equation duplication of
+ * these identical arrays.
+ *
+ * All three members are stored as shared_ptr<const ...> so the cached objects stay immutable and
+ * are safe to share between systems; consumers write only their own per-system value/RHS vectors.
+ *
+ * @tparam SystemSparsityType   - the system sparsity type, e.g. CsrSparsityPattern<localIdx>
+ * @tparam BoundarySparsityType - the boundary sparsity type, e.g. CooSparsityPattern<localIdx>
+ */
+template<typename SystemSparsityType, typename BoundarySparsityType>
+struct SharedSparsityBundle
+{
+    std::shared_ptr<const SystemSparsityType> systemSparsity;
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress;
+    std::shared_ptr<const BoundarySparsityType> boundarySparsity;
+
+    // Explicit constructor: CUDA-12.4 nvcc rejects parenthesized aggregate init, so give the
+    // bundle a real constructor for portability (brace-init would otherwise suffice).
+    SharedSparsityBundle(
+        std::shared_ptr<const SystemSparsityType> systemSparsity,
+        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress,
+        std::shared_ptr<const BoundarySparsityType> boundarySparsity
+    )
+        : systemSparsity(std::move(systemSparsity)),
+          faceToMatrixAddress(std::move(faceToMatrixAddress)),
+          boundarySparsity(std::move(boundarySparsity))
+    {}
+};
+
+/* @brief Returns the SHARED, immutable topology bundle for a mesh, caching it in
+ * mesh.stencilDB(). Mirrors the GeometryScheme::readOrCreate precedent exactly
+ * (contains/insert/get of a std::shared_ptr keyed by a type-specific string).
+ *
+ * The cache key encodes both sparsity types so the CSR system pattern and the COO boundary pattern
+ * (and the index type) never collide. Returns a cheap copy of the bundle (three shared_ptrs).
+ *
+ * @note mesh.stencilDB() is mutable and not thread-safe; this matches the GeometryScheme cache and
+ *       is acceptable for CPU-serial v1. No locking is added here.
+ */
+template<typename SystemSparsityType, typename BoundarySparsityType>
+[[nodiscard]] SharedSparsityBundle<SystemSparsityType, BoundarySparsityType>
+readOrCreateSparsityBundle(const UnstructuredMesh& mesh);
 
 }

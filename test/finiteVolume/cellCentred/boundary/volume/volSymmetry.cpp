@@ -68,13 +68,28 @@ TEST_CASE("symmetry_slip_volume")
             NeoN::fill(field.boundaryData().refValue(), NeoN::Vec3(-1.0, -1.0, -1.0));
             NeoN::fill(field.boundaryData().value(), NeoN::Vec3(-1.0, -1.0, -1.0));
 
+            // The default (no "implicit" key) selects the implicit normal-damping treatment.
+            {
+                NeoN::Dictionary defaultDict;
+                auto defaultBoundary =
+                    NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
+                        bcName, mesh, defaultDict, 0
+                    );
+                REQUIRE(defaultBoundary->attributes().transformImplicit == true);
+            }
+
+            // Opt into the deferred treatment: the normal damping is written into refGrad (RHS),
+            // which is multi-RHS friendly.
             NeoN::Dictionary dict;
+            dict.insert("implicit", false);
             auto boundary =
                 NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
                     bcName, mesh, dict, 0
                 );
 
             boundary->correctBoundaryCondition(field);
+
+            REQUIRE(boundary->attributes().transformImplicit == false);
 
             auto [refValuesH, valuesH, refGradH, nHatH, deltaCoeffsH, faceCellsH, internalH] =
                 copyToHosts(
@@ -112,6 +127,55 @@ TEST_CASE("symmetry_slip_volume")
                 for (auto d = 0u; d < 3; ++d)
                 {
                     REQUIRE(gradValueV[d] == Catch::Approx(gExpected[d]));
+                }
+            }
+        }
+
+        // === vector field: implicit mode ======================================
+        {
+            auto field = NeoN::Field<NeoN::Vec3>(exec, mesh.nCells(), mesh.boundaryMesh().offset());
+            NeoN::fill(field.internalVector(), NeoN::Vec3(1.0, -1.0, 0.5));
+            NeoN::fill(field.boundaryData().refGrad(), NeoN::Vec3(-1.0, -1.0, -1.0));
+            NeoN::fill(field.boundaryData().value(), NeoN::Vec3(-1.0, -1.0, -1.0));
+
+            NeoN::Dictionary dict;
+            dict.insert("implicit", true);
+            auto boundary =
+                NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory<NeoN::Vec3>::create(
+                    "symmetry", mesh, dict, 0
+                );
+
+            boundary->correctBoundaryCondition(field);
+
+            REQUIRE(boundary->attributes().transformImplicit == true);
+
+            auto [valuesH, refGradH, nHatH, faceCellsH, internalH] = copyToHosts(
+                field.boundaryData().value(),
+                field.boundaryData().refGrad(),
+                mesh.boundaryMesh().faceUnitNormals(),
+                mesh.boundaryMesh().faceOwners(),
+                field.internalVector()
+            );
+
+            for (auto& boundaryValueV : valuesH.view(boundary->range()))
+            {
+                const auto i = static_cast<NeoN::localIdx>(&boundaryValueV - valuesH.data());
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[faceCellsH.view()[i]];
+                const auto vExpected = intV - nV * (intV & nV);
+
+                for (auto d = 0u; d < 3; ++d)
+                {
+                    REQUIRE(boundaryValueV[d] == Catch::Approx(vExpected[d]));
+                }
+            }
+
+            // implicit mode leaves refGrad zero (normal damping handled at assembly/solve)
+            for (auto& gradValueV : refGradH.view(boundary->range()))
+            {
+                for (auto d = 0u; d < 3; ++d)
+                {
+                    REQUIRE(gradValueV[d] == Catch::Approx(0.0));
                 }
             }
         }

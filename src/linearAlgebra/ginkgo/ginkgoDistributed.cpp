@@ -136,10 +136,11 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     );
 
     const auto nrows = static_cast<gko::size_type>(mtx.sparsity()->rows());
+    const auto matrixSize = gko::dim<2> {nrows, nrows};
 
     std::shared_ptr<const gko::LinOp> localMtx =
         gko::share(gko::matrix::Csr<scalar, IndexType>::create_const(
-            exec, gko::dim<2> {nrows, nrows}, std::move(vals), std::move(col), std::move(row)
+            exec, matrixSize, std::move(vals), std::move(col), std::move(row)
         ));
 
     const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
@@ -290,7 +291,9 @@ SolverStatsEntry solve_impl_dist(
                 std::chrono::duration_cast<std::chrono::microseconds>(endEval - startEval).count()
             )
             / 1000.0;
-        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+        return {
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+        };
     }
 
     // copy of rhs to compute the initial residual (res is modified in-place by apply)
@@ -319,7 +322,7 @@ SolverStatsEntry solve_impl_dist(
     gko::as<dist_vec>(resFinal)->compute_norm2(finalNormVec);
     scalar finalResNorm = retrieve(finalNormVec);
 
-    auto numIter = label(logger->get_num_iterations());
+    gko::size_type numIter = logger->get_num_iterations();
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -328,7 +331,7 @@ SolverStatsEntry solve_impl_dist(
         )
         / 1000.0;
 
-    return {numIter, initResNorm, finalResNorm, duration};
+    return {static_cast<size_t>(numIter), initResNorm, finalResNorm, duration};
 }
 
 SolverStats solve_impl_dist(
@@ -375,7 +378,7 @@ SolverStats solve_impl_dist(
             for (std::size_t i = 0; i < l1Res.perColInitNorms.size(); ++i)
             {
                 stats.entries.push_back(
-                    {static_cast<label>(l1Res.numIter),
+                    {static_cast<size_t>(l1Res.numIter),
                      l1Res.perColInitNorms[i],
                      l1Res.perColFinalNorms[i],
                      duration}
@@ -383,7 +386,9 @@ SolverStats solve_impl_dist(
             }
             return stats;
         }
-        return {static_cast<label>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration};
+        return {
+            static_cast<size_t>(l1Res.numIter), l1Res.initResNorm, l1Res.finalResNorm, duration
+        };
     }
 
     auto rhsCopy = Vector<Vec3>(rhs);
@@ -415,7 +420,7 @@ SolverStats solve_impl_dist(
     mtx->apply(one, x, neg_one, res);
     auto finalNorms = colNorms(res);
 
-    auto numIter = label(logger->get_num_iterations());
+    gko::size_type numIter = logger->get_num_iterations();
     exec->synchronize();
     auto endEval = std::chrono::steady_clock::now();
     auto duration =
@@ -426,7 +431,9 @@ SolverStats solve_impl_dist(
 
     SolverStats stats;
     for (int i = 0; i < 3; ++i)
-        stats.entries.push_back({numIter, initNorms[i], finalNorms[i], duration});
+        stats.entries.push_back(
+            {static_cast<size_t>(numIter), initNorms[i], finalNorms[i], duration}
+        );
     return stats;
 }
 
@@ -463,6 +470,60 @@ void solveComponentDist(
     setComponent<I>(xcopy, x);
 }
 
+// Distributed counterpart of solveImplicitTransformComponent: solve component I of a scalar-matrix
+// / Vec3-rhs system under an implicit transform BC (slip/symmetry), temporarily applying the
+// component's diagonal correction to the shared rank-local diagonal in place and reusing
+// solve_impl_dist (which honours the l1ScaledResidual criterion). The correction is rank-local, so
+// only the local diagonal entries are touched.
+// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
+// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
+template<
+    unsigned int I,
+    typename SystemType,
+    typename ExecType,
+    typename FactoryType,
+    typename ValuesType,
+    typename MatAddrType,
+    typename DiagType>
+void solveImplicitTransformComponentDist(
+    const SystemType& sys,
+    Vector<Vec3>& x,
+    const ExecType& exec,
+    std::shared_ptr<const gko::Executor> gkoExec,
+    const gko::experimental::mpi::communicator& comm,
+    std::shared_ptr<const gko::LinOp> gkoMtx,
+    const FactoryType& factory,
+    SolverStats& stats,
+    const L1ResidualControl* l1Control,
+    ValuesType values,
+    const MatAddrType& ma,
+    DiagType diagC,
+    localIdx nrows
+)
+{
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
+        "applyImplicitTransformDiagDist"
+    );
+    gkoExec->synchronize();
+
+    auto rhs = getComponent<I>(sys.rhs());
+    auto xcopy = getComponent<I>(x);
+    auto solver = gko::share(factory->generate(gkoMtx));
+    stats.entries.push_back(solve_impl_dist(gkoExec, comm, rhs, xcopy, gkoMtx, solver, l1Control));
+    setComponent<I>(xcopy, x);
+
+    parallelFor(
+        exec,
+        {0, nrows},
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
+        "restoreImplicitTransformDiagDist"
+    );
+    gkoExec->synchronize();
+}
+
 SolverStats GinkgoSolver::solveDist(
     const LinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>& sys, Vector<scalar>& x
 ) const
@@ -481,7 +542,10 @@ SolverStats GinkgoSolver::solveDist(
         cachedNonLocalMtx_
     );
     auto solver = gko::share(factory_->generate(gkoMtx));
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control)};
 }
 
@@ -490,7 +554,10 @@ SolverStats GinkgoSolver::solveDist(
 ) const
 {
     auto stats = SolverStats {};
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     solveComponentDist<0>(
         sys, x, gkoExec_, factory_, stats, l1Control, cachedImap_, cachedNonLocalMtx_
     );
@@ -512,6 +579,10 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     auto gkoMtx = createGkoMtxDist(
         gkoExec_,
         comm,
@@ -521,8 +592,70 @@ SolverStats GinkgoSolver::solveDist(
         cachedImap_,
         cachedNonLocalMtx_
     );
+
+    // Implicit transform-BC path: solve the three components segregated, applying each column's
+    // per-component diagonal correction to the shared rank-local diagonal in place. Mirrors the
+    // serial path; createGkoMtxDist views the local matrix, so the in-place edits are seen at solve
+    // time.
+    if (sys.diagCmpt() && sys.diagCmpt()->size() > 0)
+    {
+        auto values = const_cast<Vector<scalar>&>(sys.matrix().values()).view();
+        const auto ma = sys.faceToMatrixAddress()->view(sys.matrix().rowOffs().view());
+        auto diagC = sys.diagCmpt()->view();
+        const localIdx nrows = sys.rhs().size();
+        gkoExec_->synchronize();
+
+        SolverStats stats;
+        solveImplicitTransformComponentDist<0>(
+            sys,
+            x,
+            exec_,
+            gkoExec_,
+            comm,
+            gkoMtx,
+            factory_,
+            stats,
+            l1Control,
+            values,
+            ma,
+            diagC,
+            nrows
+        );
+        solveImplicitTransformComponentDist<1>(
+            sys,
+            x,
+            exec_,
+            gkoExec_,
+            comm,
+            gkoMtx,
+            factory_,
+            stats,
+            l1Control,
+            values,
+            ma,
+            diagC,
+            nrows
+        );
+        solveImplicitTransformComponentDist<2>(
+            sys,
+            x,
+            exec_,
+            gkoExec_,
+            comm,
+            gkoMtx,
+            factory_,
+            stats,
+            l1Control,
+            values,
+            ma,
+            diagC,
+            nrows
+        );
+        return stats;
+    }
+
+
     auto solver = gko::share(factory_->generate(gkoMtx));
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, solver, l1Control);
 }
 
