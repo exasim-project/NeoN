@@ -24,6 +24,7 @@ NB_MODULE(_blockamr, m)
     registerLinOp(m);
     registerStencilKernels(m);
     registerCellType(m);
+    registerGhostCell(m);
     registerTileLayout(m);
     registerWallTable(m);
     registerBandTable(m);

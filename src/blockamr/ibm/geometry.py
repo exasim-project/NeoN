@@ -46,11 +46,12 @@ _OFFSETS = np.array([[i, j, k] for i in (0, 1) for j in (0, 1) for k in (0, 1)],
 # ---------------------------------------------------------------------------
 
 #: Component offsets of the packed v2 geometry fab. These mirror ``ibm::GEOM_*``
-#: in ``src/bindings/blockAMR/ibm/geometry_view.H``. What the test suite pins
-#: today is the component *count*, against the compiled
-#: ``blockamr.IBM_GEOM_NCOMP``; the offsets are declared independently on each
-#: side, and their cross-language pin arrives when the compiled side exports
-#: them beside ``IBM_GEOM_NCOMP`` (B31).
+#: in ``src/bindings/blockAMR/ibm/geometry_view.H``, and since B31 the compiled
+#: side exports all five (``blockamr.GEOM_SDF`` … ``blockamr.IBM_GEOM_NCOMP``)
+#: and ``test_ibm_mesh.py``'s layout row asserts every one of them against these
+#: names. The offsets are therefore **pinned** across the language boundary, not
+#: merely mirrored: the layout is named in exactly two places and they cannot
+#: drift.
 GEOM_SDF = 0
 GEOM_NORMAL = 1
 GEOM_WALL_POINT = 4
@@ -80,8 +81,11 @@ def packed_box_geometry(grid, body_list, ngrow):
       every classification of a body near a periodic boundary throw M5.
     * outside a non-periodic domain face there is no neighbour to copy from at
       all, so only an analytic evaluation puts a meaningful value there — which
-      is what lets the classification produce correct ghost markers in its first
-      pass, with no second pass and no marker exchange.
+      is what makes the classification's first pass right on *that* shell, the
+      one no exchange could have filled. Elsewhere (across a box edge, across a
+      periodic seam) the marker's ghosts come from ``classify_default``'s two
+      ``FillBoundary`` calls; a ghost ``WALL`` in particular can only have
+      arrived that way, since pass 2 launches on the valid box.
 
     ``wall_point`` therefore also uses the wrapped position: a ghost cell *is*
     the wrapped cell, geometry and all. That is the opposite convention from

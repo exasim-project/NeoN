@@ -494,8 +494,20 @@ def _analytic_packed(body, lo, hi, ngrow, periodic=PERIODIC):
 
 
 def test_the_packed_layout_is_the_one_the_compiled_side_expects(blockamr_session):
-    """The layout is named twice — here and in ``ibm/geometry_view.H``."""
+    """The layout is named twice — here and in ``ibm/geometry_view.H``.
+
+    All five names, not just the count (B29-R, I-2). Only ``GEOM_NCOMP`` used
+    to cross the language boundary, so the four *offsets* were declared
+    independently on each side: swapping ``GEOM_NORMAL`` and
+    ``GEOM_WALL_POINT`` in one file alone would have kept every row green while
+    the compiled kernels read the wall point as a normal. B31 exports them, and
+    this row is where the two declarations are held together.
+    """
     assert GEOM_NCOMP == blockamr.IBM_GEOM_NCOMP
+    assert GEOM_SDF == blockamr.GEOM_SDF
+    assert GEOM_NORMAL == blockamr.GEOM_NORMAL
+    assert GEOM_WALL_POINT == blockamr.GEOM_WALL_POINT
+    assert GEOM_PATCH == blockamr.GEOM_PATCH
 
 
 def test_the_v2_geometry_fab_is_filled_analytically_over_the_grown_box(blockamr_session):

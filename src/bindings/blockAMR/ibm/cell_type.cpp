@@ -288,7 +288,18 @@ void registerCellType(nb::module_& m)
         );
 
     m.attr("MARKER_NGROW") = ibm::MARKER_NGROW;
+
+    // The packed geometry layout (Q29b), exported WHOLE. Until B31 only the
+    // component count crossed the language boundary, so the four offsets were
+    // declared independently on each side and nothing stopped them drifting —
+    // a swap of `GEOM_NORMAL` and `GEOM_WALL_POINT` on one side alone would
+    // have produced plausible wrong numbers with every test still green
+    // (B29-R, I-2). `test_ibm_mesh.py`'s layout row now asserts all five.
     m.attr("IBM_GEOM_NCOMP") = ibm::GEOM_NCOMP;
+    m.attr("GEOM_SDF") = ibm::GEOM_SDF;
+    m.attr("GEOM_NORMAL") = ibm::GEOM_NORMAL;
+    m.attr("GEOM_WALL_POINT") = ibm::GEOM_WALL_POINT;
+    m.attr("GEOM_PATCH") = ibm::GEOM_PATCH;
 
     m.def(
         "classify_default",

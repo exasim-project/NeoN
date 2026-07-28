@@ -55,9 +55,17 @@
 // (1) WIDTH. `geometry.nGrow() >= marker.nGrow()`. Pass 1 of `classifyDefault`
 //     runs on `mfi.growntilebox()` and reads `sdf` at every one of those
 //     indices; `validateCellType` runs over `mfi.fabbox()` and does the same.
-//     `requireGeometryGhosts` below is that check, and it is why classification
-//     produces correct ghost markers directly — there is no second
-//     classification pass and no marker exchange needed to obtain them.
+//     `requireGeometryGhosts` below is that check.
+//
+//     What the grown analytic geometry buys, stated narrowly (B29-R, I-1): it
+//     is what makes pass 1's SOLID/FLUID correct in a ghost cell OUTSIDE A
+//     NON-PERIODIC DOMAIN FACE, where `FillBoundary` has no source at all.
+//     Everywhere else — across a box edge, across a periodic seam — the halo
+//     exchange supplies the ghosts. `classifyDefault` does run two
+//     `ct.FillBoundary` calls, and a ghost WALL marker can only have come from
+//     the second one, because pass 2 launches on the valid box. So this is not
+//     a claim that no marker exchange is needed; it is the claim that no
+//     exchange COULD have filled that particular shell.
 //
 // (2) VALUE. The geometry's ghost cells must be MEANINGFUL over the whole fab
 //     box, and specifically:

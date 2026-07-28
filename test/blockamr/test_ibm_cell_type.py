@@ -385,10 +385,12 @@ def test_the_mesh_built_geometry_classifies_a_grown_box_in_one_pass(blockamr_ses
     ``IbmMesh.geometry_fab`` is the v2 path Q29(d) rules on: the packed fab is
     uploaded from the v1 numpy analytic evaluation through ``copy_grown_from``.
     Because that fill is analytic and grown, ``classify_default``'s first pass
-    writes correct markers into the ghost region directly — there is no second
-    classification pass and no marker exchange needed to obtain them, which is
-    exactly what "classification runs on grown boxes" asserts. The expectation
-    is still the numpy oracle above, never the builder's own output.
+    writes correct SOLID/FLUID markers into the ghost region directly, which is
+    what "classification runs on grown boxes" asserts. This level is fully
+    periodic, so every ghost here *also* has a ``FillBoundary`` source — the
+    shell no exchange can reach is the non-periodic one, and it is the row
+    below that pins it (B29-R, I-1). The expectation is still the numpy oracle
+    above, never the builder's own output.
     """
     from blockamr.mesh import Mesh
 
