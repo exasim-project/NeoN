@@ -25,13 +25,33 @@ def _bindings():
 
 
 class CppDivAcc:
-    """Accumulate ``coeff * div(phi)`` via a named ``div_*_acc`` binding."""
+    """Accumulate ``coeff * div(phi)`` via a named ``div_*_acc`` binding.
 
-    def __init__(self, binding):
+    ``ibm_binding`` is the W1 sibling of a **wide** scheme (design §5): the same
+    kernel with a marker argument, falling back to its own width-1 formula at a
+    cell whose stencil would read a ``SOLID`` cell. A width-1 scheme has none,
+    because its stencil never reaches past the wall layer the wall sweep owns.
+    """
+
+    def __init__(self, binding, ibm_binding=None):
         self.binding = binding
+        self.ibm_binding = ibm_binding
 
-    def add_to(self, src, op, cell_field, lev, geom):
+    def add_to(self, src, op, cell_field, lev, geom, cell_type=None):
         faces = op.face_field[lev]
+        if cell_type is not None and self.ibm_binding is not None:
+            getattr(_bindings(), self.ibm_binding)(
+                src,
+                cell_field.mf[lev],
+                cell_type,
+                faces[0].mf,
+                faces[1].mf,
+                faces[2].mf,
+                geom,
+                op.coeff,
+                cell_field.ncomp,
+            )
+            return
         getattr(_bindings(), self.binding)(
             src,
             cell_field.mf[lev],
@@ -47,7 +67,7 @@ class CppDivAcc:
 class CppLaplacianAcc:
     """Accumulate ``coeff * gamma * laplacian(phi)`` (constant gamma only)."""
 
-    def add_to(self, src, op, cell_field, lev, geom):
+    def add_to(self, src, op, cell_field, lev, geom, cell_type=None):
         if not isinstance(op.gamma, (int, float)):
             raise NotImplementedError(
                 "cpp backend: variable/callable gamma on term 'Laplacian' "
@@ -61,7 +81,7 @@ class CppLaplacianAcc:
 class CppGradAcc:
     """Accumulate ``coeff * grad(phi)`` (scalar phi -> 3-component vector)."""
 
-    def add_to(self, src, op, cell_field, lev, geom):
+    def add_to(self, src, op, cell_field, lev, geom, cell_type=None):
         _bindings().grad_acc(src, cell_field.mf[lev], geom, op.coeff)
 
 
@@ -74,9 +94,9 @@ class CppWallKernel:
     a ``BandTable`` upload.
 
     It carries the name and nothing else on purpose. Resolving the attribute
-    lazily keeps this module import-safe during package init, and the driver
-    rewire that will *call* it — with the canonical twelve arguments, by
-    keyword, from one call site — is B36's.
+    lazily keeps this module import-safe during package init, and
+    :meth:`~blockamr.ibm.driver.WallEvaluation.apply` calls it — with the
+    canonical twelve arguments, by keyword, from one call site (B36).
     """
 
     def __init__(self, name):
@@ -97,7 +117,7 @@ class CppSourceAcc:
     an error.
     """
 
-    def add_to(self, src, op, cell_field, lev, geom):
+    def add_to(self, src, op, cell_field, lev, geom, cell_type=None):
         source = op.field
         if source.mesh is not cell_field.mesh:
             raise ValueError(

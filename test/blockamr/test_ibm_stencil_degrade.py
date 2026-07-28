@@ -5,10 +5,13 @@
 """W1's degrade — the compiled siblings ``div_{vanleer,quick}_acc_ibm`` (B35).
 
 **Conformance, not acceptance**, like ``test_ibm_cell_type.py``,
-``test_ibm_ghost_cell_cpp.py`` and ``test_ibm_wall_functors.py``: nothing on an
-evaluate path reaches these kernels. The scheme dispatch, the production marker
-allocation and the ``noIbm`` routing are B36's; here the siblings are called
-directly through the bindings.
+``test_ibm_ghost_cell_cpp.py`` and ``test_ibm_wall_functors.py``: here the
+siblings are called directly through the bindings, per cell, which is what an
+evaluate cannot observe. B36 shipped the rest — ``VanLeer``/``QUICK`` name their
+sibling in ``build_cpp_kernel``, ``WallEvaluation`` allocates the marker at the
+equation's widest stencil and hands it to the interior dispatch, and ``noIbm``
+(no marker) is the plain call — so an evaluate under ``ghostCell`` reaches these
+kernels too.
 
 W1 (design §5, ruled at review.md §4 **Q42(a)**): *a width-``w > 1`` interior
 scheme falls back to its width-1 formula at any cell whose stencil would read a
@@ -604,7 +607,8 @@ def test_the_sibling_accumulates_and_scales_like_its_parent(blockamr_session, sc
     made of the siblings on a marker where the degrade is *active* — so the
     branch is inside the accumulate, not around it. Also pins the keyword
     spelling of the binding (``cell_type`` between ``phi`` and ``fx``, with
-    ``coeff`` and ``ncomp`` defaulted), which B36's dispatch will call by name.
+    ``coeff`` and ``ncomp`` defaulted), which B36's dispatch calls positionally
+    from ``CppDivAcc.add_to``.
     """
     _parent, sibling = SIBLINGS[scheme]
     mesh, geom, ba, dm, ct = _classified(CYLINDER)

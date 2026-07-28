@@ -16,12 +16,13 @@ sequence and its constant equal v1's, compared through raw ``int64`` views.
 review.md §4 Q29(d) refuses the ULP fallback: a residual mismatch stays red and
 is escalated.
 
-**Why this bar and not "the rungs, green on v2"** (review.md §4 Q49(a)). There
-is no driver seam to run rungs through yet: the v1 registry key
-``("laplacian", "ghostCell")`` is taken and ``register`` raises on a second
-class, and ``BandEvaluation.apply`` still calls ``rows()`` and uploads a
-``BandTable``. Flipping the driver over is B36. Row parity is strictly stronger
-per cell than the rungs, which are aggregate and tolerance-based.
+**Why this bar and not "the rungs, green on v2"** (review.md §4 Q49(a)). When
+this file was written there was no driver seam to run rungs through: the v1
+registry key ``("laplacian", "ghostCell")`` was taken, and the driver still
+called ``rows()`` and uploaded a ``BandTable``. B36 flipped it — the rungs run
+on the pair now — and this bar is *kept*, because row parity is strictly
+stronger per cell than the rungs, which are aggregate and tolerance-based. It is
+what pins the port's correctness after the seam it was written ahead of.
 
 **Why eight configurations and not the two rung geometries** (Q35, discharged by
 measurement before the build). The falsification matrix below was measured
@@ -823,12 +824,13 @@ def test_every_registered_wall_pair_carries_the_canonical_twelve(blockamr_sessio
 
 
 def test_the_v1_scheme_names_the_compiled_pair(blockamr_session):
-    """The seam B36 flips (review.md §4 Q49(g)).
+    """The seam B36 flipped (review.md §4 Q49(g)).
 
     ``register`` raises on a second class for a taken key, and O4 forbids
-    removing v1's, so the declaration lands **additively** on the existing
-    ``GhostCellLaplacian``: ``rows()`` is untouched, nothing is deregistered,
-    and B36 changes ``BandEvaluation.apply`` from the one to the other.
+    removing v1's, so the declaration landed **additively** on the existing
+    ``GhostCellLaplacian``: ``rows()`` is untouched and nothing is deregistered.
+    B36 made ``WallEvaluation.apply`` call this kernel instead of ``rows()``;
+    ``rows()`` stays as the oracle the parity rows above compare against.
     """
     scheme_cls = BOUNDARY_SCHEMES[("laplacian", "ghostCell")]
     kernel = scheme_cls(interior_scheme=None).build_cpp_kernel()

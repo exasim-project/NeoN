@@ -38,11 +38,12 @@ class ExplicitBackend(Protocol):
     def evaluate(self, terms, cell_field, lev, t, ibm=None) -> list:
         """Per-box source arrays for the spatial ``terms`` on level ``lev``.
 
-        ``ibm``, when given, is the band driver
-        (:class:`~blockamr.ibm.driver.BandEvaluation`): once every term's
-        interior sweep has run, ``ibm.apply(result_mf, lev, t)`` overwrites the
-        band cells with the boundary schemes' rows. ``None`` — the no-``"ibm"``
-        path, ``noIbm`` and an empty band — is one branch outside the kernel,
-        which is what keeps those results bitwise the plain operator's.
+        ``ibm``, when given, is the wall driver
+        (:class:`~blockamr.ibm.driver.WallEvaluation`): once every term's
+        interior sweep has run, ``ibm.apply(result_mf, lev, t)`` writes the wall
+        cells through the boundary schemes and masks the solid. ``None`` — the
+        no-``"ibm"`` path, ``noIbm`` and an empty band — is one branch outside
+        the kernel, which is what keeps those results bitwise the plain
+        operator's.
         """
         ...

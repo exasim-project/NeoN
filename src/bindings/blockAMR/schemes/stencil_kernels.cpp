@@ -570,6 +570,14 @@ static void laplacianAcc(
 
 // Accumulate coeff * grad(phi) into out: scalar phi (comp 0) → 3-component vector,
 // central difference (phi_r - phi_l)/(2 dh) per spatial direction (cf. grad.py).
+//
+// `out` may carry FEWER than three components, and then only the leading ones are
+// written (B36). `evaluate(Equation(exp.grad(T)))` on a scalar T sizes the backend's
+// scratch source by the SOLVED field's component count — one — so the unguarded
+// version wrote two components past the end of every fab, silently, on the one path
+// that reaches it. `nc` is uniform over the launch, so the three branches cost a
+// predicated store and nothing diverges; a three-component `out` (every other caller)
+// is bitwise what it was.
 static void gradAcc(
     amrex::MultiFab& out_mf,
     const amrex::MultiFab& phi_mf,
@@ -579,6 +587,7 @@ static void gradAcc(
 {
     const auto dx = geom.CellSizeArray();
     const amrex::Real dhx = dx[0], dhy = dx[1], dhz = dx[2];
+    const int nc = out_mf.nComp();
     for (amrex::MFIter mfi(phi_mf); mfi.isValid(); ++mfi)
     {
         const amrex::Box& bx = mfi.validbox();
@@ -588,12 +597,15 @@ static void gradAcc(
             bx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k)
             {
-                out(i, j, k, 0) +=
-                    coeff * (phi(i + 1, j, k, 0) - phi(i - 1, j, k, 0)) / (2.0 * dhx);
-                out(i, j, k, 1) +=
-                    coeff * (phi(i, j + 1, k, 0) - phi(i, j - 1, k, 0)) / (2.0 * dhy);
-                out(i, j, k, 2) +=
-                    coeff * (phi(i, j, k + 1, 0) - phi(i, j, k - 1, 0)) / (2.0 * dhz);
+                if (nc > 0)
+                    out(i, j, k, 0) +=
+                        coeff * (phi(i + 1, j, k, 0) - phi(i - 1, j, k, 0)) / (2.0 * dhx);
+                if (nc > 1)
+                    out(i, j, k, 1) +=
+                        coeff * (phi(i, j + 1, k, 0) - phi(i, j - 1, k, 0)) / (2.0 * dhy);
+                if (nc > 2)
+                    out(i, j, k, 2) +=
+                        coeff * (phi(i, j, k + 1, 0) - phi(i, j, k - 1, 0)) / (2.0 * dhz);
             }
         );
     }

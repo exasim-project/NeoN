@@ -19,11 +19,11 @@ decoration. review.md §4 Q29(d) refuses the ULP fallback: a residual mismatch
 stays red and is escalated.
 
 **Why this bar and not "the scheme × method grid green on v2"** (review.md §4
-Q56(a), inheriting Q49(a)/Q52(a)). There is no driver seam to run the grid
-through yet — the v1 registry key ``("grad", "ghostCell")`` is taken,
-``register`` raises on a second class, and ``BandEvaluation.apply`` still calls
-``rows()`` and uploads a ``BandTable``; flipping the driver over is B36, at the
-grid's own tolerance. Row parity is strictly stronger per cell.
+Q56(a), inheriting Q49(a)/Q52(a)). When this file was written there was no
+driver seam to run the grid through — the v1 registry key ``("grad",
+"ghostCell")`` was taken and the driver still called ``rows()``. B36 flipped it
+and the grid runs on the pair, at the grid's own tolerance; this bar is kept
+because row parity is strictly stronger per cell.
 
 **H-9, the defect this file exists to resist.** ``div``'s functor is
 ``for (int dd = 0; dd < 3; ++dd)``; ``grad``'s is one axis. The reason is the row
@@ -1193,13 +1193,13 @@ def test_the_grad_pair_takes_exactly_the_canonical_twelve(blockamr_session):
 
 
 def test_the_v1_scheme_names_the_compiled_pair(blockamr_session):
-    """The seam B36 flips (review.md §4 Q49(g)).
+    """The seam B36 flipped (review.md §4 Q49(g)).
 
     ``register`` raises on a second class for a taken key, and O4 forbids
-    removing v1's, so the declaration lands **additively** on the existing
+    removing v1's, so the declaration landed **additively** on the existing
     ``GhostCellGrad``: ``rows()`` is untouched, ``_check_grad_ncomp`` is
-    untouched, nothing is deregistered, and B36 changes ``BandEvaluation.apply``
-    from the one to the other.
+    untouched and nothing is deregistered. B36 made ``WallEvaluation.apply``
+    call this kernel instead of ``rows()``.
     """
     from blockamr.schemes.grad_schemes import CentralDiffGrad
 
@@ -1225,10 +1225,15 @@ def test_a_multi_component_sweep_is_refused_by_v1_and_by_the_compiled_pair(block
     One ``pytest.raises`` covers both, and that is not a coincidence worth
     hiding: v1 raises ``NotImplementedError`` naming ``term.field.name``, the
     compiled pair raises ``std::runtime_error`` naming the entry point (it has no
-    field name), and ``NotImplementedError`` **is a** ``RuntimeError``. The type
-    gap is owed to B36 beside B31's Invariant-F precedent; the *sentence* is
-    v1's, verbatim from "the band row applies" onwards, and that shared tail is
-    what this row pins.
+    field name), and ``NotImplementedError`` **is a** ``RuntimeError``. **B36
+    ruled the type gap**: the two are different *surfaces*, so they keep
+    different types. A call through the Python driver refuses in
+    ``GhostCellGrad.wall_coeff``, before the launch, with v1's
+    ``NotImplementedError`` naming the field — api §9's promised sentence, which
+    only Python can say; a direct call to the binding keeps the compiled
+    ``RuntimeError``, and the subclass relation makes one ``except`` catch both.
+    The *sentence* is v1's, verbatim from "the band row applies" onwards, and
+    that shared tail is what this row pins.
     """
     name = "G6-cyl-z-mixed"
     mesh, term, geom, ba, dm = _case(name)

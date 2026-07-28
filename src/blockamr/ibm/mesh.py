@@ -22,7 +22,7 @@ import weakref
 
 from .band import CROSS, band_on_grids
 from .band_rows import band_table, pin_rows
-from .classify import box_grids
+from .classify import _patches, box_grids
 from .geometry import GEOM_NCOMP, geometry_on_grids, packed_geometry_on_grids
 
 
@@ -41,8 +41,10 @@ class IbmMesh:
         self._grids = {}
         self._geometry = {}
         self._geometry_fabs = {}
+        self._cell_types = {}
         self._bands = {}
         self._method_data = {}
+        self._wall_data = {}
         self._pin_tables = {}
         self._pinned = weakref.WeakKeyDictionary()
 
@@ -107,6 +109,51 @@ class IbmMesh:
                 mf.copy_grown_from(mfi, block)
             self._geometry_fabs[key] = (ngrow, mf)
         return self._geometry_fabs[key][1]
+
+    def cell_type(self, method, lev, ngrow=1):
+        """The v2 marker of ``lev`` under ``method`` (design §2.2, §8).
+
+        ``SOLID | WALL | FLUID`` on this level's grids, filled by the method's
+        own classification — ``blockamr.classify_default`` unless the method
+        declares a ``classify``, which is conformance check M4.
+
+        Cached on ``(method, lev, grid_version)`` — design §8's key, with **no
+        ``ngrow``** in it — and grown monotonically, exactly as
+        :meth:`geometry_fab` is and for the same reason: W1's siblings read the
+        marker at their own stencil reach, so two equations on one level can
+        want different ghost widths of one marker. ``MARKER_NGROW`` is the
+        default classification's floor, not an allocation size.
+        """
+        import blockamr
+
+        ngrow = int(ngrow)
+        key = (method, int(lev), self.grid_version)
+        have = self._cell_types.get(key)
+        if have is None or have[0] < ngrow:
+            geom = self._mesh.geom(lev)
+            ct = blockamr.CellTypeFab(self._mesh.box_array(lev), self._mesh.dm(lev), ngrow)
+            classify = getattr(method, "classify", None) or blockamr.classify_default
+            classify(ct, self.geometry_fab(lev, ngrow), geom)
+            self._cell_types[key] = (ngrow, ct)
+        return self._cell_types[key][1]
+
+    def wall_data(self, method, lev, ngrow=1):
+        """The method's own **device-side** data, built once per generation.
+
+        The v2 peer of :meth:`data`, and stored just as opaquely: the method
+        declares what it precomputes from the marker and the geometry, the mesh
+        allocates and invalidates it and never looks inside (design §2.3).
+        """
+        key = (method, int(lev), self.grid_version)
+        if key not in self._wall_data:
+            names, _bodies = _patches(self.bodies)
+            self._wall_data[key] = method.wall_preprocess(
+                self.cell_type(method, lev, ngrow),
+                self.geometry_fab(lev, ngrow),
+                self._mesh.geom(lev),
+                names,
+            )
+        return self._wall_data[key]
 
     def band(self, lev, width, shape=CROSS):
         """The boundary cells of a width-``width`` scheme on ``lev``."""
@@ -210,7 +257,9 @@ class IbmMesh:
         self._grids.clear()
         self._geometry.clear()
         self._geometry_fabs.clear()
+        self._cell_types.clear()
         self._bands.clear()
         self._method_data.clear()
+        self._wall_data.clear()
         self._pin_tables.clear()
         self._pinned.clear()

@@ -9,7 +9,7 @@ from .band_rows import BandRows, band_table
 from .bc import FixedGradient, FixedValue, Mixed
 from .body import Cylinder, Plane
 from .direct_forcing import DirectForcing, DirectForcingData
-from .driver import BandEvaluation, equation_band
+from .driver import WallEvaluation, equation_band
 from .ghost_cell import GhostCell
 from .no_ibm import NoIbm
 
@@ -61,7 +61,7 @@ def evaluation(name, cell_field, spatial_ops):
     makes bitwise equality with the plain operator structural rather than
     maintained (design §6).
 
-    Otherwise the driver is the band flow of :mod:`blockamr.ibm.driver` — the
+    Otherwise the driver is the wall flow of :mod:`blockamr.ibm.driver` — the
     only flow there is: the prolong/restrict schedule that ``ghostCell`` ran on
     until its three ``(operator, method)`` pairs existed is gone with W5.
     """
@@ -77,7 +77,7 @@ def evaluation(name, cell_field, spatial_ops):
         _validate_patches(name, cell_field)
     if not method.requires_bodies or _band_is_empty(cell_field, spatial_ops):
         return None
-    return BandEvaluation(method, name, cell_field, spatial_ops)
+    return WallEvaluation(method, name, cell_field, spatial_ops)
 
 
 def _band_is_empty(cell_field, spatial_ops):
@@ -124,7 +124,6 @@ def _validate_patches(name, cell_field):
 
 __all__ = [
     "IBM",
-    "BandEvaluation",
     "BandRows",
     "Cylinder",
     "DirectForcing",
@@ -135,6 +134,7 @@ __all__ = [
     "Mixed",
     "NoIbm",
     "Plane",
+    "WallEvaluation",
     "band_table",
     "evaluation",
 ]

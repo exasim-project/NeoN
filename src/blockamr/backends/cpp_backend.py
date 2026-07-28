@@ -38,15 +38,19 @@ class CppBackend:
 
     def source(self, terms, cell_field, lev, t, ibm=None):
         """Accumulated source (scratch, ngrow=0): ``Σ coeff·op(phi)``, with the
-        band rows applied when ``ibm`` is given. The R4 seam: operator
+        wall sweep applied when ``ibm`` is given. The R4 seam: operator
         evaluation and time update stay separate named launches. The returned
         scratch is reused (and zeroed) by the next ``source`` call — consume
         it first.
         """
         src = self._scratch(cell_field, lev)
-        self._evaluate_spatial_terms(terms, cell_field, lev, t, src)
+        # W1 (design §5): a wide interior scheme degrades against the marker,
+        # in its own kernel and per cell. `None` on every path but an IBM one
+        # with a compiled pair, so the plain sweep is the plain call.
+        cell_type = None if ibm is None else ibm.interior_cell_type(lev)
+        self._evaluate_spatial_terms(terms, cell_field, lev, t, src, cell_type)
         if ibm is not None:
-            # The band overwrite, after every term's interior sweep and never
+            # The wall sweep, after every term's interior sweep and never
             # fused into one (row-format rule R4). `ibm is None` is this one
             # branch, outside the kernel — which is what makes the no-IBM
             # result bitwise the plain operator's.
@@ -90,7 +94,7 @@ class CppBackend:
         src.set_val(0.0)
         return src
 
-    def _evaluate_spatial_terms(self, spatial_ops, cell_field, lev, t, src):
+    def _evaluate_spatial_terms(self, spatial_ops, cell_field, lev, t, src, cell_type=None):
         """Sum every spatial term into the scratch source: src = Σ coeff·op(phi)."""
         geom = cell_field.mesh.geom(lev)
         for sp_op in spatial_ops:
@@ -101,4 +105,4 @@ class CppBackend:
                     f"cpp backend: no kernel for term {type(sp_op).__name__!r} "
                     f"(scheme {getattr(scheme, 'type', None)!r})"
                 )
-            build_cpp_kernel().add_to(src, sp_op, cell_field, lev, geom)
+            build_cpp_kernel().add_to(src, sp_op, cell_field, lev, geom, cell_type)

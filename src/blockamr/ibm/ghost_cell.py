@@ -110,6 +110,18 @@ class GhostCell:
         names, body_list = _patches(ibm.bodies)
         return ghost_cell_data(box_grids(mesh, lev), ibm.geometry(lev), names, body_list)
 
+    @staticmethod
+    def wall_preprocess(cell_type, geom_ibm, geom, patch_names):
+        """The compiled peer of :meth:`preprocess` (B29/B36, design §2.3).
+
+        Same object, same invariant (Invariant F is checked inside), device-side
+        and keyed the same way — :meth:`~blockamr.ibm.mesh.IbmMesh.wall_data`
+        stores it opaquely and the wall pairs cast it once inside their own TU.
+        """
+        import blockamr
+
+        return blockamr.ghost_cell_preprocess(cell_type, geom_ibm, geom, patch_names)
+
 
 def ghost_cell_data(grids, geometries, names, body_list):
     """:meth:`GhostCell.preprocess` on explicit per-box descriptions.

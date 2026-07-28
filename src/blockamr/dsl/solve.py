@@ -104,7 +104,7 @@ def solve(equation, *, dt=None, t=None, solution=None):
         )
 
     # solution["ibm"] (api §1): validate the name, then branch on the method's
-    # kind. Operator methods become the band driver (None when the IBM path is
+    # kind. Operator methods become the wall driver (None when the IBM path is
     # not entered at all — no key, noIbm, empty band — keeping those results
     # bitwise the plain operator's); step methods fire on the field after each
     # stage update.
@@ -128,13 +128,11 @@ def solve(equation, *, dt=None, t=None, solution=None):
                 # The exact pre-IBM call chain — bitwise the plain operator.
                 impl.euler_step(equation, cell_field, lev, t, dt)
             else:
-                # Accumulating source (interior sweep + band rows; the pin ran
+                # Accumulating source (interior sweep + wall sweep; the pin ran
                 # at classification time, Q3/B25) plus the generic update,
                 # never a fused step kernel (R4).
                 src = band.source_level(impl, equation.spatial_ops, cell_field, lev, t)
-                blockamr.euler_update(
-                    cell_field.mf[lev], src, dt / ddt_coeff, cell_field.ncomp
-                )
+                blockamr.euler_update(cell_field.mf[lev], src, dt / ddt_coeff, cell_field.ncomp)
         if step_method is not None:
             _apply_step_method(step_method, cell_field, dt, t + dt)
     elif isinstance(ddt_scheme, RungeKutta2):
@@ -160,8 +158,8 @@ def solve(equation, *, dt=None, t=None, solution=None):
 def _stage_source(impl, equation, band, cell_field, lev, t_s):
     """One stage's accumulated source on one level, at stage time ``t_s``.
 
-    The band route (interior sweep + band rows; the pin ran at classification
-    time, Q3/B25) when a band driver is active, the plain accumulating kernels
+    The IBM route (interior sweep + wall sweep; the pin ran at classification
+    time, Q3/B25) when a wall driver is active, the plain accumulating kernels
     otherwise — never a fused step kernel (R4). The returned MultiFab may be a
     backend scratch reused by the next call: consume it before the next
     ``source``.

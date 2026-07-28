@@ -337,12 +337,26 @@ class GhostCellLaplacian:
         rows this method builds, bitwise, and it reaches them at the cell
         instead of through a band table.
 
-        Nothing calls this yet: :class:`~blockamr.ibm.driver.BandEvaluation`
-        still goes through :meth:`rows`, and flipping the driver over is B36.
+        This is what :class:`~blockamr.ibm.driver.WallEvaluation` calls on a
+        production evaluate (B36); :meth:`rows` is kept as the oracle the
+        row-parity suite compares the pair against.
         """
         from ...cpp_kernels import CppWallKernel
 
         return CppWallKernel("wall_laplacian_ghost_cell")
+
+    def wall_coeff(self, term, t):
+        """The scalar the pair is launched with: ``coeff * gamma``.
+
+        The canonical twelve carry no diffusivity, so the constant gamma is
+        folded in here — the same fold :func:`_coefficient` does for the rows,
+        with the same refusal of a gamma that is not constant.
+        """
+        return _coefficient(term, t)
+
+    def wall_extras(self, term, lev):
+        """``laplacian x ghostCell`` takes exactly the canonical twelve."""
+        return {}
 
 
 def _closed_flux_rows(ctx, coeff, ncomp, stride):
@@ -403,24 +417,47 @@ class GhostCellDiv:
     def build_cpp_kernel(self):
         """The compiled peer of :meth:`rows` — ``div x ghostCell`` (B33).
 
-        Nothing calls this yet, exactly as for
-        :meth:`GhostCellLaplacian.build_cpp_kernel`:
-        :class:`~blockamr.ibm.driver.BandEvaluation` still uploads a
-        ``BandTable``, and flipping it over is B36. The compiled pair reaches
-        the same rows :meth:`rows` builds, bitwise, and it reaches them at the
-        cell instead of through a band table.
+        Called by :class:`~blockamr.ibm.driver.WallEvaluation` on a production
+        evaluate (B36); the compiled pair reaches the same rows :meth:`rows`
+        builds, bitwise, and it reaches them at the cell instead of through a
+        band table.
 
         ``wall_div_ghost_cell`` takes four arguments past the canonical twelve
         — ``flux_x, flux_y, flux_z, face_value`` — because a ``div`` row is a
-        *face* balance. **B36 owns the face-value mapping** at the call site:
-        ``self.interior.type`` selects ``DivFaceValue.Central`` for ``Linear``
-        and ``DivFaceValue.Upwind`` for ``Upwind``, ``VanLeer`` and ``QUICK``
-        — the last two being the D1 degrade, since a width-2 stencil reaches
-        through the solid inside the band.
+        *face* balance. They are :meth:`wall_extras`.
         """
         from ...cpp_kernels import CppWallKernel
 
         return CppWallKernel("wall_div_ghost_cell")
+
+    def wall_coeff(self, term, t):
+        """The term's own scalar: a ``div`` row carries no other coefficient
+        (the flux is a field the pair reads)."""
+        return float(term.coeff)
+
+    def wall_extras(self, term, lev):
+        """The four arguments past the twelve — the face fluxes and the
+        face-value selector (design §4.4, shipped B33).
+
+        The mapping is this class's, made here and nowhere else:
+        ``self.interior.type`` selects ``DivFaceValue.Central`` for ``Linear``
+        and ``DivFaceValue.Upwind`` for ``Upwind``, ``VanLeer`` and ``QUICK``
+        — the last two being the D1 degrade, since a width-2 stencil reaches
+        through the solid inside the band. It is the compiled twin of
+        :func:`_face_weights`, which the rows use.
+        """
+        import blockamr
+
+        faces = term.coefficient[lev]
+        central = getattr(self.interior, "type", None) == "Linear"
+        return {
+            "flux_x": faces[0].mf,
+            "flux_y": faces[1].mf,
+            "flux_z": faces[2].mf,
+            "face_value": (
+                blockamr.DivFaceValue.Central if central else blockamr.DivFaceValue.Upwind
+            ),
+        }
 
 
 @register
@@ -455,22 +492,38 @@ class GhostCellGrad:
     def build_cpp_kernel(self):
         """The compiled peer of :meth:`rows` — ``grad x ghostCell`` (B34).
 
-        Nothing calls this yet, exactly as for the other two pairs:
-        :class:`~blockamr.ibm.driver.BandEvaluation` still goes through
-        :meth:`rows`, and flipping the driver over is B36.
+        Called by :class:`~blockamr.ibm.driver.WallEvaluation` on a production
+        evaluate (B36).
 
         ``wall_grad_ghost_cell`` takes **exactly** the canonical twelve — a
         ``grad`` row is a one-axis face balance at ``flux = 1`` and
         ``weight_self = 0.5``, so unlike ``div`` it needs no face field and no
         face-value selector, and the interior scheme is not read at all.
-        **The ``ncomp > 1`` refusal is the pair's**, raised by ``validate``
-        before any launch, in v1's own sentence (see :func:`_check_grad_ncomp`);
-        the compiled side raises ``RuntimeError`` rather than
-        ``NotImplementedError``, which is a subclass of it.
         """
         from ...cpp_kernels import CppWallKernel
 
         return CppWallKernel("wall_grad_ghost_cell")
+
+    def wall_coeff(self, term, t):
+        """The term's own scalar — and the one place the ``ncomp > 1`` refusal
+        is **reconciled** (B36, api §9).
+
+        Both surfaces refuse; they refuse with different types because they are
+        different surfaces. A direct call to the binding raises the compiled
+        ``RuntimeError`` naming the entry point, which is what a C++ guard can
+        say. A call through the *Python* driver raises v1's
+        ``NotImplementedError`` naming the field — the sentence api §9's error
+        table promises — because the driver knows the field's name and the
+        kernel does not. ``NotImplementedError`` is a ``RuntimeError``, so a
+        caller that catches the compiled type catches this one too, and the
+        Python surface never changed type across the port.
+        """
+        _check_grad_ncomp(term, term.field.ncomp)
+        return float(term.coeff)
+
+    def wall_extras(self, term, lev):
+        """``grad x ghostCell`` takes exactly the canonical twelve."""
+        return {}
 
 
 def _check_grad_ncomp(term, ncomp):

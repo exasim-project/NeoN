@@ -16,11 +16,10 @@ signed zeros by the plane (see H-6 below), so the stricter comparison is not
 decoration. review.md §4 Q29(d) refuses the ULP fallback: a residual mismatch
 stays red and is escalated.
 
-**Why this bar and not "rung 8 green on v2"** (review.md §4 Q52(a)). There is no
-driver seam to run rungs through yet — the v1 registry key ``("div",
-"ghostCell")`` is taken, ``register`` raises on a second class, and
-``BandEvaluation.apply`` still calls ``rows()`` and uploads a ``BandTable``;
-flipping the driver over is B36. And rung 8 is a **strict xfail today**
+**Why this bar and not "rung 8 green on v2"** (review.md §4 Q52(a)). When this
+file was written there was no driver seam to run rungs through — the v1 registry
+key ``("div", "ghostCell")`` was taken and the driver still called ``rows()``.
+B36 flipped it, and this bar is kept. And rung 8 is a **strict xfail**
 (``RECONSTRUCTION_ORDER``/T14: the reconstruction is trilinear and the exact
 discrete cancellation breaks in the band), so a *correct* port keeps it red —
 "rung 8 green on v2" would mean the port had changed the numerics, which is the
@@ -610,8 +609,8 @@ def _face_value(term):
     first-order ``Upwind`` and the width-2 ``vanLeer``/``quick`` that DEGRADE to
     it inside the band (D1) — takes the upwind cell.
 
-    This is v1's ``_face_weights`` bit, and B36 will make exactly this call at
-    the driver.
+    This is v1's ``_face_weights`` bit, and B36 made exactly this call at the
+    driver — see ``GhostCellDiv.wall_extras``.
     """
     if getattr(term.scheme, "type", None) == "Linear":
         return blockamr.DivFaceValue.Central
@@ -1432,17 +1431,17 @@ def test_the_div_pair_appends_exactly_four_arguments_past_the_canonical_twelve(b
 
 
 def test_the_v1_scheme_names_the_compiled_pair(blockamr_session):
-    """The seam B36 flips (review.md §4 Q49(g)).
+    """The seam B36 flipped (review.md §4 Q49(g)).
 
     ``register`` raises on a second class for a taken key, and O4 forbids
-    removing v1's, so the declaration lands **additively** on the existing
-    ``GhostCellDiv``: ``rows()`` is untouched, nothing is deregistered, and B36
-    changes ``BandEvaluation.apply`` from the one to the other.
+    removing v1's, so the declaration landed **additively** on the existing
+    ``GhostCellDiv``: ``rows()`` is untouched and nothing is deregistered. B36
+    made ``WallEvaluation.apply`` call this kernel instead of ``rows()``.
 
-    B33 deliberately ships **no** scheme-to-``DivFaceValue`` helper. The mapping
-    is recorded — in the binding's docstring, in ``build_cpp_kernel``'s and in
-    :func:`_face_value` above — and B36 owns the call site; a helper with no
-    caller is exactly the speculative code CLAUDE.md §2 refuses.
+    B33 deliberately shipped **no** scheme-to-``DivFaceValue`` helper, because a
+    helper with no caller is exactly the speculative code CLAUDE.md §2 refuses.
+    B36 gave it its caller: the mapping is ``GhostCellDiv.wall_extras``, whose
+    one-line rule is :func:`_face_value` above, made at the driver's call site.
     """
     from blockamr.schemes.div_schemes import Linear
 

@@ -75,6 +75,64 @@ def gamma_rows(value, points, t, ncomp):
     return out
 
 
+def robin_data(names, ibm_bc, ncomp, wall_points, t):
+    """The per-patch ``(alpha, beta, gamma(t))`` tables a wall pair reads (B36).
+
+    ``names`` is :func:`~blockamr.ibm.classify._patches`' patch order, i.e. the
+    enumeration ``IbmGeometry.patch`` carries; the row ``p`` of every table
+    below is the body ``names[p]``, and a table built on any other order applies
+    the wrong condition to the wrong body silently.
+
+    ``gamma`` reaches the device as a **compiled expression** and never as a
+    Python callable (Q4, design §4.4). The two spellings v1 accepts are
+    reconciled here, at the one call site design §4.4 names:
+
+    * a **constant** datum — scalar or per-component — is the ``Constant`` tag,
+      bitwise the number the user wrote;
+    * a **callable** datum (``f(x, y, z, t)``, B42) is evaluated host-side at
+      that patch's wall foot points, at the stage time ``t``, exactly as v1's
+      ``_band_closure`` evaluates it, and lands as ``Constant`` for this sweep.
+      Because the tables are rebuilt per ``apply``, a schedule is followed per
+      stage with nothing to invalidate — v1's capability, respelled.
+
+    A datum that varies **across** a patch (A3's rotating wall) is refused
+    rather than averaged: one ``GammaExpr`` serves the whole patch, so a spatial
+    datum needs the ``Form`` tag Q25's OP-1 left out of scope.
+    """
+    import blockamr
+
+    npatch = len(names)
+    alpha = np.zeros(npatch)
+    beta = np.zeros(npatch)
+    form = np.zeros((npatch, ncomp), dtype=np.int32)  # 0 == GammaExpr::Constant
+    param = np.zeros((npatch, ncomp, 4), dtype=np.float64)
+    for patch, name in enumerate(names):
+        a, b, datum = ibm_bc[name].robin()
+        alpha[patch] = a
+        beta[patch] = b
+        param[patch, :, 0] = _patch_gamma(datum, name, patch, ncomp, wall_points, t)
+    return blockamr.RobinData(alpha, beta, form, param)
+
+
+def _patch_gamma(datum, name, patch, ncomp, wall_points, t):
+    """One patch's ``gamma`` as ``(ncomp,)`` constants — see :func:`robin_data`."""
+    if not callable(datum):
+        return broadcast_gamma(datum, ncomp)
+    points = wall_points(patch)
+    if points.shape[0] == 0:
+        return np.zeros(ncomp)
+    values = gamma_rows(datum, points, t, ncomp)
+    first = np.asarray(values[0], dtype=float)
+    if not np.array_equal(values, np.broadcast_to(first, values.shape)):
+        raise NotImplementedError(
+            f"the wall datum on patch '{name}' varies across the patch, and a compiled "
+            "gamma is one expression per (patch, component): a spatially varying surface "
+            "value needs a Form tag that does not exist yet (plans/IBM/review.md §4 Q25 "
+            "OP-1). A datum of the evaluation time alone is supported."
+        )
+    return first
+
+
 @dataclass
 class FixedValue:
     """Dirichlet: ``phi_w = value`` — the triple ``(1, 0, value)``.

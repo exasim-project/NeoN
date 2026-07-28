@@ -18,10 +18,11 @@
 // Why this file is frozen, and what "frozen" costs
 // ---------------------------------------------------------------------------
 // This header is included by every compiled consumer of the immersed geometry:
-// `ibm/cell_type.cpp` (B28) today, and `ibm/ghost_cell.cpp` (B31) plus the three
-// `schemes/boundary/*_ghost_cell.cpp` wall pairs (B32/B33/B34) as they land —
-// five CUDA translation units, the largest single-header rebuild fan-out in the
-// v2 IBM tree. design §1.3's rule 3 ("changing one pair rebuilds one TU") holds
+// `ibm/cell_type.cpp` (B28), `ibm/ghost_cell.cpp` (B31) and the three
+// `schemes/boundary/*_ghost_cell.cpp` wall pairs (B32/B33/B34). All five landed,
+// and since B36 all five are on the production evaluate path — five CUDA
+// translation units, the largest single-header rebuild fan-out in the v2 IBM
+// tree. design §1.3's rule 3 ("changing one pair rebuilds one TU") holds
 // for the `.cpp` files; this header is the deliberate exception. A change to it
 // after B29 is therefore a compile session of its own, never a rider on another
 // task. The accessors are member functions rather than raw members precisely so

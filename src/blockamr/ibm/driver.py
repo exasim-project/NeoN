@@ -2,13 +2,15 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""The per-``evaluate`` IBM driver — the band flow (B6, B10).
+"""The per-``evaluate`` IBM driver — the wall flow (B36).
 
-One ``evaluate`` under the row architecture (``plans/IBM/design.md`` §3)::
+One ``evaluate`` under the v2 architecture (``plans/IBM/design.md`` §3,
+``plans/IBM/api.md`` §2.3)::
 
     fill_patch(phi)                       once, before the terms
     interior kernel over the whole valid box   the *same* call as the no-IBM path
-    apply_band_rows(out, phi, table, Overwrite)  per term, after the sweeps
+    wall_<op>_<method>(...) per term      after every sweep: Overwrite, then Add
+    pin_solid(out, ct, 0.0)               the SOLID mask
 
 The non-fluid pin (design §7) is **not** in that list: it is a classification
 write, applied once per ``(field, method, lev, grid_version)`` when this driver
@@ -17,47 +19,61 @@ field's first one never writes the field at all.
 
 The interior sweep is untouched — same kernel, same arguments — so the bulk is
 bitwise the plain operator's *structurally* rather than by care
-(``plans/IBM/overview.md`` §5), and the whole IBM correction is a list of rows
-over the band.
+(``plans/IBM/overview.md`` §5). The one exception is W1: a width-2 interior
+scheme runs its ``_ibm`` sibling, which falls back to its own width-1 formula at
+a cell whose stencil would read a ``SOLID`` cell (design §5). That sibling is
+selected here, by handing the marker to the backend, and nowhere else.
 
-The composition rule (design.md §6)
-----------------------------------
+Two paths, one composition rule
+-------------------------------
 
-The band is a property of the **equation**, not of one term: it is
-``band(W)`` for ``W = max_t w_t`` over the equation's terms, and every term's
-boundary scheme emits rows over that one set. Then the applies compose the way
-the interior sweeps do — the first term writes, the rest add — and a cell in
-``band(W)`` carries ``sum_t rows_t`` exactly.
+A ``(operator, method)`` pair that is **compiled** is called through its
+``build_cpp_kernel()`` wrapper with the canonical twelve arguments (design
+§4.4); one that is not — ``source x ghostCell``, and any pair a test registers
+from Python — still emits v1 :class:`~blockamr.ibm.band_rows.BandRows` over the
+band. Both write the same cells, and they compose the same way: the first term
+to write uses ``Overwrite``, every later one ``Add``.
 
-Terms of different widths (a width-1 laplacian beside a width-2 div) are what
-this rule exists for. The narrow term's rows extend past its own
-``band(w_t)``, and there they are its **plain interior formula**: outside its
-band every cell of its stencil is fluid, so the row is the operator's own value
-and the wall never enters it. The alternative — correcting each term on its own
-band, in ``Add`` mode, with the row carrying ``row - interior`` — would keep
-the sweep's bits outside each band, but it needs *every* term's interior
-formula as a fixed row, which a limiter (``vanLeer``) does not have. This rule
-is total.
+That "same cells" is what fixes the row path's band width once a compiled pair
+is in the equation. A wall sweep writes exactly the ``WALL`` cells, so a row
+term composing with it must emit over ``band(1)`` — the wall layer and the
+solid cells — and not over the equation's widest band, whose deeper fluid cells
+the interior sweep already owns and no wall sweep overwrites. With no compiled
+pair in the equation the v1 rule stands unchanged: one band, the widest term's.
+
+The SOLID mask (OPEN-C)
+-----------------------
+
+v1 carried every solid cell as an ``nnz = 0, c = 0`` row, so its first
+``Overwrite`` term wrote exactly ``0.0`` there. A wall sweep returns before the
+sink at ``m != WALL``, which would leave the interior sweep's value — computed
+from pinned neighbours and read by nothing — inside the body. Design §7's four
+lines are already compiled as ``blockamr.pin_solid``, so the mask is that call
+on the *result*, once per level, after the terms.
 
 ``ibm is None`` — the no-key path, ``noIbm`` and an empty band — is one branch
 *outside* any kernel, in the caller, which is what makes bitwise equality with
 the plain operator structural rather than maintained.
 """
 
+import numpy as np
+
 import blockamr
 
 from ..schemes.boundary import resolve
 from .band import CROSS
 from .band_rows import band_table
+from .bc import robin_data
+from .classify import _patches
 
 
-class BandEvaluation:
-    """The band flow for one field, one ``evaluate``.
+class WallEvaluation:
+    """The wall flow for one field, one ``evaluate``.
 
-    Built per ``evaluate`` because the rows are (v1: design §8 — rebuild every
-    evaluate, cache on a coefficient generation later). Holds one boundary
-    scheme per term, resolved up front so a missing ``(operator, method)`` pair
-    raises before any kernel launches.
+    Built per ``evaluate``. Holds one boundary scheme per term, resolved up
+    front so a missing ``(operator, method)`` pair raises before any kernel
+    launches, and — for the pairs that are compiled — the
+    :class:`~blockamr.cpp_kernels.CppWallKernel` that names the binding.
     """
 
     def __init__(self, method, name, cell_field, spatial_ops):
@@ -67,54 +83,151 @@ class BandEvaluation:
         self.ibm = cell_field.mesh.ibm
         self.terms = list(spatial_ops)
         self.schemes = {term: resolve(_operator_of(term), name, term.scheme) for term in self.terms}
+        self.kernels = {term: _wall_kernel(self.schemes[term]) for term in self.terms}
+        #: True when at least one term is on a compiled pair — the v2 flow.
+        self.on_pairs = any(kernel is not None for kernel in self.kernels.values())
         self.width, self.shape = equation_band(self.terms)
-        # Classification time, v1: the driver is built before the level loop —
-        # before the first fill_patch and before any sweep — and the band has
-        # already been classified by then (design §7, review §4 Q3). Once per
-        # (field, method, lev, grid_version); every later evaluate is a read.
+        #: The ghost width the marker and the packed geometry are built at: the
+        #: widest interior stencil, since W1's siblings read the marker at their
+        #: own reach (``MARKER_NGROW`` is the classification's floor, not a size).
+        self.ngrow = max(1, self.width)
+        #: The band width a *row* term is asked for — see the module docstring.
+        self.row_width = 1 if self.on_pairs else self.width
+        # Classification time: the driver is built before the level loop —
+        # before the first fill_patch and before any sweep (design §7,
+        # review §4 Q3). Once per (field, method, lev, grid_version); every
+        # later evaluate is a read.
         for lev in range(cell_field.mesh.n_levels()):
             self.ibm.ensure_pinned(cell_field, method, lev)
 
+    def interior_cell_type(self, lev):
+        """The marker the interior sweep degrades against (W1), or ``None``.
+
+        ``None`` for a method with no compiled pair: there is no v2 marker on
+        that path, and a width-2 term there is corrected by its rows.
+        """
+        if not self.on_pairs:
+            return None
+        return self.ibm.cell_type(self.method, lev, self.ngrow)
+
     def evaluate_level(self, impl, terms, cell_field, lev, t):
-        """One level: the untouched interior sweep, then the rows."""
+        """One level: the untouched interior sweep, then the wall sweep."""
         return impl.evaluate(terms, cell_field, lev, t, ibm=self)
 
     def source_level(self, impl, terms, cell_field, lev, t):
         """The step-side twin of :meth:`evaluate_level`: interior sweep and
-        band rows — returning the accumulated source MultiFab instead of host
+        wall sweep — returning the accumulated source MultiFab instead of host
         arrays, so ``solve()``'s time schemes can feed it to ``euler_update``
         (the R4 seam between operator and update)."""
         return impl.source(terms, cell_field, lev, t, ibm=self)
 
     def apply(self, out_mf, lev, t):
-        """Overwrite the band cells of the accumulated result with the rows.
+        """Write the wall cells of the accumulated result, then mask the solid.
 
         Called by the backend once the interior sweep of **every** term has
         run: a later term's sweep writes the whole valid box, so a correction
         applied between two sweeps would be overwritten by the second one.
-
-        The first term's rows replace what the sweep left in the band; every
-        further term adds to them, which is the same accumulation the interior
-        sweeps do into the scratch source. Every term's rows cover the *same*
-        set — the equation's band — which is what makes that exact.
         """
         ncomp = self.field.ncomp
-        version = self.ibm.grid_version
-        mode = blockamr.BandMode.Overwrite
+        views = self._views(lev, t, ncomp) if self.on_pairs else None
+        first = True
         for term in self.terms:
-            rows = self.schemes[term].rows(term, self.ibm, lev, ncomp, t, self.width)
-            if rows.nrows == 0:
+            kernel = self.kernels[term]
+            scheme = self.schemes[term]
+            if kernel is None:
+                first = self._apply_rows(out_mf, term, scheme, lev, t, ncomp, first)
                 continue
-            blockamr.apply_band_rows(
-                out_mf,
-                self.field.mf[lev],
-                band_table(rows, version),
-                ncomp,
-                mode,
-                1.0,  # constant_scale: the affine apply (row-contract §4)
-                version,
+            kernel(
+                out=out_mf,
+                phi=self.field.mf[lev],
+                t=t,
+                coeff=scheme.wall_coeff(term, t),
+                ncomp=ncomp,
+                mode=blockamr.WallMode.Overwrite if first else blockamr.WallMode.Add,
+                constant_scale=1.0,  # R2: the affine apply (design §4.4)
+                **views,
+                **scheme.wall_extras(term, lev),
             )
-            mode = blockamr.BandMode.Add
+            first = False
+        if self.on_pairs:
+            # OPEN-C: design §7's four lines, on the result rather than the field.
+            blockamr.pin_solid(out_mf, views["cell_type"], 0.0, ncomp)
+
+    # -- internals ----------------------------------------------------------
+
+    def _views(self, lev, t, ncomp):
+        """The device views every compiled pair on this level shares."""
+        return {
+            "cell_type": self.ibm.cell_type(self.method, lev, self.ngrow),
+            "geom_ibm": self.ibm.geometry_fab(lev, self.ngrow),
+            "method_data": self.ibm.wall_data(self.method, lev, self.ngrow),
+            "robin": self._robin(lev, t, ncomp),
+            "geom": self.field.mesh.geom(lev),
+        }
+
+    def _robin(self, lev, t, ncomp):
+        """The per-patch ``(alpha, beta, gamma(t))`` tables, in patch order.
+
+        Rebuilt per ``apply`` because ``gamma`` may be a schedule; it is
+        ``npatch`` numbers, so the rebuild is free next to the sweep it feeds.
+        """
+        names, _bodies = _patches(self.ibm.bodies)
+        return robin_data(names, self.field.ibm_bc, ncomp, self._wall_points(lev), t)
+
+    def _wall_points(self, lev):
+        """``patch -> (n, 3)`` wall foot points, for a callable datum only.
+
+        The same points, in the same order, v1's ``_band_closure`` hands a
+        schedule: the surface feet of the level's ``depth == 1`` cells. Built
+        lazily, so a constant datum reads no geometry at all.
+        """
+        cache = {}
+
+        def points(patch):
+            if not cache:
+                geometries = self.ibm.geometry(lev)
+                at_wall = [g.depth == 1 for g in geometries]
+                cache["point"] = _stack([g.wall_point[s] for g, s in zip(geometries, at_wall)], 3)
+                cache["patch"] = _stack([g.patch[s] for g, s in zip(geometries, at_wall)], None)
+            return cache["point"][cache["patch"] == patch]
+
+        return points
+
+    def _apply_rows(self, out_mf, term, scheme, lev, t, ncomp, first):
+        """v1's band-row apply for a pair that is not compiled. Returns the
+        new ``first`` flag."""
+        rows = scheme.rows(term, self.ibm, lev, ncomp, t, self.row_width)
+        if rows.nrows == 0:
+            return first
+        version = self.ibm.grid_version
+        blockamr.apply_band_rows(
+            out_mf,
+            self.field.mf[lev],
+            band_table(rows, version),
+            ncomp,
+            blockamr.BandMode.Overwrite if first else blockamr.BandMode.Add,
+            1.0,  # constant_scale: the affine apply (row-contract §4)
+            version,
+        )
+        return False
+
+
+def _stack(blocks, ncol):
+    """Concatenate per-box arrays, with the empty case's shape spelled out."""
+    blocks = [b for b in blocks if b.shape[0]]
+    if blocks:
+        return np.concatenate(blocks)
+    return np.zeros((0, ncol) if ncol else (0,))
+
+
+def _wall_kernel(scheme):
+    """The compiled pair a boundary scheme names, or ``None``.
+
+    The exact peer of the interior dispatch (``cpp_backend``): the scheme owns
+    its kernel, and the driver has no ``(operator, method)`` table of its own.
+    """
+    build = getattr(scheme, "build_cpp_kernel", None)
+    return None if build is None else build()
 
 
 def _operator_of(term):
@@ -136,7 +249,11 @@ def equation_band(terms):
     (they are nested: ``band(w) = {depth <= w}``). The shape is the widest
     *stencil* shape any term declares — a corner-reading scheme needs the
     Chebyshev band, and the cross band would under-select along the diagonals
-    for it (design §4). One equation, one band, one composition rule.
+    for it (design §4).
+
+    Still the rule for a row-only equation, and still what sizes the marker's
+    ghost region on the v2 path: W1's siblings read the marker at their own
+    stencil reach.
     """
     widths = [_band_width(term) for term in terms]
     shapes = {_band_shape(term) for term in terms}

@@ -89,7 +89,7 @@ class VanLeer(BaseModel):
         return VanLeerDiv3D(face=face, dh=dh, coeff=coeff)
 
     def build_cpp_kernel(self):
-        return CppDivAcc("div_vanleer_acc")
+        return CppDivAcc("div_vanleer_acc", "div_vanleer_acc_ibm")
 
 
 
@@ -115,7 +115,7 @@ class QUICK(BaseModel):
         return QUICKDiv3D(face=face, dh=dh, coeff=coeff)
 
     def build_cpp_kernel(self):
-        return CppDivAcc("div_quick_acc")
+        return CppDivAcc("div_quick_acc", "div_quick_acc_ibm")
 
 
 
