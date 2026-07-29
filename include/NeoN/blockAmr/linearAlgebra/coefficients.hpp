@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
+#include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 #include "NeoN/core/executor/executor.hpp"
 
 namespace blockamr::la
@@ -98,22 +99,65 @@ private:
 
 // What it takes to BE a matrix format. No base class to derive from -- satisfy this and
 // you are one.
+//
+// makePrecond IS THE FORMAT'S JOB, and that is the whole point of it being here rather
+// than on the solver. A geometric-multigrid hierarchy is built by rediscretising the
+// COEFFICIENTS on a sequence of coarser levels; a solver holds a gko::LinOp, by which
+// point the erasure has thrown the coefficients away. So the only object that still can
+// build one is the format that owns them. `config` is the SolverConfig the solve was
+// asked for -- reused rather than re-spelled as a narrower precond-only struct, because
+// it already carries precondKind, the GmgConfig V-cycle knobs, precondCycles and
+// precondMlmg, and a second spelling of those is exactly the duplication this refactor
+// removes.
+//
+// Returning NULL means the format DECLINES: it has no way to build that preconditioner
+// and says so by handing back nothing, leaving the caller to raise. It is not an error
+// signal a format invents a message for -- only the caller knows what it was going to
+// do with it. A format still THROWS for a combination it must refuse on its own terms
+// (an unbuildable GMG variant, say), and precond="none" returns null without either
+// party treating it as a refusal.
+//
+// name() exists for that message and for nothing else: an erased Matrix cannot
+// otherwise say what it is holding, and "declines precond 'gmg'" is not actionable
+// without it.
 template<typename T>
-concept IsMatrix = requires(T t, const T ct) {
-    { ct.op() } -> std::same_as<std::shared_ptr<const gko::LinOp>>;
-    { ct.isAssembled() } -> std::same_as<bool>;
-    { t.coefficients() } -> std::same_as<MatrixCoefficients>;
-    { t.zero() } -> std::same_as<void>;
-    { ct.symmetry() } -> std::same_as<Symmetry>;
-    { ct.localRows() } -> std::same_as<std::size_t>;
-    { ct.executor() } -> std::same_as<const NeoN::Executor&>;
+concept IsMatrix = requires(T t, const T ct, const SolverConfig& config) {
+    {
+        ct.op()
+    } -> std::same_as<std::shared_ptr<const gko::LinOp>>;
+    {
+        ct.isAssembled()
+    } -> std::same_as<bool>;
+    {
+        t.coefficients()
+    } -> std::same_as<MatrixCoefficients>;
+    {
+        t.zero()
+    } -> std::same_as<void>;
+    {
+        ct.symmetry()
+    } -> std::same_as<Symmetry>;
+    {
+        ct.localRows()
+    } -> std::same_as<std::size_t>;
+    {
+        ct.executor()
+    } -> std::same_as<const NeoN::Executor&>;
+    {
+        ct.makePrecond(config)
+    } -> std::same_as<std::shared_ptr<const gko::LinOp>>;
+    {
+        ct.name()
+    } -> std::same_as<const char*>;
 };
 
 // What it takes to BE an operator. Declared HERE, beside the coefficients it writes, so
 // that linearAlgebra/ never depends on the operators -- the dependency runs ops -> la.
 template<typename T>
 concept IsOperator = requires(const T t, Coefficients c) {
-    { t.assemble(c) } -> std::same_as<void>;
+    {
+        t.assemble(c)
+    } -> std::same_as<void>;
 };
 
 } // namespace blockamr::la

@@ -12,31 +12,49 @@ cannot tell which format it got.
 
 Use this instead of ``FaceCoeffSolver`` when the coefficients come from a
 discretisation rather than from arrays you already have; use ``FaceCoeffSolver``
-when you want GMG (see the limitations below).
+when you want GMG as the SOLVER (see the limitations below).
+
+A format is allocated on a ``blockamr.MeshLevel(ba, dm, geom)`` -- one AMR level's
+layout as a single object, so the three cannot be handed over out of order. It is
+NOT ``blockamr.Mesh``, which is the multi-level container.
 
 The system is NON-OWNING: the matrix and the rhs must outlive it, and the rhs an
 operator writes IS the field you passed in. Operators ACCUMULATE, so a reused
 system is ``zero()``-ed first. The executor is given to the MATRIX and reaches the
 solve from there -- ``Solver`` has none of its own, so the two cannot disagree.
 
+PRECONDITIONERS ARE THE MATRIX'S, not the solver's. ``precond="gmg"`` /
+``"gmg_kokkos"`` / ``"mlmg"`` are built by the FORMAT from the coefficients it
+holds -- the only object that still has them once the solver sees a ``LinOp`` --
+and shaped by :class:`~blockamr.solver_config.GmgConfig` nested on the config::
+
+    Solver(SolverConfig(solver="cg", precond="gmg_kokkos",
+                        gmg=GmgConfig(pre_sweeps=2, post_sweeps=2))).solve(system, sol)
+
+:class:`MFFaceCoeffs` builds all four; :class:`CsrMatrix` takes ``"none"`` and
+``"mlmg"`` only and :meth:`Solver.solve` raises for the rest, naming the format
+and the precond.
+
 Two things are NOT reachable through this surface today, and it does not pretend
 otherwise:
 
-* **GMG.** ``precond="gmg"``/``"gmg_kokkos"`` and ``solver="gmg"/"ir"/"mpir"``
-  raise from :meth:`Solver.solve`, because the GMG hierarchy is built from the
-  coefficient FIELDS rather than from the ``LinOp`` this path solves through. The
-  error says so; it is a real limitation, not a bug to route around. Use
-  ``blockamr.FaceCoeffSolver`` for a GMG-preconditioned solve.
+* **GMG as the SOLVER.** ``solver="gmg"/"ir"/"mpir"`` raise from
+  :meth:`Solver.solve`: they drive the hierarchy directly (a stationary V-cycle
+  loop, or Ginkgo's ``Ir`` with the cycle as its inner solver) rather than
+  preconditioning a Krylov method with it, which is a different object with a
+  different stopping test. The error says so; it is a real limitation, not a bug
+  to route around. Use ``blockamr.FaceCoeffSolver`` for those.
 * **Only one operator exists**, :func:`laplacian`. There is no ``ddt``, so the
   cell-centred diagonal SOURCE is written directly with
   ``Matrix.diagonal_source(alpha)``.
 
 Example
 -------
->>> mat = MFFaceCoeffs.symmetric(ba, dm, geom, executor=exec, bc=["dirichlet"] * 6)
+>>> mesh = blockamr.MeshLevel(ba, dm, geom)
+>>> mat = MFFaceCoeffs.symmetric(mesh, executor=exec, bc=["dirichlet"] * 6)
 >>> system = LinearSystem(mat, rhs)
 >>> system += laplacian(gamma, geom, bc=["dirichlet"] * 6)
->>> stats = Solver(SolverConfig(solver="cg", rtol=1e-10)).solve(system, sol)
+>>> stats = Solver(SolverConfig(solver="cg", precond="gmg", rtol=1e-10)).solve(system, sol)
 >>> stats["num_iters"]
 """
 
@@ -47,10 +65,11 @@ from typing import Any, Optional, Sequence
 from ._blockamr import LinearSystem, Matrix, Operator
 from ._blockamr import Solver as _Solver
 from ._blockamr import la_laplacian as _la_laplacian
-from .solver_config import SolverConfig
+from .solver_config import GmgConfig, SolverConfig
 
 __all__ = [
     "CsrMatrix",
+    "GmgConfig",
     "LinearSystem",
     "MFFaceCoeffs",
     "Matrix",
@@ -77,30 +96,26 @@ class MFFaceCoeffs:
 
     Example
     -------
-    >>> mat = MFFaceCoeffs.symmetric(ba, dm, geom, executor=exec)
+    >>> mat = MFFaceCoeffs.symmetric(blockamr.MeshLevel(ba, dm, geom), executor=exec)
     """
 
     @staticmethod
     def symmetric(
-        ba: Any,
-        dm: Any,
-        geom: Any,
+        mesh: Any,
         executor: Optional[Any] = None,
         bc: Optional[Sequence[str]] = None,
     ) -> Matrix:
         """Allocate diag + upper; `lower` aliases `upper` and is reported empty."""
-        return Matrix.mf_symmetric(ba, dm, geom, executor=executor, bc=list(bc or _PERIODIC))
+        return Matrix.mf_symmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
 
     @staticmethod
     def asymmetric(
-        ba: Any,
-        dm: Any,
-        geom: Any,
+        mesh: Any,
         executor: Optional[Any] = None,
         bc: Optional[Sequence[str]] = None,
     ) -> Matrix:
         """Additionally allocate `lower`; a convecting operator needs it."""
-        return Matrix.mf_asymmetric(ba, dm, geom, executor=executor, bc=list(bc or _PERIODIC))
+        return Matrix.mf_asymmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
 
 
 class CsrMatrix:
@@ -114,30 +129,26 @@ class CsrMatrix:
 
     Example
     -------
-    >>> mat = CsrMatrix.symmetric(ba, dm, geom, executor=exec)
+    >>> mat = CsrMatrix.symmetric(blockamr.MeshLevel(ba, dm, geom), executor=exec)
     """
 
     @staticmethod
     def symmetric(
-        ba: Any,
-        dm: Any,
-        geom: Any,
+        mesh: Any,
         executor: Optional[Any] = None,
         bc: Optional[Sequence[str]] = None,
     ) -> Matrix:
         """Allocate diag + upper; `lower` aliases `upper` and is reported empty."""
-        return Matrix.csr_symmetric(ba, dm, geom, executor=executor, bc=list(bc or _PERIODIC))
+        return Matrix.csr_symmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
 
     @staticmethod
     def asymmetric(
-        ba: Any,
-        dm: Any,
-        geom: Any,
+        mesh: Any,
         executor: Optional[Any] = None,
         bc: Optional[Sequence[str]] = None,
     ) -> Matrix:
         """Additionally allocate `lower`; a convecting operator needs it."""
-        return Matrix.csr_asymmetric(ba, dm, geom, executor=executor, bc=list(bc or _PERIODIC))
+        return Matrix.csr_asymmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
 
 
 def laplacian(
@@ -171,17 +182,21 @@ def laplacian(
 class Solver(_Solver):
     """Solves a :class:`LinearSystem`; holds a :class:`SolverConfig` and nothing else.
 
-    Use it for any Krylov method; ``blockamr.FaceCoeffSolver`` is the alternative
-    when a GMG preconditioner is wanted, which this path cannot supply (see the
-    module docstring). There is deliberately no factory: which method the config
-    names is decided once, inside, where the string is already parsed.
+    Use it for any Krylov method, preconditioned or not;
+    ``blockamr.FaceCoeffSolver`` is the alternative when the V-cycle is wanted as
+    the SOLVER (see the module docstring). There is deliberately no factory: which
+    method the config names is decided once, inside, where the string is already
+    parsed.
 
     Stateless with respect to the system -- the same solver can solve many, and it
-    reads the executor off each system's matrix rather than carrying one.
+    reads the executor off each system's matrix rather than carrying one. The
+    PRECONDITIONER likewise comes from each system's matrix, per solve, so one
+    solver preconditions every system it is given with that system's own
+    coefficients.
 
     Example
     -------
-    >>> stats = Solver(SolverConfig(solver="cg", rtol=1e-10)).solve(system, sol)
+    >>> stats = Solver(SolverConfig(solver="cg", precond="gmg")).solve(system, sol)
     """
 
     def __init__(self, config: SolverConfig) -> None:

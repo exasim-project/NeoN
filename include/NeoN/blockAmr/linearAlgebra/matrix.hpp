@@ -84,6 +84,18 @@ public:
 
     const NeoN::Executor& executor() const { return model_->executor(); }
 
+    // The preconditioner for `config`, built by the FORMAT from its own
+    // coefficients -- null when the format declines (coefficients.hpp). Forwards
+    // like everything else here: Matrix decides nothing, including this.
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig& config) const
+    {
+        return model_->makePrecond(config);
+    }
+
+    // What the held format is called, for the message a caller raises when
+    // makePrecond declines. Not a dispatch key -- nothing branches on it.
+    const char* name() const { return model_->name(); }
+
 private:
 
     struct Concept
@@ -97,6 +109,8 @@ private:
         virtual Symmetry symmetry() const = 0;
         virtual std::size_t localRows() const = 0;
         virtual const NeoN::Executor& executor() const = 0;
+        virtual std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const = 0;
+        virtual const char* name() const = 0;
 
         virtual std::unique_ptr<Concept> clone() const = 0;
     };
@@ -113,6 +127,11 @@ private:
         Symmetry symmetry() const override { return cls_.symmetry(); }
         std::size_t localRows() const override { return cls_.localRows(); }
         const NeoN::Executor& executor() const override { return cls_.executor(); }
+        std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig& config) const override
+        {
+            return cls_.makePrecond(config);
+        }
+        const char* name() const override { return cls_.name(); }
 
         std::unique_ptr<Concept> clone() const override { return std::make_unique<Model<M>>(cls_); }
 

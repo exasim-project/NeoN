@@ -108,9 +108,11 @@ class GmgConfig(BaseModel):
 class SolverConfig(BaseModel):
     """Everything ``blockamr.linear_algebra.Solver`` needs besides the system.
 
-    Use it for the ``la`` surface (``Solver(SolverConfig(solver="cg")).solve(...)``);
-    ``GmgConfig`` above is the separate, older model for the legacy
-    ``FaceCoeffSolver`` V-cycle knobs, and the two do not overlap.
+    Use it for the ``la`` surface (``Solver(SolverConfig(solver="cg")).solve(...)``).
+    ``GmgConfig`` above is the V-cycle shape, and it is NESTED here rather than
+    respelled: ``SolverConfig(precond="gmg", gmg=GmgConfig(pre_sweeps=4))`` is the
+    same model the legacy ``FaceCoeffSolver`` splats, so the two surfaces cannot
+    describe different cycles.
 
     Frozen, like ``GmgConfig``: a config is a value, and a solver holds the one it
     was built with.
@@ -124,15 +126,23 @@ class SolverConfig(BaseModel):
     every dispatch below that compares the resulting enum. Repeating the list here
     would be a second parse that has to be kept in step with the first.
 
-    ``precond`` other than ``"none"``, and ``solver`` in ``("gmg", "ir", "mpir")``,
-    are accepted here and REFUSED by ``Solver.solve`` with an explanation: the GMG
-    hierarchy is built from the coefficient fields rather than from a ``LinOp``, so
-    it is not reachable through this path. Use ``FaceCoeffSolver`` for those.
+    ``precond`` is REACHABLE: the preconditioner is built by the MATRIX, from the
+    coefficients it holds, so ``"gmg"`` / ``"gmg_kokkos"`` / ``"mlmg"`` work on a
+    format that can build them and ``Solver.solve`` raises -- naming the format and
+    the precond -- on one that cannot (``CsrMatrix`` takes ``"none"``/``"mlmg"``
+    only). ``gmg`` below is what shapes the V-cycle.
+
+    ``solver`` in ``("gmg", "ir", "mpir")`` is still accepted here and REFUSED by
+    ``Solver.solve``: those want the hierarchy as the SOLVER rather than as a
+    preconditioner of one, which is a different object with a different stopping
+    test. Use ``FaceCoeffSolver`` for them.
 
     Examples
     --------
     >>> SolverConfig(solver="cg", rtol=1e-10).kwargs()["solver"]
     'cg'
+    >>> SolverConfig(precond="gmg", gmg=GmgConfig(pre_sweeps=4)).kwargs()["gmg_pre_sweeps"]
+    4
     """
 
     model_config = ConfigDict(frozen=True)
@@ -144,6 +154,8 @@ class SolverConfig(BaseModel):
     atol: float = Field(default=0.0, ge=0.0)
     project_nullspace: bool = False
     norm: str = "l2"
+    # Inert unless ``precond`` names a GMG variant, exactly as the C++ GmgConfig is.
+    gmg: GmgConfig = GmgConfig()
 
     def kwargs(self) -> dict:
         """Constructor kwargs to splat into the ``_blockamr.Solver(...)`` binding."""
@@ -155,4 +167,7 @@ class SolverConfig(BaseModel):
             "atol": self.atol,
             "project_nullspace": self.project_nullspace,
             "norm": self.norm,
+            # The same dict FaceCoeffSolver is splatted with -- one spelling of the
+            # V-cycle knobs, consumed by two bindings.
+            **self.gmg.kwargs(),
         }

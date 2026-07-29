@@ -26,6 +26,7 @@ if(NeoN_WITH_GINKGO)
       linearAlgebra/matrixFree/faceCoeffOp.cpp
       linearAlgebra/sparse/csr.cpp
       linearAlgebra/krylov/krylov.cpp
+      linearAlgebra/precond.cpp
       linearAlgebra/solve/persistent.cpp
       linearAlgebra/solve/oneshot.cpp)
 

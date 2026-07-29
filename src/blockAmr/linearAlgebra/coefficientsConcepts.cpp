@@ -42,6 +42,8 @@ struct StubMatrix
     Symmetry symmetry() const;
     std::size_t localRows() const;
     const NeoN::Executor& executor() const;
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
+    const char* name() const;
 };
 
 struct StubOperator
@@ -69,6 +71,8 @@ struct StubMatrixNoZero
     Symmetry symmetry() const;
     std::size_t localRows() const;
     const NeoN::Executor& executor() const;
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
+    const char* name() const;
 };
 
 // Present member, WRONG return type: localRows() returns int, not std::size_t.
@@ -83,6 +87,25 @@ struct StubMatrixNarrowLocalRows
     Symmetry symmetry() const;
     int localRows() const;
     const NeoN::Executor& executor() const;
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
+    const char* name() const;
+};
+
+// Present member, WRONG parameter: makePrecond takes a PrecondKind rather than the
+// whole SolverConfig. A precond kind alone cannot shape a V-cycle -- the sweep
+// counts, omega and precision live on the config -- so this is the mistake the
+// signature is most likely to drift into, and it is pinned rather than described.
+struct StubMatrixPrecondKindOnly
+{
+    std::shared_ptr<const gko::LinOp> op() const;
+    bool isAssembled() const;
+    MatrixCoefficients coefficients();
+    void zero();
+    Symmetry symmetry() const;
+    std::size_t localRows() const;
+    const NeoN::Executor& executor() const;
+    std::shared_ptr<const gko::LinOp> makePrecond(PrecondKind) const;
+    const char* name() const;
 };
 
 // Present member, WRONG parameter: assemble() takes MatrixCoefficients (the
@@ -96,6 +119,7 @@ struct StubOperatorWrongArgument
 
 static_assert(!IsMatrix<StubMatrixNoZero>);
 static_assert(!IsMatrix<StubMatrixNarrowLocalRows>);
+static_assert(!IsMatrix<StubMatrixPrecondKindOnly>);
 static_assert(!IsOperator<StubOperatorWrongArgument>);
 
 // A type that is not a matrix at all -- the floor these concepts must clear.

@@ -147,9 +147,7 @@ template<class V>
 FaceCoeffOpT<V>::FaceCoeffOpT(
     std::shared_ptr<const gko::Executor> exec,
     const NeoN::Executor& nexec,
-    const amrex::BoxArray& ba,
-    const amrex::DistributionMapping& dm,
-    amrex::Geometry geom,
+    const MeshLevel& mesh,
     gko::size_type n,
     const CellFieldLevel& alpha,
     const FaceFieldLevel& upper,
@@ -158,7 +156,7 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     const amrex::MultiFab* bcData,
     const CellFieldLevel& diag
 )
-    : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(geom), nexec_(nexec),
+    : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(mesh.geom), nexec_(nexec),
       bc_(bc), hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
       onDevice_(exec->get_master().get() != exec.get())
 {
@@ -181,7 +179,7 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     const amrex::MultiFab* diagField = diag.mf.get();
     if (diagField == nullptr)
     {
-        diagOwned_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
+        diagOwned_ = std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0);
         computeFaceCoeffDiag(nexec_, CellFieldLevel {diagOwned_}, alpha, upper, lower);
         diagField = diagOwned_.get();
     }
@@ -197,8 +195,8 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
         uz_ = &upper[2];
         lz_ = &lower[2];
         bcData_ = bcData;
-        in_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 1);
-        out_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
+        in_ = std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 1);
+        out_ = std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0);
     }
     else
     {
@@ -231,10 +229,10 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
             bcData_ = owned_.back().get();
         }
         in_ = std::make_shared<amrex::MultiFab>(
-            ba, dm, 1, 1, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
+            mesh.ba, mesh.dm, 1, 1, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
         );
         out_ = std::make_shared<amrex::MultiFab>(
-            ba, dm, 1, 0, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
+            mesh.ba, mesh.dm, 1, 0, amrex::MFInfo().SetArena(amrex::The_Pinned_Arena())
         );
     }
     in_->setVal(0.0);

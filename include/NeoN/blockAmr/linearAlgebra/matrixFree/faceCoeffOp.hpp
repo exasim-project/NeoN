@@ -16,6 +16,7 @@
 
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
+#include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/core/executor/executor.hpp"
@@ -82,9 +83,12 @@ public:
     FaceCoeffOpT(
         std::shared_ptr<const gko::Executor> exec,
         const NeoN::Executor& nexec,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
-        amrex::Geometry geom,
+        // The layout the scratch/in-out fields are allocated on and the geometry
+        // the stencil's dx and ghost fill come from, as one argument
+        // (core/meshLevel.hpp). Only `geom` outlives the constructor -- ba/dm are
+        // used to allocate and then dropped, which is why geom_ below is still a
+        // bare amrex::Geometry and not a whole MeshLevel.
+        const MeshLevel& mesh,
         gko::size_type n,
         // Read-only, hence const&: a by-value CellFieldLevel/FaceFieldLevel would
         // hand this constructor write access to the caller's coefficients.

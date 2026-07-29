@@ -38,6 +38,7 @@
 #include "bindings.hpp"
 
 #include "NeoN/blockAmr/core/bc.hpp"
+#include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp"
@@ -641,8 +642,7 @@ blockamr::la::Matrix makeLaMatrix(
     const BcArray& bc
 )
 {
-    const amrex::BoxArray& ba = like.boxArray();
-    const amrex::DistributionMapping& dm = like.DistributionMap();
+    const blockamr::MeshLevel mesh {like.boxArray(), like.DistributionMap(), geom};
     const bool sym = (symmetry == "symmetric");
     if (symmetry != "symmetric" && symmetry != "asymmetric")
     {
@@ -652,19 +652,13 @@ blockamr::la::Matrix makeLaMatrix(
     }
     if (format == "mf")
     {
-        return sym ? blockamr::la::Matrix(
-                   blockamr::la::MFFaceCoeffs::symmetric(nexec, ba, dm, geom, bc)
-               )
-                   : blockamr::la::Matrix(
-                       blockamr::la::MFFaceCoeffs::asymmetric(nexec, ba, dm, geom, bc)
-                   );
+        return sym ? blockamr::la::Matrix(blockamr::la::MFFaceCoeffs::symmetric(nexec, mesh, bc))
+                   : blockamr::la::Matrix(blockamr::la::MFFaceCoeffs::asymmetric(nexec, mesh, bc));
     }
     if (format == "csr")
     {
-        return sym
-                 ? blockamr::la::Matrix(blockamr::la::CsrMatrix::symmetric(nexec, ba, dm, geom, bc))
-                 : blockamr::la::Matrix(blockamr::la::CsrMatrix::asymmetric(nexec, ba, dm, geom, bc)
-                 );
+        return sym ? blockamr::la::Matrix(blockamr::la::CsrMatrix::symmetric(nexec, mesh, bc))
+                   : blockamr::la::Matrix(blockamr::la::CsrMatrix::asymmetric(nexec, mesh, bc));
     }
     throw std::runtime_error("la matrix: unknown format '" + format + "' (expected 'mf' or 'csr')");
 }
@@ -1333,15 +1327,14 @@ void registerGinkgoSolve(nb::module_& m)
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
             const BcArray bcArr = parseBc(bc, geom, "_la_stored_diagonal");
-            const amrex::BoxArray& ba = alpha.boxArray();
-            const amrex::DistributionMapping& dm = alpha.DistributionMap();
+            const blockamr::MeshLevel mesh {alpha.boxArray(), alpha.DistributionMap(), geom};
             if (symmetry != "symmetric" && symmetry != "asymmetric")
             {
                 throw std::runtime_error("la matrix: unknown symmetry '" + symmetry + "'");
             }
             auto m = (symmetry == "symmetric")
-                       ? blockamr::la::MFFaceCoeffs::symmetric(nexec, ba, dm, geom, bcArr)
-                       : blockamr::la::MFFaceCoeffs::asymmetric(nexec, ba, dm, geom, bcArr);
+                       ? blockamr::la::MFFaceCoeffs::symmetric(nexec, mesh, bcArr)
+                       : blockamr::la::MFFaceCoeffs::asymmetric(nexec, mesh, bcArr);
             {
                 auto c = m.coefficients();
                 writeField(*c.diag, alpha, "alpha");
@@ -1422,57 +1415,69 @@ void registerGinkgoSolve(nb::module_& m)
     // Matrix (linearAlgebra/matrix.hpp).
     // ------------------------------------------------------------------
 
+    // The layout triple as one object (core/meshLevel.hpp). Bound here, with the
+    // la surface that consumes it, because that is the only thing in Python that
+    // takes one; it is exported from `blockamr` (the package does
+    // `from ._blockamr import *`) so a test can build one. Constructor only --
+    // nothing reads a MeshLevel's members back from Python.
+    nb::class_<blockamr::MeshLevel>(m, "MeshLevel")
+        .def(
+            "__init__",
+            [](blockamr::MeshLevel* self,
+               const BoxArray& ba,
+               const DistributionMapping& dm,
+               const Geometry& geom) {
+                new (self) blockamr::MeshLevel {ba, dm, geom};
+            },
+            nb::arg("ba"),
+            nb::arg("dm"),
+            nb::arg("geom"),
+            "One AMR level's layout: a BoxArray, its DistributionMapping and the\n"
+            "Geometry over it. Held by value -- ba/dm are refcounted handles, so a\n"
+            "copy is cheap and shares the same layout data."
+        );
+
     // Each factory is its own binding rather than one taking a format string:
     // the whole point of the erasure is that the format is chosen once, on one
     // line, and never dispatched on again.
     const auto matrixFactory = [](auto make)
     {
         return [make](
-                   const BoxArray& ba,
-                   const DistributionMapping& dm,
-                   const Geometry& geom,
+                   const blockamr::MeshLevel& mesh,
                    std::optional<NeoN::Executor> executor,
                    const std::vector<std::string>& bc
                )
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
-            return blockamr::la::Matrix(make(nexec, ba, dm, geom, parseBc(bc, geom, "la matrix")));
+            return blockamr::la::Matrix(make(nexec, mesh, parseBc(bc, mesh.geom, "la matrix")));
         };
     };
     nb::class_<blockamr::la::Matrix>(m, "Matrix")
         .def_static(
             "mf_symmetric",
             matrixFactory([](auto&&... a) { return blockamr::la::MFFaceCoeffs::symmetric(a...); }),
-            nb::arg("ba"),
-            nb::arg("dm"),
-            nb::arg("geom"),
+            nb::arg("mesh"),
             nb::arg("executor") = nb::none(),
             nb::arg("bc") = std::vector<std::string>(6, "periodic")
         )
         .def_static(
             "mf_asymmetric",
             matrixFactory([](auto&&... a) { return blockamr::la::MFFaceCoeffs::asymmetric(a...); }),
-            nb::arg("ba"),
-            nb::arg("dm"),
-            nb::arg("geom"),
+            nb::arg("mesh"),
             nb::arg("executor") = nb::none(),
             nb::arg("bc") = std::vector<std::string>(6, "periodic")
         )
         .def_static(
             "csr_symmetric",
             matrixFactory([](auto&&... a) { return blockamr::la::CsrMatrix::symmetric(a...); }),
-            nb::arg("ba"),
-            nb::arg("dm"),
-            nb::arg("geom"),
+            nb::arg("mesh"),
             nb::arg("executor") = nb::none(),
             nb::arg("bc") = std::vector<std::string>(6, "periodic")
         )
         .def_static(
             "csr_asymmetric",
             matrixFactory([](auto&&... a) { return blockamr::la::CsrMatrix::asymmetric(a...); }),
-            nb::arg("ba"),
-            nb::arg("dm"),
-            nb::arg("geom"),
+            nb::arg("mesh"),
             nb::arg("executor") = nb::none(),
             nb::arg("bc") = std::vector<std::string>(6, "periodic")
         )
@@ -1559,7 +1564,17 @@ void registerGinkgoSolve(nb::module_& m)
                double atol,
                bool project_nullspace,
                const std::string& precond,
-               const std::string& norm)
+               const std::string& norm,
+               int precond_cycles,
+               int gmg_pre_sweeps,
+               int gmg_post_sweeps,
+               int gmg_coarsest_sweeps,
+               int gmg_max_levels,
+               int gmg_min_bottom,
+               const std::string& gmg_smoother,
+               const std::string& gmg_precision,
+               const std::string& gmg_coeff_precision,
+               double gmg_omega)
             {
                 SolverConfig cfg;
                 cfg.solver = solver;
@@ -1573,6 +1588,25 @@ void registerGinkgoSolve(nb::module_& m)
                 cfg.precond = precond;
                 cfg.precondKind = parsePrecondKind(precond);
                 cfg.norm = norm;
+                // The V-cycle shape. Reachable here since the preconditioner
+                // became the MATRIX's to build: a GmgConfig on the Python
+                // SolverConfig lands in the same C++ GmgConfig FaceCoeffSolver
+                // fills, so the two surfaces cannot describe different cycles.
+                //
+                // The four knobs Python's GmgConfig does not model
+                // (gmg_agg_l0_size, symmetric, gmg_bottom_*) keep their C++
+                // defaults; they are not accepted here rather than being accepted
+                // and ignored.
+                cfg.precondCycles = precond_cycles;
+                cfg.gmg.preSweeps = gmg_pre_sweeps;
+                cfg.gmg.postSweeps = gmg_post_sweeps;
+                cfg.gmg.coarsestSweeps = gmg_coarsest_sweeps;
+                cfg.gmg.maxLevels = gmg_max_levels;
+                cfg.gmg.minBottom = gmg_min_bottom;
+                cfg.gmg.smoother = gmg_smoother;
+                cfg.gmg.precision = gmg_precision;
+                cfg.gmg.coeffPrecision = gmg_coeff_precision;
+                cfg.gmg.omega = gmg_omega;
                 new (self) PyLaSolver {cfg};
             },
             nb::arg("solver") = "bicgstab",
@@ -1581,7 +1615,17 @@ void registerGinkgoSolve(nb::module_& m)
             nb::arg("atol") = 0.0,
             nb::arg("project_nullspace") = false,
             nb::arg("precond") = "none",
-            nb::arg("norm") = "l2"
+            nb::arg("norm") = "l2",
+            nb::arg("precond_cycles") = 1,
+            nb::arg("gmg_pre_sweeps") = 2,
+            nb::arg("gmg_post_sweeps") = 2,
+            nb::arg("gmg_coarsest_sweeps") = 16,
+            nb::arg("gmg_max_levels") = 0,
+            nb::arg("gmg_min_bottom") = 2,
+            nb::arg("gmg_smoother") = "rbgs",
+            nb::arg("gmg_precision") = "fp64",
+            nb::arg("gmg_coeff_precision") = "",
+            nb::arg("gmg_omega") = 1.1
         )
         .def(
             "solve",
@@ -1591,10 +1635,13 @@ void registerGinkgoSolve(nb::module_& m)
             nb::arg("sol"),
             "Solve `system` into `sol` (in place; its incoming values seed the\n"
             "initial guess). The executor comes from the system's MATRIX.\n\n"
-            "precond != 'none' and solver in ('gmg', 'ir', 'mpir') RAISE here --\n"
-            "the GMG hierarchy is built from the coefficient fields rather than\n"
-            "from a LinOp, so it is not reachable through this path. The error\n"
-            "explains that; it is not a bug to work around."
+            "The preconditioner is built by the MATRIX, from the coefficients it\n"
+            "holds -- so precond='gmg'/'gmg_kokkos'/'mlmg' work here, on a format\n"
+            "that can build them. A format that cannot raises, naming itself and\n"
+            "the precond.\n\n"
+            "solver in ('gmg', 'ir', 'mpir') still RAISES: those want the\n"
+            "hierarchy as the SOLVER rather than as a preconditioner, which is a\n"
+            "different object. Use blockamr.FaceCoeffSolver for them."
         );
 
     // M0 profiling accessors (see namespace prof). Empty unless the process

@@ -310,9 +310,7 @@ SolveResult solveFaceCoeffs(
     auto op = gko::share(FaceCoeffOp::create(
         exec,
         NeoN::Executor {NeoN::SerialExecutor {}},
-        ba,
-        dm,
-        geom,
+        MeshLevel {ba, dm, geom},
         n,
         // Non-owning handles: this entry point is handed the caller's MultiFabs
         // by reference and does not take ownership of them.

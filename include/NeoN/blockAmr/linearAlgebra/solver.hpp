@@ -8,8 +8,10 @@
 
 #include <ginkgo/ginkgo.hpp>
 
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
@@ -46,13 +48,14 @@ public:
     // incoming values seed the initial guess, as everywhere else in this stack.
     la::SolveResult solve(const LinearSystem& system, amrex::MultiFab& sol) const
     {
-        if (cfg_.precondKind != la::PrecondKind::none)
-        {
-            throw std::runtime_error(
-                "la::Solver: precond '" + cfg_.precond
-                + "' is not wired up yet (S5 drives the Krylov path only); use precond='none'"
-            );
-        }
+        // Still refused, and for a reason the preconditioner change does not
+        // touch: these three want the hierarchy as the SOLVER (a stationary
+        // V-cycle loop, or Ginkgo's Ir with the cycle as its inner solver), not
+        // as a preconditioner of one. That is a different object with a different
+        // stopping test, and this class builds a Krylov solver.
+        //
+        // Checked BEFORE the preconditioner is built: refusing after paying for a
+        // hierarchy would be the same error for more money.
         if (cfg_.solverKind == la::SolverKind::gmg || cfg_.solverKind == la::SolverKind::ir
             || cfg_.solverKind == la::SolverKind::mpir)
         {
@@ -62,7 +65,20 @@ public:
                   "than from a LinOp; use a Krylov method"
             );
         }
-        SystemKrylovSolver s(exec_, system, cfg_);
+        // ASKED FOR, not decided here. The hierarchy is built from the
+        // coefficient FIELDS, which the matrix still has and this class never
+        // did -- so the matrix builds it (coefficients.hpp) and a Solver stays
+        // what it was, a config and an executor.
+        std::shared_ptr<const gko::LinOp> precond = system.matrix().makePrecond(cfg_);
+        if (cfg_.precondKind != la::PrecondKind::none && precond == nullptr)
+        {
+            throw std::runtime_error(
+                "la::Solver: matrix format '" + std::string(system.matrix().name())
+                + "' cannot build precond '" + cfg_.precond
+                + "'; it builds its preconditioner from its own coefficients and declined this one"
+            );
+        }
+        SystemKrylovSolver s(exec_, system, cfg_, std::move(precond));
         // KrylovSolver::solve takes a non-const rhs only because ISolver's
         // signature does; the rhs is READ (gather(const FA&), transfer.hpp) and
         // never written. LinearSystem hands out a const rhs because a system is
@@ -80,7 +96,10 @@ private:
     public:
 
         SystemKrylovSolver(
-            const NeoN::Executor& exec, const LinearSystem& system, const la::SolverConfig& cfg
+            const NeoN::Executor& exec,
+            const LinearSystem& system,
+            const la::SolverConfig& cfg,
+            std::shared_ptr<const gko::LinOp> precond
         )
             : la::KrylovSolver(
                 la::makeExecutor(exec),
@@ -102,7 +121,7 @@ private:
                 cfg.rtol,
                 cfg.atol,
                 cfg.projectNullspace,
-                nullptr,
+                std::move(precond),
                 cfg.norm
             );
         }

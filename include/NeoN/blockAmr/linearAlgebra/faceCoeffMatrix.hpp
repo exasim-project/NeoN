@@ -20,9 +20,11 @@
 
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
+#include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/coefficients.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
+#include "NeoN/blockAmr/linearAlgebra/precond.hpp"
 #include "NeoN/blockAmr/linearAlgebra/sparse/csr.hpp"
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/core/executor/executor.hpp"
@@ -107,6 +109,15 @@ namespace detail
 struct FaceCoeffFields
 {
     NeoN::Executor exec {NeoN::SerialExecutor {}};
+    // NOT a MeshLevel, and that is the deliberate half of this slice's grouping.
+    // `ba`/`dm` are DERIVED from alpha wherever they are needed (mesh() below,
+    // globalRows(), MFFaceCoeffs' diagonal allocation), because alpha is the field
+    // the coefficients actually live on and is therefore the only authority on
+    // their layout. Storing the mesh here as well would give this struct a second
+    // copy of ba/dm that nothing keeps in step with alpha's own -- a matrix could
+    // then report one layout and write through another, silently. `geom` is stored
+    // because it is NOT derivable from a MultiFab; there is exactly one source for
+    // each fact. A MeshLevel is assembled on demand, in mesh(), from both.
     amrex::Geometry geom;
     la::BcArray bc {};
     Symmetry sym = Symmetry::symmetric;
@@ -115,34 +126,34 @@ struct FaceCoeffFields
     std::array<std::shared_ptr<amrex::MultiFab>, 3> upper {};
     std::array<std::shared_ptr<amrex::MultiFab>, 3> lower {};
 
-    static FaceCoeffFields make(
-        const NeoN::Executor& exec,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
-        amrex::Geometry geom,
-        Symmetry sym,
-        const la::BcArray& bc
-    )
+    // `mesh` is taken BY VALUE and its geom MOVED, which is what the four format
+    // factories above did with their by-value `amrex::Geometry geom`; a const&
+    // would add a Geometry copy per matrix construction. ba/dm are refcounted
+    // handles, so copying them into the parameter is a refcount bump.
+    static FaceCoeffFields
+    make(const NeoN::Executor& exec, MeshLevel mesh, Symmetry sym, const la::BcArray& bc)
     {
         FaceCoeffFields f;
         f.exec = exec;
-        f.geom = std::move(geom);
+        f.geom = std::move(mesh.geom);
         f.bc = bc;
         f.sym = sym;
         // MultiFabs are not zero-initialised (the arena recycles memory), so a
         // freshly built matrix is explicitly zeroed -- callers write only the
         // coefficients their operator contributes.
-        f.alpha = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
+        f.alpha = std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0);
         f.alpha->setVal(0.0);
         for (int d = 0; d < 3; ++d)
         {
-            const amrex::BoxArray fba = amrex::convert(ba, amrex::IntVect::TheDimensionVector(d));
-            f.upper[static_cast<std::size_t>(d)] = std::make_shared<amrex::MultiFab>(fba, dm, 1, 0);
+            const amrex::BoxArray fba =
+                amrex::convert(mesh.ba, amrex::IntVect::TheDimensionVector(d));
+            f.upper[static_cast<std::size_t>(d)] =
+                std::make_shared<amrex::MultiFab>(fba, mesh.dm, 1, 0);
             f.upper[static_cast<std::size_t>(d)]->setVal(0.0);
             if (sym == Symmetry::asymmetric)
             {
                 f.lower[static_cast<std::size_t>(d)] =
-                    std::make_shared<amrex::MultiFab>(fba, dm, 1, 0);
+                    std::make_shared<amrex::MultiFab>(fba, mesh.dm, 1, 0);
                 f.lower[static_cast<std::size_t>(d)]->setVal(0.0);
             }
             else
@@ -152,6 +163,16 @@ struct FaceCoeffFields
         }
         return f;
     }
+
+    /* @brief The level this matrix lives on, assembled from its two sources: the
+     *        layout off alpha, the geometry off the member.
+     *
+     * Built on demand rather than stored -- see the note on `geom` above. The
+     * layout half is exactly what MFFaceCoeffs::op() spelled by hand before this
+     * slice (alpha->boxArray(), alpha->DistributionMap()), so this is a grouping,
+     * not a new fact.
+     */
+    MeshLevel mesh() const { return MeshLevel {alpha->boxArray(), alpha->DistributionMap(), geom}; }
 
     // THE negSumDiag SEAM, as S7 left it. `diag` here is STILL `alpha`, the
     // cell-centred diagonal SOURCE (ddt/Sp/reaction) -- it is NOT the matrix
@@ -241,29 +262,19 @@ public:
     // `bc` defaults to all-periodic (BcArray 0 == periodic), which is what the
     // four-argument form in the S4 brief means; a non-periodic matrix passes the
     // sides explicitly, exactly as FaceCoeffSolver's `bc` already does.
-    static MFFaceCoeffs symmetric(
-        const NeoN::Executor& exec,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
-        amrex::Geometry geom,
-        const la::BcArray& bc = {}
-    )
+    static MFFaceCoeffs
+    symmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
         return MFFaceCoeffs(
-            detail::FaceCoeffFields::make(exec, ba, dm, std::move(geom), Symmetry::symmetric, bc)
+            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::symmetric, bc)
         );
     }
 
-    static MFFaceCoeffs asymmetric(
-        const NeoN::Executor& exec,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
-        amrex::Geometry geom,
-        const la::BcArray& bc = {}
-    )
+    static MFFaceCoeffs
+    asymmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
         return MFFaceCoeffs(
-            detail::FaceCoeffFields::make(exec, ba, dm, std::move(geom), Symmetry::asymmetric, bc)
+            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::asymmetric, bc)
         );
     }
 
@@ -282,9 +293,8 @@ public:
         return gko::share(la::FaceCoeffOp::create(
             la::makeExecutor(f_.exec),
             f_.exec,
-            f_.alpha->boxArray(),
-            f_.alpha->DistributionMap(),
-            f_.geom,
+            // Layout off alpha, geometry off the member -- see FaceCoeffFields::mesh().
+            f_.mesh(),
             f_.globalRows(),
             CellFieldLevel {f_.alpha},
             FaceFieldLevel {f_.upper},
@@ -339,6 +349,48 @@ public:
         }
         return *state_->diag;
     }
+
+    /* @brief The preconditioner for `config`, built from THIS matrix's own
+     *        coefficients. none / gmg / gmg_kokkos / mlmg; never declines.
+     *
+     * This format builds every preconditioner the matrix-free path has ever had,
+     * because it holds exactly what FaceCoeffSolver holds: alpha, the six face
+     * fields, the geometry and the BcArray. The call below is the SAME call
+     * FaceCoeffSolver's constructor makes, with the same arguments in the same
+     * order (precond.cpp) -- the hierarchy this returns is the hierarchy that
+     * path has always built, which is why moving the construction here is
+     * bitwise neutral.
+     *
+     * `storedLower()` and not coefficients().lower: the hierarchy wants the
+     * ALIASED low side a symmetric matrix stores, exactly as op() does, not the
+     * interface's absent one. Same distinction, same reason.
+     *
+     * The Kokkos V-cycle handle FaceCoeffPrecond also carries is dropped: it
+     * exists for solver="mpir", which wraps it a second time, and a Matrix is
+     * asked for a preconditioner, not for a solver.
+     */
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig& config) const
+    {
+        const FaceFieldLevel upper {f_.upper};
+        const FaceFieldLevel lower = f_.storedLower();
+        return makeFaceCoeffPrecond(
+                   la::makeExecutor(f_.exec),
+                   f_.globalRows(),
+                   f_.alpha.get(),
+                   &upper[0],
+                   &lower[0],
+                   &upper[1],
+                   &lower[1],
+                   &upper[2],
+                   &lower[2],
+                   f_.geom,
+                   f_.bc,
+                   config
+        )
+            .op;
+    }
+
+    const char* name() const { return "MFFaceCoeffs"; }
 
     bool isAssembled() const { return false; }
 
@@ -397,29 +449,19 @@ class CsrMatrix
 {
 public:
 
-    static CsrMatrix symmetric(
-        const NeoN::Executor& exec,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
-        amrex::Geometry geom,
-        const la::BcArray& bc = {}
-    )
+    static CsrMatrix
+    symmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
         return CsrMatrix(
-            detail::FaceCoeffFields::make(exec, ba, dm, std::move(geom), Symmetry::symmetric, bc)
+            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::symmetric, bc)
         );
     }
 
-    static CsrMatrix asymmetric(
-        const NeoN::Executor& exec,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
-        amrex::Geometry geom,
-        const la::BcArray& bc = {}
-    )
+    static CsrMatrix
+    asymmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
         return CsrMatrix(
-            detail::FaceCoeffFields::make(exec, ba, dm, std::move(geom), Symmetry::asymmetric, bc)
+            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::asymmetric, bc)
         );
     }
 
@@ -451,6 +493,36 @@ public:
         }
         return state_->csr;
     }
+
+    /* @brief none / mlmg only; gmg and gmg_kokkos are DECLINED.
+     *
+     * The restriction is not new and not this format's invention: the assembled
+     * solver has only ever accepted 'none' or 'mlmg' (solverConfig.hpp's note on
+     * PrecondKind, enforced in FaceCoeffCsrSolver's constructor). The reason is
+     * the same one that puts makePrecond on the matrix at all -- the GMG
+     * hierarchy rediscretises the coefficient FIELDS on coarser levels, and an
+     * assembled CSR is a matrix-free operator's opposite: it has the fields, but
+     * every path that consumes them (GmgPrecondT, KokkosGmgApply) is written
+     * against the matrix-free stencil. Declining is honest; building a
+     * matrix-free hierarchy behind an assembled matrix's back would be a second
+     * operator with no test tying the two together.
+     *
+     * Null rather than a throw, so the CALLER names itself and the format in the
+     * message (coefficients.hpp). precond='mlmg' with no precond_mlmg to wrap
+     * also comes back null and is refused by the caller the same way -- unlike
+     * FaceCoeffCsrSolver, this format has no separate "requires precond_mlmg"
+     * wording to preserve, because nothing ever threw it here.
+     */
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig& config) const
+    {
+        if (config.precondKind != PrecondKind::none && config.precondKind != PrecondKind::mlmg)
+        {
+            return nullptr;
+        }
+        return makeMlmgPrecond(la::makeExecutor(f_.exec), f_.globalRows(), *f_.alpha, config);
+    }
+
+    const char* name() const { return "CsrMatrix"; }
 
     bool isAssembled() const { return true; }
 
