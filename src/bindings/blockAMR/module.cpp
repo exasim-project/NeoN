@@ -25,6 +25,7 @@ NB_MODULE(_blockamr, m)
     registerStencilKernels(m);
     registerCellType(m);
     registerGhostCell(m);
+    registerStl(m);
     registerWallFrame(m);
     registerRobinClosure(m);
     registerLaplacianGhostCell(m);

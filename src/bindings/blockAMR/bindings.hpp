@@ -21,6 +21,7 @@ void registerLinOp(nb::module_& m);
 void registerStencilKernels(nb::module_& m);
 void registerCellType(nb::module_& m);
 void registerGhostCell(nb::module_& m);
+void registerStl(nb::module_& m);
 void registerWallFrame(nb::module_& m);
 void registerRobinClosure(nb::module_& m);
 void registerLaplacianGhostCell(nb::module_& m);

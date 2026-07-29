@@ -12,6 +12,7 @@ from .driver import WallEvaluation, wall_ngrow
 from .ghost_cell import GhostCell
 from .no_ibm import NoIbm
 from .samples import WallSamples, wall_gradient, wall_samples
+from .stl import Stl
 
 _METHODS = {
     "noIbm": NoIbm,
@@ -135,6 +136,7 @@ __all__ = [
     "Mixed",
     "NoIbm",
     "Plane",
+    "Stl",
     "WallEvaluation",
     "WallSamples",
     "wall_ngrow",

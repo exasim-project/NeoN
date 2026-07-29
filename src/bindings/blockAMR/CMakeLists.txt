@@ -26,6 +26,7 @@ nanobind_add_module(
   schemes/stencil_kernels.cpp
   ibm/cell_type.cpp
   ibm/ghost_cell.cpp
+  ibm/stl.cpp
   schemes/boundary/wall_frame.cpp
   schemes/boundary/robin_closure.cpp
   schemes/boundary/laplacian_ghost_cell.cpp
@@ -108,6 +109,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     schemes/stencil_kernels.cpp
     ibm/cell_type.cpp
     ibm/ghost_cell.cpp
+    ibm/stl.cpp
     schemes/boundary/wall_frame.cpp
     schemes/boundary/robin_closure.cpp
     schemes/boundary/laplacian_ghost_cell.cpp
