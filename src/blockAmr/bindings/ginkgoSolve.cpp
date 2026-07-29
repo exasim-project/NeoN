@@ -354,12 +354,22 @@ void bindPersistent(nb::module_& m, const char* name)
             nb::arg("gmg_max_levels") = 0,
             nb::arg("gmg_min_bottom") = 2,
             nb::arg("gmg_smoother") = "rbgs",
-            // GMG hierarchy precision: "fp64" (default; byte-for-byte the
-            // previous behaviour), "fp32" or "bf16" — the whole V-cycle (level
+            // GMG hierarchy precision: "fp32" (default), "fp64" (byte-for-byte
+            // the historical behaviour) or "bf16" — the whole V-cycle (level
             // coefficients, work fields, smoother, restriction/prolongation,
             // ghost fills) is STORED in that type while the outer CG/operator
             // stays double, which is what shrinks the bandwidth-bound V-cycle
             // traffic: half at fp32, a quarter at bf16.
+            //
+            // fp32 is the default because narrowing the cycle is free here: the
+            // V-cycle is only a PRECONDITIONER, and the Krylov operator, the
+            // residual and the stopping test stay fp64, so it can cost iterations
+            // but not correctness. It costs no measurable iterations either --
+            // identical CG counts in every case measured, and at 64^3 dirichlet
+            // the converged solution moves by 2.7e-18 (run-to-run noise is
+            // exactly 0.0). At 128^3 the cycle is 1.49x faster (periodic
+            // 45.3 -> 30.9 ms, dirichlet 65.6 -> 44.7 ms), confirmed
+            // order-independent by interleaving fp32/fp64 runs in one process.
             //
             // "bf16" needs precond="gmg_kokkos" (the shipped GmgPrecondT
             // hierarchy is fp64/fp32); its arithmetic still happens in fp32,
@@ -370,7 +380,7 @@ void bindPersistent(nb::module_& m, const char* name)
             // iterations at 64^3, 12 -> 273 at 256^3. A measured negative
             // result, wired up and kept as one: see bf16.hpp. Matrix-free
             // solver only.
-            nb::arg("gmg_precision") = "fp64",
+            nb::arg("gmg_precision") = "fp32",
             // The storage type of the COEFFICIENTS alone (alpha and the face
             // arrays); "" (the default) means the same as gmg_precision, which is
             // what every level did before this option existed. May not be wider
@@ -1139,7 +1149,7 @@ void registerGinkgoSolve(nb::module_& m)
             writeDiagSource(matrix, alpha);
 
             blockamr::la::LinearSystem system(matrix, rhs);
-            system += blockamr::la::Operator(blockamr::ops::Laplacian(gamma, geom, bcArr, bc_data));
+            system += blockamr::la::Operator(blockamr::ops::Laplacian(gamma, bcArr, bc_data));
             readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out, lx_out, ly_out, lz_out);
 
             SolverConfig cfg;
@@ -1225,8 +1235,7 @@ void registerGinkgoSolve(nb::module_& m)
             blockamr::la::LinearSystem system(matrix, rhs);
             for (int i = 0; i < n_apply; ++i)
             {
-                system +=
-                    blockamr::la::Operator(blockamr::ops::Laplacian(gamma, geom, bcArr, bc_data));
+                system += blockamr::la::Operator(blockamr::ops::Laplacian(gamma, bcArr, bc_data));
             }
             if (zero_after)
             {
@@ -1511,8 +1520,12 @@ void registerGinkgoSolve(nb::module_& m)
            const std::vector<std::string>& bc,
            const MultiFab* bcData)
         {
+            // `geom` is still taken, and is now used ONLY to parse the bc strings
+            // -- parseBc refuses a "periodic" side the geometry disagrees with.
+            // The operator itself no longer holds a geometry: it scales by the dx
+            // on the coefficients it is handed (ops/laplacian.hpp).
             const BcArray bcArr = parseBc(bc, geom, "laplacian");
-            return blockamr::la::Operator(blockamr::ops::Laplacian(gamma, geom, bcArr, bcData));
+            return blockamr::la::Operator(blockamr::ops::Laplacian(gamma, bcArr, bcData));
         },
         nb::arg("gamma"),
         nb::arg("geom"),
@@ -1623,7 +1636,7 @@ void registerGinkgoSolve(nb::module_& m)
             nb::arg("gmg_max_levels") = 0,
             nb::arg("gmg_min_bottom") = 2,
             nb::arg("gmg_smoother") = "rbgs",
-            nb::arg("gmg_precision") = "fp64",
+            nb::arg("gmg_precision") = "fp32",
             nb::arg("gmg_coeff_precision") = "",
             nb::arg("gmg_omega") = 1.1
         )

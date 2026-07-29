@@ -21,31 +21,23 @@ namespace blockamr::la
 /* @class Matrix
  * @brief Value-semantic holder for any type satisfying IsMatrix.
  *
- * The design is the type erasure NeoN already uses for dsl::SpatialOperator
- * (NeoN/dsl/spatialOperator.hpp): a private abstract `Concept` naming exactly the
- * public surface, a `Model<M>` holding one M BY VALUE, and copy through
- * `clone()`. Deliberately the same shape, not a new one -- a reader who knows
- * SpatialOperator knows this.
+ * Same type-erasure shape as NeoN's dsl::SpatialOperator
+ * (NeoN/dsl/spatialOperator.hpp), deliberately: private abstract `Concept`
+ * naming exactly the public surface, `Model<M>` holding one M BY VALUE, copy
+ * through `clone()`. The whole surface FORWARDS; Matrix decides nothing --
+ * including whether op() is assembled (CsrMatrix) or matrix-free (MFFaceCoeffs).
  *
- * The whole public surface FORWARDS; Matrix decides nothing. What a format
- * decides for itself is whether op() is assembled (CsrMatrix) or matrix-free
- * (MFFaceCoeffs), and nothing above this class needs to know which.
- *
- * Copying is a deep copy of the HELD FORMAT, which for the two formats in this
- * component means the copy shares their coefficient MultiFabs -- amrex::FabArray
- * has a deleted copy constructor, so a format cannot own its fields by value.
- * See faceCoeffMatrix.hpp.
+ * Copying deep-copies the HELD FORMAT, but the copy SHARES its coefficient
+ * MultiFabs: amrex::FabArray has a deleted copy constructor, so a format cannot
+ * own its fields by value. See faceCoeffMatrix.hpp.
  */
 class Matrix
 {
 public:
 
-    // The constrained converting constructor. The extra `requires` (which
-    // SpatialOperator does not need, because no SpatialOperator is itself an
-    // IsSpatialOperator) keeps `Matrix b {a};` on a NON-const Matrix lvalue from
-    // preferring this template over the copy constructor and wrapping a Matrix
-    // inside a Matrix -- Matrix satisfies IsMatrix, as the static_assert below
-    // asserts, so without it that is what would happen.
+    // The `requires` is load-bearing: Matrix itself satisfies IsMatrix (see the
+    // static_assert below), so without it `Matrix b {a};` on a NON-const lvalue
+    // would prefer this template over the copy ctor and nest a Matrix in a Matrix.
     template<IsMatrix M>
         requires(!std::same_as<std::remove_cvref_t<M>, Matrix>)
     Matrix(M cls) : model_(std::make_unique<Model<M>>(std::move(cls)))
@@ -65,14 +57,13 @@ public:
 
     ~Matrix() = default;
 
-    // The Ginkgo operator this matrix applies as. Assembled or matrix-free is
-    // the format's business; a caller sees a LinOp either way.
+    // Assembled or matrix-free is the format's business; a caller sees a LinOp.
     std::shared_ptr<const gko::LinOp> op() const { return model_->op(); }
 
     bool isAssembled() const { return model_->isAssembled(); }
 
-    // Write handles onto the coefficients. NOT const: an assembled format has to
-    // learn that its assembly is now stale, and this is where it does.
+    // Write handles onto the coefficients. NOT const: this is where an assembled
+    // format learns that its assembly is now stale.
     MatrixCoefficients coefficients() { return model_->coefficients(); }
 
     void zero() { model_->zero(); }
@@ -84,16 +75,15 @@ public:
 
     const NeoN::Executor& executor() const { return model_->executor(); }
 
-    // The preconditioner for `config`, built by the FORMAT from its own
-    // coefficients -- null when the format declines (coefficients.hpp). Forwards
-    // like everything else here: Matrix decides nothing, including this.
+    // Built by the FORMAT from its own coefficients; null when it declines
+    // (coefficients.hpp).
     std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig& config) const
     {
         return model_->makePrecond(config);
     }
 
-    // What the held format is called, for the message a caller raises when
-    // makePrecond declines. Not a dispatch key -- nothing branches on it.
+    // For the message a caller raises when makePrecond declines. Not a dispatch
+    // key -- nothing branches on it.
     const char* name() const { return model_->name(); }
 
 private:
@@ -141,10 +131,8 @@ private:
     std::unique_ptr<Concept> model_;
 };
 
-// The erasure's forwarding surface IS the concept's surface: if a member is
-// dropped, misspelled or given a different return type above, this fails here
-// rather than at the first caller. (It also makes Matrix nestable in another
-// Matrix, which the constrained constructor above deliberately prevents.)
+// Do not remove: catches a dropped, misspelled or retyped forwarding member here
+// rather than at the first caller. It is also why the ctor's `requires` is needed.
 static_assert(IsMatrix<Matrix>);
 
 } // namespace blockamr::la

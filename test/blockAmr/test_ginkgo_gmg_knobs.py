@@ -291,7 +291,7 @@ def test_gmg_config_defaults_and_kwargs():
         "gmg_min_bottom": 2,
         "gmg_omega": 1.1,
         "gmg_smoother": "rbgs",
-        "gmg_precision": "fp64",
+        "gmg_precision": "fp32",
         "gmg_coeff_precision": "",
         "precond_cycles": 1,
     }

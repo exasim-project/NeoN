@@ -19,22 +19,17 @@
 namespace blockamr::la
 {
 
-// Build the (Iteration, ResidualNorm[, ResidualNorm]) stopping-criteria chain
-// shared by every Krylov solve in this file: always stop on `max_iter`
-// iterations or a ResidualNorm criterion with the given `baseline` (e.g.
-// gko::stop::mode::rhs_norm for a relative rtol against ||rhs||, or
-// gko::stop::mode::absolute when the caller has already folded rtol into an
-// absolute `reduction_factor`); when `atol > 0.0` a second, absolute-baseline
-// ResidualNorm criterion is appended (the second baseline is always
-// gko::stop::mode::absolute — every call site wants the plain ||r|| <= atol
-// test, so there is nothing left for a caller to override). Passing
-// atol = 0.0 reproduces call sites that never had an atol branch at all, so
-// this single helper covers all of them exactly.
+// The (Iteration, ResidualNorm[, ResidualNorm]) stopping-criteria chain shared by
+// every Krylov solve here: stop on `max_iter` iterations, or on a ResidualNorm with
+// the given `baseline` (gko::stop::mode::rhs_norm for a relative rtol against
+// ||rhs||; ::absolute when the caller already folded rtol into an absolute
+// `reduction_factor`), plus — when atol > 0 — a second criterion whose baseline is
+// always absolute, for the plain ||r|| <= atol test every call site wants. atol = 0.0
+// reproduces the call sites that never had an atol branch.
 //
 // `norm` selects which norm the residual criteria measure: "l2" (Ginkgo's
-// gko::stop::ResidualNorm, the default and the historical behaviour) or "linf"
-// (ResidualNormInf, MLMG's norm — see stopNormInf.hpp). The iteration
-// criterion is norm-independent.
+// gko::stop::ResidualNorm, the default) or "linf" (ResidualNormInf, MLMG's norm — see
+// stopNormInf.hpp). The iteration criterion is norm-independent.
 inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCriteria(
     std::shared_ptr<const gko::Executor> exec,
     int max_iter,
@@ -71,15 +66,13 @@ inline std::vector<std::shared_ptr<const gko::stop::CriterionFactory>> makeCrite
     return criteria;
 }
 
-// Build a Krylov solver over `op`, stopping on iteration count, the relative
-// residual ||r|| <= rtol*||rhs|| (recomputed per solve, so one generate() is
-// reused across right-hand sides), or — when atol > 0 — the absolute residual
-// ||r|| <= atol. A non-null `precond` (an already-generated LinOp, e.g.
-// MlmgPrecond) is attached as the solver's generated preconditioner. `norm`
-// picks the norm both residual tests measure in ("l2" | "linf").
-//
-// `precond`/`norm` have no defaults: KrylovSolver::build (their one
-// caller) always passes both explicitly, so a default here would be dead.
+// Build a Krylov solver over `op`, stopping on iteration count, on the relative
+// residual ||r|| <= rtol*||rhs|| (recomputed per solve, so one generate() is reused
+// across right-hand sides), or — when atol > 0 — on the absolute ||r|| <= atol. A
+// non-null `precond` (an already-generated LinOp, e.g. MlmgPrecond) becomes the
+// solver's generated preconditioner. `norm` picks the norm both residual tests
+// measure in ("l2" | "linf"); neither it nor `precond` has a default because
+// KrylovSolver::build, their one caller, always passes both.
 std::shared_ptr<gko::LinOp> buildKrylov(
     const std::string& solver,
     std::shared_ptr<const gko::Executor> exec,
@@ -92,14 +85,10 @@ std::shared_ptr<gko::LinOp> buildKrylov(
 );
 
 // The cg/bicgstab/gmres subset used by the one-shot (non-persistent) solves in
-// oneshot.cpp. Unlike buildKrylov, the criteria are supplied by the caller
-// rather than built here: those solves stop on a baseline computed once from
-// the ORIGINAL system (a warm start's residual is not a fair yardstick for
-// itself), not buildKrylov's per-generate() rhs_norm, so the two cannot share
-// a criteria-building step. `what` names the caller in the "unknown solver"
-// message — ginkgo_solve_composite and ginkgo_solve_face_coeffs are the only
-// two callers, and carried byte-identical dispatch chains (differing only in
-// that name) before this consolidation.
+// oneshot.cpp. The criteria come from the caller rather than makeCriteria: those
+// solves stop against a baseline computed once from the ORIGINAL system (a warm
+// start's residual is not a fair yardstick for itself), not buildKrylov's
+// per-generate() rhs_norm. `what` names the caller in the "unknown solver" message.
 std::shared_ptr<gko::LinOp> generateBasicSolver(
     const std::string& solver,
     std::shared_ptr<const gko::Executor> exec,
@@ -108,18 +97,10 @@ std::shared_ptr<gko::LinOp> generateBasicSolver(
     const char* what
 );
 
-// Assemble the {num_iters, res_norm, converged, res_history, contraction,
-// diagnostic} result dict returned by every solve entry point (the epilogue
-// duplicated at several ginkgoSolve.cpp call sites). `res_history` is built
-// from `resLogger.history()`.
-//
-// `contraction` and `diagnostic` are filled for EVERY path, not just the
-// stationary V-cycle that needs them, because the key set is a contract: a
-// caller reads one dict without branching on which solver produced it (see
-// test_gmg_solver_stats_keys_match_cg). `diagnostic` is left empty here and
-// only the stationary path fills it in -- its thresholds are calibrated for a
-// V-cycle's roughly constant contraction and say nothing useful about a Krylov
-// method, whose rate varies over the run.
+// Fill the SolveResult every solve entry point returns (krylov/result.hpp for the
+// key-set contract). `diagnostic` is left empty here and only the stationary V-cycle
+// fills it: its thresholds are calibrated for a V-cycle's roughly constant
+// contraction and say nothing useful about a Krylov method, whose rate varies.
 inline SolveResult makeSolveResult(
     std::int64_t num_iters, double res_norm, bool converged, const std::vector<double>& res_history
 )
@@ -129,9 +110,8 @@ inline SolveResult makeSolveResult(
     r.res_norm = res_norm;
     r.converged = converged;
     r.res_history = res_history;
-    // Geometric mean of the per-iteration residual reduction. The history holds
-    // the initial residual plus one entry per iteration, so the number of
-    // reductions is size() - 1.
+    // Geometric mean of the per-iteration residual reduction; the history holds the
+    // initial residual plus one entry per iteration, hence size() - 1 reductions.
     double contraction = 0.0;
     if (res_history.size() >= 2 && res_history.front() > 0.0)
     {
@@ -145,9 +125,8 @@ inline SolveResult makeSolveResult(
     return r;
 }
 
-// Overload for the common case: num_iters/converged come from a
-// gko::log::Convergence logger and res_history from a ResidualHistoryLogger,
-// both attached to the solver via add_logger before apply().
+// Overload for the common case: counters from a gko::log::Convergence logger, history
+// from a ResidualHistoryLogger, both attached via add_logger before apply().
 inline SolveResult makeSolveResult(
     const gko::log::Convergence<double>& logger,
     const ResidualHistoryLogger& resLogger,

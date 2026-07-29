@@ -13,14 +13,11 @@
 namespace blockamr::la
 {
 
-// Every value `solver` may spell, across both persistent-solver classes and
-// every mode (Krylov, native-GMG loop, Ginkgo-IR twin, mixed-precision IR).
-// Which of these a PARTICULAR class/mode combination actually accepts is a
-// separate, per-call-site combination-legality question (e.g.
-// FaceCoeffCsrSolver never reaches SolverKind::gmg/ir/mpir; buildKrylov never
-// sees gmg/mpir at all) decided downstream by comparing this enum — this only
-// rejects an outright typo, once, at parseSolverConfig, rather than wherever
-// the string first happens to be dispatched on.
+// Every value `solver` may spell, across both persistent-solver classes and every
+// mode. Which of these a PARTICULAR class/mode accepts is a separate
+// combination-legality question decided downstream against this enum (e.g.
+// FaceCoeffCsrSolver never reaches gmg/ir/mpir); this only rejects an outright
+// typo, once, at parseSolverConfig.
 enum class SolverKind
 {
     cg,
@@ -33,12 +30,9 @@ enum class SolverKind
     mpir
 };
 
-// Throws with buildKrylov's historical "unknown solver" wording: this check
-// used to live only there (reached for every spelling except the three —
-// gmg/ir/mpir — the persistent-solver constructors intercept before ever
-// calling it), so a typo among THOSE three was rejected late, after other
-// constructor work had already run. Parsing every spelling here instead means
-// the same typo is now rejected before any of it.
+// Throws with buildKrylov's historical "unknown solver" wording. Parsing every
+// spelling HERE (rather than in buildKrylov, which gmg/ir/mpir never reach) is
+// what makes a typo among those three fail before any constructor work runs.
 inline SolverKind parseSolverKind(const std::string& solver)
 {
     if (solver == "cg") return SolverKind::cg;
@@ -52,10 +46,8 @@ inline SolverKind parseSolverKind(const std::string& solver)
     throw std::runtime_error("ginkgo: unknown solver '" + solver + "'");
 }
 
-// Every value `precond` may spell. As with SolverKind, which of these a given
-// solver class accepts is a per-class combination-legality question decided
-// downstream (FaceCoeffCsrSolver only ever allows none/mlmg, for instance);
-// this only rejects an outright typo.
+// Every value `precond` may spell. Per-class legality is decided downstream, as
+// with SolverKind (FaceCoeffCsrSolver allows only none/mlmg, for instance).
 enum class PrecondKind
 {
     none,
@@ -64,12 +56,9 @@ enum class PrecondKind
     gmg_kokkos
 };
 
-// Throws with FaceCoeffSolver's historical "unknown precond" wording (the
-// more permissive of the two per-class messages, since it is the one that
-// names all four spellings). FaceCoeffCsrSolver's narrower combination-
-// legality check ("expected 'none' or 'mlmg'") is unaffected: it still runs,
-// downstream, comparing this already-validated enum against its own accepted
-// subset.
+// Throws with FaceCoeffSolver's historical "unknown precond" wording, the more
+// permissive of the two per-class messages. FaceCoeffCsrSolver's narrower check
+// ("expected 'none' or 'mlmg'") still runs downstream on the parsed enum.
 inline PrecondKind parsePrecondKind(const std::string& precond)
 {
     if (precond == "none") return PrecondKind::none;
@@ -83,16 +72,12 @@ inline PrecondKind parsePrecondKind(const std::string& precond)
 }
 
 // Native-GMG hierarchy knobs (precond="gmg"/"gmg_kokkos", solver="gmg"/"ir"/"mpir").
-// Every field name/default matches the historical nb::arg exactly. smoother/
-// precision/coeffPrecision/bottomSolver deliberately stay plain strings rather
-// than gaining enum twins here: unlike solver/precond (validated on EVERY
-// construction, unconditionally), these four are only ever read on a GMG-using
-// path, so validating them unconditionally at parseSolverConfig would newly
-// reject values that are silently inert today on a non-GMG path — a real,
-// untested behaviour change T10's spec does not ask for. They stay validated
-// where they are read (gmgPrecond.hpp, gmgBottom.hpp, persistent.cpp,
-// gmgKokkos/vcycle.hpp's own Precision/parsePrecision), each already a single
-// site.
+// INVARIANT: every field name/default matches the historical nb::arg exactly.
+// smoother/precision/coeffPrecision/bottomSolver deliberately stay plain strings
+// with no enum twin here: they are read only on a GMG path, so validating them
+// unconditionally at parseSolverConfig would newly reject values that are
+// silently inert today on a non-GMG path. They stay validated where they are read
+// (gmgPrecond.hpp, gmgBottom.hpp, persistent.cpp, gmgKokkos/vcycle.hpp).
 struct GmgConfig
 {
     int preSweeps = 2;
@@ -101,7 +86,7 @@ struct GmgConfig
     int maxLevels = 0;
     int minBottom = 2;
     std::string smoother = "rbgs";
-    std::string precision = "fp64";
+    std::string precision = "fp32";
     std::string coeffPrecision = "";
     double omega = 1.1;
     int aggLevel0Size = 0;
@@ -112,17 +97,14 @@ struct GmgConfig
 };
 
 // Every non-coefficient, non-geometry, non-executor constructor argument of
-// FaceCoeffSolver/FaceCoeffCsrSolver. Built once by parseSolverConfig (the
-// nanobind boundary, ginkgoSolve.cpp) from the 27 raw __init__ arguments;
-// both persistent-solver constructors take `const SolverConfig&` instead of
-// spelling out all 27 (36 minus the 9 fixed: executor, geom, alpha..lz).
+// FaceCoeffSolver/FaceCoeffCsrSolver, built once by parseSolverConfig at the
+// nanobind boundary (ginkgoSolve.cpp) from the 27 raw __init__ arguments.
 struct SolverConfig
 {
     std::string solver = "bicgstab";
-    // Parsed from `solver` once by parseSolverConfig; solverKind is what
-    // every dispatch downstream now compares against instead of re-comparing
-    // the string. Kept alongside `solver` (not instead of it) because several
-    // messages still interpolate the original spelling.
+    // Parsed from `solver` once by parseSolverConfig and what every downstream
+    // dispatch compares against. Kept ALONGSIDE `solver`, not instead of it:
+    // several messages still interpolate the original spelling.
     SolverKind solverKind = SolverKind::bicgstab;
     int maxIter = 1000;
     double rtol = 1e-10;

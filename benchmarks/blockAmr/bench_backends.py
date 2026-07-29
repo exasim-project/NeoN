@@ -86,10 +86,7 @@ def read_fv_solution(case: Path, field: str) -> dict:
     return FvSolution.model_validate(data).solvers[field].model_dump()
 
 
-# ---------------------------------------------------------------------------
-# Case setup
-# ---------------------------------------------------------------------------
-def _tg_vel(x, y, z, t):
+def _taylor_green_velocity(x, y, z, t):
     """Divergence-free Taylor-Green face velocity (steady advecting flux)."""
     u = jnp.sin(2 * jnp.pi * x) * jnp.cos(2 * jnp.pi * y)
     v = -jnp.cos(2 * jnp.pi * x) * jnp.sin(2 * jnp.pi * y)
@@ -128,9 +125,6 @@ def _snapshot(U: CellField, mesh: Mesh) -> list:
     return [U.mf[0].copy_to_host(mfi).copy() for mfi in blockamr.MFIterator(U.mf[0])]
 
 
-# ---------------------------------------------------------------------------
-# Benchmark
-# ---------------------------------------------------------------------------
 @dataclass
 class Result:
     backend: str
@@ -157,7 +151,7 @@ def bench(n_cell: int, max_size: int, backends, steps: int, warmup: int, seed: i
         phi = FaceField(mesh, ncomp=1, ngrow=ngrow, name="phi")
         _seed_U(U, mesh, seed)
         for lev in range(mesh.n_levels()):
-            update_face_fluxes(phi[lev], _tg_vel, mesh.geom(lev), 0.0)
+            update_face_fluxes(phi[lev], _taylor_green_velocity, mesh.geom(lev), 0.0)
 
         # ONE equation, built once from disk-driven schemes.
         UEqn = Equation(
@@ -206,10 +200,10 @@ def _parity(results, rtol=1e-6, atol=1e-9):
         return "n/a (single backend)"
     ref = results[0]
     for r in results[1:]:
-        for a, b in zip(ref.snapshot, r.snapshot):
-            if not np.allclose(a, b, rtol=rtol, atol=atol):
-                md = float(np.max(np.abs(np.asarray(a) - np.asarray(b))))
-                return f"FAIL {ref.backend} vs {r.backend} (max|Δ|={md:.2e})"
+        for ref_box, box in zip(ref.snapshot, r.snapshot):
+            if not np.allclose(ref_box, box, rtol=rtol, atol=atol):
+                max_diff = float(np.max(np.abs(np.asarray(ref_box) - np.asarray(box))))
+                return f"FAIL {ref.backend} vs {r.backend} (max|Δ|={max_diff:.2e})"
     return "OK"
 
 

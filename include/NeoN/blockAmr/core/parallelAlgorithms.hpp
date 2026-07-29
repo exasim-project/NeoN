@@ -24,9 +24,9 @@ namespace blockamr
 namespace detail
 {
 
-// Every executor alternative forwards to amrex::ParallelFor. This is the seam, not a
-// backend change: putting it in place must leave codegen identical, so swapping an arm
-// to Kokkos later is one visible edit here and nowhere else.
+// Every executor alternative forwards to amrex::ParallelFor: the seam, not a backend
+// change -- codegen must stay identical, so swapping an arm to Kokkos later is one
+// visible edit here and nowhere else.
 
 template<typename ExecutorType, class Kernel>
 void parallelForImpl(

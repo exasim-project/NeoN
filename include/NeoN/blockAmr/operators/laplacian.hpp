@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <AMReX_Geometry.H>
 #include <AMReX_MultiFab.H>
 
 #include "NeoN/blockAmr/core/bc.hpp"
@@ -16,92 +15,74 @@ namespace blockamr::ops
 /* @class Laplacian
  * @brief The implicit diffusion discretisation, written as face coefficients.
  *
- * No base class: satisfy la::IsOperator and you are an operator. It is reached
- * only through `system += ops::Laplacian(gamma, geom, bc)` -- la::Coefficients,
- * the argument of `assemble`, has a private constructor whose only friend is
- * la::LinearSystem, so a caller cannot produce one.
+ * No base class: satisfy la::IsOperator and you are an operator. Reachable only
+ * through `system += ops::Laplacian(gamma, bc)`, since la::Coefficients has a
+ * private constructor whose only friend is la::LinearSystem.
  *
- * WHAT IT WRITES, exactly:
+ * Writes `upper[d](face) += -gammaFace / dx[d]^2` (and lower[d] when asymmetric),
+ * gammaFace being the mean of the two cells the face separates. The coefficient is
+ * NEGATIVE, so with the format's diagonal source a system is
+ * `alpha*phi - div(gamma grad phi)` -- the sign every existing blockAmr caller
+ * writes by hand, i.e. this is `-fvm::laplacian`.
  *
- *   upper[d](face) += -gammaFace / dx[d]^2       (and lower[d] when asymmetric)
+ * BOUNDARY-CONDITION SPLIT. A non-periodic domain face carries its REAL
+ * coefficient, with gamma taken from the boundary cell ITSELF -- the ghost beyond
+ * it is never filled, so reading it would read recycled arena memory. The DIAGONAL
+ * half of the homogeneous BC (core/bc.hpp fills `ghost = sign*interior + scale*g`:
+ * Dirichlet sign -1 scale 2 with g = u on the FACE, Neumann sign +1 scale dx[d]
+ * with g = du/dn outward) belongs to the CONSUMER, applied per level: FaceCoeffOp
+ * reflects the ghost on every apply (matrixFree/faceCoeffOp.cpp),
+ * assembleFaceCoeffCsr folds `diag += sign*aFace` (sparse/csr.cpp), and the GMG
+ * hierarchy reflects on every level it builds (gmg/gmgPrecond.hpp). All three are
+ * MULTIPLICATIVE in the face coefficient, so it must stay live -- which makes `bc`
+ * on the formats load-bearing arithmetic; faceCoeffMatrix.hpp holds the other half.
  *
- * with `gammaFace` the arithmetic mean of the two cells the face separates --
- * EXCEPT on a domain face of a non-periodic side, where the boundary condition is
- * folded in instead (below).
+ * WHY THAT DIRECTION, when folding would give the same FINE matrix: the folded
+ * `(sign-1)*aF` is dx-DEPENDENT (2*gamma/dx^2 for Dirichlet) yet sat in `alpha`,
+ * where gmgRestrict coarsens it by a plain eight-child volume average correct only
+ * for a dx-INDEPENDENT density, whereas on the face it coarsens by the correct 1/4
+ * law (gmgCoarsenFace). Folded, every coarse level inherited a boundary diagonal
+ * too strong and the V-cycle degraded as the mesh refined. DO NOT re-zero the face
+ * coefficient to make room for an operator-side fold: such a fold can only ever be
+ * right on the finest level.
  *
- * THE BOUNDARY FOLD (S6b). core/bc.hpp fills the ghost as
- * `ghost = sign*interior + scale*g`, with (sign -1, scale 2, g = u on the FACE)
- * for Dirichlet and (sign +1, scale dx[d], g = du/dn outward) for Neumann. A
- * boundary face with coefficient aF therefore contributes
- * `aF*(sign*pC + scale*g)` to its cell's row, which has no off-diagonal part at
- * all. So this operator writes, for that face and its cell C:
+ * MEASURED (same rhs, tolerance and cycle shape): fully-periodic is 8 iterations
+ * at 64/128/256^3 either way, solutions bitwise equal; fully-Dirichlet is 8/8/8
+ * unfolded against 12/13/14 folded (1.69x/1.72x/1.74x slower); Neumann has
+ * (sign-1) == 0, so nothing was ever folded and both conventions agree.
  *
- *   aF      ->  0                    (nothing is accumulated onto the face)
- *   diag(C) += (sign - 1) * aF       Dirichlet: -= 2*aF ; Neumann: unchanged
- *   rhs(C)  -= aF * scale * g        (bcData only; g read from ITS ghost cell)
+ * TRIPWIRE: test_la_boundary_conditions.py::
+ * test_laplacian_writes_the_boundary_face_coefficient -- load-bearing as the only
+ * test that reaches NEUMANN, and because solve-level tests stay green either way.
+ * test_the_two_formats_agree_through_the_laplacian catches nothing here: both
+ * formats fold whatever they are handed identically.
  *
- * `(sign - 1)` and not `sign` because `diag` here is still `alpha`, the diagonal
- * SOURCE, and the matrix diagonal `alpha - sum(faces)` is derived from it
- * (faceCoeffMatrix.hpp). Not accumulating aF already removes `-aF` from that sum,
- * so alpha only owes the remaining `sign*aF`:
+ * What IS written here is the INHOMOGENEOUS constant `rhs(C) -= aF * scale * g`
+ * (bcData only, g read from ITS ghost cell), because no la:: consumer can produce
+ * one: MFFaceCoeffs::op() hands FaceCoeffOp a null bcData, so
+ * FaceCoeffOpT::applyBcOffset is unreachable from la::Solver, and
+ * assembleFaceCoeffCsr takes no datum at all. One writer, so no double count. The
+ * legacy FaceCoeffSolver path is untouched and folds at apply time only.
  *
- *   alpha' - sum(faces)' = [alpha + (sign-1)aF] - [sum - aF]
- *                        = alpha - sum + sign*aF                              (*)
+ * The stored diagonal is not written by hand: it is derived behind a dirty flag
+ * Matrix::coefficients() already set, so writing `diag` and the face fields
+ * suffices and touching it directly would double-count.
  *
- * which is exactly the row assembleFaceCoeffCsr's `side()` lambda builds for a
- * non-periodic side (sparse/csr.cpp, S6a) and exactly the row FaceCoeffOp's ghost
- * reflection produces. The three agree by construction.
- *
- * THE FORMATS STILL FOLD TOO, AND THAT IS FINE -- BUT ONLY BECAUSE aF IS ZEROED.
- * MFFaceCoeffs and CsrMatrix still hand their BcArray to FaceCoeffOp and
- * assembleFaceCoeffCsr (faceCoeffMatrix.hpp), which reflect the ghost / fold the
- * diagonal a second time. Every one of those folds is MULTIPLICATIVE in the face
- * coefficient -- `aF*(sign*pC)` in the stencil, `diag += sign*aFace` in csr.cpp's
- * side() -- so on a coefficient this operator folded they contribute exactly
- * nothing. Keeping `bc` on the formats is what preserves S6a's variable row
- * length (an all-zero BcArray would make csr.cpp emit an explicit 0.0 at the
- * wraparound column) and what a hand-written non-periodic coefficient set still
- * needs.
- *
- * The dependency runs one way and it is load-bearing: fold onto the diagonal
- * while leaving aF on the face and every non-periodic boundary is wrong, because
- * the format's fold then lands on a live coefficient. laplacian.cpp marks the
- * line that must not go, and names the probe that catches its removal.
- *
- * The legacy FaceCoeffSolver path is untouched and folds at apply time only.
- *
- * The stored diagonal is NOT written by hand. It is derived behind a dirty flag
- * that Matrix::coefficients() already set before this operator ran (S7), so
- * writing `diag` and the face fields is sufficient and touching it directly would
- * double-count.
- *
- * SIGN. The coefficient is NEGATIVE, so this operator contributes
- * `-div(gamma grad phi)` -- with the format's diagonal source `alpha`, a system
- * assembled as `alpha` plus one Laplacian is `alpha*phi - div(gamma grad phi)`.
- * That is the sign every existing blockAmr caller writes by hand (`-1/dx^2` on
- * every face, throughout test/ and bench/), and reproducing those callers exactly
- * is what this slice is for. OpenFOAM's `fvm::laplacian(gamma, phi)` is the other
- * sign, i.e. this is `-fvm::laplacian`; there is no sign argument because the
- * constructor the design pins has none.
- *
- * LIFETIME. `gamma` is held by pointer and must outlive every `+=` this object is
- * used in. amrex::FabArray's copy constructor is deleted, so an operator cannot
- * own a field by value; and it should not, since the whole point of assembling
- * from a live field is that the caller's values are the ones read.
+ * LIFETIME. `gamma` is held by pointer and must outlive every `+=` -- FabArray's
+ * copy constructor is deleted, and reading the caller's live values is the point.
  */
 class Laplacian
 {
 public:
 
-    // `bcData` carries the INHOMOGENEOUS boundary datum, cell-centred on the
-    // matrix's BoxArray with >= 1 ghost and the datum living in the ghost layer
-    // (MLMG's setLevelBC contract, the same carrier FaceCoeffSolver's `bc_data`
-    // takes). null means homogeneous; then no rhs is written at all.
+    // `bcData` carries the INHOMOGENEOUS datum, cell-centred on the matrix's
+    // BoxArray with >= 1 ghost and the datum in the ghost layer (MLMG's
+    // setLevelBC contract). null means homogeneous, and then no rhs is written.
+    //
+    // NO geometry argument: it arrives on the coefficients as `c.mesh`, so the
+    // geometry scaled by and the geometry the matrix was built on cannot disagree.
     Laplacian(
-        const amrex::MultiFab& gamma,
-        amrex::Geometry geom,
-        la::BcArray bc,
-        const amrex::MultiFab* bcData = nullptr
+        const amrex::MultiFab& gamma, la::BcArray bc, const amrex::MultiFab* bcData = nullptr
     );
 
     // Accumulate, never assign -- several operators may share one system.
@@ -110,7 +91,6 @@ public:
 private:
 
     const amrex::MultiFab* gamma_;
-    amrex::Geometry geom_;
     la::BcArray bc_;
     const amrex::MultiFab* bcData_;
 };

@@ -497,6 +497,9 @@ def test_bench_reproduces_the_production_vcycle(max_size):
         gmg_coarsest_sweeps=8,
         gmg_omega=1.0,
         precond_cycles=1,
+        # The bench's baselines have no reduced-precision hierarchy, so production
+        # must be pinned to the bench's fp64 for the two to be comparable at all.
+        gmg_precision="fp64",
     )
     st = solver.solve(rhs, sol)
     production = st["res_norm"] / float(np.linalg.norm(b))

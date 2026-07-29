@@ -11,26 +11,18 @@
 #include <AMReX_Geometry.H>
 #include <AMReX_MultiFab.H>
 
-// ---------------------------------------------------------------------------
 // The optimised (kokkos_opt) V-cycle as a preconditioner apply, behind an interface
-// that mentions neither Kokkos nor Ginkgo.
+// that mentions neither Kokkos nor Ginkgo: the Kokkos kernels compile in
+// blockamr_kokkos, the Ginkgo stack in blockamr_solvers (both
+// CUDA_SEPARABLE_COMPILATION OFF; blockamr_kokkos is separate by history, not because
+// of an RDC fence -- see CMakeLists.txt). So the cycle is an opaque handle over flat
+// device vectors and precond.hpp wraps it in a gko::LinOp on the other side, with
+// nothing shared but this header and two double pointers.
 //
-// That is the point of this header: the Kokkos kernels compile in the blockamr_kokkos
-// object library, while the Ginkgo solver stack compiles in blockamr_solvers -- both
-// are CUDA_SEPARABLE_COMPILATION OFF (see CMakeLists.txt for the rationale;
-// blockamr_kokkos stays a separate library by history/inertia, not because of an RDC
-// fence). So the V-cycle is exposed here as an opaque handle over flat device
-// vectors, and precond.hpp wraps it in a gko::LinOp on the other side -- Ginkgo
-// there, Kokkos here, nothing shared but this header and two double pointers.
-//
-// Why bother: bench_gmg_kokkos.py measures the V-cycle in isolation, but a V-cycle is
-// a preconditioner. What a caller cares about is the SOLVE, where the V-cycle is one
-// term next to the matrix-vector product, the Krylov vector algebra and the iteration
-// count. Handing the optimised cycle to the real CG is the only way to find out what
-// its 3.17x is worth end to end, and the only way to compare it with MLMG on equal
-// terms -- bench_solvers.py already runs MLMG, matrix-free CG, MLMG-preconditioned CG,
-// the native GMG preconditioner and its Ir twin over the same operator.
-// ---------------------------------------------------------------------------
+// Why: a V-cycle measured in isolation is not a preconditioner. What a caller sees is
+// the SOLVE, where the cycle is one term next to the matrix-vector product, the Krylov
+// algebra and the iteration count -- and the only way to compare it with MLMG and the
+// native GMG on equal terms (bench_solvers.py runs all of them over the same operator).
 
 namespace blockamr
 {
@@ -47,49 +39,45 @@ struct KokkosGmgOpts
     int minBottom = 2;
     double omega = 1.0;
 
-    // The level storage type: "fp64", "fp32" or "bf16" (see GmgArgs::precision).
-    // The flat vectors this class exchanges with the solver are fp64 regardless.
+    // The level storage type: "fp64", "fp32" or "bf16" (see GmgArgs::precision). The
+    // flat vectors this class exchanges with the solver are fp64 regardless.
     std::string precision = "fp64";
 
-    // The storage type of the COEFFICIENTS alone; empty = same as `precision`. See
-    // GmgArgs::coeffPrecision -- narrowing these is cheaper in iterations than
-    // narrowing psi and rhs, because a coefficient error perturbs only the
-    // preconditioner's operator and never the residual CG stops on.
+    // The storage type of the COEFFICIENTS alone; empty = same as `precision`.
+    // Narrowing these costs far fewer iterations than narrowing psi and rhs, because a
+    // coefficient error perturbs only the preconditioner's operator, never the residual
+    // CG stops on (kernels.hpp GmgGsCell has the measurements).
     std::string coeffPrecision;
 
-    // On by default here, unlike in the bench. It cannot change the result at equal
-    // depth (red-black smoothing is decomposition-independent) and it is what keeps
-    // the coarse levels from being one launch per tiny box; the depth it additionally
-    // unlocks is a better-coarsened hierarchy, which the iteration count will show.
+    // On by default here, unlike in the bench: it cannot change the result at equal
+    // depth (red-black smoothing is decomposition-independent), it keeps the coarse
+    // levels from being one launch per tiny box, and the extra depth it unlocks helps
+    // the iteration count.
     bool agglomerate = true;
     int aggGridSize = 32;
 
-    // Target box size for level 0's own decomposition; 0 leaves level 0 on the
-    // caller's boxes. See GmgArgs::aggLevel0Size -- it trades one copy per apply for
-    // the halo traffic of the level that holds most of the cells.
+    // Target box size for level 0's own decomposition; 0 keeps the caller's boxes.
+    // Trades one copy per apply for the halo traffic of the level holding most of the
+    // cells.
     int aggLevel0Size = 0;
 
-    // On by default here for the same reason as agglomeration: it cannot change the
-    // result. ux and lx are the SAME matrix entries of a symmetric operator stored
-    // twice (see GmgArgs::shareCoeffs), so keeping one face fab per direction removes
-    // three of the nine arrays a colour sweep streams. Symmetry is verified at setup
-    // and an asymmetric operator keeps the pair, so this is safe to leave on.
+    // On by default for the same reason as agglomeration: it cannot change the result.
+    // ux and lx are the SAME entries of a symmetric operator stored twice, so one face
+    // fab per direction removes three of the nine arrays a colour sweep streams.
+    // Symmetry is verified at setup and an asymmetric operator keeps the pair.
     bool shareCoeffs = true;
 
-    // Homogeneous domain boundary conditions per side (xlo, xhi, ylo, yhi, zlo, zhi):
-    // 0 periodic, 1 Dirichlet, 2 Neumann. Same encoding and same type as
-    // la::BcArray, so the caller passes the parsed spec straight through.
+    // Homogeneous BCs per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1 Dirichlet,
+    // 2 Neumann -- la::BcArray's encoding, so a parsed spec passes straight through.
     std::array<int, 6> bc {};
 };
 
-// z = M^{-1} r, on flat DEVICE vectors in the solver's cell ordering (MFIter order,
-// i fastest within a valid box -- the ordering transfer.hpp defines and the
-// whole Ginkgo stack already uses).
+// z = M^{-1} r on flat DEVICE vectors in the solver's cell ordering (MFIter order, i
+// fastest within a valid box -- transfer.hpp's ordering).
 //
-// Two widths, because the Krylov vectors have two: fp64 for the ordinary solvers,
-// fp32 for the inner solve of the mixed-precision refinement. Both are independent
-// of what the HIERARCHY is stored in (`precision` above) -- the flat vector is the
-// solver's, the levels are the V-cycle's, and the scatter/gather converts.
+// Two widths because the Krylov vectors have two: fp64 for the ordinary solvers, fp32
+// for the inner solve of the mixed-precision refinement. Both are independent of the
+// HIERARCHY's storage type (`precision` above); the scatter/gather converts.
 class KokkosGmgApply
 {
 public:
@@ -106,13 +94,14 @@ public:
 };
 
 // Build the hierarchy from the same face-coefficient pieces FaceCoeffOp takes. The
-// fields must outlive the returned object, which reads them for the setup only.
+// fields are read at setup only and level 0 keeps its own converted copies, so later
+// in-place writes by the caller are not seen -- a changed operator needs a rebuilt
+// object.
 //
-// Red-black only: the ported V-cycle has no Chebyshev smoother, so asking for one
-// throws rather than quietly solving with a different smoother. Boundary conditions
-// are supported -- periodic, homogeneous Dirichlet and homogeneous Neumann, the same
-// three the shipped preconditioner takes -- via opts.bc, which must agree with the
-// geometry's periodicity (la::parseBc enforces that at the solver boundary).
+// Red-black only: asking for Chebyshev throws rather than quietly smoothing
+// differently. Boundary conditions -- periodic, homogeneous Dirichlet, homogeneous
+// Neumann -- come through opts.bc, which must agree with the geometry's periodicity
+// (la::parseBc enforces that at the solver boundary).
 std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const amrex::Geometry& geom,
     const amrex::MultiFab& alpha,

@@ -7,11 +7,9 @@
 #include <AMReX_GpuQualifiers.H>
 
 // The benchmarked cell kernels, written ONCE each and templated on the accessor
-// type so amrex::ParallelFor and the two Kokkos launchers all run the identical
-// arithmetic. Every accessor takes GLOBAL (i, j, k) -- see launch.hpp.
-//
-// AMREX_GPU_HOST_DEVICE marks these __host__ __device__, which is what both an
-// AMReX lambda and a KOKKOS_LAMBDA need to call them.
+// type so every launcher runs identical arithmetic. Accessors take GLOBAL
+// (i, j, k) -- see launch.hpp. AMREX_GPU_HOST_DEVICE is what lets both an AMReX
+// lambda and a KOKKOS_LAMBDA call them.
 
 namespace blockamr
 {
@@ -25,8 +23,8 @@ axpyCell(In const& x, Out const& y, int i, int j, int k, double a)
 }
 
 // Constant-coefficient 7-point Laplacian, 1 ghost. Same stencil shape as the
-// matrix-free apply in gmgKernels.hpp, which is what the V-cycle spends
-// its time in -- bandwidth-bound, 8 reads and 1 write per cell before caching.
+// matrix-free apply the V-cycle spends its time in -- bandwidth-bound, 8 reads and
+// 1 write per cell before caching.
 template<class In, class Out>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
 laplacianCell(In const& in, Out const& out, int i, int j, int k, double cx, double cy, double cz)
@@ -37,8 +35,8 @@ laplacianCell(In const& in, Out const& out, int i, int j, int k, double cx, doub
                  + cz * (in(i, j, k + 1) + in(i, j, k - 1) - 2.0 * s0);
 }
 
-// Harmonic-mean VanLeer correction, copied from stencilKernels.cpp so the two
-// implementations stay comparable: psi(r)*delta with one division, no abs.
+// Harmonic-mean VanLeer correction, copied from stencilKernels.cpp so the two stay
+// comparable: psi(r)*delta with one division, no abs.
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE double vanleerCorr(double d_up, double d_down)
 {
     const double prod = d_up * d_down;
@@ -46,8 +44,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE double vanleerCorr(double d_up, double 
 }
 
 // VanLeer-limited upwind divergence, mirroring divVanLeerCell in
-// stencilKernels.cpp:112. Needs TWO ghost cells (phi(i-2) .. phi(i+2)) and reads
-// three face fields -- FLOP-heavy and branchy, unlike the two above.
+// stencilKernels.cpp. Two ghost cells and three face fields -- FLOP-heavy and
+// branchy, unlike the two above.
 template<class In, class Face, class Out>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void divVanLeerCell(
     In const& phi,

@@ -2,45 +2,40 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Boundary conditions on the ``blockamr::la`` path: folded into the coefficients.
+"""Boundary conditions on the ``blockamr::la`` path: left on the face coefficients.
 
-S6b moved the fold from apply time to assembly time, for this path only. Before
-it, a domain boundary reached the mat-vec as a GHOST value — ``FaceCoeffOp``
+A domain boundary reaches the mat-vec as a GHOST value — ``FaceCoeffOp``
 reflecting the ghost layer, ``assembleFaceCoeffCsr`` folding the same reflection
-onto the diagonal — and ``ops::Laplacian`` wrote coefficients that knew nothing
-about it. Now ``ops::Laplacian`` writes the boundary condition itself:
+onto the diagonal — and ``ops::Laplacian`` writes coefficients that carry no
+boundary condition of their own:
 
-    aF      ->  0                (nothing accumulated onto the domain face)
-    diag(C) += (sign - 1) * aF   Dirichlet -2*aF; Neumann unchanged
-    rhs(C)  -= aF * scale * g    with bc_data; g read from ITS ghost cell
+    aF      -> -0.5*(gC + gC)/dx**2   the boundary CELL's gamma, twice: a domain
+                                      face has no second cell to average over
+    rhs(C)  -= aF * scale * g         with bc_data; g read from ITS ghost cell
 
 ``(sign, scale)`` is ``(-1, 2)`` for Dirichlet and ``(+1, dx[d])`` for Neumann,
-straight out of ``core/bc.hpp``'s ghost fill. ``(sign - 1)`` rather than ``sign``
-because ``diag`` is still ``alpha``, the diagonal SOURCE, and the matrix diagonal
-``alpha - sum(faces)`` is derived from it: not accumulating ``aF`` already removed
-``-aF`` from that sum.
+straight out of ``core/bc.hpp``'s ghost fill. ``sign`` never appears in what the
+operator writes: the consumer derives ``(sign-1)*aF`` from the live ``aF`` — the
+stencil as ``aF*(sign*pC)`` against a stored diagonal of ``alpha - sum(faces)``,
+``csr.cpp`` as ``diag += sign*aFace`` on a column it then drops.
 
-Both matrix formats STILL carry a ``bc`` and still fold with it, and that is not a
-double application: the operator's fold zeroes ``aF``, and every fold in the
-formats is multiplicative in ``aF`` (``aF*(sign*pC)`` in the stencil,
-``diag += sign*aFace`` in ``csr.cpp``), so the second one contributes exactly
-nothing. The formats keep ``bc`` because it is what makes ``csr.cpp`` DROP the
-boundary column instead of emitting a zero at the wraparound one, and because a
-hand-written non-periodic coefficient set still needs it. The dependency runs one
-way and is load-bearing — see ``faceCoeffMatrix.hpp`` and the comment on the
-``return`` in ``laplacian.cpp``.
+S6b briefly had ``ops::Laplacian`` fold instead (``aF -> 0`` plus ``(sign-1)*aF``
+on ``alpha``), which gives the same FINE matrix and was reverted for the coarse
+ones: ``(sign-1)*aF`` is ``2*gamma/dx**2``, dx-DEPENDENT, and the GMG hierarchy
+coarsens ``alpha`` as a dx-INDEPENDENT density. Measured 12/13/14 CG+GMG
+iterations at 64/128/256**3 folded against 8/8/8 unfolded. See ``laplacian.cpp``.
 
 What is checked here, on periodic / Dirichlet / Neumann / a mixed array:
 
-* the coefficients ``ops::Laplacian`` writes, BITWISE, per BC kind — the faces it
-  drops and the ``alpha`` it adds to, which is the fold arithmetic itself, on a
-  symmetric AND on an asymmetric matrix (the latter is the only row in the suite
-  that reaches the operator's low-side write at all);
+* the coefficients ``ops::Laplacian`` writes, BITWISE, per BC kind — the domain
+  faces and the ``alpha`` it must leave alone, on a symmetric AND on an
+  asymmetric matrix (the latter is the only row in the suite that reaches the
+  operator's low-side write at all);
 * the two formats, given the same operator, agree — bitwise on the coefficients
   and to ``_AGREE_TOL`` on the solve;
-* both formats reproduce the LEGACY ``FaceCoeffSolver``, which still folds by
-  ghost reflection. That is the load-bearing test: it is the only one that can
-  tell a self-consistent wrong convention from the right one;
+* both formats reproduce the LEGACY ``FaceCoeffSolver``. That is the load-bearing
+  test: it is the only one that can tell a self-consistent wrong convention from
+  the right one;
 * the inhomogeneous rhs term, bitwise against the datum, and again against the
   legacy path's ``bc_data`` answer — with an anti-vacuity check that dropping the
   datum moves the answer;
@@ -50,10 +45,12 @@ What is checked here, on periodic / Dirichlet / Neumann / a mixed array:
   identical — which is exactly how the ``bc`` removal that S6b first shipped got
   as far as a green suite (handoff §10, §11).
 
-The legacy path is deliberately NOT changed: it shares its coefficient fields with
-the GMG hierarchy, which reflects ghosts of its own per level, so folding into
-them would apply every BC twice per level (plans/blockamr-la-implementation.md,
-"S6b — RESCOPED"). ``test_ginkgo_bc.py`` is that path's test and is untouched.
+The legacy path is deliberately NOT changed and never folded into its
+coefficients: it shares them with the GMG hierarchy, which reflects ghosts of its
+own per level, so folding into them would apply every BC twice per level
+(plans/blockamr-la-implementation.md, "S6b — RESCOPED"). ``test_ginkgo_bc.py`` is
+that path's test and is untouched; this path now agrees with it on the stored
+coefficients as well as on the answer.
 
 The entry points are ``blockamr._blockamr._la_system_solve`` / ``_la_system_probe``
 — test-facing bindings, since blockAmr has no C++ test target that builds.
@@ -297,9 +294,13 @@ def _sides(bc):
 def _expected_faces(geom, dm, bc):
     """The face fields ops::Laplacian writes for gamma = 1 under `bc`.
 
-    -1/dx**2 on every face the operator still couples through, and ZERO on the two
-    domain faces of each non-periodic direction -- their coefficient moved onto
-    the diagonal source.
+    -1/dx**2 on every face, a non-periodic domain one included: the boundary
+    condition is not in the coefficient, only the gamma AVERAGE is -- and there
+    the operator averages the boundary cell's value with itself for want of a
+    second cell. Written as the operator spells it, since the comparison is
+    bitwise; at gamma = 1 it lands on the same number as an interior face, which
+    is why the varying-gamma row in ``test_la_linear_system.py`` is what pins
+    WHICH cell it read.
     """
     faces = _raw_faces(geom, dm)
     for _, s, _kind in _sides(bc):
@@ -310,26 +311,23 @@ def _expected_faces(geom, dm, bc):
             arr = face.copy_to_host(mfi)
             sl = [slice(None)] * 3
             sl[d] = edge
-            arr[tuple(sl) + (0,)] = 0.0
+            arr[tuple(sl) + (0,)] = -0.5 * (1.0 + 1.0) * _inv_dx2(geom, d)
             face.copy_from(mfi, arr)
     return faces
 
 
-def _expected_alpha(geom, bc, alpha_val=1.0):
-    """alpha after the fold: (sign-1)*aF per non-periodic side a cell touches.
+def _expected_alpha(alpha_val=1.0):
+    """alpha, untouched: the operator writes NO diagonal source, under ANY bc.
 
-    Dirichlet (sign -1) adds -2*aF; Neumann (sign +1) adds nothing at all, which
-    is what distinguishes the two kinds here -- under Neumann only the faces move.
+    This is the assertion that would object to a boundary term being folded back
+    onto the diagonal source. `(sign-1)*aF` there is dx-DEPENDENT and ends up
+    coarsened as a density by the GMG hierarchy; on the face it is coarsened by
+    the law it obeys. Dirichlet is the kind that would move (`sign-1 == -2`);
+    Neumann (`sign-1 == 0`) never could, and is in this parametrization so that
+    the two kinds are held to the same statement rather than only the one where a
+    mistake is expressible.
     """
-    out = np.full((N, N, N), alpha_val)
-    for _, s, kind in _sides(bc):
-        d = s // 2
-        sign = -1.0 if kind == "dirichlet" else 1.0
-        coef = -0.5 * (1.0 + 1.0) * _inv_dx2(geom, d)
-        sl = [slice(None)] * 3
-        sl[d] = 0 if s % 2 == 0 else N - 1
-        out[tuple(sl)] += (sign - 1.0) * coef
-    return out
+    return np.full((N, N, N), alpha_val)
 
 
 def _expected_rhs_fold(geom, bc, datum):
@@ -361,15 +359,21 @@ def _expected_rhs_fold(geom, bc, datum):
     "fmt, symmetry", [("mf", "symmetric"), ("csr", "symmetric"), ("mf", "asymmetric")]
 )
 @pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
-def test_laplacian_folds_the_boundary_into_the_coefficients(
+def test_laplacian_writes_the_boundary_face_coefficient(
     blockamr_session, fmt, symmetry, case, periodic, bc
 ):
-    """The fold, per BC kind, asserted BITWISE on what the operator wrote.
+    """What the operator wrote, per BC kind, asserted BITWISE.
 
-    This is the arithmetic of S6b and nothing else: which faces are dropped, and
-    what lands on the diagonal source when they are. Bitwise because the claim is
-    exactness -- a tolerance would pass a Dirichlet fold that used `sign` instead
-    of `sign - 1` on a mesh where 1/dx**2 happened to be small.
+    The claim is that the domain-face coefficient is LIVE and the diagonal source
+    is untouched -- the boundary condition belongs to whoever applies the matrix,
+    which is the only place it can be re-derived per GMG level. Bitwise because
+    the claim is exactness: a tolerance would pass a fold that put `(sign-1)*aF`
+    back on alpha on a mesh where 1/dx**2 happened to be small.
+
+    NEUMANN reaches nothing else in this suite at coefficient level, and it is the
+    kind where the two conventions coincide (`sign-1 == 0`), so it is the row that
+    says the statement holds for reasons rather than by luck; DIRICHLET is the row
+    where the old fold was expressible and so the one that can regress.
 
     The `asymmetric` row is what exercises ops::Laplacian's LOW-side write at all:
     every other test in this suite runs the default symmetric matrix, where the
@@ -389,7 +393,7 @@ def test_laplacian_folds_the_boundary_into_the_coefficients(
     _probe(fmt, gamma, alpha, geom, _random_rhs(ba, dm), bc, out, symmetry=symmetry)
 
     np.testing.assert_array_equal(
-        _one_box(out[0]), _expected_alpha(geom, bc), err_msg=f"{tag}: alpha after the fold"
+        _one_box(out[0]), _expected_alpha(), err_msg=f"{tag}: alpha must be untouched"
     )
     want = _expected_faces(geom, dm, bc)
     for d, name in enumerate("xyz"):
@@ -445,14 +449,14 @@ def test_the_two_formats_agree_through_the_laplacian(blockamr_session, case, per
 def test_folded_system_matches_the_legacy_face_coeff_solver(
     blockamr_session, fmt, case, periodic, bc
 ):
-    """The folded matrix IS the matrix the legacy ghost reflection applies.
+    """The assembled matrix IS the matrix the legacy ghost reflection applies.
 
-    The reference gets the raw coefficients and `bc`, and folds at apply time; this
-    path gets no `bc` at all and folds at assembly. Two independent implementations
-    of one boundary condition, so this is the test that can tell a self-consistent
-    wrong convention (a `sign` where `sign - 1` belongs, a scale of 1 where 2
-    belongs) from the right one -- which the format-agreement test above cannot,
-    since both formats would be wrong together.
+    The reference gets HAND-WRITTEN raw coefficients plus `bc`; this path gets the
+    same `bc` and coefficients ops::Laplacian assembled. Two independently written
+    coefficient sets under one boundary convention, so this is the test that can
+    tell a self-consistent wrong convention (a gamma read off the wrong side of a
+    domain face, a scale of 1 where 2 belongs) from the right one -- which the
+    format-agreement test above cannot, since both formats would be wrong together.
     """
     _require_bindings()
     geom, ba, dm = _make_mesh(periodic)

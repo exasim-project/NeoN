@@ -58,10 +58,14 @@ class GmgConfig(BaseModel):
     # RB-SOR relaxation: sol <- sol + omega * (gs - sol). Ignored by
     # smoother="chebyshev". Must stay in (0, 2) to be a convergent relaxation.
     omega: float = Field(default=1.1, gt=0.0, lt=2.0)
-    # V-cycle hierarchy precision: "fp64" (default; byte-for-byte the built-in
-    # behaviour), "fp32" (single-precision V-cycle, outer CG/operator stay
-    # double — halves the bandwidth-bound V-cycle traffic) or "bf16" (quarters
-    # it; stored in bfloat16, still computed in fp32).
+    # V-cycle hierarchy precision: "fp32" (default), "fp64" (byte-for-byte the
+    # historical behaviour) or "bf16" (quarters the traffic; stored in bfloat16,
+    # still computed in fp32).
+    #
+    # fp32 is the default because the V-cycle is bandwidth-bound and only steers
+    # CG — the outer operator, residual and stopping test stay fp64. Measured at
+    # 128^3: 1.49x faster for an identical iteration count, with the converged
+    # answer moving 2.7e-18, below the fp64 path's own run-to-run noise floor.
     #
     # "bf16" needs ``precond="gmg_kokkos"`` — the shipped GMG hierarchy carries
     # fp64/fp32 only, and the solver raises for the other precond values. It is a
@@ -70,7 +74,7 @@ class GmgConfig(BaseModel):
     # ||A|| ~ 6/dx^2, so the cycle weakens as n^2 and the CG iteration count more
     # than doubles already at 64^3 (11 -> 25) and reaches 273 vs 12 at 256^3.
     # There is no size at which it wins. See solvers/bf16.hpp.
-    precision: Literal["fp64", "fp32", "bf16"] = "fp64"
+    precision: Literal["fp64", "fp32", "bf16"] = "fp32"
     # Storage type of the COEFFICIENTS alone (alpha and the face arrays); "" means
     # the same as ``precision``, which is what every level did before this existed.
     # May not be wider than ``precision``, and needs ``precond="gmg_kokkos"``.

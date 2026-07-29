@@ -159,12 +159,14 @@ def laplacian(
 ) -> Operator:
     """The implicit diffusion term: ``system += laplacian(gamma, geom, bc=bc)``.
 
-    Writes ``-gammaFace/dx**2`` onto every interior face, so a system of this term
-    alone is ``-div(gamma grad phi)`` -- the positive-definite sign every caller in
-    this component already writes by hand, and the opposite of OpenFOAM's
-    ``fvm::laplacian``. On a non-periodic domain face the coefficient is folded
-    onto the diagonal source instead, and with ``bc_data`` onto the rhs too, which
-    MUTATES the rhs the system holds.
+    Writes ``-gammaFace/dx**2`` onto every face, so a system of this term alone is
+    ``-div(gamma grad phi)`` -- the positive-definite sign every caller in this
+    component already writes by hand, and the opposite of OpenFOAM's
+    ``fvm::laplacian``. A non-periodic domain face gets the boundary cell's own
+    gamma (it has no second cell); the homogeneous boundary condition itself is
+    applied by the matrix, per level, from that coefficient. With ``bc_data`` the
+    inhomogeneous constant is written onto the rhs, which MUTATES the rhs the
+    system holds.
 
     `geom` is an argument because a :class:`LinearSystem` carries no geometry: it
     is a matrix and an rhs and nothing else, by design.

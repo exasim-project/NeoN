@@ -15,32 +15,26 @@
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp"
 
-// ---------------------------------------------------------------------------
-// The optimised Kokkos V-cycle as a Ginkgo preconditioner.
+// The optimised Kokkos V-cycle as a Ginkgo preconditioner: a gko::LinOp whose apply
+// hands two device pointers to blockamr::KokkosGmgApply. All the multigrid lives behind
+// that handle, in the non-RDC object library where the Kokkos kernels compile
+// (apply.hpp).
 //
-// This is the whole Ginkgo side of it: a gko::LinOp whose apply hands two device
-// pointers to blockamr::KokkosGmgApply. All the multigrid lives on the other side of
-// that handle, in the non-RDC object library where the Kokkos kernels compile (see
-// apply.hpp for why that's a separate library rather than an RDC fence).
+// It sits beside GmgPrecondT rather than inside it, because GmgPrecondT is the shipped
+// preconditioner and the baseline every measurement is read against: `precond="gmg"`
+// and `precond="gmg_kokkos"` are independent objects, so bench_solvers.py can run both
+// in one process and compare them.
 //
-// It sits beside GmgPrecondT rather than inside it. GmgPrecondT is the shipped
-// preconditioner and the baseline every measurement is read against, so it is left
-// untouched; `precond="gmg"` and `precond="gmg_kokkos"` are two independent objects
-// and bench_solvers.py can run both in one process and compare them.
-//
-// What this one does NOT carry, because the ported V-cycle does not: physical
-// boundary conditions (periodic only), the Chebyshev smoother, and the host
-// (ReferenceExecutor) path. Each is rejected at construction rather than silently
+// What this one does NOT carry, because the ported V-cycle does not: the Chebyshev
+// smoother, and the host (ReferenceExecutor) path -- rejected below rather than
 // ignored.
-// ---------------------------------------------------------------------------
 
 namespace blockamr::la
 {
 
-// V is the value type of the Krylov vectors this preconditioner is applied to --
-// double for the ordinary solvers, float inside the mixed-precision refinement. It
-// is independent of the HIERARCHY's storage type: KokkosGmgApply converts on the
-// way in and out, so an fp32 Krylov can drive an fp64 hierarchy and vice versa.
+// V is the value type of the Krylov vectors -- double for the ordinary solvers, float
+// inside the mixed-precision refinement. Independent of the HIERARCHY's storage type:
+// KokkosGmgApply converts on the way in and out, so either can drive the other.
 template<class V>
 class GmgKokkosPrecondT : public AmrexLinOpBase<GmgKokkosPrecondT<V>, V>
 {
@@ -82,15 +76,15 @@ protected:
             this->get_executor()->synchronize(); // b written by Ginkgo
         }
         prof::Timer t("gmgk.vcycle");
-        // shared_ptr<T> in a const method still yields a non-const T*, so the
-        // handle's mutating apply is reachable without a cast.
+        // shared_ptr<T> in a const method still yields a non-const T*, so the handle's
+        // mutating apply is reachable without a cast.
         vcycle_->apply(localValues<V>(b), localValues<V>(x));
     }
 
 private:
 
-    // shared_ptr for the same reason as AmrexLinOpBase::scratch_: Ginkgo gives these
-    // operators a copy-assignment, which a move-only member would delete.
+    // shared_ptr like AmrexLinOpBase::scratch_: Ginkgo copy-assigns these operators,
+    // which a move-only member would delete.
     std::shared_ptr<blockamr::KokkosGmgApply> vcycle_;
 };
 

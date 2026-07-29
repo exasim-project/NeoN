@@ -44,44 +44,46 @@
 // The formats therefore differ in exactly one thing -- what op() hands back --
 // which is why they live in one header instead of two.
 //
-// BOTH FORMATS CARRY A BcArray, AND SO DOES ops::Laplacian (S6b). Read this
-// before changing either, because it looks like a double fold and is not.
+// BOTH FORMATS CARRY A BcArray, AND SO DOES ops::Laplacian. Read this before
+// changing either, because it looks like a double fold and is not.
 //
-// op() hands `bc` to the underlying machinery exactly as it did before S6b:
-// FaceCoeffOp reflects the domain ghosts, assembleFaceCoeffCsr folds the same
-// reflection onto the diagonal and drops the off-diagonal. S6b then ALSO made
-// ops::Laplacian fold, into the coefficients it assembles: the boundary face
-// coefficient becomes zero and (sign-1)*aF lands on the diagonal source, with
-// -aF*scale*g on the rhs for an inhomogeneous datum (operators/laplacian.hpp).
-//
-// The two coexist because THE OPERATOR'S FOLD ZEROES aF, and every fold here is
-// multiplicative in aF: the stencil computes aF*(sign*pC) = 0, and csr.cpp's
-// side() does `diag += sign*aFace` = 0 on a column it then drops. So the second
-// fold applies nothing. This was verified by building it, not by reasoning alone
-// (S6b handoff §6.1 and §10).
+// THESE FORMATS ARE THE ONLY PLACE THE HOMOGENEOUS DOMAIN BC IS APPLIED, and that
+// is the whole of the arrangement. op() hands `bc` to the underlying machinery:
+// FaceCoeffOp reflects the domain ghosts per apply, assembleFaceCoeffCsr folds the
+// same reflection onto the diagonal per assembly and drops the off-diagonal.
+// ops::Laplacian carries `bc` for two other reasons only -- it must know which
+// domain faces have no second cell to average gamma over, and it must know which
+// sides read an inhomogeneous datum -- and it deliberately leaves the boundary FACE
+// COEFFICIENT live (operators/laplacian.hpp). Every fold here is multiplicative in
+// that coefficient, so a live one is exactly what they need.
 //
 // THE DEPENDENCY THAT MAKES IT SAFE, spelled out because it is load-bearing and
-// invisible: an operator that folds onto the diagonal while LEAVING aF on the
-// face breaks every non-periodic boundary, because then the fold below is applied
-// to a live coefficient. The tripwire is measured -- that mutation reddens 19
-// tests (S6b handoff §10) -- but note WHERE it is NOT:
-// test_la_boundary_conditions.py::test_the_two_formats_agree_through_the_laplacian
-// stays green through it, because both formats fold the live coefficient the same
-// way and agree with each other while both are wrong. The guard that actually
-// holds this line is the BITWISE coefficient assertion in the same file
-// (test_laplacian_folds_the_boundary_into_the_coefficients); do not replace it
-// with a solve-level comparison.
+// invisible: an operator that ALSO folded -- zeroing the boundary coefficient and
+// putting (sign-1)*aF on the diagonal source -- would leave the folds below inert
+// and the FINE matrix identical, which is why the arrangement can be got wrong and
+// still pass a solve. It is wrong on the COARSE levels: the GMG hierarchy built by
+// makePrecond coarsens `alpha` with gmgRestrict, an eight-child volume average
+// correct only for a dx-INDEPENDENT density, and (sign-1)*aF is 2*gamma/dx^2. On
+// the face, gmgCoarsenFace's 1/4 is the right law. Measured: fully-Dirichlet CG+GMG
+// took 12/13/14 iterations at 64/128/256^3 with the operator folding, 8/8/8 without
+// -- 1.7x slower and mesh-DEPENDENT. laplacian.cpp carries the full measurement.
+//
+// The guard is the BITWISE coefficient assertion in test_la_boundary_conditions.py
+// (test_laplacian_writes_the_boundary_face_coefficient); do not replace it with a
+// solve-level comparison. test_the_two_formats_agree_through_the_laplacian sees
+// nothing -- both formats fold whatever they are handed the same way, so they agree
+// with each other under either convention.
 //
 // Keeping `bc` here is also what preserves S6a's variable row length: with an
 // all-zero BcArray, csr.cpp's else-branch (:109) emits an explicit 0.0 at the
 // modular-wraparound column, so a non-periodic row would carry seven entries
 // including a periodic coupling that does not exist.
 //
-// The legacy blockamr::la::FaceCoeffSolver path is UNCHANGED and folds BCs
-// at apply time only: it shares its coefficient fields with the GMG hierarchy,
-// which applies its own ghost reflection per level, so folding into them would
-// apply every BC twice per level (plans/blockamr-la-implementation.md, "S6b --
-// RESCOPED").
+// The legacy blockamr::la::FaceCoeffSolver path folds BCs at apply time in exactly
+// the same way, and always has: it shares its coefficient fields with the GMG
+// hierarchy, which applies its own ghost reflection per level, so folding into them
+// would apply every BC twice per level (plans/blockamr-la-implementation.md, "S6b --
+// RESCOPED"). The la:: path now agrees with it on the stored coefficients too.
 
 namespace blockamr::la
 {
@@ -191,7 +193,7 @@ struct FaceCoeffFields
     // operator's += landed on a value the matrix recomputes underneath it.
     MatrixCoefficients coefficients()
     {
-        MatrixCoefficients c {CellFieldLevel {alpha}, FaceFieldLevel {upper}, std::nullopt};
+        MatrixCoefficients c {mesh(), CellFieldLevel {alpha}, FaceFieldLevel {upper}, std::nullopt};
         if (sym == Symmetry::asymmetric)
         {
             c.lower = storedLower();
@@ -287,9 +289,8 @@ public:
     // is what makes it survive.
     std::shared_ptr<const gko::LinOp> op() const
     {
-        // Called for its refresh only -- the operator takes the HANDLE to the
-        // same field below, not the reference this returns.
-        diagonal();
+        // PROTOTYPE (C1): no refresh -- the stencil recomputes the centre term
+        // inline, so there is nothing derived to keep fresh.
         return gko::share(la::FaceCoeffOp::create(
             la::makeExecutor(f_.exec),
             f_.exec,
@@ -302,9 +303,9 @@ public:
             // which is exactly FaceCoeffOp's documented convention. coefficients()
             // reports the same object ABSENT.
             f_.storedLower(),
-            // Still the caller's `bc`: the reflection it drives is inert on
-            // coefficients an operator already folded (aF == 0 there), and it is
-            // what a hand-written non-periodic coefficient set still needs. The
+            // The caller's `bc`, and this is where it EARNS its keep: the
+            // reflection it drives is what applies the homogeneous domain BC, on
+            // an operator-assembled and a hand-written coefficient set alike. The
             // header says why that is not a double fold.
             f_.bc,
             nullptr,
@@ -330,9 +331,9 @@ public:
      *
      * No BC awareness, deliberately: domain BCs enter the mat-vec through the
      * ghost reflection, hence through the OFF-diagonal term, so alpha - sum(faces)
-     * is BC-independent. That stayed true through S6b -- the fold it added moves a
-     * boundary coefficient between the face fields and alpha, and this derivation
-     * reads whatever those hold.
+     * is BC-independent. It reads whatever the two fields hold, so it is correct
+     * under either convention for where the boundary term is stored -- and the
+     * convention is that it stays on the face (operators/laplacian.hpp).
      */
     const amrex::MultiFab& diagonal() const
     {
@@ -485,8 +486,9 @@ public:
                 // Still the caller's `bc`, and this is where it EARNS its keep:
                 // it is what makes csr.cpp's side() drop the boundary column
                 // instead of emitting an explicit 0.0 at the wraparound one
-                // (S6a's variable row length). The fold it adds on top,
-                // `diag += sign*aFace`, is zero on a folded coefficient set.
+                // (S6a's variable row length), AND what folds the homogeneous
+                // domain BC onto the diagonal, `diag += sign*aFace`, from the live
+                // boundary coefficient ops::Laplacian leaves there.
                 f_.bc
             );
             state_->dirty = false;

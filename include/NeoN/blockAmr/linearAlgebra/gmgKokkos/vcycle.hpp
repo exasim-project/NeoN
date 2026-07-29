@@ -2,20 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
-// The production Kokkos GMG V-cycle: Vcycle<Backend,T,TC> and the types it needs
-// (LevelT, sameField, KokkosOptGmgBackend, Precision/PrecPair) -- split out of
-// what used to be one TU, bench/gmg_vcycle.cpp, so the shipped precond="gmg_kokkos"
-// path (apply.cpp) does not carry the four-backend benchmark harness
-// into the wheel with it. See bench/gmgVcycleBench.cpp for the harness (the
-// other three backends, the timing driver, benchGmgVcycle) and for the "why
-// compare these four backends" rationale that used to sit at the head of the
-// single file.
+// The production Kokkos GMG V-cycle: Vcycle<Backend,T,TC> plus LevelT, sameField,
+// KokkosOptGmgBackend and the Precision/PrecPair enums. Split out of the old single
+// bench TU so the shipped precond="gmg_kokkos" path (apply.cpp) does not drag the
+// four-backend benchmark harness into the wheel; see bench/gmgVcycleBench.cpp.
 //
-// A header, not a .cpp, because Vcycle is a template: apply.cpp
-// instantiates it for KokkosOptGmgBackend only (the production path),
-// bench/gmgVcycleBench.cpp for all four backends (the comparison). What used to
-// be one set of instantiation points emitted in one TU is now emitted once per
-// including TU -- more compile time, no change in behaviour.
+// A header because Vcycle is a template: apply.cpp instantiates it for
+// KokkosOptGmgBackend only, bench/gmgVcycleBench.cpp for all four backends.
 
 #pragma once
 
@@ -47,15 +40,12 @@ namespace blockamr
 namespace
 {
 
-// The level scalar is a template parameter, as in production's GmgPrecondT: the whole
-// hierarchy below level 0 can be carried in fp32 — or in bf16 — while the operator and
-// the caller's fields stay fp64, shrinking the traffic of a smoother that is
-// bandwidth-bound at scale. Only kokkos_opt is instantiated for the reduced types; the
-// baselines stay fp64, which is what keeps them baselines.
-//
-// bf16 is a STORAGE type only: la::Bf16 converts to float on every read and rounds
-// once on every write, and the kernels compute in la::GmgComputeT<T>. See bf16.hpp
-// for why anything else turns the preconditioner's operator singular.
+// The level scalar is a template parameter, as in production's GmgPrecondT: the
+// hierarchy below level 0 can run narrower while the operator and the caller's fields
+// stay fp64, shrinking the traffic of a bandwidth-bound smoother. Only kokkos_opt is
+// instantiated narrow; the baselines stay fp64, which is what keeps them baselines.
+// bf16 is STORAGE only (la::Bf16 converts on read, rounds on write, kernels compute in
+// la::GmgComputeT<T>) -- see gmg/bf16.hpp.
 enum class Precision
 {
     fp64,
@@ -82,9 +72,9 @@ Precision parsePrecision(const std::string& p)
     );
 }
 
-// Bytes per stored value, used only to reject a coefficient type WIDER than the field
-// type: that combination costs traffic to buy accuracy in the array that needs it
-// least, so it is a configuration mistake rather than a trade-off worth instantiating.
+// Only used to reject a coefficient type WIDER than the field type: paying traffic for
+// accuracy in the array that needs it least is a configuration mistake, not a
+// trade-off.
 int precisionBytes(Precision p)
 {
     switch (p)
@@ -99,8 +89,7 @@ int precisionBytes(Precision p)
     return 8;
 }
 
-// The coefficient precision defaults to the field precision, which is what the whole
-// hierarchy used before the two were separable.
+// The coefficient precision defaults to the field precision.
 Precision parseCoeffPrecision(const std::string& coeff, const std::string& field)
 {
     const Precision f = parsePrecision(field);
@@ -119,28 +108,17 @@ Precision parseCoeffPrecision(const std::string& coeff, const std::string& field
     return c;
 }
 
-// The fused kernels again, with every AMReX operation removed from the timed cycle
-// (halo.hpp supplies the halo exchange, the zero fill and the agglomeration
-// transfers) and therefore with the per-kernel fence removed too: consecutive Kokkos
-// kernels on one execution space are already ordered by the stream. What that buys is
-// not the fences themselves but the serialisation they enforced -- the host no longer
-// waits on the device inside a cycle, so it can run the launch of a coarse level
-// ahead of the arithmetic of the level above it.
+// The fused kernels with every AMReX operation lifted out of the timed cycle (halo.hpp
+// supplies the halo exchange, the zero fill and the agglomeration transfers), so the
+// per-kernel fence goes too: consecutive Kokkos kernels on one execution space are
+// already stream-ordered, and the host can now run a coarse level's launches ahead of
+// the arithmetic above it. The fence could not be dropped earlier -- the FillBoundary
+// after each colour sweep needed exactly the ordering it gave.
 //
-// The fence could not be dropped before this: each colour sweep was followed by an
-// AMReX FillBoundary, which needs exactly the same ordering the fence provided. The
-// halo port is what makes the removal possible, not an optimisation beside it.
-//
-// ON ONE RANK ONLY, and that is a property of the plans rather than of the kernels.
-// A CopyPlan task is a device-to-device rectangular copy between two LOCAL box
-// indices; a ghost cell covered by a box on another rank has no device address to
-// name, so the plan cannot express it. Filling that gap would mean packing buffers,
-// MPI and a completion wait per exchange -- i.e. reinstating exactly the
-// synchronisation point this backend exists to remove, for a cycle whose cost is
-// then no longer the launch (halo.hpp says the same at its head). So on >1
-// rank the CELL KERNELS stay Kokkos and the DATA MOVEMENTS go back to AMReX, which
-// is precisely what `kokkos_fused` already does: same answer everywhere,
-// fence-free on one rank. `Vcycle::amrexFree_` is where that decision is made.
+// ONE RANK ONLY, a limit of the plans and not of the kernels: a CopyPlan task names two
+// LOCAL box indices, so a ghost owned by another rank has no device address (halo.hpp).
+// On >1 rank the CELL KERNELS stay Kokkos and the DATA MOVEMENTS go back to AMReX --
+// what `kokkos_fused` already does. Decided in `Vcycle::amrexFree_`.
 struct KokkosOptGmgBackend
 {
     static constexpr const char* tag = "kokkos_opt";
@@ -152,8 +130,7 @@ struct KokkosOptGmgBackend
 
     static void afterAmrexWrite() { amrex::Gpu::streamSynchronizeAll(); }
 
-    // The level scalar is deduced from the fabs rather than fixed at double, which is
-    // what lets this backend — and only this one — be instantiated for fp32.
+    // The level scalar is deduced from the fabs, so this backend alone can run narrow.
     template<class... A>
     static void gsColor(A&&... a)
     {
@@ -173,18 +150,12 @@ struct KokkosOptGmgBackend
     }
 };
 
-// Are these two fields the same numbers everywhere?
-//
-// The question this answers is whether the operator is symmetric. Cell i's east
-// coefficient is stored at face i+1 of ux; cell i+1's west coefficient is stored at
-// face i+1 of lx; and they are the two off-diagonal entries A[i][i+1] and A[i+1][i].
-// So ux == lx pointwise IS symmetry, and it is the exact condition under which one
-// array can stand in for both.
-//
-// Bitwise, deliberately: near-equal is a different operator, and a tolerance here
-// would silently symmetrise it. The common case is the same fab passed twice (the
-// solver hands ux=lx=fx), which the pointer test settles without a kernel; setup
-// only, so the reduction costs nothing that gets timed.
+// Are these two fields the same numbers everywhere? ux == lx pointwise IS symmetry of
+// the operator (cell i's east coefficient and cell i+1's west one are the entries
+// A[i][i+1] and A[i+1][i], both stored at face i+1), and so the exact condition for one
+// array to stand in for both. Bitwise on purpose: a tolerance would silently symmetrise
+// a near-symmetric operator. The common case (the same fab passed twice) is settled by
+// the pointer test; setup only, so the reduction is never timed.
 bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
 {
     if (&a == &b)
@@ -205,9 +176,8 @@ bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
         [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
         { return {amrex::Math::abs(aa[box](i, j, k) - bb[box](i, j, k))}; }
     );
-    // ParReduce reduces over THIS rank's boxes only. The answer decides whether the
-    // hierarchy keeps one face fab per direction or two, so ranks that disagreed
-    // would build structurally different hierarchies for the same operator.
+    // ParReduce is this rank's boxes only, and the answer decides how many face fabs a
+    // level keeps: ranks that disagreed would build different hierarchies.
     amrex::ParallelAllReduce::Max(diff, amrex::ParallelContext::CommunicatorSub());
     return diff == 0.0;
 }
@@ -217,9 +187,8 @@ bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
 template<class T, class TC>
 struct LevelT
 {
-    // The level fab type production uses (FabArray<BaseFab<T>>, not MultiFab), so the
-    // production kernels apply unchanged. Two of them: the fields (sol, rhs) carry T,
-    // the coefficients carry TC. See GmgGsCell for why the two are separable.
+    // Production's fab type (FabArray<BaseFab<T>>), so the production kernels apply
+    // unchanged. Fields carry T, coefficients TC; see GmgGsCell for why they split.
     using Fab = la::GmgFab<T>;
     using CoeffFab = la::GmgFab<TC>;
 
@@ -227,34 +196,29 @@ struct LevelT
     std::unique_ptr<CoeffFab> alpha, ux, lx, uy, ly, uz, lz;
     std::unique_ptr<Fab> sol, rhs;
 
-    // lx/ly/lz are NULL on a level that shares one face coefficient per direction
-    // (GmgArgs::shareCoeffs, kokkos_opt only). The stencil reads the east coefficient
-    // at face i+1 and the west at face i, so for a symmetric operator -- where the
-    // two fabs hold identical numbers -- handing the kernels ux for both arguments is
-    // the same arithmetic on half the storage. Read the lower coefficients through
-    // these accessors, never through the pointers, so a shared level cannot be
-    // dereferenced by accident.
+    // lx/ly/lz are NULL on a level sharing one face coefficient per direction
+    // (GmgArgs::shareCoeffs, kokkos_opt only): for a symmetric operator ux and lx hold
+    // identical numbers, so passing ux for both is the same arithmetic on half the
+    // storage. Always read the lower coefficients through these accessors, so a shared
+    // level cannot be dereferenced by accident.
     [[nodiscard]] const CoeffFab& lxf() const { return lx ? *lx : *ux; }
     [[nodiscard]] const CoeffFab& lyf() const { return ly ? *ly : *uy; }
     [[nodiscard]] const CoeffFab& lzf() const { return lz ? *lz : *uz; }
     [[nodiscard]] bool shared() const { return lx == nullptr; }
 
-    // Agglomerated levels only. This level's BoxArray is a fresh decomposition of
-    // its domain rather than the fine level's coarsened in place, so it no longer
-    // matches the fine level box for box and the inter-level kernels -- which
-    // address a fine and a coarse fab at the SAME local box index -- cannot reach it
-    // directly. These two hold the restriction's output and the prolongation's input
-    // on coarsen(fine BoxArray, 2) with the FINE DistributionMapping, which is the
-    // layout those kernels can address; AMReX ParallelCopy moves between them and
-    // this level's own fields.
+    // Agglomerated levels only. This level's BoxArray is a fresh decomposition, so it
+    // no longer matches the fine level box for box and the inter-level kernels -- which
+    // address fine and coarse at the SAME local box index -- cannot reach it. These
+    // hold the restriction output and the prolongation input on coarsen(fine BoxArray,
+    // 2) with the FINE DistributionMapping; ParallelCopy bridges to this level's own
+    // fields.
     std::unique_ptr<Fab> xferRhs, xferSol;
     bool agglomerated = false;
 
-    // kokkos_opt only, and empty for every other backend: the data movements of this
-    // level resolved to device tables at setup. `halo` is the ghost exchange of sol,
-    // `bc` the homogeneous domain-boundary reflection (empty on a periodic mesh, and
-    // on any level whose boxes touch no physical face), `xferIn`/`xferOut` the two
-    // directions of the agglomeration transfer.
+    // kokkos_opt only, empty otherwise: this level's data movements resolved to device
+    // tables at setup -- sol's ghost exchange, the homogeneous domain-boundary
+    // reflection (empty on a periodic mesh), and the two directions of the
+    // agglomeration transfer.
     CopyPlan halo, bc, xferIn, xferOut;
 };
 
@@ -276,36 +240,29 @@ public:
         const amrex::BoxArray& ba = args.alpha->boxArray();
         const amrex::DistributionMapping& dm = args.alpha->DistributionMap();
 
-        // One face coefficient per direction instead of an upper/lower pair, when the
-        // caller asked for it, the backend supports it AND the operator really is
-        // symmetric. Checked rather than assumed: ux == lx is what makes the two fabs
-        // interchangeable, and an asymmetric operator that quietly lost its lower
-        // coefficients would solve a different system at full speed.
+        // One face coefficient per direction instead of an upper/lower pair -- only
+        // when asked, only if the backend allows it, and only if the operator really is
+        // symmetric: one that quietly lost its lower coefficients would solve a
+        // different system at full speed.
         shared_ = Backend::canShareCoeffs && args.shareCoeffs && sameField(*args.ux, *args.lx)
                && sameField(*args.uy, *args.ly) && sameField(*args.uz, *args.lz);
 
-        // Level 0 on ITS OWN decomposition of the caller's grid, when asked. Every
-        // other level is free to pick its boxes because it exists only inside the
-        // cycle; level 0 is the one the caller addresses, so giving it bigger boxes
-        // costs an interface: a fab on the caller's layout at each end of an apply,
-        // and a plan-driven copy between the two decompositions. What it buys is halo
-        // traffic. A 32^3 box carries 6*32^2 ghost cells against 32^3 interior ones,
-        // 19% overhead; a 64^3 box carries 9.4% -- and level 0 is 7/8 of the cells in
-        // the whole hierarchy, so that ratio dominates the cycle.
+        // Level 0 on ITS OWN decomposition, when asked. Every other level picks its
+        // boxes freely; level 0 is the one the caller addresses, so bigger boxes cost
+        // an interface (a caller-layout fab at each end of an apply plus a plan-driven
+        // copy). What it buys is halo traffic: 32^3 boxes carry 19% ghost overhead
+        // against 9.4% for 64^3, and level 0 is 7/8 of the cells in the hierarchy.
         amrex::BoxArray l0ba = ba;
         amrex::DistributionMapping l0dm = dm;
-        // Level 0's own decomposition rides on the plan-driven interface copy, so it
-        // is available exactly where the plans are. On >1 rank the caller's layout is
-        // kept -- the option trades halo traffic for one copy per apply, and a copy
-        // that has become an MPI ParallelCopy is not the trade it was measured to be.
+        // Only available where the plans are. On >1 rank the caller's layout is kept:
+        // the trade was measured against a local copy, not against an MPI ParallelCopy.
         if (amrexFree_)
         {
             if (args.aggLevel0Size > 0)
             {
                 amrex::BoxArray tba(args.geom->Domain());
                 tba.maxSize(args.aggLevel0Size);
-                // Strictly fewer boxes, or there is nothing to gain and the interface
-                // would be pure cost.
+                // Strictly fewer boxes, or the interface is pure cost.
                 if (tba.size() < ba.size())
                 {
                     l0ba = tba;
@@ -318,9 +275,9 @@ public:
         levels_.push_back(makeLevel(l0ba, l0dm, *args.geom, shared_));
         if (aggL0_)
         {
-            // The convert-copies below need matching layouts, so rediscretise on the
-            // caller's decomposition and ParallelCopy across -- the same two-step the
-            // agglomerated coarse levels use. Setup, so the temporary is untimed.
+            // The convert-copies need matching layouts, so rediscretise on the caller's
+            // decomposition and ParallelCopy across. Setup, so the temporary is
+            // untimed.
             Level t = makeLevel(ba, dm, *args.geom, shared_);
             copyCallerCoeffs(args, t);
             copyCoeffs(t, levels_[0]);
@@ -332,10 +289,9 @@ public:
         }
 
         // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps
-        // >= minBottom cells per direction. Without agglomeration the fine BoxArray
-        // is coarsened in place and the DistributionMapping reused, so the number of
-        // boxes is the same on every level and only their size shrinks — the
-        // production behaviour, and the reason the coarsest level is launch-bound.
+        // >= minBottom cells per direction. Without agglomeration the fine BoxArray is
+        // coarsened in place and the DistributionMapping reused, so only the box SIZE
+        // shrinks — production behaviour, and why the coarsest level is launch-bound.
         while (true)
         {
             if (args.maxLevels > 0 && static_cast<int>(levels_.size()) >= args.maxLevels)
@@ -357,6 +313,8 @@ public:
             }
             amrex::BoxArray cba = fba;
             cba.coarsen(2);
+            // Each level carries its OWN geometry: the stencil and the rediscretised
+            // coefficients belong to this level's dx, never to level 0's.
             const amrex::Geometry cgeom(
                 cdom,
                 fgeom.ProbDomain(),
@@ -364,15 +322,12 @@ public:
                 {fgeom.isPeriodic(0), fgeom.isPeriodic(1), fgeom.isPeriodic(2)}
             );
 
-            // Agglomeration: take a fresh aggGridSize-capped decomposition of the
-            // coarse domain when it has strictly fewer boxes than the in-place
-            // coarsening. Same mechanism MLMG uses (LPInfo::do_agglomeration
-            // rebuilds the coarse grids as BoxArray(domain).maxSize(agg_grid_size),
-            // AMReX_MLLinOp.H:1028) but not the same trigger: MLMG agglomerates once
-            // the average box falls below agg_grid_size^3 cells, with a default
-            // agg_grid_size of 8 in 3D, because what it is reducing is the number of
-            // MPI ranks with work. On one GPU that default would leave the box count
-            // untouched; the cost here is per-box kernel launches, so the trigger is
+            // Agglomeration: a fresh aggGridSize-capped decomposition of the coarse
+            // domain, taken only when it has strictly fewer boxes than coarsening in
+            // place. Same mechanism as MLMG's LPInfo::do_agglomeration but a different
+            // trigger: MLMG reduces the number of MPI ranks with work (default
+            // agg_grid_size 8 in 3D, which on one GPU would leave the box count
+            // untouched), while the cost here is per-box launches -- so the trigger is
             // the box count itself.
             amrex::BoxArray aba = cba;
             amrex::DistributionMapping adm = fdm;
@@ -402,16 +357,16 @@ public:
                 c.xferRhs = makeMf(cba, fdm, 0);
                 c.xferSol = makeMf(cba, fdm, 0);
                 // The restriction kernels only speak the fine level's layout, so
-                // rediscretise there and copy the result onto this level's
-                // decomposition. Setup, so the extra fabs are transient and untimed.
+                // rediscretise there and copy onto this level's decomposition
+                // (untimed).
                 Level t = makeLevel(cba, fdm, cgeom, shared_);
                 restrictCoeffs(fl, t);
                 copyCoeffs(t, c);
             }
         }
 
-        // Resolve the data movements once, now that the hierarchy is final. Setup, so
-        // untimed: what the timed cycle sees is a device table and one launch.
+        // Resolve the data movements once the hierarchy is final; the timed cycle then
+        // sees a device table and one launch.
         if (amrexFree_)
         {
             if (aggL0_)
@@ -424,9 +379,8 @@ public:
                 L.halo = makeHaloPlan(*L.sol, L.geom.periodicity());
                 if (hasPhysBc_)
                 {
-                    // The coarse domains are the fine one coarsened, so every level
-                    // has the same physical faces and the same bc spec applies
-                    // throughout -- as in production (gmgPrecond.hpp fillGhosts).
+                    // Coarse domains are the fine one coarsened, so every level has the
+                    // same physical faces and one bc spec applies throughout.
                     L.bc = makeBcPlan(*L.sol, L.geom.Domain(), bc_);
                 }
                 if (L.agglomerated)
@@ -467,19 +421,16 @@ public:
     }
 
     // Preconditioner apply on flat device vectors: L0 rhs <- r, L0 sol <- 0, n
-    // V-cycles, z <- L0 sol. This is the same sequence GmgPrecondT::apply_impl runs
-    // (gmgPrecond.hpp:304), including the two AMReX transfers -- so it pays the same
-    // cross-runtime sync at each end, and a solver-level comparison measures the
-    // cycle rather than a difference in plumbing. Inside, the cycle stays fence-free.
+    // V-cycles, z <- L0 sol. Same sequence as GmgPrecondT::apply_impl, including the
+    // two AMReX transfers, so a solver-level comparison measures the cycle and not the
+    // plumbing.
     template<class V>
     void applyFlat(const V* r, V* z, int nCycles)
     {
         Level& L0 = levels_.front();
-        // The flat vector's cell order is the CALLER's (MFIter order over the caller's
-        // BoxArray, i fastest), so with an agglomerated level 0 the scatter lands in
-        // the staging fab and a plan copy carries it across -- and back again on the
-        // way out. That copy is the price of the bigger boxes, and it is paid once per
-        // APPLY rather than once per cycle: with precond_cycles > 1 it amortises.
+        // The flat vector's cell order is the CALLER's, so with an agglomerated level 0
+        // the scatter lands in the staging fab and a plan copy carries it across, and
+        // back on the way out -- once per APPLY, so precond_cycles > 1 amortises it.
         if (aggL0_)
         {
             la::scatter_device(r, *iface_);
@@ -503,9 +454,9 @@ public:
         amrex::Gpu::streamSynchronize(); // z complete before the caller reads it
     }
 
-    // sum((rhs - A sol)^2) on the finest level. Reporting only: it is the gate that
-    // says the timed V-cycle did the work, so it stays an AMReX reduction for both
-    // backends and never runs inside a timed region.
+    // sum((rhs - A sol)^2) on the finest level. Reporting only -- the gate that says
+    // the timed cycle did the work -- so it stays an AMReX reduction and is never
+    // timed.
     double residSumSq()
     {
         Level& L = levels_.front();
@@ -541,8 +492,8 @@ public:
                 return {r * r};
             }
         );
-        // This rank's boxes only, like every ParReduce. The caller squares-roots it
-        // and prints it as THE residual of the cycle.
+        // This rank's boxes only, like every ParReduce; the caller prints its root as
+        // THE residual of the cycle.
         amrex::ParallelAllReduce::Sum(sum, amrex::ParallelContext::CommunicatorSub());
         return sum;
     }
@@ -552,12 +503,11 @@ public:
     // What the hierarchy actually does, not what was requested (see sameField).
     bool sharedCoeffs() const { return shared_; }
 
-    // Whether level 0 really got its own decomposition: asking for one no coarser
-    // than the caller's does not get it.
+    // Whether level 0 really got its own decomposition; asking does not guarantee it.
     bool aggLevel0() const { return aggL0_; }
 
-    // Boxes and cells PER LEVEL: the point of the exercise is that the box count
-    // does not shrink while the cell count does.
+    // Boxes and cells PER LEVEL: the point is that the box count does not shrink while
+    // the cell count does.
     std::vector<int> boxesPerLevel() const
     {
         std::vector<int> v;
@@ -580,7 +530,7 @@ public:
 
 private:
 
-    // Templated on the fab's value type so the field fabs and the (possibly narrower)
+    // Templated on the fab value type so the field fabs and the (possibly narrower)
     // coefficient fabs share one allocation path.
     template<class V>
     static std::unique_ptr<la::GmgFab<V>>
@@ -629,7 +579,9 @@ private:
         return L;
     }
 
-    // The caller's fields into a level that shares their decomposition.
+    // The caller's fields converted into level 0's OWN fabs, read at setup only: later
+    // in-place writes by the caller are not seen, which is fine because a changed
+    // operator means a rebuilt preconditioner.
     static void copyCallerCoeffs(const GmgArgs& args, Level& L)
     {
         la::gmgConvertCopy(*L.alpha, *args.alpha, /*onDevice=*/true);
@@ -644,12 +596,13 @@ private:
         }
     }
 
-    // Rediscretise the operator on the coarse level: volume-average the diagonal
-    // source, area-average the face coefficients (4 fine faces per coarse face).
-    // Both fabs must share a DistributionMapping and box order.
-    // A shared level rediscretises three faces instead of six -- area-averaging the
-    // same fine values twice would produce the same coarse numbers, so symmetry is
-    // preserved down the hierarchy and the pair never has to be re-formed.
+    // Rediscretise the operator on the coarse level: faces through gmgCoarsenFace (the
+    // 4 fine faces averaged, then rescaled for the doubled dx), alpha through
+    // gmgRestrict's plain 8-child average -- correct only because alpha is a
+    // dx-independent density. Both fabs must share a DistributionMapping and box order.
+    // A shared level does three faces instead of six: averaging the same fine values
+    // twice gives the same coarse numbers, so symmetry survives the hierarchy and the
+    // pair is never re-formed.
     static void restrictCoeffs(const Level& f, Level& c)
     {
         la::gmgRestrict<TC>(*f.alpha, *c.alpha, /*onDevice=*/true);
@@ -664,9 +617,9 @@ private:
         }
     }
 
-    // Move the rediscretised coefficients onto a different decomposition of the same
-    // region. The face BoxArrays overlap on internal faces, but a shared face carries
-    // one value, so which source box wins does not matter.
+    // Move the rediscretised coefficients onto another decomposition of the same
+    // region. Face BoxArrays overlap on internal faces, but a shared face carries one
+    // value, so which source box wins does not matter.
     static void copyCoeffs(const Level& src, Level& dst)
     {
         dst.alpha->ParallelCopy(*src.alpha, 0, 0, 1);
@@ -681,10 +634,9 @@ private:
         }
     }
 
-    // Periodic/internal ghosts, then the homogeneous physical-BC reflection — the
-    // same two steps in the same order as the production fillGhosts. On the bench's
-    // own triply periodic mesh the second step has no tasks and is skipped entirely,
-    // so the measured backends are unaffected by its existence.
+    // Periodic/internal ghosts, then the homogeneous physical-BC reflection — the same
+    // two steps in the same order as production's fillGhosts. On a periodic mesh the
+    // second step has no tasks.
     void fillGhosts(Level& L) const
     {
         if (amrexFree_)
@@ -696,9 +648,8 @@ private:
             }
             return;
         }
-        // AMReX is about to READ sol, which the last colour sweep wrote. For the
-        // fenced backends that sweep already fenced and this is a no-op; for
-        // kokkos_opt on >1 rank it is the ordering the dropped fence used to give.
+        // AMReX is about to READ sol, which the last colour sweep wrote: a no-op for
+        // the fenced backends, the dropped fence's ordering for kokkos_opt on >1 rank.
         Backend::beforeAmrexRead();
         L.sol->FillBoundary(L.geom.periodicity());
         if (hasPhysBc_)
@@ -708,8 +659,8 @@ private:
         Backend::afterAmrexWrite();
     }
 
-    // Red-black colour sweeps; `reversed` flips the colour order (black-red), the
-    // adjoint of the forward sweep, so the whole V-cycle stays symmetric.
+    // Red-black colour sweeps; `reversed` flips to black-red, the adjoint of the
+    // forward sweep, so the whole V-cycle stays symmetric.
     void smooth(std::size_t l, int sweeps, bool reversed)
     {
         Level& L = levels_[l];
@@ -741,8 +692,7 @@ private:
         Level& L = levels_[l];
         if (l + 1 == levels_.size())
         {
-            // Tiny grid: forward + reversed halves keep the coarsest "solve"
-            // self-adjoint.
+            // Forward + reversed halves keep the coarsest "solve" self-adjoint.
             smooth(l, coarsestSweeps_ / 2, false);
             smooth(l, coarsestSweeps_ / 2, true);
             return;
@@ -750,10 +700,8 @@ private:
         smooth(l, preSweeps_, false);
         fillGhosts(L);
         Level& C = levels_[l + 1];
-        // On an agglomerated level the kernels write/read the transfer fab, which
-        // lives on this level's coarsened layout, and a copy bridges to and from the
-        // coarse decomposition — AMReX ParallelCopy, or its Kokkos twin under
-        // kokkos_opt.
+        // On an agglomerated level the kernels write/read the transfer fab on this
+        // level's coarsened layout, and a copy bridges to the coarse decomposition.
         Backend::residRestrict(
             *L.sol,
             *L.rhs,
@@ -810,25 +758,23 @@ private:
     bool hasPhysBc_ = false;
     bool shared_ = false;
 
-    // Whether the timed cycle really is AMReX-free: the backend must offer the
-    // Kokkos data movements AND every box they name must be addressable, which on
-    // more than one rank it is not (see KokkosOptGmgBackend). False here does not
-    // change a single arithmetic result -- it routes the halo, the zero fill and the
-    // agglomeration transfers through AMReX, the same ones every other backend uses.
+    // Whether the timed cycle really is AMReX-free: the backend must offer the Kokkos
+    // data movements AND every box they name must be local, which on >1 rank it is not
+    // (see KokkosOptGmgBackend). False changes no arithmetic -- it routes the halo, the
+    // zero fill and the agglomeration transfers through AMReX instead.
     bool amrexFree_ = false;
 
-    // Level-0 agglomeration only: the caller-layout staging fab and the plans that
-    // move between it and level 0. Empty otherwise, and the apply path then talks to
-    // level 0 directly as before.
+    // Level-0 agglomeration only: the caller-layout staging fab and its plans. Empty
+    // otherwise, and the apply path then talks to level 0 directly.
     bool aggL0_ = false;
     std::unique_ptr<Fab> iface_;
     CopyPlan ifaceIn_, ifaceOut_;
     std::vector<Level> levels_;
 };
 
-// The six (field, coefficient) pairs, as one enum. parseCoeffPrecision has already
-// rejected a coefficient type wider than the field type, so the other three cells of
-// the 3x3 matrix cannot arrive here and are never instantiated.
+// The six (field, coefficient) pairs. parseCoeffPrecision already rejected a
+// coefficient wider than the field, so the other three cells of the 3x3 never arrive
+// here.
 enum class PrecPair
 {
     f64c64,

@@ -16,44 +16,32 @@
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
-// ---------------------------------------------------------------------------
-// The coarsest multigrid level as a Ginkgo operator, and the solver selection
-// that runs on it.
+// The coarsest multigrid level as a Ginkgo operator, and the solver selection that
+// runs on it.
 //
-// WHY THIS EXISTS. The V-cycle's bottom "solve" was a fixed number of smoother
-// sweeps with no residual test (gmg_coarsest_sweeps). That is cheap and, being
-// fixed work, it is exactly stationary -- which matters, because the V-cycle is
-// used as a CG preconditioner and CG assumes the preconditioner is the SAME
-// linear operator on every apply. But a smoother cannot touch the coarse grid's
-// near-null modes at all: a consistent polynomial smoother has p(0) = 1, so the
-// constant mode survives every sweep, and no number of sweeps converges it.
-// MLMG solves its bottom with a Krylov method for this reason.
+// Why it exists: fixed smoother sweeps (gmg_coarsest_sweeps) are exactly stationary,
+// which the outer CG needs, but a smoother cannot touch the coarse grid's near-null
+// modes at all — a consistent polynomial smoother has p(0) = 1, so the constant mode
+// survives every sweep. MLMG solves its bottom with a Krylov method for this reason.
 //
-// WHY IT IS GINKGO RATHER THAN A HAND-ROLLED CG. A hand-rolled CG would be ~60
-// lines and avoid a Ginkgo round trip on a grid of a few dozen cells. It would
-// also be a second implementation of something Ginkgo already has, and -- more
-// to the point -- CG is only valid for a SYMMETRIC operator. The moment the
-// operator can be asymmetric (convection), the bottom needs BiCGStab or GMRES
-// too, and then a hand-rolled path is three implementations. Naming a Ginkgo
-// solver in one dispatch is the maintainable form of "the user chooses".
+// Why Ginkgo and not a hand-rolled CG: CG is valid only for a SYMMETRIC operator, so
+// as soon as the operator can be asymmetric (convection) the bottom needs BiCGStab
+// or GMRES as well — three hand-rolled implementations instead of one dispatch.
 //
-// ASYMMETRY IS NOT SPECIAL-CASED HERE. GmgBottomOp reads its own upper and lower
-// coefficient array per direction (gmgApply*), so it represents an asymmetric
-// operator exactly. Which SOLVER is legal on it is the caller's decision, made
-// explicit by the `symmetric` flag rather than inferred -- see GmgPrecondT.
-// ---------------------------------------------------------------------------
+// Asymmetry is not special-cased: GmgBottomOp reads its own upper and lower
+// coefficient array per direction, so it represents an asymmetric operator exactly.
+// Which SOLVER is legal on it is the caller's explicit `symmetric` flag, never
+// inferred — see GmgPrecondT.
 
 namespace blockamr::la
 {
 
-// A single GMG level exposed as a gko::LinOp: y = A x on that level's
-// rediscretised coefficients, with the level's own geometry and boundary
-// conditions applied to x's ghosts first.
+// A single GMG level as a gko::LinOp: y = A x on that level's rediscretised
+// coefficients, with the level's geometry and BCs applied to x's ghosts first.
 //
-// The value type is the HIERARCHY's type T, not the outer Krylov's double: the
-// bottom solve happens entirely inside the V-cycle, on level fields that are
-// already stored in T, so converting to double at the boundary would cost two
-// full passes to buy precision that the surrounding V-cycle does not carry.
+// The value type is the HIERARCHY's T, not the outer Krylov's double: the bottom
+// solve runs inside the V-cycle on fields already stored in T, so converting at the
+// boundary would cost two full passes for precision the V-cycle does not carry.
 template<class T>
 class GmgBottomOp : public AmrexLinOpBase<GmgBottomOp<T>, T>
 {
@@ -86,9 +74,8 @@ public:
           hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
           onDevice_(onDevice)
     {
-        // Own work fabs rather than borrowing the level's sol/rhs: the Krylov
-        // method applies this operator to its own search directions, which are
-        // not the level's solution, and aliasing them would corrupt the cycle.
+        // Own work fabs, not the level's sol/rhs: the Krylov method applies this
+        // operator to its own search directions, and aliasing would corrupt the cycle.
         const amrex::MFInfo info =
             onDevice_ ? amrex::MFInfo() : amrex::MFInfo().SetArena(amrex::The_Pinned_Arena());
         in_ = std::make_shared<GmgFab<T>>(ba, dm, 1, 1, info);  // 1 ghost for the stencil
@@ -158,8 +145,7 @@ private:
     bool onDevice_ = false;
 };
 
-// Which bottom solver a caller asked for. "smoother" keeps the historical
-// fixed-sweep behaviour, and is the DEFAULT precisely because it is stationary:
+// "smoother" (fixed sweeps) is the DEFAULT precisely because it is stationary —
 // see makeBottomSolver's note.
 inline void validateBottomSolver(const std::string& kind, bool symmetric)
 {
@@ -172,8 +158,8 @@ inline void validateBottomSolver(const std::string& kind, bool symmetric)
         );
     }
     // Refused, not warned: a CG bottom on an asymmetric operator does not fail
-    // loudly, it converges to the wrong correction or stalls, and the caller
-    // sees only a worse outer iteration count.
+    // loudly — it converges to the wrong correction or stalls, and the caller sees
+    // only a worse outer iteration count.
     if (!symmetric && (kind == "cg" || kind == "fcg"))
     {
         throw std::runtime_error(
@@ -186,18 +172,13 @@ inline void validateBottomSolver(const std::string& kind, bool symmetric)
 
 // Generate the bottom solver on `op`.
 //
-// STATIONARITY. A residual-tested Krylov bottom takes a different number of
-// iterations on different right-hand sides, which makes the V-cycle a DIFFERENT
-// linear operator on each apply. gko::solver::Cg and Bicgstab both assume a
-// fixed preconditioner, so an outer CG over a V-cycle with an adaptive bottom is
-// outside its theory. Two ways to stay inside it, both available here:
-//   - solve the bottom essentially exactly (a tight `rtol`), so the variation is
-//     below what the outer solver can see. The bottom is a handful of cells, so
-//     this is cheap -- it is the recommended setting.
-//   - drive the outer solve with a FLEXIBLE method (solver='gcr' or 'fcg'),
-//     which tolerates a preconditioner that varies between applies.
-// The DEFAULT bottom is still 'smoother' (fixed sweeps), which is stationary by
-// construction and reproduces the historical behaviour exactly.
+// STATIONARITY. A residual-tested Krylov bottom takes a different iteration count
+// per right-hand side, making the V-cycle a DIFFERENT linear operator on each apply
+// — outside the theory of an outer CG, which assumes a fixed preconditioner. Two
+// ways to stay inside it: a tight `rtol` so the variation is below what the outer
+// solver can see (cheap, the bottom is a handful of cells — recommended), or a
+// FLEXIBLE outer method (solver='gcr' or 'fcg'). The DEFAULT bottom is 'smoother'
+// (fixed sweeps), stationary by construction.
 template<class T>
 std::shared_ptr<const gko::LinOp> makeBottomSolver(
     const std::string& kind,

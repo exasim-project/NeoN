@@ -27,7 +27,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import blockamr
-import bench_backends as bb
+import bench_backends
 
 # 2D sweep: vary cell count (n_cell) AND box size (max_size). max_size must
 # divide n_cell; #boxes = (n_cell / max_size)**3. Overridable on the CLI.
@@ -35,7 +35,7 @@ N_CELLS = (32, 64, 128)
 MAX_SIZES = (16, 32, 64)
 BACKENDS = ("jax", "cpp")
 # One colour per max_size (box size); backends live in separate panels.
-MS_COLORS = {16: "#d1495b", 32: "#edae49", 64: "#2e86ab", 128: "#66a182", 256: "#8338ec"}
+MAX_SIZE_COLORS = {16: "#d1495b", 32: "#edae49", 64: "#2e86ab", 128: "#66a182", 256: "#8338ec"}
 HERE = Path(__file__).parent
 
 
@@ -44,7 +44,7 @@ def collect(steps: int, warmup: int, seed: int, n_cells, max_sizes) -> list[dict
     rows: list[dict] = []
     with blockamr.runtime():
         for n_cell, max_size in sweep:
-            for r in bb.bench(n_cell, max_size, BACKENDS, steps, warmup, seed):
+            for r in bench_backends.bench(n_cell, max_size, BACKENDS, steps, warmup, seed):
                 rows.append(
                     {
                         "n_cell": r.n_cell,
@@ -62,9 +62,9 @@ def collect(steps: int, warmup: int, seed: int, n_cells, max_sizes) -> list[dict
 
 def write_csv(rows: list[dict], path: Path) -> None:
     with path.open("w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-        w.writeheader()
-        w.writerows(rows)
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def plot(rows: list[dict], out: Path) -> None:
@@ -84,15 +84,15 @@ def plot(rows: list[dict], out: Path) -> None:
         for j, backend in enumerate(BACKENDS):
             ax = axes[i][j]
             for max_size in MAX_SIZES:
-                pts = sorted(
+                points = sorted(
                     (r for r in rows if r["backend"] == backend and r["max_size"] == max_size),
                     key=lambda r: r["n_cell"],
                 )
-                if not pts:
+                if not points:
                     continue
                 ax.plot(
-                    [r["n_cell"] for r in pts], [r[key] for r in pts],
-                    "o-", color=MS_COLORS[max_size], lw=2, ms=7,
+                    [r["n_cell"] for r in points], [r[key] for r in points],
+                    "o-", color=MAX_SIZE_COLORS[max_size], lw=2, ms=7,
                     label=f"max_size={max_size}",
                 )
             ax.set(xscale="log", yscale=yscale, title=f"{backend}")

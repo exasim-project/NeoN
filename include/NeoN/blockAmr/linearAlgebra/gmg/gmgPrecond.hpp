@@ -43,36 +43,19 @@ struct GmgLevelT
     double lambdaMax = 0.0;           // estimate of lambda_max(D^{-1}A) on this level
 };
 
-// Native matrix-free geometric-multigrid V-cycle preconditioner on the
-// face-coefficient operator: z = M^{-1} r via `n_cycles` V-cycles with
-// red-black Gauss-Seidel smoothing (the same smoother family MLMG uses;
-// measured much stronger than damped Jacobi here: 9/9 vs 16/16 CG iterations
-// at N=32/64 with omega=6/7 Jacobi, 20/22 with omega=2/3), volume-average
-// restriction and piecewise-constant prolongation. The V-cycle is symmetric —
-// the post-smoother runs the colours in REVERSED order (black-red), making it
-// the adjoint of the pre-smoother, and prolongation is the adjoint of
-// restriction up to a constant — so it is CG-safe. The whole hierarchy is
-// built ONCE at construction — no per-apply allocation; the coefficients are
-// copied, so later in-place updates to the caller's fields are seen by the
-// outer operator but not by this preconditioner (a slightly stale
-// preconditioner only costs iterations).
 // Abstract hook exposing a GMG V-cycle as operations on FP64 MultiFabs, so the
 // native stationary solver (FaceCoeffSolver solver="gmg") can drive the
 // precision-templated GmgPrecondT<T> without knowing T. The whole apply runs on
-// AMReX fabs (no Ginkgo vector), converting FP64<->T at the two ends. M3 fuses the
-// FP64 residual, its convert-scatter into the (T-typed) L0 rhs and the FP64 norm
-// into one kernel (residScatterNorm); vcycleGather runs the V-cycle(s) and adds
-// the correction back onto the FP64 x.
+// AMReX fabs (no Ginkgo vector), converting FP64<->T only at the two ends.
 class GmgApplyMf
 {
 public:
 
     virtual ~GmgApplyMf() = default;
 
-    // Fused r = rhs - A*sol - shift -> (cast to T) L0 rhs; L0 sol := 0; returns
-    // BOTH FP64 norms of r (the sum of squares and max|r|), so the caller can
-    // stop in either norm; the norm authority stays double even for a float L0
-    // rhs. `sol`'s ghosts must already be filled by the caller.
+    // Fused r = rhs - A*sol - shift -> (cast to T) L0 rhs; L0 sol := 0. Returns
+    // BOTH FP64 norms of r so the caller can stop in either; the norm authority
+    // stays double even for a float L0 rhs. `sol`'s ghosts must already be filled.
     virtual ResidNorms residScatterNorm(
         const amrex::MultiFab& sol,
         const amrex::MultiFab& rhs,
@@ -91,6 +74,20 @@ public:
     virtual void vcycleGather(amrex::MultiFab& x) const = 0;
 };
 
+// Native matrix-free geometric-multigrid V-cycle preconditioner on the
+// face-coefficient operator: z = M^{-1} r via `n_cycles` V-cycles with red-black
+// Gauss-Seidel smoothing, volume-average restriction and piecewise-constant
+// prolongation (coarsening laws and their dx justification: gmgKernels.hpp).
+// RB-GS is measured, not assumed: 9/9 CG iterations at N=32/64 against 16/16 for
+// omega=6/7 damped Jacobi and 20/22 for omega=2/3.
+//
+// CG-safe because the cycle is symmetric — the post-smoother runs the colours
+// REVERSED (black-red), the adjoint of the pre-smoother, and prolongation is the
+// adjoint of restriction up to a constant.
+//
+// The hierarchy is built ONCE at construction and the coefficients are COPIED, so
+// later in-place updates to the caller's fields reach the outer operator but NOT
+// this preconditioner — a stale preconditioner only costs iterations.
 template<class T>
 class GmgPrecondT : public AmrexLinOpBase<GmgPrecondT<T>>, public GmgApplyMf
 {
@@ -149,19 +146,13 @@ public:
             );
         }
         validateBottomSolver(bottom_solver, symmetric);
-        // Two settings whose justification is a symmetry argument, refused
-        // rather than warned about when the caller has declared the operator
-        // asymmetric.
-        //
-        // omega != 1: the colour sweep stops being self-adjoint, which is
-        // survivable for a symmetric operator (it is a tuning knob there, and
-        // 1.1 is the measured optimum) but compounds with an already
-        // non-self-adjoint operator.
-        //
-        // chebyshev: the polynomial is built on a REAL interval
-        // [lambda_max/6, lambda_max] estimated by a power iteration. An
-        // asymmetric operator has a complex spectrum, so that interval does not
-        // describe it and the polynomial has no contraction guarantee.
+        // Both settings rest on a symmetry argument, so they are refused rather
+        // than warned about once the caller declares the operator asymmetric.
+        // omega != 1 makes the colour sweep non-self-adjoint (a harmless tuning
+        // knob for a symmetric operator, where 1.1 is the measured optimum, but it
+        // compounds with an already non-self-adjoint one); chebyshev builds its
+        // polynomial on the REAL interval [lambda_max/6, lambda_max], which does
+        // not describe a complex spectrum — no contraction guarantee.
         if (!symmetric)
         {
             if (omega != 1.0)
@@ -181,9 +172,8 @@ public:
                 );
             }
         }
-        // Finest level: copy the coefficients into this preconditioner's arena
-        // (default/device on cuda, pinned on reference — MultiFab::Copy handles
-        // the cross-arena transfer, cf. pinnedCopy).
+        // Finest level: copy the coefficients into this preconditioner's own arena
+        // (default/device on cuda, pinned on reference).
         levels_.push_back(makeLevel(ba, dm, geom));
         copyCoeff(*levels_[0].alpha, *alpha);
         copyCoeff(*levels_[0].ux, *ux);
@@ -193,12 +183,11 @@ public:
         copyCoeff(*levels_[0].uz, *uz);
         copyCoeff(*levels_[0].lz, *lz);
 
-        // Coarsen by 2 while every box dimension stays divisible by 2 (with
-        // >= 2 cells left) and the coarse domain keeps >= 4 cells per
-        // direction. The coarse coefficients are rediscretised from the fine
-        // ones: face coeff = mean of the 4 covered fine face coeffs / 4
-        // (a ~ -beta/dx^2: beta averaged, dx doubled), alpha (per-volume
-        // source) = mean of the 8 fine cell values.
+        // Coarsen by 2 while every box dimension stays divisible by 2 (>= 2 cells
+        // left) and the coarse domain keeps >= min_bottom cells on its short side.
+        // Coarse coefficients are rediscretised by the two DIFFERENT laws stated in
+        // gmgKernels.hpp: gmgRestrict for alpha, gmgCoarsenFace (scale = 4) for the
+        // dx-dependent face coefficients.
         while (true)
         {
             if (max_levels > 0 && static_cast<int>(levels_.size()) >= max_levels)
@@ -237,8 +226,8 @@ public:
         }
         amrex::Gpu::streamSynchronize();
 
-        // Chebyshev setup: per level allocate the polynomial increment field and
-        // estimate lambda_max(D^{-1}A) via ~15 power iterations (setup-time cost).
+        // Chebyshev setup: per level, the polynomial increment field plus a
+        // lambda_max(D^{-1}A) estimate from ~15 power iterations (setup-time only).
         if (useCheb_)
         {
             for (auto& L : levels_)
@@ -253,13 +242,12 @@ public:
         }
 
         // Bottom solver, built once on the coarsest level. Null for "smoother",
-        // which leaves vcycle() on the historical fixed-sweep path.
+        // which leaves vcycle() on the fixed-sweep path.
         if (bottom_solver != "smoother")
         {
             const GmgLevelT<T>& B = levels_.back();
-            // GLOBAL for the operator's row/column dimension (every rank must
-            // agree on it), LOCAL for the vectors, which gather/scatter fill
-            // from this rank's own coarse boxes.
+            // GLOBAL size for the operator (every rank must agree on it), LOCAL for
+            // the vectors, which gather/scatter fill from this rank's coarse boxes.
             const auto nBottom = static_cast<gko::size_type>(B.alpha->boxArray().numPts());
             const auto nBottomLocal = static_cast<gko::size_type>(localCount(*B.alpha));
             bottomOp_ = gko::share(GmgBottomOp<T>::create(
@@ -282,21 +270,16 @@ public:
                 makeBottomSolver<T>(bottom_solver, exec, bottomOp_, bottom_max_iter, bottom_rtol);
             bottomB_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottomLocal, 1});
             bottomX_ = gko::matrix::Dense<T>::create(exec, gko::dim<2> {nBottomLocal, 1});
-            // The bottom Krylov is a Ginkgo solver like any other, so its dots
-            // and norms need the same distributed views the outer solve gets --
-            // shrinking the buffers alone would leave every rank converging on
-            // its own residual.
+            // The bottom Krylov's dots and norms need the same distributed views the
+            // outer solve gets, or every rank converges on its own residual.
             bottomBGlobal_ = makeGlobalVec(exec, nBottom, bottomB_.get());
             bottomXGlobal_ = makeGlobalVec(exec, nBottom, bottomX_.get());
         }
     }
 
-    // Native stationary-solver hooks (M1 + M3). residScatterNorm forms the FP64
-    // residual and, in the SAME kernel, casts it into the T-typed L0 rhs and
-    // reduces its FP64 norm — no separate FP64 residual MultiFab, norm pass, or
-    // convert-scatter. vcycleGather then runs the V-cycle(s) and adds the T-typed
-    // correction back onto the FP64 x. Runs entirely on AMReX fabs (no Ginkgo
-    // vector); conversions are identities when T==double.
+    // Native stationary-solver hooks: one kernel forms the FP64 residual, casts it
+    // into the T-typed L0 rhs and reduces its FP64 norm (see
+    // faceCoeffResidScatterNorm); conversions are identities when T == double.
     ResidNorms residScatterNorm(
         const amrex::MultiFab& sol,
         const amrex::MultiFab& rhs,
@@ -353,8 +336,8 @@ public:
 
 protected:
 
-    // Keeps the base's advanced apply_impl(alpha, b, beta, x) visible in this
-    // scope (the declaration below would otherwise hide it).
+    // The declaration below would otherwise hide the base's advanced
+    // apply_impl(alpha, b, beta, x).
     using AmrexLinOpBase<GmgPrecondT<T>>::apply_impl;
 
     void apply_impl(const gko::LinOp* b, gko::LinOp* x) const override
@@ -405,10 +388,10 @@ protected:
 
 private:
 
-    // Chebyshev smooths modes with eigenvalue in [lambdaMax / kChebEigRatio,
-    // lambdaMax]; the lower modes are left to the coarse grid. alpha ~= 4-8 is
-    // the usual band; 6 minimised the CG count here (degree-2 -> 11 iters at
-    // N=32/64 vs rbgs 9, a sweep over {2,3,4,6,8,15,30} at setup).
+    // Chebyshev smooths eigenvalues in [lambdaMax / kChebEigRatio, lambdaMax] and
+    // leaves the lower modes to the coarse grid. 4-8 is the usual band; a sweep over
+    // {2,3,4,6,8,15,30} put the minimum at 6 (degree-2: 11 CG iters at N=32/64,
+    // against 9 for rbgs).
     static constexpr double kChebEigRatio = 6.0;
     static constexpr double kChebSafety = 1.05; // inflate the lambda_max estimate
     static constexpr int kPowerIters = 15;      // power iterations for lambda_max
@@ -444,9 +427,9 @@ private:
         return L;
     }
 
-    // Copy the caller's FP64 coefficient MultiFab into a level fab, converting
-    // to T. On the reference path the source may live in device memory, so it is
-    // staged through a pinned FP64 copy before the host conversion loop.
+    // Copy the caller's FP64 coefficient MultiFab into a level fab as T. On the
+    // reference path the source may be device memory, hence the pinned staging copy
+    // before the host conversion loop.
     void copyCoeff(GmgFab<T>& dst, const amrex::MultiFab& src) const
     {
         if (onDevice_)
@@ -461,9 +444,9 @@ private:
         }
     }
 
-    // Fill sol's ghost layer: periodic/internal via FillBoundary, then the
-    // homogeneous Dirichlet/Neumann reflection on domain faces (the gap-2 BC
-    // fills coarsen cleanly, so the same bc spec applies on every level).
+    // Fill sol's ghosts: FillBoundary, then the homogeneous Dirichlet/Neumann
+    // reflection on domain faces. The same bc spec applies on every level because
+    // the gap-2 BC fills coarsen cleanly.
     void fillGhosts(const GmgLevelT<T>& L, int lvl) const
     {
         prof::Timer t("gmg.fill", lvl);
@@ -485,10 +468,9 @@ private:
         }
     }
 
-    // Dispatch to the configured smoother. `reversed` is only meaningful for
-    // red-black Gauss-Seidel (post-smoother runs the colours in reversed order,
-    // the adjoint of the forward sweep); Chebyshev is symmetric by construction
-    // so it ignores it. `sweeps` is the RB-GS sweep count / the Chebyshev degree.
+    // `reversed` only means something for RB-GS; Chebyshev is symmetric by
+    // construction and ignores it. `sweeps` is the RB-GS sweep count or the
+    // Chebyshev degree.
     void smooth(std::size_t l, int sweeps, bool reversed) const
     {
         if (useCheb_)
@@ -501,9 +483,8 @@ private:
         }
     }
 
-    // Red-black Gauss-Seidel sweeps; `reversed` flips the colour order
-    // (black-red), which is the adjoint of the forward sweep — used for the
-    // post-smoother so the whole V-cycle is symmetric.
+    // Red-black Gauss-Seidel sweeps; `reversed` (black-red) is the adjoint of the
+    // forward sweep, used by the post-smoother to keep the V-cycle symmetric.
     void rbgsSmooth(std::size_t l, int sweeps, bool reversed) const
     {
         const GmgLevelT<T>& L = levels_[l];
@@ -529,10 +510,9 @@ private:
         }
     }
 
-    // Jacobi-preconditioned Chebyshev smoother of degree `degree`: one full-cell
-    // fused residual+increment kernel per degree (plain-stencil bandwidth, no
-    // colour split, one ghost fill per degree). A fixed polynomial in the
-    // symmetric operator -> symmetric linear smoother, CG-safe by construction.
+    // Jacobi-preconditioned Chebyshev smoother: one fused residual+increment kernel
+    // and one ghost fill per degree, no colour split. A fixed polynomial in a
+    // symmetric operator, so CG-safe by construction.
     void chebyshevSmooth(std::size_t l, int degree) const
     {
         if (degree <= 0)
@@ -603,9 +583,9 @@ private:
         }
     }
 
-    // lambda_max(D^{-1}A) on level l via power iteration on a checkerboard seed
-    // (near the top eigenvector). Returns the estimate inflated by kChebSafety
-    // so the Chebyshev interval upper bound is not undershot.
+    // lambda_max(D^{-1}A) on level l by power iteration from a checkerboard seed
+    // (near the top eigenvector), inflated by kChebSafety so the Chebyshev
+    // interval's upper bound is not undershot.
     double estimateLambdaMax(std::size_t l) const
     {
         const GmgLevelT<T>& L = levels_[l];
@@ -648,12 +628,10 @@ private:
     }
 
     // Krylov solve of the coarsest system A z = rhs, replacing the fixed sweeps.
-    //
-    // The incoming sol is zero on this level (the parent zeroes the coarse sol
-    // before recursing), so there is no warm start to preserve and x starts at
-    // zero -- which also keeps the bottom solve's own iteration count
-    // reproducible for a given rhs, one less source of apply-to-apply variation
-    // in a preconditioner the outer CG wants to be stationary.
+    // The parent zeroes the coarse sol before recursing, so there is no warm start
+    // to preserve and x starts at zero — which also makes the bottom iteration count
+    // reproducible for a given rhs, one less apply-to-apply variation in a
+    // preconditioner the outer CG wants stationary.
     void bottomSolve(const GmgLevelT<T>& L) const
     {
         prof::Timer t("gmg.bottom");
@@ -691,9 +669,9 @@ private:
                 bottomSolve(L);
                 return;
             }
-            // Tiny grid: smoothing is cheap; forward + reversed halves keep
-            // the coarsest "solve" self-adjoint (RB-GS; Chebyshev is symmetric
-            // regardless, so the two halves just compose into a degree-2*n poly).
+            // Forward + reversed halves keep the coarsest "solve" self-adjoint under
+            // RB-GS (Chebyshev is symmetric regardless: the halves just compose into
+            // a degree-2n polynomial).
             smooth(l, coarsestSweeps_ / 2, false);
             smooth(l, coarsestSweeps_ / 2, true);
             return;
@@ -701,8 +679,7 @@ private:
         smooth(l, preSweeps_, false);
         fillGhosts(L, static_cast<int>(l));
         const GmgLevelT<T>& C = levels_[l + 1];
-        // Fused residual + restriction: coarse rhs = avg(rhs - A sol) computed on
-        // the fly, saving the separate fine-grid residual read+write (M4 item 3).
+        // Fused residual + restriction, saving the fine-grid residual read+write.
         {
             prof::Timer t("gmg.residrestrict", static_cast<int>(l));
             const FaceCoeffs<T> fc {
@@ -739,14 +716,12 @@ private:
     bool useCheb_ = false;
     // RB-SOR relaxation factor; 1.0 = plain Gauss-Seidel. Unused when useCheb_.
     double omega_ = 1.0;
-    // Whether the caller declared the operator symmetric. Set explicitly rather
-    // than sniffed: a coefficient set that happens to be symmetric on this call
-    // may not be on the next, and silently switching algorithm on that would
-    // change the answer without changing the configuration.
+    // Declared by the caller, never sniffed: a coefficient set that happens to be
+    // symmetric on this call may not be on the next, and switching algorithm on that
+    // would change the answer without changing the configuration.
     bool symmetric_ = true;
     std::vector<GmgLevelT<T>> levels_;
-    // Null when gmg_bottom_solver == "smoother" (the default), in which case the
-    // bottom stays the historical fixed sweeps.
+    // Null when gmg_bottom_solver == "smoother" (the default): fixed sweeps.
     std::shared_ptr<const GmgBottomOp<T>> bottomOp_;
     std::shared_ptr<const gko::LinOp> bottomSolver_;
     mutable std::shared_ptr<gko::matrix::Dense<T>> bottomB_, bottomX_;

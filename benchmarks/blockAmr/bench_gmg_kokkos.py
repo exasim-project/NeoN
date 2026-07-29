@@ -107,10 +107,10 @@ import numpy as np
 
 import blockamr
 
-# (label, backend, agglomerate, pin_depth, precision, share, l0). pin_depth truncates
-# the hierarchy to the baseline's level count, which is what makes a row comparable to
-# the baseline rather than merely faster at a different job. l0 is the level-0 box size:
-# 0 keeps the caller's boxes, "domain" puts the whole grid in one box.
+# (label, backend, agglomerate, pin_depth, precision, share, level0_size). pin_depth
+# truncates the hierarchy to the baseline's level count, which is what makes a row
+# comparable to the baseline rather than merely faster at a different job. level0_size is
+# the level-0 box size: 0 keeps the caller's boxes, "domain" puts the whole grid in one box.
 CONFIGS = [
     ("amrex", "amrex", False, True, "fp64", False, 0),
     ("kokkos", "kokkos", False, True, "fp64", False, 0),
@@ -167,10 +167,10 @@ def _const_cell(ba, dm, value):
     return mf
 
 
-def _const_face(geom, dm, d, max_size, value):
+def _const_face(geom, dm, direction, max_size, value):
     dom = geom.domain()
     fb = blockamr.Box(dom.small_end(), dom.big_end())
-    fb.surrounding_nodes(d)
+    fb.surrounding_nodes(direction)
     fba = blockamr.BoxArray(fb)
     fba.max_size(max_size)
     mf = blockamr.MultiFab(fba, dm, 1, 0)
@@ -201,12 +201,15 @@ def _run_case(label, n_cell, max_size, iters, batches):
     geom, ba, dm = _mesh(n_cell, max_size)
     dx = geom.cell_size()
     alpha = _const_cell(ba, dm, 1.0)
-    faces = [_const_face(geom, dm, d, box_size, -1.0 / dx[d] ** 2) for d in range(3)]
+    faces = [
+        _const_face(geom, dm, direction, box_size, -1.0 / dx[direction] ** 2)
+        for direction in range(3)
+    ]
     rhs = _rhs(ba, dm, n_cell)
 
     rows = []
     baseline_levels = 0
-    for cfg_label, backend, agglomerate, pin_depth, precision, share, l0 in CONFIGS:
+    for cfg_label, backend, agglomerate, pin_depth, precision, share, level0_size in CONFIGS:
         stats = dict(
             blockamr.bench_gmg_vcycle(
                 backend,
@@ -224,7 +227,7 @@ def _run_case(label, n_cell, max_size, iters, batches):
                 agg_grid_size=AGG_GRID_SIZE,
                 precision=precision,
                 share_coeffs=share,
-                agg_level0_size=(n_cell if l0 == "domain" else l0),
+                agg_level0_size=(n_cell if level0_size == "domain" else level0_size),
                 max_levels=baseline_levels if pin_depth else 0,
                 iters=iters,
                 batches=batches,
@@ -253,22 +256,23 @@ def _run_case(label, n_cell, max_size, iters, batches):
 def _report(rows):
     print(f"\nexecution space: {blockamr.kokkos_execution_space()}")
     for case, _, _ in CASES:
-        sel = [r for r in rows if r["case"] == case]
-        if not sel:
+        selected = [r for r in rows if r["case"] == case]
+        if not selected:
             continue
-        print(f"\n{case}   cells/level {sel[0]['cells_per_level']}")
+        print(f"\n{case}   cells/level {selected[0]['cells_per_level']}")
         print(
             f"  {'config':<22} {'lvls':>4} {'ms/vcycle':>10} {'enqueue':>9} {'r1/r0':>9} "
             f"{'speedup':>9}  boxes/level"
         )
         print("  " + "-" * 81)
-        base = next(r["ms_min"] for r in sel if r["backend"] == "amrex")
-        for r in sel:
-            flag = "" if r["backend"] == "amrex" else f"{base / r['ms_min']:7.2f}x"
-            drop = r["resid1"] / r["resid0"] if r["resid0"] > 0 else float("nan")
+        base = next(r["ms_min"] for r in selected if r["backend"] == "amrex")
+        for r in selected:
+            speedup_text = "" if r["backend"] == "amrex" else f"{base / r['ms_min']:7.2f}x"
+            resid_drop = r["resid1"] / r["resid0"] if r["resid0"] > 0 else float("nan")
             print(
                 f"  {r['backend']:<22} {r['nlevels']:>4} {r['ms_min']:>10.4f} "
-                f"{r['ms_enqueue']:>9.4f} {drop:>9.3e} {flag:>9}  {r['boxes_per_level']}"
+                f"{r['ms_enqueue']:>9.4f} {resid_drop:>9.3e} {speedup_text:>9}  "
+                f"{r['boxes_per_level']}"
             )
 
 
@@ -291,9 +295,9 @@ def main():
     _report(rows)
     if rows:
         with open(args.csv, "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
-            w.writeheader()
-            w.writerows(rows)
+            writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+            writer.writeheader()
+            writer.writerows(rows)
         print(f"wrote {args.csv} ({len(rows)} rows)")
 
 

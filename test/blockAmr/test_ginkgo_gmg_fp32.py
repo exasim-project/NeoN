@@ -153,8 +153,17 @@ def test_gmg_fp32_solution_matches_fp64(blockamr_session, executor):
     coeffs = _helmholtz_coeffs(geom, ba, dm, N)
     rhs = _random_rhs(ba, dm)
 
+    # fp64 must be requested explicitly — the default is fp32, and relying on the
+    # default here would compare fp32 against itself.
     s64 = _make_solver_or_skip(
-        coeffs, geom, executor, solver="cg", max_iter=200, rtol=1e-10, precond="gmg"
+        coeffs,
+        geom,
+        executor,
+        solver="cg",
+        max_iter=200,
+        rtol=1e-10,
+        precond="gmg",
+        gmg_precision="fp64",
     )
     sol64 = _zero_sol(ba, dm)
     s64.solve(rhs, sol64)
@@ -191,12 +200,12 @@ def test_gmg_fp32_unknown_precision_raises(blockamr_session):
 # GmgConfig precision field (pure Python)
 # ---------------------------------------------------------------------------
 def test_gmg_config_precision_default_and_kwargs():
-    """GmgConfig.precision defaults to fp64 and maps to the gmg_precision kwarg."""
+    """GmgConfig.precision defaults to fp32 and maps to the gmg_precision kwarg."""
     cfg = blockamr.GmgConfig()
-    assert cfg.precision == "fp64"
-    assert cfg.kwargs()["gmg_precision"] == "fp64"
-    cfg32 = blockamr.GmgConfig(precision="fp32")
-    assert cfg32.kwargs()["gmg_precision"] == "fp32"
+    assert cfg.precision == "fp32"
+    assert cfg.kwargs()["gmg_precision"] == "fp32"
+    cfg64 = blockamr.GmgConfig(precision="fp64")
+    assert cfg64.kwargs()["gmg_precision"] == "fp64"
 
 
 def test_gmg_config_precision_validation():

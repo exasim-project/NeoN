@@ -16,20 +16,18 @@
 namespace blockamr::la
 {
 
-// Assemble the face-coefficient matrix into a CSR on `exec`. SINGLE-BOX only
-// (matches the benchmark meshes); the row/column order is the same idx(i,j,k) =
-// (k*nj + j)*ni + i used by the gather/scatter pack. This is the assembled
-// counterpart of FaceCoeffOp, for measuring the matrix-free advantage.
+// Assemble the face-coefficient matrix into a CSR on `exec`: the assembled
+// counterpart of FaceCoeffOp, for measuring the matrix-free advantage. SINGLE-BOX
+// only (the benchmark meshes), in the gather/scatter's own row/column order
+// idx(i,j,k) = (k*nj + j)*ni + i.
 //
-// `bc` carries the same homogeneous domain conditions FaceCoeffOp folds by ghost
-// reflection (core/bc.hpp): a PERIODIC side keeps the modular-wraparound
-// neighbour column, while on a Dirichlet/Neumann side the reflected ghost makes
-// the outside neighbour's value sign*pC (sign = -1 / +1), so that face has no
-// column at all and its coefficient lands on the DIAGONAL as sign*aFace. Rows on
-// a non-periodic boundary therefore carry fewer than 7 entries.
-//
-// Homogeneous only: inhomogeneous `bc_data` is an rhs fold, not a matrix one, and
-// FaceCoeffCsrSolver refuses it.
+// The CSR half of the boundary-condition contract (the operator's half is in
+// operators/laplacian.hpp): a PERIODIC side keeps the modular-wraparound neighbour
+// column; on a Dirichlet/Neumann side the reflected ghost (core/bc.hpp) makes the
+// outside value sign*pC, so that column is DROPPED and the domain face's
+// coefficient lands on the DIAGONAL as sign*aFace (sign = -1 / +1) — such rows
+// carry fewer than 7 entries. Homogeneous only: inhomogeneous `bc_data` is an rhs
+// fold, not a matrix one, and FaceCoeffCsrSolver refuses it.
 std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
     std::shared_ptr<const gko::Executor> exec,
     const amrex::Geometry& geom,

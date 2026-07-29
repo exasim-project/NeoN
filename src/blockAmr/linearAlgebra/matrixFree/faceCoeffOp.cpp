@@ -79,7 +79,7 @@ void faceCoeffStencilFusedDevice(
     const amrex::MultiFab& ly,
     const amrex::MultiFab& uz,
     const amrex::MultiFab& lz,
-    const amrex::MultiFab& diag
+    const amrex::MultiFab& alphaMf
 )
 {
     long off = 0;
@@ -93,7 +93,7 @@ void faceCoeffStencilFusedDevice(
         const auto lya = ly.const_array(mfi);
         const auto az = uz.const_array(mfi);
         const auto lza = lz.const_array(mfi);
-        const auto dg = diag.const_array(mfi);
+        const auto al = alphaMf.const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         const int ni = vbx.length(0);
@@ -127,10 +127,10 @@ void faceCoeffStencilFusedDevice(
                 const V aT = static_cast<V>(az(i, j, k + 1));
                 const V aB = static_cast<V>(lza(i, j, k));
                 const V offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
-                // The stored diagonal is amrex::Real (fp64) whatever V is, so an
-                // fp32 instantiation rounds it once here, exactly as it rounds
-                // each face coefficient above.
-                const V diag = static_cast<V>(dg(i, j, k));
+                // PROTOTYPE (C1): recompute the centre term inline instead of
+                // reading a stored diagonal field. Same association order as
+                // computeFaceCoeffDiag, so bitwise identical at V = double.
+                const V diag = static_cast<V>(al(i, j, k)) - (aE + aW + aN + aS + aT + aB);
                 xo[idx] = diag * pC + offd;
             }
         );
@@ -172,17 +172,10 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
             "FaceCoeffOp: the reduced-precision operator is a device path; use executor='cuda'"
         );
     }
-    // The diagonal is derived from the coefficients ONCE, here, unless the caller
-    // already keeps one (blockamr::la::MFFaceCoeffs does, so that it survives the
-    // per-solve rebuild of this operator). Either way the stencils below read a
-    // field instead of re-deriving alpha - sum(faces) per cell per apply.
-    const amrex::MultiFab* diagField = diag.mf.get();
-    if (diagField == nullptr)
-    {
-        diagOwned_ = std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0);
-        computeFaceCoeffDiag(nexec_, CellFieldLevel {diagOwned_}, alpha, upper, lower);
-        diagField = diagOwned_.get();
-    }
+    // PROTOTYPE (C1): no stored diagonal at all -- the stencils recompute
+    // alpha - sum(faces) inline, so alpha is what they read.
+    (void)diag;
+    const amrex::MultiFab* diagField = &(*alpha);
     if (onDevice_)
     {
         // Reference the caller's device fields directly; the stencil reads
@@ -361,7 +354,9 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
                     const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
                                      + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
                                      + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    o(i, j, k) = dg(i, j, k) * psi(i, j, k) + off;
+                    // PROTOTYPE (C1): inline centre term, same association order.
+                    const double dgv = dg(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    o(i, j, k) = dgv * psi(i, j, k) + off;
                 }
             }
         }

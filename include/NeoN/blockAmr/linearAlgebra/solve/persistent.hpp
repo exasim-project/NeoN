@@ -23,14 +23,11 @@
 namespace blockamr::la
 {
 
-// Anything the nanobind-visible solver facade (FaceCoeffSolver) can drive:
-// pack rhs -> solve -> unpack sol. Two things implement it, both file-local
-// to persistent.cpp: the Ginkgo Krylov path (KrylovSolver below -- also
-// FaceCoeffCsrSolver's own base) and the native stationary V-cycle loop
-// (GmgStationarySolver). FaceCoeffSolver picks one at construction time (see
-// makeFaceCoeffSolver in persistent.cpp) and forwards every solve() call to
-// it. Defined here in full (not forward-declared) so FaceCoeffSolver's
-// std::unique_ptr<ISolver> member never needs an out-of-line destructor.
+// Anything the nanobind-visible facade (FaceCoeffSolver) can drive: pack rhs -> solve
+// -> unpack sol. Implemented by the Ginkgo Krylov path (KrylovSolver below, also
+// FaceCoeffCsrSolver's base) and by the native stationary V-cycle loop
+// (GmgStationarySolver, file-local to persistent.cpp). Defined here in full so
+// FaceCoeffSolver's std::unique_ptr<ISolver> member needs no out-of-line destructor.
 class ISolver
 {
 public:
@@ -40,14 +37,11 @@ public:
     virtual SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol) = 0;
 };
 
-// Ginkgo Krylov solver: the operator, the generated Ginkgo solver and the
-// device scratch vectors are built ONCE; each solve is just pack rhs -> apply
-// -> unpack sol, reusing everything (no per-call operator/solver rebuild).
-// The concrete operator is supplied by a subclass. Every KrylovSolver
-// unconditionally allocates its n-sized Ginkgo work vectors (b_/x_) --  the
-// native stationary solver (solver="gmg") never constructs one of these at
-// all; it is a GmgStationarySolver instead, which drives its own V-cycle on
-// MultiFabs and needs neither.
+// Ginkgo Krylov solver: operator, generated solver and device scratch vectors are built
+// ONCE, so each solve is just pack rhs -> apply -> unpack sol with no per-call rebuild.
+// The concrete operator comes from a subclass. Every instance unconditionally allocates
+// its n-sized work vectors b_/x_; solver="gmg" never constructs one of these (it is a
+// GmgStationarySolver, driving its own V-cycle on MultiFabs).
 class KrylovSolver : public ISolver
 {
 public:
@@ -58,16 +52,15 @@ public:
 
 protected:
 
-    // n is the GLOBAL cell count -- the operators' row/column dimension, which
-    // every rank must agree on. nLocal is the count this rank owns and is what
-    // the flat vectors are sized by; they differ only under MPI.
+    // n is the GLOBAL cell count (the operators' dimension, which every rank must agree
+    // on), nLocal this rank's share, which sizes the flat vectors; equal outside MPI.
     KrylovSolver(
         std::shared_ptr<const gko::Executor> exec, gko::size_type n, gko::size_type nLocal
     );
 
-    // Subclass calls this once its operator is built. `norm` selects the norm
-    // the stopping criteria -- and the reported res_norm -- measure in ("l2" |
-    // "linf", MLMG's; see stopNormInf.hpp).
+    // Called by the subclass once its operator is built. `norm` selects the norm the
+    // stopping criteria -- and the reported res_norm -- measure in ("l2" | "linf",
+    // MLMG's; see stopNormInf.hpp).
     void build(
         std::shared_ptr<gko::LinOp> op,
         const std::string& solver,
@@ -79,10 +72,9 @@ protected:
         const std::string& norm = "l2"
     );
 
-    // v -= mean(v), computed on the executor (dot with ones); only the scalar
-    // mean crosses to the host. Uniform cells, so volume mean == arithmetic mean.
-    // Takes the GLOBAL view (bGlobal_/xGlobal_), not the local Dense: the dot has
-    // to reduce across ranks or each rank subtracts its own partial mean.
+    // v -= mean(v), on the executor (dot with ones; only the scalar crosses to the
+    // host). Uniform cells, so volume mean == arithmetic mean. Takes the GLOBAL view,
+    // not the local Dense, or each rank would subtract its own partial mean.
     void subtractMean(gko::LinOp* v);
 
     std::shared_ptr<const gko::Executor> exec_;
@@ -93,11 +85,10 @@ protected:
     // Rank-local storage, sized nLocal_. gather/scatter fill these directly.
     std::unique_ptr<Dense> b_;
     std::unique_ptr<Dense> x_;
-    // What Ginkgo is handed: a distributed::Vector viewing the buffer above on
-    // >1 rank, the buffer itself on one. Everything the operators do to a vector
-    // is elementwise and stays rank-local; what these buy is that the dots and
-    // norms INSIDE the Krylov solver -- and in subtractMean below -- reduce
-    // across ranks, because the solver's work vectors are clones of these.
+    // What Ginkgo is handed: a distributed::Vector viewing the buffer above on >1 rank,
+    // the buffer itself on one. The operators are elementwise and stay rank-local; what
+    // these buy is that the dots and norms INSIDE the Krylov solver -- and in
+    // subtractMean -- reduce across ranks, since its work vectors are clones of these.
     std::shared_ptr<gko::LinOp> bGlobal_;
     std::shared_ptr<gko::LinOp> xGlobal_;
     std::shared_ptr<gko::LinOp> solver_;
@@ -106,34 +97,30 @@ protected:
     bool projectNullspace_ = false;
     std::unique_ptr<Dense> ones_;
     std::shared_ptr<gko::LinOp> onesGlobal_;
-    // Constant offset of an AFFINE operator (inhomogeneous domain BCs): op_ stays
-    // the linear part A, and solve() runs it on rhs - bcOffset_. Null on every
-    // homogeneous configuration, which is the default, so nothing is allocated
-    // and nothing is subtracted unless a caller asked for inhomogeneous BCs.
-    // Refreshed per solve by the subclass that owns the BC data.
+    // Constant offset of an AFFINE operator (inhomogeneous domain BCs): op_ stays the
+    // linear part A and solve() runs it on rhs - bcOffset_. Null on the default
+    // homogeneous configuration, so nothing is allocated and nothing subtracted;
+    // refreshed per solve by the subclass that owns the BC data.
     std::unique_ptr<Dense> bcOffset_;
     NormKind norm_ = NormKind::l2;
 };
 
-// Matrix-free persistent solver: the operator reads the caller's coefficient
-// fields on the fly, so an external in-place update to them changes the
-// matrix with no reassembly. A pure facade: at construction it picks ONE of
-// two solve strategies from config.solverKind (see makeFaceCoeffSolver,
-// persistent.cpp) -- the native stationary GMG V-cycle for solver="gmg", a
-// Ginkgo Krylov solve (with the GMG hierarchy as an optional preconditioner
-// or IR inner solver) for everything else -- and forwards every solve() call
-// to whichever it built. Both strategies are file-local to persistent.cpp
-// (GmgStationarySolver, FaceCoeffKrylovSolver); this class is the only part
-// of either that Python, or any other translation unit, ever names.
+// Matrix-free persistent solver, and a pure facade: at construction it picks ONE
+// strategy from config.solverKind (makeFaceCoeffSolver, persistent.cpp) -- the native
+// stationary GMG V-cycle for solver="gmg", a Ginkgo Krylov solve (with the GMG
+// hierarchy as optional preconditioner or IR inner solver) otherwise -- and forwards
+// every solve() to it. Both strategies are file-local to persistent.cpp, so this class
+// is the only part either Python or another translation unit ever names. Its operator
+// references the caller's coefficient fields, so an in-place update can change the
+// matrix with no reassembly -- see the staleness note in matrixFree/faceCoeffOp.hpp for
+// when that does and does not hold.
 class FaceCoeffSolver
 {
 public:
 
-    // The coefficients are non-const because the matrix-free operator takes them
-    // as CellFieldLevel/FaceFieldLevel handles (core/fieldLevel.hpp), which are
-    // mutable handles; the const on these parameters was a declaration, not a
-    // property of the caller -- the binding holds them as amrex::MultiFab&.
-    // Nothing on this path writes them.
+    // Non-const because the matrix-free operator takes the coefficients as mutable
+    // CellFieldLevel/FaceFieldLevel handles (core/fieldLevel.hpp); nothing on this
+    // path writes them.
     FaceCoeffSolver(
         const NeoN::Executor& executor,
         amrex::Geometry geom,
@@ -154,12 +141,10 @@ private:
     std::unique_ptr<ISolver> impl_;
 };
 
-// Assembled-CSR persistent solver: same matrix, stored explicitly. Its per-
-// iteration SpMV streams the matrix from memory, versus FaceCoeffSolver which
-// recomputes entries from the face coefficients -- the matrix-free comparison.
-// Always a Ginkgo Krylov solve (there is no matrix-free CSR hierarchy), so
-// this derives from KrylovSolver directly -- no facade, no extra members, no
-// overrides.
+// Assembled-CSR persistent solver: same matrix, stored explicitly -- its per-iteration
+// SpMV streams the matrix from memory where FaceCoeffSolver recomputes entries from the
+// face coefficients, which is the matrix-free comparison. Always a Ginkgo Krylov solve
+// (there is no matrix-free CSR hierarchy), so it derives from KrylovSolver directly.
 class FaceCoeffCsrSolver : public KrylovSolver
 {
 public:

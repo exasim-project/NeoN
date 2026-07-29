@@ -15,19 +15,21 @@ What IS testable, and is what this file checks:
 
 * ``system += ops::Laplacian(gamma, geom, bc)`` writes **bitwise** the face
   coefficients a caller writes by hand today, periodic and non-periodic, on both
-  matrix formats -- and the two paths then solve to the same answer. On a
-  non-periodic side "by hand" means the S6b fold: the domain-face coefficient is
-  zero and the diagonal source carries ``(sign-1)*aF``;
+  matrix formats -- and the two paths then solve to the same answer. Non-periodic
+  is the same statement and not a special case: the boundary condition is applied
+  by the matrix from the live coefficient, so the operator writes no diagonal
+  source and drops no face (see ``operators/laplacian.hpp``);
 * the face coefficient is the two-cell mean of ``gamma`` over ``dx**2``, with the
-  right neighbour on every INTERIOR face (periodic wraparound included). Constant
-  ``gamma`` cannot tell an off-by-one-cell mistake from a correct one, so one case
-  varies it;
+  right neighbour on every INTERIOR face (periodic wraparound included) and the
+  boundary cell's own value on a non-periodic DOMAIN face, which has no second
+  cell. Constant ``gamma`` cannot tell an off-by-one-cell mistake from a correct
+  one, so one case varies it;
 * operators ACCUMULATE -- applying the same one twice doubles the coefficients;
 * ``zero()`` clears the coefficients *and* the rhs.
 
-The BC fold itself -- every kind, both formats, the inhomogeneous rhs term --
-lives in ``test_la_boundary_conditions.py``; what is pinned here is the operator's
-interior behaviour and the ``LinearSystem`` mechanics around it.
+The boundary condition itself -- every kind, both formats, the inhomogeneous rhs
+term -- lives in ``test_la_boundary_conditions.py``; what is pinned here is the
+operator's coefficient arithmetic and the ``LinearSystem`` mechanics around it.
 
 Bitwise, not ``allclose``: the claim is that the operator writes *exactly* what
 the hand-built path writes, and a tolerance would hide an off-by-one-cell or a
@@ -96,46 +98,15 @@ def _hand_built_faces(geom, dm, n):
     return [_face_field(geom, dm, d, n, -_inv_dx2(geom, d)) for d in range(3)]
 
 
-def _expected_faces(geom, dm, n, folded):
-    """The three face fields ops::Laplacian writes for gamma = 1.
+def _expected_alpha(alpha_in):
+    """alpha comes back exactly as it went in, under EVERY bc.
 
-    With `folded` (a non-periodic side) the two domain faces of each direction
-    carry NOTHING: their coefficient moved onto the diagonal source. Written as
-    the operator writes it -- ``-0.5*(g+g)*invDx2`` -- because the comparison is
-    bitwise.
+    The operator writes no diagonal SOURCE of its own (there is no ops::Ddt yet),
+    and a non-periodic boundary does not make it write one: the boundary condition
+    stays derivable from the live face coefficient, which is what lets the GMG
+    hierarchy re-derive it per level (``operators/laplacian.hpp``).
     """
-    faces = _hand_built_faces(geom, dm, n)
-    if not folded:
-        return faces
-    for d, face in enumerate(faces):
-        for mfi in blockamr.MFIterator(face):
-            arr = face.copy_to_host(mfi)
-            for edge in (0, -1):
-                sl = [slice(None)] * 3
-                sl[d] = edge
-                arr[tuple(sl) + (0,)] = 0.0
-            face.copy_from(mfi, arr)
-    return faces
-
-
-def _expected_alpha(alpha_in, geom, folded):
-    """alpha after the fold: the source it went in as, plus (sign-1)*aF per side.
-
-    Dirichlet is sign = -1, so each non-periodic side a cell touches adds
-    ``-2 * aF`` with ``aF = -0.5*(g+g)/dx**2`` the coefficient the boundary face
-    would have carried. `alpha_in` is untouched otherwise -- the operator writes
-    no diagonal SOURCE of its own (there is no ops::Ddt yet).
-    """
-    out = _one_box(alpha_in).copy()
-    if not folded:
-        return out
-    for d in range(3):
-        coef = -0.5 * (1.0 + 1.0) * _inv_dx2(geom, d)
-        for edge in (0, -1):
-            sl = [slice(None)] * 3
-            sl[d] = edge
-            out[tuple(sl)] += -2.0 * coef
-    return out
+    return _one_box(alpha_in).copy()
 
 
 def _out_fields(geom, ba, dm, n):
@@ -196,10 +167,10 @@ def _assert_bitwise(got, want, what):
 
 _SOLVE_KWARGS = dict(solver="cg", max_iter=5000, rtol=1e-14, atol=0.0)
 
-# Periodic and one non-periodic case. In the interior the coefficients an operator
-# writes are the same either way; on a non-periodic domain face they are the S6b
-# fold instead (`folded` below). The non-periodic row is the one S6a made
-# reachable through CsrMatrix.
+# Periodic and one non-periodic case. The coefficients an operator writes are the
+# same either way EXCEPT for which cells a domain face averages gamma over, which
+# only the varying-gamma row below can see (`nonperiodic` selects its expectation).
+# The non-periodic row is the one S6a made reachable through CsrMatrix.
 _BC_CASES = [
     ("periodic", [1, 1, 1], ["periodic"] * 6, False),
     ("dirichlet", [0, 0, 0], ["dirichlet"] * 6, True),
@@ -278,18 +249,18 @@ def _reference_solve(geom, ba, dm, n, rhs, bc, executor):
 
 
 @pytest.mark.parametrize("fmt", ["mf", "csr"])
-@pytest.mark.parametrize("case, periodic, bc, folded", _BC_CASES)
+@pytest.mark.parametrize("case, periodic, bc, nonperiodic", _BC_CASES)
 def test_laplacian_writes_the_hand_built_coefficients(
-    blockamr_session, fmt, case, periodic, bc, folded
+    blockamr_session, fmt, case, periodic, bc, nonperiodic
 ):
     """`system += ops::Laplacian(gamma=1, ...)` gives bitwise the hand-built faces.
 
     Bitwise is the claim: the operator is a replacement for the seven-MultiFab
-    call every caller writes today, not an approximation of it. On the periodic
-    row `alpha` must come back exactly as it went in -- the operator writes no
-    diagonal SOURCE of its own. On the non-periodic one it comes back with the
-    S6b fold on the boundary cells, and the two domain faces per direction come
-    back at zero, which is the same matrix said differently.
+    call every caller writes today, not an approximation of it. `nonperiodic` is
+    deliberately NOT consulted -- at constant gamma both rows expect the identical
+    coefficients, because the boundary condition is not in them: `alpha` comes back
+    exactly as it went in and every face, domain ones included, carries the
+    hand-built value.
     """
     _require_bindings()
     n = 16
@@ -300,17 +271,19 @@ def test_laplacian_writes_the_hand_built_coefficients(
 
     _probe(fmt, gamma, alpha, geom, ba, dm, n, bc, out)
 
-    want_faces = _expected_faces(geom, dm, n, folded)
+    want_faces = _hand_built_faces(geom, dm, n)
     np.testing.assert_array_equal(
-        _one_box(out[0]), _expected_alpha(alpha, geom, folded), err_msg=f"{fmt}/{case} alpha"
+        _one_box(out[0]), _expected_alpha(alpha), err_msg=f"{fmt}/{case} alpha"
     )
     for d, name in enumerate("xyz"):
         _assert_bitwise(out[1 + d], want_faces[d], f"{fmt}/{case} u{name}")
 
 
 @pytest.mark.parametrize("fmt", ["mf", "csr"])
-@pytest.mark.parametrize("case, periodic, bc, folded", _BC_CASES)
-def test_system_solve_matches_hand_built_solver(blockamr_session, fmt, case, periodic, bc, folded):
+@pytest.mark.parametrize("case, periodic, bc, nonperiodic", _BC_CASES)
+def test_system_solve_matches_hand_built_solver(
+    blockamr_session, fmt, case, periodic, bc, nonperiodic
+):
     """The assembled system solves to the hand-built solver's answer.
 
     Same mesh, same coefficients, same CG. The random rhs is deliberate: a smooth
@@ -341,16 +314,20 @@ def test_system_solve_matches_hand_built_solver(blockamr_session, fmt, case, per
     )
 
 
-@pytest.mark.parametrize("case, periodic, bc, folded", _BC_CASES)
-def test_laplacian_face_gamma_is_the_two_cell_average(blockamr_session, case, periodic, bc, folded):
+@pytest.mark.parametrize("case, periodic, bc, nonperiodic", _BC_CASES)
+def test_laplacian_face_gamma_is_the_two_cell_average(
+    blockamr_session, case, periodic, bc, nonperiodic
+):
     """A varying gamma pins WHICH two cells each face averages.
 
     With gamma constant every neighbour choice gives the same number, so a
     wraparound written as a clamp -- or a face indexed one cell off -- passes the
     test above unnoticed. Here the expectation is computed per face from the cell
-    values: periodic faces wrap. A non-periodic DOMAIN face carries no
-    coefficient at all since S6b (it was folded onto the diagonal), so those two
-    per direction are expected to be zero; every other face is the two-cell mean.
+    values: periodic faces wrap. A non-periodic DOMAIN face has only ONE adjacent
+    cell, so it averages the boundary cell's gamma with itself; the ghost on the
+    far side is never filled and reading it would be reading recycled memory. This
+    is the only row in the suite that can tell that apart from reading the ghost,
+    or from the zero the coefficient used to be given there.
     """
     _require_bindings()
     n = 8
@@ -367,12 +344,14 @@ def test_laplacian_face_gamma_is_the_two_cell_average(blockamr_session, case, pe
         inv_dx2 = _inv_dx2(geom, d)
         got = _one_box(out[1 + d])
         for f in range(n + 1):
-            if folded and f in (0, n):
-                want = np.zeros_like(np.take(g, 0, axis=d))
+            if nonperiodic and f in (0, n):
+                # Both sides are the single interior cell: 0 at the low face,
+                # n-1 at the high one.
+                lo = hi = 0 if f == 0 else n - 1
             else:
                 lo = (f - 1) % n if wrap else f - 1
                 hi = f % n if wrap else f
-                want = -0.5 * (np.take(g, lo, axis=d) + np.take(g, hi, axis=d)) * inv_dx2
+            want = -0.5 * (np.take(g, lo, axis=d) + np.take(g, hi, axis=d)) * inv_dx2
             np.testing.assert_array_equal(
                 np.take(got, f, axis=d), want, err_msg=f"{case}: dir {d}, face {f}"
             )

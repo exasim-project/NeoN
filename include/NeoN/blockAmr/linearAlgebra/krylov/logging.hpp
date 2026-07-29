@@ -14,12 +14,10 @@
 namespace blockamr::la
 {
 
-// Per-iteration residual-norm history. Ginkgo's iteration_complete event
-// hands (solver, b, x, it, residual, residual_norm, implicit_sq_norm, ...);
-// the criteria used here make the solvers pass residual_norm = nullptr, so
-// the norm is computed from the residual vector (with the implicit squared
-// norm as a last resort). Scalars land on the solve executor, so device
-// values are staged through the host master before reading.
+// Per-iteration residual-norm history. The criteria used here make the solvers pass
+// residual_norm = nullptr, so the norm is computed from the residual vector (implicit
+// squared norm as a last resort). Scalars land on the solve executor, so device values
+// are staged through the host master before reading.
 class ResidualHistoryLogger : public gko::log::Logger
 {
 public:

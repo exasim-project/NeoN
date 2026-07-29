@@ -165,10 +165,10 @@ def const_cell(ba, dm, value):
     return mf
 
 
-def const_face(geom, dm, d, max_size, value):
+def const_face(geom, dm, direction, max_size, value):
     dom = geom.domain()
     fb = blockamr.Box(dom.small_end(), dom.big_end())
-    fb.surrounding_nodes(d)
+    fb.surrounding_nodes(direction)
     fba = blockamr.BoxArray(fb)
     fba.max_size(max_size)
     mf = blockamr.MultiFab(fba, dm, 1, 0)
@@ -289,14 +289,14 @@ def make_solve(method, geom, ba, dm, max_size, periodic, bc, rhs, sol, rtol, ato
         return solve, ()
 
     if method == "legacy-mf":
-        obj = make_legacy_solver(geom, ba, dm, max_size, bc, rtol, atol, max_iter)
+        legacy_solver = make_legacy_solver(geom, ba, dm, max_size, bc, rtol, atol, max_iter)
 
         def solve():
             sol.set_val(0.0)
-            st = obj.solve(rhs, sol)
-            return st["num_iters"], st["res_norm"]
+            stats = legacy_solver.solve(rhs, sol)
+            return stats["num_iters"], stats["res_norm"]
 
-        return solve, (obj,)
+        return solve, (legacy_solver,)
 
     solver_kind, precond = LA_METHODS[method]
     system, keepalive = make_la_system(geom, ba, dm, bc, rhs, neon.GPUExecutor())
@@ -313,8 +313,8 @@ def make_solve(method, geom, ba, dm, max_size, periodic, bc, rhs, sol, rtol, ato
 
     def solve():
         sol.set_val(0.0)
-        st = la_solver.solve(system, sol)
-        return st["num_iters"], st["res_norm"]
+        stats = la_solver.solve(system, sol)
+        return stats["num_iters"], stats["res_norm"]
 
     return solve, (system, la_solver, *keepalive)
 
@@ -550,9 +550,9 @@ def main():
                     )
 
     with open(args.csv, "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(HEADER)
-        w.writerows(rows)
+        writer = csv.writer(f)
+        writer.writerow(HEADER)
+        writer.writerows(rows)
     print(f"\nwrote {len(rows)} rows to {args.csv}")
 
 

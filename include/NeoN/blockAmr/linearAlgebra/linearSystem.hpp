@@ -18,21 +18,15 @@ namespace blockamr::la
 {
 
 /* @class LinearSystem
- * @brief Pure data: a matrix and a right-hand side, the two things a solve needs
- *        and the two things an operator contributes to.
+ * @brief Pure data: a matrix and a right-hand side. No BCs, Geometry or
+ *        discretisation knowledge -- the operators fold that in beforehand.
  *
- * No BCs, no Geometry, no discretisation knowledge -- the operators folded all of
- * that in before it got here. What it adds over holding the pair loosely is
- * `operator+=`: A and b are written together, by one object, through one call.
+ * INVARIANT: non-owning. It holds `Matrix*` and `amrex::MultiFab*`, both of which
+ * must outlive it; the rhs a caller passes IS the rhs the solve reads, so an
+ * operator's contribution needs no copy-back.
  *
- * Non-owning, per the design: it holds `Matrix*` and `amrex::MultiFab*` and both
- * must outlive it. That is not a shortcut -- the rhs a caller passes IS the rhs
- * the solve reads, so an operator's contribution to it is visible to the caller
- * without a copy-back step.
- *
- * This class is the sole friend of `Coefficients` (coefficients.hpp) and the sole
- * friend of `Operator::assemble` (operator.hpp). `operator+=` below is where both
- * friendships are finally used, and it is the only mutating entry point on the
+ * Sole friend of `Coefficients` (coefficients.hpp) and of `Operator::assemble`
+ * (operator.hpp); `operator+=` is the only mutating entry point on the
  * linear-algebra side.
  */
 class LinearSystem
@@ -41,26 +35,20 @@ public:
 
     LinearSystem(Matrix& matrix, amrex::MultiFab& rhs) : matrix_(&matrix), rhs_(&rhs) {}
 
-    // The accumulation. Builds the one Coefficients the operator will ever see --
-    // the matrix's coefficient handles plus the rhs, which lives here rather than
-    // on the Matrix -- and hands it over. The operator receives that and nothing
-    // else: not this class, not the Matrix, not the format.
-    //
-    // ACCUMULATES. Operators add to what is already there, so a system is zeroed
+    // ACCUMULATES: operators add to what is already there, so a system is zeroed
     // once (zero(), or at construction by the format) and then written by however
-    // many operators contribute to it.
+    // many operators contribute. The operator sees only a Coefficients -- not this
+    // class, not the Matrix, not the format.
     LinearSystem& operator+=(const Operator& op)
     {
-        // nonOwning: the rhs belongs to the caller (this class is documented
-        // non-owning above), so the handle borrows it rather than sharing ownership.
+        // nonOwning: the rhs belongs to the caller, so the handle borrows it.
         op.assemble(Coefficients {
             matrix_->coefficients(), CellFieldLevel {nonOwning(*rhs_)}, matrix_->executor()
         });
         return *this;
     }
 
-    // Coefficients AND rhs, together: they are one system, and zeroing half of it
-    // is never what a caller means.
+    // Coefficients AND rhs together: zeroing half a system is never meant.
     void zero()
     {
         matrix_->zero();
@@ -71,9 +59,7 @@ public:
 
     const amrex::MultiFab& rhs() const { return *rhs_; }
 
-    // From the MATRIX, which is the only object that knows how many rows this rank
-    // owns. Never boxArray().numPts(), which counts every rank's cells and differs
-    // under MPI (faceCoeffMatrix.hpp).
+    // Rank-local, never boxArray().numPts(): see localCount in transfer.hpp.
     std::size_t localRows() const { return matrix_->localRows(); }
 
     const NeoN::Executor& executor() const { return matrix_->executor(); }

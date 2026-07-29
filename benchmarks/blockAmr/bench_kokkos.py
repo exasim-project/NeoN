@@ -91,9 +91,9 @@ def _mesh(shape, max_size):
 def _scatter(mf, values):
     for mfi in blockamr.MFIterator(mf):
         bx = mfi.valid_box()
-        s, b = bx.small_end(), bx.big_end()
+        lo, hi = bx.small_end(), bx.big_end()
         arr = mf.copy_to_host(mfi)
-        arr[:, :, :, 0] = values[s[0] : b[0] + 1, s[1] : b[1] + 1, s[2] : b[2] + 1]
+        arr[:, :, :, 0] = values[lo[0] : hi[0] + 1, lo[1] : hi[1] + 1, lo[2] : hi[2] + 1]
         mf.copy_from(mfi, arr)
     return mf
 
@@ -107,10 +107,10 @@ def _cell_mf(ba, dm, geom, values, nghost):
     return mf
 
 
-def _face_mf(ba, dm, d, values):
-    typ = [0, 0, 0]
-    typ[d] = 1
-    fba = blockamr.convert_ba(ba, blockamr.IntVect(*typ))
+def _face_mf(ba, dm, direction, values):
+    index_type = [0, 0, 0]
+    index_type[direction] = 1
+    fba = blockamr.convert_ba(ba, blockamr.IntVect(*index_type))
     mf = blockamr.MultiFab(fba, dm, 1, 0)
     mf.set_val(0.0)
     _scatter(mf, values)
@@ -130,12 +130,13 @@ def _run_case(label, shape, max_size, iters, batches):
         out_mf = _cell_mf(ba, dm, geom, np.zeros(shape), 0)
         kwargs = {}
         if info["needs_faces"]:
-            faces = [
-                rng.random(tuple(s + (1 if a == d else 0) for a, s in enumerate(shape))) - 0.5
-                for d in range(3)
-            ]
-            fmfs = [_face_mf(ba, dm, d, faces[d]) for d in range(3)]
-            kwargs = {"fx": fmfs[0], "fy": fmfs[1], "fz": fmfs[2]}
+            faces = []
+            for direction in range(3):
+                face_shape = list(shape)
+                face_shape[direction] += 1
+                faces.append(rng.random(tuple(face_shape)) - 0.5)
+            face_mfs = [_face_mf(ba, dm, direction, faces[direction]) for direction in range(3)]
+            kwargs = {"fx": face_mfs[0], "fy": face_mfs[1], "fz": face_mfs[2]}
 
         for backend in BACKENDS:
             stats = dict(
@@ -176,16 +177,16 @@ def _report(rows):
     print("-" * 72)
     for case, _, _ in CASES:
         for kernel in KERNELS:
-            sel = [r for r in rows if r["case"] == case and r["kernel"] == kernel]
-            if not sel:
+            selected = [r for r in rows if r["case"] == case and r["kernel"] == kernel]
+            if not selected:
                 continue
-            base = next(r["ms_min"] for r in sel if r["backend"] == "amrex")
-            for r in sel:
+            base = next(r["ms_min"] for r in selected if r["backend"] == "amrex")
+            for r in selected:
                 ratio = r["ms_min"] / base
-                flag = "" if r["backend"] == "amrex" else f"{ratio:8.2f}x"
+                ratio_text = "" if r["backend"] == "amrex" else f"{ratio:8.2f}x"
                 print(
                     f"{r['case']:<12} {r['kernel']:<10} {r['backend']:<12} "
-                    f"{r['nboxes']:>5} {r['ms_min']:>10.4f} {r['gb_per_s']:>8.1f} {flag:>9}"
+                    f"{r['nboxes']:>5} {r['ms_min']:>10.4f} {r['gb_per_s']:>8.1f} {ratio_text:>9}"
                 )
             print()
 
@@ -216,9 +217,9 @@ def main():
     _report(rows)
     if rows:
         with open(args.csv, "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
-            w.writeheader()
-            w.writerows(rows)
+            writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+            writer.writeheader()
+            writer.writerows(rows)
         print(f"wrote {args.csv} ({len(rows)} rows)")
 
 

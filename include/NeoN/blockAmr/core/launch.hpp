@@ -23,23 +23,16 @@
 
 // The launchers under comparison, in two families.
 //
-// PER-BOX -- take an amrex::Box and invoke f(i, j, k) over its GLOBAL index range.
-// One launch per box, which is how NeoN's operators are written today.
+// PER-BOX -- an amrex::Box, f(i, j, k) over its GLOBAL range, one launch per box,
+// which is how NeoN's operators are written today: launchAmrex (amrex::ParallelFor,
+// the baseline), launchKokkosMd (MDRangePolicy, idiomatic tiled Kokkos) and
+// launchKokkosFlat (RangePolicy + manual ijk, matching AMReX's own scheme and the
+// only form NeoN::parallelFor can express today).
 //
-//   launchAmrex        amrex::ParallelFor -- the baseline. On CUDA this flattens the
-//                      box into a 1D grid-stride loop with AMREX_GPU_MAX_THREADS.
-//   launchKokkosMd     Kokkos MDRangePolicy<Rank<3>> -- idiomatic Kokkos, tiled.
-//   launchKokkosFlat   Kokkos RangePolicy + manual ijk decomposition -- matches
-//                      AMReX's own scheme, and is the only form NeoN::parallelFor
-//                      can express today (it takes a 1D range, parallelAlgorithms.hpp).
-//
-// FUSED -- take the MultiFab and invoke f(ibox, i, j, k) for every valid cell of
-// every box in ONE launch, so per-box launch cost cannot appear at all.
-//
-//   launchAmrexFused   amrex::ParallelFor(mf, f) (AMReX_MFParallelForG.H) -- AMReX's
-//                      own fused path, and the honest baseline for the Kokkos one.
-//   launchKokkosTeam   Kokkos TeamPolicy over the same block decomposition, reading
-//                      the same cached BoxIndexer table AMReX built.
+// FUSED -- the MultiFab, f(ibox, i, j, k) for every valid cell in ONE launch, so
+// per-box launch cost cannot appear at all: launchAmrexFused (AMReX's own fused
+// path, the honest baseline) and launchKokkosTeam (a TeamPolicy over the same
+// decomposition, reading the same cached BoxIndexer table AMReX built).
 
 namespace blockamr
 {
@@ -85,18 +78,14 @@ void launchKokkosFlat(const amrex::Box& bx, F const& f)
     );
 }
 
-// ---------------------------------------------------------------------------
-// Streams. AMReX round-robins its box loop over numGpuStreams() CUDA streams
-// (AMReX_MFIter.cpp:381 calls setStreamIndex(currentIndex % streams)), so short
-// per-box kernels overlap. A plain Kokkos::parallel_for issues to ONE stream and
-// serializes them -- the measured multi-box penalty. partition_space gives Kokkos
-// the same width: N execution space instances, N streams.
-// ---------------------------------------------------------------------------
+// Streams. AMReX round-robins its box loop over numGpuStreams() CUDA streams, so
+// short per-box kernels overlap; a plain Kokkos::parallel_for issues to ONE stream
+// and serializes them -- the measured multi-box penalty. partition_space gives
+// Kokkos the same width.
 
-// Heap-owned rather than a plain function-local static: the instances own their
-// cudaStreams (ManageStream::yes) and must be destroyed BEFORE Kokkos::finalize
-// and amrex::Finalize, not at static teardown afterwards. releaseStreamPool() is
-// called from kokkosFinalize().
+// Heap-owned rather than a function-local static: the instances own their
+// cudaStreams and must be destroyed BEFORE Kokkos::finalize and amrex::Finalize,
+// not at static teardown afterwards (releaseStreamPool() from kokkosFinalize()).
 inline std::vector<Kokkos::DefaultExecutionSpace>*& streamPoolPtr()
 {
     static std::vector<Kokkos::DefaultExecutionSpace>* pool = nullptr;
@@ -108,8 +97,8 @@ inline const Kokkos::DefaultExecutionSpace& benchStream(int ibox)
     auto*& pool = streamPoolPtr();
     if (pool == nullptr)
     {
-        // Exactly as many streams as AMReX uses, so the two round-robins are the
-        // same width and the comparison is of the launcher, not the stream count.
+        // Exactly as many streams as AMReX uses, so the comparison is of the
+        // launcher, not the stream count.
         const int n = std::max(1, amrex::Gpu::Device::numGpuStreams());
         pool = new std::vector<Kokkos::DefaultExecutionSpace>(Kokkos::Experimental::partition_space(
             Kokkos::DefaultExecutionSpace {}, std::vector<int>(static_cast<std::size_t>(n), 1)
@@ -154,9 +143,7 @@ void launchKokkosMdNamed(const char* name, const amrex::Box& bx, F const& f)
     );
 }
 
-// ---------------------------------------------------------------------------
 // Fused launchers: one kernel for every box. f takes (ibox, i, j, k).
-// ---------------------------------------------------------------------------
 
 template<class F>
 void launchAmrexFused(const amrex::MultiFab& mf, F const& f)
@@ -165,19 +152,15 @@ void launchAmrexFused(const amrex::MultiFab& mf, F const& f)
 }
 
 // The Kokkos twin of AMReX's fused path. Everything that is not the launch itself
-// is shared with it: MT is AMReX's CUDA block size (AMReX_MFParallelForG.H:124),
-// nblocks_per_box comes from AMReX's ParForInfo, and the per-box BoxIndexer table
-// is AMReX's own cached DEVICE copy (built once per FabArray, so neither backend
-// pays a host-to-device copy per launch). What differs is that AMReX hand-writes
-// <<<nblocks, MT, 0, stream>>> plus blockIdx.x arithmetic per backend, while this
-// is one portable TeamPolicy.
+// is shared with it -- MT, nblocks_per_box and the cached DEVICE BoxIndexer table
+// are AMReX's own -- so the comparison is of one portable TeamPolicy against
+// AMReX's hand-written per-backend launch.
 //
-// Templated on the FabArray, not fixed to MultiFab: everything it touches
-// (IndexArray, box, getParForInfo) lives on FabArrayBase, and the GMG levels are
-// FabArray<BaseFab<T>>. `name` labels the kernel so a profile can tell callers
-// apart.
+// Templated on the FabArray, not fixed to MultiFab: everything it touches lives on
+// FabArrayBase and the GMG levels are FabArray<BaseFab<T>>. `name` labels the
+// kernel so a profile can tell callers apart.
 //
-// Valid cells only. A grown iteration space would need the MDRangePolicy fallback
+// Valid cells only: a grown iteration space would need the MDRangePolicy fallback
 // below to accept a negative lower bound, which its unsigned index type rejects.
 template<class MF, class F>
 void launchKokkosTeamNamed(const char* name, const MF& mf, F const& f)
@@ -189,10 +172,9 @@ void launchKokkosTeamNamed(const char* name, const MF& mf, F const& f)
     }
     if (nboxes == 1)
     {
-        // The same fallback AMReX makes (AMReX_MFParallelForG.H:67): with one box
-        // there is nothing to fuse, and the team mapping measurably costs on an
-        // L2-resident kernel. Without this, the fused column would report a
-        // handicap AMReX does not take at 1 box.
+        // The same fallback AMReX makes: with one box there is nothing to fuse and
+        // the team mapping measurably costs, so without this the fused column would
+        // report a handicap AMReX does not take at 1 box.
         const amrex::Box bx = mf.box(mf.IndexArray()[0]);
         launchKokkosMdNamed(
             name, bx, BLOCKAMR_LAMBDA(int i, int j, int k) { f(0, i, j, k); }
@@ -238,11 +220,9 @@ void launchKokkosTeam(const MF& mf, F const& f)
     launchKokkosTeamNamed("bench_team", mf, f);
 }
 
-// ---------------------------------------------------------------------------
-// Accessors: both take GLOBAL (i, j, k). amrex::Array4 already does, and is
+// Accessors: both take GLOBAL (i, j, k). amrex::Array4 already does and is
 // trivially copyable into a Kokkos lambda; ViewAcc gives an unmanaged Kokkos View
 // the same convention by subtracting the fab box origin.
-// ---------------------------------------------------------------------------
 
 using FabView = Kokkos::View<
     double***,
@@ -261,8 +241,8 @@ struct ViewAcc
     }
 };
 
-// Unmanaged View over the whole fab box (ghosts included), with the origin
-// recorded so the accessor speaks global indices like Array4 does.
+// Unmanaged View over the whole fab box (ghosts included), origin recorded so the
+// accessor speaks global indices like Array4.
 inline ViewAcc viewAcc(amrex::FArrayBox& fab)
 {
     const amrex::Box& b = fab.box();

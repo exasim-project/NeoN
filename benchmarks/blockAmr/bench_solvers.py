@@ -195,10 +195,10 @@ def const_cell(ba, dm, value):
     return mf
 
 
-def const_face(geom, dm, d, max_size, value):
+def const_face(geom, dm, direction, max_size, value):
     dom = geom.domain()
     fb = blockamr.Box(dom.small_end(), dom.big_end())
-    fb.surrounding_nodes(d)
+    fb.surrounding_nodes(direction)
     fba = blockamr.BoxArray(fb)
     fba.max_size(max_size)
     mf = blockamr.MultiFab(fba, dm, 1, 0)
@@ -386,12 +386,12 @@ def solve_once(method, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter):
     return iters, res
 
 
-def do_solve(method, obj, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter):
-    """One solve from a zero initial guess. Persistent solvers reuse `obj`."""
-    if obj is not None:  # persistent (mf / csr)
+def do_solve(method, persistent_solver, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter):
+    """One solve from a zero initial guess. Persistent solvers are reused as given."""
+    if persistent_solver is not None:
         sol.set_val(0.0)
-        st = obj.solve(rhs, sol)
-        return st["num_iters"], st["res_norm"]
+        stats = persistent_solver.solve(rhs, sol)
+        return stats["num_iters"], stats["res_norm"]
     return solve_once(method, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter)
 
 
@@ -432,21 +432,25 @@ def bench(n_cell, max_size, methods, repeats, warmup, rtol, atol, max_iter):
         # setup); each timed solve is then only pack -> apply -> unpack. A
         # non-persistent method rebuilds per call, so its setup is the first
         # solve and every repeat re-pays the build.
-        obj = None
+        persistent_solver = None
         t0 = perf_counter()
         if method in PERSISTENT:
-            obj = make_persistent(method, geom, ba, dm, max_size, rtol, max_iter)
-        iters, res = do_solve(method, obj, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter)
+            persistent_solver = make_persistent(method, geom, ba, dm, max_size, rtol, max_iter)
+        iters, res = do_solve(
+            method, persistent_solver, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter
+        )
         setup_ms = 1e3 * (perf_counter() - t0)
 
         for _ in range(warmup):
-            do_solve(method, obj, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter)
+            do_solve(
+                method, persistent_solver, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter
+            )
 
         samples = []
         for _ in range(repeats):
             t0 = perf_counter()
             iters, res = do_solve(
-                method, obj, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter
+                method, persistent_solver, geom, ba, dm, max_size, rhs, sol, rtol, atol, max_iter
             )
             samples.append(perf_counter() - t0)
 
@@ -555,27 +559,24 @@ def main():
     )
     args = ap.parse_args()
 
-    # bf16 exists for precond="gmg_kokkos" alone. Rather than let the other GMG rows
-    # quietly run fp64 under a bf16 heading -- which is exactly what makes a
-    # comparison table lie -- name them and stop.
-    if args.gmg_precision == "bf16":
-        no_bf16 = sorted({"mf-gmg", "gmg", "gmg-ir"} & set(args.methods))
-        if no_bf16:
-            ap.error(
-                "--gmg-precision bf16 is implemented for mf-gmgk only; "
-                f"drop {', '.join(no_bf16)} from --methods"
-            )
-    # Same rule for the coefficient type, and for the same reason: mf-gmg / gmg /
-    # gmg-ir share the shipped hierarchy, which stores one type per level.
+    # Narrowing exists for precond="gmg_kokkos" alone; mf-gmg / gmg / gmg-ir share the
+    # shipped hierarchy, which stores one type per level. Rather than let those rows
+    # quietly run fp64 under a bf16 heading -- which is exactly what makes a comparison
+    # table lie -- name them and stop.
+    shipped_hierarchy = sorted({"mf-gmg", "gmg", "gmg-ir"} & set(args.methods))
+    if args.gmg_precision == "bf16" and shipped_hierarchy:
+        ap.error(
+            "--gmg-precision bf16 is implemented for mf-gmgk only; "
+            f"drop {', '.join(shipped_hierarchy)} from --methods"
+        )
     if args.gmg_coeff_precision:
-        no_split = sorted({"mf-gmg", "gmg", "gmg-ir"} & set(args.methods))
-        if no_split:
+        if shipped_hierarchy:
             ap.error(
                 "--gmg-coeff-precision is implemented for mf-gmgk only; "
-                f"drop {', '.join(no_split)} from --methods"
+                f"drop {', '.join(shipped_hierarchy)} from --methods"
             )
-        width = {"fp64": 8, "fp32": 4, "bf16": 2}
-        if width[args.gmg_coeff_precision] > width[args.gmg_precision]:
+        width_bytes = {"fp64": 8, "fp32": 4, "bf16": 2}
+        if width_bytes[args.gmg_coeff_precision] > width_bytes[args.gmg_precision]:
             ap.error(
                 f"--gmg-coeff-precision {args.gmg_coeff_precision} is wider than "
                 f"--gmg-precision {args.gmg_precision}; narrow the fields first"
@@ -649,9 +650,9 @@ def main():
                 )
 
     with open(args.csv, "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(header)
-        w.writerows(rows)
+        writer = csv.writer(f)
+        writer.writerow(header)
+        writer.writerows(rows)
     print(f"\nwrote {len(rows)} rows to {args.csv}")
 
 

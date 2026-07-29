@@ -166,6 +166,25 @@ static_assert(std::is_same_v<decltype(Coefficients::upper), FaceFieldLevel>);
 static_assert(std::is_same_v<decltype(Coefficients::lower), std::optional<FaceFieldLevel>>);
 static_assert(std::is_same_v<decltype(Coefficients::rhs), CellFieldLevel>);
 
+// --- The coefficients are SELF-DESCRIBING: the mesh travels with them ---------
+//
+// Not optional and not a pointer. An operator cannot write a face coefficient
+// without dx, so a coefficient set that does not carry its own layout is not
+// sufficient to assemble from -- and passing it alongside instead made a mismatch
+// representable (ops::Laplacian used to hold its own amrex::Geometry). Take this
+// member off either struct and every operator needs a second source for it again.
+static_assert(std::is_same_v<decltype(MatrixCoefficients::mesh), MeshLevel>);
+static_assert(std::is_same_v<decltype(Coefficients::mesh), MeshLevel>);
+
+// The geometry is NOT separately constructible into ops::Laplacian any more: the
+// three-argument form that took one is gone, so the old
+// `Laplacian(gamma, geom, bc)` spelling no longer compiles.
+static_assert(!std::is_constructible_v<
+              ops::Laplacian,
+              const amrex::MultiFab&,
+              amrex::Geometry,
+              BcArray>);
+
 // The concrete operator satisfies the concept it is written against. (It also
 // asserts this in its own header; repeated here so this TU fails if the header's
 // assertion is ever removed along with whatever broke it.)

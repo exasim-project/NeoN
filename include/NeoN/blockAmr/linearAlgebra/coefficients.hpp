@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
+#include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 #include "NeoN/core/executor/executor.hpp"
 
@@ -45,6 +46,7 @@ enum class Symmetry
 };
 
 // The matrix-side coefficient handles, grouped by role -- lduMatrix's split.
+//   mesh  -- the layout those handles are over: ba, dm, geom (core/meshLevel.hpp)
 //   diag  -- cell-centred, one value per cell. STILL the diagonal SOURCE alpha,
 //            not the matrix diagonal (faceCoeffMatrix.hpp).
 //   upper -- face-centred, owner-row -> neighbour coupling on the HIGH face
@@ -57,8 +59,17 @@ enum class Symmetry
 // because an operator writing both would double every coefficient. The storage
 // reading has its own accessor and its own type (FaceCoeffFields::storedLower(),
 // a plain FaceFieldLevel), so the two cannot be confused at a call site.
+//
+// `mesh` is FIRST, and it is here rather than beside these handles at a call site,
+// because the coefficients are not self-describing without it: every operator that
+// writes a face coefficient needs dx to scale it and the periodicity to fill the
+// halo the face average reads across. Passing it separately made a mismatch
+// representable -- ops::Laplacian used to carry its own amrex::Geometry, handed in
+// at construction, and nothing checked it against the matrix's. It cannot be
+// spelled now: the operator reads the mesh off the coefficients it was handed.
 struct MatrixCoefficients
 {
+    MeshLevel mesh;
     CellFieldLevel diag;
     FaceFieldLevel upper;
     std::optional<FaceFieldLevel> lower; // nullopt when symmetric
@@ -75,6 +86,11 @@ class Coefficients
 {
 public:
 
+    // The layout every handle below is over, carried down from the matrix with
+    // them. An operator needs dx and the periodicity to write a face coefficient
+    // at all, so a Coefficients without this is not sufficient to assemble from --
+    // which is the whole claim this type makes.
+    MeshLevel mesh;
     CellFieldLevel diag;
     FaceFieldLevel upper;
     std::optional<FaceFieldLevel> lower; // nullopt when symmetric
@@ -93,7 +109,7 @@ private:
     friend class LinearSystem;
 
     Coefficients(MatrixCoefficients mc, CellFieldLevel rhs, const NeoN::Executor& exec)
-        : diag(mc.diag), upper(mc.upper), lower(mc.lower), rhs(rhs), exec(exec)
+        : mesh(mc.mesh), diag(mc.diag), upper(mc.upper), lower(mc.lower), rhs(rhs), exec(exec)
     {}
 };
 
