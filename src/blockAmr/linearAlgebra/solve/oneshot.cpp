@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp"
@@ -313,13 +314,11 @@ SolveResult solveFaceCoeffs(
         dm,
         geom,
         n,
-        &alpha,
-        &ux,
-        &lx,
-        &uy,
-        &ly,
-        &uz,
-        &lz
+        // Non-owning handles: this entry point is handed the caller's MultiFabs
+        // by reference and does not take ownership of them.
+        CellFieldLevel {nonOwning(alpha)},
+        FaceFieldLevel {{nonOwning(ux), nonOwning(uy), nonOwning(uz)}},
+        FaceFieldLevel {{nonOwning(lx), nonOwning(ly), nonOwning(lz)}}
     ));
 
     // Plain linear solve A x = b: the face coefficients are the full

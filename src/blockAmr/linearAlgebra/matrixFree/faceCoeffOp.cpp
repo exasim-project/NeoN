@@ -20,27 +20,24 @@ namespace blockamr::la
 
 void computeFaceCoeffDiag(
     const NeoN::Executor& exec,
-    amrex::MultiFab& diag,
-    const amrex::MultiFab& alpha,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz
+    CellFieldLevel diag,
+    const CellFieldLevel& alpha,
+    const FaceFieldLevel& upper,
+    const FaceFieldLevel& lower
 )
 {
-    for (amrex::MFIter mfi(diag); mfi.isValid(); ++mfi)
+    amrex::MultiFab& dgf = *diag;
+    for (amrex::MFIter mfi(dgf); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
-        const auto dg = diag.array(mfi);
-        const auto al = alpha.const_array(mfi);
-        const auto ax = ux.const_array(mfi);
-        const auto lxa = lx.const_array(mfi);
-        const auto ay = uy.const_array(mfi);
-        const auto lya = ly.const_array(mfi);
-        const auto az = uz.const_array(mfi);
-        const auto lza = lz.const_array(mfi);
+        const auto dg = dgf.array(mfi);
+        const auto al = (*alpha).const_array(mfi);
+        const auto ax = upper[0].const_array(mfi);
+        const auto lxa = lower[0].const_array(mfi);
+        const auto ay = upper[1].const_array(mfi);
+        const auto lya = lower[1].const_array(mfi);
+        const auto az = upper[2].const_array(mfi);
+        const auto lza = lower[2].const_array(mfi);
         blockamr::parallelFor(
             exec,
             vbx,
@@ -154,16 +151,12 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     const amrex::DistributionMapping& dm,
     amrex::Geometry geom,
     gko::size_type n,
-    const amrex::MultiFab* alpha,
-    const amrex::MultiFab* ux,
-    const amrex::MultiFab* lx,
-    const amrex::MultiFab* uy,
-    const amrex::MultiFab* ly,
-    const amrex::MultiFab* uz,
-    const amrex::MultiFab* lz,
+    const CellFieldLevel& alpha,
+    const FaceFieldLevel& upper,
+    const FaceFieldLevel& lower,
     BcArray bc,
     const amrex::MultiFab* bcData,
-    const amrex::MultiFab* diag
+    const CellFieldLevel& diag
 )
     : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(geom), nexec_(nexec),
       bc_(bc), hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
@@ -185,23 +178,24 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     // already keeps one (blockamr::la::MFFaceCoeffs does, so that it survives the
     // per-solve rebuild of this operator). Either way the stencils below read a
     // field instead of re-deriving alpha - sum(faces) per cell per apply.
-    if (diag == nullptr)
+    const amrex::MultiFab* diagField = diag.mf.get();
+    if (diagField == nullptr)
     {
         diagOwned_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
-        computeFaceCoeffDiag(nexec_, *diagOwned_, *alpha, *ux, *lx, *uy, *ly, *uz, *lz);
-        diag = diagOwned_.get();
+        computeFaceCoeffDiag(nexec_, CellFieldLevel {diagOwned_}, alpha, upper, lower);
+        diagField = diagOwned_.get();
     }
     if (onDevice_)
     {
         // Reference the caller's device fields directly; the stencil reads
         // them on the GPU and in_/out_ live in the default (device) arena.
-        diag_ = diag;
-        ux_ = ux;
-        lx_ = lx;
-        uy_ = uy;
-        ly_ = ly;
-        uz_ = uz;
-        lz_ = lz;
+        diag_ = diagField;
+        ux_ = &upper[0];
+        lx_ = &lower[0];
+        uy_ = &upper[1];
+        ly_ = &lower[1];
+        uz_ = &upper[2];
+        lz_ = &lower[2];
         bcData_ = bcData;
         in_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 1);
         out_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
@@ -213,13 +207,13 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
         // reads the stored diagonal, and alpha reaches that only through
         // computeFaceCoeffDiag above.
         owned_ = {
-            pinnedCopy(*diag),
-            pinnedCopy(*ux),
-            pinnedCopy(*lx),
-            pinnedCopy(*uy),
-            pinnedCopy(*ly),
-            pinnedCopy(*uz),
-            pinnedCopy(*lz)
+            pinnedCopy(*diagField),
+            pinnedCopy(upper[0]),
+            pinnedCopy(lower[0]),
+            pinnedCopy(upper[1]),
+            pinnedCopy(lower[1]),
+            pinnedCopy(upper[2]),
+            pinnedCopy(lower[2])
         };
         diag_ = owned_[0].get();
         ux_ = owned_[1].get();

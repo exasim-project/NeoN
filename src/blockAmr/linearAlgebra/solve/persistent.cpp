@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "NeoN/blockAmr/core/bc.hpp"
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp"
@@ -686,13 +687,13 @@ public:
     FaceCoeffKrylovSolver(
         std::shared_ptr<const gko::Executor> exec,
         const NeoN::Executor& nexec,
-        const amrex::MultiFab* alpha,
-        const amrex::MultiFab* ux,
-        const amrex::MultiFab* lx,
-        const amrex::MultiFab* uy,
-        const amrex::MultiFab* ly,
-        const amrex::MultiFab* uz,
-        const amrex::MultiFab* lz,
+        amrex::MultiFab* alpha,
+        amrex::MultiFab* ux,
+        amrex::MultiFab* lx,
+        amrex::MultiFab* uy,
+        amrex::MultiFab* ly,
+        amrex::MultiFab* uz,
+        amrex::MultiFab* lz,
         amrex::Geometry geom,
         const BcArray& bcArr,
         const SolverConfig& config
@@ -708,13 +709,13 @@ private:
 FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
     std::shared_ptr<const gko::Executor> exec,
     const NeoN::Executor& nexec,
-    const amrex::MultiFab* alpha,
-    const amrex::MultiFab* ux,
-    const amrex::MultiFab* lx,
-    const amrex::MultiFab* uy,
-    const amrex::MultiFab* ly,
-    const amrex::MultiFab* uz,
-    const amrex::MultiFab* lz,
+    amrex::MultiFab* alpha,
+    amrex::MultiFab* ux,
+    amrex::MultiFab* lx,
+    amrex::MultiFab* uy,
+    amrex::MultiFab* ly,
+    amrex::MultiFab* uz,
+    amrex::MultiFab* lz,
     amrex::Geometry geom,
     const BcArray& bcArr,
     const SolverConfig& config
@@ -730,13 +731,11 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
         alpha->DistributionMap(),
         geom,
         n_,
-        alpha,
-        ux,
-        lx,
-        uy,
-        ly,
-        uz,
-        lz,
+        // Non-owning handles: Python owns these fields and this solver holds
+        // them only for as long as it is alive.
+        CellFieldLevel {nonOwning(*alpha)},
+        FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
+        FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
         bcArr,
         config.bcData
     ));
@@ -908,13 +907,9 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
             alpha->DistributionMap(),
             geom,
             n_,
-            alpha,
-            ux,
-            lx,
-            uy,
-            ly,
-            uz,
-            lz,
+            CellFieldLevel {nonOwning(*alpha)},
+            FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
+            FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
             bcArr
         ));
         auto pc32 = gko::share(GmgKokkosPrecond32::create(exec_, n_, vcycle));
@@ -985,13 +980,13 @@ namespace
 std::unique_ptr<ISolver> makeFaceCoeffSolver(
     std::shared_ptr<const gko::Executor> exec,
     const NeoN::Executor& nexec,
-    const amrex::MultiFab* alpha,
-    const amrex::MultiFab* ux,
-    const amrex::MultiFab* lx,
-    const amrex::MultiFab* uy,
-    const amrex::MultiFab* ly,
-    const amrex::MultiFab* uz,
-    const amrex::MultiFab* lz,
+    amrex::MultiFab* alpha,
+    amrex::MultiFab* ux,
+    amrex::MultiFab* lx,
+    amrex::MultiFab* uy,
+    amrex::MultiFab* ly,
+    amrex::MultiFab* uz,
+    amrex::MultiFab* lz,
     amrex::Geometry geom,
     const SolverConfig& config
 )
@@ -1056,13 +1051,13 @@ std::unique_ptr<ISolver> makeFaceCoeffSolver(
 FaceCoeffSolver::FaceCoeffSolver(
     const NeoN::Executor& executor,
     amrex::Geometry geom,
-    const amrex::MultiFab* alpha,
-    const amrex::MultiFab* ux,
-    const amrex::MultiFab* lx,
-    const amrex::MultiFab* uy,
-    const amrex::MultiFab* ly,
-    const amrex::MultiFab* uz,
-    const amrex::MultiFab* lz,
+    amrex::MultiFab* alpha,
+    amrex::MultiFab* ux,
+    amrex::MultiFab* lx,
+    amrex::MultiFab* uy,
+    amrex::MultiFab* ly,
+    amrex::MultiFab* uz,
+    amrex::MultiFab* lz,
     const SolverConfig& config
 )
     : impl_(makeFaceCoeffSolver(

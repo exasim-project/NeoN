@@ -15,9 +15,11 @@
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "NeoN/blockAmr/core/bc.hpp"
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/coefficients.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
@@ -28,8 +30,8 @@
 // The two concrete matrix FORMATS, both satisfying IsMatrix.
 //
 // They hold the SAME storage -- one cell-centred alpha plus the six face
-// coefficient fields -- and hand out the same CellView/FaceView. That is the
-// resolution of the question S2 left open (plans/blockamr-la-implementation.md
+// coefficient fields -- and hand out the same CellFieldLevel/FaceFieldLevel.
+// That is the resolution of the question S2 left open (plans/blockamr-la-implementation.md
 // §4.4): the narrow MultiFab-backed views stand for both formats and neither the
 // views nor Matrix grows a second erasure. The design's objection to a
 // MultiFab-backed CSR was that it would cost "a full extra copy of the
@@ -92,13 +94,15 @@ namespace detail
  * constructor is DELETED (AMReX_FabArray.H) -- a MultiFab cannot be a by-value
  * member of a copyable type. So a copied format SHARES its coefficient fields
  * with the original, which is also the only sane reading of a copy: both objects
- * then hand out the same CellView/FaceView pointers, and a write through one is
- * visible through the other.
+ * then hand out the same CellFieldLevel/FaceFieldLevel handles, and a write
+ * through one is visible through the other.
  *
  * When the matrix is symmetric, lower[d] ALIASES upper[d]: the matrix-free
  * operator's documented symmetric convention is "pass the same MultiFab for u*
  * and l*" (matrixFree/faceCoeffOp.hpp), so aliasing is what the operators below
- * already expect, and coefficients() reports an empty `lower` view.
+ * already expect, and coefficients() reports `lower` as NULLOPT. storedLower()
+ * is the accessor for that aliased storage; the two readings are kept apart
+ * deliberately (coefficients.hpp).
  */
 struct FaceCoeffFields
 {
@@ -166,15 +170,29 @@ struct FaceCoeffFields
     // operator's += landed on a value the matrix recomputes underneath it.
     MatrixCoefficients coefficients()
     {
-        MatrixCoefficients c;
-        c.diag = CellView {alpha.get()};
-        c.upper = FaceView {{upper[0].get(), upper[1].get(), upper[2].get()}};
+        MatrixCoefficients c {CellFieldLevel {alpha}, FaceFieldLevel {upper}, std::nullopt};
         if (sym == Symmetry::asymmetric)
         {
-            c.lower = FaceView {{lower[0].get(), lower[1].get(), lower[2].get()}};
+            c.lower = storedLower();
         }
         return c;
     }
+
+    /* @brief The STORED low side, which always exists -- aliasing upper when the
+     *        matrix is symmetric.
+     *
+     * Deliberately NOT what coefficients() reports. That is the INTERFACE reading:
+     * absent when symmetric, because for a symmetric format lower[d] IS upper[d]
+     * and an operator writing both would double every coefficient. This is the
+     * STORAGE reading, and it is what the matrix-free operator's documented
+     * convention wants ("pass the same MultiFab for u* and l*",
+     * matrixFree/faceCoeffOp.hpp) -- an alias, never an absence.
+     *
+     * Both are true of one object at once, which is why they are different TYPES:
+     * std::optional<FaceFieldLevel> at the interface, plain FaceFieldLevel here,
+     * so handing one to something that meant the other does not compile.
+     */
+    FaceFieldLevel storedLower() const { return FaceFieldLevel {lower}; }
 
     void zero()
     {
@@ -258,6 +276,9 @@ public:
     // is what makes it survive.
     std::shared_ptr<const gko::LinOp> op() const
     {
+        // Called for its refresh only -- the operator takes the HANDLE to the
+        // same field below, not the reference this returns.
+        diagonal();
         return gko::share(la::FaceCoeffOp::create(
             la::makeExecutor(f_.exec),
             f_.exec,
@@ -265,20 +286,19 @@ public:
             f_.alpha->DistributionMap(),
             f_.geom,
             f_.globalRows(),
-            f_.alpha.get(),
-            f_.upper[0].get(),
-            f_.lower[0].get(),
-            f_.upper[1].get(),
-            f_.lower[1].get(),
-            f_.upper[2].get(),
-            f_.lower[2].get(),
+            CellFieldLevel {f_.alpha},
+            FaceFieldLevel {f_.upper},
+            // The STORED lower, not the interface's: symmetric ALIASES upper here,
+            // which is exactly FaceCoeffOp's documented convention. coefficients()
+            // reports the same object ABSENT.
+            f_.storedLower(),
             // Still the caller's `bc`: the reflection it drives is inert on
             // coefficients an operator already folded (aF == 0 there), and it is
             // what a hand-written non-periodic coefficient set still needs. The
             // header says why that is not a double fold.
             f_.bc,
             nullptr,
-            &diagonal()
+            CellFieldLevel {state_->diag}
         ));
     }
 
@@ -310,14 +330,10 @@ public:
         {
             la::computeFaceCoeffDiag(
                 f_.exec,
-                *state_->diag,
-                *f_.alpha,
-                *f_.upper[0],
-                *f_.lower[0],
-                *f_.upper[1],
-                *f_.lower[1],
-                *f_.upper[2],
-                *f_.lower[2]
+                CellFieldLevel {state_->diag},
+                CellFieldLevel {f_.alpha},
+                FaceFieldLevel {f_.upper},
+                f_.storedLower()
             );
             state_->dirty = false;
         }

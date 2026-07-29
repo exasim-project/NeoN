@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "NeoN/blockAmr/core/bc.hpp"
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/core/executor/executor.hpp"
@@ -31,26 +32,27 @@ namespace blockamr::la
 // It takes NO BcArray, deliberately: domain BCs enter the mat-vec through the
 // ghost reflection, i.e. through the OFF-diagonal term, so alpha - sum(faces) is
 // BC-independent and storing it is arithmetically identical to deriving it.
+//
+// `diag` is taken BY VALUE and the coefficients by const reference, which is the
+// signature saying which of them this writes: a by-value CellFieldLevel reaches
+// the non-const operator*, a const& one cannot (core/fieldLevel.hpp).
 void computeFaceCoeffDiag(
     const NeoN::Executor& exec,
-    amrex::MultiFab& diag,
-    const amrex::MultiFab& alpha,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz
+    CellFieldLevel diag,
+    const CellFieldLevel& alpha,
+    const FaceFieldLevel& upper,
+    const FaceFieldLevel& lower
 );
 
 // General matrix-free face-coefficient operator on a structured single-level grid. The
 // matrix is carried as OpenFOAM-style pieces given as AMReX fields:
 //   alpha  : cell-centred diagonal SOURCE (ddt/Sp/reaction), NOT the full
 //            diagonal — the face part is folded in by computeFaceCoeffDiag above.
-//   u{x,y,z}, l{x,y,z} : face-centred upper/lower off-diagonal coefficients.
-//             u* is the owner-row->neighbour coupling on the cell's HIGH face,
-//            l* the neighbour-row->owner coupling on the cell's LOW face. For a
-//            symmetric matrix pass the same MultiFab for u* and l*.
+//   upper, lower : the three face-centred off-diagonal direction fields each,
+//            as one FaceFieldLevel each (core/fieldLevel.hpp). upper[d] is the
+//            owner-row->neighbour coupling on the cell's HIGH face in direction
+//            d, lower[d] the neighbour-row->owner coupling on its LOW face. For
+//            a symmetric matrix pass the same fields for upper and lower.
 // The mat-vec is the OpenFOAM Amul in pull form (each cell reads its 6
 // neighbours), against the STORED diagonal
 //   diag = alpha - (aE+aW+aN+aS+aT+aB)               (negSumDiag)
@@ -84,21 +86,22 @@ public:
         const amrex::DistributionMapping& dm,
         amrex::Geometry geom,
         gko::size_type n,
-        const amrex::MultiFab* alpha,
-        const amrex::MultiFab* ux,
-        const amrex::MultiFab* lx,
-        const amrex::MultiFab* uy,
-        const amrex::MultiFab* ly,
-        const amrex::MultiFab* uz,
-        const amrex::MultiFab* lz,
+        // Read-only, hence const&: a by-value CellFieldLevel/FaceFieldLevel would
+        // hand this constructor write access to the caller's coefficients.
+        const CellFieldLevel& alpha,
+        const FaceFieldLevel& upper,
+        const FaceFieldLevel& lower,
         BcArray bc = {},
+        // Still a bare pointer: this is read-only ghost-fill data and its source
+        // (SolverConfig::bcData) is a const amrex::MultiFab*, so there is no
+        // mutable handle to build a CellFieldLevel from.
         const amrex::MultiFab* bcData = nullptr,
-        // The stored fine-level diagonal, already computed by the caller. null
-        // (every legacy call site) means "compute it here, once, from the
-        // coefficients as handed in" — see the staleness note on owned_ below.
-        // blockamr::la::MFFaceCoeffs owns one and passes it, so it survives the
-        // per-solve rebuild of this operator.
-        const amrex::MultiFab* diag = nullptr
+        // The stored fine-level diagonal, already computed by the caller. An
+        // empty handle (every legacy call site) means "compute it here, once,
+        // from the coefficients as handed in" — see the staleness note on owned_
+        // below. blockamr::la::MFFaceCoeffs owns one and passes it, so it
+        // survives the per-solve rebuild of this operator.
+        const CellFieldLevel& diag = {}
     );
 
     // c0 = L(0), the constant offset that inhomogeneous domain BCs add to the

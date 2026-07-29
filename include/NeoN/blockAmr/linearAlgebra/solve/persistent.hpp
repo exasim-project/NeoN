@@ -129,16 +129,21 @@ class FaceCoeffSolver
 {
 public:
 
+    // The coefficients are non-const because the matrix-free operator takes them
+    // as CellFieldLevel/FaceFieldLevel handles (core/fieldLevel.hpp), which are
+    // mutable handles; the const on these parameters was a declaration, not a
+    // property of the caller -- the binding holds them as amrex::MultiFab&.
+    // Nothing on this path writes them.
     FaceCoeffSolver(
         const NeoN::Executor& executor,
         amrex::Geometry geom,
-        const amrex::MultiFab* alpha,
-        const amrex::MultiFab* ux,
-        const amrex::MultiFab* lx,
-        const amrex::MultiFab* uy,
-        const amrex::MultiFab* ly,
-        const amrex::MultiFab* uz,
-        const amrex::MultiFab* lz,
+        amrex::MultiFab* alpha,
+        amrex::MultiFab* ux,
+        amrex::MultiFab* lx,
+        amrex::MultiFab* uy,
+        amrex::MultiFab* ly,
+        amrex::MultiFab* uz,
+        amrex::MultiFab* lz,
         const SolverConfig& config
     );
 

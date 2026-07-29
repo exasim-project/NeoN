@@ -686,7 +686,7 @@ void writeField(amrex::MultiFab& dst, const amrex::MultiFab& src, const char* wh
 
 // Fill a matrix from the seven caller fields, through Matrix::coefficients() and
 // nothing else. l* are read only when the matrix is asymmetric -- a symmetric one
-// reports an empty `lower` view, which IS the interface saying "there is no low
+// reports NO `lower` at all, which IS the interface saying "there is no low
 // side to write".
 void writeCoefficients(
     blockamr::la::Matrix& matrix,
@@ -703,15 +703,15 @@ void writeCoefficients(
     // NOTE the negSumDiag convention: c.diag is the cell-centred diagonal SOURCE
     // alpha, not the matrix diagonal (which is alpha - sum(faces); since S7 the
     // matrix-free format stores that separately). See faceCoeffMatrix.hpp.
-    writeField(*c.diag.ptr, alpha, "alpha");
-    writeField(*c.upper.dir[0], ux, "ux");
-    writeField(*c.upper.dir[1], uy, "uy");
-    writeField(*c.upper.dir[2], uz, "uz");
-    if (!c.lower.empty())
+    writeField(*c.diag, alpha, "alpha");
+    writeField(c.upper[0], ux, "ux");
+    writeField(c.upper[1], uy, "uy");
+    writeField(c.upper[2], uz, "uz");
+    if (c.lower.has_value())
     {
-        writeField(*c.lower.dir[0], lx, "lx");
-        writeField(*c.lower.dir[1], ly, "ly");
-        writeField(*c.lower.dir[2], lz, "lz");
+        writeField((*c.lower)[0], lx, "lx");
+        writeField((*c.lower)[1], ly, "ly");
+        writeField((*c.lower)[2], lz, "lz");
     }
 }
 
@@ -729,25 +729,43 @@ void writeCoefficients(
 void writeDiagSource(blockamr::la::Matrix& matrix, const amrex::MultiFab& alpha)
 {
     auto c = matrix.coefficients();
-    writeField(*c.diag.ptr, alpha, "alpha");
+    writeField(*c.diag, alpha, "alpha");
 }
 
 // Copy the coefficients back out into caller-owned MultiFabs, so a test can
 // compare them BITWISE against a hand-built set. Reads through the same
 // Matrix::coefficients() handles an operator writes through.
+//
+// The three l*Out receivers are OPTIONAL and are written only when the matrix
+// actually reports a `lower` view. A symmetric one does not -- so they are left
+// exactly as the caller passed them, which is what lets a test assert that the
+// operator wrote nothing to the low side. Without them the asymmetric branch of
+// ops::Laplacian is invisible from Python: it is the only coefficient the
+// operator writes that nothing else copies out.
 void readCoefficients(
     blockamr::la::Matrix& matrix,
     amrex::MultiFab& alphaOut,
     amrex::MultiFab& uxOut,
     amrex::MultiFab& uyOut,
-    amrex::MultiFab& uzOut
+    amrex::MultiFab& uzOut,
+    amrex::MultiFab* lxOut = nullptr,
+    amrex::MultiFab* lyOut = nullptr,
+    amrex::MultiFab* lzOut = nullptr
 )
 {
     auto c = matrix.coefficients();
-    writeField(alphaOut, *c.diag.ptr, "alpha_out");
-    writeField(uxOut, *c.upper.dir[0], "ux_out");
-    writeField(uyOut, *c.upper.dir[1], "uy_out");
-    writeField(uzOut, *c.upper.dir[2], "uz_out");
+    writeField(alphaOut, *c.diag, "alpha_out");
+    writeField(uxOut, c.upper[0], "ux_out");
+    writeField(uyOut, c.upper[1], "uy_out");
+    writeField(uzOut, c.upper[2], "uz_out");
+    const bool wantLower =
+        lxOut != nullptr && lyOut != nullptr && lzOut != nullptr && c.lower.has_value();
+    if (wantLower)
+    {
+        writeField(*lxOut, (*c.lower)[0], "lx_out");
+        writeField(*lyOut, (*c.lower)[1], "ly_out");
+        writeField(*lzOut, (*c.lower)[2], "lz_out");
+    }
 }
 
 /* @brief What Python's `la.Solver` is: a parsed SolverConfig and nothing else.
@@ -1017,7 +1035,7 @@ void registerGinkgoSolve(nb::module_& m)
         "The matrix allocates its OWN coefficient fields; the seven passed here\n"
         "are copied into them through Matrix::coefficients(), so the write face\n"
         "is the interface's, not the solver's. With symmetry='symmetric' the\n"
-        "`lower` view is empty and l* are ignored. via_copy=True solves through a\n"
+        "`lower` handle is absent and l* are ignored. via_copy=True solves through a\n"
         "COPY of the Matrix (its clone() path). assemble_before_write=True calls\n"
         "op() once before the coefficients are written, which an assembled format\n"
         "must notice. Returns the usual solve dict plus is_assembled, local_rows\n"
@@ -1048,9 +1066,14 @@ void registerGinkgoSolve(nb::module_& m)
             d["local_rows"] = matrix.localRows();
             {
                 auto c = matrix.coefficients();
-                d["lower_empty"] = c.lower.empty();
-                d["upper_empty"] = c.upper.empty();
-                d["diag_empty"] = c.diag.empty();
+                d["lower_empty"] = !c.lower.has_value();
+                // Kept, and now STRUCTURALLY false: CellFieldLevel/FaceFieldLevel
+                // have no empty state, so `diag`/`upper` cannot be absent. The
+                // invariant these two keys used to probe at runtime is asserted at
+                // compile time instead (coefficientsConcepts.cpp), which is
+                // strictly stronger than what is emitted here.
+                d["upper_empty"] = false;
+                d["diag_empty"] = false;
                 d["reports_symmetric"] = c.symmetric();
             }
             writeCoefficients(matrix, alpha, ux, lx, uy, ly, uz, lz);
@@ -1085,7 +1108,7 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("symmetry") = "symmetric",
         nb::arg("bc") = std::vector<std::string>(6, "periodic"),
         "Introspect a blockamr::la::Matrix without solving: isAssembled,\n"
-        "symmetry, localRows, which coefficient views are empty, the row count of\n"
+        "symmetry, localRows, whether the `lower` handle is absent, the row count of\n"
         "the operator op() hands back, and whether op() is rebuilt after a write\n"
         "through coefficients() / zero() or reused when nothing was written."
     );
@@ -1103,6 +1126,9 @@ void registerGinkgoSolve(nb::module_& m)
            MultiFab& ux_out,
            MultiFab& uy_out,
            MultiFab& uz_out,
+           MultiFab* lx_out,
+           MultiFab* ly_out,
+           MultiFab* lz_out,
            std::optional<NeoN::Executor> executor,
            const std::string& symmetry,
            const std::string& solver,
@@ -1120,7 +1146,7 @@ void registerGinkgoSolve(nb::module_& m)
 
             blockamr::la::LinearSystem system(matrix, rhs);
             system += blockamr::la::Operator(blockamr::ops::Laplacian(gamma, geom, bcArr, bc_data));
-            readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out);
+            readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out, lx_out, ly_out, lz_out);
 
             SolverConfig cfg;
             cfg.solver = solver;
@@ -1149,6 +1175,9 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("ux_out"),
         nb::arg("uy_out"),
         nb::arg("uz_out"),
+        nb::arg("lx_out").none() = nb::none(),
+        nb::arg("ly_out").none() = nb::none(),
+        nb::arg("lz_out").none() = nb::none(),
         nb::arg("executor") = nb::none(),
         nb::arg("symmetry") = "symmetric",
         nb::arg("solver") = "cg",
@@ -1167,7 +1196,9 @@ void registerGinkgoSolve(nb::module_& m)
         "bc_data set also -aF*scale*g on the rhs -- which MUTATES the rhs passed\n"
         "in, since LinearSystem is non-owning. The assembled coefficients are\n"
         "copied back into alpha_out/u{x,y,z}_out so a caller can compare them\n"
-        "bitwise with a hand-built set. Returns the usual solve dict plus\n"
+        "bitwise with a hand-built set; the optional l{x,y,z}_out receive the LOW\n"
+        "side and are written only when the matrix reports a `lower` view, i.e.\n"
+        "with symmetry='asymmetric'. Returns the usual solve dict plus\n"
         "is_assembled, local_rows, symmetric and rhs_aliases_input."
     );
     m.def(
@@ -1181,6 +1212,9 @@ void registerGinkgoSolve(nb::module_& m)
            MultiFab& ux_out,
            MultiFab& uy_out,
            MultiFab& uz_out,
+           MultiFab* lx_out,
+           MultiFab* ly_out,
+           MultiFab* lz_out,
            std::optional<NeoN::Executor> executor,
            const std::string& symmetry,
            const std::vector<std::string>& bc,
@@ -1204,7 +1238,7 @@ void registerGinkgoSolve(nb::module_& m)
             {
                 system.zero();
             }
-            readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out);
+            readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out, lx_out, ly_out, lz_out);
 
             nb::dict d;
             d["is_assembled"] = system.matrix().isAssembled();
@@ -1251,6 +1285,9 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("ux_out"),
         nb::arg("uy_out"),
         nb::arg("uz_out"),
+        nb::arg("lx_out").none() = nb::none(),
+        nb::arg("ly_out").none() = nb::none(),
+        nb::arg("lz_out").none() = nb::none(),
         nb::arg("executor") = nb::none(),
         nb::arg("symmetry") = "symmetric",
         nb::arg("bc") = std::vector<std::string>(6, "periodic"),
@@ -1262,8 +1299,10 @@ void registerGinkgoSolve(nb::module_& m)
         "Applies ops::Laplacian `n_apply` times (operators ACCUMULATE, so twice is\n"
         "twice the coefficients) and optionally calls LinearSystem::zero()\n"
         "afterwards, which clears the coefficients AND the rhs. Copies the result\n"
-        "into alpha_out/u{x,y,z}_out and reports local_rows, symmetric,\n"
-        "is_assembled, rhs_aliases_input and the rhs sum.\n\n"
+        "into alpha_out/u{x,y,z}_out -- and into the optional l{x,y,z}_out, but\n"
+        "only when the matrix reports a `lower` view (symmetry='asymmetric') --\n"
+        "and reports local_rows, symmetric, is_assembled, rhs_aliases_input and\n"
+        "the rhs sum.\n\n"
         "report_structure=True additionally calls op() and returns the assembled\n"
         "matrix's csr_row_ptrs and csr_col_idxs (host copies), so a test can check\n"
         "the SPARSITY of a boundary row. format='csr' only."
@@ -1305,15 +1344,15 @@ void registerGinkgoSolve(nb::module_& m)
                        : blockamr::la::MFFaceCoeffs::asymmetric(nexec, ba, dm, geom, bcArr);
             {
                 auto c = m.coefficients();
-                writeField(*c.diag.ptr, alpha, "alpha");
-                writeField(*c.upper.dir[0], ux, "ux");
-                writeField(*c.upper.dir[1], uy, "uy");
-                writeField(*c.upper.dir[2], uz, "uz");
-                if (!c.lower.empty())
+                writeField(*c.diag, alpha, "alpha");
+                writeField(c.upper[0], ux, "ux");
+                writeField(c.upper[1], uy, "uy");
+                writeField(c.upper[2], uz, "uz");
+                if (c.lower.has_value())
                 {
-                    writeField(*c.lower.dir[0], lx, "lx");
-                    writeField(*c.lower.dir[1], ly, "ly");
-                    writeField(*c.lower.dir[2], lz, "lz");
+                    writeField((*c.lower)[0], lx, "lx");
+                    writeField((*c.lower)[1], ly, "ly");
+                    writeField((*c.lower)[2], lz, "lz");
                 }
             }
             writeField(diag_out, m.diagonal(), "diag_out");
@@ -1331,12 +1370,12 @@ void registerGinkgoSolve(nb::module_& m)
                 {
                     blockamr::la::MFFaceCoeffs copy = m;
                     auto c = copy.coefficients();
-                    writeField(*c.diag.ptr, *alpha2, "alpha2");
+                    writeField(*c.diag, *alpha2, "alpha2");
                 }
                 else
                 {
                     auto c = m.coefficients();
-                    writeField(*c.diag.ptr, *alpha2, "alpha2");
+                    writeField(*c.diag, *alpha2, "alpha2");
                 }
                 writeField(*diag2_out, m.diagonal(), "diag2_out");
             }

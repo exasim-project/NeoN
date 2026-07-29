@@ -15,6 +15,7 @@
 // The real formats' own static_asserts (faceCoeffMatrix.hpp) reach a compiler for the
 // same reason: this TU includes them.
 
+#include <optional>
 #include <type_traits>
 
 #include "NeoN/blockAmr/linearAlgebra/coefficients.hpp"
@@ -119,11 +120,27 @@ static_assert(!IsOperator<Operator>);
 //    is what is actually out of reach: there is no way to PRODUCE one except
 //    through operator+=. std::is_constructible respects access control, so this
 //    is the check, not a comment about the check.
-static_assert(!std::is_constructible_v<Coefficients, MatrixCoefficients, CellView>);
+static_assert(!std::is_constructible_v<Coefficients, MatrixCoefficients, CellFieldLevel>);
 // Not copy-constructible from thin air either -- but a Coefficients a caller was
 // handed can of course be copied, which is what makes assemble(Coefficients) a
 // by-value parameter rather than a reference.
 static_assert(std::is_copy_constructible_v<Coefficients>);
+
+// --- Absence has exactly ONE spelling, and only `lower` has it ----------------
+//
+// `diag` and `upper` are never absent. Asserted here rather than probed from
+// Python: with CellFieldLevel/FaceFieldLevel non-nullable, "empty" is not
+// expressible at all, so this is what _la_matrix_probe's diag_empty/upper_empty
+// keys became -- they now emit a literal false, and these three lines are what
+// makes that literal true. Turn either member into an optional, or take the
+// optional off `lower`, and this fires.
+static_assert(std::is_same_v<decltype(MatrixCoefficients::diag), CellFieldLevel>);
+static_assert(std::is_same_v<decltype(MatrixCoefficients::upper), FaceFieldLevel>);
+static_assert(std::is_same_v<decltype(MatrixCoefficients::lower), std::optional<FaceFieldLevel>>);
+static_assert(std::is_same_v<decltype(Coefficients::diag), CellFieldLevel>);
+static_assert(std::is_same_v<decltype(Coefficients::upper), FaceFieldLevel>);
+static_assert(std::is_same_v<decltype(Coefficients::lower), std::optional<FaceFieldLevel>>);
+static_assert(std::is_same_v<decltype(Coefficients::rhs), CellFieldLevel>);
 
 // The concrete operator satisfies the concept it is written against. (It also
 // asserts this in its own header; repeated here so this TU fails if the header's

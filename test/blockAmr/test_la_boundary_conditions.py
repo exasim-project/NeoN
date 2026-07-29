@@ -33,7 +33,9 @@ way and is load-bearing — see ``faceCoeffMatrix.hpp`` and the comment on the
 What is checked here, on periodic / Dirichlet / Neumann / a mixed array:
 
 * the coefficients ``ops::Laplacian`` writes, BITWISE, per BC kind — the faces it
-  drops and the ``alpha`` it adds to, which is the fold arithmetic itself;
+  drops and the ``alpha`` it adds to, which is the fold arithmetic itself, on a
+  symmetric AND on an asymmetric matrix (the latter is the only row in the suite
+  that reaches the operator's low-side write at all);
 * the two formats, given the same operator, agree — bitwise on the coefficients
   and to ``_AGREE_TOL`` on the solve;
 * both formats reproduce the LEGACY ``FaceCoeffSolver``, which still folds by
@@ -145,8 +147,18 @@ def _raw_faces(geom, dm):
 
 
 def _out_fields(geom, ba, dm):
-    """Zeroed receivers for the assembled (alpha, ux, uy, uz)."""
-    return _const_cell(ba, dm, 0.0), *(_face_field(geom, dm, d, 0.0) for d in range(3))
+    """Zeroed receivers for the assembled (alpha, ux, uy, uz, lx, ly, lz).
+
+    The three LOW-side receivers are written by the binding only when the matrix
+    reports a ``lower`` view — a symmetric one does not — so on a symmetric row
+    they stay zero, and that is itself the assertion that the operator wrote
+    nothing to the low side.
+    """
+    return (
+        _const_cell(ba, dm, 0.0),
+        *(_face_field(geom, dm, d, 0.0) for d in range(3)),
+        *(_face_field(geom, dm, d, 0.0) for d in range(3)),
+    )
 
 
 def _one_box(mf):
@@ -345,10 +357,12 @@ def _expected_rhs_fold(geom, bc, datum):
     return out
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
+@pytest.mark.parametrize(
+    "fmt, symmetry", [("mf", "symmetric"), ("csr", "symmetric"), ("mf", "asymmetric")]
+)
 @pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
 def test_laplacian_folds_the_boundary_into_the_coefficients(
-    blockamr_session, fmt, case, periodic, bc
+    blockamr_session, fmt, symmetry, case, periodic, bc
 ):
     """The fold, per BC kind, asserted BITWISE on what the operator wrote.
 
@@ -356,22 +370,37 @@ def test_laplacian_folds_the_boundary_into_the_coefficients(
     what lands on the diagonal source when they are. Bitwise because the claim is
     exactness -- a tolerance would pass a Dirichlet fold that used `sign` instead
     of `sign - 1` on a mesh where 1/dx**2 happened to be small.
+
+    The `asymmetric` row is what exercises ops::Laplacian's LOW-side write at all:
+    every other test in this suite runs the default symmetric matrix, where the
+    matrix reports no ``lower`` and the operator writes only ``upper``. One face
+    value carries both roles, so the low side must come out bitwise equal to the
+    high side -- and on the symmetric rows it must be untouched, because there
+    ``lower[d]`` aliases ``upper[d]`` and a second write would double every
+    coefficient.
     """
     _require_bindings()
     geom, ba, dm = _make_mesh(periodic)
     gamma = _const_cell(ba, dm, 1.0)
     alpha = _const_cell(ba, dm, 1.0)
     out = _out_fields(geom, ba, dm)
+    tag = f"{fmt}/{symmetry}/{case}"
 
-    _probe(fmt, gamma, alpha, geom, _random_rhs(ba, dm), bc, out)
+    _probe(fmt, gamma, alpha, geom, _random_rhs(ba, dm), bc, out, symmetry=symmetry)
 
     np.testing.assert_array_equal(
-        _one_box(out[0]), _expected_alpha(geom, bc), err_msg=f"{fmt}/{case}: alpha after the fold"
+        _one_box(out[0]), _expected_alpha(geom, bc), err_msg=f"{tag}: alpha after the fold"
     )
     want = _expected_faces(geom, dm, bc)
     for d, name in enumerate("xyz"):
         np.testing.assert_array_equal(
-            _one_box(out[1 + d]), _one_box(want[d]), err_msg=f"{fmt}/{case}: u{name}"
+            _one_box(out[1 + d]), _one_box(want[d]), err_msg=f"{tag}: u{name}"
+        )
+    for d, name in enumerate("xyz"):
+        high = _one_box(want[d])
+        want_low = high if symmetry == "asymmetric" else np.zeros_like(high)
+        np.testing.assert_array_equal(
+            _one_box(out[4 + d]), want_low, err_msg=f"{tag}: l{name}"
         )
 
 

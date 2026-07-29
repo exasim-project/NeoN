@@ -8,6 +8,7 @@
 
 #include <cstddef>
 
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/coefficients.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrix.hpp"
 #include "NeoN/blockAmr/linearAlgebra/operator.hpp"
@@ -50,7 +51,11 @@ public:
     // many operators contribute to it.
     LinearSystem& operator+=(const Operator& op)
     {
-        op.assemble(Coefficients {matrix_->coefficients(), CellView {rhs_}, matrix_->executor()});
+        // nonOwning: the rhs belongs to the caller (this class is documented
+        // non-owning above), so the handle borrows it rather than sharing ownership.
+        op.assemble(Coefficients {
+            matrix_->coefficients(), CellFieldLevel {nonOwning(*rhs_)}, matrix_->executor()
+        });
         return *this;
     }
 
