@@ -28,11 +28,11 @@
 
 #include "NeoN/core/runtimeSelectionFactory.hpp"
 
-#include "NeoN/blockAmr/linearAlgebra/gmgKokkos/launch.hpp"
+#include "NeoN/blockAmr/core/launch.hpp"
 #include "NeoN/blockAmr/bench/cells.hpp"
 #include "NeoN/blockAmr/bench/kokkosBench.hpp"
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 // MFIter's destructor stream-synchronizes by default (AMReX_MFIter.cpp:246), a
@@ -271,7 +271,7 @@ void runPerBox(const OpArgs& args)
             f.f[n] = Backend::acc((*mfs[n])[mfi]);
         }
         Backend::launch(
-            mfi.validbox(), ibox, BENCH_LAMBDA(int i, int j, int k) { Kernel::body(f, i, j, k, c); }
+            mfi.validbox(), ibox, BLOCKAMR_LAMBDA(int i, int j, int k) { Kernel::body(f, i, j, k, c); }
         );
     }
 }
@@ -294,7 +294,7 @@ void runFused(const OpArgs& args)
 
     Backend::launchFused(
         *args.out,
-        BENCH_LAMBDA(int b, int i, int j, int k) {
+        BLOCKAMR_LAMBDA(int b, int i, int j, int k) {
             Fields<Acc, N> f {};
             for (int n = 0; n < N; ++n)
             {
@@ -453,4 +453,4 @@ BenchResult benchOperator(const std::string& name, const OpArgs& args, int iters
     return r;
 }
 
-} // namespace blockamr::bench
+} // namespace blockamr

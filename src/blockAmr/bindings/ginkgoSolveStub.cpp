@@ -47,6 +47,66 @@ void registerGinkgoSolve(nb::module_& m)
             { throw std::runtime_error("built without Ginkgo"); }
         );
 
+    m.def(
+        "_la_matrix_solve",
+        [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
+    );
+    m.def(
+        "_la_matrix_probe",
+        [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
+    );
+    m.def(
+        "_la_system_solve",
+        [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
+    );
+    m.def(
+        "_la_system_probe",
+        [](nb::args, nb::kwargs) -> nb::dict { throw std::runtime_error("built without Ginkgo"); }
+    );
+    m.def(
+        "_la_stored_diagonal",
+        [](nb::args, nb::kwargs) { throw std::runtime_error("built without Ginkgo"); }
+    );
+
+    // The S8 linear_algebra surface, same treatment: registered unconditionally
+    // so `import blockamr.linear_algebra` works, raising on first use.
+    m.def(
+        "la_laplacian",
+        [](nb::args, nb::kwargs) { throw std::runtime_error("built without Ginkgo"); }
+    );
+
+    struct MatrixStub
+    {
+    };
+    struct OperatorStub
+    {
+    };
+    struct LinearSystemStub
+    {
+    };
+    struct LaSolverStub
+    {
+    };
+    nb::class_<MatrixStub>(m, "Matrix")
+        .def(
+            "__init__",
+            [](MatrixStub*, nb::args, nb::kwargs)
+            { throw std::runtime_error("built without Ginkgo"); }
+        );
+    nb::class_<OperatorStub>(m, "Operator");
+    nb::class_<LinearSystemStub>(m, "LinearSystem")
+        .def(
+            "__init__",
+            [](LinearSystemStub*, nb::args, nb::kwargs)
+            { throw std::runtime_error("built without Ginkgo"); }
+        );
+    nb::class_<LaSolverStub>(m, "Solver")
+        .def(
+            "__init__",
+            [](LaSolverStub*, nb::args, nb::kwargs)
+            { throw std::runtime_error("built without Ginkgo"); }
+        );
+
     m.def("profile_report", []() -> nb::dict { return nb::dict(); });
     m.def("profile_reset", []() {});
 }

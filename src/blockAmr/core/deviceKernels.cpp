@@ -23,11 +23,12 @@
 // Bf16, the level fab types the instantiation lists are spelled in.
 
 #include "NeoN/blockAmr/core/bc.hpp"
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Fill the domain-boundary ghost layer of `mf` (1 ghost, component 0) so the
@@ -74,6 +75,7 @@ fillDomainBcGhostsDevice<GmgFab<Bf16>>(GmgFab<Bf16>&, const amrex::Box&, const B
 // Inhomogeneous twin: ghost = sign*interior + scale*g, with g read from the SAME
 // ghost cell of `bcdata`.
 void fillDomainBcGhostsInhomDevice(
+    const NeoN::Executor& exec,
     amrex::MultiFab& mf,
     const amrex::MultiFab& bcdata,
     const amrex::Box& domain,
@@ -97,7 +99,8 @@ void fillDomainBcGhostsInhomDevice(
             const amrex::Real scale =
                 (bc[static_cast<std::size_t>(s)] == 1) ? amrex::Real(2.0) : dx[s / 2];
             const int di = f.di, dj = f.dj, dk = f.dk;
-            amrex::ParallelFor(
+            blockamr::parallelFor(
+                exec,
                 f.gbx,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
                 { a(i, j, k) = sign * a(i + di, j + dj, k + dk) + scale * g(i, j, k); }
@@ -183,4 +186,4 @@ template void gather_device<float, GmgFab<double>>(const GmgFab<double>&, float*
 template void gather_device<float, GmgFab<float>>(const GmgFab<float>&, float*, double);
 template void gather_device<float, GmgFab<Bf16>>(const GmgFab<Bf16>&, float*, double);
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

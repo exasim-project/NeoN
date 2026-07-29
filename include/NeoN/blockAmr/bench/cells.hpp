@@ -13,7 +13,7 @@
 // AMREX_GPU_HOST_DEVICE marks these __host__ __device__, which is what both an
 // AMReX lambda and a KOKKOS_LAMBDA need to call them.
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 // y = a*x + y. No stencil, no ghosts: the pure bandwidth floor (2 reads, 1 write).
@@ -103,4 +103,4 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void divVanLeerCell(
     out(i, j, k) = total;
 }
 
-} // namespace blockamr::bench
+} // namespace blockamr

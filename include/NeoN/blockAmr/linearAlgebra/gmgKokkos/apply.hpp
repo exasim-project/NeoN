@@ -32,7 +32,7 @@
 // the native GMG preconditioner and its Ir twin over the same operator.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 // The V-cycle shape, matching GmgArgs (kokkosBench.hpp) and production's
@@ -78,7 +78,7 @@ struct KokkosGmgOpts
 
     // Homogeneous domain boundary conditions per side (xlo, xhi, ylo, yhi, zlo, zhi):
     // 0 periodic, 1 Dirichlet, 2 Neumann. Same encoding and same type as
-    // solvers::BcArray, so the caller passes the parsed spec straight through.
+    // la::BcArray, so the caller passes the parsed spec straight through.
     std::array<int, 6> bc {};
 };
 
@@ -112,7 +112,7 @@ public:
 // throws rather than quietly solving with a different smoother. Boundary conditions
 // are supported -- periodic, homogeneous Dirichlet and homogeneous Neumann, the same
 // three the shipped preconditioner takes -- via opts.bc, which must agree with the
-// geometry's periodicity (solvers::parseBc enforces that at the solver boundary).
+// geometry's periodicity (la::parseBc enforces that at the solver boundary).
 std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const amrex::Geometry& geom,
     const amrex::MultiFab& alpha,
@@ -125,4 +125,4 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const KokkosGmgOpts& opts
 );
 
-} // namespace blockamr::bench
+} // namespace blockamr

@@ -22,7 +22,7 @@
 
 #include "NeoN/blockAmr/bench/kokkosBench.hpp"
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 namespace
@@ -98,4 +98,4 @@ double kokkosMfSum(amrex::MultiFab& mf)
     return total;
 }
 
-} // namespace blockamr::bench
+} // namespace blockamr

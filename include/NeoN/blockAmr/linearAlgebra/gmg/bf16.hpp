@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // ---------------------------------------------------------------------------
@@ -112,4 +112,4 @@ struct GmgCompute<Bf16>
 template<class T>
 using GmgComputeT = typename GmgCompute<T>::type;
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

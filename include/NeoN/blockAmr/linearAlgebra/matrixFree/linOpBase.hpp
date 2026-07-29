@@ -8,10 +8,10 @@
 
 #include <memory>
 
-#include "NeoN/blockAmr/core/distVec.hpp"
+#include "NeoN/blockAmr/linearAlgebra/distVec.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // CRTP base for the matrix-free Ginkgo operators in this directory. It bundles
@@ -131,4 +131,4 @@ private:
     mutable std::shared_ptr<DenseV> scratch_;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

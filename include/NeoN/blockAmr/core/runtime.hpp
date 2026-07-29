@@ -12,7 +12,7 @@
 // actually depends on.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 void kokkosInitialize();
@@ -20,4 +20,4 @@ void kokkosFinalize();
 bool kokkosInitialized();
 bool kokkosFinalized();
 
-} // namespace blockamr::bench
+} // namespace blockamr

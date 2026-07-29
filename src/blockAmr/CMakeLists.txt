@@ -13,16 +13,18 @@
 # _blockamr costs nothing at compile time. They are defined before _blockamr in this same file,
 # which is all the ordering guarantee the link below needs.
 
-# The Ginkgo-gated matrix-free solver stack (core/ operators/ linearAlgebra/). Only exists when
-# Ginkgo is available; without it _blockamr compiles bindings/ginkgoSolveStub.cpp instead and this
-# target is never defined.
+# The Ginkgo-gated matrix-free solver stack (core/ linearAlgebra/). Only exists when Ginkgo is
+# available; without it _blockamr compiles bindings/ginkgoSolveStub.cpp instead and this target is
+# never defined.
 if(NeoN_WITH_GINKGO)
   set(_blockamr_solvers_sources
       core/profiling.cpp
       core/bc.cpp
-      operators/mlmgOps.cpp
-      operators/faceCoeffOp.cpp
-      operators/csr.cpp
+      linearAlgebra/coefficientsConcepts.cpp
+      operators/laplacian.cpp
+      linearAlgebra/matrixFree/mlmgOps.cpp
+      linearAlgebra/matrixFree/faceCoeffOp.cpp
+      linearAlgebra/sparse/csr.cpp
       linearAlgebra/krylov/krylov.cpp
       linearAlgebra/solve/persistent.cpp
       linearAlgebra/solve/oneshot.cpp)
@@ -51,7 +53,7 @@ if(NeoN_WITH_GINKGO)
   endif()
 endif()
 
-# Kernels for the Kokkos-vs-AMReX operator bench (linearAlgebra/gmgKokkos/ kokkos/ bench/) plus the
+# Kernels for the Kokkos-vs-AMReX operator bench (linearAlgebra/gmgKokkos/ core/ bench/) plus the
 # single-TU device kernels. Compiled as its own object library, NOT into _blockamr directly -- but
 # not because of an RDC fence: the whole component builds CUDA_SEPARABLE_COMPILATION OFF, see the
 # rationale on _blockamr's own property below. blockamr_kokkos (formerly blockamr_bench) remains a
@@ -60,7 +62,7 @@ endif()
 # identical compile flags. Builds regardless of Ginkgo, exactly as blockamr_bench did.
 set(_blockamr_kokkos_sources
     bench/kokkosSpike.cpp
-    kokkos/runtime.cpp
+    core/runtime.cpp
     bench/operators.cpp
     core/deviceKernels.cpp
     linearAlgebra/gmg/gmgKernels.cpp

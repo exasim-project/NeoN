@@ -17,15 +17,15 @@
 #include <utility>
 #include <vector>
 
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
-#include "NeoN/blockAmr/operators/faceCoeffOp.hpp"
-#include "NeoN/blockAmr/operators/mlmgOps.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/mlmgOps.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 using namespace amrex;
@@ -304,9 +304,23 @@ SolveResult solveFaceCoeffs(
     const DistributionMapping& dm = sol.DistributionMap();
     const auto n = static_cast<gko::size_type>(ba.numPts());
 
-    auto op =
-        gko::share(FaceCoeffOp::create(exec, ba, dm, geom, n, &alpha, &ux, &lx, &uy, &ly, &uz, &lz)
-        );
+    // No NeoN executor reaches this entry point; the Ginkgo one above is fixed to
+    // Reference, so the matching NeoN alternative is SerialExecutor.
+    auto op = gko::share(FaceCoeffOp::create(
+        exec,
+        NeoN::Executor {NeoN::SerialExecutor {}},
+        ba,
+        dm,
+        geom,
+        n,
+        &alpha,
+        &ux,
+        &lx,
+        &uy,
+        &ly,
+        &uz,
+        &lz
+    ));
 
     // Plain linear solve A x = b: the face coefficients are the full
     // (BC-folded) matrix, so no affine offset. Incoming sol seeds the
@@ -347,4 +361,4 @@ SolveResult solveFaceCoeffs(
     return result;
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

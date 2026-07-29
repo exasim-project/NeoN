@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Assemble the {num_iters, res_norm, converged, res_history, contraction,
@@ -40,4 +40,4 @@ struct SolveResult
     std::optional<std::string> diagnostic;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

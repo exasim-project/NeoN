@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-namespace blockamr::solvers::prof
+namespace blockamr::la::prof
 {
 
 // ---------------------------------------------------------------------------
@@ -49,4 +49,4 @@ private:
     std::chrono::steady_clock::time_point t0_;
 };
 
-} // namespace blockamr::solvers::prof
+} // namespace blockamr::la::prof

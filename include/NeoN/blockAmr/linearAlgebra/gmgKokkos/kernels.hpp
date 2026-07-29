@@ -10,7 +10,7 @@
 #include <AMReX_MultiFab.H>
 
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
-#include "NeoN/blockAmr/linearAlgebra/gmgKokkos/launch.hpp"
+#include "NeoN/blockAmr/core/launch.hpp"
 
 // ---------------------------------------------------------------------------
 // Kokkos twins of the native GMG V-cycle kernels: a 1:1 port of the three
@@ -69,7 +69,7 @@
 // Array4 here leaves the LAUNCHER as the only difference between the two columns.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 // The box loop launches no AMReX kernel, so AMReX has nothing to synchronize at the
@@ -84,7 +84,7 @@ inline amrex::MFItInfo gmgNoSync() { return amrex::MFItInfo().DisableDeviceSync(
 // table. Written once so a fused launch cannot silently compute something else.
 //
 // The Array4s carry T, the level's STORAGE type; every local is declared C =
-// solvers::GmgComputeT<T>, the type the arithmetic happens in. For T = double and
+// la::GmgComputeT<T>, the type the arithmetic happens in. For T = double and
 // T = float those are the same type, so these structs stay the character-for-
 // character twins of the *Device kernels named above and generate the code they
 // always did. For T = Bf16 they are what makes the hierarchy storage-only, and
@@ -105,7 +105,7 @@ inline amrex::MFItInfo gmgNoSync() { return amrex::MFItInfo().DisableDeviceSync(
 template<class T, class TC = T>
 struct GmgGsCell
 {
-    using C = solvers::GmgComputeT<T>;
+    using C = la::GmgComputeT<T>;
 
     amrex::Array4<T> psi;
     amrex::Array4<const T> b;
@@ -128,7 +128,7 @@ struct GmgGsCell
         const C off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
                     + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
         const C diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-        if (amrex::Math::abs(diag) > solvers::gmgDiagFloor<C>())
+        if (amrex::Math::abs(diag) > la::gmgDiagFloor<C>())
         {
             const C gs = (b(i, j, k) - off) / diag;
             psi(i, j, k) += om * (gs - static_cast<C>(psi(i, j, k)));
@@ -139,7 +139,7 @@ struct GmgGsCell
 template<class T, class TC = T>
 struct GmgResidRestrictCell
 {
-    using C = solvers::GmgComputeT<T>;
+    using C = la::GmgComputeT<T>;
 
     amrex::Array4<T> cr;
     amrex::Array4<const T> psi, b;
@@ -192,20 +192,20 @@ struct GmgProlongCell
 // One red-black over-relaxation colour pass. Twin of gmgGsColor.
 template<class T, class TC>
 void gmgGsColorKokkos(
-    solvers::GmgFab<T>& sol,
-    const solvers::GmgFab<T>& rhs,
-    const solvers::GmgFab<TC>& ux,
-    const solvers::GmgFab<TC>& lx,
-    const solvers::GmgFab<TC>& uy,
-    const solvers::GmgFab<TC>& ly,
-    const solvers::GmgFab<TC>& uz,
-    const solvers::GmgFab<TC>& lz,
-    const solvers::GmgFab<TC>& alpha,
+    la::GmgFab<T>& sol,
+    const la::GmgFab<T>& rhs,
+    const la::GmgFab<TC>& ux,
+    const la::GmgFab<TC>& lx,
+    const la::GmgFab<TC>& uy,
+    const la::GmgFab<TC>& ly,
+    const la::GmgFab<TC>& uz,
+    const la::GmgFab<TC>& lz,
+    const la::GmgFab<TC>& alpha,
     int parity,
     double omega
 )
 {
-    const solvers::GmgComputeT<T> om = static_cast<solvers::GmgComputeT<T>>(omega);
+    const la::GmgComputeT<T> om = static_cast<la::GmgComputeT<T>>(omega);
     for (amrex::MFIter mfi(rhs, gmgNoSync()); mfi.isValid(); ++mfi)
     {
         const GmgGsCell<T, TC> cell {
@@ -222,7 +222,7 @@ void gmgGsColorKokkos(
             parity
         };
         launchKokkosMdNamed(
-            "gmg_gs", mfi.validbox(), BENCH_LAMBDA(int i, int j, int k) { cell(i, j, k); }
+            "gmg_gs", mfi.validbox(), BLOCKAMR_LAMBDA(int i, int j, int k) { cell(i, j, k); }
         );
     }
     Kokkos::fence();
@@ -231,16 +231,16 @@ void gmgGsColorKokkos(
 // Fused residual + volume-average restriction. Twin of gmgResidRestrict.
 template<class T, class TC>
 void gmgResidRestrictKokkos(
-    const solvers::GmgFab<T>& sol,
-    const solvers::GmgFab<T>& rhs,
-    solvers::GmgFab<T>& crhs,
-    const solvers::GmgFab<TC>& ux,
-    const solvers::GmgFab<TC>& lx,
-    const solvers::GmgFab<TC>& uy,
-    const solvers::GmgFab<TC>& ly,
-    const solvers::GmgFab<TC>& uz,
-    const solvers::GmgFab<TC>& lz,
-    const solvers::GmgFab<TC>& alpha
+    const la::GmgFab<T>& sol,
+    const la::GmgFab<T>& rhs,
+    la::GmgFab<T>& crhs,
+    const la::GmgFab<TC>& ux,
+    const la::GmgFab<TC>& lx,
+    const la::GmgFab<TC>& uy,
+    const la::GmgFab<TC>& ly,
+    const la::GmgFab<TC>& uz,
+    const la::GmgFab<TC>& lz,
+    const la::GmgFab<TC>& alpha
 )
 {
     for (amrex::MFIter mfi(crhs, gmgNoSync()); mfi.isValid(); ++mfi)
@@ -260,7 +260,7 @@ void gmgResidRestrictKokkos(
         launchKokkosMdNamed(
             "gmg_residrestrict",
             mfi.validbox(),
-            BENCH_LAMBDA(int ic, int jc, int kc) { cell(ic, jc, kc); }
+            BLOCKAMR_LAMBDA(int ic, int jc, int kc) { cell(ic, jc, kc); }
         );
     }
     Kokkos::fence();
@@ -268,13 +268,13 @@ void gmgResidRestrictKokkos(
 
 // Piecewise-constant prolongation + correction. Twin of gmgProlongAdd.
 template<class T>
-void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fine)
+void gmgProlongAddKokkos(const la::GmgFab<T>& crse, la::GmgFab<T>& fine)
 {
     for (amrex::MFIter mfi(fine, gmgNoSync()); mfi.isValid(); ++mfi)
     {
         const GmgProlongCell<T> cell {fine.array(mfi), crse.const_array(mfi)};
         launchKokkosMdNamed(
-            "gmg_prolong", mfi.validbox(), BENCH_LAMBDA(int i, int j, int k) { cell(i, j, k); }
+            "gmg_prolong", mfi.validbox(), BLOCKAMR_LAMBDA(int i, int j, int k) { cell(i, j, k); }
         );
     }
     Kokkos::fence();
@@ -315,15 +315,15 @@ void gmgProlongAddKokkos(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fin
 // kernels.cpp for the instantiation list.
 template<class T, class TC>
 void gmgGsColorKokkosFused(
-    solvers::GmgFab<T>& sol,
-    const solvers::GmgFab<T>& rhs,
-    const solvers::GmgFab<TC>& ux,
-    const solvers::GmgFab<TC>& lx,
-    const solvers::GmgFab<TC>& uy,
-    const solvers::GmgFab<TC>& ly,
-    const solvers::GmgFab<TC>& uz,
-    const solvers::GmgFab<TC>& lz,
-    const solvers::GmgFab<TC>& alpha,
+    la::GmgFab<T>& sol,
+    const la::GmgFab<T>& rhs,
+    const la::GmgFab<TC>& ux,
+    const la::GmgFab<TC>& lx,
+    const la::GmgFab<TC>& uy,
+    const la::GmgFab<TC>& ly,
+    const la::GmgFab<TC>& uz,
+    const la::GmgFab<TC>& lz,
+    const la::GmgFab<TC>& alpha,
     int parity,
     double omega,
     bool fence = true
@@ -331,22 +331,20 @@ void gmgGsColorKokkosFused(
 
 template<class T, class TC>
 void gmgResidRestrictKokkosFused(
-    const solvers::GmgFab<T>& sol,
-    const solvers::GmgFab<T>& rhs,
-    solvers::GmgFab<T>& crhs,
-    const solvers::GmgFab<TC>& ux,
-    const solvers::GmgFab<TC>& lx,
-    const solvers::GmgFab<TC>& uy,
-    const solvers::GmgFab<TC>& ly,
-    const solvers::GmgFab<TC>& uz,
-    const solvers::GmgFab<TC>& lz,
-    const solvers::GmgFab<TC>& alpha,
+    const la::GmgFab<T>& sol,
+    const la::GmgFab<T>& rhs,
+    la::GmgFab<T>& crhs,
+    const la::GmgFab<TC>& ux,
+    const la::GmgFab<TC>& lx,
+    const la::GmgFab<TC>& uy,
+    const la::GmgFab<TC>& ly,
+    const la::GmgFab<TC>& uz,
+    const la::GmgFab<TC>& lz,
+    const la::GmgFab<TC>& alpha,
     bool fence = true
 );
 
 template<class T>
-void gmgProlongAddKokkosFused(
-    const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fine, bool fence = true
-);
+void gmgProlongAddKokkosFused(const la::GmgFab<T>& crse, la::GmgFab<T>& fine, bool fence = true);
 
-} // namespace blockamr::bench
+} // namespace blockamr

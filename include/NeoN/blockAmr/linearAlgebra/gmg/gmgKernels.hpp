@@ -17,7 +17,7 @@
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // ---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ namespace blockamr::solvers
 // T while the outer CG/operator stays FP64. GmgFab<T> is the level fab type.
 //
 // T is what a level is STORED in, which for the bf16 hierarchy is not what the
-// arithmetic happens in: solvers::GmgComputeT<T> (bf16.hpp) is the compute type,
+// arithmetic happens in: la::GmgComputeT<T> (bf16.hpp) is the compute type,
 // = T for double and float and float for Bf16. Kernels that mix a stored value
 // with a literal weight spell the weight GmgComputeT<T> so a bf16 level does not
 // round it to 3 digits; kernels reached only by the FP64/FP32 paths are written
@@ -621,4 +621,4 @@ void gmgFillChecker(GmgFab<T>& v, bool onDevice)
     }
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

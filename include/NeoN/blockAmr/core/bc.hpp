@@ -15,7 +15,9 @@
 #include <string>
 #include <vector>
 
-namespace blockamr::solvers
+#include "NeoN/core/executor/executor.hpp"
+
+namespace blockamr::la
 {
 
 // Domain-boundary condition per side, order (xlo, xhi, ylo, yhi, zlo, zhi):
@@ -141,7 +143,14 @@ void fillDomainBcGhostsHost(FA& mf, const amrex::Box& domain, const BcArray& bc)
 // reached from persistent.cpp AND faceCoeffOp.cpp, so an inline definition
 // with an AMREX_GPU_DEVICE lambda would be an extended lambda emitted in two
 // CUDA TUs of one binary. Defined in core/deviceKernels.cpp.
+//
+// `exec` is the NeoN executor the launch dispatches on (S9). Both of this
+// kernel's callers -- FaceCoeffOpT::applyWith and GmgStationarySolver::
+// fillGmgGhosts -- hold one, which is exactly what its homogeneous twin above
+// cannot say: that one is also reached from gmgPrecond.hpp, gmgBottom.hpp and
+// gmgKokkos/vcycle.hpp, none of which carries an executor.
 void fillDomainBcGhostsInhomDevice(
+    const NeoN::Executor& exec,
     amrex::MultiFab& mf,
     const amrex::MultiFab& bcdata,
     const amrex::Box& domain,
@@ -219,7 +228,13 @@ void checkBcData(
 // need not be copied. Flat index matches scatter_device (box-by-box, i fastest).
 // Explicitly instantiated for V = double and V = float (bc.cpp); the MultiFab is
 // always amrex::Real, only the flat Krylov vector changes width.
+//
+// `exec` is the NeoN executor the launch dispatches on (S9, blockamr::parallelFor).
+// Threading it here was cheap because this kernel has exactly ONE caller,
+// FaceCoeffOpT::applyWith, which already holds one -- unlike its neighbours
+// scatter_device / gather_device / fillDomainBcGhostsDevice, whose GMG callers
+// carry no executor at all (see the S8/S9 handoff's launch-site table).
 template<class V>
-void scatterShellDevice(const V* vec, amrex::MultiFab& mf);
+void scatterShellDevice(const NeoN::Executor& exec, const V* vec, amrex::MultiFab& mf);
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

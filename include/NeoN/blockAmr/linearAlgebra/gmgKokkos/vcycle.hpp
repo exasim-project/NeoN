@@ -36,12 +36,12 @@
 
 #include "NeoN/blockAmr/bench/kokkosBench.hpp"
 #include "NeoN/blockAmr/core/bc.hpp"
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp"
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 namespace
@@ -53,8 +53,8 @@ namespace
 // bandwidth-bound at scale. Only kokkos_opt is instantiated for the reduced types; the
 // baselines stay fp64, which is what keeps them baselines.
 //
-// bf16 is a STORAGE type only: solvers::Bf16 converts to float on every read and rounds
-// once on every write, and the kernels compute in solvers::GmgComputeT<T>. See bf16.hpp
+// bf16 is a STORAGE type only: la::Bf16 converts to float on every read and rounds
+// once on every write, and the kernels compute in la::GmgComputeT<T>. See bf16.hpp
 // for why anything else turns the preconditioner's operator singular.
 enum class Precision
 {
@@ -220,8 +220,8 @@ struct LevelT
     // The level fab type production uses (FabArray<BaseFab<T>>, not MultiFab), so the
     // production kernels apply unchanged. Two of them: the fields (sol, rhs) carry T,
     // the coefficients carry TC. See GmgGsCell for why the two are separable.
-    using Fab = solvers::GmgFab<T>;
-    using CoeffFab = solvers::GmgFab<TC>;
+    using Fab = la::GmgFab<T>;
+    using CoeffFab = la::GmgFab<TC>;
 
     amrex::Geometry geom;
     std::unique_ptr<CoeffFab> alpha, ux, lx, uy, ly, uz, lz;
@@ -264,8 +264,8 @@ class Vcycle
 public:
 
     using Level = LevelT<T, TC>;
-    using Fab = solvers::GmgFab<T>;
-    using CoeffFab = solvers::GmgFab<TC>;
+    using Fab = la::GmgFab<T>;
+    using CoeffFab = la::GmgFab<TC>;
 
     Vcycle(const GmgArgs& args)
         : preSweeps_(args.preSweeps), postSweeps_(args.postSweeps),
@@ -445,7 +445,7 @@ public:
     {
         if (aggL0_)
         {
-            solvers::gmgConvertCopy(*iface_, rhs, /*onDevice=*/true);
+            la::gmgConvertCopy(*iface_, rhs, /*onDevice=*/true);
             Backend::afterAmrexWrite();
             gmgCopyKokkos<T>(*levels_[0].rhs, *iface_, ifaceIn_);
             gmgZeroKokkos<T>(*levels_[0].sol);
@@ -453,7 +453,7 @@ public:
             return;
         }
         Backend::beforeAmrexRead(); // a previous cycle's kernels may still be in flight
-        solvers::gmgConvertCopy(*levels_[0].rhs, rhs, /*onDevice=*/true);
+        la::gmgConvertCopy(*levels_[0].rhs, rhs, /*onDevice=*/true);
         levels_[0].sol->setVal(T(0));
         amrex::Gpu::streamSynchronize();
     }
@@ -482,24 +482,24 @@ public:
         // APPLY rather than once per cycle: with precond_cycles > 1 it amortises.
         if (aggL0_)
         {
-            solvers::scatter_device(r, *iface_);
+            la::scatter_device(r, *iface_);
             Backend::afterAmrexWrite();
             gmgCopyKokkos<T>(*L0.rhs, *iface_, ifaceIn_);
             gmgZeroKokkos<T>(*L0.sol); // z0 = 0: apply M^{-1}, not a warm-started solve
             cycles(nCycles);
             gmgCopyKokkos<T>(*iface_, *L0.sol, ifaceOut_);
             Backend::beforeAmrexRead();
-            solvers::gather_device(*iface_, z, 1.0);
+            la::gather_device(*iface_, z, 1.0);
             amrex::Gpu::streamSynchronize();
             return;
         }
         Backend::beforeAmrexRead(); // a previous apply's kernels may still be in flight
-        solvers::scatter_device(r, *L0.rhs);
+        la::scatter_device(r, *L0.rhs);
         L0.sol->setVal(T(0)); // z0 = 0: apply M^{-1}, not a warm-started solve
         Backend::afterAmrexWrite();
         cycles(nCycles);
         Backend::beforeAmrexRead();
-        solvers::gather_device(*L0.sol, z, 1.0);
+        la::gather_device(*L0.sol, z, 1.0);
         amrex::Gpu::streamSynchronize(); // z complete before the caller reads it
     }
 
@@ -583,10 +583,10 @@ private:
     // Templated on the fab's value type so the field fabs and the (possibly narrower)
     // coefficient fabs share one allocation path.
     template<class V>
-    static std::unique_ptr<solvers::GmgFab<V>>
+    static std::unique_ptr<la::GmgFab<V>>
     makeFab(const amrex::BoxArray& ba, const amrex::DistributionMapping& dm, int ng)
     {
-        auto mf = std::make_unique<solvers::GmgFab<V>>(ba, dm, 1, ng);
+        auto mf = std::make_unique<la::GmgFab<V>>(ba, dm, 1, ng);
         mf->setVal(V(0));
         return mf;
     }
@@ -632,15 +632,15 @@ private:
     // The caller's fields into a level that shares their decomposition.
     static void copyCallerCoeffs(const GmgArgs& args, Level& L)
     {
-        solvers::gmgConvertCopy(*L.alpha, *args.alpha, /*onDevice=*/true);
-        solvers::gmgConvertCopy(*L.ux, *args.ux, /*onDevice=*/true);
-        solvers::gmgConvertCopy(*L.uy, *args.uy, /*onDevice=*/true);
-        solvers::gmgConvertCopy(*L.uz, *args.uz, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.alpha, *args.alpha, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.ux, *args.ux, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.uy, *args.uy, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.uz, *args.uz, /*onDevice=*/true);
         if (!L.shared())
         {
-            solvers::gmgConvertCopy(*L.lx, *args.lx, /*onDevice=*/true);
-            solvers::gmgConvertCopy(*L.ly, *args.ly, /*onDevice=*/true);
-            solvers::gmgConvertCopy(*L.lz, *args.lz, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.lx, *args.lx, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.ly, *args.ly, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.lz, *args.lz, /*onDevice=*/true);
         }
     }
 
@@ -652,15 +652,15 @@ private:
     // preserved down the hierarchy and the pair never has to be re-formed.
     static void restrictCoeffs(const Level& f, Level& c)
     {
-        solvers::gmgRestrict<TC>(*f.alpha, *c.alpha, /*onDevice=*/true);
-        solvers::gmgCoarsenFace<TC>(*f.ux, *c.ux, 0, 4.0, /*onDevice=*/true);
-        solvers::gmgCoarsenFace<TC>(*f.uy, *c.uy, 1, 4.0, /*onDevice=*/true);
-        solvers::gmgCoarsenFace<TC>(*f.uz, *c.uz, 2, 4.0, /*onDevice=*/true);
+        la::gmgRestrict<TC>(*f.alpha, *c.alpha, /*onDevice=*/true);
+        la::gmgCoarsenFace<TC>(*f.ux, *c.ux, 0, 4.0, /*onDevice=*/true);
+        la::gmgCoarsenFace<TC>(*f.uy, *c.uy, 1, 4.0, /*onDevice=*/true);
+        la::gmgCoarsenFace<TC>(*f.uz, *c.uz, 2, 4.0, /*onDevice=*/true);
         if (!c.shared())
         {
-            solvers::gmgCoarsenFace<TC>(f.lxf(), *c.lx, 0, 4.0, /*onDevice=*/true);
-            solvers::gmgCoarsenFace<TC>(f.lyf(), *c.ly, 1, 4.0, /*onDevice=*/true);
-            solvers::gmgCoarsenFace<TC>(f.lzf(), *c.lz, 2, 4.0, /*onDevice=*/true);
+            la::gmgCoarsenFace<TC>(f.lxf(), *c.lx, 0, 4.0, /*onDevice=*/true);
+            la::gmgCoarsenFace<TC>(f.lyf(), *c.ly, 1, 4.0, /*onDevice=*/true);
+            la::gmgCoarsenFace<TC>(f.lzf(), *c.lz, 2, 4.0, /*onDevice=*/true);
         }
     }
 
@@ -703,7 +703,7 @@ private:
         L.sol->FillBoundary(L.geom.periodicity());
         if (hasPhysBc_)
         {
-            solvers::fillDomainBcGhostsDevice(*L.sol, L.geom.Domain(), bc_);
+            la::fillDomainBcGhostsDevice(*L.sol, L.geom.Domain(), bc_);
         }
         Backend::afterAmrexWrite();
     }
@@ -806,7 +806,7 @@ private:
     int postSweeps_;
     int coarsestSweeps_;
     double omega_;
-    solvers::BcArray bc_ {};
+    la::BcArray bc_ {};
     bool hasPhysBc_ = false;
     bool shared_ = false;
 
@@ -864,4 +864,4 @@ PrecPair precPair(Precision field, Precision coeff)
 
 } // namespace
 
-} // namespace blockamr::bench
+} // namespace blockamr

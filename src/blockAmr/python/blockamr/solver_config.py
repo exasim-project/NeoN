@@ -2,12 +2,14 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Validated configuration for the native geometric-multigrid preconditioner.
+"""Validated configuration for the solvers: the GMG V-cycle knobs, and la.Solver.
 
 ``GmgConfig`` collects the ``precond="gmg"`` V-cycle knobs of
 ``FaceCoeffSolver`` (see ``src/blockAmr/bindings/ginkgoSolve.cpp``) into one
 validated pydantic model. ``kwargs()`` returns the ``gmg_*`` / ``precond_cycles``
 constructor keyword arguments to splat into ``FaceCoeffSolver(...)``.
+
+``SolverConfig`` does the same for ``blockamr.linear_algebra.Solver``.
 """
 
 from __future__ import annotations
@@ -100,4 +102,57 @@ class GmgConfig(BaseModel):
             "gmg_precision": self.precision,
             "gmg_coeff_precision": self.coeff_precision,
             "precond_cycles": self.cycles,
+        }
+
+
+class SolverConfig(BaseModel):
+    """Everything ``blockamr.linear_algebra.Solver`` needs besides the system.
+
+    Use it for the ``la`` surface (``Solver(SolverConfig(solver="cg")).solve(...)``);
+    ``GmgConfig`` above is the separate, older model for the legacy
+    ``FaceCoeffSolver`` V-cycle knobs, and the two do not overlap.
+
+    Frozen, like ``GmgConfig``: a config is a value, and a solver holds the one it
+    was built with.
+
+    Notes
+    -----
+    ``solver`` and ``precond`` are plain strings, deliberately not ``Literal``.
+    The spellings are parsed exactly once, in C++
+    (``linearAlgebra/solverConfig.hpp``'s ``parseSolverKind`` /
+    ``parsePrecondKind``, called by the ``Solver`` binding's constructor), and
+    every dispatch below that compares the resulting enum. Repeating the list here
+    would be a second parse that has to be kept in step with the first.
+
+    ``precond`` other than ``"none"``, and ``solver`` in ``("gmg", "ir", "mpir")``,
+    are accepted here and REFUSED by ``Solver.solve`` with an explanation: the GMG
+    hierarchy is built from the coefficient fields rather than from a ``LinOp``, so
+    it is not reachable through this path. Use ``FaceCoeffSolver`` for those.
+
+    Examples
+    --------
+    >>> SolverConfig(solver="cg", rtol=1e-10).kwargs()["solver"]
+    'cg'
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    solver: str = "bicgstab"
+    precond: str = "none"
+    max_iter: int = Field(default=1000, ge=1)
+    rtol: float = Field(default=1e-10, ge=0.0)
+    atol: float = Field(default=0.0, ge=0.0)
+    project_nullspace: bool = False
+    norm: str = "l2"
+
+    def kwargs(self) -> dict:
+        """Constructor kwargs to splat into the ``_blockamr.Solver(...)`` binding."""
+        return {
+            "solver": self.solver,
+            "precond": self.precond,
+            "max_iter": self.max_iter,
+            "rtol": self.rtol,
+            "atol": self.atol,
+            "project_nullspace": self.project_nullspace,
+            "norm": self.norm,
         }

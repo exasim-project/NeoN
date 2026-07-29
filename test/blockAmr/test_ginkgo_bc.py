@@ -14,13 +14,17 @@ caller supplies face coefficients on ALL faces including boundary ones. Checks:
   all-Neumann and mixed BCs;
 * agreement with an identically-discretised MLABecLaplacian solved by MLMG
   (``set_max_order(2)`` makes MLMG's Dirichlet ghost fill linear = ours);
-* validation errors (bc vs geometry periodicity, CSR solver periodic-only);
+* validation errors (bc vs geometry periodicity, bc that CSR cannot express);
 * the singular all-Neumann pure Poisson composes with project_nullspace.
 
 The ``bc_data`` constructor kwarg makes those same BCs INHOMOGENEOUS: a ghosted
 cell MultiFab whose ghost layer carries u on the face (dirichlet sides) or the
 outward du/dn (neumann sides) — MLMG's ``set_level_bc`` contract, so one fab
 drives both solvers. Section 2 below covers it.
+
+Section 3 covers the assembled-CSR twin, ``FaceCoeffCsrSolver``, which folds the
+same HOMOGENEOUS conditions into the matrix entries instead of into a ghost
+layer, and must therefore land on the matrix-free path's answer.
 """
 
 import math
@@ -151,7 +155,7 @@ def _zero_sol(ba, dm):
     return sol
 
 
-def _solve_manufactured(n, executor, bc, alpha_val, u_fn, f_fn):
+def _solve_manufactured(n, executor, bc, alpha_val, u_fn, f_fn, cls="FaceCoeffSolver"):
     """Solve alpha*u - lap u = f on the non-periodic unit cube; max-norm error vs u."""
     geom, ba, dm = _make_mesh(n, [0, 0, 0])
     dx = geom.cell_size()
@@ -160,7 +164,7 @@ def _solve_manufactured(n, executor, bc, alpha_val, u_fn, f_fn):
     _fill_cell(rhs, dx, f_fn)
     sol = _zero_sol(ba, dm)
     s = _make_solver_or_skip(
-        "FaceCoeffSolver",
+        cls,
         coeffs,
         geom,
         executor,
@@ -305,7 +309,14 @@ def test_dirichlet_matches_mlmg(blockamr_session, executor):
 
 
 def test_bc_validation_errors(blockamr_session):
-    """bc entries must match the geometry's periodicity; CSR stays periodic-only."""
+    """bc entries must match the geometry's periodicity, on BOTH solver paths.
+
+    The assembled-CSR solver used to reject every non-periodic bc outright; it
+    now folds homogeneous dirichlet/neumann into the matrix (section 3), so the
+    only thing left to assert about it here is that it accepts them and still
+    applies the SAME bc-vs-geometry validation as the matrix-free path — that
+    check lives in parseBc, which both paths call.
+    """
     if not hasattr(blockamr, "FaceCoeffSolver"):
         pytest.skip("blockamr.FaceCoeffSolver binding not available")
 
@@ -333,9 +344,18 @@ def test_bc_validation_errors(blockamr_session):
         # Wrong length.
         with pytest.raises(RuntimeError, match="6 entries"):
             build("FaceCoeffSolver", geom_np, ["dirichlet"] * 4)
-        # The assembled-CSR solver stays periodic-only.
-        with pytest.raises(RuntimeError, match="periodic boundaries only"):
-            build("FaceCoeffCsrSolver", geom_np, ["dirichlet"] * 6)
+        # The assembled-CSR solver now CONSTRUCTS on a non-periodic bc: the
+        # boundary faces are folded onto the diagonal instead of wrapping around.
+        assert build("FaceCoeffCsrSolver", geom_np, ["dirichlet"] * 6) is not None
+        assert build("FaceCoeffCsrSolver", geom_np, ["neumann"] * 6) is not None
+        # ... and it validates bc against the geometry exactly as FaceCoeffSolver
+        # does, in both directions.
+        with pytest.raises(RuntimeError, match="periodic"):
+            build("FaceCoeffCsrSolver", geom_np, ["periodic"] * 6)
+        with pytest.raises(RuntimeError, match="periodic"):
+            build("FaceCoeffCsrSolver", geom_p, ["dirichlet"] * 6)
+        with pytest.raises(RuntimeError, match="unknown bc"):
+            build("FaceCoeffCsrSolver", geom_np, ["wall"] * 6)
     except RuntimeError as exc:  # pragma: no cover - gating only
         if "without Ginkgo" in str(exc):
             pytest.skip("blockamr built without Ginkgo")
@@ -762,6 +782,168 @@ def test_bc_data_validation_errors(blockamr_session):
         # The assembled-CSR solver has no inhomogeneous path.
         with pytest.raises(RuntimeError, match="periodic boundaries only"):
             build(geom, bc, _bc_data(ba, dm, geom, bc), cls="FaceCoeffCsrSolver")
+    except RuntimeError as exc:  # pragma: no cover - gating only
+        if "without Ginkgo" in str(exc):
+            pytest.skip("blockamr built without Ginkgo")
+        raise
+
+
+# ---------------------------------------------------------------------------
+# 3. The assembled-CSR path (FaceCoeffCsrSolver) under the same homogeneous BCs
+#
+# Everything above folds BCs by REFLECTING a ghost cell and leaves the matrix
+# alone. FaceCoeffCsrSolver has no ghost layer to reflect — it hands Ginkgo an
+# explicit CSR — so the identical fold has to be spelled into the entries:
+#
+#   periodic  side: keep the modular-wraparound neighbour column;
+#   dirichlet side: DROP that column, and diag += (-1) * aFace;
+#   neumann   side: DROP that column, and diag += (+1) * aFace,
+#
+# because the reflection makes the outside neighbour's value sign*pC, which turns
+# the stencil term aFace*pNeighbour into the diagonal term sign*aFace*pC. Rows on
+# a non-periodic boundary therefore carry fewer than 7 entries.
+#
+# That is a re-derivation of the same operator by a different route, so the check
+# that matters is not a tolerance on a solution but AGREEMENT: same mesh, same
+# coefficients, same bc, both solvers, one answer. A sign slip, a side-indexing
+# slip, or a dropped fold all show up there and only there — the manufactured
+# rows below would still converge at 2nd order with the wrong sign on one face.
+#
+# Homogeneous only: bc_data is an rhs fold (the affine c0 of section 2) and the
+# assembled path has none, so it is refused.
+# ---------------------------------------------------------------------------
+
+# Fully non-periodic for the uniform mixes; the "mixed" row is periodic in z so
+# that ONE bc array exercises all three per-side branches of the fold at once.
+_CSR_BC_CASES = [
+    ("dirichlet", [0, 0, 0], ["dirichlet"] * 6),
+    ("neumann", [0, 0, 0], ["neumann"] * 6),
+    (
+        "mixed",
+        [0, 0, 1],
+        ["dirichlet", "dirichlet", "neumann", "neumann", "periodic", "periodic"],
+    ),
+]
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+@pytest.mark.parametrize("kind, periodic, bc", _CSR_BC_CASES)
+def test_csr_matches_matrix_free(blockamr_session, executor, kind, periodic, bc):
+    """The assembled matrix IS the matrix-free operator, on every bc kind.
+
+    alpha=1 (Helmholtz) so the system is nonsingular under every mix here,
+    all-Neumann included, and a seeded random rhs so every row is exercised —
+    a boundary row assembled wrongly cannot hide in one smooth eigenmode. Both
+    solves run the same unpreconditioned CG to rtol=1e-12, so the 1e-8 bar is
+    solver tolerance, not discretisation error: the two answers differ only by
+    the two mat-vec implementations' roundoff.
+    """
+    N = 16
+    geom, ba, dm = _make_mesh(N, periodic)
+    coeffs = _poisson_coeffs(geom, ba, dm, N, 1.0)
+    rhs = _random_rhs(ba, dm)
+
+    sols = []
+    for cls in ("FaceCoeffSolver", "FaceCoeffCsrSolver"):
+        sol = _zero_sol(ba, dm)
+        s = _make_solver_or_skip(
+            cls, coeffs, geom, executor, solver="cg", max_iter=5000, rtol=1e-12, bc=bc
+        )
+        stats = s.solve(rhs, sol)
+        assert stats["converged"] is True, f"{kind}/{cls} did not converge: {dict(stats)}"
+        assert stats["num_iters"] > 1, f"{kind}/{cls}: random rhs took one CG iteration"
+        sols.append(sol)
+
+    max_diff = _max_abs_diff(sols[0], sols[1])
+    assert max_diff < 1e-8, f"{kind}: |matrix-free - CSR| = {max_diff} exceeds 1e-8"
+
+
+# The three manufactured solutions of section 1, restated for the CSR path. All
+# three are eigenfunctions of -lap with eigenvalue 3 pi^2, so one rhs formula
+# covers them; alpha=1 keeps every mix nonsingular.
+def _u_csr_dirichlet(x, y, z):
+    pi = math.pi
+    return np.sin(pi * x) * np.sin(pi * y) * np.sin(pi * z)
+
+
+def _u_csr_neumann(x, y, z):
+    pi = math.pi
+    return np.cos(pi * x) * np.cos(pi * y) * np.cos(pi * z)
+
+
+def _u_csr_mixed(x, y, z):
+    pi = math.pi
+    return np.sin(pi * x) * np.cos(pi * y) * np.cos(pi * z)
+
+
+@pytest.mark.parametrize("executor", ["reference", "cuda"])
+@pytest.mark.parametrize(
+    "kind, bc, u_fn",
+    [
+        ("dirichlet", ["dirichlet"] * 6, _u_csr_dirichlet),
+        ("neumann", ["neumann"] * 6, _u_csr_neumann),
+        (
+            "mixed",
+            ["dirichlet", "dirichlet", "neumann", "neumann", "neumann", "neumann"],
+            _u_csr_mixed,
+        ),
+    ],
+)
+def test_csr_manufactured_second_order(blockamr_session, executor, kind, bc, u_fn):
+    """u - lap u = f through the assembled matrix: 2nd order, same as matrix-free.
+
+    Agreement (above) proves the two paths build one matrix; this proves that
+    matrix is the RIGHT one — an identical sign error in both would satisfy
+    agreement and fail here. Same u, same thresholds as the section-1 rows, so
+    the two are directly comparable.
+    """
+
+    def f_fn(x, y, z):
+        return (1.0 + 3.0 * math.pi**2) * u_fn(x, y, z)
+
+    err_16 = _solve_manufactured(16, executor, bc, 1.0, u_fn, f_fn, cls="FaceCoeffCsrSolver")
+    err_32 = _solve_manufactured(32, executor, bc, 1.0, u_fn, f_fn, cls="FaceCoeffCsrSolver")
+
+    assert err_16 < 5e-3, f"{kind}: N=16 error {err_16} too large"
+    assert err_32 < 1.5e-3, f"{kind}: N=32 error {err_32} too large"
+    ratio = err_16 / err_32
+    assert ratio > 3, f"{kind}: convergence ratio {ratio} not ~2nd order (expected ~4)"
+
+
+def test_csr_refuses_bc_data(blockamr_session):
+    """bc_data on the CSR path is refused, and that refusal is now REACHABLE.
+
+    It used to sit behind the periodic-only rejection and could never fire: a
+    bc_data carrier needs a non-periodic side, and a non-periodic bc was already
+    out. Folding the homogeneous boundaries into the matrix turned it into a live
+    user-facing path, so it gets its own case rather than riding on a dead
+    branch. It stays a refusal because an inhomogeneous BC is the affine term
+    L(x) = A x + c0 of section 2 — an rhs fold, which the assembled path does not
+    have — and silently dropping the datum would read as a wrong answer.
+    """
+    if not hasattr(blockamr, "FaceCoeffCsrSolver"):
+        pytest.skip("blockamr.FaceCoeffCsrSolver binding not available")
+
+    N = 8
+    bc = ["dirichlet"] * 6
+    geom, ba, dm = _make_mesh(N, [0, 0, 0])
+    alpha, fx, fy, fz = _poisson_coeffs(geom, ba, dm, N, 1.0)
+
+    try:
+        with pytest.raises(RuntimeError, match="bc_data"):
+            blockamr.FaceCoeffCsrSolver(
+                alpha,
+                fx,
+                fx,
+                fy,
+                fy,
+                fz,
+                fz,
+                geom,
+                executor=gko_executor("reference"),
+                bc=bc,
+                bc_data=_bc_data(ba, dm, geom, bc),
+            )
     except RuntimeError as exc:  # pragma: no cover - gating only
         if "without Ginkgo" in str(exc):
             pytest.skip("blockamr built without Ginkgo")

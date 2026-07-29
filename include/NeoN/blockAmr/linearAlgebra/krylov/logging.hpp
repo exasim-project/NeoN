@@ -11,7 +11,7 @@
 
 #include "NeoN/blockAmr/core/types.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Per-iteration residual-norm history. Ginkgo's iteration_complete event
@@ -77,4 +77,4 @@ private:
     mutable std::vector<double> history_;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Cells this rank owns -- the length of the flat vectors below, and the local
@@ -150,4 +150,4 @@ void scatter_device(const V* vec, FA& mf);
 template<class V, class FA>
 void gather_device(const FA& mf, V* vec, double scale);
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

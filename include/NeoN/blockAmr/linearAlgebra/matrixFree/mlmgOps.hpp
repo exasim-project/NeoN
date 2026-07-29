@@ -16,10 +16,10 @@
 #include <memory>
 #include <vector>
 
-#include "NeoN/blockAmr/core/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Matrix-free SPD operator: x = sign*(L_inhom(b) - c0), with MLMG::apply as
@@ -151,4 +151,4 @@ private:
     std::shared_ptr<amrex::MultiFab> out_;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

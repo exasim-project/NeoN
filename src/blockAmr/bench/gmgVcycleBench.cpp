@@ -73,7 +73,7 @@
 
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp"
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 namespace
@@ -109,23 +109,23 @@ struct AmrexGmgBackend
     // FaceCoeffs<double>, so the flat 7-coefficient argument list vcycle.hpp's
     // shared call site passes has to be repacked here.
     static void gsColor(
-        solvers::GmgFab<double>& sol,
-        const solvers::GmgFab<double>& rhs,
-        const solvers::GmgFab<double>& ux,
-        const solvers::GmgFab<double>& lx,
-        const solvers::GmgFab<double>& uy,
-        const solvers::GmgFab<double>& ly,
-        const solvers::GmgFab<double>& uz,
-        const solvers::GmgFab<double>& lz,
-        const solvers::GmgFab<double>& alpha,
+        la::GmgFab<double>& sol,
+        const la::GmgFab<double>& rhs,
+        const la::GmgFab<double>& ux,
+        const la::GmgFab<double>& lx,
+        const la::GmgFab<double>& uy,
+        const la::GmgFab<double>& ly,
+        const la::GmgFab<double>& uz,
+        const la::GmgFab<double>& lz,
+        const la::GmgFab<double>& alpha,
         int parity,
         double omega
     )
     {
-        solvers::gmgGsColor<double>(
+        la::gmgGsColor<double>(
             sol,
             rhs,
-            solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
+            la::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
             parity,
             omega,
             /*onDevice=*/true
@@ -133,23 +133,23 @@ struct AmrexGmgBackend
     }
 
     static void residRestrict(
-        const solvers::GmgFab<double>& sol,
-        const solvers::GmgFab<double>& rhs,
-        solvers::GmgFab<double>& crhs,
-        const solvers::GmgFab<double>& ux,
-        const solvers::GmgFab<double>& lx,
-        const solvers::GmgFab<double>& uy,
-        const solvers::GmgFab<double>& ly,
-        const solvers::GmgFab<double>& uz,
-        const solvers::GmgFab<double>& lz,
-        const solvers::GmgFab<double>& alpha
+        const la::GmgFab<double>& sol,
+        const la::GmgFab<double>& rhs,
+        la::GmgFab<double>& crhs,
+        const la::GmgFab<double>& ux,
+        const la::GmgFab<double>& lx,
+        const la::GmgFab<double>& uy,
+        const la::GmgFab<double>& ly,
+        const la::GmgFab<double>& uz,
+        const la::GmgFab<double>& lz,
+        const la::GmgFab<double>& alpha
     )
     {
-        solvers::gmgResidRestrict<double>(
+        la::gmgResidRestrict<double>(
             sol,
             rhs,
             crhs,
-            solvers::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
+            la::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
             /*onDevice=*/true
         );
     }
@@ -157,7 +157,7 @@ struct AmrexGmgBackend
     template<class... A>
     static void prolongAdd(A&&... a)
     {
-        solvers::gmgProlongAdd<double>(std::forward<A>(a)..., /*onDevice=*/true);
+        la::gmgProlongAdd<double>(std::forward<A>(a)..., /*onDevice=*/true);
     }
 };
 
@@ -357,13 +357,13 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
         case PrecPair::f64c32:
             return run<B, double, float>(args, iters, batches);
         case PrecPair::f64c16:
-            return run<B, double, solvers::Bf16>(args, iters, batches);
+            return run<B, double, la::Bf16>(args, iters, batches);
         case PrecPair::f32c32:
             return run<B, float>(args, iters, batches);
         case PrecPair::f32c16:
-            return run<B, float, solvers::Bf16>(args, iters, batches);
+            return run<B, float, la::Bf16>(args, iters, batches);
         case PrecPair::f16c16:
-            return run<B, solvers::Bf16>(args, iters, batches);
+            return run<B, la::Bf16>(args, iters, batches);
         case PrecPair::f64c64:
             break;
         }
@@ -372,4 +372,4 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
     throw std::runtime_error("benchGmgVcycle: unknown backend '" + backend + "'");
 }
 
-} // namespace blockamr::bench
+} // namespace blockamr

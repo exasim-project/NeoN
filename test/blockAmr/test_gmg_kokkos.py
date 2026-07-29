@@ -280,7 +280,7 @@ def test_bf16_hierarchy_is_the_same_vcycle(max_size):
     larger than itself. Round either intermediate to bf16 and they land on the same
     value: the residual cancels to exactly zero. So the thing this test has to
     separate is a hierarchy that merely STORES bf16 (what we want, and what
-    ``solvers::GmgComputeT`` delivers) from one that also COMPUTES in it. Neither
+    ``la::GmgComputeT`` delivers) from one that also COMPUTES in it. Neither
     crashes; both return a smaller residual.
 
     Hence a gate on the CONTRACTION rather than only on the answer. One V-cycle of

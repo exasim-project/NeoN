@@ -9,10 +9,10 @@
 
 #include <ginkgo/ginkgo.hpp>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 using MLMG = amrex::MLMGT<amrex::MultiFab>;
 using Dense = gko::matrix::Dense<double>;
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

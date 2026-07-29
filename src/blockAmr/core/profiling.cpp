@@ -12,7 +12,7 @@
 
 #include <cstdlib>
 
-namespace blockamr::solvers::prof
+namespace blockamr::la::prof
 {
 
 int mode()
@@ -67,4 +67,4 @@ Timer::~Timer()
 #endif
 }
 
-} // namespace blockamr::solvers::prof
+} // namespace blockamr::la::prof

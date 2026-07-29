@@ -10,7 +10,7 @@
 #include <AMReX_ParallelDescriptor.H>
 #include <AMReX_ParallelReduce.H>
 
-#include "NeoN/blockAmr/kokkos/runtime.hpp"
+#include "NeoN/blockAmr/core/runtime.hpp"
 
 namespace nb = nanobind;
 
@@ -30,14 +30,14 @@ void registerInit(nb::module_& m)
             // Kokkos cannot be re-initialized once finalized, so a second
             // sequential runtime() block in one process leaves it unavailable;
             // the Kokkos entry points raise rather than crash in that case.
-            blockamr::bench::kokkosInitialize();
+            blockamr::kokkosInitialize();
         }
     );
     m.def(
         "finalize",
         []()
         {
-            blockamr::bench::kokkosFinalize();
+            blockamr::kokkosFinalize();
             amrex::Finalize();
         }
     );

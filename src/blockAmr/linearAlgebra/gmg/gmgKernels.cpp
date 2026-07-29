@@ -16,7 +16,7 @@
 
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Copy src (any FabArray, e.g. the caller's FP64 MultiFab or a same-type level
@@ -278,4 +278,4 @@ template void gmgResidRestrict<float>(
     const GmgFab<float>&, const GmgFab<float>&, GmgFab<float>&, const FaceCoeffs<float>&, bool
 );
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

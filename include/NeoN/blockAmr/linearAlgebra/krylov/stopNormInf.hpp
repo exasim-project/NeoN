@@ -17,7 +17,7 @@
 #include <string>
 #include <utility>
 
-#include "NeoN/blockAmr/core/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 
 // ---------------------------------------------------------------------------
@@ -45,7 +45,7 @@
 // synchronisation per iteration, the same one MLMG's ResNormInf pays.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Which norm the stopping criterion (and the reported residual) measures.
@@ -242,4 +242,4 @@ private:
     double last_ = 0.0;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

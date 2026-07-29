@@ -20,14 +20,14 @@
 #include "bindings.hpp"
 
 #include "NeoN/blockAmr/bench/kokkosBench.hpp"
-#include "NeoN/blockAmr/kokkos/runtime.hpp"
+#include "NeoN/blockAmr/core/runtime.hpp"
 
 namespace nb = nanobind;
 
 namespace
 {
 
-blockamr::bench::OpArgs makeArgs(
+blockamr::OpArgs makeArgs(
     amrex::MultiFab& out,
     amrex::MultiFab& in,
     amrex::MultiFab* fx,
@@ -39,7 +39,7 @@ blockamr::bench::OpArgs makeArgs(
     double dz
 )
 {
-    blockamr::bench::OpArgs args;
+    blockamr::OpArgs args;
     args.out = &out;
     args.in = &in;
     args.fx = fx;
@@ -56,18 +56,18 @@ blockamr::bench::OpArgs makeArgs(
 
 void registerKokkosBench(nb::module_& m)
 {
-    m.def("kokkos_available", &blockamr::bench::kokkosInitialized);
-    m.def("kokkos_execution_space", &blockamr::bench::kokkosExecutionSpace);
-    m.def("kokkos_selftest", &blockamr::bench::kokkosSelftest, nb::arg("n") = 1024);
-    m.def("kokkos_mf_sum", &blockamr::bench::kokkosMfSum, nb::arg("mf"));
+    m.def("kokkos_available", &blockamr::kokkosInitialized);
+    m.def("kokkos_execution_space", &blockamr::kokkosExecutionSpace);
+    m.def("kokkos_selftest", &blockamr::kokkosSelftest, nb::arg("n") = 1024);
+    m.def("kokkos_mf_sum", &blockamr::kokkosMfSum, nb::arg("mf"));
 
-    m.def("bench_operators", &blockamr::bench::benchOperators);
+    m.def("bench_operators", &blockamr::benchOperators);
 
     m.def(
         "bench_operator_info",
         [](const std::string& name)
         {
-            const auto info = blockamr::bench::benchOperatorInfo(name);
+            const auto info = blockamr::benchOperatorInfo(name);
             nb::dict d;
             d["nghost"] = info.nghost;
             d["needs_faces"] = info.needsFaces;
@@ -89,7 +89,7 @@ void registerKokkosBench(nb::module_& m)
            double dx,
            double dy,
            double dz)
-        { blockamr::bench::applyOperator(name, makeArgs(out, in, fx, fy, fz, a, dx, dy, dz)); },
+        { blockamr::applyOperator(name, makeArgs(out, in, fx, fy, fz, a, dx, dy, dz)); },
         nb::arg("name"),
         nb::arg("out"),
         nb::arg("in_"),
@@ -117,7 +117,7 @@ void registerKokkosBench(nb::module_& m)
            int iters,
            int batches)
         {
-            const auto r = blockamr::bench::benchOperator(
+            const auto r = blockamr::benchOperator(
                 name, makeArgs(out, in, fx, fy, fz, a, dx, dy, dz), iters, batches
             );
             nb::dict d;
@@ -143,7 +143,7 @@ void registerKokkosBench(nb::module_& m)
         nb::arg("batches") = 5
     );
 
-    m.def("bench_gmg_backends", &blockamr::bench::benchGmgBackends);
+    m.def("bench_gmg_backends", &blockamr::benchGmgBackends);
 
     m.def(
         "bench_gmg_vcycle",
@@ -173,7 +173,7 @@ void registerKokkosBench(nb::module_& m)
            int iters,
            int batches)
         {
-            blockamr::bench::GmgArgs args;
+            blockamr::GmgArgs args;
             args.geom = &geom;
             args.rhs = &rhs;
             args.alpha = &alpha;
@@ -215,7 +215,7 @@ void registerKokkosBench(nb::module_& m)
                 }
             }
 
-            const auto r = blockamr::bench::benchGmgVcycle(backend, args, iters, batches);
+            const auto r = blockamr::benchGmgVcycle(backend, args, iters, batches);
             nb::dict d;
             d["ms_min"] = r.msMin;
             d["ms_median"] = r.msMedian;

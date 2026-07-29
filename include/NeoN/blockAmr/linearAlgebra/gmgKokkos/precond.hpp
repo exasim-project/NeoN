@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <utility>
 
-#include "NeoN/blockAmr/core/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp"
@@ -19,7 +19,7 @@
 // The optimised Kokkos V-cycle as a Ginkgo preconditioner.
 //
 // This is the whole Ginkgo side of it: a gko::LinOp whose apply hands two device
-// pointers to bench::KokkosGmgApply. All the multigrid lives on the other side of
+// pointers to blockamr::KokkosGmgApply. All the multigrid lives on the other side of
 // that handle, in the non-RDC object library where the Kokkos kernels compile (see
 // apply.hpp for why that's a separate library rather than an RDC fence).
 //
@@ -34,7 +34,7 @@
 // ignored.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // V is the value type of the Krylov vectors this preconditioner is applied to --
@@ -54,7 +54,7 @@ public:
     GmgKokkosPrecondT(
         std::shared_ptr<const gko::Executor> exec,
         gko::size_type n,
-        std::shared_ptr<bench::KokkosGmgApply> vcycle
+        std::shared_ptr<blockamr::KokkosGmgApply> vcycle
     )
         : AmrexLinOpBase<GmgKokkosPrecondT<V>, V>(exec, gko::dim<2> {n, n}),
           vcycle_(std::move(vcycle))
@@ -91,10 +91,10 @@ private:
 
     // shared_ptr for the same reason as AmrexLinOpBase::scratch_: Ginkgo gives these
     // operators a copy-assignment, which a move-only member would delete.
-    std::shared_ptr<bench::KokkosGmgApply> vcycle_;
+    std::shared_ptr<blockamr::KokkosGmgApply> vcycle_;
 };
 
 using GmgKokkosPrecond = GmgKokkosPrecondT<double>;
 using GmgKokkosPrecond32 = GmgKokkosPrecondT<float>;
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

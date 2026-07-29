@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/blockAmr/operators/mlmgOps.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/mlmgOps.hpp"
 
 #include <AMReX_GpuDevice.H>
 
 #include <cstddef>
 
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 AmrexOp::AmrexOp(std::shared_ptr<const gko::Executor> exec) : AmrexLinOpBase<AmrexOp>(exec) {}
@@ -221,4 +221,4 @@ void MlmgPrecond::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
     }
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/blockAmr/operators/faceCoeffOp.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
 
 #include <AMReX_GpuLaunch.H>
 #include <AMReX_MultiFabUtil.H>
@@ -11,11 +11,55 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
+
+void computeFaceCoeffDiag(
+    const NeoN::Executor& exec,
+    amrex::MultiFab& diag,
+    const amrex::MultiFab& alpha,
+    const amrex::MultiFab& ux,
+    const amrex::MultiFab& lx,
+    const amrex::MultiFab& uy,
+    const amrex::MultiFab& ly,
+    const amrex::MultiFab& uz,
+    const amrex::MultiFab& lz
+)
+{
+    for (amrex::MFIter mfi(diag); mfi.isValid(); ++mfi)
+    {
+        const amrex::Box& vbx = mfi.validbox();
+        const auto dg = diag.array(mfi);
+        const auto al = alpha.const_array(mfi);
+        const auto ax = ux.const_array(mfi);
+        const auto lxa = lx.const_array(mfi);
+        const auto ay = uy.const_array(mfi);
+        const auto lya = ly.const_array(mfi);
+        const auto az = uz.const_array(mfi);
+        const auto lza = lz.const_array(mfi);
+        blockamr::parallelFor(
+            exec,
+            vbx,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
+            {
+                // Same reads and same association order as the two stencils below
+                // used to spell inline: aE=ux(high face), aW=lx(low face), ...
+                const amrex::Real aE = ax(i + 1, j, k);
+                const amrex::Real aW = lxa(i, j, k);
+                const amrex::Real aN = ay(i, j + 1, k);
+                const amrex::Real aS = lya(i, j, k);
+                const amrex::Real aT = az(i, j, k + 1);
+                const amrex::Real aB = lza(i, j, k);
+                dg(i, j, k) = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+            }
+        );
+    }
+    amrex::Gpu::streamSynchronize();
+}
 
 // Fused matrix-free apply (M3 3a) that skips the full flat<->MultiFab pack/unpack:
 // the stencil reads the centre and any interior neighbour straight from the flat
@@ -28,6 +72,7 @@ namespace blockamr::solvers
 // alias (Krylov apply never aliases operand and result).
 template<class V>
 void faceCoeffStencilFusedDevice(
+    const NeoN::Executor& exec,
     const V* bvec,
     V* xvec,
     const amrex::MultiFab& in,
@@ -37,7 +82,7 @@ void faceCoeffStencilFusedDevice(
     const amrex::MultiFab& ly,
     const amrex::MultiFab& uz,
     const amrex::MultiFab& lz,
-    const amrex::MultiFab& alpha
+    const amrex::MultiFab& diag
 )
 {
     long off = 0;
@@ -51,7 +96,7 @@ void faceCoeffStencilFusedDevice(
         const auto lya = ly.const_array(mfi);
         const auto az = uz.const_array(mfi);
         const auto lza = lz.const_array(mfi);
-        const auto al = alpha.const_array(mfi);
+        const auto dg = diag.const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         const int ni = vbx.length(0);
@@ -60,7 +105,8 @@ void faceCoeffStencilFusedDevice(
         const long o = off;
         const V* b = bvec;
         V* xo = xvec;
-        amrex::ParallelFor(
+        blockamr::parallelFor(
+            exec,
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
@@ -84,7 +130,10 @@ void faceCoeffStencilFusedDevice(
                 const V aT = static_cast<V>(az(i, j, k + 1));
                 const V aB = static_cast<V>(lza(i, j, k));
                 const V offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
-                const V diag = static_cast<V>(al(i, j, k)) - (aE + aW + aN + aS + aT + aB);
+                // The stored diagonal is amrex::Real (fp64) whatever V is, so an
+                // fp32 instantiation rounds it once here, exactly as it rounds
+                // each face coefficient above.
+                const V diag = static_cast<V>(dg(i, j, k));
                 xo[idx] = diag * pC + offd;
             }
         );
@@ -100,6 +149,7 @@ FaceCoeffOpT<V>::FaceCoeffOpT(std::shared_ptr<const gko::Executor> exec)
 template<class V>
 FaceCoeffOpT<V>::FaceCoeffOpT(
     std::shared_ptr<const gko::Executor> exec,
+    const NeoN::Executor& nexec,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm,
     amrex::Geometry geom,
@@ -112,10 +162,11 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     const amrex::MultiFab* uz,
     const amrex::MultiFab* lz,
     BcArray bc,
-    const amrex::MultiFab* bcData
+    const amrex::MultiFab* bcData,
+    const amrex::MultiFab* diag
 )
-    : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(geom), bc_(bc),
-      hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
+    : AmrexLinOpBase<FaceCoeffOpT<V>, V>(exec, gko::dim<2> {n, n}), geom_(geom), nexec_(nexec),
+      bc_(bc), hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
       onDevice_(exec->get_master().get() != exec.get())
 {
     for (int d = 0; d < 3; ++d)
@@ -130,11 +181,21 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
             "FaceCoeffOp: the reduced-precision operator is a device path; use executor='cuda'"
         );
     }
+    // The diagonal is derived from the coefficients ONCE, here, unless the caller
+    // already keeps one (blockamr::la::MFFaceCoeffs does, so that it survives the
+    // per-solve rebuild of this operator). Either way the stencils below read a
+    // field instead of re-deriving alpha - sum(faces) per cell per apply.
+    if (diag == nullptr)
+    {
+        diagOwned_ = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
+        computeFaceCoeffDiag(nexec_, *diagOwned_, *alpha, *ux, *lx, *uy, *ly, *uz, *lz);
+        diag = diagOwned_.get();
+    }
     if (onDevice_)
     {
         // Reference the caller's device fields directly; the stencil reads
         // them on the GPU and in_/out_ live in the default (device) arena.
-        alpha_ = alpha;
+        diag_ = diag;
         ux_ = ux;
         lx_ = lx;
         uy_ = uy;
@@ -148,9 +209,11 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     else
     {
         // Host (ReferenceExecutor) stencil: stage the coefficients to
-        // pinned memory once and read those.
+        // pinned memory once and read those. alpha is NOT staged -- the stencil
+        // reads the stored diagonal, and alpha reaches that only through
+        // computeFaceCoeffDiag above.
         owned_ = {
-            pinnedCopy(*alpha),
+            pinnedCopy(*diag),
             pinnedCopy(*ux),
             pinnedCopy(*lx),
             pinnedCopy(*uy),
@@ -158,13 +221,16 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
             pinnedCopy(*uz),
             pinnedCopy(*lz)
         };
-        alpha_ = owned_[0].get();
+        diag_ = owned_[0].get();
         ux_ = owned_[1].get();
         lx_ = owned_[2].get();
         uy_ = owned_[3].get();
         ly_ = owned_[4].get();
         uz_ = owned_[5].get();
         lz_ = owned_[6].get();
+        // Whatever this operator computed for itself now lives pinned in owned_;
+        // the device-arena original is dead weight.
+        diagOwned_.reset();
         if (bcData != nullptr)
         {
             owned_.push_back(pinnedCopy(*bcData));
@@ -217,7 +283,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
             // FillBoundary/domain-BC read it to fill the face ghosts; the
             // interior is read straight from the flat vector by the stencil.
             prof::Timer t("op.scatter");
-            scatterShellDevice(bvals, *in_);
+            scatterShellDevice(nexec_, bvals, *in_);
         }
         {
             prof::Timer t("op.fill");
@@ -228,7 +294,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
                 // homogeneous Dirichlet/Neumann BCs into the stencil.
                 if (inhom)
                 {
-                    fillDomainBcGhostsInhomDevice(*in_, *bcData_, geom_.Domain(), bc_, dx_);
+                    fillDomainBcGhostsInhomDevice(nexec_, *in_, *bcData_, geom_.Domain(), bc_, dx_);
                 }
                 else
                 {
@@ -243,7 +309,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
             // from in_, writes straight to the flat output (no gather). Free
             // function: nvcc forbids an extended __device__ lambda in a member.
             faceCoeffStencilFusedDevice(
-                bvals, xvals, *in_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *alpha_
+                nexec_, bvals, xvals, *in_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *diag_
             );
         }
         {
@@ -284,7 +350,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
         const auto lya = ly_->const_array(mfi);
         const auto az = uz_->const_array(mfi);
         const auto lza = lz_->const_array(mfi);
-        const auto al = alpha_->const_array(mfi);
+        const auto dg = diag_->const_array(mfi);
         const auto lo = amrex::lbound(vbx);
         const auto hi = amrex::ubound(vbx);
         for (int k = lo.z; k <= hi.z; ++k)
@@ -303,8 +369,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
                     const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
                                      + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
                                      + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const double diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
-                    o(i, j, k) = diag * psi(i, j, k) + off;
+                    o(i, j, k) = dg(i, j, k) * psi(i, j, k) + off;
                 }
             }
         }
@@ -317,4 +382,4 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
 template class FaceCoeffOpT<double>;
 template class FaceCoeffOpT<float>;
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

@@ -10,7 +10,7 @@
 
 #include "NeoN/blockAmr/core/types.hpp" // MLMG alias
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Every value `solver` may spell, across both persistent-solver classes and
@@ -141,4 +141,4 @@ struct SolverConfig
     const amrex::MultiFab* bcData = nullptr;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

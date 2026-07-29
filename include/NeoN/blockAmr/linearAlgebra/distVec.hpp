@@ -8,7 +8,7 @@
 
 #include <memory>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // The vectors these operators are applied to are Dense on one rank and
@@ -172,4 +172,4 @@ std::shared_ptr<gko::LinOp> makeGlobalVec(
     gko::matrix::Dense<float>* local
 );
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

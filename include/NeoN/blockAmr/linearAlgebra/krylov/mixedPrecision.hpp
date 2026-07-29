@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "NeoN/blockAmr/core/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 
@@ -25,7 +25,7 @@
 // Measurements: report/blockamr-precision-measurements.md in the NeoFOAM repo.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 class MixedPrecisionSolve : public AmrexLinOpBase<MixedPrecisionSolve>
@@ -102,4 +102,4 @@ private:
     mutable std::shared_ptr<gko::LinOp> b32Global_, x32Global_;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

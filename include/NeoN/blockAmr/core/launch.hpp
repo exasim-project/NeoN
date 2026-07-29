@@ -18,9 +18,8 @@
 #include <AMReX_MFParallelFor.H>
 #include <AMReX_MultiFab.H>
 
-// One lambda form for all launchers: __host__ __device__ satisfies both an AMReX
-// device lambda and a Kokkos functor, so the kernel body is written once.
-#define BENCH_LAMBDA [=] AMREX_GPU_HOST_DEVICE
+// BLOCKAMR_LAMBDA, the one lambda form for all launchers, is defined there.
+#include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
 
 // The launchers under comparison, in two families.
 //
@@ -42,7 +41,7 @@
 //   launchKokkosTeam   Kokkos TeamPolicy over the same block decomposition, reading
 //                      the same cached BoxIndexer table AMReX built.
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 template<class F>
@@ -196,7 +195,7 @@ void launchKokkosTeamNamed(const char* name, const MF& mf, F const& f)
         // handicap AMReX does not take at 1 box.
         const amrex::Box bx = mf.box(mf.IndexArray()[0]);
         launchKokkosMdNamed(
-            name, bx, BENCH_LAMBDA(int i, int j, int k) { f(0, i, j, k); }
+            name, bx, BLOCKAMR_LAMBDA(int i, int j, int k) { f(0, i, j, k); }
         );
         return;
     }
@@ -275,4 +274,4 @@ inline ViewAcc viewAcc(amrex::FArrayBox& fab)
     };
 }
 
-} // namespace blockamr::bench
+} // namespace blockamr

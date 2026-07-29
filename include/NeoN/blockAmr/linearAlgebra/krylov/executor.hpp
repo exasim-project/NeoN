@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // The Ginkgo executor backing a NeoN one. Thin forwarder to
@@ -25,4 +25,4 @@ namespace blockamr::solvers
 // Ginkgo means no cross-library synchronisation at the operator boundary.
 std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor);
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

@@ -11,9 +11,9 @@
 #include <string>
 
 #include "NeoN/blockAmr/core/bc.hpp"
-#include "NeoN/blockAmr/core/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
 // ---------------------------------------------------------------------------
@@ -43,7 +43,7 @@
 // explicit by the `symmetric` flag rather than inferred -- see GmgPrecondT.
 // ---------------------------------------------------------------------------
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // A single GMG level exposed as a gko::LinOp: y = A x on that level's
@@ -250,4 +250,4 @@ std::shared_ptr<const gko::LinOp> makeBottomSolver(
     throw std::runtime_error("GmgPrecond: unknown gmg_bottom_solver '" + kind + "'");
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

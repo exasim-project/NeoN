@@ -21,14 +21,14 @@
 #include <vector>
 
 #include "NeoN/blockAmr/core/bc.hpp"
-#include "NeoN/blockAmr/core/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgBottom.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // One multigrid level: geometry, rediscretised coefficients and preallocated
@@ -753,4 +753,4 @@ private:
     std::shared_ptr<gko::LinOp> bottomBGlobal_, bottomXGlobal_;
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

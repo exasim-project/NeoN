@@ -16,7 +16,7 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Build the (Iteration, ResidualNorm[, ResidualNorm]) stopping-criteria chain
@@ -162,4 +162,4 @@ inline SolveResult makeSolveResult(
     );
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

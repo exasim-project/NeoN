@@ -19,7 +19,7 @@ class Geometry;
 class MultiFab;
 }
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 // Kokkos lifetime (kokkosInitialize/kokkosFinalize/kokkosInitialized/
@@ -160,7 +160,7 @@ struct GmgArgs
     // finer the grid, since the restricted residual carries psi's storage error
     // multiplied by ||A|| ~ 6/dx^2 (1.05x weaker at 16^3, 3.2x at 256^3), which
     // costs more CG iterations than the saved bytes buy back at any size. Its
-    // arithmetic still happens in fp32 (solvers::GmgComputeT, bf16.hpp); in bf16
+    // arithmetic still happens in fp32 (la::GmgComputeT, bf16.hpp); in bf16
     // the residual would cancel to exactly zero. kokkos_opt only, for all three:
     // the baselines stay fp64.
     std::string precision = "fp64";
@@ -197,7 +197,7 @@ struct GmgArgs
 
     // Homogeneous domain boundary conditions per side (xlo, xhi, ylo, yhi, zlo, zhi):
     // 0 periodic, 1 Dirichlet, 2 Neumann -- the same spec (and the same type as)
-    // solvers::BcArray, spelled out here so this header keeps its no-AMReX-headers
+    // la::BcArray, spelled out here so this header keeps its no-AMReX-headers
     // contract. All-zero (the default) is the triply periodic mesh the bench itself
     // uses, where the boundary fill has nothing to do.
     std::array<int, 6> bc {};
@@ -231,4 +231,4 @@ std::vector<std::string> benchGmgBackends();
 // batches x iters V-cycles, fenced per batch, each batch restarted from sol = 0.
 GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int iters, int batches);
 
-} // namespace blockamr::bench
+} // namespace blockamr

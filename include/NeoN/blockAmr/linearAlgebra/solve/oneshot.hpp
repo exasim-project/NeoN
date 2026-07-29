@@ -16,7 +16,7 @@
 
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Matrix-free residual-correction CG solve of the single-level MLLinOp system
@@ -72,4 +72,4 @@ SolveResult solveFaceCoeffs(
     double rtol
 );
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

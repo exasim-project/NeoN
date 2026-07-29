@@ -8,7 +8,7 @@
 // execCopyPlan and gmgZeroKokkos.
 //
 // Why these five and not the rest of the bench's launchers: every one of them opens
-// an extended __host__ __device__ lambda (BENCH_LAMBDA / KOKKOS_LAMBDA) directly, and
+// an extended __host__ __device__ lambda (BLOCKAMR_LAMBDA / KOKKOS_LAMBDA) directly, and
 // every one of them is reached from KokkosOptGmgBackend (vcycle.hpp), which is shared
 // by apply.cpp (production) and bench/gmgVcycleBench.cpp (the bench
 // harness -- kokkos_fused also calls the first three of the five directly). Both
@@ -34,26 +34,26 @@
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp"
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 template<class T, class TC>
 void gmgGsColorKokkosFused(
-    solvers::GmgFab<T>& sol,
-    const solvers::GmgFab<T>& rhs,
-    const solvers::GmgFab<TC>& ux,
-    const solvers::GmgFab<TC>& lx,
-    const solvers::GmgFab<TC>& uy,
-    const solvers::GmgFab<TC>& ly,
-    const solvers::GmgFab<TC>& uz,
-    const solvers::GmgFab<TC>& lz,
-    const solvers::GmgFab<TC>& alpha,
+    la::GmgFab<T>& sol,
+    const la::GmgFab<T>& rhs,
+    const la::GmgFab<TC>& ux,
+    const la::GmgFab<TC>& lx,
+    const la::GmgFab<TC>& uy,
+    const la::GmgFab<TC>& ly,
+    const la::GmgFab<TC>& uz,
+    const la::GmgFab<TC>& lz,
+    const la::GmgFab<TC>& alpha,
     int parity,
     double omega,
     bool fence
 )
 {
-    const solvers::GmgComputeT<T> om = static_cast<solvers::GmgComputeT<T>>(omega);
+    const la::GmgComputeT<T> om = static_cast<la::GmgComputeT<T>>(omega);
     const auto psi = sol.arrays();
     const auto b = rhs.const_arrays();
     const auto ax = ux.const_arrays();
@@ -66,7 +66,7 @@ void gmgGsColorKokkosFused(
     launchKokkosTeamNamed(
         "gmg_gs_fused",
         rhs,
-        BENCH_LAMBDA(int ib, int i, int j, int k) {
+        BLOCKAMR_LAMBDA(int ib, int i, int j, int k) {
             GmgGsCell<T, TC> {
                 psi[ib],
                 b[ib],
@@ -90,16 +90,16 @@ void gmgGsColorKokkosFused(
 
 template<class T, class TC>
 void gmgResidRestrictKokkosFused(
-    const solvers::GmgFab<T>& sol,
-    const solvers::GmgFab<T>& rhs,
-    solvers::GmgFab<T>& crhs,
-    const solvers::GmgFab<TC>& ux,
-    const solvers::GmgFab<TC>& lx,
-    const solvers::GmgFab<TC>& uy,
-    const solvers::GmgFab<TC>& ly,
-    const solvers::GmgFab<TC>& uz,
-    const solvers::GmgFab<TC>& lz,
-    const solvers::GmgFab<TC>& alpha,
+    const la::GmgFab<T>& sol,
+    const la::GmgFab<T>& rhs,
+    la::GmgFab<T>& crhs,
+    const la::GmgFab<TC>& ux,
+    const la::GmgFab<TC>& lx,
+    const la::GmgFab<TC>& uy,
+    const la::GmgFab<TC>& ly,
+    const la::GmgFab<TC>& uz,
+    const la::GmgFab<TC>& lz,
+    const la::GmgFab<TC>& alpha,
     bool fence
 )
 {
@@ -116,7 +116,7 @@ void gmgResidRestrictKokkosFused(
     launchKokkosTeamNamed(
         "gmg_residrestrict_fused",
         crhs,
-        BENCH_LAMBDA(int ib, int ic, int jc, int kc) {
+        BLOCKAMR_LAMBDA(int ib, int ic, int jc, int kc) {
             GmgResidRestrictCell<T, TC> {
                 cr[ib], psi[ib], b[ib], ax[ib], lxa[ib], ay[ib], lya[ib], az[ib], lza[ib], al[ib]
             }(ic, jc, kc);
@@ -129,14 +129,14 @@ void gmgResidRestrictKokkosFused(
 }
 
 template<class T>
-void gmgProlongAddKokkosFused(const solvers::GmgFab<T>& crse, solvers::GmgFab<T>& fine, bool fence)
+void gmgProlongAddKokkosFused(const la::GmgFab<T>& crse, la::GmgFab<T>& fine, bool fence)
 {
     const auto f = fine.arrays();
     const auto c = crse.const_arrays();
     launchKokkosTeamNamed(
         "gmg_prolong_fused",
         fine,
-        BENCH_LAMBDA(int ib, int i, int j, int k) {
+        BLOCKAMR_LAMBDA(int ib, int i, int j, int k) {
             GmgProlongCell<T> {f[ib], c[ib]}(i, j, k);
         }
     );
@@ -185,8 +185,7 @@ void execCopyPlan(
                     // ternary would otherwise be Bf16 and float, each convertible to
                     // the other, which is ambiguous. Both the load and the sign flip
                     // are exact in it, so the copy still moves values unchanged.
-                    const solvers::GmgComputeT<T> v =
-                        src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
+                    const la::GmgComputeT<T> v = src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
                     dst[t.dst](i, j, k) = (t.sign < 0) ? -v : v;
                 }
             );
@@ -195,11 +194,11 @@ void execCopyPlan(
 }
 
 template<class T>
-void gmgZeroKokkos(solvers::GmgFab<T>& mf)
+void gmgZeroKokkos(la::GmgFab<T>& mf)
 {
     const auto a = mf.arrays();
     launchKokkosTeamNamed(
-        "gmg_zero", mf, BENCH_LAMBDA(int ib, int i, int j, int k) { a[ib](i, j, k) = T(0); }
+        "gmg_zero", mf, BLOCKAMR_LAMBDA(int ib, int i, int j, int k) { a[ib](i, j, k) = T(0); }
     );
 }
 
@@ -207,177 +206,175 @@ void gmgZeroKokkos(solvers::GmgFab<T>& mf)
 // instantiated for (both here and in vcycle.hpp -- see PrecPair), plus kokkos_fused's
 // (double, double), which is the same pair.
 template void gmgGsColorKokkosFused<double, double>(
-    solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
+    la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
     int,
     double,
     bool
 );
 template void gmgGsColorKokkosFused<double, float>(
-    solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
+    la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
     int,
     double,
     bool
 );
-template void gmgGsColorKokkosFused<double, solvers::Bf16>(
-    solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
+template void gmgGsColorKokkosFused<double, la::Bf16>(
+    la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
     int,
     double,
     bool
 );
 template void gmgGsColorKokkosFused<float, float>(
-    solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
+    la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
     int,
     double,
     bool
 );
-template void gmgGsColorKokkosFused<float, solvers::Bf16>(
-    solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
+template void gmgGsColorKokkosFused<float, la::Bf16>(
+    la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
     int,
     double,
     bool
 );
-template void gmgGsColorKokkosFused<solvers::Bf16, solvers::Bf16>(
-    solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
+template void gmgGsColorKokkosFused<la::Bf16, la::Bf16>(
+    la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
     int,
     double,
     bool
 );
 
 template void gmgResidRestrictKokkosFused<double, double>(
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<double, float>(
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    solvers::GmgFab<double>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    la::GmgFab<double>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
     bool
 );
-template void gmgResidRestrictKokkosFused<double, solvers::Bf16>(
-    const solvers::GmgFab<double>&,
-    const solvers::GmgFab<double>&,
-    solvers::GmgFab<double>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
+template void gmgResidRestrictKokkosFused<double, la::Bf16>(
+    const la::GmgFab<double>&,
+    const la::GmgFab<double>&,
+    la::GmgFab<double>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<float, float>(
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
     bool
 );
-template void gmgResidRestrictKokkosFused<float, solvers::Bf16>(
-    const solvers::GmgFab<float>&,
-    const solvers::GmgFab<float>&,
-    solvers::GmgFab<float>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
+template void gmgResidRestrictKokkosFused<float, la::Bf16>(
+    const la::GmgFab<float>&,
+    const la::GmgFab<float>&,
+    la::GmgFab<float>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
     bool
 );
-template void gmgResidRestrictKokkosFused<solvers::Bf16, solvers::Bf16>(
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
-    const solvers::GmgFab<solvers::Bf16>&,
+template void gmgResidRestrictKokkosFused<la::Bf16, la::Bf16>(
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
+    const la::GmgFab<la::Bf16>&,
     bool
 );
 
 // Field type only -- prolongation never touches the coefficients.
 template void
-gmgProlongAddKokkosFused<double>(const solvers::GmgFab<double>&, solvers::GmgFab<double>&, bool);
+gmgProlongAddKokkosFused<double>(const la::GmgFab<double>&, la::GmgFab<double>&, bool);
+template void gmgProlongAddKokkosFused<float>(const la::GmgFab<float>&, la::GmgFab<float>&, bool);
 template void
-gmgProlongAddKokkosFused<float>(const solvers::GmgFab<float>&, solvers::GmgFab<float>&, bool);
-template void gmgProlongAddKokkosFused<solvers::Bf16>(
-    const solvers::GmgFab<solvers::Bf16>&, solvers::GmgFab<solvers::Bf16>&, bool
-);
+gmgProlongAddKokkosFused<la::Bf16>(const la::GmgFab<la::Bf16>&, la::GmgFab<la::Bf16>&, bool);
 
 // execCopyPlan/gmgZeroKokkos are templated on the FIELD type alone (the data
 // movements they drive -- halo, zero fill, agglomeration transfer -- never touch the
@@ -387,11 +384,10 @@ template void execCopyPlan<
 template void execCopyPlan<
     float>(const char*, const amrex::MultiArray4<float>&, const amrex::MultiArray4<const float>&, const CopyPlan&);
 template void execCopyPlan<
-    solvers::
-        Bf16>(const char*, const amrex::MultiArray4<solvers::Bf16>&, const amrex::MultiArray4<const solvers::Bf16>&, const CopyPlan&);
+    la::Bf16>(const char*, const amrex::MultiArray4<la::Bf16>&, const amrex::MultiArray4<const la::Bf16>&, const CopyPlan&);
 
-template void gmgZeroKokkos<double>(solvers::GmgFab<double>&);
-template void gmgZeroKokkos<float>(solvers::GmgFab<float>&);
-template void gmgZeroKokkos<solvers::Bf16>(solvers::GmgFab<solvers::Bf16>&);
+template void gmgZeroKokkos<double>(la::GmgFab<double>&);
+template void gmgZeroKokkos<float>(la::GmgFab<float>&);
+template void gmgZeroKokkos<la::Bf16>(la::GmgFab<la::Bf16>&);
 
-} // namespace blockamr::bench
+} // namespace blockamr

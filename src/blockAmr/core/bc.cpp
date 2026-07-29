@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <stdexcept>
 
-namespace blockamr::solvers
+#include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
+
+namespace blockamr::la
 {
 
 std::shared_ptr<amrex::MultiFab> pinnedCopy(const amrex::MultiFab& src)
@@ -103,7 +105,7 @@ void checkBcData(
 }
 
 template<class V>
-void scatterShellDevice(const V* vec, amrex::MultiFab& mf)
+void scatterShellDevice(const NeoN::Executor& exec, const V* vec, amrex::MultiFab& mf)
 {
     long off = 0;
     for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
@@ -115,7 +117,8 @@ void scatterShellDevice(const V* vec, amrex::MultiFab& mf)
         const int ni = vbx.length(0);
         const int nj = vbx.length(1);
         const long o = off;
-        amrex::ParallelFor(
+        blockamr::parallelFor(
+            exec,
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
@@ -133,7 +136,7 @@ void scatterShellDevice(const V* vec, amrex::MultiFab& mf)
 
 // The two flat-vector value types the Krylov paths use: double for the fp64
 // solvers, float for the mixed-precision inner solve.
-template void scatterShellDevice<double>(const double*, amrex::MultiFab&);
-template void scatterShellDevice<float>(const float*, amrex::MultiFab&);
+template void scatterShellDevice<double>(const NeoN::Executor&, const double*, amrex::MultiFab&);
+template void scatterShellDevice<float>(const NeoN::Executor&, const float*, amrex::MultiFab&);
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

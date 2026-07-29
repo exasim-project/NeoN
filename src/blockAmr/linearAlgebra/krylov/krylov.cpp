@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 namespace
@@ -148,4 +148,4 @@ std::shared_ptr<gko::LinOp> generateBasicSolver(
     throw std::runtime_error(std::string(what) + ": unknown solver '" + solver + "'");
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

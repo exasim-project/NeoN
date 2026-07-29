@@ -18,9 +18,9 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
-#include "NeoN/blockAmr/linearAlgebra/solve/solverConfig.hpp"
+#include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // Anything the nanobind-visible solver facade (FaceCoeffSolver) can drive:
@@ -173,4 +173,4 @@ public:
     );
 };
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

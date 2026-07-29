@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "NeoN/blockAmr/operators/csr.hpp"
+#include "NeoN/blockAmr/linearAlgebra/sparse/csr.hpp"
 
 #include "NeoN/blockAmr/core/bc.hpp"
 
@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
@@ -27,7 +27,8 @@ std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
     const amrex::MultiFab& uy,
     const amrex::MultiFab& ly,
     const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz
+    const amrex::MultiFab& lz,
+    const BcArray& bc
 )
 {
     if (alpha.size() != 1)
@@ -82,27 +83,53 @@ std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
                 const double aS = Ly(ia, ja, ka);
                 const double aT = Uz(ia, ja, ka + 1);
                 const double aB = Lz(ia, ja, ka);
-                const double diag = A(ia, ja, ka) - (aE + aW + aN + aS + aT + aB);
+                double diag = A(ia, ja, ka) - (aE + aW + aN + aS + aT + aB);
 
-                // 7 stencil entries (col, val), sorted by column for the row.
-                std::array<std::pair<long, double>, 7> e = {
-                    {{idx(i, j, (k - 1 + nk) % nk), aB},
-                     {idx(i, (j - 1 + nj) % nj, k), aS},
-                     {idx((i - 1 + ni) % ni, j, k), aW},
-                     {idx(i, j, k), diag},
-                     {idx((i + 1) % ni, j, k), aE},
-                     {idx(i, (j + 1) % nj, k), aN},
-                     {idx(i, j, (k + 1) % nk), aT}}
+                // At most 7 stencil entries (col, val); a boundary side that is
+                // not periodic contributes none, so `ne` <= 7.
+                std::array<std::pair<long, double>, 7> e {};
+                std::size_t ne = 0;
+
+                // One side of the 7-point stencil. `leaves` says the neighbour
+                // steps off the domain on side `s`. Periodic (bc 0): keep the
+                // modular-wraparound column. Otherwise the reflect-ghost fill of
+                // core/bc.hpp has already made that neighbour's value sign*pC
+                // (sign = -1 homogeneous Dirichlet, +1 homogeneous Neumann), so
+                // aFace*pNeighbour IS sign*aFace*pC -- a diagonal term, and the
+                // off-diagonal entry disappears.
+                auto side = [&](int s, bool leaves, double aFace, long col)
+                {
+                    const int b = bc[static_cast<std::size_t>(s)];
+                    if (leaves && b != 0)
+                    {
+                        diag += ((b == 1) ? -1.0 : 1.0) * aFace;
+                    }
+                    else
+                    {
+                        e[ne++] = {col, aFace};
+                    }
                 };
+
+                // Side order (xlo, xhi, ylo, yhi, zlo, zhi) matches BcArray.
+                side(0, i == 0, aW, idx((i - 1 + ni) % ni, j, k));
+                side(1, i == ni - 1, aE, idx((i + 1) % ni, j, k));
+                side(2, j == 0, aS, idx(i, (j - 1 + nj) % nj, k));
+                side(3, j == nj - 1, aN, idx(i, (j + 1) % nj, k));
+                side(4, k == 0, aB, idx(i, j, (k - 1 + nk) % nk));
+                side(5, k == nk - 1, aT, idx(i, j, (k + 1) % nk));
+                // Last, so every side's fold is already in `diag`.
+                e[ne++] = {idx(i, j, k), diag};
+
+                // Sorted by column: Ginkgo's Csr expects it.
                 std::sort(
                     e.begin(),
-                    e.end(),
+                    e.begin() + static_cast<std::ptrdiff_t>(ne),
                     [](const auto& p, const auto& q) { return p.first < q.first; }
                 );
-                for (const auto& [c, v] : e)
+                for (std::size_t m = 0; m < ne; ++m)
                 {
-                    col_idxs.push_back(static_cast<int>(c));
-                    values.push_back(v);
+                    col_idxs.push_back(static_cast<int>(e[m].first));
+                    values.push_back(e[m].second);
                 }
                 row_ptrs[static_cast<std::size_t>(idx(i, j, k)) + 1] =
                     static_cast<int>(col_idxs.size());
@@ -119,4 +146,4 @@ std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
     ));
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

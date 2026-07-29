@@ -20,17 +20,17 @@
 
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
-#include "NeoN/blockAmr/core/transfer.hpp"
+#include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/precond.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/mixedPrecision.hpp"
-#include "NeoN/blockAmr/operators/csr.hpp"
-#include "NeoN/blockAmr/operators/faceCoeffOp.hpp"
-#include "NeoN/blockAmr/operators/mlmgOps.hpp"
+#include "NeoN/blockAmr/linearAlgebra/sparse/csr.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/mlmgOps.hpp"
 
-namespace blockamr::solvers
+namespace blockamr::la
 {
 
 // The one path whose flat Ginkgo vectors were never given the local sizing plus
@@ -361,6 +361,7 @@ public:
 
     GmgStationarySolver(
         std::shared_ptr<const gko::Executor> exec,
+        const NeoN::Executor& nexec,
         const amrex::MultiFab* alpha,
         const amrex::MultiFab* ux,
         const amrex::MultiFab* lx,
@@ -395,6 +396,10 @@ private:
     void subtractMeanMf(amrex::MultiFab& mf) const;
 
     std::shared_ptr<const gko::Executor> exec_;
+    // The NeoN executor the kernel launches dispatch on (S9). Carried only for
+    // fillGmgGhosts' inhomogeneous fill; the V-cycle's own kernels take the
+    // HostDeviceParallelFor path and cannot use it (see the S8/S9 handoff).
+    NeoN::Executor nexec_ {NeoN::SerialExecutor {}};
     bool onDevice_;
     gko::size_type n_;
     const amrex::MultiFab* alpha_ = nullptr;
@@ -423,6 +428,7 @@ private:
 
 GmgStationarySolver::GmgStationarySolver(
     std::shared_ptr<const gko::Executor> exec,
+    const NeoN::Executor& nexec,
     const amrex::MultiFab* alpha,
     const amrex::MultiFab* ux,
     const amrex::MultiFab* lx,
@@ -434,13 +440,15 @@ GmgStationarySolver::GmgStationarySolver(
     const BcArray& bcArr,
     const SolverConfig& config
 )
-    : exec_(std::move(exec)), onDevice_(exec_->get_master().get() != exec_.get()),
+    : exec_(std::move(exec)), nexec_(nexec), onDevice_(exec_->get_master().get() != exec_.get()),
       n_(static_cast<gko::size_type>(alpha->boxArray().numPts()))
 {
     if (onDevice_)
     {
         // Device residual kernel reads the caller's device coefficients
-        // directly (in-place updates are seen, like FaceCoeffOp).
+        // directly, so in-place updates are seen. This path derives its own
+        // diagonal per apply, which is why that still holds here -- FaceCoeffOp
+        // no longer works this way, since S7 stores its diagonal once.
         alpha_ = alpha;
         ux_ = ux;
         lx_ = lx;
@@ -522,7 +530,7 @@ void GmgStationarySolver::fillGmgGhosts(amrex::MultiFab& mf) const
         {
             if (bcData_ != nullptr)
             {
-                fillDomainBcGhostsInhomDevice(mf, *bcData_, geom_.Domain(), bcArr_, dx);
+                fillDomainBcGhostsInhomDevice(nexec_, mf, *bcData_, geom_.Domain(), bcArr_, dx);
             }
             else
             {
@@ -677,6 +685,7 @@ public:
 
     FaceCoeffKrylovSolver(
         std::shared_ptr<const gko::Executor> exec,
+        const NeoN::Executor& nexec,
         const amrex::MultiFab* alpha,
         const amrex::MultiFab* ux,
         const amrex::MultiFab* lx,
@@ -698,6 +707,7 @@ private:
 
 FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
     std::shared_ptr<const gko::Executor> exec,
+    const NeoN::Executor& nexec,
     const amrex::MultiFab* alpha,
     const amrex::MultiFab* ux,
     const amrex::MultiFab* lx,
@@ -715,6 +725,7 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
 {
     auto op = gko::share(FaceCoeffOp::create(
         exec_,
+        nexec,
         alpha->boxArray(),
         alpha->DistributionMap(),
         geom,
@@ -764,7 +775,7 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
 
     std::shared_ptr<const gko::LinOp> pc;
     // Set only by precond="gmg_kokkos"; solver="mpir" needs it and says so.
-    std::shared_ptr<bench::KokkosGmgApply> vcycle;
+    std::shared_ptr<blockamr::KokkosGmgApply> vcycle;
     if (config.precondKind == PrecondKind::gmg)
     {
         pc = buildGmgHierarchy(
@@ -823,7 +834,7 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
                 + config.gmg.smoother + "'"
             );
         }
-        bench::KokkosGmgOpts opts;
+        blockamr::KokkosGmgOpts opts;
         opts.cycles = config.precondCycles;
         opts.preSweeps = config.gmg.preSweeps;
         opts.postSweeps = config.gmg.postSweeps;
@@ -846,8 +857,8 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
         // Held in a local as well: solver="mpir" wraps the SAME hierarchy in an fp32
         // LinOp, and building it twice would double the setup and the device memory
         // for two views of one V-cycle.
-        vcycle = std::shared_ptr<bench::KokkosGmgApply>(
-            bench::makeKokkosGmgApply(geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, opts)
+        vcycle = std::shared_ptr<blockamr::KokkosGmgApply>(
+            blockamr::makeKokkosGmgApply(geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, opts)
         );
         pc = gko::share(GmgKokkosPrecond::create(exec_, n_, vcycle));
     }
@@ -892,6 +903,7 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
         }
         auto op32 = gko::share(FaceCoeffOp32::create(
             exec_,
+            nexec,
             alpha->boxArray(),
             alpha->DistributionMap(),
             geom,
@@ -942,8 +954,10 @@ SolveResult FaceCoeffKrylovSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& 
     if (bcOffsetOp_ != nullptr)
     {
         // c0 = L(0), refreshed every solve: the BC data is REFERENCED, not copied,
-        // on the device path, so an in-place update has to take effect exactly as
-        // an in-place coefficient update does. One extra operator apply per solve,
+        // on the device path, so an in-place update to it has to take effect.
+        // (The COEFFICIENTS no longer work that way -- since S7 the operator's
+        // diagonal is computed at construction, so a coefficient change needs a
+        // new solver.) One extra operator apply per solve,
         // which is the whole price of inhomogeneous BCs on the Krylov path.
         //
         // x_ is the zero source rather than a dedicated vector: KrylovSolver::
@@ -970,6 +984,7 @@ namespace
 // anything.
 std::unique_ptr<ISolver> makeFaceCoeffSolver(
     std::shared_ptr<const gko::Executor> exec,
+    const NeoN::Executor& nexec,
     const amrex::MultiFab* alpha,
     const amrex::MultiFab* ux,
     const amrex::MultiFab* lx,
@@ -1028,11 +1043,11 @@ std::unique_ptr<ISolver> makeFaceCoeffSolver(
     if (config.solverKind == SolverKind::gmg)
     {
         return std::make_unique<GmgStationarySolver>(
-            exec, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config
+            exec, nexec, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config
         );
     }
     return std::make_unique<FaceCoeffKrylovSolver>(
-        exec, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config
+        exec, nexec, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config
     );
 }
 
@@ -1050,8 +1065,9 @@ FaceCoeffSolver::FaceCoeffSolver(
     const amrex::MultiFab* lz,
     const SolverConfig& config
 )
-    : impl_(makeFaceCoeffSolver(makeExecutor(executor), alpha, ux, lx, uy, ly, uz, lz, geom, config)
-    )
+    : impl_(makeFaceCoeffSolver(
+        makeExecutor(executor), executor, alpha, ux, lx, uy, ly, uz, lz, geom, config
+    ))
 {}
 
 SolveResult FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
@@ -1138,23 +1154,24 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     // The assembly is single-box only (csr.cpp), which on >1 rank would mean one
     // rank holding every row while the others hold none.
     requireSingleRank("FaceCoeffCsrSolver");
-    // The CSR assembly wraps neighbour indices around the domain
-    // (periodic-only); parseBc also rejects a non-periodic geometry.
+    // Periodic sides keep their wraparound column; homogeneous dirichlet/neumann
+    // sides are folded onto the diagonal by assembleFaceCoeffCsr, the assembled
+    // twin of FaceCoeffOp's ghost reflection. parseBc rejects a bc that disagrees
+    // with the geometry's periodicity.
     const BcArray bcArr = parseBc(config.bc, geom, "FaceCoeffCsrSolver");
-    if (std::any_of(bcArr.begin(), bcArr.end(), [](int b) { return b != 0; }))
-    {
-        throw std::runtime_error(
-            "FaceCoeffCsrSolver: periodic boundaries only — use FaceCoeffSolver "
-            "for dirichlet/neumann bc"
-        );
-    }
-    // Unreachable via a valid bc (bc_data needs a non-periodic side, which the
-    // check above already refuses), but named rather than ignored so the message
-    // stays the one the caller needs if that ever changes.
+    // A LIVE path since the assembly learned non-periodic sides: any
+    // dirichlet/neumann bc now constructs, and bc_data is what a caller reaches
+    // for next. It stays refused because inhomogeneous BCs are an affine term,
+    // L(x) = A x + c0 -- an rhs fold (KrylovSolver::solve's bcOffset_), not a
+    // matrix one, and this path has no c0. Refused rather than ignored, like
+    // every other capability gap here: a silently-dropped datum would look like a
+    // wrong answer, not a missing feature.
     if (config.bcData != nullptr)
     {
         throw std::runtime_error(
-            "FaceCoeffCsrSolver: periodic boundaries only — bc_data needs FaceCoeffSolver"
+            "FaceCoeffCsrSolver: bc_data is not supported — the assembled matrix folds "
+            "homogeneous dirichlet/neumann and periodic boundaries only; inhomogeneous BC "
+            "data needs FaceCoeffSolver"
         );
     }
     // config.precondKind's spelling was already validated once, by
@@ -1179,7 +1196,7 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     {
         throw std::runtime_error("FaceCoeffCsrSolver: precond='mlmg' requires precond_mlmg");
     }
-    auto op = assembleFaceCoeffCsr(exec_, geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz);
+    auto op = assembleFaceCoeffCsr(exec_, geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, bcArr);
     std::shared_ptr<const gko::LinOp> pc;
     if (config.precondMlmg != nullptr)
     {
@@ -1204,4 +1221,4 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     );
 }
 
-} // namespace blockamr::solvers
+} // namespace blockamr::la

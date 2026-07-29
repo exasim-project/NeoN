@@ -10,7 +10,7 @@
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp"
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 namespace
@@ -52,7 +52,7 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const KokkosGmgOpts& opts
 )
 {
-    // No bc/geometry consistency check here: solvers::parseBc already refuses a
+    // No bc/geometry consistency check here: la::parseBc already refuses a
     // non-periodic direction marked periodic and a periodic one marked otherwise, and
     // it is the only path that reaches this factory. Repeating it would be a branch no
     // test could reach.
@@ -86,17 +86,17 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     case PrecPair::f64c32:
         return std::make_unique<KokkosGmgApplyImpl<double, float>>(args, opts.cycles);
     case PrecPair::f64c16:
-        return std::make_unique<KokkosGmgApplyImpl<double, solvers::Bf16>>(args, opts.cycles);
+        return std::make_unique<KokkosGmgApplyImpl<double, la::Bf16>>(args, opts.cycles);
     case PrecPair::f32c32:
         return std::make_unique<KokkosGmgApplyImpl<float>>(args, opts.cycles);
     case PrecPair::f32c16:
-        return std::make_unique<KokkosGmgApplyImpl<float, solvers::Bf16>>(args, opts.cycles);
+        return std::make_unique<KokkosGmgApplyImpl<float, la::Bf16>>(args, opts.cycles);
     case PrecPair::f16c16:
-        return std::make_unique<KokkosGmgApplyImpl<solvers::Bf16>>(args, opts.cycles);
+        return std::make_unique<KokkosGmgApplyImpl<la::Bf16>>(args, opts.cycles);
     case PrecPair::f64c64:
         break;
     }
     return std::make_unique<KokkosGmgApplyImpl<double>>(args, opts.cycles);
 }
 
-} // namespace blockamr::bench
+} // namespace blockamr

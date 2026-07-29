@@ -17,7 +17,7 @@
 
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
-#include "NeoN/blockAmr/linearAlgebra/gmgKokkos/launch.hpp"
+#include "NeoN/blockAmr/core/launch.hpp"
 
 // ---------------------------------------------------------------------------
 // The data movements of the V-cycle, on Kokkos: the ghost exchange, the copy
@@ -57,7 +57,7 @@
 // (vcycle.hpp, Vcycle::amrexFree_).
 // ---------------------------------------------------------------------------
 
-namespace blockamr::bench
+namespace blockamr
 {
 
 // Threads per work block, and so the team size of the copy kernel.
@@ -195,7 +195,7 @@ CopyPlan makeHaloPlan(const amrex::FabArray<FAB>& mf, const amrex::Periodicity& 
 // mirror interior cell to reflect into it (sign -1 for Dirichlet, +1 for Neumann).
 //
 // This is the twin of fillDomainBcGhosts* (bc.hpp) and it shares that path's
-// geometry rather than restating it: solvers::bcGhostFill decides, per box and side,
+// geometry rather than restating it: la::bcGhostFill decides, per box and side,
 // whether the side fires and what the layer, sign and offset are. So the two fills
 // cannot drift apart, and the Kokkos one is testable against the AMReX one to the bit.
 //
@@ -205,8 +205,7 @@ CopyPlan makeHaloPlan(const amrex::FabArray<FAB>& mf, const amrex::Periodicity& 
 // on a box that touches a physical face in one direction and a periodic neighbour in
 // another, where the reflection must see the already-exchanged interior values.
 template<class FAB>
-CopyPlan
-makeBcPlan(const amrex::FabArray<FAB>& mf, const amrex::Box& domain, const solvers::BcArray& bc)
+CopyPlan makeBcPlan(const amrex::FabArray<FAB>& mf, const amrex::Box& domain, const la::BcArray& bc)
 {
     const amrex::BoxArray& ba = mf.boxArray();
     std::vector<CopyTask> tasks;
@@ -215,8 +214,8 @@ makeBcPlan(const amrex::FabArray<FAB>& mf, const amrex::Box& domain, const solve
         const amrex::Box valid = ba[mf.IndexArray()[li]];
         for (int s = 0; s < 6; ++s)
         {
-            solvers::BcGhostFill f;
-            if (!solvers::bcGhostFill(valid, domain, bc, s, f))
+            la::BcGhostFill f;
+            if (!la::bcGhostFill(valid, domain, bc, s, f))
             {
                 continue;
             }
@@ -276,7 +275,7 @@ void execCopyPlan(
 // Reads are valid cells and writes are ghost cells, disjoint, so the whole exchange
 // is safe in a single kernel with no intermediate buffer.
 template<class T>
-void gmgFillBoundaryKokkos(solvers::GmgFab<T>& mf, const CopyPlan& plan)
+void gmgFillBoundaryKokkos(la::GmgFab<T>& mf, const CopyPlan& plan)
 {
     execCopyPlan("gmg_halo", mf.arrays(), mf.const_arrays(), plan);
 }
@@ -284,14 +283,14 @@ void gmgFillBoundaryKokkos(solvers::GmgFab<T>& mf, const CopyPlan& plan)
 // Twin of fillDomainBcGhostsDevice(mf, domain, bc), from a plan built by makeBcPlan.
 // Reads interior cells and writes ghost cells, disjoint, so one kernel is safe.
 template<class T>
-void gmgFillDomainBcKokkos(solvers::GmgFab<T>& mf, const CopyPlan& plan)
+void gmgFillDomainBcKokkos(la::GmgFab<T>& mf, const CopyPlan& plan)
 {
     execCopyPlan("gmg_bc", mf.arrays(), mf.const_arrays(), plan);
 }
 
 // Twin of dst.ParallelCopy(src, 0, 0, 1).
 template<class T>
-void gmgCopyKokkos(solvers::GmgFab<T>& dst, const solvers::GmgFab<T>& src, const CopyPlan& plan)
+void gmgCopyKokkos(la::GmgFab<T>& dst, const la::GmgFab<T>& src, const CopyPlan& plan)
 {
     execCopyPlan("gmg_copy", dst.arrays(), src.const_arrays(), plan);
 }
@@ -310,6 +309,6 @@ void gmgCopyKokkos(solvers::GmgFab<T>& dst, const solvers::GmgFab<T>& src, const
 // execCopyPlan above: it launches its own extended lambda directly and is driven
 // from both apply.cpp and bench/gmgVcycleBench.cpp.
 template<class T>
-void gmgZeroKokkos(solvers::GmgFab<T>& mf);
+void gmgZeroKokkos(la::GmgFab<T>& mf);
 
-} // namespace blockamr::bench
+} // namespace blockamr
