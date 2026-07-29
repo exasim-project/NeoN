@@ -5,13 +5,13 @@
 """IBM method registry (API doc §6): ``IBM.lookup(name)`` resolves a
 per-field ``solution["ibm"]`` name to a strategy class."""
 
-from .band_rows import BandRows, band_table
-from .bc import FixedGradient, FixedValue, Mixed
+from .bc import FixedGradient, FixedValue, Harmonic, Mixed
 from .body import Cylinder, Plane
 from .direct_forcing import DirectForcing, DirectForcingData
-from .driver import WallEvaluation, equation_band
+from .driver import WallEvaluation, wall_ngrow
 from .ghost_cell import GhostCell
 from .no_ibm import NoIbm
+from .samples import WallSamples, wall_gradient, wall_samples
 
 _METHODS = {
     "noIbm": NoIbm,
@@ -55,9 +55,9 @@ def evaluation(name, cell_field, spatial_ops):
     """Validate the request and build the per-``evaluate`` IBM driver.
 
     Returns ``None`` when the IBM path is not entered at all — no
-    ``solution["ibm"]`` key, the explicit ``noIbm`` opt-out, or an **empty
-    band** (a body whose boundary cells are none of this mesh's). All three are
-    then a short-circuit *outside* any kernel in the caller, which is what
+    ``solution["ibm"]`` key, the explicit ``noIbm`` opt-out, or **no ``WALL``
+    cell on any level** (a body whose surface this mesh does not cut). All three
+    are then a short-circuit *outside* any kernel in the caller, which is what
     makes bitwise equality with the plain operator structural rather than
     maintained (design §6).
 
@@ -75,27 +75,28 @@ def evaluation(name, cell_field, spatial_ops):
         )
     if method.requires_bodies:
         _validate_patches(name, cell_field)
-    if not method.requires_bodies or _band_is_empty(cell_field, spatial_ops):
+    if not method.requires_bodies or _no_wall_cell(method, cell_field, spatial_ops):
         return None
     return WallEvaluation(method, name, cell_field, spatial_ops)
 
 
-def _band_is_empty(cell_field, spatial_ops):
-    """True when the equation's band has no cell to correct, on any level.
+def _no_wall_cell(method, cell_field, spatial_ops):
+    """True when no level of this mesh has a ``WALL`` cell for ``method``.
 
-    Asked of the *equation's* band — the widest of its terms', in the stencil
-    shape they declare (:func:`~blockamr.ibm.driver.equation_band`) — because
-    that is the one set the rows are built over. Taking the default cross band
-    of width 1 instead would short-circuit a corner-reading or a wide scheme
-    whose band is not empty.
+    Asked of the **marker**, through the method's own preprocessed data, whose
+    row count *is* the level's wall-cell count (design §2.3). v1 asked the same
+    question of the equation's band, at the widest of its terms' widths and in
+    the stencil shape they declared; the marker has neither, so the question is
+    simply "did the classification find a wall here".
 
-    The classification is the method-agnostic layer, so this is decided from
-    ``mesh.ibm`` alone — before a method's own preprocessing runs and before a
-    single row is built.
+    The ghost width is the equation's (:func:`~blockamr.ibm.driver.wall_ngrow`)
+    so that the marker built here is the one the driver goes on to use, and the
+    monotonic caches in :class:`~blockamr.ibm.mesh.IbmMesh` are not asked to
+    grow a second time.
     """
     mesh = cell_field.mesh
-    width, shape = equation_band(spatial_ops)
-    return not any(mesh.ibm.band(lev, width, shape).nrows for lev in range(mesh.n_levels()))
+    ngrow = wall_ngrow(spatial_ops)
+    return not any(mesh.ibm.wall_data(method, lev, ngrow).nrows for lev in range(mesh.n_levels()))
 
 
 def _validate_patches(name, cell_field):
@@ -124,17 +125,20 @@ def _validate_patches(name, cell_field):
 
 __all__ = [
     "IBM",
-    "BandRows",
     "Cylinder",
     "DirectForcing",
     "DirectForcingData",
     "FixedGradient",
     "FixedValue",
     "GhostCell",
+    "Harmonic",
     "Mixed",
     "NoIbm",
     "Plane",
     "WallEvaluation",
-    "band_table",
+    "WallSamples",
+    "wall_ngrow",
     "evaluation",
+    "wall_gradient",
+    "wall_samples",
 ]

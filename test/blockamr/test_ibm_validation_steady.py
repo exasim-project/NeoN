@@ -126,6 +126,29 @@ T_END = 0.6
 BAND_CELLS = 2.0
 
 
+@pytest.fixture(scope="module", autouse=True)
+def _release_the_memoised_cases():
+    """Drop ``_A1``/``_A2``/``_A3`` while AMReX is still up (B33's pattern).
+
+    Each memo holds six converged cases — six meshes, each with its
+    ``CellField`` and its ``mesh.ibm`` — and every one of them owns device
+    memory. Left in module globals they are torn down at *interpreter* exit,
+    which is after ``blockamr_session`` has finalized AMReX, and freeing a
+    device allocation into a destroyed CUDA context aborts (``CUDA error 709``,
+    then ``MPI_Abort() after MPI_FINALIZE``, after a fully green run —
+    reproduced on ``test_a1_annulus_temperature_converges_in_band_and_bulk``
+    alone). A module-scoped finalizer runs before the session-scoped one, so
+    this is simply the right place to let go.
+
+    Fixture only: it clears caches and asserts nothing. Every measurement in
+    this file is byte-identical with and without it.
+    """
+    yield
+    _A1.clear()
+    _A2.clear()
+    _A3.clear()
+
+
 # ---------------------------------------------------------------------------
 # The surface-diagnostic API this file is written against (task T18)
 # ---------------------------------------------------------------------------

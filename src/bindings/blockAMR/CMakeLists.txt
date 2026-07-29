@@ -31,9 +31,8 @@ nanobind_add_module(
   schemes/boundary/laplacian_ghost_cell.cpp
   schemes/boundary/div_ghost_cell.cpp
   schemes/boundary/grad_ghost_cell.cpp
-  tile_layout.cpp
-  wall_table.cpp
-  band_table.cpp)
+  schemes/boundary/source_ghost_cell.cpp
+  tile_layout.cpp)
 
 target_link_libraries(_blockamr PRIVATE amrex)
 
@@ -53,6 +52,12 @@ target_link_libraries(_blockamr PRIVATE amrex)
 #   B33). It is the FIRST caller of robin.H's atLinear/atConstant, whose `value + d*grad` is a
 #   contraction site of its own, and it adds `dG = sdf + step*dx*n`, a face-neighbour accumulator
 #   bank, the donor sums, the diagonal and the constant.
+# * schemes/boundary/source_ghost_cell.cpp includes ibm/ghost_cell.H (its binding takes a
+#   GhostCellData for the canonical twelve) and therefore joins this list by the mechanical rule
+#   below, not by an arithmetic argument: the functor itself performs NO multiply-add at all -- it
+#   loads one source value and emits it through sink.constant -- so there is nothing in it for a
+#   contraction to move. It is listed because the rule is "every includer", and a rule with a
+#   reasoned-around exception is not a rule.
 # * schemes/boundary/grad_ghost_cell.cpp against the SAME _face_balance_rows in the same v1 module
 #   (tasks.md B34), reached from GhostCellGrad.rows with axes=(0,), flux=1 and weight_self=0.5. It
 #   is robin.H's FOURTH includer and atLinear/atConstant's second caller, and it carries the same
@@ -80,7 +85,7 @@ set(_ghost_cell_fp_flags
 set_source_files_properties(
   ibm/ghost_cell.cpp schemes/boundary/robin_closure.cpp schemes/boundary/laplacian_ghost_cell.cpp
   schemes/boundary/div_ghost_cell.cpp schemes/boundary/grad_ghost_cell.cpp
-  PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
+  schemes/boundary/source_ghost_cell.cpp PROPERTIES COMPILE_OPTIONS "${_ghost_cell_fp_flags}")
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
 if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
@@ -108,9 +113,8 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
     schemes/boundary/laplacian_ghost_cell.cpp
     schemes/boundary/div_ghost_cell.cpp
     schemes/boundary/grad_ghost_cell.cpp
+    schemes/boundary/source_ghost_cell.cpp
     tile_layout.cpp
-    wall_table.cpp
-    band_table.cpp
     PROPERTIES LANGUAGE CUDA)
 endif()
 

@@ -32,11 +32,16 @@ cylinder-Neumann geometries, and the ``datum-linear`` defect (an S2 violation)
 is invisible on K1, whose datum is ``0.0``. A suite built from the obvious
 choice would have shipped two untested hazards.
 
-**The oracle is v1's production code**, imported read-only: ``_context`` and
+**The oracle is v1's rows, RECORDED** (:mod:`test.blockamr.v1_golden`). They
+were produced by v1's own production code — ``_context`` and
 ``_closed_flux_rows``, with the term built through ``Equation(exp.laplacian(1.0,
-T))``. The mutants are applied to a numpy model of the functor and never to the
-oracle — and the model itself is pinned to the *compiled* row by the parity rows
-first, which is what makes the matrix a statement about the shipped code.
+T))`` — on the last tree that had it, and checked in as bits when the band was
+deleted. Nothing here re-derives them, which is the strongest form of the oracle
+discipline the file always claimed: a re-implementation can drift towards the
+code under test, a file of numbers cannot. The mutants are applied to a numpy
+model of the functor and never to the oracle — and the model itself is pinned to
+the *compiled* row by the parity rows first, which is what makes the matrix a
+statement about the shipped code.
 
 **Where the other rows live.** Per-cell functor conformance (S2, S3, Q34, the
 error surface) is ``test_ibm_wall_functors.py``, which is where the shipped
@@ -62,12 +67,13 @@ from blockamr.ibm.classify import _patches, box_grids
 from blockamr.ibm.ghost_cell import GhostCell
 from blockamr.mesh import Mesh
 from blockamr.schemes.boundary import BOUNDARY_SCHEMES
-from blockamr.schemes.boundary.ghost_cell import (
-    STRIDE,
-    _closed_flux_rows,
-    _context,
-    _neighbour,
-)
+
+from .v1_golden import load as _load_v1
+
+#: v1's row width — ``self + 6 face neighbours + 8 image donors``. Declared here
+#: since the band tree went: it is a property of the RECORDED rows, and
+#: ``_v1_row`` slices them with it.
+STRIDE = 15
 
 
 def _wall_row(*args):
@@ -236,6 +242,25 @@ _CASES = {}
 _V1 = {}
 
 
+@pytest.fixture(scope="module", autouse=True)
+def _release_the_memoised_levels():
+    """Drop the caches while AMReX is still up (B33's pattern, copied).
+
+    The memoised levels own device memory. Left in module globals they are torn
+    down at *interpreter* exit, which is after ``blockamr_session`` has
+    finalized AMReX, and freeing a device allocation into a destroyed CUDA
+    context aborts (``CUDA error 709``). The sibling pair suites
+    (``test_ibm_div_ghost_cell.py``, ``test_ibm_grad_ghost_cell.py``) have
+    carried this finalizer since B33; this file is the one that did not, and it
+    holds the same kind of cache.
+
+    Fixture only: no assertion in this file changes by a bit.
+    """
+    yield
+    _CASES.clear()
+    _V1.clear()
+
+
 def _case(name, max_size=None):
     """``(mesh, term, geom, ba, dm)`` — one configuration, v1 side resolved."""
     key = (name, max_size)
@@ -245,11 +270,16 @@ def _case(name, max_size=None):
 
 
 def _v1_side(name):
-    """``(ctx, rows, arms)`` of one configuration, at ``coeff = 1.0``."""
+    """``(ctx, rows, arms)`` of one configuration, at ``coeff = 1.0``.
+
+    **Recorded, not rebuilt** (see :mod:`test.blockamr.v1_golden`). v1's
+    ``_context`` / ``_closed_flux_rows`` were deleted with the band; the rows
+    they produced are checked in as bits, so every comparison below is against
+    the same numbers it was against before, to the last one.
+    """
     if name not in _V1:
-        mesh, term, _geom, _ba, _dm = _case(name)
-        ctx = _context(term, mesh.ibm, 0, 1, 0.0, 1)
-        _V1[name] = (ctx, _closed_flux_rows(ctx, 1.0, 1, STRIDE), _arms(ctx))
+        ctx, rows, arms, _extra = _load_v1("laplacian", name)
+        _V1[name] = (ctx, rows, arms)
     return _V1[name]
 
 
@@ -344,11 +374,6 @@ def _same(lhs, rhs):
 # ---------------------------------------------------------------------------
 # the numpy model of the functor, and its mutants
 # ---------------------------------------------------------------------------
-
-
-def _arms(ctx):
-    """``{(d, step): (index, is_fluid)}`` — v1's own vectorised neighbour test."""
-    return {(d, step): _neighbour(ctx, d, step) for d in range(3) for step in (1, -1)}
 
 
 def _model_row(ctx, arms, r, mutant=None):
@@ -600,20 +625,23 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     this session could not deliver "bitwise" as written, with the reason
     measured rather than argued.
 
-    Interior sweep plus wall sweep, against v1's interior sweep plus
-    ``apply_band_rows``, on the *same* ``phi``, over **eight boxes** so the row
-    map's cross-box concatenation is what is being exercised.
+    Interior sweep plus wall sweep, over **eight boxes** so the row map's
+    cross-box concatenation is what is being exercised, against the interior
+    sweep alone and against v1's RECORDED rows. The v1 half used to be v1's own
+    interior sweep plus ``apply_band_rows``; that kernel is deleted with the
+    band, and what it computed — ``_dot(row, fused=True)``, cell for cell, on
+    this exact configuration — was measured against it before the deletion and
+    is what the residual below is now counted from.
 
     What is measured:
 
-    * **FLUID** — bitwise equal, every cell. Both sides run the *same*
-      ``laplacian_acc`` and neither writes a FLUID cell afterwards. ``PHI`` is
-      quadratic so this is not the equality of two zeros.
-    * **WALL** — v2's output is bitwise ``_dot(row, fused=False)`` and v1's is
-      bitwise ``_dot(row, fused=True)``, from **the same row**: 320 of 320 each.
+    * **FLUID** — bitwise the interior sweep's own value, every cell: the wall
+      sweep writes no FLUID cell at all. ``PHI`` is quadratic so this is not the
+      equality of two zeros.
+    * **WALL** — v2's output is bitwise ``_dot(row, fused=False)``: 320 of 320.
       The rows are identical (the parity rows above), so the entire residual is
       the two consumers' floating-point contraction and nothing else —
-      ``band_table.cpp``'s ``acc += t.a[k] * src(...)`` is in a TU with no
+      ``band_table.cpp``'s ``acc += t.a[k] * src(...)`` was in a TU with no
       per-file FP flags and nvcc's default ``--fmad=true`` fuses it (PTX: 14
       ``fma.rn.f64`` attributed to that line), while ``ApplySink::linear`` is
       inlined into this pair's ``--fmad=false`` TU and does not (PTX: zero).
@@ -630,23 +658,24 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
       never quietly become the whole comparison.
     """
     name = "K5-cylinder-mixed"
-    mesh, term, geom, ba, dm = _case(name, max_size=8)
+    mesh, _term, geom, ba, dm = _case(name, max_size=8)
     _bodies, ibm_bc, _lo, _hi = CONFIGS[name]
     phi = _phi(ba, dm)
     g, ct, data, robin = _v2(mesh, geom, ba, dm, ibm_bc)
 
-    # v1: the untouched interior sweep, then the band rows in Overwrite mode.
-    from blockamr.ibm.band_rows import band_table
+    # v1's side, RECORDED: `apply_band_rows` and the rows that fed it went with
+    # the band, so the comparison is against v1's rows and `_dot(fused=True)` —
+    # the value v1's kernel was measured, cell for cell, to produce (the two
+    # assertions in the loop below were both green against the live v1 sweep
+    # before the deletion).
+    ctx, rows, _arms_unused = _v1_side(name)
 
-    ctx = _context(term, mesh.ibm, 0, 1, 0.0, 1)
-    rows = _closed_flux_rows(ctx, 1.0, 1, STRIDE)
-    out_v1 = blockamr.MultiFab(ba, dm, 1, 0)
-    out_v1.set_val(0.0)
-    blockamr.laplacian_acc(out_v1, phi, geom, 1.0, 1)
-    version = mesh.ibm.grid_version
-    blockamr.apply_band_rows(
-        out_v1, phi, band_table(rows, version), 1, blockamr.BandMode.Overwrite, 1.0, version
-    )
+    # the interior sweep ALONE, so "the wall sweep writes no FLUID cell" and
+    # "a SOLID cell keeps the interior value" are statements this file can make
+    # without a second implementation of the wall.
+    out_bulk = blockamr.MultiFab(ba, dm, 1, 0)
+    out_bulk.set_val(0.0)
+    blockamr.laplacian_acc(out_bulk, phi, geom, 1.0, 1)
 
     # v2: the same interior sweep, then the compiled pair, by keyword.
     out_v2 = blockamr.MultiFab(ba, dm, 1, 0)
@@ -676,19 +705,27 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     }
 
     marker = _markers(ct, phi)
-    got_v1, got_v2 = _readback(out_v1), _readback(out_v2)
+    got_bulk, got_v2 = _readback(out_bulk), _readback(out_v2)
     seen = {SOLID: 0, WALL: 0, "fluid": 0}
     solid_differ = wall_differ = 0
     for key, value in got_v2.items():
         m = marker[key[:3]]
         if m == SOLID:
             seen[SOLID] += 1
-            solid_differ += _bits(value) != _bits(got_v1[key])
+            # OPEN-C: v1 carried every solid cell as an `nnz = 0, c = 0` row and
+            # so wrote exactly 0.0 there; v2's frame returns before the sink at
+            # `m != WALL` and the interior sweep's value stands. Both halves are
+            # asserted — the value IS the bulk's, bitwise, and it is not 0.0 —
+            # so the exclusion stays load-bearing without v1's kernel.
+            assert _bits(value) == _bits(got_bulk[key]), (
+                f"a SOLID cell is not the interior sweep's value at {key}"
+            )
+            solid_differ += _bits(value) != _bits(0.0)
             continue
         if m != WALL:
             seen["fluid"] += 1
-            assert _bits(value) == _bits(got_v1[key]), (
-                f"a FLUID cell moved at {key}: v2 {value!r} vs v1 {got_v1[key]!r}"
+            assert _bits(value) == _bits(got_bulk[key]), (
+                f"the wall sweep wrote a FLUID cell at {key}: {value!r} vs {got_bulk[key]!r}"
             )
             assert value != 0.0, f"vacuous: the interior laplacian is zero at {key}"
             continue
@@ -697,20 +734,20 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
         assert _bits(value) == _bits(_dot(entries, c, 1.0, fused=False)), (
             f"v2's sweep at {key} is not its own row's plain dot product"
         )
-        assert _bits(got_v1[key]) == _bits(_dot(entries, c, 1.0, fused=True)), (
-            f"v1's sweep at {key} is not the same row's FUSED dot product"
-        )
-        wall_differ += _bits(value) != _bits(got_v1[key])
+        wall_differ += _bits(value) != _bits(_dot(entries, c, 1.0, fused=True))
 
     assert seen[WALL] == NWALL[name], seen
     assert seen["fluid"] > 0 and seen[SOLID] > 0, seen
-    # Measured at B32 and pinned exactly (B32-R S-1). A toolchain bump that
-    # moves this number is a real observable change: re-measure, re-pin, and
-    # record it in the ledger next to Q50.
+    # Measured at B32 and pinned exactly (B32-R S-1). It is now the count of
+    # WALL cells where the SAME row's fused and unfused dot products differ —
+    # which is what the number always measured, `band_table.cpp` having been
+    # shown (cell for cell, before its deletion) to compute the fused one.
+    # A toolchain bump that moves it is a real observable change: re-measure,
+    # re-pin, and record it in the ledger next to Q50.
     assert wall_differ == 103, (
         f"the contraction residual moved: {wall_differ}/320 WALL cells differ "
-        "but the pinned measurement is 103 — either band_table.cpp's "
-        "contraction changed or this pair's flags did; re-read Q50 first"
+        "but the pinned measurement is 103 — this pair's FP flags changed; "
+        "re-read Q50 first"
     )
     assert solid_differ > 0, "vacuous: OPEN-C is only a finding where the two sides differ"
 

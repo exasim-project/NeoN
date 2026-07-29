@@ -5,14 +5,18 @@
 """``mesh.ibm`` — the shared interface between preprocessing and the schemes (B2).
 
 Everything the IBM precomputes from ``mesh.bodies`` hangs here: the per-cell
-:class:`~blockamr.ibm.geometry.IbmGeometry`, the :class:`~blockamr.ibm.band.Band`
-of a given stencil width, and each method's own data. Nothing is built until it
-is asked for, and every cache is keyed by the grid generation (design §8), so a
-regrid or a moved body cannot be served from a stale entry::
+:class:`~blockamr.ibm.geometry.IbmGeometry`, the packed geometry fab, the
+``SOLID | WALL | FLUID`` marker and each method's own data. Nothing is built
+until it is asked for, and every cache is keyed by the grid generation
+(design §8), so a regrid or a moved body cannot be served from a stale entry::
 
     mesh.bodies = {"cyl": Cylinder(centre=(0.5, 0.5), radius=0.2, axis=2)}
-    band = mesh.ibm.band(lev, width=1)         # classifies on first use
-    donors = mesh.ibm.data("ghostCell", lev)   # the method's own extras
+    ct = mesh.ibm.cell_type(GhostCell, lev)     # classifies on first use
+    donors = mesh.ibm.data(GhostCell, lev)      # the method's own extras
+
+The table design §8 fixes is the whole of it, and the row that is **missing** is
+the point: there is no band, no width, no stencil shape and no row table here
+any more.
 
 Method data is stored **opaquely**: the method declares the type, the mesh
 allocates and invalidates it and never looks inside (design §2.4).
@@ -20,8 +24,6 @@ allocates and invalidates it and never looks inside (design §2.4).
 
 import weakref
 
-from .band import CROSS, band_on_grids
-from .band_rows import band_table, pin_rows
 from .classify import _patches, box_grids
 from .geometry import GEOM_NCOMP, geometry_on_grids, packed_geometry_on_grids
 
@@ -42,10 +44,8 @@ class IbmMesh:
         self._geometry = {}
         self._geometry_fabs = {}
         self._cell_types = {}
-        self._bands = {}
         self._method_data = {}
         self._wall_data = {}
-        self._pin_tables = {}
         self._pinned = weakref.WeakKeyDictionary()
 
     @property
@@ -130,6 +130,15 @@ class IbmMesh:
         key = (method, int(lev), self.grid_version)
         have = self._cell_types.get(key)
         if have is None or have[0] < ngrow:
+            # The two geometry validity checks live on the v1 classification
+            # (`classify.py`'s `_check_adjacent` and `_check_resolvable_gap`)
+            # and the packed fab does not repeat them, by its own note. They are
+            # api §9's "two bodies less than a cell apart" and "the body is
+            # incompatible with this mesh", and §9 places both at
+            # *classification* — which is here. Until they are compiled, this is
+            # what runs them: once per (lev, generation), cached, and on exactly
+            # the path that used to reach them through `ibm.band(...)`.
+            self.geometry(lev)
             geom = self._mesh.geom(lev)
             ct = blockamr.CellTypeFab(self._mesh.box_array(lev), self._mesh.dm(lev), ngrow)
             classify = getattr(method, "classify", None) or blockamr.classify_default
@@ -155,13 +164,6 @@ class IbmMesh:
             )
         return self._wall_data[key]
 
-    def band(self, lev, width, shape=CROSS):
-        """The boundary cells of a width-``width`` scheme on ``lev``."""
-        key = (lev, int(width), shape, self.grid_version)
-        if key not in self._bands:
-            self._bands[key] = band_on_grids(self._boxes(lev), self.geometry(lev), width, shape)
-        return self._bands[key]
-
     def data(self, method, lev):
         """The method's own preprocessed data, built once per generation.
 
@@ -173,7 +175,7 @@ class IbmMesh:
             self._method_data[key] = method.preprocess(self._mesh, lev)
         return self._method_data[key]
 
-    def ensure_pinned(self, field, method, lev):
+    def ensure_pinned(self, field, method, lev, ngrow=1):
         """Pin ``field`` on ``lev`` once per classification (B25, design §7).
 
         The pin belongs to the classification, not to the evaluate (Q3,
@@ -193,41 +195,31 @@ class IbmMesh:
         seen = self._pinned.setdefault(field, set())
         if key in seen:
             return
-        self.pin_non_fluid(field, lev)
+        self.pin_non_fluid(field, lev, method, ngrow)
         seen.add(key)
 
-    def pin_non_fluid(self, field, lev):
-        """Write the pin value into every non-fluid cell of ``field`` (B7).
+    def pin_non_fluid(self, field, lev, method, ngrow=1):
+        """Write the pin value into every ``SOLID`` cell of ``field`` (B7).
 
         The one write this design makes to a user field, and design §7 is where
-        it is argued: the interior sweep reads non-fluid neighbours at a band
-        cell, and those reads must be finite. Two properties make it safe — it
-        touches only cells (``depth <= 0``) whose value no *bulk* cell ever
-        reads, and it is idempotent, so running it twice leaves the field
-        bitwise where the first one left it.
+        it is argued: the interior sweep reads solid neighbours at a wall cell,
+        and those reads must be finite. Two properties make it safe — it
+        touches only cells whose value no *fluid* cell ever reads, and it is
+        idempotent, so running it twice leaves the field bitwise where the first
+        one left it.
 
         Unconditional: the production caller is :meth:`ensure_pinned`, which
         runs it once per ``(field, method, lev, grid_version)`` — at
         classification, not per evaluate (B25).
 
-        Expressed as ``nnz = 0`` rows through the band kernel
-        (:func:`~blockamr.ibm.band_rows.pin_rows`), so it writes device memory
-        without a second kernel and without staging the field through the host.
+        It is design §7's four compiled lines, ``blockamr.pin_solid``, on the
+        method's own marker. v1 expressed the same write as a table of
+        ``nnz = 0`` rows so it could reuse the band kernel; the marker makes it
+        a kernel that reads nothing but one ``uint8`` per cell.
         """
         import blockamr
 
-        table = self._pin_table(lev, field.ncomp)
-        if table is None:
-            return
-        blockamr.apply_band_rows(
-            field.mf[lev],
-            field.mf[lev],
-            table,
-            field.ncomp,
-            blockamr.BandMode.Overwrite,
-            1.0,
-            self.grid_version,
-        )
+        blockamr.pin_solid(field.mf[lev], self.cell_type(method, lev, ngrow), 0.0, field.ncomp)
 
     def invalidate(self):
         """Drop everything and start a new generation.
@@ -236,14 +228,6 @@ class IbmMesh:
         it directly after changing the geometry any other way.
         """
         self._mesh._invalidate_ibm()
-
-    def _pin_table(self, lev, ncomp):
-        """The pin table of ``(lev, ncomp)``, or ``None`` when nothing is solid."""
-        key = (lev, int(ncomp), self.grid_version)
-        if key not in self._pin_tables:
-            rows = pin_rows(self._boxes(lev), self.geometry(lev), int(ncomp))
-            self._pin_tables[key] = None if rows.nrows == 0 else band_table(rows, self.grid_version)
-        return self._pin_tables[key]
 
     def _boxes(self, lev):
         """The level's local boxes, in ``MFIterator`` order."""
@@ -258,8 +242,6 @@ class IbmMesh:
         self._geometry.clear()
         self._geometry_fabs.clear()
         self._cell_types.clear()
-        self._bands.clear()
         self._method_data.clear()
         self._wall_data.clear()
-        self._pin_tables.clear()
         self._pinned.clear()

@@ -87,12 +87,14 @@ from blockamr.ibm.bc import FixedGradient, FixedValue, Mixed
 from blockamr.ibm.body import Cylinder, Plane
 from blockamr.ibm.classify import _patches
 from blockamr.schemes.boundary import BOUNDARY_SCHEMES
-from blockamr.schemes.boundary.ghost_cell import (
-    STRIDE,
-    _context,
-    _face_balance_rows,
-    _neighbour,
-)
+
+from .v1_golden import load as _load_v1
+from .v1_golden import load_grad_coeff_rows as _load_v1_coeff_rows
+
+#: v1's row width — ``self + 6 face neighbours + 8 image donors``. Declared here
+#: since the band tree went: it is a property of the RECORDED rows, which
+#: ``_v1_row`` slices with it.
+STRIDE = 15
 
 N = 16
 SOLID = int(blockamr.CellType.SOLID)
@@ -288,34 +290,233 @@ COVERAGE = {
     # normal ungated dG-assoc dG-sign dG-no-n at-wall arm-raw diag-neg0
     # diag-drop donors-drop arms-six
     "G1-plane-x-dirichlet": (
-        256, 0, 0, 256, 0, 0, 256, 0, 256, 0, 256, 256, 0, 256, 0, 256, 0, 256, 256, 256, 256,
+        256,
+        0,
+        0,
+        256,
+        0,
+        0,
+        256,
+        0,
+        256,
+        0,
+        256,
+        256,
+        0,
+        256,
+        0,
+        256,
+        0,
+        256,
+        256,
+        256,
+        256,
     ),
     "G2-plane-y-dirichlet": (
-        256, 256, 0, 256, 0, 0, 0, 0, 256, 0, 0, 0, 0, 0, 0, 0, 0, 256, 256, 256, 256,
+        256,
+        256,
+        0,
+        256,
+        0,
+        0,
+        0,
+        0,
+        256,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        256,
+        256,
+        256,
+        256,
     ),
     "G3-plane-123-dirichlet": (
-        256, 171, 0, 256, 0, 0, 85, 0, 256, 85, 85, 85, 0, 85, 85, 82, 0, 256, 256, 174, 256,
+        256,
+        171,
+        0,
+        256,
+        0,
+        0,
+        85,
+        0,
+        256,
+        85,
+        85,
+        85,
+        0,
+        85,
+        85,
+        82,
+        0,
+        256,
+        256,
+        174,
+        256,
     ),
     "G4-cyl-z-dirichlet": (
-        320, 128, 0, 320, 0, 0, 192, 0, 320, 192, 192, 192, 0, 192, 192, 192, 0, 320, 320, 320, 320,
+        320,
+        128,
+        0,
+        320,
+        0,
+        0,
+        192,
+        0,
+        320,
+        192,
+        192,
+        192,
+        0,
+        192,
+        192,
+        192,
+        0,
+        320,
+        320,
+        320,
+        320,
     ),
     "G5-cyl-z-neumann": (
-        320, 128, 0, 320, 0, 0, 192, 0, 320, 192, 192, 192, 0, 192, 192, 192, 0, 320, 320, 320, 320,
+        320,
+        128,
+        0,
+        320,
+        0,
+        0,
+        192,
+        0,
+        320,
+        192,
+        192,
+        192,
+        0,
+        192,
+        192,
+        192,
+        0,
+        320,
+        320,
+        320,
+        320,
     ),
     "G6-cyl-z-mixed": (
-        320, 128, 0, 320, 0, 0, 192, 0, 320, 192, 192, 192, 0, 192, 192, 192, 0, 320, 320, 320, 320,
+        320,
+        128,
+        0,
+        320,
+        0,
+        0,
+        192,
+        0,
+        320,
+        192,
+        192,
+        192,
+        0,
+        192,
+        192,
+        192,
+        0,
+        320,
+        320,
+        320,
+        320,
     ),
     "G7-two-cyl-two-patches": (
-        448, 192, 0, 448, 0, 0, 256, 0, 448, 256, 256, 256, 0, 256, 256, 256, 0, 448, 448, 448, 448,
+        448,
+        192,
+        0,
+        448,
+        0,
+        0,
+        256,
+        0,
+        448,
+        256,
+        256,
+        256,
+        0,
+        256,
+        256,
+        256,
+        0,
+        448,
+        448,
+        448,
+        448,
     ),
     "G8-cyl-x-mixed": (
-        320, 320, 0, 320, 0, 0, 0, 0, 320, 0, 0, 0, 0, 0, 0, 0, 0, 320, 320, 320, 320,
+        320,
+        320,
+        0,
+        320,
+        0,
+        0,
+        0,
+        0,
+        320,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        320,
+        320,
+        320,
+        320,
     ),
     "G9-nondyadic-cyl": (
-        288, 128, 0, 288, 0, 0, 160, 0, 288, 160, 160, 160, 0, 160, 160, 160, 0, 288, 288, 288, 288,
+        288,
+        128,
+        0,
+        288,
+        0,
+        0,
+        160,
+        0,
+        288,
+        160,
+        160,
+        160,
+        0,
+        160,
+        160,
+        160,
+        0,
+        288,
+        288,
+        288,
+        288,
     ),
     "G10-nondyadic-grid": (
-        352, 128, 0, 352, 0, 0, 224, 194, 352, 224, 224, 224, 0, 224, 224, 224, 0, 352, 352, 226,
+        352,
+        128,
+        0,
+        352,
+        0,
+        0,
+        224,
+        194,
+        352,
+        224,
+        224,
+        224,
+        0,
+        224,
+        224,
+        224,
+        0,
+        352,
+        352,
+        226,
         352,
     ),
 }
@@ -420,39 +621,19 @@ def _build_case(name, max_size=None):
     return mesh, eqn.explicit_terms[0], geom, ba, dm
 
 
-def _v1_rows(ctx, coeff=1.0):
-    """v1's ``grad`` rows over ``ctx`` — ``axes=(0,)``, ``flux=1``, ``w=0.5``."""
-    ones = np.ones((ctx.nrows, 3, 2))
-    return _face_balance_rows(
-        ctx,
-        axes=(0,),
-        flux=ones,
-        weight_self=0.5 * ones,
-        coeff=coeff,
-        ncomp=1,
-        stride=STRIDE,
-    )
-
-
 def _v1_side(name):
-    """``(ctx, rows, arms, flux)`` of one configuration, ``coeff = 1.0``."""
+    """``(ctx, rows, arms, flux)`` of one configuration, ``coeff = 1.0``.
+
+    **Recorded, not rebuilt** (see :mod:`test.blockamr.v1_golden`). v1's
+    ``_context`` and ``_face_balance_rows`` — and with them
+    ``GhostCellGrad.rows``, which this function used to cross-check the hand
+    assembly against — were deleted with the band. What they produced is checked
+    in as bits, so every comparison below is against the same numbers, and the
+    cross-check is subsumed: the recorded rows ARE the production call's, having
+    been asserted equal to it on the tree that recorded them.
+    """
     if name not in _V1:
-        mesh, term, _geom, _ba, _dm = _case(name)
-        width = int(getattr(term.scheme, "stencil_width", 1))
-        assert width == 1, "grad has exactly one scheme and it is width 1 — Q56(a)"
-        ctx = _context(term, mesh.ibm, 0, 1, 0.0, width)
-        rows = _v1_rows(ctx, float(term.coeff))
-        # The hand assembly above is the PRODUCTION call, checked rather than
-        # assumed: `GhostCellGrad.rows` is what an evaluate reaches, and a
-        # divergence between the two would make the whole oracle a private
-        # re-derivation (oracle discipline, plan §8.7).
-        produced = BOUNDARY_SCHEMES[("grad", "ghostCell")](term.scheme).rows(
-            term, mesh.ibm, 0, 1, 0.0, width
-        )
-        np.testing.assert_array_equal(rows.a.view(np.int64), produced.a.view(np.int64))
-        np.testing.assert_array_equal(rows.c.view(np.int64), produced.c.view(np.int64))
-        np.testing.assert_array_equal(rows.stencil, produced.stencil)
-        arms = {(d, s): _neighbour(ctx, d, s) for d in range(3) for s in (1, -1)}
+        ctx, rows, arms, _extra = _load_v1("grad", name)
         _V1[name] = (ctx, rows, arms, np.ones((ctx.nrows, 3, 2)))
     return _V1[name]
 
@@ -642,9 +823,7 @@ def _model_row(ctx, arms, flux, r, mutant=None):
                 index, nb_fluid_all = arms[(d, step)]
                 if not bool(nb_fluid_all[r]):
                     continue
-                entries.append(
-                    arm[slot] if slot in arm else (tuple(int(v) for v in index[r]), 0.0)
-                )
+                entries.append(arm[slot] if slot in arm else (tuple(int(v) for v in index[r]), 0.0))
     else:
         order = visited if mutant == "order-step" else sorted(visited)
         entries.extend(arm[slot] for slot in order)
@@ -819,10 +998,11 @@ def test_the_five_controls_move_no_bit_and_the_coeff_placement_is_v1s(blockamr_s
     measured = {}
     for name in COEFF_PLACEMENT:
         ctx, _rows, _arms, _flux = _v1_side(name)
-        unit = _v1_rows(ctx, 1.0)
+        by_coeff = _load_v1_coeff_rows(name)
+        unit = by_coeff[1.0]
         moved = []
         for coeff in COEFFS:
-            folded = _v1_rows(ctx, coeff)
+            folded = by_coeff[coeff]
             n = 0
             for r in range(ctx.nrows):
                 if not ctx.at_wall[r]:
@@ -837,8 +1017,7 @@ def test_the_five_controls_move_no_bit_and_the_coeff_placement_is_v1s(blockamr_s
             moved.append(n)
         measured[name] = tuple(moved)
     assert measured == COEFF_PLACEMENT, (
-        f"H-5's exposure moved: {measured} against the recorded {COEFF_PLACEMENT} "
-        f"at coeff {COEFFS}"
+        f"H-5's exposure moved: {measured} against the recorded {COEFF_PLACEMENT} at coeff {COEFFS}"
     )
 
 
@@ -1044,9 +1223,7 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
       ``Overwrite`` term write exactly ``0.0`` there, while v2's frame returns
       before the sink at ``m != WALL``. Recorded rather than resolved.
     """
-    from blockamr.ibm.band_rows import band_table
-
-    mesh, term, geom, ba, dm = _case(name, max_size=8)
+    mesh, _term, geom, ba, dm = _case(name, max_size=8)
     _bodies, ibm_bc, _lo, _hi = CONFIGS[name]
 
     nbox = sum(1 for _ in blockamr.MFIterator(blockamr.MultiFab(ba, dm, 1, 0)))
@@ -1055,16 +1232,18 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     phi = _phi(ba, dm)
     g, ct, data, robin = _v2(mesh, geom, ba, dm, ibm_bc)
 
-    # v1: the untouched interior sweep, then the band rows in Overwrite mode.
-    ctx = _context(term, mesh.ibm, 0, 1, 0.0, 1)
-    rows = _v1_rows(ctx, 1.0)
-    out_v1 = blockamr.MultiFab(ba, dm, 3, 0)
-    out_v1.set_val(0.0)
-    blockamr.grad_acc(out_v1, phi, geom, 1.0)
-    version = mesh.ibm.grid_version
-    blockamr.apply_band_rows(
-        out_v1, phi, band_table(rows, version), 1, blockamr.BandMode.Overwrite, 1.0, version
-    )
+    # v1's side, RECORDED: `apply_band_rows` and the rows that fed it went with
+    # the band, so the comparison is against v1's rows and `_dot(fused=True)` —
+    # the value v1's kernel was measured, cell for cell, to produce on this
+    # configuration before the deletion.
+    ctx, rows, _arms_unused, _flux_unused = _v1_side(name)
+
+    # the interior sweep ALONE, so "the wall sweep writes no FLUID cell", "it
+    # touches no component but 0" and "a SOLID cell keeps the interior value"
+    # are statements this file can make without a second implementation.
+    out_bulk = blockamr.MultiFab(ba, dm, 3, 0)
+    out_bulk.set_val(0.0)
+    blockamr.grad_acc(out_bulk, phi, geom, 1.0)
 
     # v2: the same interior sweep, then the compiled pair, by keyword.
     out_v2 = blockamr.MultiFab(ba, dm, 3, 0)
@@ -1092,34 +1271,36 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     }
 
     marker = _markers(ct, phi)
-    got_v1, got_v2 = _readback(out_v1), _readback(out_v2)
+    got_bulk, got_v2 = _readback(out_bulk), _readback(out_v2)
     seen = {SOLID: 0, WALL: 0, "fluid": 0}
     solid_differ = wall_differ = max_delta = 0
     for key, value in got_v2.items():
         m = marker[key[:3]]
         if m == SOLID:
             seen[SOLID] += 1
-            solid_differ += key[3] == 0 and _bits(value) != _bits(got_v1[key])
+            # OPEN-C: v1 wrote exactly 0.0 at a solid cell; v2 leaves the
+            # interior sweep's value. Both halves asserted.
+            assert _bits(value) == _bits(got_bulk[key]), (
+                f"a SOLID cell is not the interior sweep's value at {key}"
+            )
+            solid_differ += key[3] == 0 and _bits(value) != _bits(0.0)
             continue
         if m != WALL:
             seen["fluid"] += 1
-            assert _bits(value) == _bits(got_v1[key]), (
-                f"a FLUID cell moved at {key}: v2 {value!r} vs v1 {got_v1[key]!r}"
+            assert _bits(value) == _bits(got_bulk[key]), (
+                f"the wall sweep wrote a FLUID cell at {key}: {value!r} vs {got_bulk[key]!r}"
             )
             continue
         seen[WALL] += 1
         if key[3] != 0:
-            # components 1 and 2 are grad_acc's, untouched by either wall sweep.
-            assert _bits(value) == _bits(got_v1[key]), key
+            # components 1 and 2 are grad_acc's, untouched by the wall sweep.
+            assert _bits(value) == _bits(got_bulk[key]), key
             continue
         entries, c = by_cell[key[:3]]
         assert _bits(value) == _bits(_dot(entries, c, 1.0, fused=False)), (
             f"v2's sweep at {key} is not its own row's plain dot product"
         )
-        assert _bits(got_v1[key]) == _bits(_dot(entries, c, 1.0, fused=True)), (
-            f"v1's sweep at {key} is not the same row's FUSED dot product"
-        )
-        delta = abs(_bits(value) - _bits(got_v1[key]))
+        delta = abs(_bits(value) - _bits(_dot(entries, c, 1.0, fused=True)))
         wall_differ += delta != 0
         max_delta = max(max_delta, delta)
 
@@ -1129,8 +1310,7 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     assert (wall_differ, max_delta) == WALL_RESIDUAL[name], (
         f"the contraction residual moved: {wall_differ}/{NWALL[name]} WALL cells differ, "
         f"max |delta bits| {max_delta}, but the pinned measurement is "
-        f"{WALL_RESIDUAL[name]} — either band_table.cpp's contraction changed or this "
-        "pair's flags did; re-read Q50 first"
+        f"{WALL_RESIDUAL[name]} — this pair's FP flags changed; re-read Q50 first"
     )
     assert solid_differ > 0, "vacuous: OPEN-C is only a finding where the two sides differ"
 
@@ -1245,10 +1425,16 @@ def test_a_multi_component_sweep_is_refused_by_v1_and_by_the_compiled_pair(block
         "a per-component row, which the "
     )
 
-    # v1, through the production call.
+    # The PYTHON surface, through the production call the driver makes.
+    # `rows()` went with the band; `wall_coeff` is where B36 put the same
+    # guard, and it is what `WallEvaluation.apply` calls before every launch —
+    # so the sentence is asserted at the site that can still say it.
     scheme = BOUNDARY_SCHEMES[("grad", "ghostCell")](term.scheme)
+    two = CellField(mesh, ncomp=2, ngrow=1, name="T", ibm_bc=ibm_bc)
+    eqn2 = Equation(exp.grad(two), schemes={"Grad": "central"})
+    _resolve_schemes(eqn2.explicit_terms, eqn2.schemes)
     with pytest.raises(RuntimeError, match="grad x ghostCell needs a one-component field") as v1:
-        scheme.rows(term, mesh.ibm, 0, 2, 0.0, 1)
+        scheme.wall_coeff(eqn2.explicit_terms[0], 0.0)
     assert isinstance(v1.value, NotImplementedError), type(v1.value)
     assert tail in str(v1.value), str(v1.value)
     assert "ncomp = 2" in str(v1.value)

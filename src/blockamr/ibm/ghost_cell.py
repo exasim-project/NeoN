@@ -117,10 +117,26 @@ class GhostCell:
         Same object, same invariant (Invariant F is checked inside), device-side
         and keyed the same way — :meth:`~blockamr.ibm.mesh.IbmMesh.wall_data`
         stores it opaquely and the wall pairs cast it once inside their own TU.
+
+        **The one translation this method makes.** Invariant F — a live
+        trilinear donor that is not a fluid cell, i.e. a gap the mesh cannot
+        resolve — is a `ValueError` on the *equation* surface, because that is
+        what v1's :func:`_check_fluid_donors` raised and what
+        ``test_ibm_api_surface.py``'s thin-gap row asserts. The compiled check
+        can only throw `RuntimeError`. Both surfaces keep their own type and
+        say the **same sentence**, which is the reconciliation
+        ``GhostCellGrad.wall_coeff`` already makes for ``ncomp > 1`` (api §9):
+        a direct call to the binding raises the compiled type, a call through
+        the Python layer raises v1's.
         """
         import blockamr
 
-        return blockamr.ghost_cell_preprocess(cell_type, geom_ibm, geom, patch_names)
+        try:
+            return blockamr.ghost_cell_preprocess(cell_type, geom_ibm, geom, patch_names)
+        except RuntimeError as exc:
+            if str(exc).startswith("IBM band cell "):
+                raise ValueError(str(exc)) from exc
+            raise
 
 
 def ghost_cell_data(grids, geometries, names, body_list):

@@ -441,6 +441,69 @@ def test_a_harmonic_datum_is_evaluated_inside_the_frame(blockamr_session):
         assert got == pytest.approx(_gamma_numpy(HARMONIC, a0, ac, asin, omega, t), rel=1e-14)
 
 
+def test_the_python_bc_spelling_reaches_the_device_as_a_harmonic(blockamr_session):
+    """**The production route**, which is what B30a's harmonic rows left open.
+
+    ``GammaExpr::Harmonic`` has been compiled, device-tested and unreachable
+    since B30a: every table :func:`blockamr.ibm.bc.robin_data` built carried
+    ``form = Constant``, because the only time-dependent spelling the Python
+    surface had was a **callable**, which it evaluates host-side and collapses
+    to one number per sweep. :class:`blockamr.ibm.Harmonic` is the spelling that
+    does not collapse.
+
+    The discriminating half is the last assertion, and it is why this row builds
+    the table **once, at t = 0** and then reads it at three other times. A
+    collapsed datum returns ``gamma(0)`` at every one of them; a compiled one
+    returns ``gamma(t)``. The two are indistinguishable on a table rebuilt per
+    read, which is exactly how the callable path hides.
+    """
+    from blockamr.ibm import FixedValue, Harmonic
+    from blockamr.ibm.bc import robin_data
+
+    g, ct, geom, ba, dm = _classified(ONE_BODY)
+    phi = _field(ba, dm)
+    i, j, k = _a_wall_cell(ct, phi)
+    a0, ac, asin, omega = 0.25, 2.0, -0.5, 3.0
+
+    datum = Harmonic(mean=a0, cos_amplitude=ac, sin_amplitude=asin, omega=omega)
+
+    # built at t = 0, and never rebuilt: `wall_points` is never called, because
+    # a Harmonic needs no wall foot point at all.
+    def _no_points(_patch):
+        raise AssertionError("a Harmonic datum must not read the wall geometry")
+
+    robin = robin_data(["cyl"], {"cyl": FixedValue(datum)}, 1, _no_points, 0.0)
+
+    assert _wall_frame_record(g, robin, geom, 0.0, i, j, k, 0)[1] == a0 + ac
+    for t in (0.3, 1.7, -2.2):
+        got = _wall_frame_record(g, robin, geom, t, i, j, k, 0)[1]
+        assert got == pytest.approx(_gamma_numpy(HARMONIC, a0, ac, asin, omega, t), rel=1e-14)
+        assert got != pytest.approx(a0 + ac, rel=1e-9), (
+            "the datum was collapsed to gamma(0) at table-build time — this is the "
+            "host-side fallback, not the compiled expression"
+        )
+
+
+def test_the_harmonic_datum_is_the_same_waveform_on_the_host(blockamr_session):
+    """One object, two paths, one waveform.
+
+    :class:`~blockamr.ibm.Harmonic` is also callable with the repo's coefficient
+    signature, so the host-side users that have no kernel — v1's row builder's
+    successors and the jax backend — drive off the *same* declaration. This row
+    is what stops the two spellings drifting into two different waveforms.
+    """
+    from blockamr.ibm import Harmonic
+
+    datum = Harmonic(mean=0.25, cos_amplitude=2.0, sin_amplitude=-0.5, omega=3.0)
+    for t in (0.0, 0.3, 1.7, -2.2):
+        host = np.asarray(datum(np.zeros(4), np.zeros(4), np.zeros(4), t))
+        assert host.shape == (4,)
+        np.testing.assert_array_equal(
+            host, np.full(4, _gamma_numpy(HARMONIC, 0.25, 2.0, -0.5, 3.0, t))
+        )
+        assert datum.params() == (0.25, 2.0, -0.5, 3.0)
+
+
 @pytest.mark.parametrize(
     "case, params",
     [
@@ -1699,7 +1762,7 @@ def test_a_zero_face_flux_reaches_the_row_as_positive_zero_and_not_negative_zero
     for cell in cells:
         for face_value in (blockamr.DivFaceValue.Upwind, blockamr.DivFaceValue.Central):
             entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell, face_value)
-            at = dict(entries[1:-blockamr.GHOST_CELL_K])
+            at = dict(entries[1 : -blockamr.GHOST_CELL_K])
             below = _shifted(cell, (0, 0, -1))
             assert below in at, f"{cell}: the fluid -z face emitted no entry"
             assert _raw(at[below]) == _raw(0.0), (
@@ -1934,9 +1997,7 @@ def test_each_disagreement_between_the_div_pairs_arguments_is_refused_by_name(bl
     with pytest.raises(RuntimeError, match=r"wall_div_ghost_cell: the ghostCell data"):
         call(out, phi, ct, other, _constant(0.5))
 
-    with pytest.raises(
-        RuntimeError, match=r"wall_div_ghost_cell: the face flux in direction 0"
-    ):
+    with pytest.raises(RuntimeError, match=r"wall_div_ghost_cell: the face flux in direction 0"):
         call(out, phi, ct, data, _constant(0.5), flux=(mfs[1], mfs[1], mfs[2]))
 
 
@@ -1984,7 +2045,7 @@ def test_the_two_div_face_value_rules_are_exactly_the_v1_face_weights(blockamr_s
 
     for face_value, expected in want.items():
         entries, _c = _div_row(ct, g, data, robin, geom, mfs, cell, face_value)
-        at = dict(entries[1:-blockamr.GHOST_CELL_K])
+        at = dict(entries[1 : -blockamr.GHOST_CELL_K])
         for off, value in expected.items():
             index = _shifted(cell, off)
             assert index in at, f"{cell}: no entry at {index}"

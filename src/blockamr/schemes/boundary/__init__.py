@@ -5,38 +5,33 @@
 """The ``(operator, method)`` boundary-scheme registry and its resolver (B5).
 
 A *boundary scheme* is the one place an operator and an IBM method meet
-(``plans/IBM/design.md`` §6). It turns one term into the affine rows the band
-kernel applies::
+(``plans/IBM/design.md`` §6). Under v2 it **names a compiled kernel** and does
+no arithmetic at all::
 
     class GhostCellLaplacian:
         operator = "laplacian"
         method = "ghostCell"
-        stride = 15
 
         def __init__(self, interior_scheme): ...
-        def rows(self, term, ibm, lev, ncomp, t, width) -> BandRows: ...
+        def build_cpp_kernel(self) -> CppWallKernel: ...
+        def wall_coeff(self, term, t): ...
+        def wall_extras(self, term, lev): ...
 
 The table is keyed by ``(operator, method)`` and **not** by the interior
-scheme: that one is handed to the constructor so the boundary scheme can mirror
-it or degrade it (design §6, D1), which keeps the table at
-``n_operators x n_methods``.
-
-``width`` is the band width the **equation** runs on — the widest of its
-terms', not this term's own (design §6, the composition rule). A scheme takes
-``ibm.band(lev, width)`` and, outside its own term's band, emits its plain
-interior formula: that is what lets terms of different widths accumulate into
-one result buffer.
+scheme: that one is handed to the constructor so a pair that needs to know the
+interior face rule can read it (``div``'s D1 degrade, in ``wall_extras``), which
+keeps the table at ``n_operators x n_methods``.
 
 Two rules, and both are about failing loudly rather than plausibly:
 
 * **No fallback.** A missing pair raises, naming the pair and listing the
   registered ones. Falling back to the interior scheme would silently drop the
   wall condition and return a field that looks right (design §6, A8).
-* **An interior scheme must declare its stencil shape.** ``band(w)`` is the set
-  of cells whose width-``w`` *cross* stencil touches a non-fluid cell; a
-  corner-reading scheme needs the Chebyshev depth instead, and taking the cross
-  band for it under-selects along the diagonals — a wrong answer in the band
-  with a green bulk (design §4).
+* **An interior scheme must declare its stencil shape.** The declaration
+  outlived the band it was invented for: with W1 the shape is what says whether
+  a scheme reads its corners, and a scheme that does not say cannot be reasoned
+  about at all. It stays required, and stays checked here, because a silent
+  default is exactly the failure this rule exists to prevent.
 
 ``noIbm`` and the absent-``"ibm"`` path never reach here: they produce no band
 and the band sweep does not launch.
@@ -65,6 +60,19 @@ def register(scheme_cls):
     return scheme_cls
 
 
+#: The two stencil shapes an interior scheme may declare. Rehomed here when
+#: ``ibm/band.py`` was deleted: the band that used to switch on them is gone,
+#: the declaration is not (see the module docstring), and this is the one file
+#: that reads it.
+#: Axis-ray stencil.
+CROSS = "cross"
+
+#: Corner-reading stencil.
+BOX = "box"
+
+SHAPES = (BOX, CROSS)
+
+
 def pairs():
     """The registered ``(operator, method)`` pairs, sorted."""
     return sorted(BOUNDARY_SCHEMES)
@@ -89,10 +97,6 @@ def resolve(operator, method, interior_scheme):
 
 def _check_stencil_shape(interior_scheme):
     """Reject an interior scheme that does not say which band it needs."""
-    # Deferred: ``blockamr.ibm`` pulls in the methods (and jax with them), and
-    # the shapes are one vocabulary, owned by the band that switches on them.
-    from ...ibm.band import SHAPES
-
     shape = getattr(interior_scheme, "stencil_shape", None)
     name = type(interior_scheme).__name__
     if shape is None:

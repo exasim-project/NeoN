@@ -34,7 +34,9 @@ import pytest
 import blockamr
 from blockamr.dsl import Equation, evaluate, exp, solve
 from blockamr.field import CellField, FaceField
-from blockamr.ibm import BandRows, Cylinder, FixedValue
+from blockamr.ibm import Cylinder, FixedValue
+from blockamr.ibm.ghost_cell import GhostCell
+from blockamr.ibm.driver import wall_ngrow
 from blockamr.mesh import Mesh
 from blockamr.operators.div import update_face_fluxes
 from blockamr.schemes.boundary import BOUNDARY_SCHEMES
@@ -61,8 +63,11 @@ DONOR = (3, 2, 2)
 #: phi(3, 2, 2) = ((3 + 0.5)/8)^2 = 0.4375^2
 DONOR_VALUE = 0.19140625
 
-#: ``(term class name, band width)`` of every ``rows`` call, cleared per test.
-ASKED_WIDTHS = []
+#: ``(coeff, mode)`` of every call the driver makes to the test pair's kernel,
+#: cleared per test. The v2 peer of v1's ``ASKED_WIDTHS``: there is no band
+#: width to record any more, and what the composition rule now turns on is the
+#: MODE — ``Overwrite`` for the first term, ``Add`` for every later one.
+KERNEL_CALLS = []
 
 
 # ---------------------------------------------------------------------------
@@ -87,51 +92,112 @@ class _RowsMethod:
     def preprocess(mesh, lev):
         return None
 
+    @staticmethod
+    def wall_preprocess(cell_type, geom_ibm, geom, patch_names):
+        """The v2 peer, borrowed from ``ghostCell``.
 
-class _OneRowScheme:
-    """A boundary scheme whose rows are written by hand, not derived.
+        This fake declares no data of its own — its kernel below reads none —
+        but a method must still produce *something* the driver can hand a pair
+        as ``method_data``, and its row count is what
+        ``blockamr.ibm.evaluation`` asks "does this mesh have a WALL cell at
+        all". Borrowing ``ghostCell``'s keeps the fake honest about the one
+        thing it is not faking.
+        """
+        import blockamr
 
-    One row per level: ``out(TARGET) = coeff * (2 * phi(DONOR) + 7)``. The
+        return blockamr.ghost_cell_preprocess(cell_type, geom_ibm, geom, patch_names)
+
+
+class _HandWrittenKernel:
+    """The test-only registration seam (api §4).
+
+    **What this is and why it is kept.** Under v2 a ``(operator, method)`` pair
+    is a compiled kernel, so a suite that wants to watch the *wiring* — which
+    cells the driver hands a pair, in which mode, in which order, and whether it
+    launches at all — can no longer register a numpy ``rows()`` and read the
+    result. This class is the minimum that restores that: a Python object with
+    the ONE method the driver asks a scheme for (``build_cpp_kernel``) returning
+    a callable with the canonical keyword signature. It writes its row through
+    the same host staging every other test in this tree uses, and it is never on
+    a production path — ``blockamr.ibm._METHODS`` is monkeypatched for the
+    duration of a test and nothing in ``src/`` names it.
+
+    The row is written by hand, not derived:
+    ``out(TARGET) = coeff * (2 * phi(DONOR) + 7)``.
+    """
+
+    def __call__(self, **kw):
+        KERNEL_CALLS.append((kw["coeff"], kw["mode"]))
+        out, phi = kw["out"], kw["phi"]
+        coeff, ncomp = kw["coeff"], kw["ncomp"]
+        add = kw["mode"] == blockamr.WallMode.Add
+        value = coeff * (2.0 * _cell_value(phi, DONOR) + 7.0 * kw["constant_scale"])
+        for mfi in blockamr.MFIterator(out):
+            box = mfi.valid_box()
+            lo = tuple(int(v) for v in box.small_end())
+            hi = tuple(int(v) for v in box.big_end())
+            if not all(lo[d] <= TARGET[d] <= hi[d] for d in range(3)):
+                continue
+            arr = np.asarray(out.copy_to_host(mfi))
+            local = tuple(TARGET[d] - lo[d] for d in range(3))
+            for n in range(ncomp):
+                if add:
+                    arr[local][n] += value
+                else:
+                    arr[local][n] = value
+            out.copy_from(mfi, np.asfortranarray(arr))
+
+
+def _cell_value(mf, cell, n=0):
+    """One cell of a MultiFab, staged through the host."""
+    for mfi in blockamr.MFIterator(mf):
+        box = mfi.valid_box()
+        lo = tuple(int(v) for v in box.small_end())
+        hi = tuple(int(v) for v in box.big_end())
+        if all(lo[d] <= cell[d] <= hi[d] for d in range(3)):
+            arr = np.asarray(mf.copy_to_host(mfi))
+            return float(arr[tuple(cell[d] - lo[d] for d in range(3))][n])
+    raise AssertionError(f"cell {cell} is in no local box")
+
+
+class _OneCellScheme:
+    """A boundary scheme whose wall value is written by hand, not derived.
+
+    One cell per level: ``out(TARGET) = coeff * (2 * phi(DONOR) + 7)``. The
     term's own coefficient scales it so two terms of the same operator produce
     different numbers, which is what makes their accumulation visible.
-
-    Every ``rows`` call records the band width the driver asked it for, in
-    :data:`ASKED_WIDTHS` — the equation's width, not the term's own (design §6,
-    the composition rule). The driver builds a fresh scheme instance per
-    evaluate, so the record is module-level and the fixture clears it.
     """
 
     operator = "laplacian"
     method = METHOD
-    stride = 1
 
     def __init__(self, interior_scheme):
         self.interior = interior_scheme
 
-    def rows(self, term, ibm, lev, ncomp, t, width):
-        ASKED_WIDTHS.append((type(term).__name__, width))
-        coeff = float(term.coeff)
-        return BandRows(
-            target=np.array([TARGET], dtype=np.int32),
-            stencil=np.array([[DONOR]], dtype=np.int32),
-            a=np.array([[2.0 * coeff]], dtype=np.float64),
-            nnz=np.array([1], dtype=np.int32),
-            c=np.full((1, ncomp), 7.0 * coeff, dtype=np.float64),
-            patch=np.zeros(1, dtype=np.int32),
-            box_offset=np.array([0, 1], dtype=np.int32),
-            stride=1,
-        )
+    def build_cpp_kernel(self):
+        return _HandWrittenKernel()
+
+    def wall_coeff(self, term, t):
+        return float(term.coeff)
+
+    def wall_extras(self, term, lev):
+        return {}
 
 
-class _NeverCalledScheme(_OneRowScheme):
-    """The proof that an empty band does not launch the sweep."""
-
-    def rows(self, term, ibm, lev, ncomp, t, width):
-        raise AssertionError("the band sweep ran on an empty band")
+class _NeverCalledKernel(_HandWrittenKernel):
+    def __call__(self, **kw):
+        raise AssertionError("the wall sweep ran where there is no WALL cell")
 
 
-class _WideDivScheme(_OneRowScheme):
-    """The div peer of :class:`_OneRowScheme`, for the two-band case."""
+class _NeverCalledScheme(_OneCellScheme):
+    """The proof that a mesh with no ``WALL`` cell does not launch the sweep."""
+
+    def build_cpp_kernel(self):
+        return _NeverCalledKernel()
+
+
+class _WideDivScheme(_OneCellScheme):
+    """The div peer of :class:`_OneCellScheme`, for the two-width case."""
 
     operator = "div"
 
@@ -153,7 +219,7 @@ def registered(monkeypatch):
     """
     import blockamr.ibm as ibm_registry
 
-    ASKED_WIDTHS.clear()
+    KERNEL_CALLS.clear()
     monkeypatch.setitem(ibm_registry._METHODS, METHOD, _RowsMethod)
 
     def _register(*scheme_classes):
@@ -187,9 +253,9 @@ def _cylinder(centre=CENTRE):
     return {"cyl": Cylinder(centre=centre, radius=R, axis=2)}
 
 
-def _quadratic_field(mesh, ncomp=1):
+def _quadratic_field(mesh, ncomp=1, ngrow=1):
     """``T = x^2`` — exact in binary64 at every cell centre of this mesh."""
-    T = CellField(mesh, ncomp=ncomp, ngrow=1, name="T", ibm_bc={"cyl": FixedValue(0.0)})
+    T = CellField(mesh, ncomp=ncomp, ngrow=ngrow, name="T", ibm_bc={"cyl": FixedValue(0.0)})
     mf = T.mf[0]
     for mfi in blockamr.MFIterator(mf):
         arr = mf.copy_to_host(mfi)
@@ -298,7 +364,7 @@ def test_undeclared_stencil_shape_is_rejected(blockamr_session, registered):
     for it under-selects along the diagonals — a wrong answer in the band with
     a correct bulk (design §4). A scheme that declares neither shape is
     therefore refused, naming itself and both shapes."""
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     eqn = Equation(exp.laplacian(1.0, T), schemes={"Laplacian": _NoShapeLaplacian()})
@@ -350,7 +416,7 @@ def test_the_bands_rows_overwrite_the_interior_result_and_nothing_else(
     is observable (design §7 says it is idempotent, and W4 owns reconciling it
     with the purity test).
     """
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     eqn = Equation(exp.laplacian(1.0, T))
@@ -377,7 +443,7 @@ def test_a_second_term_adds_its_rows_to_the_first_terms_band_value(blockamr_sess
     Overwriting twice would leave 14.765625, adding twice would leave
     22.1484375 plus whatever the sweep wrote.
     """
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     eqn = Equation(exp.laplacian(1.0, T) + 2.0 * exp.laplacian(1.0, T))
@@ -387,33 +453,46 @@ def test_a_second_term_adds_its_rows_to_the_first_terms_band_value(blockamr_sess
     assert banded[TARGET] == 7.3828125 + 14.765625
 
 
-def test_terms_of_different_widths_are_all_asked_for_the_equations_widest_band(
-    blockamr_session, registered
-):
-    """A width-1 laplacian beside a width-2 div: **one** band, the widest.
+def test_the_marker_is_built_at_the_equations_widest_stencil(blockamr_session, registered):
+    """A width-1 laplacian beside a width-2 div: **one** marker, grown to the
+    widest reach in the equation.
 
-    The band is a property of the equation, not of one term (design §6, the
-    composition rule). Every term's rows are built over ``band(2)`` here, which
-    is what makes 'the first term writes, the rest add' exact: a cell in
-    ``band(2)`` carries the sum of both terms' rows, and a cell only the div's
-    band contains still carries the laplacian's own interior value — supplied
-    by its row rather than left behind by the sweep.
+    v1 asked every boundary scheme for rows over one band, the widest term's,
+    and this row asserted that width. There is no band and no width to ask for
+    any more — but the number did not disappear, it moved: W1's marker-aware
+    interior siblings read the marker at their **own** stencil reach (design
+    §5), so the marker and the packed geometry are allocated at the equation's
+    widest, which is what :func:`~blockamr.ibm.driver.wall_ngrow` returns and
+    what :class:`~blockamr.ibm.driver.WallEvaluation` passes to every cache it
+    touches.
 
-    Asserted on the width the driver asks for, because that *is* the contract
-    between the driver and a boundary scheme; the numbers it produces are
-    ``test_ibm_combinations.py``'s hand-computed mixed-width case.
+    Both halves are asserted: the number itself, and that the composition rule
+    it used to underwrite still holds — the first term overwrites, the second
+    adds, and the wall sweep launched exactly twice.
     """
-    registered(_OneRowScheme, _WideDivScheme)
+    registered(_OneCellScheme, _WideDivScheme)
     mesh = _mesh(bodies=_cylinder())
-    T = _quadratic_field(mesh)
+    # ngrow = 2, and that is the point being made from the other side: a
+    # width-2 interior scheme now reads the MARKER at its own reach, so the
+    # field and the marker must both carry two ghost cells. v1's rows read
+    # neither and a one-ghost field went through.
+    T = _quadratic_field(mesh, ngrow=2)
     eqn = Equation(
         exp.laplacian(1.0, T) + exp.div(_uniform_flux(mesh, T.ngrow), T),
         schemes={"Div": "quick"},
     )
+    from blockamr.dsl.solve import _resolve_schemes
+
+    _resolve_schemes(eqn.explicit_terms, eqn.schemes)
+    assert wall_ngrow(eqn.explicit_terms) == 2, "quick is width 2 — the probe would be blind"
 
     evaluate(eqn, t=0.0, solution=_sol(METHOD))
 
-    assert ASKED_WIDTHS == [("Laplacian", 2), ("Div", 2)]
+    assert [mode for _coeff, mode in KERNEL_CALLS] == [
+        blockamr.WallMode.Overwrite,
+        blockamr.WallMode.Add,
+    ]
+    assert mesh.ibm.cell_type(_RowsMethod, 0).n_grow() == 2
 
 
 def test_an_empty_band_is_bitwise_identical_to_no_ibm(blockamr_session, registered):
@@ -530,6 +609,42 @@ def test_a_source_term_writes_nothing_into_a_non_fluid_cell(blockamr_session):
     np.testing.assert_array_equal(with_source[solid], 0.0)
 
 
+def test_the_source_pairs_row_is_a_constant_and_names_no_cell(blockamr_session):
+    """``source x ghostCell``'s per-cell row, through the compiled hook.
+
+    The whole claim of the fourth pair, at one cell: **zero linear entries and
+    one constant**. An explicit (Su) source is a coefficient field, not the
+    unknown, so its row reads no cell — v1 said the same with ``nnz = 0`` — and
+    the value reaches it through ``sink.constant`` alone, which is S2/R1 and
+    what makes ``constant_scale = 0`` drop an Su term entirely.
+    """
+    row_hook = blockamr._blockamr._wall_row_source_ghost_cell
+    mesh = _mesh(bodies=_cylinder())
+    S = _source_field(mesh)
+    ct = mesh.ibm.cell_type(GhostCell, 0, 1)
+
+    wall = np.argwhere(_reads_a_pinned_cell() & ~_solid_columns())
+    assert wall.size, "the probe would be blind"
+    cell = tuple(int(v) for v in wall[0])
+
+    entries, constant = row_hook(ct, S.mf[0], *cell, 0)
+
+    assert entries == [], "an explicit source names no cell, not even its own"
+    assert constant == _valid_cells(S)[..., 0][cell]
+
+
+def test_the_source_pair_refuses_a_cell_that_is_not_a_wall_cell(blockamr_session):
+    """A wall row exists only where the marker is ``WALL``; asking elsewhere is
+    a sentence, not a number (api §9)."""
+    row_hook = blockamr._blockamr._wall_row_source_ghost_cell
+    mesh = _mesh(bodies=_cylinder())
+    S = _source_field(mesh)
+    ct = mesh.ibm.cell_type(GhostCell, 0, 1)
+
+    with pytest.raises(RuntimeError, match=r"is not a WALL cell of this level"):
+        row_hook(ct, S.mf[0], 0, 0, 0, 0)
+
+
 # ---------------------------------------------------------------------------
 # the non-fluid pin (B7)
 # ---------------------------------------------------------------------------
@@ -546,20 +661,20 @@ def test_pinning_writes_the_pin_value_into_every_non_fluid_cell(blockamr_session
     solid = _solid_columns()
     assert (_valid_cells(T)[..., 0][solid] != 0.0).all(), "the probe would be blind"
 
-    mesh.ibm.pin_non_fluid(T, 0)
+    mesh.ibm.pin_non_fluid(T, 0, GhostCell)
 
     np.testing.assert_array_equal(_valid_cells(T)[..., 0][solid], 0.0)
 
 
 def test_pinning_leaves_every_fluid_cell_bitwise_untouched(blockamr_session):
     """The pin is the only write this architecture makes to a user field, and
-    its licence is that no fluid cell is in it: every row is ``nnz = 0`` over a
-    ``depth <= 0`` target."""
+    its licence is that no fluid cell is in it: the kernel returns at every
+    cell whose marker is not ``SOLID``."""
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     before = _valid_cells(T)
 
-    mesh.ibm.pin_non_fluid(T, 0)
+    mesh.ibm.pin_non_fluid(T, 0, GhostCell)
 
     fluid = ~_solid_columns()
     np.testing.assert_array_equal(_valid_cells(T)[..., 0][fluid], before[..., 0][fluid])
@@ -572,31 +687,32 @@ def test_pinning_twice_is_bitwise_a_no_op(blockamr_session):
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
 
-    mesh.ibm.pin_non_fluid(T, 0)
+    mesh.ibm.pin_non_fluid(T, 0, GhostCell)
     once = _valid_cells(T)
-    mesh.ibm.pin_non_fluid(T, 0)
+    mesh.ibm.pin_non_fluid(T, 0, GhostCell)
 
     np.testing.assert_array_equal(_valid_cells(T), once)
 
 
 def test_pinning_a_body_free_mesh_writes_nothing(blockamr_session):
-    """No body, no non-fluid cell, no table and no launch."""
+    """No body, no SOLID cell: the marker is FLUID everywhere and the pin
+    writes nothing."""
     mesh = _mesh()
     T = _quadratic_field(mesh)
     before = _valid_cells(T)
 
-    mesh.ibm.pin_non_fluid(T, 0)
+    mesh.ibm.pin_non_fluid(T, 0, GhostCell)
 
     np.testing.assert_array_equal(_valid_cells(T), before)
 
 
 def test_pinning_a_vector_field_pins_every_component(blockamr_session):
-    """The pin table carries one constant per component, so a vector field is
-    the same rows with a wider ``c`` — not a second table format."""
+    """``pin_solid`` takes the component count, so a vector field is the same
+    kernel over a wider fab — not a second code path."""
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh, ncomp=3)
 
-    mesh.ibm.pin_non_fluid(T, 0)
+    mesh.ibm.pin_non_fluid(T, 0, GhostCell)
 
     np.testing.assert_array_equal(_valid_cells(T)[_solid_columns()], 0.0)
 
@@ -613,7 +729,7 @@ def test_evaluate_pins_the_solid_cells_of_a_field_it_has_not_seen(blockamr_sessi
     driver is built for it. ``T = x^2`` is nonzero in every solid cell before
     the evaluate, so 'was pinned' and 'was already 0' are not the same
     observation."""
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     solid = _solid_columns()
@@ -631,7 +747,7 @@ def test_the_pin_does_not_run_again_in_a_later_evaluate(blockamr_session, regist
     dirtied in between. Seeding 7.0 into the solid columns and finding it
     **bitwise** there after a second evaluate is the whole claim; a per-evaluate
     pin would leave 0.0."""
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     eqn = Equation(exp.laplacian(1.0, T))
@@ -656,7 +772,7 @@ def test_the_pin_does_not_run_again_in_a_later_solve(blockamr_session, registere
     probe stays bitwise, exactly like its ``evaluate`` twin. Seeding 7.0 into
     the solid columns between the two solves and finding it there afterwards is
     the whole claim; a per-call pin would leave 0.0."""
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     eqn = Equation(exp.ddt(T) - exp.laplacian(1.0, T), schemes={"ddt": "Euler"})
@@ -672,7 +788,7 @@ def test_a_new_generation_pins_the_field_again(blockamr_session, registered):
     """The memo is keyed on ``grid_version`` like every other IBM cache (design
     §8), so a regrid, a moved body or an explicit ``invalidate()`` re-pins: the
     classification the pin belongs to has been redone."""
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     T = _quadratic_field(mesh)
     eqn = Equation(exp.laplacian(1.0, T))
@@ -690,7 +806,7 @@ def test_a_second_field_is_pinned_on_its_own_first_evaluate(blockamr_session, re
     ``(method, lev, grid_version)`` triple (review.md §4 Q3): the write lands in
     that field's storage, so a field created after the classification — same
     mesh, same generation — is still pinned the first time it is evaluated."""
-    registered(_OneRowScheme)
+    registered(_OneCellScheme)
     mesh = _mesh(bodies=_cylinder())
     first = _quadratic_field(mesh)
     evaluate(Equation(exp.laplacian(1.0, first)), t=0.0, solution=_sol(METHOD))

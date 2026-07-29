@@ -24,22 +24,17 @@ scheme runs its ``_ibm`` sibling, which falls back to its own width-1 formula at
 a cell whose stencil would read a ``SOLID`` cell (design §5). That sibling is
 selected here, by handing the marker to the backend, and nowhere else.
 
-Two paths, one composition rule
--------------------------------
+One path, one composition rule
+------------------------------
 
-A ``(operator, method)`` pair that is **compiled** is called through its
-``build_cpp_kernel()`` wrapper with the canonical twelve arguments (design
-§4.4); one that is not — ``source x ghostCell``, and any pair a test registers
-from Python — still emits v1 :class:`~blockamr.ibm.band_rows.BandRows` over the
-band. Both write the same cells, and they compose the same way: the first term
-to write uses ``Overwrite``, every later one ``Add``.
-
-That "same cells" is what fixes the row path's band width once a compiled pair
-is in the equation. A wall sweep writes exactly the ``WALL`` cells, so a row
-term composing with it must emit over ``band(1)`` — the wall layer and the
-solid cells — and not over the equation's widest band, whose deeper fluid cells
-the interior sweep already owns and no wall sweep overwrites. With no compiled
-pair in the equation the v1 rule stands unchanged: one band, the widest term's.
+Every registered ``(operator, method)`` pair is **compiled** and is called
+through its ``build_cpp_kernel()`` wrapper with the canonical twelve arguments
+(design §4.4), plus whatever that pair appends past the twelfth. They compose
+the way they always did: the first term to write uses ``Overwrite``, every
+later one ``Add``, and every one of them writes exactly the ``WALL`` cells — so
+the set they touch is identical by construction and there is nothing to
+negotiate. The band, its width and the row path went with ``source x
+ghostCell``'s own kernel, which was the last thing holding them.
 
 The SOLID mask (OPEN-C)
 -----------------------
@@ -61,8 +56,6 @@ import numpy as np
 import blockamr
 
 from ..schemes.boundary import resolve
-from .band import CROSS
-from .band_rows import band_table
 from .bc import robin_data
 from .classify import _patches
 
@@ -84,30 +77,19 @@ class WallEvaluation:
         self.terms = list(spatial_ops)
         self.schemes = {term: resolve(_operator_of(term), name, term.scheme) for term in self.terms}
         self.kernels = {term: _wall_kernel(self.schemes[term]) for term in self.terms}
-        #: True when at least one term is on a compiled pair — the v2 flow.
-        self.on_pairs = any(kernel is not None for kernel in self.kernels.values())
-        self.width, self.shape = equation_band(self.terms)
         #: The ghost width the marker and the packed geometry are built at: the
         #: widest interior stencil, since W1's siblings read the marker at their
         #: own reach (``MARKER_NGROW`` is the classification's floor, not a size).
-        self.ngrow = max(1, self.width)
-        #: The band width a *row* term is asked for — see the module docstring.
-        self.row_width = 1 if self.on_pairs else self.width
+        self.ngrow = wall_ngrow(self.terms)
         # Classification time: the driver is built before the level loop —
         # before the first fill_patch and before any sweep (design §7,
         # review §4 Q3). Once per (field, method, lev, grid_version); every
         # later evaluate is a read.
         for lev in range(cell_field.mesh.n_levels()):
-            self.ibm.ensure_pinned(cell_field, method, lev)
+            self.ibm.ensure_pinned(cell_field, method, lev, self.ngrow)
 
     def interior_cell_type(self, lev):
-        """The marker the interior sweep degrades against (W1), or ``None``.
-
-        ``None`` for a method with no compiled pair: there is no v2 marker on
-        that path, and a width-2 term there is corrected by its rows.
-        """
-        if not self.on_pairs:
-            return None
+        """The marker the interior sweep degrades against (W1)."""
         return self.ibm.cell_type(self.method, lev, self.ngrow)
 
     def evaluate_level(self, impl, terms, cell_field, lev, t):
@@ -129,14 +111,11 @@ class WallEvaluation:
         applied between two sweeps would be overwritten by the second one.
         """
         ncomp = self.field.ncomp
-        views = self._views(lev, t, ncomp) if self.on_pairs else None
+        views = self._views(lev, t, ncomp)
         first = True
         for term in self.terms:
             kernel = self.kernels[term]
             scheme = self.schemes[term]
-            if kernel is None:
-                first = self._apply_rows(out_mf, term, scheme, lev, t, ncomp, first)
-                continue
             kernel(
                 out=out_mf,
                 phi=self.field.mf[lev],
@@ -149,9 +128,8 @@ class WallEvaluation:
                 **scheme.wall_extras(term, lev),
             )
             first = False
-        if self.on_pairs:
-            # OPEN-C: design §7's four lines, on the result rather than the field.
-            blockamr.pin_solid(out_mf, views["cell_type"], 0.0, ncomp)
+        # OPEN-C: design §7's four lines, on the result rather than the field.
+        blockamr.pin_solid(out_mf, views["cell_type"], 0.0, ncomp)
 
     # -- internals ----------------------------------------------------------
 
@@ -193,24 +171,6 @@ class WallEvaluation:
 
         return points
 
-    def _apply_rows(self, out_mf, term, scheme, lev, t, ncomp, first):
-        """v1's band-row apply for a pair that is not compiled. Returns the
-        new ``first`` flag."""
-        rows = scheme.rows(term, self.ibm, lev, ncomp, t, self.row_width)
-        if rows.nrows == 0:
-            return first
-        version = self.ibm.grid_version
-        blockamr.apply_band_rows(
-            out_mf,
-            self.field.mf[lev],
-            band_table(rows, version),
-            ncomp,
-            blockamr.BandMode.Overwrite if first else blockamr.BandMode.Add,
-            1.0,  # constant_scale: the affine apply (row-contract §4)
-            version,
-        )
-        return False
-
 
 def _stack(blocks, ncol):
     """Concatenate per-box arrays, with the empty case's shape spelled out."""
@@ -221,13 +181,24 @@ def _stack(blocks, ncol):
 
 
 def _wall_kernel(scheme):
-    """The compiled pair a boundary scheme names, or ``None``.
+    """The compiled pair a boundary scheme names.
 
     The exact peer of the interior dispatch (``cpp_backend``): the scheme owns
     its kernel, and the driver has no ``(operator, method)`` table of its own.
+    A scheme without one raises here rather than falling back — there is no row
+    path left to fall back to, and a wall condition dropped in silence is the
+    failure this design most needs to make loud (design §6).
     """
     build = getattr(scheme, "build_cpp_kernel", None)
-    return None if build is None else build()
+    if build is None:
+        raise NotImplementedError(
+            f"the boundary scheme {type(scheme).__name__!r} for the pair "
+            f"('{scheme.operator}', '{scheme.method}') names no compiled kernel: it has no "
+            "build_cpp_kernel(). Every registered pair is a compiled kernel under v2 "
+            "(plans/IBM/design.md §4.4); the numpy row path it would otherwise have used is "
+            "deleted."
+        )
+    return build()
 
 
 def _operator_of(term):
@@ -242,29 +213,18 @@ def _operator_of(term):
     return operator
 
 
-def equation_band(terms):
-    """``(width, shape)`` of the band an equation's terms share.
+def wall_ngrow(terms):
+    """The ghost width one equation's markers and packed geometry are built at.
 
-    The width is the widest term's, so the band contains every term's own band
-    (they are nested: ``band(w) = {depth <= w}``). The shape is the widest
-    *stencil* shape any term declares — a corner-reading scheme needs the
-    Chebyshev band, and the cross band would under-select along the diagonals
-    for it (design §4).
-
-    Still the rule for a row-only equation, and still what sizes the marker's
-    ghost region on the v2 path: W1's siblings read the marker at their own
-    stencil reach.
+    The widest interior stencil of the equation's terms, floored at 1: W1's
+    marker-aware siblings read the marker at their **own** stencil reach
+    (design §5), so a width-2 term needs two ghost cells of it. It is not a band
+    width and there is no shape in it — the band went with ``source x
+    ghostCell``'s kernel; this is an allocation size and nothing else.
     """
-    widths = [_band_width(term) for term in terms]
-    shapes = {_band_shape(term) for term in terms}
-    return max(widths, default=1), (CROSS if shapes <= {CROSS} else (shapes - {CROSS}).pop())
+    return max([_stencil_width(term) for term in terms], default=1)
 
 
-def _band_width(term):
-    """The stencil width the term's own band would be taken at."""
-    return int(getattr(term.scheme, "stencil_width", 1))
-
-
-def _band_shape(term):
-    """The stencil shape the term's scheme declares (design §4)."""
-    return getattr(term.scheme, "stencil_shape", CROSS)
+def _stencil_width(term):
+    """The interior stencil width the term's scheme declares."""
+    return max(1, int(getattr(term.scheme, "stencil_width", 1)))

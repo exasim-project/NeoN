@@ -81,14 +81,13 @@ from blockamr.ibm.body import Cylinder, Plane
 from blockamr.ibm.classify import _patches
 from blockamr.operators.div import update_face_fluxes
 from blockamr.schemes.boundary import BOUNDARY_SCHEMES
-from blockamr.schemes.boundary.ghost_cell import (
-    STRIDE,
-    _band_face_flux,
-    _context,
-    _face_balance_rows,
-    _face_weights,
-    _neighbour,
-)
+
+from .v1_golden import load as _load_v1
+
+#: v1's row width — ``self + 6 face neighbours + 8 image donors``. Declared here
+#: since the band tree went: it is a property of the RECORDED rows, which
+#: ``_v1_row`` slices with it.
+STRIDE = 15
 
 N = 16
 SOLID = int(blockamr.CellType.SOLID)
@@ -618,34 +617,18 @@ def _face_value(term):
 
 
 def _v1_side(name):
-    """``(ctx, rows, arms, flux, central)`` of one configuration, ``coeff = 1.0``."""
+    """``(ctx, rows, arms, flux, central)`` of one configuration, ``coeff = 1.0``.
+
+    **Recorded, not rebuilt** (see :mod:`test.blockamr.v1_golden`). v1's
+    ``_context`` / ``_band_face_flux`` / ``_face_balance_rows`` /
+    ``_face_weights`` were deleted with the band; what they produced — including
+    the face flux the rows were built from, and which face-value rule the
+    interior scheme selected — is checked in as bits, so every comparison below
+    is against the same numbers it was against before.
+    """
     if name not in _V1:
-        mesh, term, _geom, _ba, _dm, _face = _case(name)
-        width = _width(term)
-        ctx = _context(term, mesh.ibm, 0, 1, 0.0, width)
-        flux = _band_face_flux(term.coefficient, 0, ctx.band)
-        rows = _face_balance_rows(
-            ctx,
-            axes=(0, 1, 2),
-            flux=flux,
-            weight_self=_face_weights(term.scheme, flux),
-            coeff=float(term.coeff),
-            ncomp=1,
-            stride=STRIDE,
-        )
-        # The hand assembly above is the PRODUCTION call, checked rather than
-        # assumed: `GhostCellDiv.rows` is what an evaluate reaches, and a
-        # divergence between the two would make the whole oracle a private
-        # re-derivation (oracle discipline, plan §8.5).
-        produced = BOUNDARY_SCHEMES[("div", "ghostCell")](term.scheme).rows(
-            term, mesh.ibm, 0, 1, 0.0, width
-        )
-        np.testing.assert_array_equal(rows.a.view(np.int64), produced.a.view(np.int64))
-        np.testing.assert_array_equal(rows.c.view(np.int64), produced.c.view(np.int64))
-        np.testing.assert_array_equal(rows.stencil, produced.stencil)
-        arms = {(d, s): _neighbour(ctx, d, s) for d in range(3) for s in (1, -1)}
-        central = getattr(term.scheme, "type", None) == "Linear"
-        _V1[name] = (ctx, rows, arms, flux, central)
+        ctx, rows, arms, extra = _load_v1("div", name)
+        _V1[name] = (ctx, rows, arms, extra["flux"], extra["central"])
     return _V1[name]
 
 
@@ -1176,8 +1159,6 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     reconcile. The wide-scheme composition is owed at B36, where the bar is D1's
     own ``atol = 1e-12`` and not a bitwise one.
     """
-    from blockamr.ibm.band_rows import band_table
-
     mesh, term, geom, ba, dm, face = _case(name, max_size=8)
     _bodies, ibm_bc, _lo, _hi, _vel, scheme = CONFIGS[name]
     assert _width(term) == 1, "the sweep row is scoped to width-1 schemes — Q52(c)"
@@ -1187,25 +1168,18 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     g, ct, data, robin = _v2(mesh, geom, ba, dm, ibm_bc)
     interior = getattr(blockamr, _INTERIOR[scheme])
 
-    # v1: the untouched interior sweep, then the band rows in Overwrite mode.
-    ctx = _context(term, mesh.ibm, 0, 1, 0.0, 1)
-    flux = _band_face_flux(term.coefficient, 0, ctx.band)
-    rows = _face_balance_rows(
-        ctx,
-        axes=(0, 1, 2),
-        flux=flux,
-        weight_self=_face_weights(term.scheme, flux),
-        coeff=1.0,
-        ncomp=1,
-        stride=STRIDE,
-    )
-    out_v1 = blockamr.MultiFab(ba, dm, 1, 0)
-    out_v1.set_val(0.0)
-    interior(out_v1, phi, *mfs, geom, 1.0, 1)
-    version = mesh.ibm.grid_version
-    blockamr.apply_band_rows(
-        out_v1, phi, band_table(rows, version), 1, blockamr.BandMode.Overwrite, 1.0, version
-    )
+    # v1's side, RECORDED: `apply_band_rows` and the rows that fed it went with
+    # the band, so the comparison is against v1's rows and `_dot(fused=True)` —
+    # the value v1's kernel was measured, cell for cell, to produce on this
+    # configuration before the deletion.
+    ctx, rows, _arms_unused, _flux_unused, _central_unused = _v1_side(name)
+
+    # the interior sweep ALONE, so "the wall sweep writes no FLUID cell" and
+    # "a SOLID cell keeps the interior value" are statements this file can make
+    # without a second implementation of the wall.
+    out_bulk = blockamr.MultiFab(ba, dm, 1, 0)
+    out_bulk.set_val(0.0)
+    interior(out_bulk, phi, *mfs, geom, 1.0, 1)
 
     # v2: the same interior sweep, then the compiled pair, by keyword.
     out_v2 = blockamr.MultiFab(ba, dm, 1, 0)
@@ -1237,19 +1211,25 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     }
 
     marker = _markers(ct, phi)
-    got_v1, got_v2 = _readback(out_v1), _readback(out_v2)
+    got_bulk, got_v2 = _readback(out_bulk), _readback(out_v2)
     seen = {SOLID: 0, WALL: 0, "fluid": 0}
     solid_differ = wall_differ = max_delta = 0
     for key, value in got_v2.items():
         m = marker[key[:3]]
         if m == SOLID:
             seen[SOLID] += 1
-            solid_differ += _bits(value) != _bits(got_v1[key])
+            # OPEN-C: v1 wrote exactly 0.0 at a solid cell; v2 leaves the
+            # interior sweep's value. Both halves asserted, so the exclusion
+            # stays load-bearing without v1's kernel.
+            assert _bits(value) == _bits(got_bulk[key]), (
+                f"a SOLID cell is not the interior sweep's value at {key}"
+            )
+            solid_differ += _bits(value) != _bits(0.0)
             continue
         if m != WALL:
             seen["fluid"] += 1
-            assert _bits(value) == _bits(got_v1[key]), (
-                f"a FLUID cell moved at {key}: v2 {value!r} vs v1 {got_v1[key]!r}"
+            assert _bits(value) == _bits(got_bulk[key]), (
+                f"the wall sweep wrote a FLUID cell at {key}: {value!r} vs {got_bulk[key]!r}"
             )
             continue
         seen[WALL] += 1
@@ -1257,10 +1237,7 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
         assert _bits(value) == _bits(_dot(entries, c, 1.0, fused=False)), (
             f"v2's sweep at {key} is not its own row's plain dot product"
         )
-        assert _bits(got_v1[key]) == _bits(_dot(entries, c, 1.0, fused=True)), (
-            f"v1's sweep at {key} is not the same row's FUSED dot product"
-        )
-        delta = abs(_bits(value) - _bits(got_v1[key]))
+        delta = abs(_bits(value) - _bits(_dot(entries, c, 1.0, fused=True)))
         wall_differ += delta != 0
         max_delta = max(max_delta, delta)
 
@@ -1270,8 +1247,7 @@ def test_the_sweep_is_the_pairs_own_row_and_v1s_residual_is_its_consumers_fma(
     assert (wall_differ, max_delta) == WALL_RESIDUAL[name], (
         f"the contraction residual moved: {wall_differ}/{NWALL[name]} WALL cells differ, "
         f"max |delta bits| {max_delta}, but the pinned measurement is "
-        f"{WALL_RESIDUAL[name]} — either band_table.cpp's contraction changed or this "
-        "pair's flags did; re-read Q50 first"
+        f"{WALL_RESIDUAL[name]} — this pair's FP flags changed; re-read Q50 first"
     )
     assert solid_differ > 0, "vacuous: OPEN-C is only a finding where the two sides differ"
 

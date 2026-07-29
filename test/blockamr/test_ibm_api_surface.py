@@ -40,14 +40,13 @@ import pytest
 import blockamr
 from blockamr.dsl import Equation, evaluate, exp
 from blockamr.field import CellField
-from blockamr.ibm import IBM, Cylinder, DirectForcing, FixedValue, Plane
+from blockamr.ibm import IBM, Cylinder, FixedValue, Plane
 from blockamr.mesh import AmrMesh, Mesh
 from blockamr.schemes.registry import SCHEME_REGISTRY
 
 from .ibm_gaps import (
     CUT_CELL,
     PENALIZATION,
-    T6_DIRECT_FORCING_ROWS,
     T17_MOVING_BODIES,
     T18_FORCES,
 )
@@ -488,37 +487,22 @@ def test_cutcell_annihilates_a_constant_like_every_other_method(blockamr_session
 
 
 # ---------------------------------------------------------------------------
-# 5. directForcing as rows (T6)
+# 5. directForcing as rows (T6) — DELETED with `wall_table.cpp`
+#
+# `test_direct_forcing_is_expressed_as_wall_rows` was a strict xfail asserting
+# `isinstance(tables[0], blockamr.WallTable)` — the ONLY reference to
+# `WallTable` anywhere in the tree, and to a `DirectForcing.build_tables` that
+# was never written. `wall_table.cpp` is deleted (plans/IBM/design.md §1.3): the
+# row format it bound is gone, so the shape T6 asked `directForcing` to take no
+# longer exists and the xfail could never flip by being implemented — only by
+# being rewritten into a different claim.
+#
+# Deleted for that stated reason and NOT relaxed. `directForcing` keeps its own
+# coverage: it is a STEP method (design §7's table), it is refused by an
+# operator-level evaluate — asserted in `test_ibm_rungs.py` — and it runs end to
+# end in `test_cylinder_ibm.py`. `T6_DIRECT_FORCING_ROWS` stays in
+# `ibm_gaps.py`: `test_ibm_combinations.py` still uses it.
 # ---------------------------------------------------------------------------
-
-
-@T6_DIRECT_FORCING_ROWS
-def test_direct_forcing_is_expressed_as_wall_rows(blockamr_session):
-    """T6 — "a method that previously had its own kernel now has none".
-
-    ``directForcing`` is the format's first real test: ``b = 1``, no donors,
-    ``gamma = u_body``, ``RestrictMode.Overwrite``. Today it still builds its
-    own ``jnp`` mask array in ``build_data``, which is a second representation
-    of the same geometry and the thing T6 deletes.
-
-    Asserted through the same ``build_tables(mesh, field)`` protocol
-    ``GhostCell`` and ``NoIbm`` already implement — a method that is "just
-    rows" should not need a second entry point to say so. The row count is
-    checked against the analytic non-fluid cell count, computed test-side from
-    the body: the recipe writes exactly one row per non-fluid cell, so a table
-    that is short (only the ghost layer) or long (fluid cells swept in) is
-    caught without inspecting a single row.
-    """
-    centre = (0.5, 0.5)
-    mesh = _make_mesh(bodies={"cyl": _cylinder(centre)})
-    U = CellField(mesh, ncomp=3, ngrow=1, name="U", ibm_bc={"cyl": FixedValue(0.0)})
-
-    tables = DirectForcing.build_tables(mesh, U)
-
-    assert DirectForcing.restrict_mode == "Overwrite"
-    assert isinstance(tables[0], blockamr.WallTable)
-    assert tables[0].nrows == _non_fluid_count(centre)
-    assert tables[0].ncomp == U.ncomp
 
 
 # ---------------------------------------------------------------------------

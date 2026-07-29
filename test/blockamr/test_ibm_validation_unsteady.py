@@ -86,7 +86,6 @@ from blockamr.operators.div import update_face_fluxes
 
 from .ibm_gaps import (
     B27_UNSTEADY_VALIDATION_MEASUREMENT,
-    T18_FORCES,
 )
 
 BACKEND = "cpp"
@@ -543,7 +542,6 @@ def test_stokes_layer_phase_lag_matches_the_analytic_solution(blockamr_session, 
 
 
 @pytest.mark.slow
-@T18_FORCES
 def test_stokes_layer_skin_friction_leads_the_wall_velocity_by_45_degrees(blockamr_session):
     """A4's third metric, and the only one that is purely a wall quantity.
 
@@ -567,9 +565,11 @@ def test_stokes_layer_skin_friction_leads_the_wall_velocity_by_45_degrees(blocka
     the area-averaged ``dphi/dn`` on that patch with shape ``(ncomp,)`` — the
     same function A1's "wall flux ``dT/dr|_R``" metric needs.
 
-    Red on T18: that diagnostic does not exist. It is imported inside the test
-    body so the ``ImportError`` lands inside the xfail rather than taking the
-    whole module down at collection.
+    **Green since the diagnostic landed.** ``blockamr.ibm.wall_gradient`` is
+    the per-patch surface metric verification.md §9 records as missing — "the
+    gate's own third metric is unavailable" — and this row is what its absence
+    made unaskable. It is still imported inside the test body, so a build
+    without it lands the ``ImportError`` here rather than at collection.
     """
     from blockamr.ibm import wall_gradient
 
@@ -584,7 +584,13 @@ def test_stokes_layer_skin_friction_leads_the_wall_velocity_by_45_degrees(blocka
         nsteps,
         _ghost_seeder(u, mesh, _stokes2_seed),
         sample_every=8,
-        probe=lambda _t: float(wall_gradient(u, "wall", solution=solution)[0]),
+        # `t` is passed, not discarded: the wall gradient of a Dirichlet wall is
+        # `(phi_image - phi_w)/d` and `phi_w` is `gamma(t)`, so a diagnostic read at
+        # the wrong time reports the wrong shear. A4's datum is `U0 cos(omega t)`;
+        # reading it at 0 contaminates the amplitude by 2.85x and the phase by
+        # 2.13 rad (measured). A5's datum is constant and the argument is inert
+        # there, and is passed anyway so the two probes cannot drift.
+        probe=lambda t: float(wall_gradient(u, "wall", solution=solution, t=t)[0]),
     )
     window = times >= times[-1] - FIT_PERIODS * PERIOD_A4
     amp, phase = _fit_harmonic(times[window], -NU * hist[window], OMEGA_A4)
@@ -758,7 +764,6 @@ def test_stokes_first_problem_profile_follows_erfc(blockamr_session):
 
 
 @pytest.mark.slow
-@T18_FORCES
 def test_stokes_first_problem_wall_shear_decays_as_one_over_sqrt_t(blockamr_session):
     """A5's wall metric: ``tau(t) = rho U0 sqrt(nu / (pi t))``.
 
@@ -768,8 +773,9 @@ def test_stokes_first_problem_wall_shear_decays_as_one_over_sqrt_t(blockamr_sess
     by a constant, or that is evaluated one cell out from the surface, does not
     fit ``t^-1/2``. The prefactor is asserted too, but second.
 
-    Same missing diagnostic as A4's skin friction (T18), imported inside the
-    body so the failure is an xfail and not a collection error.
+    Same diagnostic as A4's skin friction (``blockamr.ibm.wall_gradient``),
+    imported inside the body so a build without it fails here rather than at
+    collection.
     """
     from blockamr.ibm import wall_gradient
 
@@ -784,7 +790,13 @@ def test_stokes_first_problem_wall_shear_decays_as_one_over_sqrt_t(blockamr_sess
         nsteps,
         _ghost_seeder(u, mesh, _stokes1_seed),
         sample_every=25,
-        probe=lambda _t: float(wall_gradient(u, "wall", solution=solution)[0]),
+        # `t` is passed, not discarded: the wall gradient of a Dirichlet wall is
+        # `(phi_image - phi_w)/d` and `phi_w` is `gamma(t)`, so a diagnostic read at
+        # the wrong time reports the wrong shear. A4's datum is `U0 cos(omega t)`;
+        # reading it at 0 contaminates the amplitude by 2.85x and the phase by
+        # 2.13 rad (measured). A5's datum is constant and the argument is inert
+        # there, and is passed anyway so the two probes cannot drift.
+        probe=lambda t: float(wall_gradient(u, "wall", solution=solution, t=t)[0]),
     )
     tau = -NU * hist
     exponent = _fit_power(times, tau)
