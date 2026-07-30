@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Bucketed dispatch: nested vmap over boxes and cells,
-plus flat element-level dispatch with lax.fori_loop chunks."""
+"""Bucketed dispatch: nested vmap over boxes and cells, plus flat element-level
+dispatch with lax.fori_loop chunks."""
 
 import jax
 import jax.numpy as jnp
@@ -26,7 +26,7 @@ def process_bucket(bucket, dt_over_coeff, kernels):
         ncomp=1: (max_boxes, n_cells_padded)
         ncomp>1: (max_boxes, n_cells_padded, ncomp)
     """
-    ncomp = kernels[0].ncomp  # static → compile-time constant
+    ncomp = kernels[0].ncomp  # static → a compile-time constant
 
     def process_one_box(box_idx):
         Nx = bucket.Nx_arr[box_idx]
@@ -68,10 +68,7 @@ def process_bucket(bucket, dt_over_coeff, kernels):
 
 @jax.jit
 def evaluate_bucket(bucket, kernels):
-    """Evaluate spatial operators for all boxes — return source term only.
-
-    Unlike process_bucket, does NOT do the time integration step
-    (phi - dt * source). Just returns the sum of kernel contributions.
+    """Sum the kernel contributions for all boxes; no time-integration step.
 
     Returns:
         ncomp=1: (max_boxes, n_cells_padded)
@@ -116,16 +113,9 @@ def evaluate_bucket(bucket, kernels):
     return jax.vmap(eval_one_box)(jnp.arange(bucket.max_boxes))
 
 
-# ---------------------------------------------------------------------------
-# Flat element-level dispatch with lax.fori_loop chunks
-# ---------------------------------------------------------------------------
-
 @jax.jit
 def process_flat(bucket, elem_map, dt_over_coeff, kernels):
-    """Process all valid cells via flat element-level dispatch.
-
-    One JIT'd kernel launch processes all boxes on a level
-    using a single vmap over all valid cells.
+    """Process all valid cells on a level in one launch: a single vmap over all cells.
 
     Args:
         bucket: BucketContext covering all boxes on the level.
@@ -177,11 +167,7 @@ def process_flat(bucket, elem_map, dt_over_coeff, kernels):
 
 @jax.jit
 def evaluate_flat(bucket, elem_map, kernels):
-    """Evaluate spatial operators via flat dispatch — source term only.
-
-    Same structure as process_flat but returns the sum of kernel
-    contributions without the time-integration step.
-    """
+    """As :func:`process_flat`, but without the time-integration step."""
     ncomp = kernels[0].ncomp
 
     def _eval_one(flat_idx):

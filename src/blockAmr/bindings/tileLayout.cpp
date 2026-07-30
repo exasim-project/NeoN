@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-// TileLayout: per-field dispatch metadata for tiled Pallas kernels.
-// One TileLayout per MultiFab (cell or face). Stores per-tile
-// [offset, sx, sy, sz, box_id] as a device int32 array.
-// Built by build_tile_layout() — single MFIter pass + one htod_memcpy.
+// Per-field dispatch metadata for tiled Pallas kernels: one TileLayout per MultiFab (cell or
+// face), holding per-tile [offset, sx, sy, sz, box_id] as a device int32 array.
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
@@ -19,9 +17,8 @@
 namespace nb = nanobind;
 using namespace amrex;
 
-// Device tag for The_Device_Arena()-backed tile buffers: host memory (=> CPU)
-// on a CPU-only AMReX build, so JAX's from_dlpack doesn't request a nonexistent
-// cuda backend when running CPU-only.
+// Device tag for The_Device_Arena()-backed tile buffers; CPU on a CPU-only AMReX build so JAX's
+// from_dlpack does not request a nonexistent cuda backend.
 #if defined(AMREX_USE_CUDA)
 constexpr int kTileDevice = nb::device::cuda::value;
 #elif defined(AMREX_USE_HIP)
@@ -86,7 +83,6 @@ static TileLayout buildTileLayout(MultiFab& mf, int bf)
     int nc = mf.nComp();
     constexpr int FIELDS = 5;
 
-    // Count boxes and tiles
     int n_boxes = 0;
     size_t n_tiles = 0;
     for (MFIter mfi(mf); mfi.isValid(); ++mfi)
@@ -99,7 +95,6 @@ static TileLayout buildTileLayout(MultiFab& mf, int bf)
         n_boxes++;
     }
 
-    // Pad to power of 2
     size_t n_tiles_padded = 1;
     while (n_tiles_padded < n_tiles)
         n_tiles_padded <<= 1;
@@ -107,10 +102,8 @@ static TileLayout buildTileLayout(MultiFab& mf, int bf)
     while (n_boxes_padded < n_boxes)
         n_boxes_padded <<= 1;
 
-    // Allocate host array
     auto* packed = new int32_t[n_tiles_padded * FIELDS];
 
-    // Fill tile descriptors
     size_t t = 0;
     size_t box_offset = 0;
     int box_id = 0;
@@ -165,7 +158,6 @@ static TileLayout buildTileLayout(MultiFab& mf, int bf)
             packed[dst + f] = packed[f];
     }
 
-    // Single htod_memcpy
     size_t nbytes = n_tiles_padded * FIELDS * sizeof(int32_t);
     auto* dev_ptr = static_cast<int32_t*>(The_Device_Arena()->alloc(nbytes));
     Gpu::htod_memcpy(dev_ptr, packed, nbytes);

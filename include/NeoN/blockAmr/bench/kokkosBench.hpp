@@ -8,9 +8,8 @@
 #include <string>
 #include <vector>
 
-// Deliberately free of both Kokkos and nanobind headers: the implementations live in
-// the blockamr_kokkos object library and the nanobind bindings in _blockamr, and this
-// header is the only thing the two sides share.
+// Deliberately free of both Kokkos and nanobind headers: it is the only thing the
+// blockamr_kokkos object library and the _blockamr bindings share.
 
 namespace amrex
 {
@@ -21,24 +20,19 @@ class MultiFab;
 namespace blockamr
 {
 
-// Kokkos lifetime lives in runtime.hpp, so production's init.cpp need not include
-// this bench-only header.
+// Kokkos lifetime lives in runtime.hpp, so init.cpp need not include this bench header.
 
 std::string kokkosExecutionSpace();
 
-// Sum of i over [0, n) -- proves a Kokkos kernel links and launches inside
-// _blockamr, with no AMReX interplay involved.
+// Sum of i over [0, n) -- proves a Kokkos kernel links and launches inside _blockamr.
 double kokkosSelftest(long n);
 
-// Sum of mf's valid cells through an unmanaged Kokkos View over the fab pointers --
-// proves the zero-copy handle addresses the same bytes AMReX does.
+// Sum of mf's valid cells through an unmanaged Kokkos View -- proves the zero-copy handle
+// addresses the same bytes AMReX does.
 double kokkosMfSum(amrex::MultiFab& mf);
 
-// The operator bench.
-
-// Fields an operator reads and writes. Ghosts are the caller's job, filled outside
-// the timed region so the halo exchange is not part of the comparison. Face fields
-// may be null for operators that do not use them.
+// Fields an operator reads and writes. Ghosts are the caller's job, filled outside the
+// timed region. Face fields may be null for operators that do not use them.
 struct OpArgs
 {
     amrex::MultiFab* out = nullptr;
@@ -60,10 +54,8 @@ struct BenchResult
     long ncells = 0;       // valid cells, summed over boxes
     int nboxes = 0;        // launches per apply
 
-    // Host time to ISSUE the applies, measured before the fence. Separates the two
-    // ways a backend can be slow: ~ msMin means host-limited (the launch path
-    // itself), << msMin means GPU-limited. Without it, a per-launch-overhead story
-    // can be told about either.
+    // Host time to ISSUE the applies, before the fence: ~ msMin means host-limited (the
+    // launch path itself), << msMin means GPU-limited.
     double msEnqueue = 0.0;
 };
 
@@ -83,23 +75,17 @@ OpInfo benchOperatorInfo(const std::string& name);
 // One apply, untimed -- the correctness path. Ghosts must already be filled.
 void applyOperator(const std::string& name, const OpArgs& args);
 
-// batches x iters applies, fenced per batch. Warms up first, so the reported minimum
-// excludes PTX JIT and first-touch effects.
+// batches x iters applies, fenced per batch. Warms up, so msMin excludes PTX JIT.
 BenchResult benchOperator(const std::string& name, const OpArgs& args, int iters, int batches);
 
-// The GMG V-cycle bench: the native V-cycle of gmgPrecond.hpp, run with its AMReX
-// kernels and with Kokkos twins of the same three. Unlike the operator bench this is
-// a whole solver phase -- (sweeps x 2 colours + 2) kernels PER LEVEL, each once per
-// box, with a ghost exchange between colours -- so it measures launch cost in the
-// shape a real multigrid hierarchy produces, coarse levels included.
+// The GMG V-cycle bench: gmgPrecond.hpp's native V-cycle with its AMReX kernels and with
+// Kokkos twins -- a whole solver phase, so launch cost in a real hierarchy's shape.
 
-// The operator (diagonal source + symmetric face coefficients) and the rhs, all FP64
-// and sharing one BoxArray/DistributionMapping, plus the V-cycle shape. Mesh must be
-// triply periodic: the bench carries no physical-BC ghost fill.
+// The operator (diagonal source + face coefficients) and the rhs, all FP64 on one
+// BoxArray, plus the cycle shape. Mesh must be triply periodic: no physical-BC fill.
 struct GmgArgs
 {
-    // const: the V-cycle only reads these (it copies them into its own level fields
-    // at setup), which is what lets a caller holding const fields build one.
+    // const: the V-cycle only reads these, copying them into its level fields at setup.
     const amrex::Geometry* geom = nullptr;
     const amrex::MultiFab* rhs = nullptr;
     const amrex::MultiFab* alpha = nullptr;
@@ -116,64 +102,35 @@ struct GmgArgs
     int minBottom = 2;
     double omega = 1.0;
 
-    // Coarse-grid agglomeration. Off = production: the fine BoxArray is coarsened in
-    // place, so the coarsest level launches as many kernels as the finest for a few
-    // hundred cells. On = a coarse level takes a fresh aggGridSize-capped
-    // decomposition whenever that has fewer boxes, with inter-level kernels routed
-    // through a transfer fab. Red-black smoothing is decomposition-independent, so
-    // this changes cost and not arithmetic.
+    // Coarse-grid agglomeration. Off = production, the fine BoxArray coarsened in place,
+    // so the coarsest level launches as many kernels as the finest. On = a fresh
+    // aggGridSize-capped decomposition when it has fewer boxes. Cost, not arithmetic.
     bool agglomerate = false;
     int aggGridSize = 32;
 
-    // Target box size for LEVEL 0's own decomposition; 0 (the default) leaves level 0
-    // on the caller's boxes. Re-deciding the one decomposition the caller can see
-    // costs a staging fab and a copy per apply, but level 0 holds 7/8 of the cells and
-    // a box's halo traffic falls as its side grows (19% overhead at 32^3, 9.4% at
-    // 64^3). Ignored unless it yields strictly fewer boxes. kokkos_opt only.
+    // Target box size for LEVEL 0's own decomposition; 0 leaves it on the caller's boxes.
+    // Level 0 holds 7/8 of the cells and a box's halo traffic falls as its side grows (19%
+    // overhead at 32^3, 9.4% at 64^3). Ignored unless it yields fewer boxes. kokkos_opt.
     int aggLevel0Size = 0;
 
-    // The value type the whole hierarchy is STORED in, as production's
-    // gmg_precision: "fp64" (the default), "fp32" or "bf16". The caller's fields and
-    // the residual gate stay fp64 whatever this says; what shrinks is smoother
-    // traffic, which is what the V-cycle is bound by once launch cost is gone.
-    //
-    // Unlike the switches above these DO change arithmetic. bf16's cycle is
-    // measurably weaker, more so the finer the grid, since the restricted residual
-    // carries psi's storage error times ||A|| ~ 6/dx^2 (1.05x weaker at 16^3, 3.2x at
-    // 256^3) -- more CG iterations than the saved bytes buy back at any size.
-    // Arithmetic still happens in fp32; in bf16 the residual would cancel to exactly
-    // zero. kokkos_opt only, for all three: the baselines stay fp64, which is what
-    // keeps them baselines.
+    // Hierarchy storage type ("fp64" | "fp32" | "bf16"), production's gmg_precision;
+    // fields and the residual gate stay fp64. Changes ARITHMETIC (bf16 measurably
+    // weaker), so kokkos_opt only -- the baselines stay fp64, which keeps them baselines.
     std::string precision = "fp64";
 
-    // The value type the COEFFICIENTS (alpha and the face arrays) are stored in;
-    // empty means "same as precision". Split from `precision` because a rounded psi is
-    // amplified by ||A|| when the cycle restricts b - A psi, while a rounded
-    // coefficient only perturbs the PRECONDITIONER's operator -- CG still stops on the
-    // fp64 one, so the cost is iterations, not correctness. kokkos_opt only, and it
-    // may not be WIDER than precision.
-    //
-    // Measured: narrow the coefficients only once the FIELDS are narrow. Under fp32
-    // fields, bf16 coefficients gain 1.18x at an indistinguishable residual
-    // reduction; under fp64 fields the same change costs 11%. Tables:
-    // report/blockamr-precision-measurements.md.
+    // Storage type of the COEFFICIENTS; empty means "same as precision", never WIDER. A
+    // rounded coefficient only perturbs the PRECONDITIONER, where a rounded psi is
+    // amplified by ||A||. Measured: report/blockamr-precision-measurements.md.
     std::string coeffPrecision;
 
-    // Store ONE face coefficient per direction instead of an upper/lower pair: for a
-    // SYMMETRIC operator ux(i+1) and lx(i+1) are the same matrix entry, so the two
-    // fabs hold identical numbers and a colour sweep streams 9 arrays where 6 suffice.
-    // Not an approximation -- the same numbers with half the coefficient traffic.
-    //
-    // Symmetry is CHECKED bitwise at setup rather than assumed, and an asymmetric
-    // operator silently keeps the pair; GmgResult::sharedCoeffs reports which
-    // happened, so a timing can never be labelled shared when it was not.
-    // kokkos_opt only.
+    // ONE face coefficient per direction instead of an upper/lower pair: for a SYMMETRIC
+    // operator the two fabs hold identical numbers, so this is no approximation. Symmetry
+    // is CHECKED bitwise at setup; GmgResult::sharedCoeffs reports it. kokkos_opt only.
     bool shareCoeffs = false;
 
-    // Homogeneous domain BCs per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic,
-    // 1 Dirichlet, 2 Neumann -- la::BcArray's spec, respelled here so this header
-    // keeps its no-AMReX-headers contract. All-zero (the default) is the triply
-    // periodic mesh the bench itself uses.
+    // Homogeneous domain BCs per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1
+    // Dirichlet, 2 Neumann -- la::BcArray respelled to keep this header AMReX-free.
+    // All-zero (the default) is the triply periodic mesh the bench itself uses.
     std::array<int, 6> bc {};
 };
 
@@ -187,13 +144,11 @@ struct GmgResult
     std::vector<int> boxesPerLevel;
     std::vector<long> cellsPerLevel;
 
-    // ||rhs - A sol|| before and after ONE V-cycle from sol = 0: the gate that says
-    // the timed launcher computed the V-cycle rather than something cheaper.
+    // ||rhs - A sol|| before and after ONE V-cycle from sol = 0 -- the correctness gate.
     double resid0 = 0.0;
     double resid1 = 0.0;
 
-    // Whether the hierarchy actually shares one face coefficient per direction:
-    // asking for it on an asymmetric operator does not get it.
+    // Whether the hierarchy really shares one coefficient per direction (asymmetric: no).
     bool sharedCoeffs = false;
 
     // Whether level 0 actually got its own decomposition (GmgArgs::aggLevel0Size).

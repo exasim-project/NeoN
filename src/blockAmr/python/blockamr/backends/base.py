@@ -6,11 +6,10 @@ from typing import Protocol
 
 
 class ExplicitBackend(Protocol):
-    """Explicit forward-Euler discretisation backend for one AMR level.
+    """Explicit forward-Euler discretisation backend for ONE AMR level.
 
-    The caller (``dsl.solve.solve``/``dsl.solve.evaluate``) owns the level
-    loop, ``fill_patch``, and ``average_down`` — a backend only touches a
-    single level, so ghost/BC handling stays backend-agnostic.
+    The caller owns the level loop, ``fill_patch`` and ``average_down``, so ghost/BC
+    handling stays backend-agnostic.
     """
 
     def euler_step(self, equation, cell_field, lev, t, dt) -> None:

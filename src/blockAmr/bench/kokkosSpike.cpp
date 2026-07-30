@@ -2,17 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// Feasibility spike for the Kokkos-vs-AMReX operator bench. Two things need to
-// hold before the bench is worth writing:
-//
-//   1. a Kokkos CUDA kernel links and launches from inside _blockamr;
-//   2. an unmanaged Kokkos View over MultiFab memory is a valid handle on the
-//      same bytes AMReX kernels see -- MultiFab data is plain device memory
-//      (the_arena_is_managed defaults to false), so DefaultExecutionSpace's
-//      memory space is the correct label and no copy is involved.
-//
-// This TU is compiled WITHOUT relocatable device code, like the rest of the module
-// (see CMakeLists.txt for why _blockamr itself is also non-RDC).
+// Feasibility spike for the operator bench: a Kokkos CUDA kernel links and launches from inside
+// _blockamr, and an unmanaged Kokkos View over MultiFab memory is a no-copy handle on the same
+// bytes AMReX kernels see (MultiFab data is plain unmanaged device memory).
 
 #include <stdexcept>
 
@@ -28,8 +20,8 @@ namespace blockamr
 namespace
 {
 
-// LayoutLeft matches Array4's i-contiguous ordering, so this View addresses the
-// fab exactly as amrex::ParallelFor does.
+// LayoutLeft matches Array4's i-contiguous ordering, so this View addresses the fab as
+// amrex::ParallelFor does.
 using FabView = Kokkos::View<
     double***,
     Kokkos::LayoutLeft,
@@ -74,8 +66,7 @@ double kokkosMfSum(amrex::MultiFab& mf)
     {
         const amrex::Box& fbx = mf[mfi].box();
         const amrex::Box& vbx = mfi.validbox();
-        // The View spans the whole fab box, ghosts included, so valid-region
-        // indices are offset by validbox.smallEnd - fabbox.smallEnd.
+        // The View spans the whole fab box, so valid indices shift by validbox - fabbox smallEnd.
         FabView v(mf[mfi].dataPtr(), fbx.length(0), fbx.length(1), fbx.length(2));
         const int ox = vbx.smallEnd(0) - fbx.smallEnd(0);
         const int oy = vbx.smallEnd(1) - fbx.smallEnd(1);

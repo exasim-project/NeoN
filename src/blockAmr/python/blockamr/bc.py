@@ -2,10 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Non-periodic boundary conditions for block-structured meshes.
-
-Provides Dirichlet and Neumann ghost-cell filling for CellFields
-on domains with solid walls.
+"""Non-periodic boundary conditions: Dirichlet and Neumann ghost-cell filling for
+CellFields on domains with solid walls.
 """
 
 import blockamr
@@ -60,12 +58,11 @@ class NeumannBC:
 
 
 class SlipBC:
-    """Free-slip / symmetry wall (native BC code 3).
+    """Free-slip / symmetry wall (native BC code 3), cf. OpenFOAM ``slip``.
 
-    No penetration + zero tangential shear: the velocity component *normal* to
-    the face is reflected with a sign flip (ghost = -interior → zero normal
-    velocity at the face) while the *tangential* components are copied
-    (ghost = interior → zero gradient). cf. OpenFOAM ``slip`` / ``symmetry``.
+    No penetration and zero tangential shear: the component NORMAL to the face is
+    reflected (ghost = -interior, zero normal velocity at the face) while the TANGENTIAL
+    components are copied (ghost = interior, zero gradient).
     """
 
     def fill(self, arr, axis, side, ngrow):
@@ -81,7 +78,7 @@ class SlipBC:
             src = _take(arr, interior_idx, axis)
             if arr.ndim == 4 and ncomp > 1:
                 val = src.copy()
-                # component normal to this face (== axis) reflects with -sign
+                # The component normal to this face is the one indexed by ``axis``.
                 val[..., axis] = -val[..., axis]
                 _put(arr, ghost_idx, axis, val)
             else:
@@ -105,10 +102,7 @@ class BoundaryCondition:
 
 
 def fill_ghost_cells(mf, geom, bc):
-    """Fill ghost cells of a MultiFab according to BoundaryCondition.
-
-    Uses a GPU-native C++ kernel — no host round-trip.
-    """
+    """Fill a MultiFab's ghost cells from *bc*, via a GPU-native C++ kernel."""
     ngrow = mf.n_grow()
     if ngrow == 0:
         return
@@ -197,18 +191,15 @@ def slip():
 def pressure_domain_bc(u_bc, geom):
     """Per-face pressure ``LinOpBCType`` derived from a velocity ``VectorBC``.
 
-    Standard incompressible pressure/velocity BC pairing (cf. OpenFOAM
-    ``inlet: U fixedValue / p zeroGradient``, ``outlet: U zeroGradient / p
-    fixedValue``):
+    The standard incompressible pairing:
 
     * periodic axis                        → ``Periodic``
-    * velocity Neumann face (outflow)      → pressure ``Dirichlet`` (pins the
-      otherwise-singular reference and lets flow leave the domain)
+    * velocity Neumann face (outflow)      → pressure ``Dirichlet``, which pins the
+      otherwise-singular reference and lets flow leave the domain
     * velocity Dirichlet face (inlet/wall) → pressure ``Neumann`` (zeroGradient)
 
-    Returns ``(lo_bc, hi_bc)`` — two length-3 lists of
-    ``blockamr.LinOpBCType`` for the lo/hi faces of each axis, ready for
-    ``MLLinOp.set_domain_bc(lo_bc, hi_bc)``.
+    Returns ``(lo_bc, hi_bc)``: two length-3 lists for the lo/hi face of each axis,
+    ready for ``MLLinOp.set_domain_bc(lo_bc, hi_bc)``.
     """
     bc_type = blockamr.LinOpBCType
     is_per = geom.is_periodic()
@@ -229,11 +220,7 @@ def pressure_domain_bc(u_bc, geom):
 
 
 class VectorBC(BoundaryCondition):
-    """Per-face vector BC specification.
-
-    cf. OpenFOAM boundaryField:
-        lid    { type fixedValue; value uniform (1 0 0); }
-        walls  { type noSlip; }
+    """Per-face vector BC specification, cf. an OpenFOAM ``boundaryField``.
 
     Usage:
         VectorBC(

@@ -14,10 +14,8 @@
 namespace blockamr::la
 {
 
-// Per-iteration residual-norm history. The criteria used here make the solvers pass
-// residual_norm = nullptr, so the norm is computed from the residual vector (implicit
-// squared norm as a last resort). Scalars land on the solve executor, so device values
-// are staged through the host master before reading.
+// Per-iteration residual-norm history. The criteria here pass residual_norm = nullptr, so
+// the norm comes from the residual vector; device scalars stage through the host master.
 class ResidualHistoryLogger : public gko::log::Logger
 {
 public:

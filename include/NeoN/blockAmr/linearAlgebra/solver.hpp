@@ -24,16 +24,9 @@ namespace blockamr::la
 {
 
 /* @class Solver
- * @brief Solves a LinearSystem. Holds an executor and a SolverConfig BY VALUE and
- *        nothing else -- no matrix, no rhs, no geometry.
- *
- * Deliberately NO factory (design §7.4): which Krylov method the config names is
- * decided once, in solverConfig.hpp's parseSolverKind.
- *
- * Returns `la::SolveResult`, as every solve entry point in this component does,
- * rather than the design's separate `SolverStats`: its key set is a contract
- * pinned by test_gmg_solver_stats_keys_match_cg, and a second near-identical
- * struct is the duplication this refactor removes.
+ * @brief Solves a LinearSystem, holding only an executor and a SolverConfig by value.
+ *        Deliberately NO factory: parseSolverKind decided the method once. Returns
+ *        la::SolveResult, as every solve entry point here does.
  */
 class Solver
 {
@@ -41,15 +34,11 @@ public:
 
     Solver(const NeoN::Executor& exec, const la::SolverConfig& cfg) : exec_(exec), cfg_(cfg) {}
 
-    // rhs comes from the system, not the caller (cf. NeoN::la::Solver::solve(ls,
-    // field)). `sol`'s incoming values seed the initial guess, as elsewhere here.
+    // rhs comes from the system, not the caller; `sol`'s values seed the initial guess.
     la::SolveResult solve(const LinearSystem& system, amrex::MultiFab& sol) const
     {
-        // Refused: these three want the hierarchy as the SOLVER (a stationary
-        // V-cycle loop, or Ginkgo's Ir with the cycle as inner solver) -- a
-        // different object with a different stopping test than the Krylov solver
-        // this class builds. Checked BEFORE building the preconditioner, so the
-        // refusal does not first pay for a hierarchy.
+        // Refused: these three want the hierarchy as the SOLVER, a different object with a
+        // different stopping test. Checked before the refusal pays for a hierarchy.
         if (cfg_.solverKind == la::SolverKind::gmg || cfg_.solverKind == la::SolverKind::ir
             || cfg_.solverKind == la::SolverKind::mpir)
         {
@@ -59,8 +48,7 @@ public:
                   "than from a LinOp; use a Krylov method"
             );
         }
-        // ASKED FOR, not decided here: the hierarchy comes from the coefficient
-        // FIELDS, which only the matrix has (coefficients.hpp).
+        // ASKED FOR, not decided here: the hierarchy comes from the coefficient FIELDS.
         std::shared_ptr<const gko::LinOp> precond = system.matrix().makePrecond(cfg_);
         if (cfg_.precondKind != la::PrecondKind::none && precond == nullptr)
         {
@@ -71,17 +59,14 @@ public:
             );
         }
         SystemKrylovSolver s(exec_, system, cfg_, std::move(precond));
-        // KrylovSolver::solve takes a non-const rhs only because ISolver's
-        // signature does; the rhs is READ (gather(const FA&), transfer.hpp) and
-        // never written. The cast lives here, once, rather than widening either
-        // interface.
+        // The rhs is READ, never written (gather takes a const FA&); the cast lives here,
+        // once, rather than widening ISolver's signature.
         return s.solve(const_cast<amrex::MultiFab&>(system.rhs()), sol);
     }
 
 private:
 
-    // Runs a LinearSystem through the existing Krylov machinery: KrylovSolver
-    // builds itself from a LinOp, and Matrix::op() is one.
+    // Runs a LinearSystem through the Krylov machinery: Matrix::op() is a LinOp.
     class SystemKrylovSolver : public la::KrylovSolver
     {
     public:
@@ -94,14 +79,13 @@ private:
         )
             : la::KrylovSolver(
                 la::makeExecutor(exec),
-                // Global dimension, which every rank MUST agree on -- so it is
-                // taken from the operator rather than recomputed here.
+                // Global dimension, which every rank MUST agree on -- so it comes from
+                // the operator rather than being recomputed here.
                 system.matrix().op()->get_size()[0],
                 system.localRows()
             )
         {
-            // const_pointer_cast because Ginkgo's solver factories store a
-            // non-const system matrix; nothing here writes through it.
+            // const_pointer_cast: Ginkgo's factories store a non-const system matrix.
             build(
                 std::const_pointer_cast<gko::LinOp>(system.matrix().op()),
                 cfg.solver,

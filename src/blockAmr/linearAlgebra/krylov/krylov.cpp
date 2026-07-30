@@ -15,22 +15,9 @@ namespace blockamr::la
 namespace
 {
 
-// Every gko::solver::X::build().with_criteria(criteria) params object shares
-// this line: attach `precond` as the generated preconditioner when one was
-// given. Was five verbatim copies of it (one per solver kind); collapsing it
-// is why `buildKrylov` below no longer needs a `criteriaFlex` copy of
-// `criteria` either -- the per-branch local variable that copy stood in for
-// is now this function's own `params` argument.
-//
-// Returns `params` itself (not `.on(exec)->generate(op)`'s result): that
-// conversion -- std::unique_ptr<SolverType> to std::shared_ptr<gko::LinOp> --
-// has to stay in buildKrylov's own (non-template) body, one call site per
-// solver kind, exactly where it lived before this collapse. GCC 13 rejects
-// that same conversion when it instead happens inside a function template
-// parameterised on the builder type Params (a GCC 13 regression: "use of
-// built-in trait '__remove_cv(gko::LinOp)' in function signature", reproduced
-// for all five Params instantiations), so no shared_ptr<gko::LinOp>
-// conversion happens inside any template here.
+// Attach `precond` as the generated preconditioner, shared by all five solver builders.
+// Returns `params` itself: GCC 13 rejects the unique_ptr<SolverType> -> shared_ptr<gko::LinOp>
+// conversion inside a function template, so it has to stay in buildKrylov's non-template body.
 template<class Params>
 Params withPrecond(Params params, const std::shared_ptr<const gko::LinOp>& precond)
 {
@@ -45,9 +32,7 @@ Params withPrecond(Params params, const std::shared_ptr<const gko::LinOp>& preco
 
 std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor)
 {
-    // No mapping of our own: NeoN already owns this one (memoization, the Kokkos
-    // finalize hook, and the execution-space stream). Restating it here is how the
-    // two copies drift apart.
+    // No mapping of our own: NeoN owns it (memoization, the Kokkos finalize hook, the stream).
     return NeoN::la::ginkgo::getGkoExecutor(executor);
 }
 
@@ -81,15 +66,9 @@ std::shared_ptr<gko::LinOp> buildKrylov(
             .on(exec)
             ->generate(op);
     }
-    // FLEXIBLE outer solvers: unlike Cg and Bicgstab they do not assume the
-    // preconditioner is the same linear operator on every apply, so they are
-    // the right outer method when the V-cycle's bottom is solved by an
-    // adaptive Krylov method (gmg_bottom_solver != 'smoother' with a loose
-    // gmg_bottom_rtol). Both cost more per iteration than Cg -- Gcr stores a
-    // growing search space, Fcg one extra vector -- so they are opt-in
-    // rather than the default; the stationary route (a tight bottom rtol,
-    // keeping solver='cg') is usually cheaper. Fcg still needs a SYMMETRIC
-    // operator; Gcr does not.
+    // FLEXIBLE outer solvers: they do not assume a fixed preconditioner, so they suit a V-cycle
+    // whose bottom is an adaptive Krylov solve (loose gmg_bottom_rtol). Both cost more per
+    // iteration than Cg, so they are opt-in; Fcg still needs a SYMMETRIC operator, Gcr does not.
     if (solver == "gcr")
     {
         return withPrecond(gko::solver::Gcr<double>::build().with_criteria(criteria), precond)
@@ -104,15 +83,9 @@ std::shared_ptr<gko::LinOp> buildKrylov(
     }
     if (solver == "ir")
     {
-        // Iterative refinement x <- x + relax * S(b - A x), where S is the
-        // already-generated inner solver `precond` (the GMG V-cycle LinOp). With
-        // relaxation_factor 1.0 this is plain Richardson driven by the V-cycle,
-        // Ginkgo's idiomatic counterpart of the native solver="gmg" loop.
-        // default_initial_guess defaults to `provided`, so the incoming x seeds
-        // the iteration (the persistent-solver warm-start contract). Ir attaches
-        // its inner solver via with_generated_solver rather than
-        // with_generated_preconditioner, so it does not go through
-        // withPrecond.
+        // Iterative refinement x <- x + relax * S(b - A x) with S = `precond`, the generated GMG
+        // V-cycle; relaxation 1.0 is plain Richardson, and default_initial_guess `provided` lets
+        // the incoming x seed it (warm start). Inner solver via with_generated_solver.
         auto params = gko::solver::Ir<double>::build().with_criteria(criteria);
         params.with_relaxation_factor(1.0);
         if (precond)

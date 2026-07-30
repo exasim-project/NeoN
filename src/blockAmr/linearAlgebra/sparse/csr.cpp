@@ -20,35 +20,31 @@ namespace blockamr::la
 
 std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
     std::shared_ptr<const gko::Executor> exec,
-    const amrex::Geometry& geom,
-    const amrex::MultiFab& alpha,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
+    const MeshLevel& mesh,
+    const CellFieldLevel& alpha,
+    const FaceFieldLevel& upper,
+    const FaceFieldLevel& lower,
     const BcArray& bc
 )
 {
-    if (alpha.size() != 1)
+    if ((*alpha).size() != 1)
     {
         throw std::runtime_error("assembleFaceCoeffCsr: single-box meshes only");
     }
-    const amrex::Box dom = geom.Domain();
+    const amrex::Box dom = mesh.geom.Domain();
     const int ni = dom.length(0);
     const int nj = dom.length(1);
     const int nk = dom.length(2);
     const long n = static_cast<long>(ni) * nj * nk;
 
     // Host-accessible copies to read the (device) coefficients.
-    auto al = pinnedCopy(alpha);
-    auto axu = pinnedCopy(ux);
-    auto axl = pinnedCopy(lx);
-    auto ayu = pinnedCopy(uy);
-    auto ayl = pinnedCopy(ly);
-    auto azu = pinnedCopy(uz);
-    auto azl = pinnedCopy(lz);
+    auto al = pinnedCopy(*alpha);
+    auto axu = pinnedCopy(upper[0]);
+    auto axl = pinnedCopy(lower[0]);
+    auto ayu = pinnedCopy(upper[1]);
+    auto ayl = pinnedCopy(lower[1]);
+    auto azu = pinnedCopy(upper[2]);
+    auto azl = pinnedCopy(lower[2]);
     amrex::Gpu::streamSynchronize();
 
     amrex::MFIter mfi(*al);
@@ -85,18 +81,13 @@ std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
                 const double aB = Lz(ia, ja, ka);
                 double diag = A(ia, ja, ka) - (aE + aW + aN + aS + aT + aB);
 
-                // At most 7 stencil entries (col, val); a boundary side that is
-                // not periodic contributes none, so `ne` <= 7.
+                // At most 7 entries (col, val): a non-periodic boundary side contributes none.
                 std::array<std::pair<long, double>, 7> e {};
                 std::size_t ne = 0;
 
-                // One side of the 7-point stencil. `leaves` says the neighbour
-                // steps off the domain on side `s`. Periodic (bc 0): keep the
-                // modular-wraparound column. Otherwise the reflect-ghost fill of
-                // core/bc.hpp has already made that neighbour's value sign*pC
-                // (sign = -1 homogeneous Dirichlet, +1 homogeneous Neumann), so
-                // aFace*pNeighbour IS sign*aFace*pC -- a diagonal term, and the
-                // off-diagonal entry disappears.
+                // One side of the 7-point stencil. Periodic (bc 0): keep the wraparound column.
+                // Otherwise the reflect ghost made that neighbour sign*pC (-1 Dirichlet, +1
+                // Neumann), so the term is sign*aFace on the DIAGONAL and the column is gone.
                 auto side = [&](int s, bool leaves, double aFace, long col)
                 {
                     const int b = bc[static_cast<std::size_t>(s)];

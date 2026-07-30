@@ -2,13 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Core array types for 3D functor kernels.
-
-Provides:
-  - Axis: IntEnum for x/y/z with unit direction vectors
-  - CellArray: 4D (Nx, Ny, Nz, ncomp) ghosted cell data — like AMReX Array4
-  - FaceArray: staggered face arrays for all 3 directions
-  - reshape helpers: Fortran-order flat buffer → CellArray / FaceArray
+"""Core array types for 3D functor kernels: ``Axis``, ``CellArray``, ``FaceArray``,
+and the reshape helpers from a Fortran-order flat buffer into them.
 """
 
 import enum
@@ -32,11 +27,7 @@ class Axis(enum.IntEnum):
 
 
 class CellArray(eqx.Module):
-    """4D ghosted cell-centred array, shape (Nx, Ny, Nz, ncomp).
-
-    Always 4D — matching AMReX Array4<Real>.
-    Single-component fields have ncomp=1: phi[i, j, k, 0].
-    """
+    """Ghosted cell-centred array, always 4D (Nx, Ny, Nz, ncomp), as AMReX Array4."""
 
     data: jnp.ndarray  # (Nx, Ny, Nz, nc)
 
@@ -45,11 +36,7 @@ class CellArray(eqx.Module):
 
 
 class FaceArray(eqx.Module):
-    """Staggered face arrays for all 3 directions.
-
-    Access: face[Axis.x] returns face.x, etc.
-    Shapes are staggered: x-faces (Nx+1, Ny, Nz), y-faces (Nx, Ny+1, Nz), etc.
-    """
+    """Staggered face arrays: x-faces (Nx+1, Ny, Nz), y-faces (Nx, Ny+1, Nz), etc."""
 
     x: jnp.ndarray  # x-face fluxes
     y: jnp.ndarray  # y-face fluxes
@@ -59,15 +46,10 @@ class FaceArray(eqx.Module):
         return getattr(self, Axis(ax).name)
 
 
-# ------------------------------------------------------------------
-# Reshape helpers: Fortran-order flat → CellArray / FaceArray
-# ------------------------------------------------------------------
-
 def _reshape_plane(flat_buf, start, Nx, Ny, Nz):
-    """Reshape one Fortran-order plane (Nx*Ny*Nz,) to (Nx, Ny, Nz).
+    """Reshape one Fortran-order plane (Nx*Ny*Nz,) to (Nx, Ny, Nz), metadata-only.
 
-    AMReX layout: x fastest → flat[i + Nx*j + Nx*Ny*k].
-    reshape(Nz, Ny, Nx).transpose(2, 1, 0) is metadata-only in JAX.
+    AMReX layout is x-fastest: ``flat[i + Nx*j + Nx*Ny*k]``.
     """
     plane = jax.lax.dynamic_slice(flat_buf, (start,), (Nx * Ny * Nz,))
     return plane.reshape(Nz, Ny, Nx).transpose(2, 1, 0)

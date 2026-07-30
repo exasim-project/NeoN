@@ -25,9 +25,8 @@
 
 namespace nb = nanobind;
 
-// Arena wrapping an externally-owned pointer (e.g. from JAX/numpy).
-// The first alloc() of the exact chunk size returns the external pointer;
-// all subsequent allocations (staging buffers, etc.) go to a fallback arena.
+// Arena wrapping an externally-owned pointer (e.g. from JAX/numpy): the first alloc() of exactly
+// the chunk size hands out that pointer, every later allocation goes to the fallback arena.
 class ExternalArena final : public amrex::Arena
 {
     void* m_ptr;
@@ -83,9 +82,8 @@ public:
     }
 };
 
-// Async copy from ndarray into a single FAB's valid region.
-// Returns (staging_ptr, owns_staging).  Caller must call
-// streamSynchronize() before freeing staging_ptr (when owns == true).
+// Async copy from ndarray into one FAB's valid region -> (staging_ptr, owns_staging). The caller
+// must streamSynchronize() before freeing staging_ptr when owns is true.
 static std::pair<amrex::Real*, bool>
 copyToFab_async(amrex::MultiFab& mf, amrex::MFIter& mfi, nb::ndarray<nb::ro> src)
 {
@@ -180,8 +178,7 @@ copyToFab_async(amrex::MultiFab& mf, amrex::MFIter& mfi, nb::ndarray<nb::ro> src
     }
     else
     {
-        // C-order layout: shape (nx, ny, nz, ncomp) with component as
-        // the innermost (fastest-varying) dimension.
+        // C-order layout: shape (nx, ny, nz, ncomp), component fastest-varying.
         auto arr4 = fab.array();
         const auto lo = bx.smallEnd();
         const Real* cSrc = devSrc;
@@ -226,8 +223,7 @@ copyToFab_async(amrex::MultiFab& mf, amrex::MFIter& mfi, nb::ndarray<nb::ro> src
 inline int deviceTypeFromArena(const amrex::MultiFab& mf)
 {
     if (!mf.arena()->isDeviceAccessible()) return nb::device::cpu::value;
-    // Pinned memory is host-resident (CPU-addressable) — report CPU so JAX
-    // can use it even when running in CPU-only mode.
+    // Pinned memory is CPU-addressable -- report CPU so JAX can use it in CPU-only mode.
     if (mf.arena()->isHostAccessible()) return nb::device::cpu::value;
 #if defined(AMREX_USE_CUDA)
     if (mf.arena()->isManaged()) return nb::device::cuda_managed::value;
@@ -241,10 +237,8 @@ inline int deviceTypeFromArena(const amrex::MultiFab& mf)
 #endif
 }
 
-// Device tag for arrays allocated on The_Device_Arena(). On a CPU-only AMReX
-// build that arena is host memory, so the exported ndarray must report CPU (a
-// hardcoded cuda tag makes JAX's from_dlpack request a nonexistent cuda backend
-// when running CPU-only).
+// Device tag for The_Device_Arena() arrays; CPU on a CPU-only AMReX build so JAX's from_dlpack
+// does not request a nonexistent cuda backend.
 #if defined(AMREX_USE_CUDA)
 constexpr int kDeviceArenaDevice = nb::device::cuda::value;
 #elif defined(AMREX_USE_HIP)
@@ -271,7 +265,6 @@ void registerMultiFab(nb::module_& m)
 {
     using namespace amrex;
 
-    // --- BoxList ---
     nb::class_<BoxList>(m, "BoxList")
         .def(nb::init<>())
         .def(
@@ -384,7 +377,6 @@ void registerMultiFab(nb::module_& m)
             [](nb::object pySelf) -> nb::object
             {
                 MFIterator& self = nb::cast<MFIterator&>(pySelf);
-                // Advance from previous iteration
                 if (self.needsAdvance)
                 {
                     ++(*self.mfi);
@@ -464,9 +456,8 @@ void registerMultiFab(nb::module_& m)
                     );
                 }
 
-                // ExternalArena is leaked (~64 bytes) — its lifetime exceeds
-                // the MultiFab because SingleChunkArena holds a raw pointer.
-                // A capsule-based cleanup can be added later.
+                // ExternalArena is leaked (~64 bytes): its lifetime must outlive the MultiFab,
+                // which holds only a raw pointer to it. keep_alive<1, 6> pins `data` itself.
                 auto* arena = new ExternalArena(
                     data.data(), expected * sizeof(Real), fallback, devAccess, hostAccess
                 );
@@ -641,9 +632,8 @@ void registerMultiFab(nb::module_& m)
                     Gpu::htod_memcpy(dst, src_ptr, nbytes);
             },
             nb::arg("flat_array"),
-            "Copy flat array directly into MultiFab contiguous storage. "
-            "Single memcpy — no per-box loop. Array must have same byte size "
-            "as singleChunkSize()."
+            "Copy a flat array into the MultiFab's contiguous storage in a single memcpy. "
+            "The array must have the same byte size as singleChunkSize()."
         )
         .def(
             "fab_metadata",
@@ -674,7 +664,6 @@ void registerMultiFab(nb::module_& m)
                 int ng = mf.nGrow();
                 int nc = mf.nComp();
 
-                // First pass: count tiles
                 size_t n_tiles = 0;
                 size_t box_offset = 0;
                 for (amrex::MFIter mfi(mf); mfi.isValid(); ++mfi)
@@ -701,7 +690,6 @@ void registerMultiFab(nb::module_& m)
                         n_padded <<= 1;
                 }
 
-                // Allocate flat arrays
                 auto* offsets = new int64_t[n_padded];
                 auto* stride_x = new int64_t[n_padded];
                 auto* stride_y = new int64_t[n_padded];
@@ -712,7 +700,6 @@ void registerMultiFab(nb::module_& m)
                 auto* tile_js = new int64_t[n_padded];
                 auto* tile_ks = new int64_t[n_padded];
 
-                // Second pass: fill tile descriptors
                 size_t t = 0;
                 box_offset = 0;
                 int box_id = 0;
@@ -738,10 +725,8 @@ void registerMultiFab(nb::module_& m)
                         {
                             for (int tk = 0; tk < vNz / bf; ++tk)
                             {
-                                // Corner of this tile's ghost origin.
-                                // The kernel adds ng internally when iterating,
-                                // so the offset points to (ti*bf, tj*bf, tk*bf)
-                                // in the box, not (ng+ti*bf, ...).
+                                // Offset points at (ti*bf, tj*bf, tk*bf) in the box, NOT
+                                // (ng+ti*bf, ...): the kernel adds ng itself while iterating.
                                 int ci = ti * bf;
                                 int cj = tj * bf;
                                 int ck = tk * bf;
@@ -779,7 +764,6 @@ void registerMultiFab(nb::module_& m)
                     tile_ks[p] = 0;
                 }
 
-                // Copy to device and return as JAX arrays
                 auto make_array = [&](int64_t* host_ptr)
                 {
                     size_t nbytes = n_padded * sizeof(int64_t);
@@ -831,7 +815,6 @@ void registerMultiFab(nb::module_& m)
                 int nc = mf.nComp();
                 constexpr int FIELDS_PER_TILE = 5;
 
-                // Single pass: count tiles and collect per-box info
                 size_t n_tiles = 0;
                 size_t box_offset = 0;
 
@@ -864,7 +847,6 @@ void registerMultiFab(nb::module_& m)
                     ++box_id;
                 }
 
-                // Pad to next power of 2
                 size_t n_padded;
                 if (requested_padded > 0 && (size_t)requested_padded >= n_tiles)
                     n_padded = (size_t)requested_padded;
@@ -875,10 +857,8 @@ void registerMultiFab(nb::module_& m)
                         n_padded <<= 1;
                 }
 
-                // Allocate single packed host array
                 auto* packed = new int32_t[n_padded * FIELDS_PER_TILE];
 
-                // Fill tile descriptors
                 size_t t = 0;
                 for (const auto& bi : boxes)
                 {
@@ -917,7 +897,6 @@ void registerMultiFab(nb::module_& m)
                         packed[dst + f] = packed[f];
                 }
 
-                // Single htod_memcpy to device
                 size_t nbytes = n_padded * FIELDS_PER_TILE * sizeof(int32_t);
                 auto* dev_ptr = static_cast<int32_t*>(The_Device_Arena()->alloc(nbytes));
                 Gpu::htod_memcpy(dev_ptr, packed, nbytes);
@@ -957,7 +936,6 @@ void registerMultiFab(nb::module_& m)
                 int ng = cell_mf.nGrow();
                 int nc = cell_mf.nComp();
 
-                // Pass 1: count tiles
                 size_t n_tiles = 0;
                 for (amrex::MFIter mfi(cell_mf); mfi.isValid(); ++mfi)
                 {
@@ -1007,7 +985,7 @@ void registerMultiFab(nb::module_& m)
                 auto* tile_cj = new int32_t[n_padded];
                 auto* tile_ck = new int32_t[n_padded];
 
-                // Pass 2: fill — iterate cell MFIter, use index for face access
+                // Faces are indexed by the cell MFIter's box index (same box ordering).
                 size_t t = 0;
                 size_t fx_box_off = 0, fy_box_off = 0, fz_box_off = 0;
                 int box_idx = 0;
@@ -1022,10 +1000,8 @@ void registerMultiFab(nb::module_& m)
                     int vNy = Ny - 2 * ng;
                     int vNz = Nz - 2 * ng;
 
-                    // Face FAB dimensions — access by index (same ordering)
                     const auto& fx_bx = fx_mf.boxArray()[box_idx];
                     int fxNx = fx_bx.length(0), fxNy = fx_bx.length(1), fxNz = fx_bx.length(2);
-                    // Add ngrow for face
                     int fx_ng = fx_mf.nGrow();
                     fxNx += 2 * fx_ng;
                     fxNy += 2 * fx_ng;
@@ -1612,15 +1588,13 @@ void registerMultiFab(nb::module_& m)
                 int nc = mf.nComp();
                 int ng = mf.nGrow();
 
-                // Parse bc_types: 6 ints (lo_x, hi_x, lo_y, hi_y, lo_z, hi_z)
-                // 0=skip, 1=dirichlet, 2=neumann, 3=slip (component normal to
-                // the face reflect-odd → no penetration; tangential zero-grad)
+                // bc_types: 6 ints (lo_x, hi_x, lo_y, hi_y, lo_z, hi_z); 0=skip, 1=dirichlet,
+                // 2=neumann, 3=slip (normal component reflect-odd, tangential zero-gradient).
                 GpuArray<int, 6> bc_types;
                 for (int i = 0; i < 6; ++i)
                     bc_types[i] = nb::cast<int>(bc_types_list[i]);
 
-                // Parse bc_values: 6 lists of ncomp doubles
-                // bc_values[face][comp] — wall value for dirichlet
+                // bc_values[face][comp]: 6 lists of ncomp doubles, the wall value for dirichlet.
                 GpuArray<GpuArray<Real, AMREX_SPACEDIM>, 6> bc_vals {};
                 for (int f = 0; f < 6; ++f)
                 {

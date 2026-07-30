@@ -4,18 +4,9 @@
 
 """3D functor kernels for structured grid stencils.
 
-Each kernel is an eqx.Module with:
-  - __call__(self, box_id, i, j, k, phi) → scalar
-  - ng: int (static) — ghost width required by this stencil
-
-phi is passed by parallel_for, NOT stored on the kernel.
-The kernel defines the computation; parallel_for provides the data.
-
-Dispatched through parallel_for(kernel, phi) on any backend.
-
-Mirrors AMReX ParallelFor + Array4 pattern:
-    C++:    ParallelFor(mf, [=](int box_id, int i, int j, int k) {...})
-    Python: kernel(box_id, i, j, k, phi)
+Each kernel is an eqx.Module with ``__call__(self, box_id, i, j, k, phi) -> scalar``
+and a static ``ng`` — the ghost width its stencil needs. ``phi`` is supplied by
+``parallel_for``, never stored on the kernel, mirroring AMReX ParallelFor + Array4.
 """
 
 import equinox as eqx
@@ -23,10 +14,6 @@ import jax.numpy as jnp
 
 from .array_types import Axis, CellArray, FaceArray
 
-
-# ------------------------------------------------------------------
-# Laplacian
-# ------------------------------------------------------------------
 
 class Laplacian3D(eqx.Module):
     """Central difference laplacian: coeff * sum_ax (phi[+1] - 2*phi + phi[-1]) / dx^2."""
@@ -49,7 +36,7 @@ class Laplacian3D(eqx.Module):
 class VariableGammaLaplacian3D(eqx.Module):
     """div(gamma * grad(phi)) with per-cell variable gamma."""
 
-    gamma: CellArray  # (Nx, Ny, Nz, 1) — operator-specific data
+    gamma: CellArray  # (Nx, Ny, Nz, 1)
     dh: tuple = eqx.field(static=True)
     coeff: float = eqx.field(static=True)
     ng: int = eqx.field(static=True, default=1)
@@ -69,10 +56,6 @@ class VariableGammaLaplacian3D(eqx.Module):
                       ) / self.dh[ax]**2
         return self.coeff * total
 
-
-# ------------------------------------------------------------------
-# Divergence schemes
-# ------------------------------------------------------------------
 
 class UpwindDiv3D(eqx.Module):
     """First-order upwind divergence."""
@@ -201,16 +184,10 @@ class VanLeerDiv3D(eqx.Module):
         return self.coeff * total
 
 
-# ------------------------------------------------------------------
-# Fused kernel for forward Euler time step
-# ------------------------------------------------------------------
-
 class FusedEulerKernel(eqx.Module):
-    """Sums spatial operator contributions and applies forward Euler step.
+    """``phi[i,j,k,0] - dt_over_coeff * sum(spatial_kernels(i,j,k,phi))``.
 
-    result = phi[i,j,k,0] - dt_over_coeff * sum(spatial_kernels(i,j,k,phi))
-
-    ng is max of all sub-kernel ng values.
+    ``ng`` is the max over the sub-kernels.
     """
 
     spatial_kernels: tuple
@@ -232,10 +209,7 @@ class FusedEulerKernel(eqx.Module):
 
 
 class CombinedSource(eqx.Module):
-    """Sums spatial operator contributions (no time step — for evaluate()).
-
-    ng is max of all sub-kernel ng values.
-    """
+    """Sums spatial operator contributions, no time step. ``ng`` is the sub-kernel max."""
 
     spatial_kernels: tuple
     ng: int = eqx.field(static=True)

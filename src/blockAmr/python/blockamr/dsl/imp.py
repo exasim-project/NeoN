@@ -2,21 +2,18 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Implicit DSL operators (cf. OpenFOAM fvm::).
-
-These create lazy operator objects that are resolved to AMReX MLMG solves
-when passed to solve().
+"""Implicit DSL operators (cf. OpenFOAM fvm::): lazy objects resolved to AMReX MLMG
+solves when passed to ``solve()``.
 """
 
 from .eqterm import EqTerm
 
 
 class ImplicitLaplacian(EqTerm):
-    """Implicit Laplacian: div(sigma * grad(field)).
+    """Implicit Laplacian ``div(sigma * grad(field))``, solved NODALLY.
 
-    Created by imp.laplacian(sigma, field). The actual MLNodeLaplacian + MLMG
-    are set up lazily on first solve. ``== rhs`` builds an implicit Equation
-    (via EqTerm.__eq__).
+    The MLNodeLaplacian + MLMG are set up lazily on first solve; ``== rhs`` builds an
+    implicit Equation via ``EqTerm.__eq__``.
     """
 
     kind = "implicit"

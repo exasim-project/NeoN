@@ -2,11 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Velocity correction: U += expression.
-
-Usage:
-    correct(U, -dt * exp.grad(p))   # U -= dt * grad(p)
-"""
+"""Velocity correction: ``correct(U, -dt * exp.grad(p))`` applies ``U -= dt*grad(p)``."""
 
 import jax.numpy as jnp
 
@@ -14,7 +10,7 @@ import blockamr
 
 
 def correct(cell_field, expr):
-    """Apply correction to a CellField. Modifies in place.
+    """Apply a correction to a CellField, IN PLACE.
 
     Parameters
     ----------
@@ -29,7 +25,7 @@ def correct(cell_field, expr):
     ncomp = cell_field.ncomp
 
     for lev in range(n_levels):
-        corrections = expr.evaluate(lev=lev)  # list of per-box arrays
+        corrections = expr.evaluate(lev=lev)  # per-box arrays
         mf = cell_field.mf[lev]
         ng = mf.n_grow()
         arrs = mf.arrays()
@@ -53,7 +49,7 @@ def correct(cell_field, expr):
 
         mf.copy_arrays(results)
 
-    # Restrict fine -> coarse
+    # Restrict fine -> coarse.
     for lev in reversed(range(n_levels - 1)):
         blockamr.average_down(
             cell_field.mf[lev + 1], cell_field.mf[lev],

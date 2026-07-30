@@ -6,8 +6,7 @@ from .base import ExplicitBackend
 from .cpp_backend import CppBackend
 from .jax_backend import JaxBackend
 
-# Explicit-path backend registry: `jax` (Pallas GPU) and `cpp` (composable
-# AMReX ParallelFor kernels).
+# `jax` is Pallas GPU; `cpp` is composable AMReX ParallelFor kernels.
 backends = {"jax": JaxBackend(), "cpp": CppBackend()}
 
 

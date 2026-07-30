@@ -76,8 +76,7 @@ void registerTagBox(nb::module_& m)
             "set_tags",
             [](TagBoxIterator& self, nb::ndarray<nb::ro> mask)
             {
-                // mask is an int array (nx, ny, nz) — nonzero means TAG_SET
-                // Accepts both host (numpy) and device (JAX) arrays.
+                // mask: int (nx, ny, nz), nonzero means TAG_SET; host (numpy) or device (JAX).
                 auto& tb = (*self.tba)[*self.mfi];
                 const Box& vbx = self.mfi->validbox();
                 auto tag4 = tb.array();
@@ -91,7 +90,6 @@ void registerTagBox(nb::module_& m)
 
                 if (srcOnDevice)
                 {
-                    // Source is on GPU — read directly, no host copy
                     const int* mdata = static_cast<const int*>(mask.data());
                     amrex::ParallelFor(
                         vbx,
@@ -108,7 +106,6 @@ void registerTagBox(nb::module_& m)
                 }
                 else
                 {
-                    // Source is on host — convert int→char, copy to device
                     const int* mdata = static_cast<const int*>(mask.data());
                     char* tagBuf = static_cast<char*>(The_Arena()->alloc(npts * sizeof(char)));
                     char* hostBuf = new char[npts];
@@ -150,7 +147,6 @@ void registerTagBox(nb::module_& m)
             "set_tags",
             [](TagBoxArray& tba, nb::object mfi_obj, nb::ndarray<nb::ro> mask)
             {
-                // Extract amrex::MFIter from the Python MFIterator via .get()
                 auto& mfi_inner = nb::cast<MFIter&>(mfi_obj.attr("get")());
                 auto& tb = tba[mfi_inner];
                 const Box& vbx = mfi_inner.validbox();

@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-// See runtime.hpp. Split out of bench/kokkosSpike.cpp, which keeps only
-// the feasibility spike (FabView, kokkosSelftest, kokkosMfSum). This TU is
-// compiled WITHOUT relocatable device code, like the rest of the module (see
-// CMakeLists.txt for why _blockamr itself is also non-RDC).
+// See runtime.hpp. Compiled WITHOUT relocatable device code, like the rest of the module
+// (CMakeLists.txt has the rationale).
 
 #include "NeoN/blockAmr/core/runtime.hpp"
 
@@ -28,9 +26,8 @@ void kokkosFinalize()
 {
     if (Kokkos::is_initialized())
     {
-        // The kokkos_stream backend's execution space instances own cudaStreams
-        // (ManageStream::yes), so they have to go before finalize -- and before
-        // amrex::Finalize tears the CUDA context down.
+        // The kokkos_stream backend's space instances own cudaStreams (ManageStream::yes), so
+        // they have to go before finalize and before amrex::Finalize drops the CUDA context.
         releaseStreamPool();
         Kokkos::finalize();
     }

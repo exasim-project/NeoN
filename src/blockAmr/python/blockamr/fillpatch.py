@@ -22,7 +22,7 @@ class FillPatchCellConservative:
             bcs = [blockamr.periodic_bcrec()] * field.ncomp
             fine_mf = field.mf[lev]
             if fine_mf is None:
-                # New level — no old fine data, interpolate from coarse only
+                # New level: no old fine data, so interpolate from coarse only.
                 blockamr.interp_from_coarse_level(
                     mf,
                     time,
@@ -64,10 +64,8 @@ class FillPatchSingleLevel:
 
 
 class FillPatchWithBC:
-    """Fill patch with explicit boundary conditions (non-periodic).
-
-    Performs inter-box ghost exchange via fill_boundary, then fills
-    domain-boundary ghosts according to the supplied BoundaryCondition.
+    """Non-periodic fill: inter-box ghost exchange, then the domain-boundary ghosts
+    from the supplied BoundaryCondition.
     """
 
     def __init__(self, bc):

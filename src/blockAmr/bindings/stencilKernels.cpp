@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// C++ baseline stencil kernels for performance comparison with JAX dispatch.
-// Implements VanLeer divergence + laplacian forward Euler step directly
-// on AMReX MultiFabs using ParallelFor (GPU-accelerated when available).
+// C++ baseline stencil kernels for performance comparison with JAX dispatch, run directly on
+// AMReX MultiFabs via ParallelFor. Throughout this file fx/fy/fz are face FLUXES of an explicit
+// scheme -- NOT the matrix face coefficients of the implicit/la path.
 
 #include <nanobind/nanobind.h>
 
@@ -27,11 +27,8 @@ vanleerCorr(amrex::Real d_up, amrex::Real d_down)
     return (prod > 0.0) ? 2.0 * prod / (d_up + d_down) : 0.0;
 }
 
-// ---------------------------------------------------------------------------
-// Comp-indexed cell-level scheme helpers for the composable accumulate kernels.
-// Formulas mirror the JAX cell kernels in cell_kernels.py exactly (per-axis
-// division, x→y→z accumulation order) so the cpp backend matches the jax path.
-// ---------------------------------------------------------------------------
+// Comp-indexed cell-level scheme helpers. The formulas mirror cell_kernels.py exactly (per-axis
+// division, x->y->z accumulation order) so the cpp backend matches the jax path.
 
 using Arr4c = amrex::Array4<const amrex::Real>;
 
@@ -224,10 +221,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real laplacianCell(
 } // namespace
 
 
-// ---------------------------------------------------------------------------
-// Composable accumulate kernels (out +=) + generic axpy — the cpp backend
-// composes these into a scratch source MultiFab (see plan 03 §4).
-// ---------------------------------------------------------------------------
+// Composable accumulate kernels (out +=): the cpp backend composes these into a scratch source.
 
 // Accumulate coeff * div_scheme(phi) into out, one term per launch, ncomp-general.
 static void divUpwindAcc(
@@ -485,7 +479,6 @@ static void eulerStepVanLeerLap(
                 bx,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k)
                 {
-                    // --- VanLeer divergence ---
                     amrex::Real divF = 0.0;
 
                     // x-direction
@@ -543,14 +536,12 @@ static void eulerStepVanLeerLap(
                         divF += (fr * phi_r - fl * phi_l) * idz;
                     }
 
-                    // --- Central-difference laplacian ---
                     amrex::Real s0 = phi(i, j, k, comp);
                     amrex::Real lap =
                         (phi(i + 1, j, k, comp) - 2.0 * s0 + phi(i - 1, j, k, comp)) * idx2
                         + (phi(i, j + 1, k, comp) - 2.0 * s0 + phi(i, j - 1, k, comp)) * idy2
                         + (phi(i, j, k + 1, comp) - 2.0 * s0 + phi(i, j, k - 1, comp)) * idz2;
 
-                    // Forward Euler update
                     phi(i, j, k, comp) -= dt * (divF - nu * lap);
                 }
             );
@@ -811,9 +802,7 @@ static void eulerStepQuickLap(
 }
 
 
-// ---------------------------------------------------------------------------
-// Divergence-only source kernels (no time step, write to separate output)
-// ---------------------------------------------------------------------------
+// Divergence-only source kernels: no time step, written to a separate output.
 
 // Upwind divergence source term.
 static void divUpwind(
@@ -1047,8 +1036,7 @@ static void divQuick(
 }
 
 
-// Build precomputed stencil offsets for all boxes in a MultiFab.
-// Returns (base, fx_off, fy_off, fz_off) as Python lists of ints.
+// Precomputed stencil offsets for every box: (base, fx, fy, fz) as Python lists of ints.
 static nb::tuple buildStencilOffsets(
     const amrex::MultiFab& mf,
     const amrex::MultiFab& fx_mf,
@@ -1189,8 +1177,6 @@ void registerStencilKernels(nb::module_& m)
         "Forward Euler step with QUICK div + laplacian (C++ baseline)."
     );
 
-    // --- Divergence-only source kernels ---
-
     m.def(
         "div_upwind",
         [](amrex::MultiFab& out,
@@ -1270,8 +1256,7 @@ void registerStencilKernels(nb::module_& m)
         "Build precomputed stencil offsets (base, fx, fy, fz) as int32 arrays."
     );
 
-    // ---- Simple kernels for benchmarking Pallas vs C++ ----
-
+    // Simple kernels for benchmarking Pallas vs C++.
     m.def(
         "laplacian",
         [](amrex::MultiFab& out_mf, const amrex::MultiFab& phi_mf, const amrex::Geometry& geom)
@@ -1331,8 +1316,6 @@ void registerStencilKernels(nb::module_& m)
         "Write flat cell index: out(i,j,k) = (i-lo) + nx*(j-lo) + nx*ny*(k-lo)."
     );
 
-    // ---- Multi-component Laplacian ----
-
     m.def(
         "laplacian_ncomp",
         [](amrex::MultiFab& out_mf,
@@ -1371,8 +1354,6 @@ void registerStencilKernels(nb::module_& m)
         nb::arg("ncomp") = 1,
         "Multi-component laplacian: out(i,j,k,n) = lap(phi, n)."
     );
-
-    // ---- Multi-component first-order upwind divergence ----
 
     m.def(
         "upwind_div_ncomp",
@@ -1442,8 +1423,6 @@ void registerStencilKernels(nb::module_& m)
         nb::arg("ncomp") = 1,
         "Multi-component first-order upwind divergence."
     );
-
-    // ---- Composable accumulate kernels + generic axpy (plan 03 §4) ----
 
     m.def(
         "div_upwind_acc",

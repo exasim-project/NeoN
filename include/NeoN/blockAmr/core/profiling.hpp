@@ -11,12 +11,9 @@
 namespace blockamr::la::prof
 {
 
-// Phase profiling. Env var BLOCKAMR_PROFILE (read once):
-//   unset/0 : off — one cached-int check per phase, no syncs, no NVTX.
-//   1       : wall-clock timers, each phase fenced by streamSynchronize() on both
-//             ends (honest attribution, but the syncs perturb the total), + NVTX.
-//   2       : NVTX only, no extra syncs — for nsys timelines of an unperturbed solve.
-// Accumulated seconds/counts are exposed via profile_report()/profile_reset().
+// Phase profiling, from BLOCKAMR_PROFILE (read once): unset/0 off, 1 wall-clock timers
+// with each phase fenced by streamSynchronize (honest, but the syncs perturb) + NVTX,
+// 2 NVTX only. Totals are exposed via profile_report()/profile_reset().
 
 int mode();
 

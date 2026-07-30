@@ -2,21 +2,19 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Unified lazy Equation: EqTerms + the schemes (fvSchemes) to discretise them.
+"""Lazy Equation: EqTerms plus the schemes (fvSchemes) to discretise them.
 
-Nothing evaluates at build time — the terms stay a DSL tree, leaving room
-for optimize() to fuse/reorder before dispatch. The linear-solver settings
-are NOT here: they are 'how to solve', passed to solve() as ``solution``.
+Nothing evaluates at build time — the terms stay a DSL tree so ``optimize()`` can fuse
+or reorder before dispatch. Linear-solver settings are NOT here; they are 'how to
+solve', passed to ``solve()`` as ``solution``.
 """
 
 from .eqterm import EqTerm
 
 
 class Equation:
-    """A lazy PDE equation.
-
-    Built from EqTerms via composition (``exp.ddt(U) + exp.div(phi, U)``)
-    or directly: ``Equation(*terms, schemes=...)``.
+    """A lazy PDE equation, built by composing EqTerms or as ``Equation(*terms,
+    schemes=...)``.
 
     State:
       explicit_terms : list of temporal/spatial EqTerms
@@ -79,20 +77,17 @@ class Equation:
         return NotImplemented
 
     def optimize(self):
-        """Return an optimised equation.
-
-        Identity today — this is the seam for kernel fusion, stencil
-        caching and term reordering, and the reason terms are held lazily.
+        """Return an optimised equation. Identity today: the seam for kernel fusion,
+        stencil caching and term reordering, and the reason terms are held lazily.
         """
         return self
 
     def solve(self, *, dt=None, t=None, solution=None):
-        """Discretise and solve: optimize() then delegate to the free solve().
+        """Discretise and solve: optimize(), then delegate to the free solve().
 
-        solution : the field's fvSolution.solvers[field] block — the linear
-            solver + tolerances (MLMG rtol/atol/maxIter/bottomSolver) and the
-            field's IBM method. Discretisation schemes are NOT passed here —
-            they are the equation's own ``schemes`` (bound at construction).
+        solution : the field's fvSolution.solvers[field] block — linear solver,
+            tolerances (MLMG rtol/atol/maxIter/bottomSolver) and the field's IBM method.
+            Discretisation schemes are NOT passed here; they are the equation's own.
         """
         from .solve import solve as _solve
 

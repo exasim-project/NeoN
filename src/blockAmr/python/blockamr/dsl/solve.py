@@ -7,17 +7,13 @@ from .. import backends
 from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
 from ..schemes.registry import lookup_scheme
 
-# Backward-compat re-exports of the explicit machinery moved to
-# ``blockamr.backends.jax_backend`` (removed in plan 06). ``BF`` is a
-# mutable module global there — proxied live via ``__getattr__`` below so
-# callers reading ``dsl.solve.BF`` see ``set_tile_size`` updates.
+# Backward-compat re-exports; ``BF`` is proxied via ``__getattr__`` below instead.
 from ..backends.jax_backend import forward_euler, parallel_for, set_tile_size  # noqa: F401
 
 
 def __getattr__(name):
-    # PEP 562: keep ``from blockamr.dsl.solve import BF`` live-tracking the
-    # single source of truth in jax_backend (a plain re-export would freeze a
-    # copy that ``set_tile_size`` could not update).
+    # ``BF`` is a mutable global in jax_backend; a plain re-export would freeze a copy
+    # that ``set_tile_size`` could not update.
     if name == "BF":
         from ..backends import jax_backend
 
@@ -32,13 +28,12 @@ def solve(equation, *, dt=None, t=None, solution=None):
 
       solve(Equation(exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U),
                      schemes=schemes), dt=dt, t=t)
-        → explicit Forward Euler (JAX/Pallas). Schemes are resolved from the
-          equation's own ``schemes`` (bound at construction); ``solution``
-          may carry the field's IBM method.
+        → explicit CELL-CENTRED Forward Euler (JAX/Pallas). Schemes come from the
+          equation's own ``schemes``; ``solution`` may carry the field's IBM method.
 
       solve(Equation(imp.laplacian(sigma, p) == exp.div(U)), dt=dt,
             solution=sol_p)
-        → implicit MLMG solve (AMReX C++), configured by ``solution``
+        → implicit NODAL MLMG solve (AMReX C++), configured by ``solution``
           (solver/rtol/atol/maxIter/bottomSolver/verbose/bottomVerbose).
     """
     from .equation import Equation
@@ -64,17 +59,14 @@ def solve(equation, *, dt=None, t=None, solution=None):
 
     ddt_scheme = lookup_scheme(schemes, ["ddt", "Ddt"], "ddt", ForwardEuler())
 
-    # Resolve operator schemes from the schemes dict (names or objects,
-    # keyed by scheme_key or class name). A scheme object pinned via direct
-    # operator construction (Div(..., scheme=obj)) wins over the dict; the
-    # exp.* DSL surface has no scheme= kwarg and always resolves by name.
+    # A scheme pinned at construction (Div(..., scheme=obj)) wins over the dict; the
+    # exp.* surface has no scheme= kwarg and always resolves by name.
     for sp_op in equation.spatial_ops:
         if sp_op._scheme_explicit or sp_op._scheme_operator is None:
             continue
         keys = [sp_op._scheme_key_or_none(), type(sp_op).__name__]
         sp_op.scheme = lookup_scheme(schemes, keys, sp_op._scheme_operator, sp_op.scheme)
 
-    # Validate that the field has enough ghost cells for the widest stencil
     required = equation.required_ngrow
     actual = cell_field.ngrow
     if actual < required:
@@ -108,10 +100,7 @@ def solve(equation, *, dt=None, t=None, solution=None):
 
 
 def evaluate(expr, t=0.0):
-    """Evaluate spatial operators and return the source term.
-
-    Unlike solve(), does NOT update the field — just computes and returns
-    the sum of spatial operator contributions as per-box arrays.
+    """Sum the spatial operator contributions. Does NOT update the field.
 
     Parameters
     ----------
@@ -124,13 +113,11 @@ def evaluate(expr, t=0.0):
     Returns
     -------
     list[list[ndarray]]
-        Outer list: per level. Inner list: per box.
-        Each array has shape (vNx, vNy, vNz) for ncomp=1
-        or (vNx, vNy, vNz, ncomp) for ncomp>1.
+        Outer list per level, inner list per box. Each array has shape
+        (vNx, vNy, vNz) for ncomp=1 or (vNx, vNy, vNz, ncomp) for ncomp>1.
     """
     from .equation import Equation
 
-    # Wrap a bare operator in an equation if needed
     if not isinstance(expr, Equation):
         op = expr
         cell_field = op.field
@@ -150,13 +137,8 @@ def evaluate(expr, t=0.0):
     return all_levels
 
 
-# ---------------------------------------------------------------------------
-# Implicit equation solver (AMReX MLMG — unchanged)
-# ---------------------------------------------------------------------------
-
-# Old snake_case `solution` keys, renamed to the fvSolution camelCase
-# spellings (API doc §5). Passing an old key is a clear migration error
-# rather than a silently-ignored setting.
+# Renamed to the fvSolution camelCase spellings (API doc §5); an old key must raise
+# rather than be silently ignored.
 _DEPRECATED_SOLUTION_KEYS = {
     "max_iter": "maxIter",
     "bottom_solver": "bottomSolver",
@@ -197,13 +179,18 @@ class ImplicitSolveCache:
 
 
 def _solve_implicit(eqn, solution=None):
-    """Solve imp.laplacian(sigma, p) == exp.div(U).
+    """Solve imp.laplacian(sigma, p) == exp.div(U). Single- or multi-level.
 
-    Supports single-level and multi-level AMR meshes:
+    ``solution["solver"]`` accepts only ``"MLMG"``. The pressure solve is NODAL; the
+    gradient stored on ``p.grad`` is CELL-CENTRED:
+
     1. Pack U into ncomp=3 MultiFab with ghost cells (per level)
     2. compDivergence → nodal RHS (per level)
     3. MLMG.solve → nodal p (all levels simultaneously)
     4. getFluxes → store cell-centred gradient on p.grad (per level)
+
+    BCs, agglomeration and the bottom solver: see
+    report/blockamr-python-notes.md#nodal-pressure-projection-bcs-agglomeration-and-the-bottom-solver
     """
     imp_op = eqn.implicit_lhs  # ImplicitLaplacian
     rhs_op = eqn.rhs  # CellDivergence
@@ -217,9 +204,7 @@ def _solve_implicit(eqn, solution=None):
     atol = cfg.get("atol", 1e-12)
     max_iter = cfg.get("maxIter", 200)
     verbose = cfg.get("verbose", 0)
-    # Optional explicit nodal bottom solver: one of "cg", "bicgstab", "smoother",
-    # "cgbicg", "bicgcg", "default". None → let AMReX pick its default (a Krylov
-    # solver, which converges this system in ~5 V-cycles).
+    # One of "cg", "bicgstab", "smoother", "cgbicg", "bicgcg", "default"; None → AMReX's.
     bottom_solver = cfg.get("bottomSolver", None)
 
     p_field = imp_op.field
@@ -228,9 +213,8 @@ def _solve_implicit(eqn, solution=None):
     mesh = U_field.mesh
     n_levels = mesh.n_levels()
 
-    # The rebuild key includes the `solution` values that affect the built
-    # AMReX objects (bottomSolver changes take effect only via a rebuild —
-    # `set_bottom_solver` is otherwise sticky across calls that omit it).
+    # bottomSolver is in the key because `set_bottom_solver` is sticky across calls that
+    # omit it, so a change can only take effect through a rebuild.
     cache_key = (n_levels, sigma, bottom_solver)
     cache = getattr(p_field, "_imp_cache", None)
     needs_rebuild = cache is None or cache.key != cache_key
@@ -262,9 +246,7 @@ def _solve_implicit(eqn, solution=None):
 
         is_per = geoms[0].is_periodic()
 
-        # Per-face pressure BC: use the solver-derived spec stashed on the
-        # pressure field (outflow face → Dirichlet, inlet/wall → Neumann) when
-        # present; otherwise fall back to the periodic/all-Neumann default.
+        # Per-face pressure BC stashed on the field, else the periodic/all-Neumann default.
         p_bc = getattr(p_field, "pressure_bc", None)
         if p_bc is not None:
             lo_bc, hi_bc = p_bc
@@ -275,12 +257,8 @@ def _solve_implicit(eqn, solution=None):
             ]
             hi_bc = lo_bc[:]
 
-        # A lone outflow-Dirichlet face anchoring an otherwise-Neumann domain is
-        # badly conditioned for plain nodal multigrid (coarse-grid correction is
-        # ineffective → convergence stalls). Agglomeration + consolidation let
-        # AMReX coarsen far enough for an effective bottom solve — the standard
-        # incflo nodal-projection setup. Only enabled when a Dirichlet face is
-        # present, to leave the periodic/closed (all-Neumann) path untouched.
+        # Agglomeration only for the outflow-Dirichlet case, which plain nodal multigrid
+        # coarsens badly; see the notes linked from this function's docstring.
         has_dirichlet = any(bc == blockamr.LinOpBCType.Dirichlet for bc in (*lo_bc, *hi_bc))
         info = blockamr.LPInfo()
         if has_dirichlet:
@@ -308,11 +286,8 @@ def _solve_implicit(eqn, solution=None):
     cache.mlmg.set_verbose(verbose)
     cache.mlmg.set_max_iter(max_iter)
     cache.mlmg.set_bottom_verbose(cfg.get("bottomVerbose", 0))
-    # Bottom solver: default (None) lets AMReX use its Krylov default, which —
-    # with the agglomeration+consolidation enabled above for the has_dirichlet
-    # (outflow) case — converges the nodal projection in ~5 V-cycles. Override
-    # via solution["bottomSolver"] if needed. (Do NOT force "smoother" here: it
-    # cost ~600 iters/solve, ~100x the Krylov default, and dominated runtime.)
+    # None → AMReX's Krylov default, ~5 V-cycles here. Do NOT force "smoother": measured
+    # ~600 iters/solve, ~100x the Krylov default.
     if bottom_solver is not None:
         cache.mlmg.set_bottom_solver(bottom_solver)
 

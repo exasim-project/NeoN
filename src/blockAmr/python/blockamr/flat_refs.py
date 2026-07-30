@@ -2,16 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""FlatCellRef / FlatFaceRef / FlatFaceBoxed: structured indexing on flat buffers.
+"""Structured (i, j, k) indexing translated to ``plt.load`` on Fortran-order flat
+MultiFab buffers, so equinox kernels work unchanged under the tiled Pallas dispatch.
 
-Translates (i, j, k) indexing to plt.load on Fortran-order flat MultiFab
-buffers. Allows equinox kernels (Laplacian3D, UpwindDiv3D, etc.) to work
-unchanged with the tiled Pallas dispatch.
-
-Three face ref types:
-  - FlatFaceRef: per-tile offsets (16-int tile metadata, used by benchmarks)
-  - FlatFaceBoxed: per-box offsets indexed by box_id (5-int tiles + box arrays)
-    Registered as equinox Module so tree flatten/unflatten works through Pallas.
+``FlatFaceRef`` carries per-tile offsets (16-int tile metadata, benchmarks only);
+``FlatFaceBoxed`` carries per-box offsets indexed by box_id (5-int tiles + box arrays).
 """
 
 import equinox as eqx
@@ -59,11 +54,8 @@ class _FaceAxisRef:
 
 
 class FlatFaceRef:
-    """Drop-in for FaceArray — face[Axis.x][i, j, k] via plt.load.
-
-    Wraps 3 separate flat face buffers (one per direction) with
-    per-tile staggered strides.
-    """
+    """Drop-in for FaceArray, wrapping one flat buffer per direction with per-tile
+    staggered strides."""
 
     def __init__(self, fx_ref, fy_ref, fz_ref,
                  fx_off, fx_sx, fx_sy, fx_sz,
@@ -79,15 +71,10 @@ class FlatFaceRef:
         return self._axes[int(ax)]
 
 
-# ---------------------------------------------------------------------------
-# Box-ID indexed face ref (used with TiledContext)
-# ---------------------------------------------------------------------------
-
 class _FaceAxisBoxed(eqx.Module):
-    """Single-direction face ref with per-box offsets indexed by box_id.
+    """Single-direction face ref, per-box offsets indexed by box_id.
 
-    Equinox Module so face buffers/offsets/strides are visible as JAX
-    leaves for tree flatten/unflatten through Pallas.
+    An eqx.Module so buffers/offsets/strides survive tree flatten through Pallas.
     """
 
     buf: jnp.ndarray           # face contiguous buffer (traced leaf)
@@ -107,10 +94,8 @@ class _FaceAxisBoxed(eqx.Module):
 class FlatFaceBoxed(eqx.Module):
     """Drop-in for FaceArray — face[ax][i,j,k] via per-box offsets + box_id.
 
-    Equinox Module: face buffers, offsets, strides, and box_id are all
-    traced leaves. At build time, box_id is a dummy (jnp.int32(0)).
-    Inside the Pallas kernel, parallel_for replaces box_id with the
-    real tile's box_id via eqx.tree_at.
+    ``box_id`` is a dummy ``jnp.int32(0)`` at build time; ``parallel_for`` replaces it
+    with the tile's real box_id inside the Pallas kernel.
 
     Parameters
     ----------

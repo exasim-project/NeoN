@@ -43,8 +43,7 @@ void computeFaceCoeffDiag(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
-                // Same reads and same association order as the two stencils below
-                // used to spell inline: aE=ux(high face), aW=lx(low face), ...
+                // Same association order as the two stencils: aE=ux(high face), aW=lx(low), ...
                 const amrex::Real aE = ax(i + 1, j, k);
                 const amrex::Real aW = lxa(i, j, k);
                 const amrex::Real aN = ay(i, j + 1, k);
@@ -58,15 +57,9 @@ void computeFaceCoeffDiag(
     amrex::Gpu::streamSynchronize();
 }
 
-// Fused matrix-free apply (M3 3a) that skips the full flat<->MultiFab pack/unpack:
-// the stencil reads the centre and any interior neighbour straight from the flat
-// Ginkgo input `bvec`, consulting the ghosted scratch `in` ONLY for a neighbour
-// that leaves the valid box (periodic/internal/domain-BC ghost, filled from the
-// shell scatter + FillBoundary), and writes the result straight into the flat
-// output `xvec`. No out_ MultiFab, no gather. Bit-identical to the plain
-// face-coefficient stencil + full scatter/gather (interior flat values equal the
-// scattered in_ values). Flat index matches scatter_device. Assumes b/x do not
-// alias (Krylov apply never aliases operand and result).
+// Fused matrix-free apply: the stencil reads the centre and interior neighbours from the flat
+// Ginkgo input, the ghosted scratch `in` only where a neighbour leaves the valid box, and
+// writes straight to the flat output -- bit-identical, and b/x must not alias.
 template<class V>
 void faceCoeffStencilFusedDevice(
     const NeoN::Executor& exec,
@@ -109,10 +102,8 @@ void faceCoeffStencilFusedDevice(
             {
                 const long idx =
                     o + (static_cast<long>(k - lo.z) * nj + (j - lo.y)) * ni + (i - lo.x);
-                // Locals stay V: at V = float this is what makes the stencil an
-                // fp32 evaluation of the same operator rather than an fp64 one
-                // with narrowed endpoints. The coefficient reads below promote
-                // from amrex::Real, so a float instantiation rounds each once.
+                // Locals stay V: at V = float this is an fp32 evaluation of the operator,
+                // not an fp64 one with narrowed endpoints.
                 const V pC = b[idx];
                 const V pE = (i < hi.x) ? b[idx + 1] : static_cast<V>(psi(i + 1, j, k));
                 const V pW = (i > lo.x) ? b[idx - 1] : static_cast<V>(psi(i - 1, j, k));
@@ -127,9 +118,8 @@ void faceCoeffStencilFusedDevice(
                 const V aT = static_cast<V>(az(i, j, k + 1));
                 const V aB = static_cast<V>(lza(i, j, k));
                 const V offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
-                // PROTOTYPE (C1): recompute the centre term inline instead of
-                // reading a stored diagonal field. Same association order as
-                // computeFaceCoeffDiag, so bitwise identical at V = double.
+                // PROTOTYPE (C1): centre term recomputed inline instead of read from a stored
+                // diagonal; same association order as computeFaceCoeffDiag.
                 const V diag = static_cast<V>(al(i, j, k)) - (aE + aW + aN + aS + aT + aB);
                 xo[idx] = diag * pC + offd;
             }
@@ -164,22 +154,21 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     {
         dx_[d] = geom_.CellSize(d);
     }
-    // Only the device stencil is instantiated in V; the host loop below computes in
-    // double. Refused rather than silently run at fp64 under an fp32 label.
+    // Only the device stencil is instantiated in V; the host loop computes in double, so an
+    // fp32 host build is refused rather than silently run at fp64.
     if (!onDevice_ && !std::is_same_v<V, double>)
     {
         throw std::runtime_error(
             "FaceCoeffOp: the reduced-precision operator is a device path; use executor='cuda'"
         );
     }
-    // PROTOTYPE (C1): no stored diagonal at all -- the stencils recompute
-    // alpha - sum(faces) inline, so alpha is what they read.
+    // PROTOTYPE (C1): no stored diagonal at all -- the stencils recompute alpha - sum(faces)
+    // inline, so alpha is what they read.
     (void)diag;
     const amrex::MultiFab* diagField = &(*alpha);
     if (onDevice_)
     {
-        // Reference the caller's device fields directly; the stencil reads
-        // them on the GPU and in_/out_ live in the default (device) arena.
+        // Reference the caller's device fields directly; in_/out_ live in the device arena.
         diag_ = diagField;
         ux_ = &upper[0];
         lx_ = &lower[0];
@@ -193,10 +182,8 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
     }
     else
     {
-        // Host (ReferenceExecutor) stencil: stage the coefficients to
-        // pinned memory once and read those. alpha is NOT staged -- the stencil
-        // reads the stored diagonal, and alpha reaches that only through
-        // computeFaceCoeffDiag above.
+        // Host (ReferenceExecutor) stencil: stage the coefficients to pinned memory once and
+        // read those. Under PROTOTYPE (C1) diagField is alpha, one of them.
         owned_ = {
             pinnedCopy(*diagField),
             pinnedCopy(upper[0]),
@@ -213,8 +200,7 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
         ly_ = owned_[4].get();
         uz_ = owned_[5].get();
         lz_ = owned_[6].get();
-        // Whatever this operator computed for itself now lives pinned in owned_;
-        // the device-arena original is dead weight.
+        // The device-arena original is dead weight once the pinned copy exists.
         diagOwned_.reset();
         if (bcData != nullptr)
         {
@@ -235,9 +221,8 @@ FaceCoeffOpT<V>::FaceCoeffOpT(
 template<class V>
 void FaceCoeffOpT<V>::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
 {
-    // The operator Ginkgo sees is always the LINEAR one: reflecting domain-BC
-    // ghosts, no bc_data. The inhomogeneous fill is reached only through
-    // applyBcOffset, whose result the solver folds into the right-hand side.
+    // The operator Ginkgo sees is always the LINEAR one: reflecting domain-BC ghosts, no
+    // bcData. The inhomogeneous fill is reached only through applyBcOffset.
     applyWith(b, x, false);
 }
 
@@ -264,9 +249,8 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
         const V* bvals = localValues<V>(b);
         V* xvals = localValues<V>(x);
         {
-            // M3 3a: only the ghost-adjacent shell needs to reach the MF —
-            // FillBoundary/domain-BC read it to fill the face ghosts; the
-            // interior is read straight from the flat vector by the stencil.
+            // Only the ghost-adjacent shell needs to reach the MultiFab; the stencil reads
+            // the interior straight from the flat vector.
             prof::Timer t("op.scatter");
             scatterShellDevice(nexec_, bvals, *in_);
         }
@@ -275,8 +259,8 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
             in_->FillBoundary(geom_.periodicity());
             if (hasPhysBc_)
             {
-                // Domain-boundary ghosts: reflect-odd/even folds the
-                // homogeneous Dirichlet/Neumann BCs into the stencil.
+                // Reflect-odd/even: this is where the homogeneous Dirichlet/Neumann BCs
+                // enter the stencil, once per apply.
                 if (inhom)
                 {
                     fillDomainBcGhostsInhomDevice(nexec_, *in_, *bcData_, geom_.Domain(), bc_, dx_);
@@ -290,9 +274,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
         amrex::Gpu::streamSynchronize();
         {
             prof::Timer t("op.stencil");
-            // Fused: reads interior neighbours from the flat vector, ghosts
-            // from in_, writes straight to the flat output (no gather). Free
-            // function: nvcc forbids an extended __device__ lambda in a member.
+            // A free function: nvcc forbids an extended __device__ lambda in a member.
             faceCoeffStencilFusedDevice(
                 nexec_, bvals, xvals, *in_, *ux_, *lx_, *uy_, *ly_, *uz_, *lz_, *diag_
             );
@@ -305,11 +287,9 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
     }
 
     scatter(localValues<V>(b), *in_);
-    // Fill periodic + internal-box ghosts. Physical-boundary ghosts are
-    // then set by the reflect fill below when bc has dirichlet/neumann
-    // sides; on all-periodic operators they stay whatever scatter left
-    // (untouched valid-only write) and the boundary faces must carry a
-    // zero coefficient for those to be harmless.
+    // Periodic + internal-box ghosts; the reflect fill below sets physical-boundary ones. On
+    // an all-periodic operator they stay whatever scatter left, so the boundary faces must
+    // carry a zero coefficient for that to be harmless.
     in_->FillBoundary(geom_.periodicity());
     amrex::Gpu::streamSynchronize();
     if (hasPhysBc_)
@@ -364,8 +344,7 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
     gather(*out_, localValues<V>(x), 1.0);
 }
 
-// The two value types the Krylov paths use. FaceCoeffOpT<float> is device-only and
-// its constructor says so; both instantiations share every line above.
+// The two value types the Krylov paths use; FaceCoeffOpT<float> is device-only.
 template class FaceCoeffOpT<double>;
 template class FaceCoeffOpT<float>;
 

@@ -9,10 +9,7 @@ from ..dsl.eqterm import EqTerm
 
 
 class Grad(EqTerm):
-    """Gradient operator: (dphi/dx, dphi/dy, dphi/dz).
-
-    Returns shape (nx, ny, nz, 3) — a vector field.
-    """
+    """Gradient ``(dphi/dx, dphi/dy, dphi/dz)``, shape (nx, ny, nz, 3)."""
 
     kind = "spatial"
     _scheme_operator = "grad"

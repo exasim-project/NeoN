@@ -2,19 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""TiledContext: dispatch context for tiled Pallas kernels.
-
-Replaces BoxContext. Constructed once per level by the dispatch layer,
-passed to op.build_kernel_3d(ctx, t). Operators read what they need —
-Div reads face data, Laplacian reads only dh.
+"""TiledContext: built once per level by the dispatch layer and passed to
+``op.build_kernel_3d(ctx, t)``. Each operator reads only what it needs — Div the face
+data, Laplacian just dh.
 """
 
 
 class TiledContext:
     """Dispatch context for operators inside tiled Pallas kernels.
 
-    Constructed by _dispatch_level with face data from FaceFields.
-    box_id is set per-tile inside the Pallas kernel via with_box_id().
+    ``box_id`` is set per tile inside the Pallas kernel via ``with_box_id()``.
 
     Parameters
     ----------

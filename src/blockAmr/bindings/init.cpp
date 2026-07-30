@@ -23,13 +23,9 @@ void registerInit(nb::module_& m)
             int argc = 0;
             char** argv = nullptr;
             amrex::Initialize(argc, argv);
-            // Kokkos after AMReX (AMReX creates the CUDA context) and, in
-            // finalize(), before amrex::Finalize() tears that context down -- a
-            // Kokkos teardown afterwards hits CUDA error 709.
-            //
-            // Kokkos cannot be re-initialized once finalized, so a second
-            // sequential runtime() block in one process leaves it unavailable;
-            // the Kokkos entry points raise rather than crash in that case.
+            // Kokkos must init after AMReX (owner of the CUDA context) and finalize before it,
+            // else teardown hits CUDA error 709. Kokkos cannot be re-initialized once finalized,
+            // so a second runtime() block in one process leaves it unavailable (entries raise).
             blockamr::kokkosInitialize();
         }
     );
@@ -45,9 +41,7 @@ void registerInit(nb::module_& m)
         "n_ranks",
         []() { return amrex::ParallelContext::NProcsSub(); },
         "Number of MPI ranks in the current AMReX communicator (1 without MPI).\n\n"
-        "Only valid inside a runtime() block -- AMReX has no communicator before\n"
-        "Initialize(), which is why a skipif marker (evaluated at collection time)\n"
-        "still has to read the launcher's environment instead."
+        "Only valid inside a runtime() block -- AMReX has no communicator before Initialize()."
     );
     m.def(
         "allreduce_sum",
@@ -59,11 +53,8 @@ void registerInit(nb::module_& m)
         },
         nb::arg("array"),
         "Sum a contiguous float64 host array across ranks, IN PLACE.\n\n"
-        "AMReX's own communicator, so a reduction taken here is on the same one the\n"
-        "solvers use (ParallelContext::CommunicatorSub) -- which is the point: the\n"
-        "alternative, mpi4py's COMM_WORLD, is a second MPI binding in the process\n"
-        "whose communicator only coincides with AMReX's by default and which is a\n"
-        "dependency the package does not otherwise have.\n\n"
+        "Reduces on AMReX's own communicator (ParallelContext::CommunicatorSub), the same one\n"
+        "the solvers use.\n\n"
         "Collective: every rank must call it, with the same size. A no-op on one rank."
     );
 }

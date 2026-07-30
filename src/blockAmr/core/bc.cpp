@@ -134,8 +134,8 @@ void scatterShellDevice(const NeoN::Executor& exec, const V* vec, amrex::MultiFa
     }
 }
 
-// The two flat-vector value types the Krylov paths use: double for the fp64
-// solvers, float for the mixed-precision inner solve.
+// double for the fp64 solvers, float for the mixed-precision inner solve. A missing
+// instantiation is a null device function pointer at runtime, not a link error.
 template void scatterShellDevice<double>(const NeoN::Executor&, const double*, amrex::MultiFab&);
 template void scatterShellDevice<float>(const NeoN::Executor&, const float*, amrex::MultiFab&);
 

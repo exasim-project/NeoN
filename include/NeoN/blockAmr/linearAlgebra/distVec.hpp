@@ -11,13 +11,9 @@
 namespace blockamr::la
 {
 
-// Vectors are Dense on one rank and distributed::Vector on several -- unrelated
-// types, so `gko::as<Dense>` throws on the distributed one; these accessors are
-// the seam. Operators stay rank-local (the halo comes from AMReX FillBoundary,
-// and everything they do to a vector is elementwise); the distributed type
-// exists only so the dots/norms inside Ginkgo's Krylov solvers become
-// allreduces. GINKGO_BUILD_MPI tracks NeoN_WITH_MPI; without it the distributed
-// types do not exist and only the Dense branch remains.
+// Vectors are Dense on one rank and distributed::Vector on several -- unrelated types, so
+// `gko::as<Dense>` throws on the latter; these accessors are the seam. The distributed type
+// exists only so the dots/norms inside Ginkgo's Krylov solvers become allreduces.
 #if GINKGO_BUILD_MPI
 template<class V>
 using DistVec = gko::experimental::distributed::Vector<V>;
@@ -48,8 +44,8 @@ const V* localValues(const gko::LinOp* x)
     return gko::as<const gko::matrix::Dense<V>>(x)->get_const_values();
 }
 
-// Process-local row count. NOT get_size()[0], which on a distributed vector is
-// the global count -- sizing flat vectors by it is a past multi-rank bug.
+// Process-local row count. NOT get_size()[0], which on a distributed vector is the GLOBAL
+// count -- sizing flat vectors by it was a multi-rank bug.
 inline gko::size_type localRows(const gko::LinOp* x)
 {
 #if GINKGO_BUILD_MPI
@@ -65,8 +61,7 @@ inline gko::size_type localRows(const gko::LinOp* x)
     return x->get_size()[0];
 }
 
-// Non-owning Dense VIEW of the process-local part, for callers needing a Dense
-// object rather than a pointer. Aliases x: writing through the view writes x.
+// Non-owning Dense VIEW of the process-local part. Aliases x: writes go through to x.
 template<class V>
 std::unique_ptr<gko::matrix::Dense<V>> localView(gko::LinOp* x)
 {
@@ -88,8 +83,7 @@ std::unique_ptr<const gko::matrix::Dense<V>> localView(const gko::LinOp* x)
     );
 }
 
-// ||v||_2 and v.w over ALL ranks: Ginkgo's own compute_norm2/compute_dot carry
-// the allreduce. The 1x1 result is staged through the host master for the caller.
+// ||v||_2 and v.w over ALL ranks: Ginkgo's own routines carry the allreduce.
 inline double reduceScalar(const gko::LinOp* v, const gko::matrix::Dense<double>* r)
 {
     return gko::clone(v->get_executor()->get_master(), r)->at(0, 0);
@@ -125,20 +119,9 @@ inline double globalDot(const gko::LinOp* v, const gko::LinOp* w)
     return reduceScalar(v, res.get());
 }
 
-// Ginkgo-side view of a rank-local Dense buffer: on >1 rank a distributed::Vector
-// aliasing it (data not owned, so writes through the buffer are seen), which is
-// what makes a solver's internal dots/norms allreduces; on one rank (or without
-// MPI) a plain Dense view.
-//
-// Must use AMReX's communicator, not MPI_COMM_WORLD: the operators' halo exchange
-// runs on ParallelContext::CommunicatorSub, and a reduction on another
-// communicator would reduce over a different set of ranks.
-//
-// BUILD TRAP: two overloads rather than a template, defined in persistent.cpp --
-// nvcc rejects the shared_ptr<Dense<V>> -> shared_ptr<LinOp> conversion in a
-// TEMPLATE signature ("use of built-in trait __remove_cv in function
-// signature"); the same conversion in a plain function compiles. double is the
-// fp64 Krylov paths, float the mixed-precision GMG bottom solver.
+// Ginkgo-side view of a rank-local Dense buffer: on >1 rank a distributed::Vector aliasing
+// it, so a solver's dots/norms become allreduces -- on AMReX's communicator, NOT
+// MPI_COMM_WORLD. nvcc TRAP: two overloads, not a template, whose signature nvcc rejects.
 std::shared_ptr<gko::LinOp> makeGlobalVec(
     std::shared_ptr<const gko::Executor> exec,
     gko::size_type nGlobal,

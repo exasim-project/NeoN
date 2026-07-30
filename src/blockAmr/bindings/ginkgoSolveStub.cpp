@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-// Stub compiled instead of ginkgoSolve.cpp when NeoN_WITH_GINKGO is OFF
-// (selected in CMakeLists.txt) so module.cpp stays unconditional.
+// Compiled instead of ginkgoSolve.cpp when NeoN_WITH_GINKGO is OFF, so module.cpp stays
+// unconditional and every symbol still exists, raising on first use.
 
 #include <nanobind/nanobind.h>
 
@@ -68,8 +68,7 @@ void registerGinkgoSolve(nb::module_& m)
         [](nb::args, nb::kwargs) { throw std::runtime_error("built without Ginkgo"); }
     );
 
-    // The S8 linear_algebra surface, same treatment: registered unconditionally
-    // so `import blockamr.linear_algebra` works, raising on first use.
+    // linear_algebra surface, registered so `import blockamr.linear_algebra` works.
     m.def(
         "la_laplacian",
         [](nb::args, nb::kwargs) { throw std::runtime_error("built without Ginkgo"); }

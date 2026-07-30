@@ -2,27 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Composable AMReX C++ ``ParallelFor`` explicit backend (plan 03 §3).
+"""Composable AMReX C++ ``ParallelFor`` explicit backend.
 
-Each spatial term is discretised by launching the matching *accumulate*
-kernel (``div_*_acc`` / ``laplacian_acc`` / ``grad_acc``) which adds
-``coeff * op(phi)`` into a scratch source MultiFab; one generic
-``euler_update`` axpy then applies the forward-Euler step. The term's sign
-is already folded into ``sp_op.coeff`` (see ``FusedEulerKernel``:
-``phi - dt_over_coeff * sum(coeff_i * op_i(phi))``), so the accumulate call
-passes ``coeff`` verbatim.
+Each spatial term launches its scheme's *accumulate* kernel (``div_*_acc`` /
+``laplacian_acc`` / ``grad_acc``), adding ``coeff * op(phi)`` into a scratch source
+MultiFab; a generic ``euler_update`` axpy then applies the forward-Euler step. The
+term's sign is already folded into ``sp_op.coeff``, so ``coeff`` is passed verbatim.
 
-One kernel launch per term (correctness-first, not fused) — the fused
-``euler_step_*`` kernels stay as perf baselines. No jax import on the hot
-path: a term/scheme without a C++ kernel (or a callable/variable Laplacian
-gamma) raises ``NotImplementedError`` naming the term and scheme, never a
-silent jax fallback.
-
-Dispatch mirrors the jax backend: each term's cpp kernel is owned by its
-**scheme** via ``build_cpp_kernel()`` (peer of ``build_spatial_kernel()``),
-returning a wrapper from :mod:`~blockamr.cpp_kernels`. This backend just
-asks every op's scheme for its kernel and applies it — no per-term ``if/elif``,
-no scheme-name-to-binding table.
+One launch per term rather than a fused kernel. A term or scheme with no C++ kernel
+(including a callable/variable Laplacian gamma) raises ``NotImplementedError`` naming
+both — there is deliberately no silent jax fallback.
 """
 
 import blockamr
@@ -40,18 +29,14 @@ class CppBackend:
     def evaluate(self, terms, cell_field, lev, t):
         src = self._scratch(cell_field, lev)
         self._evaluate_spatial_terms(terms, cell_field, lev, t, src)
-        # src has ngrow=0 → copy_to_host returns the valid region per box.
+        # src has ngrow=0, so copy_to_host returns the valid region per box.
         return [src.copy_to_host(mfi) for mfi in blockamr.MFIterator(src)]
 
-    # -- internals ----------------------------------------------------------
-
     def _scratch(self, cell_field, lev):
-        """Zeroed scratch source MultiFab, cached per (level, box-array gen).
+        """Zeroed scratch source MultiFab, cached per (level, box-array generation).
 
-        Keyed on the ``fab_metadata`` box-size signature — the same
-        box-array-generation proxy ``ImplicitSolveCache`` compares. A regrid
-        rebuilds ``cell_field.mf[lev]`` on a new box array, the signature
-        changes, and the scratch is rebuilt (no separate invalidation channel).
+        Keyed on the ``fab_metadata`` box-size signature, so a regrid changes the key
+        and rebuilds the scratch with no separate invalidation channel.
         """
         mf = cell_field.mf[lev]
         sig = tuple((m[1], m[2], m[3]) for m in mf.fab_metadata())

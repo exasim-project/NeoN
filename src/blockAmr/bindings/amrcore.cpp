@@ -63,7 +63,7 @@ struct PyAmrCore : amrex::AmrCore
         nanobind::detail::ticket nb_ticket(nb_trampoline, "error_est", true);
         nb::object pyTags = nb::cast(tags, nb::rv_policy::reference);
         nb_trampoline.base().attr(nb_ticket.key)(lev, pyTags, time, ngrow);
-        // Prevent destructor call: mark as not ready (destruct=false)
+        // tags stays AMReX-owned: clear the Python instance's destruct flag or it double-frees.
         nb::detail::nb_inst_set_state(pyTags.ptr(), false, false);
     }
 };
@@ -72,7 +72,6 @@ void registerAmrCore(nb::module_& m)
 {
     using namespace amrex;
 
-    // AmrInfo — configuration struct for AmrMesh / AmrCore
     nb::class_<AmrInfo>(m, "AmrInfo")
         .def(nb::init<>())
         .def_rw("max_level", &AmrInfo::max_level)
@@ -133,7 +132,6 @@ void registerAmrCore(nb::module_& m)
             nb::arg("buf")
         );
 
-    // AmrCore — trampoline allows Python to override the 5 pure virtuals
     nb::class_<AmrCore, PyAmrCore>(m, "AmrCore")
         .def(nb::init<const Geometry&, const AmrInfo&>(), nb::arg("geom"), nb::arg("amr_info"))
         .def(

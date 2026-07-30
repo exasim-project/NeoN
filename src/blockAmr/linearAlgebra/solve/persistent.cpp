@@ -35,13 +35,9 @@
 namespace blockamr::la
 {
 
-// The one path whose flat Ginkgo vectors were never given the local sizing plus
-// distributed view that the Krylov paths got (makeGlobalVec below): the CSR
-// assembly, which is single-box only and so on >1 rank puts every row on one rank
-// while the others hold none. It still sizes by the global cell count and reduces
-// rank-locally, so it computes a wrong answer rather than a slow one. Refusing is
-// the whole point -- silence here is what let the residual norm be rank-local for
-// months.
+// REFUSED on >1 rank: the CSR path's flat vectors never got the local sizing plus distributed
+// view makeGlobalVec gives the Krylov ones, so they size by the global cell count and reduce
+// rank-locally -- a wrong answer rather than a slow one.
 static void requireSingleRank(const char* what)
 {
     if (amrex::ParallelContext::NProcsSub() > 1)
@@ -55,10 +51,8 @@ static void requireSingleRank(const char* what)
     }
 }
 
-// Declared in distVec.hpp. The two bodies are spelled out rather than shared
-// through a template helper because nvcc rejects ANY template signature that
-// returns shared_ptr<LinOp> here (see the note in distVec.hpp); the
-// duplication is the price of keeping this compilable in a CUDA build.
+// Declared in distVec.hpp. Duplicated rather than templated because nvcc rejects any template
+// signature returning shared_ptr<LinOp> here -- see the note in distVec.hpp.
 std::shared_ptr<gko::LinOp> makeGlobalVec(
     std::shared_ptr<const gko::Executor> exec,
     gko::size_type nGlobal,
@@ -133,21 +127,17 @@ SolveResult KrylovSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 
     if (bcOffset_)
     {
-        // Inhomogeneous domain BCs make the boundary operator AFFINE,
-        // L(x) = A x + c0. op_ is the linear part alone, so the system to solve
-        // is A x = rhs - c0; subtracting the offset here is the whole fold, and
-        // it also makes the residual reported below the residual of L (the
-        // report uses this same b_). c0 was refreshed by the subclass just
-        // before this call, so an in-place bc_data update takes effect.
+        // Inhomogeneous domain BCs make the boundary operator AFFINE, L(x) = A x + c0; op_ is
+        // the linear part alone, so this fold solves A x = rhs - c0 and makes the residual
+        // reported below the residual of L. c0 was refreshed by the subclass just above.
         auto negOne = gko::initialize<Dense>({-1.0}, exec_);
         b_->add_scaled(negOne, bcOffset_);
     }
 
     if (projectNullspace_)
     {
-        // Singular system with the constant nullspace (e.g. fully-periodic
-        // pure Poisson): make the rhs consistent by removing its mean, and
-        // keep the initial guess in the mean-zero subspace so CG stays there.
+        // Constant-nullspace singular system: make the rhs consistent by removing its mean,
+        // and keep the initial guess in the mean-zero subspace so CG stays there.
         subtractMean(bGlobal_.get());
         subtractMean(xGlobal_.get());
     }
@@ -159,8 +149,7 @@ SolveResult KrylovSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 
     if (projectNullspace_)
     {
-        // Pin the arbitrary constant: return the mean-zero representative
-        // (also removes any roundoff drift out of the subspace).
+        // Pin the arbitrary constant: return the mean-zero representative.
         subtractMean(xGlobal_.get());
     }
 
@@ -178,11 +167,10 @@ SolveResult KrylovSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
         }
     }
 
-    // Final residual ||b - A x|| for reporting, in the norm the solve stopped on
-    // (so a reported res_norm is always comparable with the rtol that produced it).
+    // Final residual ||b - A x|| in the norm the solve stopped on, so res_norm is comparable
+    // with the rtol that produced it.
     prof::Timer tRep("solve.report");
-    // Cloned from the GLOBAL view, so the norm below reduces across ranks in
-    // exactly the way the stopping criterion did.
+    // From the GLOBAL view, so the norm reduces across ranks as the stopping criterion did.
     auto res = bGlobal_->clone();
     auto one = gko::initialize<Dense>({1.0}, exec_);
     auto negOne = gko::initialize<Dense>({-1.0}, exec_);
@@ -243,12 +231,9 @@ void KrylovSolver::subtractMean(gko::LinOp* v)
 namespace
 {
 
-// The one shape shared by all four "gmg forbids precond_mlmg" checks
-// (solver='gmg'/'ir', precond='gmg'/'gmg_kokkos'): a V-cycle already IS the
-// preconditioner/solver, so combining it with an externally-built MLMG makes
-// no sense. `active` is the caller's own combination test (solverKind==gmg,
-// etc.); `what` names which one fired, matching the four historical messages
-// this replaces exactly.
+// REFUSED, in all four modes that build a GMG hierarchy: a V-cycle already IS the
+// preconditioner/solver, so an externally-built precond_mlmg has nothing to do. `what` names
+// which combination fired.
 void forbidPrecondMlmg(const SolverConfig& config, bool active, const char* what)
 {
     if (active && config.precondMlmg != nullptr)
@@ -261,38 +246,31 @@ void forbidPrecondMlmg(const SolverConfig& config, bool active, const char* what
 
 } // namespace
 
-// buildGmgHierarchy -- the hierarchy the native-GMG paths share -- used to be a
-// file-local function here. It now lives in linearAlgebra/precond.cpp, unchanged,
-// beside the two other preconditioner builders that moved with it, so that
-// la::Matrix can build the same hierarchy from its own coefficients. This file
-// keeps all three of its call sites (the stationary solver and the Krylov path's
-// solver="ir" and precond= forks) and hands over exactly what it handed over
-// before. See precond.hpp.
+// buildGmgHierarchy, shared by the three native-GMG call sites below, lives in
+// linearAlgebra/precond.cpp so la::Matrix can build the same hierarchy (precond.hpp).
 
 namespace
 {
 
-// Native stationary geometric-multigrid solver (solver="gmg"): x <- x +
-// V(b - A x), run to tolerance (Richardson iteration, like MLMG) -- no
-// Ginkgo Krylov object, the whole loop on AMReX fabs. Self-contained: unlike
-// the Krylov path this never touches a Ginkgo Dense vector, so it does not
-// derive from KrylovSolver -- that is the whole point of splitting it out
-// (KrylovSolver's base ctor used to need a config-derived allocDense=false
-// to skip work this class never needed in the first place).
+// Native stationary geometric-multigrid solver (solver="gmg"): x <- x + V(b - A x) run to
+// tolerance, the whole loop on AMReX fabs with no Ginkgo Krylov object or Dense vector --
+// which is why it does not derive from KrylovSolver.
 class GmgStationarySolver : public ISolver
 {
 public:
 
+    // Non-const because nonOwning() builds the grouped handles from a mutable field; the
+    // members below stay const*.
     GmgStationarySolver(
         std::shared_ptr<const gko::Executor> exec,
         const NeoN::Executor& nexec,
-        const amrex::MultiFab* alpha,
-        const amrex::MultiFab* ux,
-        const amrex::MultiFab* lx,
-        const amrex::MultiFab* uy,
-        const amrex::MultiFab* ly,
-        const amrex::MultiFab* uz,
-        const amrex::MultiFab* lz,
+        amrex::MultiFab* alpha,
+        amrex::MultiFab* ux,
+        amrex::MultiFab* lx,
+        amrex::MultiFab* uy,
+        amrex::MultiFab* ly,
+        amrex::MultiFab* uz,
+        amrex::MultiFab* lz,
         amrex::Geometry geom,
         const BcArray& bcArr,
         const SolverConfig& config
@@ -302,27 +280,17 @@ public:
 
 private:
 
-    // Fill xWork_'s ghost layer for the FP64 residual: periodic/internal via
-    // FillBoundary, then domain BCs via ghost reflection -- the same fill
-    // FaceCoeffOp does, so the residual uses the identical operator A.
-    //
-    // With bcData_ the reflection is the INHOMOGENEOUS one, which makes the outer
-    // residual rhs - L(x) rather than rhs - A x. That is the whole of the
-    // stationary path's inhomogeneous-BC support: the V-cycle then solves
-    // A delta = rhs - L(x) with its own homogeneous fills, which is right because
-    // a correction's boundary condition is homogeneous whatever the solution's
-    // is, and the iteration converges to L(x) = rhs. No extra apply, no rhs fold
-    // — the Krylov path needs both only because Ginkgo requires a linear operator.
+    // Fill xWork_'s ghost layer exactly as FaceCoeffOp does, so the residual uses the same A.
+    // With bcData_ the reflection is the INHOMOGENEOUS one, making the outer residual
+    // rhs - L(x); the V-cycle below then solves A delta = rhs - L(x) with homogeneous fills.
     void fillGmgGhosts(amrex::MultiFab& mf) const;
 
-    // mf -= mean(mf) over the valid region (constant-nullspace projection for
-    // singular systems; uniform cells so the volume mean is the arithmetic mean).
+    // mf -= mean(mf) over the valid region: the constant-nullspace projection.
     void subtractMeanMf(amrex::MultiFab& mf) const;
 
     std::shared_ptr<const gko::Executor> exec_;
-    // The NeoN executor the kernel launches dispatch on (S9). Carried only for
-    // fillGmgGhosts' inhomogeneous fill; the V-cycle's own kernels take the
-    // HostDeviceParallelFor path and cannot use it (see the S8/S9 handoff).
+    // Carried only for fillGmgGhosts' inhomogeneous fill; the V-cycle's own kernels take the
+    // HostDeviceParallelFor path and cannot use it.
     NeoN::Executor nexec_ {NeoN::SerialExecutor {}};
     bool onDevice_;
     gko::size_type n_;
@@ -353,13 +321,13 @@ private:
 GmgStationarySolver::GmgStationarySolver(
     std::shared_ptr<const gko::Executor> exec,
     const NeoN::Executor& nexec,
-    const amrex::MultiFab* alpha,
-    const amrex::MultiFab* ux,
-    const amrex::MultiFab* lx,
-    const amrex::MultiFab* uy,
-    const amrex::MultiFab* ly,
-    const amrex::MultiFab* uz,
-    const amrex::MultiFab* lz,
+    amrex::MultiFab* alpha,
+    amrex::MultiFab* ux,
+    amrex::MultiFab* lx,
+    amrex::MultiFab* uy,
+    amrex::MultiFab* ly,
+    amrex::MultiFab* uz,
+    amrex::MultiFab* lz,
     amrex::Geometry geom,
     const BcArray& bcArr,
     const SolverConfig& config
@@ -369,10 +337,8 @@ GmgStationarySolver::GmgStationarySolver(
 {
     if (onDevice_)
     {
-        // Device residual kernel reads the caller's device coefficients
-        // directly, so in-place updates are seen. This path derives its own
-        // diagonal per apply, which is why that still holds here -- FaceCoeffOp
-        // no longer works this way, since S7 stores its diagonal once.
+        // The device residual kernel reads the caller's coefficients directly, so in-place
+        // updates ARE seen -- this path derives its diagonal per apply, unlike FaceCoeffOp.
         alpha_ = alpha;
         ux_ = ux;
         lx_ = lx;
@@ -384,8 +350,8 @@ GmgStationarySolver::GmgStationarySolver(
     }
     else
     {
-        // Host residual loops can't read device memory: stage the
-        // coefficients to pinned once (solve-constant, cf. FaceCoeffOp).
+        // Host residual loops can't read device memory: the coefficients are staged to pinned
+        // ONCE here, so on this path an in-place caller update is NOT observed.
         ownedCoeff_ = {
             pinnedCopy(*alpha),
             pinnedCopy(*ux),
@@ -414,12 +380,20 @@ GmgStationarySolver::GmgStationarySolver(
     maxIter_ = config.maxIter;
     rtol_ = config.rtol;
     atol_ = config.atol;
-    // The stationary loop runs its own stopping test, so KrylovSolver::build --
-    // where the Krylov path records the norm -- is never involved here.
+    // The stationary loop runs its own stopping test; KrylovSolver::build is not involved.
     norm_ = parseNorm(config.norm);
     projectNull_ = config.projectNullspace;
+    // Non-owning handles onto the caller's fields, grouped (core/fieldLevel.hpp).
     GmgHierarchy h = buildGmgHierarchy(
-        exec_, n_, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
+        exec_,
+        n_,
+        CellFieldLevel {nonOwning(*alpha)},
+        FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
+        FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
+        MeshLevel {alpha->boxArray(), alpha->DistributionMap(), geom},
+        bcArr,
+        config.precondCycles,
+        config.gmg
     );
     gmgOwner_ = h.op;
     gmgMf_ = h.mf;
@@ -486,9 +460,8 @@ SolveResult GmgStationarySolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& so
     // Warm start: x0 = incoming sol (do NOT zero — persistent-solver contract).
     amrex::MultiFab::Copy(*xWork_, sol, 0, 0, 1, 0);
 
-    // Host residual loops can't read the device rhs: stage it to pinned once
-    // per solve (it is constant across the cycle loop). Device path reads rhs
-    // directly.
+    // Host residual loops can't read the device rhs: staged to pinned once per solve, since it
+    // is constant across the cycle loop. The device path reads rhs directly.
     const amrex::MultiFab* rhsUse = &rhs;
     if (!onDevice_)
     {
@@ -497,9 +470,8 @@ SolveResult GmgStationarySolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& so
         rhsUse = rhsPinned_.get();
     }
 
-    // Same stopping test in either norm: ||r|| <= max(rtol*||b||, atol), with
-    // both measured consistently (norm="linf" is MLMG's ||.||_inf, so a solve can
-    // be held to exactly MLMG's criterion -- see stopNormInf.hpp).
+    // Stopping test in either norm: ||r|| <= max(rtol*||b||, atol), both measured in the same
+    // norm (norm="linf" is MLMG's ||.||_inf, so a solve can be held to MLMG's own criterion).
     const bool useInf = (norm_ == NormKind::linf);
     const double bNorm = useInf ? rhs.norminf(0, 1, amrex::IntVect(0)) : rhs.norm2(0);
     const double stopTol = std::max(rtol_ * bNorm, atol_);
@@ -510,11 +482,8 @@ SolveResult GmgStationarySolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& so
     }
 
     std::vector<double> history;
-    // M3: one fused kernel forms the FP64 residual r = rhs - A x - rhsMean,
-    // casts it into the (fp32/fp64) L0 rhs, and reduces ||r|| in double — no
-    // separate FP64 residual MultiFab, norm pass, or convert-scatter. The
-    // nullspace shift (rhsMean) folds into the same kernel, so the projected
-    // path takes the fused route too (it only adds subtractMeanMf on x).
+    // One fused kernel forms the FP64 residual r = rhs - A x - rhsMean, casts it into the L0
+    // rhs and reduces ||r|| in double; the nullspace shift folds into the same kernel.
     auto computeResid = [&]() -> double
     {
         prof::Timer t("gmg.solve.resid");
@@ -549,30 +518,9 @@ SolveResult GmgStationarySolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& so
 
     SolveResult out = makeSolveResult(static_cast<std::int64_t>(cycles), rnorm, converged, history);
 
-    // Convergence diagnostic. A stationary V-cycle contracts the residual by a
-    // roughly CONSTANT factor per cycle, so makeSolveResult's `contraction` (the
-    // geometric mean of that factor) is the one number that says whether the
-    // cycle is working -- and it says it even on a run that converged, which a
-    // pass/fail flag cannot. Without it a caller sees only "did not converge in
-    // max_iter" and cannot tell a V-cycle that is grinding at 0.97/cycle from
-    // one that diverged on cycle two. Only this path attaches a `diagnostic` to
-    // it, because only here is the number a stable property of the method.
-    //
-    // Reported, not printed: this path already returns a dict the caller reads,
-    // and a std::cerr warning inside a solve is both unmissable in a sweep and
-    // unactionable in a script.
-    //
-    // The threshold is a "look here" signal, not a tolerance, but it has to sit
-    // BELOW the cases worth looking at. Measured at N=16 on the constant-coefficient
-    // periodic problem, smoothing bottom: 0.070 at 1 box, 0.155 at 8 boxes, 0.594
-    // at 64 boxes -- and only the last fails to converge in 30 cycles. With a Krylov
-    // bottom all three sit at 0.058-0.070, which is what "healthy" looks like here.
-    // So the degraded case is 4x the healthy rate, and a threshold anywhere in
-    // between separates them; one decade per 3 cycles is the round number in that
-    // gap, and still allows 3x the cycles a healthy V-cycle needs before it says
-    // anything. Crossing it means something structural: most often a bottom grid
-    // the smoother cannot solve (see gmg_bottom_solver), otherwise anisotropy or a
-    // coefficient jump the hierarchy does not represent.
+    // Convergence diagnostic, reported rather than printed: a stationary V-cycle contracts by
+    // a roughly constant factor per cycle, so `contraction` says whether the cycle is working
+    // even on a run that converged. Threshold: report/blockamr-precision-measurements.md
     constexpr double slowRho = 0.464; // 10^(-1/3), i.e. one decade per 3 cycles
     const double rho = out.contraction.value_or(0.0);
     const char* diagnostic = "";
@@ -597,12 +545,9 @@ SolveResult GmgStationarySolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& so
 namespace
 {
 
-// Ginkgo Krylov solve of the matrix-free FaceCoeffOp (every solver="gmg"
-// EXCEPT the native stationary loop above: "cg"/"bicgstab"/"gmres"/"gcr"/
-// "fcg"/"ir"/"mpir", each optionally GMG-preconditioned). The only thing this
-// adds over KrylovSolver is the inhomogeneous-BC refresh: FaceCoeffOp's c0 =
-// L(0) has to be recomputed every solve so an in-place bc_data update takes
-// effect, exactly as an in-place coefficient update does.
+// Ginkgo Krylov solve of the matrix-free FaceCoeffOp (every solver except the native
+// stationary loop above). All it adds over KrylovSolver is the inhomogeneous-BC refresh:
+// FaceCoeffOp's c0 = L(0) is recomputed every solve so an in-place bc_data update takes effect.
 class FaceCoeffKrylovSolver : public KrylovSolver
 {
 public:
@@ -647,19 +592,14 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
         exec, static_cast<gko::size_type>(alpha->boxArray().numPts()), localCount(*alpha)
     )
 {
-    auto op = gko::share(FaceCoeffOp::create(
-        exec_,
-        nexec,
-        MeshLevel {alpha->boxArray(), alpha->DistributionMap(), geom},
-        n_,
-        // Non-owning handles: Python owns these fields and this solver holds
-        // them only for as long as it is alive.
-        CellFieldLevel {nonOwning(*alpha)},
-        FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
-        FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
-        bcArr,
-        config.bcData
-    ));
+    // Non-owning handles: Python owns these fields and must outlive this solver.
+    const MeshLevel mesh {alpha->boxArray(), alpha->DistributionMap(), geom};
+    const CellFieldLevel alphaLevel {nonOwning(*alpha)};
+    const FaceFieldLevel upper {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}};
+    const FaceFieldLevel lower {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}};
+    auto op = gko::share(
+        FaceCoeffOp::create(exec_, nexec, mesh, n_, alphaLevel, upper, lower, bcArr, config.bcData)
+    );
     if (config.bcData != nullptr)
     {
         // The typed hook solve() calls to refresh c0, plus the vector to hold
@@ -668,17 +608,13 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
         bcOffset_ = Dense::create(exec_, gko::dim<2> {nLocal_, 1});
     }
 
-    // solver="ir": Ginkgo iterative refinement (gko::solver::Ir<double>) whose
-    // system matrix is the FaceCoeffOp above and whose inner solver is the
-    // generated GMG V-cycle LinOp (with_generated_solver, relaxation 1.0). Like
-    // solver="gmg" it implies the GMG hierarchy and ignores `precond`; unlike it
-    // the loop runs through Ginkgo (Dense pack/unpack + Convergence logger kept),
-    // so the measured overhead across the LinOp boundaries vs the native gmg loop
-    // is part of the deliverable — this variant does NOT fuse across it.
+    // solver="ir": gko::solver::Ir<double> over the FaceCoeffOp above, with the generated GMG
+    // V-cycle as its inner solver. Like solver="gmg" it implies the hierarchy and ignores
+    // `precond`, but the loop runs through Ginkgo's Dense pack/unpack and does NOT fuse.
     if (config.solverKind == SolverKind::ir)
     {
         GmgHierarchy inner = buildGmgHierarchy(
-            exec_, n_, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config.precondCycles, config.gmg
+            exec_, n_, alphaLevel, upper, lower, mesh, bcArr, config.precondCycles, config.gmg
         );
         build(
             op,
@@ -693,21 +629,16 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
         return;
     }
 
-    // The whole precond= fork -- gmg, gmg_kokkos, mlmg and their refusals -- now
-    // lives in makeFaceCoeffPrecond (precond.cpp), because it is exactly what
-    // la::Matrix needs to be able to build for itself and it was unreachable while
-    // it sat inside this constructor. Same branches, same order, same messages.
+    // The whole precond= fork -- gmg, gmg_kokkos, mlmg and their refusals -- lives in
+    // makeFaceCoeffPrecond (precond.cpp), which la::Matrix also builds through.
     FaceCoeffPrecond built =
-        makeFaceCoeffPrecond(exec_, n_, alpha, ux, lx, uy, ly, uz, lz, geom, bcArr, config);
+        makeFaceCoeffPrecond(exec_, n_, alphaLevel, upper, lower, mesh, bcArr, config);
     std::shared_ptr<const gko::LinOp> pc = std::move(built.op);
     // Set only by precond="gmg_kokkos"; solver="mpir" needs it and says so.
     std::shared_ptr<blockamr::KokkosGmgApply> vcycle = std::move(built.kokkosVcycle);
-    // Mixed-precision iterative refinement. The OUTER loop is Ginkgo's Ir over the
-    // fp64 operator -- it forms r = b - A x and runs the stopping test in fp64, so
-    // the answer and the tolerance are the fp64 solver's -- and the inner correction
-    // is a preconditioned Cg<float>. Expressed through the existing "ir" path
-    // because Ir::with_generated_solver is exactly the hook needed: what changes is
-    // only WHICH LinOp plays the inner solver.
+    // Mixed-precision refinement, expressed through the "ir" path: the OUTER loop stays
+    // Ginkgo's Ir over the fp64 operator, so the residual, the stopping test and the answer
+    // are the fp64 solver's; only the inner solver changes, to a preconditioned Cg<float>.
     std::string krylov = config.solver;
     if (config.solverKind == SolverKind::mpir)
     {
@@ -718,16 +649,9 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
                 "preconditioner with an fp32 apply)"
             );
         }
-        auto op32 = gko::share(FaceCoeffOp32::create(
-            exec_,
-            nexec,
-            MeshLevel {alpha->boxArray(), alpha->DistributionMap(), geom},
-            n_,
-            CellFieldLevel {nonOwning(*alpha)},
-            FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
-            FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
-            bcArr
-        ));
+        auto op32 = gko::share(
+            FaceCoeffOp32::create(exec_, nexec, mesh, n_, alphaLevel, upper, lower, bcArr)
+        );
         auto pc32 = gko::share(GmgKokkosPrecond32::create(exec_, n_, vcycle));
         // l2 rather than the caller's norm: this is an INNER tolerance, not a
         // convergence claim, and ResidualNormInf is an fp64 criterion.
@@ -764,16 +688,9 @@ SolveResult FaceCoeffKrylovSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& 
 {
     if (bcOffsetOp_ != nullptr)
     {
-        // c0 = L(0), refreshed every solve: the BC data is REFERENCED, not copied,
-        // on the device path, so an in-place update to it has to take effect.
-        // (The COEFFICIENTS no longer work that way -- since S7 the operator's
-        // diagonal is computed at construction, so a coefficient change needs a
-        // new solver.) One extra operator apply per solve,
-        // which is the whole price of inhomogeneous BCs on the Krylov path.
-        //
-        // x_ is the zero source rather than a dedicated vector: KrylovSolver::
-        // solve overwrites it with the initial guess as its first act, so the fold
-        // costs one n-vector (bcOffset_) instead of two.
+        // c0 = L(0), refreshed every solve: the BC data is REFERENCED, not copied, on the
+        // device path. The COEFFICIENTS are not -- the diagonal is computed at construction, so
+        // a coefficient change needs a new solver. x_ is the zero source (solve overwrites it).
         x_->fill(0.0);
         bcOffsetOp_->applyBcOffset(x_.get(), bcOffset_.get());
     }
@@ -785,14 +702,8 @@ SolveResult FaceCoeffKrylovSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& 
 namespace
 {
 
-// Runs every check FaceCoeffSolver's constructor used to run unconditionally
-// -- before the solver="gmg" vs. everything-else fork -- exactly once, then
-// builds whichever concrete ISolver the configuration calls for. Order
-// matches today's single constructor body exactly, since two of the checks
-// (forbidPrecondMlmg's solver="ir"/precond="gmg"/"gmg_kokkos" cases) used to
-// run BEFORE the matrix-free operator was built on the Krylov path -- moving
-// them here keeps them running before EITHER concrete solver allocates
-// anything.
+// Runs every configuration check once, before EITHER concrete solver allocates anything, then
+// builds whichever ISolver the configuration calls for.
 std::unique_ptr<ISolver> makeFaceCoeffSolver(
     std::shared_ptr<const gko::Executor> exec,
     const NeoN::Executor& nexec,
@@ -807,10 +718,8 @@ std::unique_ptr<ISolver> makeFaceCoeffSolver(
     const SolverConfig& config
 )
 {
-    // A separate coefficient precision exists in the Kokkos hierarchy alone. Named
-    // rather than ignored: the shipped GmgPrecondT stores one type per level, so
-    // accepting the option there would report a narrowed-coefficient timing for a
-    // hierarchy that never narrowed anything.
+    // REFUSED rather than ignored: the shipped GmgPrecondT stores one type per level, so
+    // accepting this would report a narrowed-coefficient timing for a hierarchy that is not.
     if (!config.gmg.coeffPrecision.empty() && config.precondKind != PrecondKind::gmg_kokkos)
     {
         throw std::runtime_error(
@@ -819,12 +728,9 @@ std::unique_ptr<ISolver> makeFaceCoeffSolver(
         );
     }
 
-    // CG-safety: the V-cycle is a symmetric (SPD) preconditioner only when
-    // the post-smoother is the adjoint of the pre-smoother, which requires
-    // equal pre/post counts. With asymmetric counts CG's assumption breaks;
-    // warn but allow (usable as a stationary/flexible-CG smoother). The native
-    // stationary solver (solver="gmg") is NOT CG, so asymmetric sweeps there
-    // are legitimate and never warn (this guard requires solver=="cg").
+    // The V-cycle is SPD only with equal pre/post sweep counts; asymmetric counts break CG's
+    // assumption, so warn but ALLOW (still usable as a stationary/flexible-CG smoother). The
+    // native stationary solver is not CG, so asymmetric sweeps there are legitimate.
     if (config.precondKind == PrecondKind::gmg && config.solverKind == SolverKind::cg
         && config.gmg.preSweeps != config.gmg.postSweeps)
     {
@@ -839,11 +745,6 @@ std::unique_ptr<ISolver> makeFaceCoeffSolver(
         checkBcData(*config.bcData, *alpha, bcArr, "FaceCoeffSolver");
     }
 
-    // "gmg forbids precond_mlmg", in all four modes that build a GMG hierarchy
-    // (the native stationary loop, its Ginkgo-IR twin, and precond="gmg"/
-    // "gmg_kokkos"): the V-cycle already IS the preconditioner/solver, so an
-    // externally-built precond_mlmg would have nothing to do. Checked once,
-    // here, for all four -- before either concrete solver allocates anything.
     forbidPrecondMlmg(config, config.solverKind == SolverKind::gmg, "solver='gmg'");
     forbidPrecondMlmg(config, config.solverKind == SolverKind::ir, "solver='ir'");
     forbidPrecondMlmg(config, config.precondKind == PrecondKind::gmg, "precond='gmg'");
@@ -889,13 +790,9 @@ SolveResult FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 namespace
 {
 
-// FaceCoeffCsrSolver has no matrix-free GMG hierarchy and no fp32 inner solve, so
-// none of these 16 knobs do anything; the pre-refactor constructor accepted and
-// silently discarded them (persistent.hpp:266-281, commented-out parameter names).
-// Refused rather than ignored, for the same reason every other capability gap on
-// this path is (see bc.hpp's checkBcData, gmg_bottom_solver in the FaceCoeffSolver
-// ctor): accepting a knob that does nothing reports a configuration that was never
-// applied.
+// FaceCoeffCsrSolver has no matrix-free GMG hierarchy and no fp32 inner solve, so these 16
+// knobs do nothing. REFUSED rather than ignored: accepting a knob that does nothing would
+// report a configuration that was never applied.
 void validateForCsr(const SolverConfig& config)
 {
     static const GmgConfig kDefaultGmg {};
@@ -946,13 +843,13 @@ void validateForCsr(const SolverConfig& config)
 FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     const NeoN::Executor& executor,
     amrex::Geometry geom,
-    const amrex::MultiFab* alpha,
-    const amrex::MultiFab* ux,
-    const amrex::MultiFab* lx,
-    const amrex::MultiFab* uy,
-    const amrex::MultiFab* ly,
-    const amrex::MultiFab* uz,
-    const amrex::MultiFab* lz,
+    amrex::MultiFab* alpha,
+    amrex::MultiFab* ux,
+    amrex::MultiFab* lx,
+    amrex::MultiFab* uy,
+    amrex::MultiFab* ly,
+    amrex::MultiFab* uz,
+    amrex::MultiFab* lz,
     const SolverConfig& config
 )
     : KrylovSolver(
@@ -965,18 +862,13 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     // The assembly is single-box only (csr.cpp), which on >1 rank would mean one
     // rank holding every row while the others hold none.
     requireSingleRank("FaceCoeffCsrSolver");
-    // Periodic sides keep their wraparound column; homogeneous dirichlet/neumann
-    // sides are folded onto the diagonal by assembleFaceCoeffCsr, the assembled
-    // twin of FaceCoeffOp's ghost reflection. parseBc rejects a bc that disagrees
-    // with the geometry's periodicity.
+    // Periodic sides keep their wraparound column; homogeneous dirichlet/neumann sides are
+    // folded onto the diagonal by assembleFaceCoeffCsr, the assembled twin of FaceCoeffOp's
+    // ghost reflection. parseBc rejects a bc that disagrees with the geometry's periodicity.
     const BcArray bcArr = parseBc(config.bc, geom, "FaceCoeffCsrSolver");
-    // A LIVE path since the assembly learned non-periodic sides: any
-    // dirichlet/neumann bc now constructs, and bc_data is what a caller reaches
-    // for next. It stays refused because inhomogeneous BCs are an affine term,
-    // L(x) = A x + c0 -- an rhs fold (KrylovSolver::solve's bcOffset_), not a
-    // matrix one, and this path has no c0. Refused rather than ignored, like
-    // every other capability gap here: a silently-dropped datum would look like a
-    // wrong answer, not a missing feature.
+    // bc_data stays REFUSED: inhomogeneous BCs are an affine term L(x) = A x + c0, i.e. an rhs
+    // fold rather than a matrix one, and this path has no c0. A silently-dropped datum would
+    // look like a wrong answer instead of a missing feature.
     if (config.bcData != nullptr)
     {
         throw std::runtime_error(
@@ -985,11 +877,8 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
             "data needs FaceCoeffSolver"
         );
     }
-    // config.precondKind's spelling was already validated once, by
-    // parseSolverConfig; what is checked here is CSR's own, narrower
-    // combination legality -- it has no matrix-free operator, so 'gmg' and
-    // 'gmg_kokkos' (both otherwise-valid PrecondKind values) are refused, the
-    // former with its own message.
+    // CSR's own, narrower combination legality (the spelling was validated at the boundary):
+    // with no matrix-free operator, 'gmg' and 'gmg_kokkos' are REFUSED.
     if (config.precondKind == PrecondKind::gmg)
     {
         throw std::runtime_error(
@@ -1007,10 +896,16 @@ FaceCoeffCsrSolver::FaceCoeffCsrSolver(
     {
         throw std::runtime_error("FaceCoeffCsrSolver: precond='mlmg' requires precond_mlmg");
     }
-    auto op = assembleFaceCoeffCsr(exec_, geom, *alpha, *ux, *lx, *uy, *ly, *uz, *lz, bcArr);
-    // Null when there is no precond_mlmg to wrap, which is what the guarded
-    // construction here spelled before makeMlmgPrecond existed (precond.cpp).
-    // The three refusals above are unchanged and still belong to this class.
+    // Non-owning handles onto the caller's fields, grouped (core/fieldLevel.hpp).
+    auto op = assembleFaceCoeffCsr(
+        exec_,
+        MeshLevel {alpha->boxArray(), alpha->DistributionMap(), geom},
+        CellFieldLevel {nonOwning(*alpha)},
+        FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
+        FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
+        bcArr
+    );
+    // Null when there is no precond_mlmg to wrap (precond.cpp).
     std::shared_ptr<const gko::LinOp> pc = makeMlmgPrecond(exec_, n_, *alpha, config);
     build(
         op,

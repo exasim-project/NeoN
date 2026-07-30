@@ -2,18 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// Compile-time proof that IsMatrix and IsOperator are satisfiable, that they name the
-// members they are meant to name, and that they DISCRIMINATE -- a concept that
-// accidentally admitted every type would satisfy the first two and be worthless.
-// Nothing here is instantiated, linked or called -- the translation unit exists so that
-// a mistake in coefficients.hpp is a compile error here, beside the concept, rather than
-// at the first real format.
-//
-// It lives in the shipped object library rather than under test/ because blockAmr has
-// no C++ test target (NeoN_BUILD_TESTS is OFF for the Python build and test/CMakeLists
-// does not add a blockAmr subdirectory), so a test TU would never be compiled at all.
-// The real formats' own static_asserts (faceCoeffMatrix.hpp) reach a compiler for the
-// same reason: this TU includes them.
+// Compile-time proof that IsMatrix and IsOperator are satisfiable, name the members they mean
+// to, and DISCRIMINATE. In the shipped object library, not under test/, because blockAmr has no
+// C++ test target -- and the formats' own static_asserts reach a compiler only through this TU.
 
 #include <optional>
 #include <type_traits>
@@ -25,14 +16,12 @@
 #include "NeoN/blockAmr/linearAlgebra/operator.hpp"
 #include "NeoN/blockAmr/operators/laplacian.hpp"
 
-// A named namespace, not an anonymous one: with internal linkage nvcc reports every
-// member as "declared but never referenced" (#177-D), which a concept check never is.
-// Nothing is defined here, so no symbol is emitted either way.
+// Named, not anonymous: with internal linkage nvcc reports every member as "declared but never
+// referenced" (#177-D), which a concept check never is.
 namespace blockamr::la::conceptCheck
 {
 
-// Declared, not defined: a concept checks the signatures in an unevaluated context, so
-// bodies would only add unreferenced-function warnings.
+// Declared, not defined: a concept checks signatures in an unevaluated context.
 struct StubMatrix
 {
     std::shared_ptr<const gko::LinOp> op() const;
@@ -54,13 +43,9 @@ struct StubOperator
 static_assert(IsMatrix<StubMatrix>);
 static_assert(IsOperator<StubOperator>);
 
-// --- Negative side: the concepts REJECT, they do not merely accept ---------
-//
-// Each stub below is StubMatrix/StubOperator with exactly ONE thing wrong, so a
-// failure names the requirement that stopped discriminating. Without these the TU
-// would pass unchanged if `requires` had been mistyped into something vacuously
-// true (an empty requires-block, a misplaced `;`, a requires-expression whose
-// body is never checked) -- the classic way a concept quietly admits everything.
+// Each stub below is StubMatrix/StubOperator with exactly ONE thing wrong, so a failure names
+// the requirement that stopped discriminating -- and a `requires` mistyped into something
+// vacuously true cannot pass them.
 
 // Missing member: zero() is gone, nothing else changed.
 struct StubMatrixNoZero
@@ -75,9 +60,8 @@ struct StubMatrixNoZero
     const char* name() const;
 };
 
-// Present member, WRONG return type: localRows() returns int, not std::size_t.
-// This is what pins the `-> std::same_as<...>` half of each requirement; a
-// concept checking only that the expression is valid would accept this one.
+// Present member, WRONG return type: pins the `-> std::same_as<...>` half of each requirement,
+// which a validity-only concept would accept.
 struct StubMatrixNarrowLocalRows
 {
     std::shared_ptr<const gko::LinOp> op() const;
@@ -91,10 +75,9 @@ struct StubMatrixNarrowLocalRows
     const char* name() const;
 };
 
-// Present member, WRONG parameter: makePrecond takes a PrecondKind rather than the
-// whole SolverConfig. A precond kind alone cannot shape a V-cycle -- the sweep
-// counts, omega and precision live on the config -- so this is the mistake the
-// signature is most likely to drift into, and it is pinned rather than described.
+// Present member, WRONG parameter: a PrecondKind alone cannot shape a V-cycle (sweeps, omega
+// and precision live on the SolverConfig), so this is the likeliest drift -- pinned, not
+// described.
 struct StubMatrixPrecondKindOnly
 {
     std::shared_ptr<const gko::LinOp> op() const;
@@ -108,10 +91,9 @@ struct StubMatrixPrecondKindOnly
     const char* name() const;
 };
 
-// Present member, WRONG parameter: assemble() takes MatrixCoefficients (the
-// matrix-side subset) rather than the Coefficients an operator is handed, which
-// carries the rhs as well. Coefficients is not convertible to MatrixCoefficients,
-// so the call in the requires-expression does not compile and the concept fails.
+// Present member, WRONG parameter: assemble() takes the matrix-side subset rather than the
+// Coefficients an operator is handed, which carries the rhs too. The two are not convertible,
+// so the call in the requires-expression does not compile.
 struct StubOperatorWrongArgument
 {
     void assemble(MatrixCoefficients) const;
@@ -126,38 +108,39 @@ static_assert(!IsOperator<StubOperatorWrongArgument>);
 static_assert(!IsMatrix<int>);
 static_assert(!IsOperator<int>);
 
-// --- The S5 gate, asserted rather than described ---------------------------
-//
-// Two privacy rules carry the claim that an operator can only run through
-// `system += op`. Neither is testable from Python -- the whole point is that the
-// code that would test them does not compile -- so they are asserted here.
+// Two privacy rules carry the claim that an operator can only run through `system += op`.
+// Neither is testable from Python -- the code that would test them does not compile -- so they
+// are asserted here.
 
-// 1. Operator::assemble is PRIVATE (friend: LinearSystem). The erasure therefore
-//    does NOT satisfy IsOperator, which is the one place its shape deliberately
-//    departs from Matrix (matrix.hpp asserts IsMatrix<Matrix> to check its own
-//    forwarding surface; Operator cannot, and must not). Make `assemble` public
-//    and this fires.
+// 1. Operator::assemble is PRIVATE (friend: LinearSystem), so the erasure does NOT satisfy
+//    IsOperator: the one place its shape deliberately departs from Matrix, which does assert
+//    IsMatrix<Matrix>. Make `assemble` public and this fires.
 static_assert(!IsOperator<Operator>);
 
-// 2. Coefficients has a private constructor (friend: LinearSystem). A concrete
-//    operator's assemble() is public -- IsOperator requires it -- so the argument
-//    is what is actually out of reach: there is no way to PRODUCE one except
-//    through operator+=. std::is_constructible respects access control, so this
-//    is the check, not a comment about the check.
-static_assert(!std::is_constructible_v<Coefficients, MatrixCoefficients, CellFieldLevel>);
-// Not copy-constructible from thin air either -- but a Coefficients a caller was
-// handed can of course be copied, which is what makes assemble(Coefficients) a
-// by-value parameter rather than a reference.
+// 2. Coefficients' ctor is private (friend: LinearSystem) and is_constructible respects access
+//    control, so operator+= is the only way to PRODUCE one. The list is the REAL 3-arg ctor's;
+//    StubPrivateCtor asserts it BINDS, without which the negative below would go vacuous.
+struct StubPrivateCtor
+{
+    StubPrivateCtor(MatrixCoefficients, CellFieldLevel, const NeoN::Executor&);
+};
+static_assert(std::is_constructible_v<
+              StubPrivateCtor,
+              MatrixCoefficients,
+              CellFieldLevel,
+              NeoN::Executor>);
+static_assert(!std::is_constructible_v<
+              Coefficients,
+              MatrixCoefficients,
+              CellFieldLevel,
+              NeoN::Executor>);
+// A Coefficients a caller was handed can of course be copied -- which is what makes
+// assemble(Coefficients) a by-value parameter rather than a reference.
 static_assert(std::is_copy_constructible_v<Coefficients>);
 
-// --- Absence has exactly ONE spelling, and only `lower` has it ----------------
-//
-// `diag` and `upper` are never absent. Asserted here rather than probed from
-// Python: with CellFieldLevel/FaceFieldLevel non-nullable, "empty" is not
-// expressible at all, so this is what _la_matrix_probe's diag_empty/upper_empty
-// keys became -- they now emit a literal false, and these three lines are what
-// makes that literal true. Turn either member into an optional, or take the
-// optional off `lower`, and this fires.
+// Absence has exactly ONE spelling and only `lower` has it: with CellFieldLevel/FaceFieldLevel
+// non-nullable, "empty" is not expressible, which is why _la_matrix_probe's diag_empty/
+// upper_empty keys now emit a literal false. Turn either into an optional and this fires.
 static_assert(std::is_same_v<decltype(MatrixCoefficients::diag), CellFieldLevel>);
 static_assert(std::is_same_v<decltype(MatrixCoefficients::upper), FaceFieldLevel>);
 static_assert(std::is_same_v<decltype(MatrixCoefficients::lower), std::optional<FaceFieldLevel>>);
@@ -166,28 +149,21 @@ static_assert(std::is_same_v<decltype(Coefficients::upper), FaceFieldLevel>);
 static_assert(std::is_same_v<decltype(Coefficients::lower), std::optional<FaceFieldLevel>>);
 static_assert(std::is_same_v<decltype(Coefficients::rhs), CellFieldLevel>);
 
-// --- The coefficients are SELF-DESCRIBING: the mesh travels with them ---------
-//
-// Not optional and not a pointer. An operator cannot write a face coefficient
-// without dx, so a coefficient set that does not carry its own layout is not
-// sufficient to assemble from -- and passing it alongside instead made a mismatch
-// representable (ops::Laplacian used to hold its own amrex::Geometry). Take this
-// member off either struct and every operator needs a second source for it again.
+// The mesh TRAVELS with the coefficients, not optional and not a pointer: an operator cannot
+// write a face coefficient without dx, and passing it alongside made a mismatch representable
+// (ops::Laplacian used to hold its own amrex::Geometry).
 static_assert(std::is_same_v<decltype(MatrixCoefficients::mesh), MeshLevel>);
 static_assert(std::is_same_v<decltype(Coefficients::mesh), MeshLevel>);
 
-// The geometry is NOT separately constructible into ops::Laplacian any more: the
-// three-argument form that took one is gone, so the old
-// `Laplacian(gamma, geom, bc)` spelling no longer compiles.
+// ops::Laplacian takes no Geometry any more: the old `Laplacian(gamma, geom, bc)` spelling
+// does not compile.
 static_assert(!std::is_constructible_v<
               ops::Laplacian,
               const amrex::MultiFab&,
               amrex::Geometry,
               BcArray>);
 
-// The concrete operator satisfies the concept it is written against. (It also
-// asserts this in its own header; repeated here so this TU fails if the header's
-// assertion is ever removed along with whatever broke it.)
+// Repeated from the operator's own header, so this TU fails if that assertion is removed.
 static_assert(IsOperator<ops::Laplacian>);
 
 } // namespace blockamr::la::conceptCheck

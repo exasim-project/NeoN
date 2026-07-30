@@ -13,16 +13,9 @@
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 
-// An FP32 solver wearing an FP64 LinOp's clothes so gko::solver::Ir<double> can drive
-// it: b down to fp32, a preconditioned Cg<float> from a zero guess, the result back
-// up. Everything deciding the ANSWER stays in the outer fp64 loop, so a weak inner
-// solve costs outer iterations and never accuracy.
-//
-// Measured and REJECTED: the fp32 iteration is the predicted 1.18x cheaper, but
-// refinement needs 1.5x the preconditioner applies — 1.41x slower than plain fp64 CG.
-// The inner stopping criterion is not trustworthy, so mp_inner_max_iter (not
-// mp_inner_rtol) is the knob for this path. Measurements:
-// report/blockamr-precision-measurements.md in the NeoFOAM repo.
+// An FP32 inner solver wearing an FP64 LinOp's clothes so gko::solver::Ir<double> can
+// drive it; the answer stays in the outer fp64 loop. Measured and REJECTED (1.41x slower
+// than fp64 CG); mp_inner_max_iter is the knob. report/blockamr-precision-measurements.md
 
 namespace blockamr::la
 {
@@ -59,10 +52,8 @@ protected:
             prof::Timer t("mp.alloc");
             b32_ = Dense32::create(this->get_executor(), size);
             x32_ = Dense32::create(this->get_executor(), size);
-            // What the inner Cg<float> is actually handed: the buffers above are sized
-            // by THIS rank's rows, so on >1 rank a plain Dense would make the inner
-            // solver's dots and norms rank-local (the defect the fp64 Krylov path had).
-            // Ginkgo clones its work vectors from these, so the view propagates.
+            // What the inner Cg<float> is handed: the buffers are sized by THIS rank's
+            // rows, so a plain Dense would make its dots and norms rank-local.
             b32Global_ = makeGlobalVec(this->get_executor(), this->get_size()[0], b32_.get());
             x32Global_ = makeGlobalVec(this->get_executor(), this->get_size()[0], x32_.get());
         }
@@ -72,8 +63,7 @@ protected:
             localView<double>(b)->convert_to(b32_);
         }
         {
-            // Zero guess, not the incoming x: this operator IS the correction S(r), so
-            // a warm start would add x to itself once the Ir outer loop accumulates.
+            // Zero guess, not the incoming x: this operator IS the correction S(r).
             prof::Timer t("mp.zero");
             x32_->fill(0.0F);
         }
@@ -92,8 +82,7 @@ private:
     std::shared_ptr<const gko::LinOp> inner_;
     // shared_ptr for the same reason as AmrexLinOpBase::scratch_ (copy-assignment).
     mutable std::shared_ptr<Dense32> b32_, x32_;
-    // Non-owning views of the two above (a distributed::Vector on >1 rank, the buffer
-    // itself on one); rebuilt whenever they are.
+    // Non-owning views of the two above; rebuilt whenever they are.
     mutable std::shared_ptr<gko::LinOp> b32Global_, x32Global_;
 };
 

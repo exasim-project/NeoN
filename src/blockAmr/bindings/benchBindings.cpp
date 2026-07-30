@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// nanobind surface for the Kokkos-vs-AMReX operator bench. Kept apart from the
-// implementations: those compile in the separate blockamr_kokkos object library (see
-// CMakeLists.txt -- not an RDC fence, the whole module builds non-RDC), so both
-// sides agree on exactly one shared header.
+// nanobind surface for the Kokkos-vs-AMReX operator bench; the implementations compile in the
+// separate blockamr_kokkos object library, so both sides agree on exactly one shared header
+// (not an RDC fence -- the whole module builds non-RDC).
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
@@ -177,11 +176,9 @@ void registerKokkosBench(nb::module_& m)
             args.geom = &geom;
             args.rhs = &rhs;
             args.alpha = &alpha;
-            // Symmetric operator by default: the upper and lower coefficient of a
-            // direction are the same face field, as the persistent solvers are handed
-            // it. Passing fx_lo/fy_lo/fz_lo gives the lower coefficients separately,
-            // which is what makes share_coeffs testable -- equal-but-distinct fabs
-            // must be detected as shareable, and genuinely different ones must not.
+            // Symmetric by default: a direction's upper and lower coefficient are the same face
+            // field. fx_lo/fy_lo/fz_lo pass the lower ones separately, making share_coeffs
+            // testable -- equal-but-distinct fabs must share, genuinely different ones must not.
             args.ux = &fx;
             args.lx = (fx_lo != nullptr) ? fx_lo : &fx;
             args.uy = &fy;
@@ -200,8 +197,8 @@ void registerKokkosBench(nb::module_& m)
             args.coeffPrecision = coeff_precision;
             args.shareCoeffs = share_coeffs;
             args.aggLevel0Size = agg_level0_size;
-            // Integers, not the solver's bc strings: parseBc lives in the Ginkgo-only
-            // half of the module and this binding is always built. Empty = periodic.
+            // Integers, not the solver's bc strings: parseBc lives in the Ginkgo-only half of the
+            // module and this binding is always built. Empty = periodic.
             if (!bc.empty())
             {
                 if (bc.size() != 6)
@@ -225,8 +222,7 @@ void registerKokkosBench(nb::module_& m)
             d["cells_per_level"] = r.cellsPerLevel;
             d["resid0"] = r.resid0;
             d["resid1"] = r.resid1;
-            // What the hierarchy DID, not what was asked for: share_coeffs is only
-            // honoured for a symmetric operator.
+            // What the hierarchy DID, not what was asked: only honoured for a symmetric operator.
             d["shared_coeffs"] = r.sharedCoeffs;
             d["agg_level0"] = r.aggLevel0;
             return d;
@@ -249,14 +245,13 @@ void registerKokkosBench(nb::module_& m)
         nb::arg("omega") = 1.0,
         nb::arg("agglomerate") = false,
         nb::arg("agg_grid_size") = 32,
-        // The level storage type: "fp64", "fp32" or "bf16" -- kokkos_opt only.
+        // Level storage type: "fp64", "fp32" or "bf16" -- kokkos_opt only.
         nb::arg("precision") = "fp64",
-        // The COEFFICIENT storage type; "" (the default) means the same as
-        // `precision`. May not be wider than it. kokkos_opt only.
+        // COEFFICIENT storage type; "" means the same as `precision`, and may not be wider.
         nb::arg("coeff_precision") = "",
         nb::arg("share_coeffs") = false,
-        // Per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1 homogeneous
-        // Dirichlet, 2 homogeneous Neumann. Empty (the default) means all periodic.
+        // Per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1 homogeneous Dirichlet,
+        // 2 homogeneous Neumann. Empty (the default) means all periodic.
         nb::arg("bc") = std::vector<int> {},
         // Target box size for level 0's own decomposition; 0 keeps the caller's boxes.
         nb::arg("agg_level0_size") = 0,

@@ -25,7 +25,6 @@ void registerLinOp(nb::module_& m)
     using MLABecLap = MLABecLaplacianT<MultiFab>;
     using MLMG = MLMGT<MultiFab>;
 
-    // --- LinOpBCType enum ---
     nb::enum_<LinOpBCType>(m, "LinOpBCType")
         .value("interior", LinOpBCType::interior)
         .value("Dirichlet", LinOpBCType::Dirichlet)
@@ -40,7 +39,6 @@ void registerLinOp(nb::module_& m)
         .value("Periodic", LinOpBCType::Periodic)
         .value("bogus", LinOpBCType::bogus);
 
-    // --- LPInfo ---
     nb::class_<LPInfo>(m, "LPInfo")
         .def(nb::init<>())
         .def(
@@ -61,29 +59,24 @@ void registerLinOp(nb::module_& m)
             nb::arg("x"),
             nb::rv_policy::reference
         )
-        // Semicoarsening: coarsen only the direction(s) the operator is strongly
-        // coupled in, instead of all three. This is MLMG's answer to anisotropic
-        // cells, and without it full coarsening makes the anisotropy WORSE on every
-        // level (4:1 cells become 8:1, 16:1, ...) until the smoother stops smoothing
-        // in the weak directions and the solve stalls or aborts. Off by default,
-        // matching AMReX.
+        // Coarsen only the strongly-coupled direction(s): MLMG's answer to anisotropic cells,
+        // where full coarsening worsens the anisotropy per level until the solve stalls or
+        // aborts. Off by default, matching AMReX.
         .def(
             "set_semicoarsening",
             [](LPInfo& info, bool x) -> LPInfo& { return info.setSemicoarsening(x); },
             nb::arg("x"),
             nb::rv_policy::reference
         )
-        // How many levels may semicoarsen before reverting to full coarsening.
-        // 0 (AMReX's default) means none, so setSemicoarsening alone does nothing
-        // useful -- both have to be set.
+        // Levels that may semicoarsen before reverting to full coarsening; 0 (AMReX's default)
+        // means none, so set_semicoarsening alone does nothing -- both have to be set.
         .def(
             "set_max_semicoarsening_level",
             [](LPInfo& info, int n) -> LPInfo& { return info.setMaxSemicoarseningLevel(n); },
             nb::arg("n"),
             nb::rv_policy::reference
         )
-        // Force the semicoarsening direction (0/1/2); -1 (the default) lets MLMG
-        // pick per level from the cell aspect ratio.
+        // Force the direction (0/1/2); -1 (default) lets MLMG pick from the cell aspect ratio.
         .def(
             "set_semicoarsening_direction",
             [](LPInfo& info, int n) -> LPInfo& { return info.setSemicoarseningDirection(n); },
@@ -91,10 +84,9 @@ void registerLinOp(nb::module_& m)
             nb::rv_policy::reference
         );
 
-    // --- Base class (opaque, needed for MLMG to accept derived types) ---
+    // Opaque base class, needed for MLMG to accept derived types.
     nb::class_<MLLinOp>(m, "MLLinOp")
-        // Ghost-fill interpolation order at domain boundaries (default 3 =
-        // quadratic; 2 = linear, matching a reflect-odd Dirichlet fill).
+        // Ghost-fill order at domain boundaries: 3 (default) quadratic, 2 linear.
         .def(
             "set_max_order", [](MLLinOp& lp, int o) { lp.setMaxOrder(o); }, nb::arg("o")
         );
@@ -113,7 +105,7 @@ void registerLinOp(nb::module_& m)
         lp.setDomainBC(lo, hi);
     };
 
-    // --- MLPoisson: del dot grad phi ---
+    // MLPoisson: del dot grad phi
     nb::class_<MLPoisson, MLLinOp>(m, "MLPoisson")
         .def(
             "__init__",
@@ -135,7 +127,7 @@ void registerLinOp(nb::module_& m)
             nb::arg("levdata") = nullptr
         );
 
-    // --- MLABecLaplacian: (alpha * a - beta * div(b * grad)) phi ---
+    // MLABecLaplacian: (alpha * a - beta * div(b * grad)) phi
     nb::class_<MLABecLap, MLLinOp>(m, "MLABecLaplacian")
         .def(
             "__init__",
@@ -149,8 +141,7 @@ void registerLinOp(nb::module_& m)
             nb::arg("dm"),
             nb::arg("info") = LPInfo()
         )
-        // Multi-level (composite AMR) constructor: one geom/ba/dm per level,
-        // coarsest first (mirrors the MLNodeLaplacian list overload).
+        // Composite AMR constructor: one geom/ba/dm per level, coarsest first.
         .def(
             "__init__",
             [](MLABecLap* self,
@@ -211,7 +202,7 @@ void registerLinOp(nb::module_& m)
             nb::arg("bz")
         );
 
-    // --- MLNodeLaplacian: del dot (sigma * grad phi) at nodes ---
+    // MLNodeLaplacian: del dot (sigma * grad phi) at nodes
     nb::class_<MLNodeLaplacian, MLLinOp>(m, "MLNodeLaplacian")
         .def(
             "__init__",
@@ -294,7 +285,6 @@ void registerLinOp(nb::module_& m)
             nb::arg("vel")
         );
 
-    // --- MLMG solver ---
     nb::class_<MLMG>(m, "MLMG")
         .def(
             "__init__",
@@ -308,30 +298,21 @@ void registerLinOp(nb::module_& m)
         .def("set_bottom_verbose", &MLMG::setBottomVerbose, nb::arg("v"))
         .def("set_bottom_max_iter", &MLMG::setBottomMaxIter, nb::arg("n"))
         .def("set_bottom_tolerance", &MLMG::setBottomTolerance, nb::arg("t"))
-        // MLMG's own V-cycle smoothing counts (nu1/nu2/nuf/nub), the direct
-        // counterparts of gmg_pre_sweeps / gmg_post_sweeps / gmg_coarsest_sweeps on
-        // the native side. Bound so that MLMG can be tuned on the same axes we tune
-        // ourselves on -- without them any "faster than MLMG" number is a tuned
-        // solver measured against a stock one.
-        //
-        // AMReX defaults: nu1 = nu2 = 2 (the same 2+2 we default to), nuf = 8, and
-        // nub = 0. nuf applies only when the SMOOTHER is the bottom solver, so it
-        // does nothing under set_bottom_solver("cg").
+        // V-cycle smoothing counts nu1/nu2, AMReX default 2 each; why they are bound at all:
+        // report/blockamr-bindings-notes.md#mlmg-smoothing
         .def("set_pre_smooth", &MLMG::setPreSmooth, nb::arg("n"))
         .def("set_post_smooth", &MLMG::setPostSmooth, nb::arg("n"))
-        // Smoothing when the smoother itself is the bottom solver (nuf).
+        // nuf (default 8), used only when the smoother itself is the bottom solver.
         .def("set_final_smooth", &MLMG::setFinalSmooth, nb::arg("n"))
         // Extra smoothing AFTER the bottom Krylov solve (nub, default 0).
         .def("set_bottom_smooth", &MLMG::setBottomSmooth, nb::arg("n"))
-        // Solve the coarsest level on a small dedicated grid ("N-solve") rather than
-        // on the coarsened original decomposition.
+        // Solve the coarsest level on a small dedicated grid ("N-solve").
         .def("set_nsolve", &MLMG::setNSolve, nb::arg("flag"))
         .def("set_nsolve_grid_size", &MLMG::setNSolveGridSize, nb::arg("s"))
         // Run exactly this many iterations, ignoring the tolerance (0 = off).
         .def("set_fixed_iter", &MLMG::setFixedIter, nb::arg("nit"))
-        // Measure the relative tolerance against ||b|| always, rather than against
-        // max(||b||, ||r0||) -- which of the two is used changes what rtol MEANS,
-        // and therefore any iteration count compared against another solver's.
+        // Use ||b|| rather than max(||b||, ||r0||); changes what rtol means, see
+        // report/blockamr-bindings-notes.md#rtol-norm
         .def("set_always_use_bnorm", &MLMG::setAlwaysUseBNorm, nb::arg("flag"))
         .def(
             "set_bottom_solver",
@@ -386,9 +367,8 @@ void registerLinOp(nb::module_& m)
         .def("get_init_residual", &MLMG::getInitResidual)
         .def("get_final_residual", &MLMG::getFinalResidual)
         .def("get_num_iters", &MLMG::getNumIters)
-        // Total bottom-solver (CG/BiCGStab) iterations summed over all outer
-        // MLMG cycles. With coarsening disabled this is the real fine-grid
-        // Krylov iteration count (get_num_iters returns only the outer cycles).
+        // Bottom-solver (CG/BiCGStab) iterations summed over all outer MLMG cycles; with
+        // coarsening disabled this is the fine-grid Krylov count (get_num_iters is outer only).
         .def(
             "get_num_cg_iters",
             [](MLMG& mlmg)

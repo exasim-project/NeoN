@@ -18,16 +18,9 @@ namespace blockamr::la
 {
 
 /* @class LinearSystem
- * @brief Pure data: a matrix and a right-hand side. No BCs, Geometry or
- *        discretisation knowledge -- the operators fold that in beforehand.
- *
- * INVARIANT: non-owning. It holds `Matrix*` and `amrex::MultiFab*`, both of which
- * must outlive it; the rhs a caller passes IS the rhs the solve reads, so an
- * operator's contribution needs no copy-back.
- *
- * Sole friend of `Coefficients` (coefficients.hpp) and of `Operator::assemble`
- * (operator.hpp); `operator+=` is the only mutating entry point on the
- * linear-algebra side.
+ * @brief Pure data: a matrix and a right-hand side, non-owning -- both must outlive it,
+ *        and the rhs a caller passes IS the one the solve reads. No BC, Geometry or
+ *        discretisation knowledge. Sole friend of Coefficients and Operator::assemble.
  */
 class LinearSystem
 {
@@ -35,10 +28,8 @@ public:
 
     LinearSystem(Matrix& matrix, amrex::MultiFab& rhs) : matrix_(&matrix), rhs_(&rhs) {}
 
-    // ACCUMULATES: operators add to what is already there, so a system is zeroed
-    // once (zero(), or at construction by the format) and then written by however
-    // many operators contribute. The operator sees only a Coefficients -- not this
-    // class, not the Matrix, not the format.
+    // ACCUMULATES: a system is zeroed once, then written by however many operators
+    // contribute. The operator sees only a Coefficients.
     LinearSystem& operator+=(const Operator& op)
     {
         // nonOwning: the rhs belongs to the caller, so the handle borrows it.

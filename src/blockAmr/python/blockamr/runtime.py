@@ -5,9 +5,8 @@
 import gc
 from . import initialize, finalize
 
-# Re-entrancy guard: AMReX may only be Initialize()'d once per process. Nested
-# ``runtime()`` blocks (e.g. a pytest session fixture wrapping a solver ``run()``
-# that also opens a runtime) count depth so only the outermost init/finalizes.
+# AMReX may only be Initialize()'d once per process, so nested ``runtime()`` blocks
+# count depth and only the outermost one init/finalizes.
 _depth = 0
 
 
@@ -38,9 +37,8 @@ class _RuntimeCtx:
 def runtime(func=None):
     """Run *func* inside an AMReX session, or return a context manager.
 
-    Preferred (callback) form — locals in *func* are destroyed before
-    ``finalize()``, so GPU resources are freed while the CUDA context is
-    still alive::
+    Prefer the callback form: *func*'s locals are destroyed before ``finalize()``, so
+    GPU resources are freed while the CUDA context is still alive::
 
         def run():
             mesh = AmrMesh(geom, info)
@@ -48,8 +46,8 @@ def runtime(func=None):
 
         blockamr.runtime(run)
 
-    Context-manager form (caller must ensure AMReX-backed objects do not
-    outlive the block, e.g. by calling them inside a helper function)::
+    In the context-manager form the CALLER must keep AMReX-backed objects from
+    outliving the block, e.g. by building them inside a helper function::
 
         with blockamr.runtime():
             run()

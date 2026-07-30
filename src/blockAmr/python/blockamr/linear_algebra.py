@@ -4,46 +4,37 @@
 
 """Assemble a linear system from operators and solve it, format-agnostically.
 
-Three layers, each knowing only the one below: a matrix FORMAT
-(:class:`MFFaceCoeffs` matrix-free, :class:`CsrMatrix` assembled), OPERATORS that
-discretise a term into coefficients (:func:`laplacian`), and a :class:`Solver`
-that is handed a :class:`LinearSystem` -- a matrix and an rhs, pure data -- and
-cannot tell which format it got.
-
-Use this instead of ``FaceCoeffSolver`` when the coefficients come from a
-discretisation rather than from arrays you already have; use ``FaceCoeffSolver``
-when you want GMG as the SOLVER (see the limitations below).
+Three layers, each knowing only the one below: a matrix FORMAT (:class:`MFFaceCoeffs`
+matrix-free, :class:`CsrMatrix` assembled), OPERATORS that discretise a term into
+coefficients (:func:`laplacian`), and a :class:`Solver` handed a
+:class:`LinearSystem` -- a matrix and an rhs, pure data -- that cannot tell which
+format it got. Use ``FaceCoeffSolver`` instead when you want GMG as the SOLVER.
 
 A format is allocated on a ``blockamr.MeshLevel(ba, dm, geom)`` -- one AMR level's
-layout as a single object, so the three cannot be handed over out of order. It is
-NOT ``blockamr.Mesh``, which is the multi-level container.
+layout as a single object, NOT the multi-level ``blockamr.Mesh``.
 
-The system is NON-OWNING: the matrix and the rhs must outlive it, and the rhs an
-operator writes IS the field you passed in. Operators ACCUMULATE, so a reused
-system is ``zero()``-ed first. The executor is given to the MATRIX and reaches the
-solve from there -- ``Solver`` has none of its own, so the two cannot disagree.
+The system is NON-OWNING: the matrix and the rhs must OUTLIVE it, and the rhs an
+operator writes IS the field you passed in. Operators ACCUMULATE, so a reused system
+is ``zero()``-ed first. The executor is given to the MATRIX and reaches the solve from
+there, so the two cannot disagree.
 
-PRECONDITIONERS ARE THE MATRIX'S, not the solver's. ``precond="gmg"`` /
-``"gmg_kokkos"`` / ``"mlmg"`` are built by the FORMAT from the coefficients it
-holds -- the only object that still has them once the solver sees a ``LinOp`` --
+PRECONDITIONERS ARE THE MATRIX'S, not the solver's: ``precond="gmg"`` /
+``"gmg_kokkos"`` / ``"mlmg"`` are built by the FORMAT from the coefficients it holds,
 and shaped by :class:`~blockamr.solver_config.GmgConfig` nested on the config::
 
     Solver(SolverConfig(solver="cg", precond="gmg_kokkos",
                         gmg=GmgConfig(pre_sweeps=2, post_sweeps=2))).solve(system, sol)
 
 :class:`MFFaceCoeffs` builds all four; :class:`CsrMatrix` takes ``"none"`` and
-``"mlmg"`` only and :meth:`Solver.solve` raises for the rest, naming the format
-and the precond.
+``"mlmg"`` only and :meth:`Solver.solve` raises for the rest, naming the format and
+the precond.
 
-Two things are NOT reachable through this surface today, and it does not pretend
-otherwise:
+Two things this surface deliberately does not reach:
 
-* **GMG as the SOLVER.** ``solver="gmg"/"ir"/"mpir"`` raise from
-  :meth:`Solver.solve`: they drive the hierarchy directly (a stationary V-cycle
-  loop, or Ginkgo's ``Ir`` with the cycle as its inner solver) rather than
+* **GMG as the SOLVER.** ``solver="gmg"/"ir"/"mpir"`` RAISE from
+  :meth:`Solver.solve` -- they drive the hierarchy directly rather than
   preconditioning a Krylov method with it, which is a different object with a
-  different stopping test. The error says so; it is a real limitation, not a bug
-  to route around. Use ``blockamr.FaceCoeffSolver`` for those.
+  different stopping test. Use ``blockamr.FaceCoeffSolver`` for those.
 * **Only one operator exists**, :func:`laplacian`. There is no ``ddt``, so the
   cell-centred diagonal SOURCE is written directly with
   ``Matrix.diagonal_source(alpha)``.
@@ -85,14 +76,9 @@ _PERIODIC = ["periodic"] * 6
 class MFFaceCoeffs:
     """Matrix-free face-coefficient format: no matrix is ever assembled.
 
-    Use it when the mat-vec is cheaper than storing the matrix, which is the whole
-    point of the comparison this component exists for; :class:`CsrMatrix` is the
-    assembled alternative and takes the identical operator calls, so switching is
-    one line.
-
-    Not instantiable: ``symmetric`` / ``asymmetric`` hand back a :class:`Matrix`,
-    the erasure everything above the format speaks. The returned matrix OWNS its
-    coefficient fields and starts zeroed.
+    :class:`CsrMatrix` is the assembled alternative and takes identical operator calls,
+    so switching is one line. Not instantiable: ``symmetric`` / ``asymmetric`` hand back
+    a :class:`Matrix`, which OWNS its coefficient fields and starts zeroed.
 
     Example
     -------
@@ -121,11 +107,9 @@ class MFFaceCoeffs:
 class CsrMatrix:
     """Assembled format: the same coefficients, held as an explicit Ginkgo CSR.
 
-    Use it as the baseline :class:`MFFaceCoeffs` is measured against. Single-box
-    meshes only, which is ``assembleFaceCoeffCsr``'s restriction rather than a new
-    one. Assembly is lazy and re-run after any write through the coefficients.
-
-    Not instantiable, for the same reason as :class:`MFFaceCoeffs`.
+    The baseline :class:`MFFaceCoeffs` is measured against. SINGLE-BOX meshes only
+    (``assembleFaceCoeffCsr``'s restriction). Assembly is lazy and re-run after any
+    write through the coefficients. Not instantiable, as :class:`MFFaceCoeffs`.
 
     Example
     -------
@@ -159,20 +143,17 @@ def laplacian(
 ) -> Operator:
     """The implicit diffusion term: ``system += laplacian(gamma, geom, bc=bc)``.
 
-    Writes ``-gammaFace/dx**2`` onto every face, so a system of this term alone is
-    ``-div(gamma grad phi)`` -- the positive-definite sign every caller in this
-    component already writes by hand, and the opposite of OpenFOAM's
-    ``fvm::laplacian``. A non-periodic domain face gets the boundary cell's own
-    gamma (it has no second cell); the homogeneous boundary condition itself is
-    applied by the matrix, per level, from that coefficient. With ``bc_data`` the
-    inhomogeneous constant is written onto the rhs, which MUTATES the rhs the
-    system holds.
+    ``gamma`` is the physical diffusivity. Each face coefficient is written as
+    ``-gammaFace/dx**2``, NEGATIVE, so a system of this term alone is
+    ``-div(gamma grad phi)`` -- positive-definite, and the opposite sign to OpenFOAM's
+    ``fvm::laplacian``. A non-periodic domain face gets the boundary cell's own gamma;
+    the homogeneous boundary condition is applied by the matrix, per level, from that
+    coefficient. With ``bc_data`` the inhomogeneous constant is written onto the rhs,
+    MUTATING the rhs the system holds.
 
-    `geom` is an argument because a :class:`LinearSystem` carries no geometry: it
-    is a matrix and an rhs and nothing else, by design.
-
-    `gamma` and `bc_data` are held by POINTER and read when ``+=`` runs, so both
-    must outlive this operator.
+    `geom` is an argument because a :class:`LinearSystem` carries no geometry.
+    `gamma` and `bc_data` are held by POINTER and read when ``+=`` runs, so both must
+    OUTLIVE this operator.
 
     Example
     -------
@@ -184,17 +165,12 @@ def laplacian(
 class Solver(_Solver):
     """Solves a :class:`LinearSystem`; holds a :class:`SolverConfig` and nothing else.
 
-    Use it for any Krylov method, preconditioned or not;
-    ``blockamr.FaceCoeffSolver`` is the alternative when the V-cycle is wanted as
-    the SOLVER (see the module docstring). There is deliberately no factory: which
-    method the config names is decided once, inside, where the string is already
-    parsed.
+    Any Krylov method, preconditioned or not; ``FaceCoeffSolver`` is the alternative
+    when the V-cycle is wanted as the SOLVER. No factory: which method the config names
+    is decided once, inside, where the string is already parsed.
 
-    Stateless with respect to the system -- the same solver can solve many, and it
-    reads the executor off each system's matrix rather than carrying one. The
-    PRECONDITIONER likewise comes from each system's matrix, per solve, so one
-    solver preconditions every system it is given with that system's own
-    coefficients.
+    STATELESS with respect to the system -- the same solver can solve many, reading the
+    executor and the preconditioner off each system's matrix per solve.
 
     Example
     -------

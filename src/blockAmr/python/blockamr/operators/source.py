@@ -22,9 +22,8 @@ class SourceKernel(NamedTuple):
 
 
 class Source(EqTerm):
-    """Pointwise source term: S(x,y,z,t) * phi.
-
-    coeff_func(x, y, z, t) -> scalar_array evaluated at cell centers.
+    """Pointwise source ``S(x,y,z,t) * phi``, with ``coeff_func(x, y, z, t)``
+    evaluated at CELL CENTRES.
     """
 
     kind = "spatial"

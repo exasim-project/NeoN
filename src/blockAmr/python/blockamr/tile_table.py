@@ -4,12 +4,10 @@
 
 """Tile table for uniform-kernel dispatch over AMR boxes.
 
-Each AMR box is tiled into bf×bf×bf chunks. The TileTable holds
-per-tile metadata (offset, strides) into the MultiFab contiguous buffer.
-All metadata are JAX arrays (data, not static) so that box count and
-box sizes can change without recompilation.
-
-Built from MultiFab.tile_table(bf) on the C++ side — pure metadata, no copies.
+Each box is tiled into bf×bf×bf chunks; the table holds per-tile offsets and strides
+into the MultiFab contiguous buffer. The metadata are JAX arrays rather than static
+fields, so box count and box sizes can change without a recompilation. Built from
+``MultiFab.tile_table(bf)`` in C++ — pure metadata, no copies.
 """
 
 import equinox as eqx
@@ -19,12 +17,9 @@ import jax.numpy as jnp
 class TileTable(eqx.Module):
     """Flat table of tile descriptors into a contiguous MultiFab buffer.
 
-    Each tile is a bf×bf×bf region of valid cells within a box.
-    Strides are the parent box's Fortran-order strides, so indexing
-    reads directly from the shared contiguous buffer.
-
-    All array fields are (n_padded,) — padded to power-of-2 for vmap.
-    Actual tile count is n_tiles.
+    Strides are the parent box's Fortran-order strides, so indexing reads straight from
+    the shared buffer. Array fields are (n_padded,), power-of-2 padded for vmap; the
+    real tile count is ``n_tiles``.
     """
 
     offset: jnp.ndarray     # (n_padded,) start index into contiguous buffer
@@ -43,18 +38,8 @@ class TileTable(eqx.Module):
 
 
 def tile_table_from_multifab(mf, bf=4):
-    """Build TileTable from a MultiFab (calls C++ tile_table method).
-
-    Parameters
-    ----------
-    mf : MultiFab
-        Must be allocated with single-chunk mode.
-    bf : int
-        Blocking factor (tile size per dimension).
-
-    Returns
-    -------
-    TileTable
+    """Build a TileTable from a MultiFab, which must be single-chunk. *bf* is the
+    blocking factor (tile size per dimension).
     """
     d = mf.tile_table(bf)
     return TileTable(

@@ -8,19 +8,16 @@ import blockamr
 
 
 def interpolate(U_cell, face_field):
-    """Interpolate CellField(ncomp>=1) to FaceField.
+    """Interpolate a CellField to a FaceField: ``phi_face[i+1/2] = 0.5*(U[i,d]+U[i+1,d])``.
 
-    For face direction d, the normal velocity component d is averaged:
-        phi_face[i+1/2] = 0.5 * (U[i, d] + U[i+1, d])
-
-    For ncomp=1, component 0 is used for all directions.
+    ncomp=1 uses component 0 for every direction.
 
     Parameters
     ----------
     U_cell : CellField
-        Cell-centred velocity with ghosts filled. ncomp=3 for vector, 1 for scalar.
+        Cell-centred velocity with ghosts already filled.
     face_field : FaceField
-        Face-centred field to fill.
+        Face-centred field to fill — MUTATED.
     """
     mesh = U_cell.mesh
     for lev in range(mesh.n_levels()):

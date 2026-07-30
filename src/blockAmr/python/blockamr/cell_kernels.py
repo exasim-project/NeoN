@@ -4,13 +4,10 @@
 
 """Cell-level kernel eqx.Modules for the accessor-based dispatch.
 
-Each kernel is an eqx.Module with
-__call__(self, phi: CellAccessor) -> scalar
-and for_box(self, bucket, box_idx) -> kernel (for per-box rebinding in vmap).
-
-Nx, Ny, Nz, dh are traced (per-box) fields — they are rebound via for_box()
-inside the outer vmap over boxes. This allows boxes with different shapes
-to coexist in the same bucket without triggering JAX recompilation.
+Each has ``__call__(self, phi: CellAccessor) -> scalar`` and
+``for_box(self, bucket, box_idx) -> kernel``. Nx, Ny, Nz and dh are traced and rebound
+per box inside the outer vmap, so boxes of different shapes share a bucket without
+forcing a JAX recompilation.
 """
 
 import equinox as eqx
@@ -22,9 +19,8 @@ from .cell_accessor import CellAccessor, FaceAccessor
 class CellLaplacianKernel(eqx.Module):
     """Central difference laplacian: coeff * div(gamma * grad(phi)).
 
-    When gamma_buf is None, uses constant gamma (scalar coeff).
-    When gamma_buf is provided, builds a CellAccessor for gamma with the
-    same box layout as phi to read per-cell gamma values.
+    ``gamma_buf=None`` means constant gamma folded into ``coeff``; otherwise gamma is
+    read per cell through a CellAccessor sharing phi's box layout.
     """
 
     dh: object  # traced: (3,) array per-box cell spacing
@@ -83,8 +79,8 @@ class CellUpwindDivKernel(eqx.Module):
     face_offsets: tuple  # traced: 3 arrays of (max_boxes,) per direction
     _face_offset: tuple  # traced: 3 scalars — current box offset per direction
     Nx: object  # traced: per-box grown x-dim
-    Ny: object  # traced
-    Nz: object  # traced
+    Ny: object
+    Nz: object
     ng: int = eqx.field(static=True)
     dh: object  # traced: (3,) array per-box cell spacing
     coeff: float = eqx.field(static=True)
@@ -122,9 +118,9 @@ class CellLinearDivKernel(eqx.Module):
     face_bufs: tuple
     face_offsets: tuple  # traced: 3 arrays of (max_boxes,) per direction
     _face_offset: tuple  # traced: 3 scalars — current box offset per direction
-    Nx: object  # traced
-    Ny: object  # traced
-    Nz: object  # traced
+    Nx: object
+    Ny: object
+    Nz: object
     ng: int = eqx.field(static=True)
     dh: object  # traced: (3,) array
     coeff: float = eqx.field(static=True)
@@ -162,9 +158,9 @@ class CellQUICKDivKernel(eqx.Module):
     face_bufs: tuple
     face_offsets: tuple  # traced: 3 arrays of (max_boxes,) per direction
     _face_offset: tuple  # traced: 3 scalars — current box offset per direction
-    Nx: object  # traced
-    Ny: object  # traced
-    Nz: object  # traced
+    Nx: object
+    Ny: object
+    Nz: object
     ng: int = eqx.field(static=True)
     dh: object  # traced: (3,) array
     coeff: float = eqx.field(static=True)
@@ -224,11 +220,9 @@ def _vanleer_limiter(r):
 
 
 def _vanleer_correction(d_up, d_down):
-    """Harmonic-mean VanLeer: ψ(r)*Δ without computing r.
+    """Harmonic-mean VanLeer: ``_vanleer_limiter(d_up/d_down) * d_down`` in one division.
 
-    Equivalent to ``_vanleer_limiter(d_up/d_down) * d_down`` but uses
-    one fp64 division instead of two divisions + two abs calls.
-    Returns 0 when gradients have opposite signs (TVD property).
+    Returns 0 when the gradients have opposite signs (the TVD property).
     """
     prod = d_up * d_down
     return jnp.where(prod > 0.0, 2.0 * prod / (d_up + d_down), 0.0)
@@ -240,9 +234,9 @@ class CellVanLeerDivKernel(eqx.Module):
     face_bufs: tuple  # traced: (fx_buf, fy_buf, fz_buf)
     face_offsets: tuple  # traced: 3 arrays of (max_boxes,) per direction
     _face_offset: tuple  # traced: 3 scalars — current box offset per direction
-    Nx: object  # traced
-    Ny: object  # traced
-    Nz: object  # traced
+    Nx: object
+    Ny: object
+    Nz: object
     ng: int = eqx.field(static=True)
     dh: object  # traced: (3,) array
     coeff: float = eqx.field(static=True)
@@ -269,17 +263,14 @@ class CellVanLeerDivKernel(eqx.Module):
             fl = face_ax[0]
             fr = face_ax[1]
 
-            # Read each stencil point once: [-2, -1, 0, +1, +2]
             s_m2 = phi.S(-2, ax)
             s_m1 = phi.S(-1, ax)
             s_0 = phi.S(0, ax)
             s_p1 = phi.S(1, ax)
             s_p2 = phi.S(2, ax)
 
-            # Left face: gradients across the face and upstream
+            # Left face: upwind from the left when fl >= 0, from the right otherwise.
             d_down_l = s_0 - s_m1
-            # fl >= 0: upwind from left, d_up = s_m1 - s_m2
-            # fl <  0: upwind from right, d_up = s_p1 - s_0
             corr_l_pos = _vanleer_correction(s_m1 - s_m2, d_down_l)
             corr_l_neg = _vanleer_correction(s_p1 - s_0, d_down_l)
             phi_l = jnp.where(fl >= 0,
@@ -287,7 +278,7 @@ class CellVanLeerDivKernel(eqx.Module):
                               s_0 - 0.5 * corr_l_neg)
             F_l = fl * phi_l
 
-            # Right face: shifted by +1
+            # Right face: the same, shifted by +1.
             d_down_r = s_p1 - s_0
             corr_r_pos = _vanleer_correction(s_0 - s_m1, d_down_r)
             corr_r_neg = _vanleer_correction(s_p2 - s_p1, d_down_r)

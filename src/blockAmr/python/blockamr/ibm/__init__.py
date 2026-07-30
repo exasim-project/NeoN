@@ -2,21 +2,19 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""IBM method registry (API doc §6): ``IBM.lookup(name)`` resolves a
-per-field ``solution["ibm"]`` name to a strategy class."""
+"""IBM method registry: ``IBM.lookup(name)`` resolves a per-field ``solution["ibm"]``
+name to a strategy class."""
 
 from .body import Cylinder
 from .direct_forcing import DirectForcing, DirectForcingData
 
 _METHODS = {"directForcing": DirectForcing}
-# Names that validate the fvSolution schema shape but are not yet
-# implemented — EB (cut-cell) support is deferred on this branch.
+# Valid fvSolution spellings whose EB (cut-cell) support is deferred on this branch.
 _NOT_IMPLEMENTED = {"cutCell", "ghostCell"}
 
 
 class IBM:
-    """Registry mapping an ``fvSolution.solvers[field].ibm`` name to its
-    strategy class."""
+    """Maps an ``fvSolution.solvers[field].ibm`` name to its strategy class."""
 
     @staticmethod
     def lookup(name):

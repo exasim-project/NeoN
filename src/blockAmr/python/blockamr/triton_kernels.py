@@ -2,12 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Triton kernel library for structured grid stencils.
-
-Provides:
-  - phi(): Array4-like accessor for (i, j, k) indexing
-  - triton_parallel_for(): launch wrapper for user @triton.jit kernels
-  - _triton_wrapper(): 3D tiled kernel that calls a user stencil function
+"""Triton kernel library for structured grid stencils: an Array4-like ``phi()``
+accessor, a launch wrapper, and the 3D tiled kernel that calls a user stencil.
 
 User writes:
 
@@ -27,11 +23,8 @@ import triton.language as tl
 
 @triton.jit
 def phi(ptr, i, j, k, sx: tl.constexpr, sy: tl.constexpr):
-    """Array4-like accessor: phi(ptr, i, j, k, sx, sy) -> value.
-
-    Computes flat offset from 3D index using C-order strides:
-        flat = i * sx + j * sy + k
-    where sx = Ny * Nz, sy = Nz.
+    """Array4-like accessor. C-order strides: ``flat = i*sx + j*sy + k``,
+    with sx = Ny*Nz and sy = Nz.
     """
     return tl.load(ptr + i * sx + j * sy + k)
 
@@ -45,10 +38,8 @@ def _triton_lap_wrapper(
     box_vol: tl.constexpr, out_vol: tl.constexpr,
     TX: tl.constexpr, TY: tl.constexpr, TZ: tl.constexpr,
 ):
-    """3D tiled kernel wrapper with fused box dimension in grid.x.
-
-    grid = (n_boxes * gx, gy, gz)
-    program_id(0) encodes both box_id and tile_x.
+    """3D tiled kernel wrapper; ``grid = (n_boxes*gx, gy, gz)`` and ``program_id(0)``
+    encodes both box_id and tile_x.
     """
     flat_id = tl.program_id(0)
     box_id = flat_id // gx
@@ -68,7 +59,6 @@ def _triton_lap_wrapper(
     j = ng + oy + ly
     k = ng + oz + lz
 
-    # Gather from ghosted input (box_id * box_vol offset)
     phi_base = phi_ptr + box_id * box_vol
     gi = i * sx + j * sy + k
     c = tl.load(phi_base + gi)
@@ -83,7 +73,6 @@ def _triton_lap_wrapper(
          + (yp - 2.0 * c + ym)
          + (zp - 2.0 * c + zm))
 
-    # Store to output (box_id * out_vol offset)
     oi = box_id * out_vol + (ox + lx) * osx + (oy + ly) * osy + (oz + lz)
     tl.store(out_ptr + oi, val)
 

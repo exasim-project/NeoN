@@ -12,9 +12,8 @@ from jax import Array
 class FlattenedBoxes(eqx.Module):
     """Contiguous MultiFab data with per-box and per-tile metadata.
 
-    eqx.Module — shapes, n_grow, n_tiles_padded, bf are static
-    (trigger recompile when changed). contiguous_array, offsets, tiles,
-    n_tiles are traced leaves.
+    The static fields (shapes, n_grow, n_tiles_padded, bf) trigger a recompile when
+    changed; the rest are traced leaves.
     """
 
     contiguous_array: Array  # (total_elems,) flat 1D buffer
@@ -22,7 +21,7 @@ class FlattenedBoxes(eqx.Module):
     shapes: tuple = eqx.field(static=True)  # ((Nx,Ny,Nz,nc), ...) per box
     n_grow: int = eqx.field(static=True)  # ghost cell layers
 
-    # Tile metadata — packed [offset, sx, sy, sz, box_id] per tile
+    # Packed [offset, sx, sy, sz, box_id] per tile.
     tiles: Array = None  # (n_tiles_padded * 5,) int32, traced
     n_tiles: Array = None  # int32 scalar, traced (for pl.when)
     n_tiles_padded: int = eqx.field(static=True, default=0)
@@ -34,11 +33,9 @@ class FlattenedBoxes(eqx.Module):
 
 
 def flattened_boxes_from_mf(mf, bf=0):
-    """Construct FlattenedBoxes from a MultiFab.
+    """Construct FlattenedBoxes from a MultiFab, zero-copy.
 
-    Uses contiguous_array() (zero-copy) and fab_metadata() from the
-    C++ bindings. When bf > 0, also builds packed tile metadata via
-    the C++ packed_tiles() method.
+    ``bf > 0`` also builds the packed tile metadata via C++ ``packed_tiles()``.
     """
     values = mf.contiguous_array()
     meta = mf.fab_metadata()
@@ -64,9 +61,8 @@ def flattened_boxes_from_mf(mf, bf=0):
 class BucketContext(eqx.Module):
     """A group of boxes bucketed by cell-count tier for vectorised dispatch.
 
-    Static fields are tier constants (fixed ceilings) and ng (uniform).
-    Traced fields hold per-box geometry and data arrays — these change on
-    regrid without triggering JAX recompilation.
+    Static fields are the tier ceilings and ng; the traced per-box geometry and data
+    can change on regrid without triggering a JAX recompilation.
     """
 
     box_offsets: Array  # traced: (max_boxes,) box starts in cell_buf
@@ -89,11 +85,7 @@ class BucketContext(eqx.Module):
 
 
 class FlattenedFaceBoxes(eqx.Module):
-    """Flat face-field data for all directions.
-
-    bufs: tuple of 3 flat 1D arrays (fx, fy, fz) — traced.
-    offsets: tuple of 3 offset arrays — traced.
-    """
+    """Flat face-field data for all three directions, all traced."""
 
     bufs: tuple  # (fx_buf, fy_buf, fz_buf)
     offsets: tuple  # (fx_offsets, fy_offsets, fz_offsets)
@@ -113,13 +105,10 @@ class FlattenedFaceBoxes(eqx.Module):
 
 
 def pad_buffer(buf, box_size=None):
-    """Pad a 1D buffer so its length is a power-of-2 multiple of box_size.
+    """Pad a 1D buffer to ``next_pow2(n_boxes) * box_size``, or ``next_pow2(len(buf))``.
 
-    If box_size is given: pads to next_pow2(n_boxes) * box_size.
-    If box_size is None: pads to next_pow2(len(buf)).
-
-    This ensures that buffers with similar box counts share the same
-    padded shape, limiting JAX recompilation to ~log2(N) unique sizes.
+    Buffers with similar box counts then share a padded shape, which limits JAX
+    recompilation to ~log2(N) unique sizes.
     """
     n = len(buf)
     if box_size is not None and box_size > 0:
@@ -145,9 +134,7 @@ def _next_power_of_2(n):
 class ElementMap(eqx.Module):
     """Maps flat element indices to box and local cell indices.
 
-    Used by flat dispatch (process_flat / evaluate_flat) to iterate over
-    all valid cells on a level with a single vmap + lax.fori_loop,
-    eliminating per-bucket kernel launch overhead.
+    Lets flat dispatch cover a whole level in one vmap, with no per-bucket launch cost.
     """
 
     elem_to_box: Array       # (total_padded,) int32 — box index per element
@@ -181,16 +168,10 @@ def _box_tier(n_boxes):
 
 
 def build_fixed_buckets(fb, dh, lev=0):
-    """Tier-bucketed cells + fixed MAX_BOXES — minimal recompilation.
+    """Tier-bucketed cells with a box tier starting at MAX_BOXES_FIXED.
 
-    Groups boxes by cell-count tier (like build_buckets), but pads
-    max_boxes to MAX_BOXES_FIXED. Recompiles only when a new cell
-    tier appears (rare with power-of-2 tiers growing by 2x).
-
-    Static fields per bucket: n_cells_padded (cell tier), max_boxes (box tier),
-    n_valid (padded = max_boxes), box_indices (padded to max_boxes), ng, lev.
-    Recompiles only when box count exceeds current box tier (grows 2x from 128)
-    or a new cell tier appears.
+    Like :func:`build_buckets`, but recompiles only when a new cell tier appears or the
+    box count outgrows the current box tier (which then doubles).
     """
     ng = fb.n_grow
     n_boxes = len(fb.offsets)
@@ -216,8 +197,7 @@ def build_fixed_buckets(fb, dh, lev=0):
         Nz_list = [b[4] for b in boxes]
         nc_list = [b[5] for b in boxes]
 
-        # Pad to box tier — dummy boxes replicate first box's geometry
-        # but have the same n_cells (compute runs, result is duplicate of box 0)
+        # Dummy boxes replicate box 0, so the compute runs and duplicates its result.
         pad_n = mb - n_valid
         if pad_n > 0:
             offsets += [offsets[0]] * pad_n
@@ -250,16 +230,12 @@ def build_fixed_buckets(fb, dh, lev=0):
 def build_buckets(fb, dh, lev=0, max_boxes=None, fixed_boxes=False):
     """Group boxes by cell-count tier into BucketContext instances.
 
-    Boxes with different (Nx, Ny, Nz) but similar cell counts are placed
-    in the same bucket. The inner vmap size (n_cells_padded) is the tier
-    ceiling. The outer vmap size (max_boxes) is power-of-2 padded.
-
-    Returns list of BucketContext.
+    Boxes of differing shape but similar cell count share a bucket. The inner vmap size
+    is the tier ceiling; the outer one is power-of-2 padded.
     """
     ng = fb.n_grow
     n_boxes = len(fb.offsets)
 
-    # Group boxes by cell-count tier
     tier_groups = {}  # tier -> list of (mf_idx, offset, Nx, Ny, Nz, n_cells)
     for b in range(n_boxes):
         Nx, Ny, Nz = fb.shapes[b][:3]
@@ -289,7 +265,7 @@ def build_buckets(fb, dh, lev=0, max_boxes=None, fixed_boxes=False):
         Nz_list = [b[4] for b in boxes]
         nc_list = [b[5] for b in boxes]
 
-        # Pad to max_boxes — replicate first box's values for dummies
+        # Dummies replicate box 0's values.
         dummy_off = offsets[0]
         dummy_Nx = Nx_list[0]
         dummy_Ny = Ny_list[0]
@@ -303,11 +279,10 @@ def build_buckets(fb, dh, lev=0, max_boxes=None, fixed_boxes=False):
         Nz_list.extend([dummy_Nz] * pad_n)
         nc_list.extend([dummy_nc] * pad_n)
 
-        # dh is uniform per level, broadcast to per-box
+        # dh is uniform per level; broadcast it per-box.
         dh_row = list(dh)
         dh_data = [dh_row] * mb
 
-        # Pad box_indices to mb (dummy indices point to first box)
         padded_indices = indices + [indices[0]] * (mb - n_valid)
 
         bucket = BucketContext(
@@ -346,9 +321,8 @@ def _total_tier(n):
 def build_flat_context(fb, dh, lev=0, pad_strategy="power2"):
     """Build a BucketContext + ElementMap for flat element-level dispatch.
 
-    All boxes on a level are placed in a single BucketContext.  The
-    ElementMap maps flat valid-cell indices to (box_idx, cell_idx) pairs
-    for use with ``process_flat`` / ``evaluate_flat``.
+    All boxes on a level land in one BucketContext; the ElementMap maps flat valid-cell
+    indices to (box_idx, cell_idx) for ``process_flat`` / ``evaluate_flat``.
 
     Parameters
     ----------
@@ -400,13 +374,12 @@ def build_flat_context(fb, dh, lev=0, pad_strategy="power2"):
     else:  # "power2"
         total_padded = _next_power_of_2(total_valid)
 
-    # Pad element arrays — dummy elements point at box 0, cell 0
+    # Dummy elements point at box 0, cell 0.
     pad_n = total_padded - total_valid
     if pad_n > 0:
         elem_box.extend([0] * pad_n)
         elem_cell.extend([0] * pad_n)
 
-    # Pad box arrays to power-of-2
     mb = _next_power_of_2(n_boxes)
     pad_boxes = mb - n_boxes
     if pad_boxes > 0:

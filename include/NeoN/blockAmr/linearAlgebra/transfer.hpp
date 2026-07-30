@@ -14,15 +14,9 @@
 namespace blockamr::la
 {
 
-// Cells this rank owns -- the length of the flat vectors below and the local row
-// count of the distributed Ginkgo vector over them.
-//
-// NEVER boxArray().numPts(), which counts EVERY rank's cells: sizing a flat vector
-// globally while gather/scatter fill it from the rank's own boxes with a local
-// offset was the long-standing multi-rank bug (each rank laid out a different
-// vector over the same index range, so Ginkgo's dots and norms gave a different
-// CG iteration per rank). Counted by the same MFIter walk gather/scatter use, so
-// it agrees with them by construction rather than by a matching formula.
+// Cells this rank owns -- the length of the flat vectors below. NEVER
+// boxArray().numPts(), which counts EVERY rank's cells: that was the long-standing
+// multi-rank bug. Counted by the same MFIter walk gather/scatter use, so it agrees.
 template<class FA>
 inline std::size_t localCount(const FA& mf)
 {
@@ -34,15 +28,9 @@ inline std::size_t localCount(const FA& mf)
     return n;
 }
 
-// Flat-vector <-> MultiFab transfer (component 0, valid cells only).
-//
-// INVARIANT: gather and scatter MUST traverse cells in the identical order --
-// MFIter without tiling, then k,j,i over the valid box. In GPU builds MultiFabs
-// are device-resident, so access is staged through host copies unless the arena is
-// host-accessible. `scale` lets gather apply the SPD sign flip (-L) in one pass.
-// Templated on the FabArray type (FP64 MultiFab, or FP32 GMG level fields) and on
-// the flat buffer's type V, so it also compiles for the device-only fp32 Krylov
-// instantiation.
+// Flat-vector <-> MultiFab transfer (component 0, valid cells only). INVARIANT: gather and
+// scatter MUST traverse in the identical order -- MFIter without tiling, then k,j,i over the
+// valid box. `scale` lets gather apply the SPD sign flip (-L) in one pass.
 template<class V, class FA>
 void gather(const FA& mf, V* buf, double scale)
 {
@@ -119,21 +107,9 @@ void scatter(const V* buf, FA& mf)
     }
 }
 
-// Device pack/unpack between a contiguous Ginkgo vector and a device-resident
-// MultiFab, via amrex::ParallelFor, so the mat-vec runs entirely on the GPU with
-// NO host round-trip per Krylov iteration.
-//
-// INVARIANT: the flat index MUST match the host gather/scatter above (MFIter
-// order, fastest in i then j then k) -- the one-time RHS pack and solution unpack
-// still use the host path. Templated on the fab type and on the flat vector's V,
-// so the per-cell copy converts precisions on the device; V is deduced.
-//
-// nvcc TRAP: declaration-only here on purpose. These are reached from
-// persistent.cpp and mlmgOps.cpp (via gmgPrecond.hpp / gmgBottom.hpp and the MLMG
-// operators) AND from gmgKokkos/apply.cpp (via vcycle.hpp's applyFlat), all in the
-// same _blockamr.so, so an AMREX_GPU_DEVICE lambda here would be an extended
-// lambda instantiated in three CUDA TUs of one binary. The single definition plus
-// its explicit instantiations live in core/deviceKernels.cpp.
+// Device pack/unpack between a Ginkgo vector and a device-resident MultiFab, so the mat-vec
+// never round-trips the host; same flat index as gather/scatter above. nvcc TRAP:
+// declaration-only, or the lambda is extended across three CUDA TUs; deviceKernels.cpp.
 template<class V, class FA>
 void scatter_device(const V* vec, FA& mf);
 

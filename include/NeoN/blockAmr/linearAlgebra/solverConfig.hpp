@@ -13,11 +13,8 @@
 namespace blockamr::la
 {
 
-// Every value `solver` may spell, across both persistent-solver classes and every
-// mode. Which of these a PARTICULAR class/mode accepts is a separate
-// combination-legality question decided downstream against this enum (e.g.
-// FaceCoeffCsrSolver never reaches gmg/ir/mpir); this only rejects an outright
-// typo, once, at parseSolverConfig.
+// Every value `solver` may spell. Which a PARTICULAR class/mode accepts is decided
+// downstream; this only rejects an outright typo, once, at parseSolverConfig.
 enum class SolverKind
 {
     cg,
@@ -30,9 +27,8 @@ enum class SolverKind
     mpir
 };
 
-// Throws with buildKrylov's historical "unknown solver" wording. Parsing every
-// spelling HERE (rather than in buildKrylov, which gmg/ir/mpir never reach) is
-// what makes a typo among those three fail before any constructor work runs.
+// Throws with buildKrylov's historical "unknown solver" wording. Parsing HERE is what makes
+// a typo in gmg/ir/mpir -- which never reach buildKrylov -- fail before any ctor work.
 inline SolverKind parseSolverKind(const std::string& solver)
 {
     if (solver == "cg") return SolverKind::cg;
@@ -46,8 +42,7 @@ inline SolverKind parseSolverKind(const std::string& solver)
     throw std::runtime_error("ginkgo: unknown solver '" + solver + "'");
 }
 
-// Every value `precond` may spell. Per-class legality is decided downstream, as
-// with SolverKind (FaceCoeffCsrSolver allows only none/mlmg, for instance).
+// Every value `precond` may spell; per-class legality is decided downstream.
 enum class PrecondKind
 {
     none,
@@ -56,9 +51,8 @@ enum class PrecondKind
     gmg_kokkos
 };
 
-// Throws with FaceCoeffSolver's historical "unknown precond" wording, the more
-// permissive of the two per-class messages. FaceCoeffCsrSolver's narrower check
-// ("expected 'none' or 'mlmg'") still runs downstream on the parsed enum.
+// Throws with FaceCoeffSolver's historical wording, the more permissive of the two;
+// FaceCoeffCsrSolver's narrower check still runs downstream on the parsed enum.
 inline PrecondKind parsePrecondKind(const std::string& precond)
 {
     if (precond == "none") return PrecondKind::none;
@@ -72,12 +66,9 @@ inline PrecondKind parsePrecondKind(const std::string& precond)
 }
 
 // Native-GMG hierarchy knobs (precond="gmg"/"gmg_kokkos", solver="gmg"/"ir"/"mpir").
-// INVARIANT: every field name/default matches the historical nb::arg exactly.
-// smoother/precision/coeffPrecision/bottomSolver deliberately stay plain strings
-// with no enum twin here: they are read only on a GMG path, so validating them
-// unconditionally at parseSolverConfig would newly reject values that are
-// silently inert today on a non-GMG path. They stay validated where they are read
-// (gmgPrecond.hpp, gmgBottom.hpp, persistent.cpp, gmgKokkos/vcycle.hpp).
+// INVARIANT: every field name and default matches the historical nb::arg exactly. No enum
+// twin for the string knobs: read only on a GMG path, so validating them here would newly
+// reject values that are inert today. They stay validated where they are read.
 struct GmgConfig
 {
     int preSweeps = 2;
@@ -97,14 +88,12 @@ struct GmgConfig
 };
 
 // Every non-coefficient, non-geometry, non-executor constructor argument of
-// FaceCoeffSolver/FaceCoeffCsrSolver, built once by parseSolverConfig at the
-// nanobind boundary (ginkgoSolve.cpp) from the 27 raw __init__ arguments.
+// FaceCoeffSolver/FaceCoeffCsrSolver, built once by parseSolverConfig (ginkgoSolve.cpp).
 struct SolverConfig
 {
     std::string solver = "bicgstab";
-    // Parsed from `solver` once by parseSolverConfig and what every downstream
-    // dispatch compares against. Kept ALONGSIDE `solver`, not instead of it:
-    // several messages still interpolate the original spelling.
+    // Parsed from `solver` once and what every downstream dispatch compares against. Kept
+    // ALONGSIDE `solver`: several messages still interpolate the original spelling.
     SolverKind solverKind = SolverKind::bicgstab;
     int maxIter = 1000;
     double rtol = 1e-10;

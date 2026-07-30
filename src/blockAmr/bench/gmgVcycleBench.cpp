@@ -2,58 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// The GMG V-cycle bench: the native geometric-multigrid V-cycle of
-// gmgPrecond.hpp, run with its AMReX kernels and with the Kokkos twins in
-// kernels.hpp. Same hierarchy, same sweep counts, same control flow, same order
-// of operations — only the launcher differs, which is the same discipline the
-// operator bench uses.
-//
-// Four backends, each the previous one plus one change, so a row of the bench is
-// read against the row above it:
-//
-//   amrex         the production per-box path — the orientation point.
-//   kokkos        its per-box Kokkos twin.
-//   kokkos_fused  the same kernels under one TeamPolicy launch per level.
-//   kokkos_opt    ... and the halo exchange, the zero fill and the agglomeration
-//                 transfers on Kokkos too (halo.hpp), which leaves no AMReX
-//                 operation inside the timed cycle and therefore no reason to fence
-//                 between kernels at all. The whole cycle becomes one stream the
-//                 host can run ahead of.
-//
-// Only the Kokkos side is optimised, deliberately — the AMReX column has to stay the
-// shipped V-cycle for the comparison to mean anything, and `kokkos`/`kokkos_fused`
-// stay put as the intermediate baselines. Orthogonal to the backend,
-// GmgArgs::agglomerate switches the hierarchy from production's in-place BoxArray
-// coarsening to a re-decomposed coarse grid; since red-black smoothing is
-// decomposition-independent, at equal depth that changes cost without changing a
-// single arithmetic result.
-//
-// This is a port of the DEVICE path of GmgPrecondT<double>, reduced to what the
-// timed V-cycle needs and nothing more:
-//
-//   kept     hierarchy construction by in-place BoxArray coarsening (so box COUNT
-//            is preserved down the levels, exactly as in production, unless
-//            agglomeration is asked for), RB-SOR smoothing with the reversed
-//            post-sweep, fused residual+restriction,
-//            piecewise-constant prolongation, the ghost fill per colour, and the
-//            recursive V-cycle with warm-started sol.
-//   dropped  Ginkgo (no LinOp, no Dense pack/unpack), the ReferenceExecutor host
-//            path, the Chebyshev smoother and
-//            its λmax power iteration, and physical boundary conditions — the
-//            bench is triply periodic, so bc handling never fires and bc.hpp
-//            stays out of this translation unit.
-//
-// The AMReX column calls the PRODUCTION kernels (gmgKernels.hpp) rather
-// than a copy of them, so the baseline is the real thing. It is recompiled here in
-// the non-RDC object library, which is what makes the flags identical for both
-// columns: production's _blockamr is non-RDC too (see CMakeLists.txt for the
-// rationale). blockamr_kokkos stays a separate library by history, not because of an
-// RDC split between the two.
-//
-// The templated Vcycle these backends are run through -- LevelT, sameField,
-// KokkosOptGmgBackend, Precision/PrecPair -- lives in vcycle.hpp, shared with the
-// production instantiation in apply.cpp; only the other three (bench-only)
-// backends and the timing driver are local to this TU.
+// The GMG V-cycle bench: gmgPrecond.hpp's V-cycle over four launchers, each the previous one
+// plus one change. The Vcycle template lives in vcycle.hpp, shared with production's apply.cpp.
+// Backends and port scope: report/blockamr-linear-algebra-notes.md#gmg-v-cycle-bench-backends
 
 #include <algorithm>
 #include <chrono>
@@ -79,17 +30,9 @@ namespace blockamr
 namespace
 {
 
-// ---------------------------------------------------------------------------
-// The backends. Each is the three kernels the timed V-cycle runs plus the two
-// cross-runtime ordering points, and nothing else, so a backend cannot quietly
-// differ in anything but what it is meant to.
-//
-//   afterAmrexWrite   order an AMReX write against a following backend kernel.
-//   beforeAmrexRead   order a backend kernel against a following AMReX read.
-//   amrexFreeCycle    the timed cycle contains no AMReX operation, so the kernels
-//                     need no fence between them (they share one stream) and the
-//                     data movements come from halo.hpp.
-// ---------------------------------------------------------------------------
+// A backend is the three kernels of the timed V-cycle plus two ordering points: afterAmrexWrite
+// orders an AMReX write against a following backend kernel, beforeAmrexRead the reverse.
+// amrexFreeCycle means no AMReX operation inside the cycle, hence no fence between the kernels.
 
 struct AmrexGmgBackend
 {
@@ -97,17 +40,13 @@ struct AmrexGmgBackend
     static constexpr bool canShareCoeffs = false;
     static constexpr bool amrexFreeCycle = false;
 
-    // AMReX kernels are issued to AMReX's own stream, so an AMReX write before them
-    // (FillBoundary, setVal) is already ordered against them: nothing to do. Nor is
-    // there anything to do the other way round.
+    // Same stream as the AMReX writes, so both directions are already ordered.
     static void afterAmrexWrite() {}
 
     static void beforeAmrexRead() {}
 
-    // Not a variadic forward like the other two backends' twins below: the
-    // production kernel's signature bundles its coefficients into one
-    // FaceCoeffs<double>, so the flat 7-coefficient argument list vcycle.hpp's
-    // shared call site passes has to be repacked here.
+    // Not a variadic forward: the production kernel takes one FaceCoeffs<double>, so the flat
+    // argument list of vcycle.hpp's shared call site is repacked here.
     static void gsColor(
         la::GmgFab<double>& sol,
         const la::GmgFab<double>& rhs,
@@ -170,12 +109,8 @@ struct KokkosGmgBackend
     // Every kernel already fences, so a following AMReX read is ordered.
     static void beforeAmrexRead() {}
 
-    // The other half of straddling two runtimes (the Kokkos::fence at the end of
-    // each ported kernel is the first half): a Kokkos kernel about to read what
-    // AMReX just wrote has no ordering against AMReX's stream, so the write has to
-    // be waited on. This is the one thing the port cannot express in Kokkos, and it
-    // doubles the host syncs per colour -- one for FillBoundary, one for the kernel
-    // -- where the AMReX path needs only the one MFIter already performs.
+    // A Kokkos kernel has no ordering against AMReX's stream, so an AMReX write before it has to
+    // be waited on: two host syncs per colour, where the AMReX path needs only MFIter's one.
     static void afterAmrexWrite() { amrex::Gpu::streamSynchronizeAll(); }
 
     template<class... A>
@@ -197,10 +132,7 @@ struct KokkosGmgBackend
     }
 };
 
-// The same three kernels under ONE launch per level instead of one per box. Only
-// the Kokkos side gets a fused variant: the AMReX column stays the production
-// per-box path, so it remains the orientation point every other column is read
-// against.
+// The same three kernels under ONE launch per level instead of one per box.
 struct KokkosFusedGmgBackend
 {
     static constexpr const char* tag = "kokkos_fused";
@@ -252,15 +184,14 @@ GmgResult run(const GmgArgs& args, int iters, int batches)
     r.boxesPerLevel = v.boxesPerLevel();
     r.cellsPerLevel = v.cellsPerLevel();
 
-    // Correctness/strength gate, untimed: how far ONE V-cycle from z0 = 0 moves the
-    // residual. A launcher that indexes wrongly cannot reproduce this number.
+    // Untimed strength gate: how far ONE V-cycle from z0 = 0 moves the residual. A launcher that
+    // indexes wrongly cannot reproduce this number.
     v.reset(*args.rhs);
     r.resid0 = std::sqrt(v.residSumSq());
     v.cycles(1);
     r.resid1 = std::sqrt(v.residSumSq());
 
-    // Timed: every batch starts from the same state, so a batch measures
-    // `iters` V-cycles of the same work rather than an ever-converging one.
+    // Timed: every batch restarts from the same state, so each measures the same work.
     v.reset(*args.rhs);
     v.cycles(1);
     fenceAll();
@@ -302,9 +233,8 @@ std::vector<std::string> benchGmgBackends()
 
 GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int iters, int batches)
 {
-    // Parse before the dispatch, not after: an unknown spelling must not silently
-    // fall through to fp64, and silently ignoring a reduced precision on a backend
-    // that has no reduced hierarchy would report an fp64 timing under its label.
+    // Parsed before the dispatch: the baselines stay fp64 by refusal, not by ignoring a reduced
+    // precision they have no hierarchy for and reporting an fp64 timing under its label.
     const Precision prec = parsePrecision(args.precision);
     const Precision coeffPrec = parseCoeffPrecision(args.coeffPrecision, args.precision);
     if (prec != Precision::fp64 && backend != KokkosOptGmgBackend::tag)
@@ -321,8 +251,7 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
             + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
         );
     }
-    // Same reason: a baseline silently ignoring share_coeffs would report the
-    // unshared timing under a shared label.
+    // Same reason: a baseline ignoring these would report its timing under another label.
     if (args.aggLevel0Size > 0 && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(

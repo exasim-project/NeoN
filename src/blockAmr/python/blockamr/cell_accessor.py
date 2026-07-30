@@ -4,19 +4,15 @@
 
 """Cell-level accessors for flat contiguous buffers.
 
-These classes operate on a 1D flat buffer (from contiguous_array)
-and use offset arithmetic to read stencil neighbors without
-creating shape-dependent array views.
+Offset arithmetic on the 1D buffer from ``contiguous_array``, so reading a stencil
+neighbour never creates a shape-dependent array view.
 """
 
 import equinox as eqx
 
 
 class StencilAxis(eqx.Module):
-    """Reads scalar neighbor values along one axis from a flat buffer.
-
-    Usage: axis[k] returns the value at offset k from center.
-    """
+    """Scalar neighbours along one axis of a flat buffer: ``axis[k]`` is offset k."""
 
     _buf: object
     _base: object
@@ -32,11 +28,10 @@ class StencilAxis(eqx.Module):
 
 
 class CellAccessor(eqx.Module):
-    """Cell-centred stencil accessor, built from a single cell_idx.
+    """Cell-centred stencil accessor built from a single cell_idx.
 
-    Converts cell_idx to (i, j, k) in grown-box coordinates, then
-    computes the flat-buffer base index. Provides stencil access via
-    phi.x[k], phi.y[k], phi.z[k], phi.S(k, ax), and phi.center.
+    Converts cell_idx to (i, j, k) in GROWN-box coordinates, then to the flat-buffer
+    base index. Read via ``phi.x[k]``/``.y``/``.z``, ``phi.S(k, ax)``, ``phi.center``.
     """
 
     x: StencilAxis
@@ -53,8 +48,7 @@ class CellAccessor(eqx.Module):
         j = ng + (cell_idx // vNx) % vNy
         k = ng + cell_idx // (vNx * vNy)
 
-        # AMReX planar layout: comp planes are contiguous
-        # (i, j, k, comp) → box_offset + comp * Nx * Ny * Nz + i + Nx * j + Nx * Ny * k
+        # AMReX planar layout: (i,j,k,comp) → offset + comp*Nx*Ny*Nz + i + Nx*j + Nx*Ny*k
         box_plane = Nx * Ny * Nz
         base = box_offset + comp * box_plane + i + Nx * j + Nx * Ny * k
         self.x = StencilAxis(cell_buf, base, 1)
@@ -71,10 +65,7 @@ class CellAccessor(eqx.Module):
 
 
 class StencilAxis3D(eqx.Module):
-    """Reads neighbor values along one axis from a 3D array.
-
-    Usage: axis[k] returns the value at offset k from center along this axis.
-    """
+    """Neighbours along one axis of a 3D array: ``axis[k]`` is offset k from centre."""
 
     _arr: object
     _i: object
@@ -93,9 +84,7 @@ class StencilAxis3D(eqx.Module):
 class CellAccessor3D(eqx.Module):
     """Cell-centred stencil accessor backed by a 3D array.
 
-    Duck-type compatible with CellAccessor — provides the same
-    .S(k, ax), .center, .x[k], .y[k], .z[k] interface so that
-    existing cell kernels work unchanged.
+    Duck-type compatible with :class:`CellAccessor`, so cell kernels work unchanged.
     """
 
     x: StencilAxis3D
@@ -119,10 +108,7 @@ class CellAccessor3D(eqx.Module):
 
 
 class FaceAccessor(eqx.Module):
-    """Access face fluxes for a cell using .x[k], .y[k], .z[k].
-
-    ff.x[0] = left x-face flux, ff.x[1] = right x-face flux.
-    Built from flat face buffers + cell position.
+    """Face fluxes for one cell: ``ff.x[0]`` is the left x-face, ``ff.x[1]`` the right.
 
     Parameters
     ----------
@@ -153,34 +139,29 @@ class FaceAccessor(eqx.Module):
         if ng_face is None:
             ng_face = ng
 
-        # Valid cell dimensions (same for cell and face)
         vNx = Nx - 2 * ng
         vNy = Ny - 2 * ng
         vNz = Nz - 2 * ng
 
-        # Valid-local indices from cell_idx
         ix = cell_idx % vNx
         it = (cell_idx // vNx) % vNy
         iz = cell_idx // (vNx * vNy)
 
-        # Face buffer positions: offset by ng_face (not ng)
+        # Face buffer positions offset by ng_face, NOT ng.
         i_f = ng_face + ix
         j_f = ng_face + it
         k_f = ng_face + iz
 
-        # x-faces: grown shape (vNx + 1 + 2*ng_face, vNy + 2*ng_face, vNz + 2*ng_face)
         Nx_fx = vNx + 1 + 2 * ng_face
         Ny_fx = vNy + 2 * ng_face
         fx_base = face_offsets[0] + i_f + Nx_fx * j_f + Nx_fx * Ny_fx * k_f
         self.x = StencilAxis(face_bufs[0], fx_base, 1)
 
-        # y-faces: grown shape (vNx + 2*ng_face, vNy + 1 + 2*ng_face, vNz + 2*ng_face)
         Nx_fy = vNx + 2 * ng_face
         Ny_fy = vNy + 1 + 2 * ng_face
         fy_base = face_offsets[1] + i_f + Nx_fy * j_f + Nx_fy * Ny_fy * k_f
         self.y = StencilAxis(face_bufs[1], fy_base, Nx_fy)
 
-        # z-faces: grown shape (vNx + 2*ng_face, vNy + 2*ng_face, vNz + 1 + 2*ng_face)
         Nx_fz = vNx + 2 * ng_face
         Ny_fz = vNy + 2 * ng_face
         fz_base = face_offsets[2] + i_f + Nx_fz * j_f + Nx_fz * Ny_fz * k_f

@@ -2,19 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// The Kokkos-vs-AMReX operator bench: 3 cell kernels x 7 launchers, selected by
-// name at runtime through NeoN's RuntimeSelectionFactory -- the same abstraction
-// NeoN's own schemes use (see surfaceInterpolation.hpp), so what is measured here
-// is what a port would actually pay. Dispatch is host-side only: one virtual
-// apply() per operator, with a concrete device lambda inside.
-//
-// Backends come in two families (see launch.hpp): PER-BOX ones launch once per box
-// inside an MFIter loop, FUSED ones cover every box in a single launch. A kernel
-// body is written once, against a Fields<> bundle of accessors, and both families
-// call it -- so no kernel is duplicated to serve a launcher.
-//
-// This TU is compiled WITHOUT relocatable device code, like the rest of the module
-// (see CMakeLists.txt for why _blockamr itself is also non-RDC).
+// The Kokkos-vs-AMReX operator bench: 3 cell kernels x 7 launchers, selected by name through
+// NeoN's RuntimeSelectionFactory. Backends are PER-BOX (one launch per box) or FUSED (one launch
+// for all boxes); one kernel body over a Fields<> bundle of accessors serves both families.
 
 #include <algorithm>
 #include <array>
@@ -35,20 +25,13 @@
 namespace blockamr
 {
 
-// MFIter's destructor stream-synchronizes by default (AMReX_MFIter.cpp:246), a
-// host-blocking round trip at the end of every box loop. Leaving it on would make
-// this bench measure the wrong thing: the sync waits on AMReX's stream, and Kokkos
-// launches on its OWN stream, so the default charges the amrex backend a ~6 us
-// synchronization per apply and the Kokkos backends nothing. Both are fenced once
-// per batch in benchOperator instead, which times the same work for both.
+// MFIter's destructor stream-synchronizes by default (AMReX_MFIter.cpp:246), which would charge
+// the amrex backend ~6 us per apply and the Kokkos backends, launching on their own stream,
+// nothing. benchOperator fences both runtimes once per batch instead.
 inline amrex::MFItInfo noSync() { return amrex::MFItInfo().DisableDeviceSync(); }
 
-// ---------------------------------------------------------------------------
-// A kernel's inputs, in one device-copyable bundle. Field order is fixed:
-// 0 = out, 1 = in, 2..4 = fx, fy, fz. Bundling them is what lets one kernel body
-// serve both the per-box and the fused launch families -- the fused one rebuilds
-// the bundle per box on the device from AMReX's Array4 table.
-// ---------------------------------------------------------------------------
+// A kernel's inputs in one device-copyable bundle; the field order is fixed:
+// 0 = out, 1 = in, 2..4 = fx, fy, fz.
 
 struct Coeffs
 {
@@ -81,10 +64,7 @@ std::array<amrex::MultiFab*, 5> fieldList(const OpArgs& args)
     return {args.out, args.in, args.fx, args.fy, args.fz};
 }
 
-// ---------------------------------------------------------------------------
-// Per-box backends: an accessor type plus a launcher. Every accessor takes GLOBAL
-// (i, j, k), so all of them run the identical kernel body from cells.hpp.
-// ---------------------------------------------------------------------------
+// Per-box backends: an accessor type plus a launcher. Every accessor takes GLOBAL (i, j, k).
 
 struct AmrexBackend
 {
@@ -128,11 +108,8 @@ struct KokkosFlatBackend
     }
 };
 
-// Diagnostic: Kokkos launcher with AMReX's OWN accessor. The two backends above
-// change launcher AND accessor at once, so a gap against amrex cannot be pinned on
-// either; this one isolates the launcher. Array4 folds the box origin into its
-// pointer at construction, while ViewAcc subtracts it per access and builds a
-// Kokkos View per box per apply.
+// Diagnostic: Kokkos launcher with AMReX's OWN accessor, isolating the launcher from the accessor
+// change (Array4 folds the box origin into its pointer; ViewAcc rebuilds a View per box).
 struct KokkosMdArray4Backend
 {
     static constexpr const char* tag = "kokkos_md_a4";
@@ -147,9 +124,8 @@ struct KokkosMdArray4Backend
     }
 };
 
-// kokkos_md, but round-robined over as many Kokkos streams as AMReX uses. Only one
-// thing separates it from kokkos_md, so it answers exactly one question: is the
-// multi-box gap AMReX's cross-stream overlap, or something else?
+// kokkos_md round-robined over as many Kokkos streams as AMReX uses: is the multi-box gap
+// AMReX's cross-stream overlap, or something else?
 struct KokkosStreamBackend
 {
     static constexpr const char* tag = "kokkos_stream";
@@ -164,12 +140,8 @@ struct KokkosStreamBackend
     }
 };
 
-// ---------------------------------------------------------------------------
-// Fused backends: one launch for all boxes, so per-box launch cost cannot exist.
-// Both use AMReX's cached device Array4 table (mf.arrays()), because the accessor
-// was already shown not to matter (kokkos_md_a4 tracks kokkos_md), and sharing it
-// keeps the launcher the only difference.
-// ---------------------------------------------------------------------------
+// Fused backends: one launch for all boxes, so per-box launch cost cannot exist. Both share
+// AMReX's cached Array4 table (the accessor was shown not to matter), leaving the launcher.
 
 struct AmrexFusedBackend
 {
@@ -197,10 +169,7 @@ struct KokkosTeamBackend
     }
 };
 
-// ---------------------------------------------------------------------------
-// Kernels: each supplies its traffic model, ghost requirement, how many fields it
-// reads, and ONE device body over a Fields<> bundle.
-// ---------------------------------------------------------------------------
+// Kernels: traffic model, ghost requirement, field count, and ONE device body.
 
 struct AxpyKernel
 {
@@ -250,10 +219,6 @@ struct VanLeerKernel
     }
 };
 
-// ---------------------------------------------------------------------------
-// The two ways to run a kernel over a MultiFab.
-// ---------------------------------------------------------------------------
-
 template<class Kernel, class Backend>
 void runPerBox(const OpArgs& args)
 {
@@ -271,7 +236,9 @@ void runPerBox(const OpArgs& args)
             f.f[n] = Backend::acc((*mfs[n])[mfi]);
         }
         Backend::launch(
-            mfi.validbox(), ibox, BLOCKAMR_LAMBDA(int i, int j, int k) { Kernel::body(f, i, j, k, c); }
+            mfi.validbox(),
+            ibox,
+            BLOCKAMR_LAMBDA(int i, int j, int k) { Kernel::body(f, i, j, k, c); }
         );
     }
 }
@@ -284,8 +251,7 @@ void runFused(const OpArgs& args)
     const Coeffs c = coeffs(args);
     const auto mfs = fieldList(args);
 
-    // arrays() is cached per FabArray, so this is a device-pointer copy, not a
-    // host-to-device transfer per apply.
+    // arrays() is cached per FabArray: a device-pointer copy, not a transfer per apply.
     Fields<amrex::MultiArray4<double>, N> ma {};
     for (int n = 0; n < N; ++n)
     {
@@ -305,11 +271,7 @@ void runFused(const OpArgs& args)
     );
 }
 
-// ---------------------------------------------------------------------------
-// The runtime-selected operator. Parameters<> because operators are stateless --
-// all data arrives through apply().
-// ---------------------------------------------------------------------------
-
+// Parameters<> because operators are stateless: all data arrives through apply().
 class CellOperator : public NeoN::RuntimeSelectionFactory<CellOperator, NeoN::Parameters<>>
 {
 public:
@@ -349,9 +311,8 @@ public:
     }
 };
 
-// Explicit instantiation is what triggers registration -- the same mechanism
-// NeoN uses for its own schemes (linear.hpp:107). benchOperators() is asserted
-// against this list in the tests, so a silently missing registration fails.
+// Explicit instantiation is what triggers registration. The tests assert benchOperators() against
+// this list, so a silently missing registration fails.
 #define BENCH_INSTANTIATE(Kernel)                                                                  \
     template class Op<Kernel, AmrexBackend>;                                                       \
     template class Op<Kernel, AmrexFusedBackend>;                                                  \
@@ -370,8 +331,7 @@ BENCH_INSTANTIATE(VanLeerKernel);
 namespace
 {
 
-// Fence both runtimes regardless of backend: cheap, and it keeps the timing
-// honest without the caller having to know which one launched.
+// Fence both runtimes regardless of backend, so the timing does not depend on which launched.
 void fenceAll()
 {
     amrex::Gpu::streamSynchronize();
@@ -431,8 +391,7 @@ BenchResult benchOperator(const std::string& name, const OpArgs& args, int iters
         {
             op->apply(args);
         }
-        // t1 is when the HOST is done issuing; t2 is when the device is done. If a
-        // backend synchronizes inside its launch, the two collapse together.
+        // t1: host done issuing, t2: device done -- they collapse if the launch synchronizes.
         const auto t1 = std::chrono::steady_clock::now();
         fenceAll();
         const auto t2 = std::chrono::steady_clock::now();

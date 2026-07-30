@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Direct-forcing IBM strategy: pin the velocity to a wall value in solid
-cells each step. Mesh-owned data, per-field method (API doc §6)."""
+"""Direct-forcing IBM strategy: pin the velocity to a wall value in solid cells each
+step. Mesh-owned data, per-field method."""
 
 from dataclasses import dataclass, field as _dc_field
 
@@ -15,12 +15,12 @@ import blockamr
 
 @dataclass
 class DirectForcingData:
-    """Precomputed per-(level, box) solid masks plus the reaction-force
-    history. ``masks[lev][bi]`` is a boolean array over box ``bi``'s valid
-    (non-ghost) cells, ``True`` inside the body. ``force_history`` is a list
-    of ``(t, Fx, Fy, Fz)`` entries, one per :func:`DirectForcing.apply` call
-    — it must survive a regrid (masks are spatial, force history is a time
-    series), so mesh regrid rebuilds carry the same list object forward.
+    """Per-(level, box) solid masks plus the reaction-force history.
+
+    ``masks[lev][bi]`` is a boolean array over box ``bi``'s VALID (non-ghost) cells,
+    ``True`` inside the body. ``force_history`` holds one ``(t, Fx, Fy, Fz)`` entry per
+    :func:`DirectForcing.apply` call and MUST survive a regrid, so regrid rebuilds
+    carry the same list object forward.
     """
 
     masks: list
@@ -28,9 +28,8 @@ class DirectForcingData:
 
 
 class DirectForcing:
-    """Direct-forcing IBM strategy. Stateless — everything it needs travels
-    through the ``mesh``/``data`` arguments, so the class itself (not an
-    instance) is both what ``mesh.build_ibm([DirectForcing])`` expects and
+    """Direct-forcing IBM strategy, stateless: everything travels through the
+    ``mesh``/``data`` arguments, so the CLASS itself is what ``build_ibm`` expects and
     what ``IBM.lookup("directForcing")`` returns.
     """
 
@@ -38,11 +37,9 @@ class DirectForcing:
     def build_data(mesh, body):
         """Per-(level, box) boolean masks: True in valid cells inside the body.
 
-        A cell is solid when its centre's distance from the body axis
-        (measured in the plane perpendicular to ``body.axis``) is below
-        ``body.radius``. Ghost cells are not represented — they are excluded
-        by construction (masks cover only the valid box) and are always
-        passed through unchanged by :func:`apply`.
+        A cell is solid when its centre's distance from the body axis, in the plane
+        perpendicular to ``body.axis``, is below ``body.radius``. Ghost cells are not
+        represented and :func:`apply` passes them through unchanged.
         """
         center = [float(c) for c in body.centre]
         radius = float(body.radius)
@@ -54,8 +51,8 @@ class DirectForcing:
             geom = mesh.geom(lev)
             dx = [float(v) for v in geom.cell_size()]
             lo = [float(v) for v in geom.prob_lo()]
-            # Zero-ghost scratch MultiFab purely for the box layout — mask
-            # data is independent of any registered field's ghost width.
+            # Zero-ghost scratch purely for the box layout; masks do not depend on any
+            # registered field's ghost width.
             scratch = blockamr.MultiFab(mesh.box_array(lev), mesh.dm(lev), 1, 0)
             boxes = [mfi.valid_box() for mfi in blockamr.MFIterator(scratch)]
 
@@ -107,6 +104,5 @@ class DirectForcing:
 
     @staticmethod
     def force_history(data):
-        """Accessor: the recorded reaction-force time series (see
-        ``DirectForcingData.force_history``)."""
+        """The recorded reaction-force time series (``DirectForcingData.force_history``)."""
         return data.force_history

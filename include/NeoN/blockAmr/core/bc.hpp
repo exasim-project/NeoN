@@ -25,10 +25,9 @@ namespace blockamr::la
 // 2 = Neumann (du/dn = 0 on the face).
 using BcArray = std::array<int, 6>;
 
-// Ghost-layer fill spec for domain side s (0..5) of a valid box: the layer to
-// write, the reflection sign (-1 Dirichlet reflect-odd, +1 Neumann reflect-even)
-// and the offset from each ghost cell to its mirror interior cell. False when the
-// side is periodic or the box does not touch that domain face.
+// Ghost-fill spec for domain side s (0..5) of a valid box: the layer to write, the
+// reflection sign (-1 Dirichlet reflect-odd, +1 Neumann reflect-even) and the offset to
+// the mirror interior cell. False when periodic or the box does not touch that face.
 struct BcGhostFill
 {
     amrex::Box gbx;
@@ -64,18 +63,9 @@ inline bool bcGhostFill(
     return true;
 }
 
-// Fill the domain-boundary ghost layer of `mf` (1 ghost, component 0) so the
-// face-coefficient stencil folds homogeneous BCs with the matrix untouched:
-// Dirichlet -> ghost = -interior (2nd order at the dx/2 face distance),
-// Neumann -> ghost = interior. Face ghost layers only — the 7-point stencil never
-// reads edge/corner ghosts. Free function because nvcc forbids an extended
-// __device__ lambda in a non-public member; templated on the FabArray to serve both
-// the FP64 operator MultiFab and the FP32 GMG level fabs.
-//
-// Declaration-only: it is reached from four CUDA TUs that all land in the one
-// _blockamr.so, so an inline AMREX_GPU_DEVICE lambda would be an extended lambda
-// instantiated four times over — the nvcc trap. Definition and explicit
-// instantiation live in core/deviceKernels.cpp.
+// Fill `mf`'s domain BC ghost layer (1 ghost, comp 0, face layers only): Dirichlet ghost
+// = -interior, Neumann ghost = interior. Declaration-only for the nvcc extended-lambda
+// trap -- four CUDA TUs in one .so; defined in core/deviceKernels.cpp.
 template<class FA>
 void fillDomainBcGhostsDevice(FA& mf, const amrex::Box& domain, const BcArray& bc);
 
@@ -110,27 +100,10 @@ void fillDomainBcGhostsHost(FA& mf, const amrex::Box& domain, const BcArray& bc)
     }
 }
 
-// Inhomogeneous twin of the two fills above: ghost = sign*interior + scale*g, g
-// read from the SAME ghost cell of `bcdata`, with
-//   Dirichlet (sign -1): scale = 2        , g = u on the boundary FACE
-//   Neumann   (sign +1): scale = dx[dir]  , g = du/dn, the OUTWARD normal derivative
-// i.e. the homogeneous fill with the datum moved off zero, on the same dx/2 face
-// placement — so the discretisation ORDER is unchanged, only the constant. The
-// Neumann scale carries no side sign: on a low side the ghost offset and the
-// outward normal both flip, and the two cancel.
-//
-// `bcdata` is cell-centred on `mf`'s BoxArray/DistributionMapping with >= 1 ghost
-// and the datum living in the ghost layer — MLMG's setLevelBC contract, so one
-// MultiFab drives both solvers (pinned by test_inhomogeneous_dirichlet_matches_mlmg).
-// Only the domain-boundary ghost layer is read.
-//
-// For the OUTER residual only: the V-cycle and the Ginkgo operator keep the
-// homogeneous fill, because both solve for a CORRECTION, whose boundary condition
-// is homogeneous whatever the solution's is.
-//
-// Declaration-only for the same nvcc multi-TU reason as its twin above; defined in
-// core/deviceKernels.cpp. It can take `exec` because both its callers hold one,
-// unlike the twin, which is also reached from GMG headers that carry none.
+// Inhomogeneous twin: ghost = sign*interior + scale*g, g from bcdata's SAME ghost cell
+// (MLMG's setLevelBC contract); scale 2 Dirichlet (g = u ON the face), dx Neumann (g =
+// du/dn outward; a low side's two flips cancel, so no side sign). For the OUTER residual
+// only. Declaration-only, same nvcc trap; defined in core/deviceKernels.cpp.
 void fillDomainBcGhostsInhomDevice(
     const NeoN::Executor& exec,
     amrex::MultiFab& mf,
@@ -178,19 +151,15 @@ inline void fillDomainBcGhostsInhomHost(
     }
 }
 
-// Host-accessible (pinned) copy of a MultiFab: the coefficient fields arrive in
-// the default (device) arena, but the face-coeff stencil runs host-side on the
-// ReferenceExecutor, so the solve-constant coefficients are staged once.
+// Host-accessible (pinned) copy: the coefficient fields arrive in the device arena, but
+// the face-coeff stencil runs host-side on the ReferenceExecutor.
 std::shared_ptr<amrex::MultiFab> pinnedCopy(const amrex::MultiFab& src);
 
 BcArray
 parseBc(const std::vector<std::string>& bc, const amrex::Geometry& geom, const std::string& who);
 
-// Validate an inhomogeneous-BC carrier against the operator it is read alongside:
-// same BoxArray and DistributionMapping as `like`, >= 1 ghost layer to hold the
-// data, and at least one non-periodic side to read it on. Refused rather than
-// ignored — a carrier nothing consults reads as a solver bug, not a configuration
-// one.
+// Validate an inhomogeneous-BC carrier: same layout as `like`, >= 1 ghost layer, and at
+// least one non-periodic side to read it on. Refused rather than ignored.
 void checkBcData(
     const amrex::MultiFab& bcdata,
     const amrex::MultiFab& like,
@@ -198,14 +167,10 @@ void checkBcData(
     const std::string& who
 );
 
-// Scatter ONLY the ghost-adjacent shell (outer 1-cell layer of each valid box)
-// from the flat Ginkgo vector into the MultiFab: that shell is all FillBoundary and
-// the reflect domain-BC fill read to populate the face ghosts, while the interior
-// valid cells are read straight from the flat vector by
-// faceCoeffStencilFusedDevice. Flat index matches scatter_device (box-by-box, i
-// fastest). Instantiated for V = double and float (bc.cpp); the MultiFab is always
-// amrex::Real, only the flat Krylov vector changes width. `exec` is available here
-// because this kernel's one caller, FaceCoeffOpT::applyWith, holds one.
+// Scatter ONLY the ghost-adjacent shell (outer 1-cell layer of each valid box): that is
+// all FillBoundary and the reflect domain-BC fill read, while interior cells are read
+// straight from the flat vector. Flat index matches scatter_device (box-by-box, i
+// fastest). Instantiated for V = double and float in bc.cpp.
 template<class V>
 void scatterShellDevice(const NeoN::Executor& exec, const V* vec, amrex::MultiFab& mf);
 

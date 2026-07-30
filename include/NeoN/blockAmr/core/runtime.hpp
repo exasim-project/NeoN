@@ -4,9 +4,8 @@
 
 #pragma once
 
-// Kokkos lifetime, driven from blockamr.initialize()/finalize() so the ordering
-// against amrex::Initialize/Finalize is enforced in one place. Split out of
-// bench/kokkosSpike.cpp so production code need not include a bench-only header.
+// Kokkos lifetime, driven from blockamr.initialize()/finalize() so its ordering against
+// amrex::Initialize/Finalize is enforced in one place.
 
 namespace blockamr
 {

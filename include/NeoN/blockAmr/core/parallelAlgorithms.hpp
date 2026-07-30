@@ -14,8 +14,7 @@
 
 #include "NeoN/core/executor/executor.hpp"
 
-// One lambda form for all launchers: __host__ __device__ satisfies both an AMReX
-// device lambda and a Kokkos functor, so the kernel body is written once.
+// One lambda form for all launchers: __host__ __device__ suits both AMReX and Kokkos.
 #define BLOCKAMR_LAMBDA [=] AMREX_GPU_HOST_DEVICE
 
 namespace blockamr
@@ -25,8 +24,7 @@ namespace detail
 {
 
 // Every executor alternative forwards to amrex::ParallelFor: the seam, not a backend
-// change -- codegen must stay identical, so swapping an arm to Kokkos later is one
-// visible edit here and nowhere else.
+// change -- swapping an arm to Kokkos later is one visible edit here and nowhere else.
 
 template<typename ExecutorType, class Kernel>
 void parallelForImpl(

@@ -2,27 +2,17 @@
 //
 // SPDX-License-Identifier: MIT
 
-// Definitions -- and, below, the explicit instantiations -- of the
-// gmgKernels.hpp twin functions that are reached from more than one .cpp
-// translation unit (Class B/C in the T9 report): declaring them as ordinary
-// header templates and giving each an AMREX_GPU_HOST_DEVICE lambda would make
-// them extended lambdas instantiated in two CUDA TUs of the same final
-// _blockamr.so (persistent.cpp via blockamr_solvers, bench/gmgVcycleBench.cpp
-// via blockamr_kokkos) -- the exact nvcc trap T2 already hit for the fused
-// Kokkos kernels (see gmgKokkos/kernels.cpp). The fix is the same one used
-// there: define the kernel in exactly one TU and explicitly instantiate every
-// (T) this TU's callers need, so every other including TU sees only the
-// declaration in gmgKernels.hpp and links against this single definition.
+// The gmgKernels.hpp kernels reached from more than one CUDA TU: declaration-only in the header,
+// defined here, and a missed instantiation is a null device function pointer at runtime, not a
+// link error. Why: report/blockamr-linear-algebra-notes.md#the-nvcc-multi-tu-trap
 
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
 namespace blockamr::la
 {
 
-// Copy src (any FabArray, e.g. the caller's FP64 MultiFab or a same-type level
-// fab) into the T-valued dst, converting per cell over dst's valid box. Replaces
-// MultiFab::Copy on the FP32 path (which requires matching value types); for
-// T=double it is an exact copy, so the FP64 path is numerically unchanged.
+// Copy any FabArray into the T-valued dst, converting per cell over dst's valid box: MultiFab::Copy
+// needs matching value types. For T=double it is exact, so the FP64 path is unchanged.
 template<class T, class SRC>
 void gmgConvertCopy(GmgFab<T>& dst, const SRC& src, bool onDevice)
 {
@@ -107,10 +97,9 @@ template void gmgGsColor<float>(
     GmgFab<float>&, const GmgFab<float>&, const FaceCoeffs<float>&, int, double, bool
 );
 
-// Volume-average (factor-2) restriction of a cell field: coarse = mean of the
-// 8 fine children. Also used to coarsen alpha (a per-volume density). Iterates
-// the coarse MF; the fine MF shares the DistributionMapping, so the same MFIter
-// index addresses the matching fine box (its BoxArray is refine(coarse, 2)).
+// Plain volume average: coarse = mean of the 8 fine children. Valid ONLY for a dx-INDEPENDENT
+// density such as alpha -- a dx-dependent coefficient needs gmgCoarsenFace's 1/scale instead.
+// Iterates the coarse MF; the fine MF shares its DistributionMapping (BoxArray refine(coarse, 2)).
 template<class T>
 void gmgRestrict(const GmgFab<T>& fine, GmgFab<T>& crse, bool onDevice)
 {
@@ -138,10 +127,9 @@ template void gmgRestrict<double>(const GmgFab<double>&, GmgFab<double>&, bool);
 template void gmgRestrict<float>(const GmgFab<float>&, GmgFab<float>&, bool);
 template void gmgRestrict<Bf16>(const GmgFab<Bf16>&, GmgFab<Bf16>&, bool);
 
-// Coarsen a face-coefficient field in direction `dir`: coarse face i_c covers
-// fine face 2*i_c with the 2x2 transverse fine faces; a ~ -beta/dx^2, so the
-// coarse coefficient is the arithmetic average of those 4 fine coefficients
-// (beta averaged) divided by `scale` (dx doubled -> 4 for rediscretisation).
+// Coarsen a face coefficient in direction `dir`: coarse face i_c averages the 4 fine faces at
+// 2*i_c, times 1/scale -- a = -beta/dx^2 (negative) is dx-DEPENDENT, so w = 0.25/scale, unlike
+// gmgRestrict's plain average. Confusing the two laws caused a real bug.
 template<class T>
 void gmgCoarsenFace(const GmgFab<T>& fine, GmgFab<T>& crse, int dir, double scale, bool onDevice)
 {
@@ -189,8 +177,8 @@ template void gmgCoarsenFace<double>(const GmgFab<double>&, GmgFab<double>&, int
 template void gmgCoarsenFace<float>(const GmgFab<float>&, GmgFab<float>&, int, double, bool);
 template void gmgCoarsenFace<Bf16>(const GmgFab<Bf16>&, GmgFab<Bf16>&, int, double, bool);
 
-// Piecewise-constant prolongation + correction: fine cell += coarse parent
-// value (the adjoint of the volume-average restriction, up to the 1/8 factor).
+// Piecewise-constant prolongation + correction: fine cell += its coarse parent value (the adjoint
+// of the volume-average restriction, up to the 1/8 factor).
 template<class T>
 void gmgProlongAdd(const GmgFab<T>& crse, GmgFab<T>& fine, bool onDevice)
 {
@@ -211,10 +199,9 @@ void gmgProlongAdd(const GmgFab<T>& crse, GmgFab<T>& fine, bool onDevice)
 template void gmgProlongAdd<double>(const GmgFab<double>&, GmgFab<double>&, bool);
 template void gmgProlongAdd<float>(const GmgFab<float>&, GmgFab<float>&, bool);
 
-// Fused residual + volume-average restriction: coarse rhs cell = mean of the 8
-// fine residuals r = rhs - A sol, each computed on the fly. Iterates the coarse
-// box (fine sol's ghosts must be filled). Saves the full fine-grid resid
-// read+write of the separate residual + restriction passes (M4 item 3).
+// Fused residual + volume-average restriction: coarse rhs = mean of the 8 fine r = rhs - A sol,
+// computed on the fly, saving the fine-grid resid read+write of two separate passes. Iterates the
+// coarse box, so the fine sol's ghosts must already be filled.
 template<class T>
 void gmgResidRestrict(
     const GmgFab<T>& sol,

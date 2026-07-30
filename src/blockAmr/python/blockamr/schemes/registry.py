@@ -2,10 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Scheme-name registry: OpenFOAM-style names -> scheme classes.
-
-Maps the names that appear in fvSchemes (e.g. ``div(phi,U) vanLeer;``) to
-the engine's scheme classes. Lookups are case-insensitive.
+"""Scheme-name registry: the names appearing in fvSchemes (e.g. ``div(phi,U) vanLeer;``)
+mapped to the engine's scheme classes. Lookups are case-insensitive.
 """
 
 from .ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
@@ -47,9 +45,8 @@ def resolve(operator, name):
 def lookup_scheme(schemes, keys, operator, default):
     """Resolve a term's scheme from a *schemes* mapping.
 
-    Tries each non-None key in *keys*, then ``"default"`` (preserving the
-    SchemesDict fallback semantics). String values are resolved through the
-    registry and instantiated; scheme objects pass through unchanged.
+    Tries each non-None key in *keys*, then ``"default"``. String values are resolved
+    through the registry and INSTANTIATED; scheme objects pass through unchanged.
     Returns *default* when nothing matches or *schemes* is empty.
     """
     if not schemes:

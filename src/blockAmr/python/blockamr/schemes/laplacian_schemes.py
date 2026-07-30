@@ -32,16 +32,10 @@ class CentralDiffLaplacian(BaseModel):
         )
 
     def build_spatial_kernel(self, dh, coeff=1.0, gamma=None):
-        """Return a 3D functor kernel for parallel_for dispatch.
+        """3D functor kernel for parallel_for dispatch.
 
-        Parameters
-        ----------
-        dh : tuple
-            Cell spacing (dx, dy, dz).
-        coeff : float
-            Coefficient (includes gamma for constant case).
-        gamma : CellArray, optional
-            Per-cell variable gamma.
+        ``coeff`` already includes gamma in the constant case; pass ``gamma`` only for
+        the per-cell variable one.
         """
         if gamma is not None:
             return VariableGammaLaplacian3D(

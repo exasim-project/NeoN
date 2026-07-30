@@ -15,29 +15,16 @@ namespace blockamr::la
 {
 
 /* @class Operator
- * @brief Value-semantic holder for any type satisfying IsOperator.
- *
- * Erasure shape: see la::Matrix (linearAlgebra/matrix.hpp).
- *
- * ONE structural difference from Matrix, and it is the point of the class:
- * `assemble` is PRIVATE with `friend class LinearSystem`, so the erasure is
- * reachable only from `system += op`. The other half of the gate is that a
- * `Coefficients` has a private constructor friending only LinearSystem
- * (coefficients.hpp), so nothing outside `+=` can even produce the argument.
- *
- * Consequently `Operator` does NOT satisfy `IsOperator` (which wants a public
- * `assemble`), so there is no `static_assert(IsOperator<Operator>)` here as in
- * matrix.hpp; the NEGATIVE form is asserted in
- * linearAlgebra/coefficientsConcepts.cpp so that making `assemble` public breaks
- * the build instead of silently widening the gate.
+ * @brief Value-semantic holder for any IsOperator type; erasure shape as la::Matrix. Its
+ *        one difference is the point: `assemble` is PRIVATE, friending only LinearSystem,
+ *        so `system += op` is the only way in (asserted in coefficientsConcepts.cpp).
  */
 class Operator
 {
 public:
 
-    // Same guard as Matrix's ctor (matrix.hpp), currently redundant here because
-    // the privacy of `assemble` keeps Operator out of IsOperator. Kept so that
-    // making `assemble` public gives a compile error rather than a nesting Operator.
+    // Same guard as Matrix's ctor, redundant today because `assemble`'s privacy keeps
+    // Operator out of IsOperator; kept so making it public errors instead of nesting.
     template<IsOperator T>
         requires(!std::same_as<std::remove_cvref_t<T>, Operator>)
     Operator(T op) : model_(std::make_unique<Model<T>>(std::move(op)))

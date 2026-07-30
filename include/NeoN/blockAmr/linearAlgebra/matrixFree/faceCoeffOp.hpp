@@ -24,13 +24,9 @@
 namespace blockamr::la
 {
 
-// The fine-level diagonal, diag = alpha - (aE+aW+aN+aS+aT+aB) (negSumDiag), per
-// valid cell of `diag` (cell-centred, alpha's BoxArray/DistributionMapping), in
-// exactly the association order the stencils use — so the stored value is bitwise
-// what an inline derivation gives. No BcArray, deliberately: domain BCs enter the
-// mat-vec through the ghost reflection, i.e. the OFF-diagonal term, so this is
-// BC-independent. `diag` by value and the coefficients by const& is the signature
-// saying which of them this writes (core/fieldLevel.hpp).
+// The fine-level diagonal diag = alpha - (aE+aW+aN+aS+aT+aB) (negSumDiag) per valid cell, in
+// exactly the association order the stencils use, so it is bitwise what they derive inline.
+// BC-independent: domain BCs enter through the ghost reflection, i.e. the off-diagonal.
 void computeFaceCoeffDiag(
     const NeoN::Executor& exec,
     CellFieldLevel diag,
@@ -39,32 +35,16 @@ void computeFaceCoeffDiag(
     const FaceFieldLevel& lower
 );
 
-// General matrix-free face-coefficient operator on a structured single-level grid,
-// its matrix carried as OpenFOAM-style pieces given as AMReX fields:
-//   alpha  : cell-centred diagonal SOURCE (ddt/Sp/reaction), NOT the full
-//            diagonal — the face part is the negSumDiag term above.
-//   upper, lower : the three face-centred off-diagonal direction fields each, one
-//            FaceFieldLevel each (core/fieldLevel.hpp). upper[d] is the
-//            owner-row->neighbour coupling on the cell's HIGH face in direction d,
-//            lower[d] the neighbour-row->owner coupling on its LOW face; for a
-//            symmetric matrix pass the same fields for both.
-// The mat-vec is the OpenFOAM Amul in pull form (each cell reads its 6 neighbours)
-// against diag = alpha - (aE+aW+aN+aS+aT+aB), so the face coeffs feed both the
-// off-diagonal and the diagonal. Exact whenever the flux part annihilates a
-// constant (divergence-free flux / pure diffusion); any non-conservative diagonal
-// contribution must be folded into alpha. Homogeneous domain BCs are applied on
-// every apply by the ghost reflection, hence through the off-diagonal term alone
-// (the operator's half of that contract: operators/laplacian.hpp).
-//
-// PROTOTYPE (C1): faceCoeffOp.cpp currently BYPASSES the stored diagonal — the
-// `diag` constructor argument is ignored and both stencils recompute
-// alpha - sum(faces) inline, in that same association order.
-//
-// V is the value type of the flat Ginkgo vectors only (double for the fp64 Krylov
-// solvers, float for the mixed-precision inner solve); the COEFFICIENTS stay
-// amrex::MultiFab, so an fp32 instantiation narrows the vectors and nothing else.
-// V = float is a DEVICE path only (the host stencil stays double), which the
-// constructor rejects rather than silently downgrades.
+// Matrix-free face-coefficient operator on one structured level: the mat-vec is Amul in pull
+// form against diag = alpha - (aE+aW+aN+aS+aT+aB); `alpha` is the diagonal SOURCE, and
+// upper[d]/lower[d] the HIGH/LOW face couplings -- pass the same fields for both if symmetric.
+
+// PROTOTYPE (C1): the `diag` argument is IGNORED -- both stencils recompute alpha - sum(faces)
+// inline, in that same association order (faceCoeffOp.cpp).
+
+// V types the flat Ginkgo vectors only, not the coefficients; V = float is a DEVICE path (the
+// host stencil is double) and the constructor rejects it on the host. Measurements:
+// report/blockamr-precision-measurements.md
 template<class V>
 class FaceCoeffOpT : public AmrexLinOpBase<FaceCoeffOpT<V>, V>
 {
@@ -72,39 +52,31 @@ public:
 
     explicit FaceCoeffOpT(std::shared_ptr<const gko::Executor> exec);
 
-    // nexec is carried alongside the Ginkgo executor rather than derived from it
-    // because the launch seam (blockamr::parallelFor) dispatches on the NeoN variant.
+    // nexec is carried alongside the Ginkgo executor because the launch seam
+    // (blockamr::parallelFor) dispatches on the NeoN variant.
     FaceCoeffOpT(
         std::shared_ptr<const gko::Executor> exec,
         const NeoN::Executor& nexec,
-        // Allocation layout for the scratch/in-out fields plus the geometry the
-        // stencil's dx and ghost fill come from (core/meshLevel.hpp). Only `geom`
-        // outlives the constructor, hence geom_ below rather than a whole MeshLevel.
+        // Allocation layout plus the geometry the stencil's dx and ghost fill come from;
+        // only `geom` outlives the constructor, hence geom_ below.
         const MeshLevel& mesh,
         gko::size_type n,
-        // const&: a by-value handle would give this constructor write access to the
-        // caller's coefficients.
+        // const&: a by-value handle would give this constructor write access.
         const CellFieldLevel& alpha,
         const FaceFieldLevel& upper,
         const FaceFieldLevel& lower,
         BcArray bc = {},
-        // A bare pointer: read-only ghost-fill data whose source
-        // (SolverConfig::bcData) is a const amrex::MultiFab*, so there is no mutable
-        // handle to build a CellFieldLevel from.
+        // A bare pointer: its source (SolverConfig::bcData) is a const amrex::MultiFab*.
         const amrex::MultiFab* bcData = nullptr,
-        // The caller's stored fine-level diagonal — blockamr::la::MFFaceCoeffs owns
-        // one, so it survives the per-solve rebuild of this operator; an empty handle
-        // (every legacy call site) means compute it here, once. Ignored while the
-        // PROTOTYPE (C1) path above is live.
+        // The caller's stored diagonal (MFFaceCoeffs owns one, so it survives this
+        // operator's per-solve rebuild); an empty handle means compute it here, once.
+        // Ignored while PROTOTYPE (C1) is live.
         const CellFieldLevel& diag = {}
     );
 
-    // c0 = L(0) into `out`: the constant inhomogeneous domain BCs add, i.e. the same
-    // stencil applied to a caller-supplied zero vector with the INHOMOGENEOUS ghost
-    // fill instead of the reflecting one. This is what keeps `apply` linear as
-    // Ginkgo's Krylov solvers assume — with bc_data the operator is affine,
-    // L(x) = A x + c0, so the solve runs A x = rhs - c0 with c0 folded into the
-    // right-hand side once per solve. Requires a bc_data operator; throws otherwise.
+    // c0 = L(0) into `out`: the constant the INHOMOGENEOUS domain BCs add. Keeps `apply`
+    // linear as Ginkgo's Krylov solvers assume -- L(x) = A x + c0, so the solve runs
+    // A x = rhs - c0. Requires a bcData operator; throws otherwise.
     void applyBcOffset(const gko::LinOp* zero, gko::LinOp* out) const;
 
 protected:
@@ -116,27 +88,21 @@ protected:
 
 private:
 
-    // Shared body of apply_impl and applyBcOffset; `inhom` picks the domain-BC ghost
-    // fill and nothing else differs between them.
+    // Shared body of apply_impl and applyBcOffset; `inhom` picks the domain-BC ghost fill.
     void applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) const;
 
     amrex::Geometry geom_;
-    // Stencil-launch executor. Defaulted for the exec-only constructor used by
-    // create_default/clear, which builds an operator with no fields to launch over.
+    // Stencil-launch executor, defaulted for the exec-only constructor (create_default/clear),
+    // which builds an operator with no fields to launch over.
     NeoN::Executor nexec_ {NeoN::SerialExecutor {}};
+    // Homogeneous domain BCs are applied ON EVERY APPLY by the ghost reflection these drive,
+    // hence through the off-diagonal alone (the operator's half: operators/laplacian.hpp).
     BcArray bc_ {};
     bool hasPhysBc_ = false;
     bool onDevice_ = false;
-    // Host path: owns pinned copies of the coefficient fields, so a caller's
-    // in-place write is NOT observed until a new operator is built. Device path:
-    // empty, and the pointers below reference the caller's device-resident fields
-    // directly, so an in-place update IS picked up by the next apply — but only
-    // while the diagonal is recomputed inline (PROTOTYPE C1 above); with a stored
-    // diagonal, a write to alpha or a face field leaves it stale. That is what
-    // blockamr::la::MFFaceCoeffs handles: it owns the diagonal, refreshes it when
-    // the coefficient handles are handed out, and builds a fresh operator per solve.
-    // A direct FaceCoeffOp caller (FaceCoeffSolver, solveFaceCoeffs) must
-    // reconstruct. bcData_ is referenced either way and always picked up in place.
+    // Host path: pinned copies, so a caller's in-place write is NOT observed until a new
+    // operator is built. Device path: empty, the pointers below reference the caller's fields
+    // directly. bcData_ is referenced either way and always picked up in place.
     std::vector<std::shared_ptr<amrex::MultiFab>> owned_;
     const amrex::MultiFab* ux_ = nullptr;
     const amrex::MultiFab* lx_ = nullptr;
@@ -144,25 +110,21 @@ private:
     const amrex::MultiFab* ly_ = nullptr;
     const amrex::MultiFab* uz_ = nullptr;
     const amrex::MultiFab* lz_ = nullptr;
-    // The diagonal field the stencils read: the caller's field, diagOwned_, or a
-    // pinned copy in owned_; never null on an operator built with fields. Under
+    // The diagonal field the stencils read; never null on an operator built with fields. Under
     // PROTOTYPE (C1) it is alpha itself, the stencils subtracting the face sum.
     const amrex::MultiFab* diag_ = nullptr;
-    // The diagonal this operator computed for itself (null-`diag` argument), device
-    // path only; on the host path the pinned copy in owned_ is read and this is
-    // released.
+    // The diagonal this operator would compute for itself (device path); never assigned while
+    // PROTOTYPE (C1) is live.
     std::shared_ptr<amrex::MultiFab> diagOwned_;
-    // Inhomogeneous domain-BC data (null = homogeneous, the default); staged to
-    // pinned memory in owned_ on the host path like the coefficients. dx_ scales the
-    // Neumann datum.
+    // Inhomogeneous domain-BC data (null = homogeneous, the default), staged to pinned memory
+    // on the host path like the coefficients. dx_ scales the Neumann datum.
     const amrex::MultiFab* bcData_ = nullptr;
     amrex::Real dx_[3] {};
     std::shared_ptr<amrex::MultiFab> in_;
     std::shared_ptr<amrex::MultiFab> out_;
 };
 
-// The fp64 operator every caller means by "FaceCoeffOp", and its fp32 twin; both
-// explicitly instantiated in faceCoeffOp.cpp.
+// The fp64 operator every caller means by "FaceCoeffOp", and its fp32 twin.
 using FaceCoeffOp = FaceCoeffOpT<double>;
 using FaceCoeffOp32 = FaceCoeffOpT<float>;
 

@@ -2,13 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Precomputed offset dispatch: flat vmap over contiguous array.
+"""Precomputed offset dispatch: flat vmap over a contiguous array.
 
-Each valid cell has 4 precomputed int32 offsets (base, fx, fy, fz)
-into the flat buffers. The kernel is a simple gather + stencil math
-with no modulo, no division, no CellAccessor, no for_box.
-
-Achieves 1.25x C++ at 128³ with linear scheme (pure XLA, no Triton).
+Each valid cell carries 4 precomputed int32 offsets (base, fx, fy, fz) into the flat
+buffers, so the kernel is a gather plus stencil math — no modulo, no division, no
+CellAccessor, no for_box. Measured 1.25x C++ at 128³ with the linear scheme (pure
+XLA, no Triton).
 """
 
 import jax
@@ -25,8 +24,7 @@ from .flattened_boxes import (
 class LocalOffsets(eqx.Module):
     """Per-cell local offsets within a box shape. uint16, shared across all boxes.
 
-    Precomputed once per unique (bx, by, bz, ng) combination.
-    Typically 256 KB for 32³ boxes — fits L2 cache.
+    Precomputed once per unique (bx, by, bz, ng); ~256 KB for 32³ boxes, so it fits L2.
     """
 
     base: jax.Array     # (n_cells_per_box,) uint16 — local cell offset within box
@@ -39,28 +37,22 @@ class LocalOffsets(eqx.Module):
 class SplitOffsets(eqx.Module):
     """Split offset dispatch: box_starts (int32, per-box) + local offsets (uint16, per-shape).
 
-    Memory: box_starts = n_boxes × 4 × 4 bytes (~1 KB for 64 boxes).
-    Local offsets = n_cells_per_box × 4 × 2 bytes (~256 KB for 32³, shared).
-    Total: ~257 KB vs 33 MB for flat int32 offsets.
+    ~257 KB for 64 boxes of 32³ against 33 MB for flat int32 offsets.
     """
 
-    # Per-box absolute starts (traced, tiny)
     cell_starts: jax.Array    # (max_boxes,) int32
     fx_starts: jax.Array      # (max_boxes,) int32
     fy_starts: jax.Array      # (max_boxes,) int32
     fz_starts: jax.Array      # (max_boxes,) int32
 
-    # Shared local offsets (traced, small, cached in L2)
     local: LocalOffsets
 
-    # Per-element box mapping (traced)
     elem_to_box: jax.Array    # (total_padded,) int32 — which box each cell belongs to
     elem_to_local: jax.Array  # (total_padded,) int32 — local cell index within box
 
     total_valid: int = eqx.field(static=True)
     total_padded: int = eqx.field(static=True)
 
-    # Strides (static)
     sx: int = eqx.field(static=True)
     sy: int = eqx.field(static=True)
     sz: int = eqx.field(static=True)
@@ -89,10 +81,6 @@ class PrecomputedOffsets(eqx.Module):
     fz_stride_r: int = eqx.field(static=True)
 
 
-# ---------------------------------------------------------------------------
-# Tiering for total_padded
-# ---------------------------------------------------------------------------
-
 TOTAL_TIERS = [
     1024, 2048, 4096, 8192, 16384, 32768, 65536,
     131072, 262144, 524288, 1048576, 2097152, 4194304,
@@ -105,10 +93,6 @@ def _total_tier(n):
             return t
     return _next_power_of_2(n)
 
-
-# ---------------------------------------------------------------------------
-# Build precomputed offsets
-# ---------------------------------------------------------------------------
 
 def build_local_offsets(bx, by, bz, ng):
     """Build shared local uint16 offsets for one box shape."""
@@ -133,7 +117,6 @@ def build_local_offsets(bx, by, bz, ng):
     )
 
 
-# Cache local offsets by box shape
 _local_offsets_cache = {}
 
 
@@ -146,25 +129,19 @@ def get_local_offsets(bx, by, bz, ng):
 
 
 def build_split_offsets(fb, face_fb, ng):
-    """Build SplitOffsets: box_starts (int32) + local offsets (uint16).
-
-    Memory: ~257 KB for 64 boxes of 32³ vs 33 MB for flat int32.
-    """
+    """Build SplitOffsets: ~257 KB for 64 boxes of 32³ vs 33 MB for flat int32."""
     n_boxes = fb.n_boxes
     Nx_g0, Ny_g0, Nz_g0 = fb.shapes[0][:3]
     bx0 = Nx_g0 - 2*ng; by0 = Ny_g0 - 2*ng; bz0 = Nz_g0 - 2*ng
     n_cells = bx0 * by0 * bz0
 
-    # Per-box starts
     cell_starts = [int(fb.offsets[b]) for b in range(n_boxes)]
     fx_starts = [int(face_fb.offsets[0][b]) for b in range(n_boxes)]
     fy_starts = [int(face_fb.offsets[1][b]) for b in range(n_boxes)]
     fz_starts = [int(face_fb.offsets[2][b]) for b in range(n_boxes)]
 
-    # Shared local offsets
     local = get_local_offsets(bx0, by0, bz0, ng)
 
-    # Element-to-box and element-to-local mappings
     e2b = []; e2l = []
     for b in range(n_boxes):
         e2b.extend([b] * n_cells)
@@ -178,7 +155,6 @@ def build_split_offsets(fb, face_fb, ng):
         e2b.extend([0] * pad_n)
         e2l.extend([0] * pad_n)
 
-    # Pad box starts to power of 2
     mb = max(n_boxes, 1)
     while mb & (mb-1): mb = (mb | (mb-1)) + 1
     cell_starts.extend([cell_starts[0]] * (mb - n_boxes))
@@ -202,21 +178,14 @@ def build_split_offsets(fb, face_fb, ng):
 
 
 def build_precomputed_offsets(fb, face_fb, ng, mf=None, fx_mf=None, fy_mf=None, fz_mf=None):
-    """Build PrecomputedOffsets from FlattenedBoxes + FlattenedFaceBoxes.
-
-    If MultiFab objects are provided, uses the fast C++ builder.
-    Otherwise falls back to Python.
-
-    Returns PrecomputedOffsets.
-    """
+    """Build PrecomputedOffsets; uses the fast C++ builder when MultiFabs are given."""
     import blockamr
 
-    # Box shape for strides (assume uniform — use first box)
+    # Strides assume uniform boxes — taken from the first box.
     Nx_g0, Ny_g0, Nz_g0 = fb.shapes[0][:3]
     bx0 = Nx_g0 - 2 * ng
     by0 = Ny_g0 - 2 * ng
 
-    # Try C++ path
     if mf is not None and fx_mf is not None:
         base_l, fx_l, fy_l, fz_l = blockamr.build_stencil_offsets(
             mf, fx_mf, fy_mf, fz_mf, ng)
@@ -225,7 +194,6 @@ def build_precomputed_offsets(fb, face_fb, ng, mf=None, fx_mf=None, fy_mf=None, 
         fy_offs = list(fy_l)
         fz_offs = list(fz_l)
     else:
-        # Python fallback
         n_boxes = fb.n_boxes
         bases = []; fx_offs = []; fy_offs = []; fz_offs = []
         for b in range(n_boxes):
@@ -246,7 +214,7 @@ def build_precomputed_offsets(fb, face_fb, ng, mf=None, fx_mf=None, fy_mf=None, 
     total_valid = len(bases)
     total_padded = _total_tier(total_valid)
 
-    # Pad with first element (safe dummy)
+    # Pad with the first element — a safe dummy.
     pad_n = total_padded - total_valid
     if pad_n > 0:
         bases.extend([bases[0]] * pad_n)
@@ -271,17 +239,12 @@ def build_precomputed_offsets(fb, face_fb, ng, mf=None, fx_mf=None, fy_mf=None, 
     )
 
 
-# ---------------------------------------------------------------------------
-# Dispatch: flat vmap stencil kernel
-# ---------------------------------------------------------------------------
-
 @jax.jit
 def linear_euler_step(cell_buf, fx_buf, fy_buf, fz_buf,
                       offsets, dh, dt_over_coeff, nu):
-    """Forward Euler step: phi_new = phi - dt*(div(phi,U) - nu*lap(phi)).
+    """Forward Euler with linear divergence + central laplacian, ncomp=1.
 
-    Linear divergence + central laplacian, ncomp=1.
-    Single flat vmap over all valid cells.
+    One flat vmap over all valid cells: phi_new = phi - dt*(div(phi,U) - nu*lap(phi)).
     """
     idx_arr = 1.0 / dh
     idx2_arr = idx_arr ** 2
@@ -312,7 +275,7 @@ def linear_euler_step(cell_buf, fx_buf, fy_buf, fz_buf,
              + (yp - 2*c + ym) * idx2_arr[1]
              + (zp - 2*c + zm) * idx2_arr[2])
 
-        # No mask needed — padded cells point to valid dummy data
+        # No mask needed — padded cells point at valid dummy data.
         return c - dt_over_coeff * (div - nu * lap)
 
     return jax.vmap(process_one)(jnp.arange(offsets.total_padded))
@@ -330,7 +293,6 @@ def linear_euler_step_split(cell_buf, fx_buf, fy_buf, fz_buf,
         bi = offsets.elem_to_box[i]
         li = offsets.elem_to_local[i]
 
-        # Reconstruct absolute offset: box_start + local_uint16
         b = offsets.cell_starts[bi] + offsets.local.base[li].astype(jnp.int32)
 
         c = cell_buf[b]
@@ -361,10 +323,7 @@ def linear_euler_step_split(cell_buf, fx_buf, fy_buf, fz_buf,
 @jax.jit
 def linear_euler_step_ncomp(cell_buf, fx_buf, fy_buf, fz_buf,
                             offsets, dh, dt_over_coeff, nu, ncomp, plane_size):
-    """Forward Euler step for ncomp > 1.
-
-    AMReX stores components as planes: comp_offset = comp * plane_size.
-    """
+    """Forward Euler for ncomp > 1. AMReX plane layout: comp_offset = comp * plane_size."""
     idx_arr = 1.0 / dh
     idx2_arr = idx_arr ** 2
     sx = offsets.sx
@@ -404,10 +363,6 @@ def linear_euler_step_ncomp(cell_buf, fx_buf, fy_buf, fz_buf,
 
     return jax.vmap(process_one)(jnp.arange(offsets.total_padded))
 
-
-# ---------------------------------------------------------------------------
-# Scatter back to per-box arrays
-# ---------------------------------------------------------------------------
 
 def scatter_precomputed(result, fb, ncomp=1):
     """Reshape flat result → per-box arrays for MultiFab.copy_arrays."""

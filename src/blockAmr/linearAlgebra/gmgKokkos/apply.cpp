@@ -2,10 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-// The production instantiations of Vcycle: the KokkosGmgApply implementation and
-// the factory declared in apply.hpp. Split out of what used to be one TU,
-// bench/gmg_vcycle.cpp, together with bench/gmgVcycleBench.cpp (the benchmark
-// half) and vcycle.hpp (the Vcycle template itself, shared by both).
+// The production instantiations of Vcycle: the KokkosGmgApply implementation and apply.hpp's
+// factory. The Vcycle template itself lives in vcycle.hpp, shared with the bench.
 
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp"
@@ -16,9 +14,8 @@ namespace blockamr
 namespace
 {
 
-// The optimised V-cycle behind the Ginkgo-free handle of apply.hpp. Fixed to
-// KokkosOptGmgBackend: a caller wanting the baselines has the bench for that, and a
-// preconditioner has no reason to run a deliberately unoptimised launcher.
+// The optimised V-cycle behind apply.hpp's Ginkgo-free handle, fixed to KokkosOptGmgBackend: the
+// bench covers the baselines, and a preconditioner has no reason to run an unoptimised launcher.
 template<class T, class TC = T>
 class KokkosGmgApplyImpl final : public KokkosGmgApply
 {
@@ -52,10 +49,7 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const KokkosGmgOpts& opts
 )
 {
-    // No bc/geometry consistency check here: la::parseBc already refuses a
-    // non-periodic direction marked periodic and a periodic one marked otherwise, and
-    // it is the only path that reaches this factory. Repeating it would be a branch no
-    // test could reach.
+    // No bc/geometry check here: la::parseBc already refuses a mismatch and is the only path in.
     GmgArgs args;
     args.geom = &geom;
     args.rhs = nullptr; // the hierarchy is built from the coefficients alone

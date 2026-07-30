@@ -2,23 +2,17 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""C++ (AMReX ``ParallelFor``) explicit-kernel wrappers.
+"""C++ (AMReX ``ParallelFor``) explicit-kernel wrappers — peer of :mod:`cell_kernels_3d`.
 
-Peer of :mod:`cell_kernels_3d` (the jax functors). A scheme's
-``build_cpp_kernel()`` returns one of these, exactly mirroring how its
-``build_spatial_kernel()`` returns a jax functor — so the cpp kernel for a
-scheme lives next to the jax one, on the scheme class.
-
-Each wrapper binds one accumulate kernel (``div_*_acc`` / ``laplacian_acc`` /
-``grad_acc``), adding ``coeff * op(phi)`` into the scratch source MultiFab, and
-knows how to pull its arguments off the term. The generic ``euler_update`` axpy
-that finishes the forward-Euler step lives in :class:`~.backends.cpp_backend.CppBackend`.
+A scheme's ``build_cpp_kernel()`` returns one of these, mirroring how its
+``build_spatial_kernel()`` returns a jax functor. Each wrapper binds one accumulate
+kernel, adds ``coeff * op(phi)`` into the scratch source MultiFab, and pulls its own
+arguments off the term. The finishing ``euler_update`` axpy lives in ``CppBackend``.
 """
 
 
 def _bindings():
-    # Lazy: keeps this module import-safe during package init (schemes import it
-    # at load time, before ``blockamr`` has finished initialising).
+    # Lazy: schemes import this at load time, before ``blockamr`` finishes initialising.
     import blockamr
 
     return blockamr

@@ -18,7 +18,6 @@ void registerFillPatch(nb::module_& m)
 {
     using namespace amrex;
 
-    // BCRec
     nb::class_<BCRec>(m, "BCRec")
         .def(
             "__init__",
@@ -43,7 +42,7 @@ void registerFillPatch(nb::module_& m)
         }
     );
 
-    // Interpolater singletons
+    // Interpolater singletons: AMReX owns them, so return non-owning references.
     nb::class_<Interpolater>(m, "Interpolater");
 
     m.def(

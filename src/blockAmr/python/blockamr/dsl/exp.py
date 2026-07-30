@@ -2,10 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Explicit DSL operators (cf. OpenFOAM fvc::).
-
-These create operator objects that build JAX kernels for stencil computation.
-"""
+"""Explicit DSL operators (cf. OpenFOAM fvc::)."""
 
 from ..operators.ddt import Ddt
 from ..operators.div import Div
@@ -20,15 +17,10 @@ def ddt(field):
 
 
 def div(face_fluxes_or_field, field=None):
-    """Divergence operator.
+    """Divergence: ``exp.div(phi, U)`` advective flux, or ``exp.div(U)`` cell velocity.
 
-    Two forms:
-      exp.div(phi, U)  — advective flux divergence (existing Div operator)
-      exp.div(U)       — cell velocity divergence for pressure RHS
-
-    The discretisation scheme is resolved by name from the equation's
-    ``schemes`` dict at solve time — construct ``Div`` directly if an
-    explicit scheme object is needed outside the DSL's dict-based flow.
+    The scheme is resolved by name from the equation's ``schemes`` at solve time;
+    construct ``Div`` directly to pin a scheme object instead.
     """
     if field is None:
         return CellDivergence(face_fluxes_or_field)
@@ -37,11 +29,8 @@ def div(face_fluxes_or_field, field=None):
 
 
 def grad(field):
-    """Gradient operator.
-
-    For a pressure NodalField after an implicit solve, returns a
-    PressureGradient that reads the stored gradient (from getFluxes).
-    Otherwise returns the standard explicit Grad operator.
+    """Gradient. A field carrying a stored gradient (post-implicit-solve pressure)
+    yields a :class:`PressureGradient` reading it; anything else yields ``Grad``.
     """
     if hasattr(field, "grad") and field.grad is not None:
         return PressureGradient(field)
@@ -56,16 +45,11 @@ def source(coeff_func, field):
     return Source(coeff_func, field)
 
 
-# ---------------------------------------------------------------------------
-# Cell velocity divergence (for pressure RHS)
-# ---------------------------------------------------------------------------
-
-
 class CellDivergence(EqTerm):
-    """Divergence of a cell-centred velocity field (ncomp=3).
+    """Divergence of a CELL-CENTRED velocity field (ncomp=3).
 
-    Used as RHS of pressure equation: imp.laplacian(sigma, p) == exp.div(U).
-    Evaluated inside solve() via MLNodeLaplacian.compDivergence.
+    The RHS of ``imp.laplacian(sigma, p) == exp.div(U)``; evaluated inside ``solve()``
+    by ``MLNodeLaplacian.compDivergence``, which makes it NODAL.
     """
 
     kind = "spatial"
@@ -79,17 +63,10 @@ class CellDivergence(EqTerm):
         return f"div({self._named(self.vel_field, 'velocity')})"
 
 
-# ---------------------------------------------------------------------------
-# Pressure gradient (lazy, reads stored result from implicit solve)
-# ---------------------------------------------------------------------------
-
-
 class PressureGradient:
-    """Lazy reference to the pressure gradient stored after an implicit solve.
+    """Lazy reference to the CELL-CENTRED gradient an implicit solve stored on ``p``.
 
-    exp.grad(p) returns this when p has a stored gradient.
-    Supports -dt * exp.grad(p) via __rmul__ and __neg__.
-    p_field.grad[lev] is a list of per-box JAX arrays.
+    ``p_field.grad[lev]`` is a list of per-box JAX arrays.
     """
 
     def __init__(self, p_field):

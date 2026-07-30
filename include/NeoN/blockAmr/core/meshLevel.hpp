@@ -12,21 +12,9 @@
 namespace blockamr
 {
 
-/* @brief The AMReX layout triple -- BoxArray, DistributionMapping, Geometry --
- *        travelling as ONE argument.
- *
- * The `Level` suffix matches CellFieldLevel/FaceFieldLevel (core/fieldLevel.hpp):
- * this is the layout of ONE AMR level, the granularity everything in the linear
- * algebra works at. Python's `blockamr.Mesh`/`AmrMesh` are the multi-level
- * containers, and the name is already taken there.
- *
- * HELD BY VALUE, which is what makes it safe as a MEMBER as well as a parameter:
- * ba and dm are refcounted handles onto shared, immutable layout data and Geometry
- * is a plain value, so a copy is cheap and a member cannot dangle.
- *
- * The executor is deliberately NOT here. la routes it through the MATRIX
- * (IsMatrix::executor()) so an operator launches where its coefficient fields
- * live; a second source for it is the failure this grouping exists to prevent.
+/* @brief The AMReX layout triple (BoxArray, DistributionMapping, Geometry) of ONE AMR
+ *        level, as one argument. Held BY VALUE, so safe as a member; the executor is
+ *        deliberately NOT here -- la routes it through the MATRIX instead.
  */
 struct MeshLevel
 {
@@ -34,15 +22,13 @@ struct MeshLevel
     amrex::DistributionMapping dm;
     amrex::Geometry geom;
 
-    // By value: a reference into a temporary geometry is the bug this would
-    // otherwise invite in device code.
+    // By value: a reference into a temporary geometry is the bug this avoids.
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx() const { return geom.CellSizeArray(); }
 
     amrex::Periodicity periodicity() const { return geom.periodicity(); }
 
-    // The halo a coefficient field needs before a face average reads its
-    // neighbour. Internal and periodic ghosts only -- a physical domain face has no
-    // second cell and is the BC's business.
+    // The halo a coefficient field needs before a face average reads its neighbour.
+    // Internal and periodic ghosts only -- a domain face is the BC's business.
     void fillHalo(amrex::MultiFab& mf) const { mf.FillBoundary(periodicity()); }
 };
 

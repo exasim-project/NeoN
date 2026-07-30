@@ -4,34 +4,25 @@
 
 """EqTerm — base class for a single PDE term in the fvm DSL.
 
-Every ``exp.*`` / ``imp.*`` operator returns an ``EqTerm``. A term knows:
+Every ``exp.*`` / ``imp.*`` operator returns an ``EqTerm``, carrying its ``kind``
+(``"temporal"`` / ``"spatial"`` / ``"implicit"``), its operand ``field`` and optional
+``coefficient`` (phi face-field / gamma / sigma), and its OpenFOAM-style
+``scheme_key`` into the equation's schemes dict.
 
-- its ``kind`` — ``"temporal"`` (ddt), ``"spatial"`` (div/laplacian/grad/
-  source) or ``"implicit"`` (matrix side of an MLMG solve);
-- its operand ``field`` (and optional ``coefficient`` operand: phi
-  face-field / gamma / sigma);
-- its ``scheme_key`` — the OpenFOAM-style string it looks up in the
-  equation's schemes dict (e.g. ``"div(phi,U)"``, ``"ddt"``).
+``exp.*`` resolves the ``scheme`` slot from that dict at discretise time; constructing
+an operator class directly (``Div(ff, phi, scheme=Upwind())``) pins a scheme object
+that then wins over the dict.
 
-The ``scheme`` slot holds the resolved scheme *object*; ``exp.*`` operators
-resolve it purely from the equation's ``schemes`` dict at discretise time
-(inside ``solve()``). Constructing an operator class directly (e.g.
-``Div(ff, phi, scheme=Upwind())``) can still pin an explicit scheme object,
-which then wins over the dict — used by low-level scheme-accuracy tests that
-bypass the DSL's dict-driven flow.
-
-Terms compose lazily and immutably — composition returns NEW objects,
-nothing evaluates until ``solve()``:
+Terms compose lazily and IMMUTABLY — composition returns new objects and nothing
+evaluates until ``solve()``:
 
 - ``term + term`` / ``term - term`` -> ``Equation``
 - ``scalar * term`` / ``term * scalar`` / ``-term`` -> scaled copy
 - ``term == rhs`` -> implicit ``Equation`` (lhs == rhs)
 
 .. warning::
-   ``__eq__`` is overridden to build equations (OpenFOAM heritage), so
-   ``__hash__`` is identity-based (``object.__hash__``) and terms must
-   never be stored in equality-based containers (dict keys, sets) or
-   compared for equality.
+   ``__eq__`` builds equations, so ``__hash__`` is identity-based and terms must never
+   be put in equality-based containers (dict keys, sets) or compared for equality.
 """
 
 import copy

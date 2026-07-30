@@ -19,9 +19,8 @@
 namespace blockamr::la
 {
 
-// Matrix-free residual-correction CG solve of the single-level MLLinOp system
-// L(sol) = rhs; the body of the `ginkgo_solve` Python entry point, whose docstring
-// (blockAmr/bindings/ginkgoSolve.cpp) carries the derivation and the `sign` contract.
+// Matrix-free residual-correction CG solve of the single-level MLLinOp system L(sol) = rhs;
+// the body of `ginkgo_solve`, whose docstring carries the derivation and `sign`.
 SolveResult solveMlmgSystem(
     amrex::MLLinOpT<amrex::MultiFab>& lp,
     amrex::MultiFab& sol,
@@ -33,9 +32,8 @@ SolveResult solveMlmgSystem(
     std::optional<NeoN::Executor> executor
 );
 
-// Matrix-free solve of the multi-level COMPOSITE MLLinOp system, one sol/rhs MultiFab
-// per AMR level (coarsest first, unpacked from the Python lists by the caller); the
-// body of `ginkgo_solve_composite` (docstring in bindings/ginkgoSolve.cpp).
+// Matrix-free solve of the multi-level COMPOSITE MLLinOp system, one sol/rhs MultiFab per
+// AMR level (coarsest first); the body of `ginkgo_solve_composite`.
 SolveResult solveComposite(
     amrex::MLLinOpT<amrex::MultiFab>& lp,
     const amrex::Vector<amrex::MultiFab*>& sol,
@@ -48,10 +46,8 @@ SolveResult solveComposite(
     const std::string& solver
 );
 
-// One-shot Ginkgo solve of a general structured face-coefficient system A(sol) = rhs;
-// the body of `ginkgo_solve_face_coeffs` (docstring in bindings/ginkgoSolve.cpp).
-// Historically returns only num_iters/res_norm, which the unset SolveResult fields
-// preserve byte-for-byte at the nb::dict boundary.
+// One-shot Ginkgo solve of a general face-coefficient system A(sol) = rhs; the body of
+// `ginkgo_solve_face_coeffs`, whose historical dict has only num_iters/res_norm.
 SolveResult solveFaceCoeffs(
     amrex::MultiFab& alpha,
     amrex::MultiFab& ux,

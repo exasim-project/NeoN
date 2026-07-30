@@ -4,9 +4,6 @@
 
 """DSL incompressible Navier-Stokes projection — data + free functions.
 
-The former monolithic solver class was dissolved: the projection algorithm is now
-the ``step`` free function (the API doc's worked example), operating on a plain
-:class:`IncompressibleState` data holder built by :func:`build_incompressible`.
 Two-step projection (MAC + nodal) matching IAMReX/incflo:
 
     1. interpolate(U, phi)
@@ -15,11 +12,10 @@ Two-step projection (MAC + nodal) matching IAMReX/incflo:
     4. laplacian(dt, p) == div(U*)
     5. U -= dt * grad(p)
 
-The neofoam framework solver does not use ``step``: its ``project`` operation
-inlines the same worked example, resolving the state + fields from the Context
-at run time. This module is the standalone driver for the engine
-examples/tests; ``build_incompressible`` + ``step`` and the neofoam ``project``
-op share the identical numerics oracle.
+``build_incompressible`` + ``step`` are the standalone driver for the engine
+examples/tests. The neofoam framework solver inlines the same worked example in its
+``project`` operation instead, resolving state and fields from the Context at run
+time; the two share the identical numerics oracle.
 """
 
 from dataclasses import dataclass
@@ -46,11 +42,9 @@ from .schemes.registry import lookup_scheme
 class IncompressibleState:
     """Fields + equations + solve settings for one projection solver.
 
-    A plain data holder (the dissolved solver state). ``U`` / ``p`` / ``phi`` are
-    the engine fields (each carrying its mesh); ``UEqn`` /
-    ``pEqn`` are the two ``Equation`` values built once and re-solved each
-    :func:`step`. ``t`` is advanced by ``step``; ``dt`` may be pushed in from an
-    outer time loop (e.g. the neofoam backend).
+    ``UEqn`` / ``pEqn`` are built once and re-solved each :func:`step`. ``t`` is
+    ADVANCED by ``step``; ``dt`` may be pushed in from an outer time loop (e.g. the
+    neofoam backend), and ``step`` overwrites it when ``cfl`` is set.
     """
 
     mesh: Any
@@ -109,8 +103,7 @@ def build_incompressible(
 
     schemes = schemes or {}
 
-    # Derive ngrow from the widest stencil across all operators (div scheme +
-    # laplacian scheme). Not hardcoded.
+    # ngrow comes from the widest operator stencil, never hardcoded.
     div_stencil_scheme = lookup_scheme(schemes, ["div(phi,U)"], "div", Upwind())
     div_sw = div_stencil_scheme.stencil_width
     lap_sw = CentralDiffLaplacian().stencil_width
@@ -121,10 +114,8 @@ def build_incompressible(
     p = CellField(mesh, ncomp=1, ngrow=0, name="p")
     phi = FaceField(mesh, ncomp=1, ngrow=ngrow, name="phi")
 
-    # Per-face pressure BC for the MAC + nodal Poisson solves. Derived from the
-    # velocity BC (outflow face -> Dirichlet p, inlet/wall -> Neumann p); None ->
-    # the periodic/all-Neumann default. Stashed on p / phi so the free-function
-    # solves (dsl.solve, mac_project) can read it.
+    # Per-face pressure BC for the MAC + nodal Poisson solves, stashed on p / phi so
+    # the free-function solves (dsl.solve, mac_project) can read it.
     p_domain_bc = pressure_domain_bc(U_bc, mesh.geom(0)) if U_bc is not None else None
     p.pressure_bc = p_domain_bc
     phi.pressure_bc = p_domain_bc
@@ -132,9 +123,7 @@ def build_incompressible(
     sol_U = sol_U or {}
     sol_p = sol_p or {"rtol": 1e-10, "atol": 1e-12, "maxIter": 200, "verbose": 0}
 
-    # Immersed body (API doc §6): geometry lives on ``mesh.body`` (set by the
-    # caller); the method is chosen per field via ``solution["ibm"]``. Precompute
-    # every distinct method's data eagerly, ready before the first solve.
+    # IBM geometry lives on ``mesh.body``; the method is per field via solution["ibm"].
     ibm_methods = []
     for sol in (sol_U, sol_p):
         ibm_name = sol.get("ibm")
@@ -145,14 +134,9 @@ def build_incompressible(
     if ibm_methods:
         mesh.build_ibm(ibm_methods)
 
-    # UEqn/pEqn are built once — an Equation is a value: terms hold field
-    # references (U, p, phi), which survive regrid because fields re-register
-    # their MultiFabs. Re-``solve()``d each step.
-    # Pass nu as a numeric constant (not a lambda): the jax Laplacian collapses a
-    # provably-constant callable gamma to exactly ``coeff * nu`` (constant path),
-    # so jax numerics are bit-identical, while the cpp explicit backend requires a
-    # numeric gamma (it rejects callables). This keeps ``backend cpp`` runnable on
-    # the momentum predictor without changing any result.
+    # Built once: terms hold field references, which survive regrid. ``nu`` must stay a
+    # numeric constant, not a lambda — jax collapses a constant callable gamma to the
+    # same value, but the cpp backend rejects callables outright.
     UEqn = Equation(
         exp.ddt(U) + exp.div(phi, U) - exp.laplacian(nu, U),
         schemes=schemes,
@@ -189,7 +173,7 @@ def step(state: IncompressibleState) -> None:
     6. Nodal pressure solve: laplacian(dt, p) = div(U*)
     7. Correct U: U^{n+1} = U* - dt * grad(p)
     8. Immersed-body method (per-field ``solution["ibm"]``), applied AFTER the
-       full projection (order matches the pre-refactor engine exactly).
+       full projection.
     """
     dt = state.dt
     U = state.U
@@ -223,18 +207,12 @@ def step(state: IncompressibleState) -> None:
 
     state.t += dt
 
-    # Adaptive time stepping
     if state.cfl is not None:
         max_vel = max_velocity(U)
         if max_vel > 1e-12:
             finest = mesh.n_levels() - 1
             dx_fine = mesh.geom(finest).cell_size()
             state.dt = state.cfl * min(dx_fine) / max_vel
-
-
-# ----------------------------------------------------------------------------
-# Regrid / plotfile / utilities (free functions; were engine methods)
-# ----------------------------------------------------------------------------
 
 
 def regrid_fields(state: IncompressibleState, tag) -> None:
@@ -250,7 +228,7 @@ def regrid_fields(state: IncompressibleState, tag) -> None:
         state.U.fill_patch(lev, state.t)
     mesh.regrid(state.t, tag=tag)
 
-    # Invalidate solver caches — grids changed
+    # The grids changed, so the cached solver objects are stale.
     if hasattr(state.p, "_imp_cache"):
         del state.p._imp_cache
     if hasattr(state.phi, "_mac_cache"):

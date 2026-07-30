@@ -24,20 +24,16 @@ AmrexOp::AmrexOp(
     double sign
 )
     : AmrexLinOpBase<AmrexOp>(exec, gko::dim<2> {n, n}), mlmg_(mlmg), sign_(sign),
-      // shared_ptr, not values: MultiFab is move-only, but
-      // EnablePolymorphicAssignment needs AmrexOp copy-assignable.
-      // MLMG::apply needs >= 1 ghost cell on the input, hence ng=1 on in_.
-      // Default (device) arena: on a Cuda executor the pack/unpack kernels
-      // and MLMG::apply all run on the GPU with no host copies; on the
-      // reference (CPU) path gather/scatter stage these via dtoh/htod.
+      // shared_ptr, not values: MultiFab is move-only but EnablePolymorphicAssignment needs
+      // AmrexOp copy-assignable. MLMG::apply needs >= 1 ghost cell on the input, hence ng=1.
       in_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 1)),
       out_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 0)),
       c0_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 0))
 {
     in_->setVal(0.0);
     out_->setVal(0.0);
-    // Affine offset c0 = L_inhom(0): captures the set_level_bc
-    // contribution so apply_impl can subtract it and stay linear.
+    // Affine offset c0 = L_inhom(0): the set_level_bc contribution apply_impl subtracts to
+    // stay linear.
     mlmg_->apply({c0_.get()}, {in_.get()});
     // apply overwrites in_'s ghost cells; restore the all-zero state.
     in_->setVal(0.0);
@@ -47,16 +43,12 @@ AmrexOp::AmrexOp(
 void AmrexOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
 {
     auto exec = this->get_executor();
-    // A ReferenceExecutor is its own master; a device (Cuda) executor has a
-    // distinct host master. On device, pack/unpack run as AMReX kernels
-    // straight against the Ginkgo device pointers, so the entire mat-vec
-    // stays on the GPU. On host, stage through host clones.
+    // On device, pack/unpack run as AMReX kernels straight against the Ginkgo device pointers,
+    // so the whole mat-vec stays on the GPU; on host, stage through host clones.
     const bool onDevice = exec->get_master().get() != exec.get();
     if (onDevice)
     {
-        // Ordering across the two libraries' streams is done host-side:
-        // wait for Ginkgo's writes to b, run the AMReX mat-vec, then wait
-        // for its writes to x before Ginkgo reads them.
+        // Stream ordering is host-side: wait for Ginkgo's writes to b, then for AMReX's to x.
         exec->synchronize();
         scatter_device(localValues<double>(b), *in_);
         mlmg_->apply({out_.get()}, {in_.get()});
@@ -70,8 +62,7 @@ void AmrexOp::apply_impl(const gko::LinOp* b, gko::LinOp* x) const
         auto bHost = gko::clone(host, localView<double>(b));
         scatter(bHost->get_const_values(), *in_);
         mlmg_->apply({out_.get()}, {in_.get()});
-        // Remove the affine BC offset, then apply the SPD sign on gather:
-        // x = sign*(L_inhom(in) - c0).
+        // x = sign*(L_inhom(in) - c0): drop the affine offset, sign applied on gather.
         amrex::MultiFab::Subtract(*out_, *c0_, 0, 0, 1, 0);
         auto xHost = Dense::create(host, gko::dim<2> {localRows(x), 1});
         gather(*out_, xHost->get_values(), sign_);
@@ -96,8 +87,7 @@ CompositeAmrexOp::CompositeAmrexOp(
     long off = 0;
     for (std::size_t lev = 0; lev < bas.size(); ++lev)
     {
-        // shared_ptr for copy-assignability (see AmrexOp); MLMG::apply
-        // needs >= 1 ghost cell on the input, hence ng=1 on in_.
+        // shared_ptr for copy-assignability (see AmrexOp); ng=1 for MLMG::apply.
         in_.push_back(std::make_shared<amrex::MultiFab>(bas[lev], dms[lev], 1, 1));
         out_.push_back(std::make_shared<amrex::MultiFab>(bas[lev], dms[lev], 1, 0));
         c0_.push_back(std::make_shared<amrex::MultiFab>(bas[lev], dms[lev], 1, 0));
@@ -180,9 +170,7 @@ MlmgPrecond::MlmgPrecond(
     int n_cycles
 )
     : AmrexLinOpBase<MlmgPrecond>(exec, gko::dim<2> {n, n}), mlmg_(mlmg),
-      // shared_ptr for copy-assignability (see AmrexOp). Default (device)
-      // arena: on a Cuda executor pack/unpack and the V-cycles all run on
-      // the GPU; the reference path stages via scatter/gather.
+      // shared_ptr for copy-assignability (see AmrexOp).
       in_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 1)),
       out_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 1))
 {

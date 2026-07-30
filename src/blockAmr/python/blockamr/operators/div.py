@@ -13,10 +13,7 @@ from ..dsl.eqterm import EqTerm
 
 
 class Div(EqTerm):
-    """Divergence operator: div(U * phi).
-
-    Accepts a FaceField (multi-level) and a CellField (multi-level).
-    """
+    """Divergence operator: div(U * phi), from a FaceField and a CellField."""
 
     kind = "spatial"
     _scheme_operator = "div"
@@ -35,13 +32,10 @@ class Div(EqTerm):
         )
 
     def build_kernel_3d(self, ctx, t):
-        """Build a 3D spatial kernel from TiledContext.
+        """eqx.Module with ``__call__(box_id, i, j, k, phi) -> scalar``.
 
-        Extracts face data from self.face_field, constructs FlatFaceBoxed
-        with per-box offsets (box_id is a dummy — replaced per-tile inside
-        the Pallas kernel by parallel_for).
-
-        Returns an eqx.Module with __call__(box_id, i, j, k, phi) → scalar.
+        The FlatFaceBoxed's ``box_id`` is a dummy here; ``parallel_for`` replaces it
+        per tile inside the Pallas kernel.
         """
         import jax.numpy as jnp
         from ..flat_refs import FlatFaceBoxed
@@ -54,7 +48,6 @@ class Div(EqTerm):
         face_metas = [face_lev[d].mf.fab_metadata() for d in range(3)]
         n_boxes = len(face_metas[0])
 
-        # Per-box face offsets and strides
         all_offs = []
         all_strs = []
         for d in range(3):
@@ -93,19 +86,14 @@ class Div(EqTerm):
         return self.scheme.build_spatial_kernel(face=face, dh=ctx.dh, coeff=self.coeff)
 
     def build_kernel(self, bucket, t):
-        """Build a cell-level kernel for a bucket of boxes.
+        """eqx.Module with ``__call__(phi) -> scalar`` and ``for_box(bucket, box_idx)``.
 
-        Returns an eqx.Module kernel with __call__(phi) → scalar
-        and for_box(bucket, box_idx) for per-box rebinding.
-
-        Caches face_offsets across calls — only the face buffer data
-        (traced) changes each timestep; the offset layout is stable
-        until regrid.
+        face_offsets are cached across calls: only the traced buffer data changes each
+        timestep, the offset layout is stable until regrid.
         """
         lev = bucket.lev
         face_fb = FlattenedFaceBoxes.from_face_field(self.face_field, lev)
 
-        # Cache face offsets keyed on (box_indices, max_boxes, lev)
         cache_key = (bucket.box_indices, bucket.max_boxes, lev)
         if not hasattr(self, "_face_offset_cache"):
             self._face_offset_cache = {}
@@ -183,10 +171,9 @@ def update_face_fluxes(face_fluxes, vel_func, geom, t):
 
 
 class FaceFluxUpdater:
-    """Precomputes face-centre coordinates and batches velocity evaluation.
+    """Precomputes face-centre coordinates and batches the velocity evaluation.
 
-    Groups boxes by shape so that boxes with the same dimensions are stacked
-    and evaluated in a single jax.vmap + jax.jit call.
+    Boxes of equal shape are stacked and evaluated in one jax.vmap + jax.jit call.
     """
 
     def __init__(self, face_fluxes, vel_func, geom):

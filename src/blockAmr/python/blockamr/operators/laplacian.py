@@ -12,9 +12,8 @@ from ..dsl.eqterm import EqTerm
 class Laplacian(EqTerm):
     """Laplacian operator: div(gamma * grad(phi)).
 
-    gamma can be:
-      - callable(x, y, z, t) -> array: evaluated on the grid per box
-      - float/int: constant gamma
+    ``gamma`` is the physical diffusivity: either a number, or a
+    ``callable(x, y, z, t) -> array`` evaluated on each box's grid.
     """
 
     kind = "spatial"
@@ -29,25 +28,14 @@ class Laplacian(EqTerm):
         self._scheme_explicit = scheme is not None
 
     def build_kernel_3d(self, ctx, t):
-        """Build a 3D spatial kernel from TiledContext.
-
-        Returns an eqx.Module with __call__(box_id, i, j, k, phi) → scalar.
-        Stateless — no phi stored on the kernel.
-
-        Parameters
-        ----------
-        ctx : TiledContext
-            Tiled dispatch context (dh, ng, lev).
-        t : float
-            Current time.
-        """
+        """Stateless eqx.Module with ``__call__(box_id, i, j, k, phi) -> scalar``."""
         if isinstance(self.gamma, (int, float)):
             return self.scheme.build_spatial_kernel(dh=ctx.dh, coeff=self.coeff * self.gamma)
 
         if not callable(self.gamma):
             raise TypeError(f"gamma must be callable or number, got {type(self.gamma)}")
 
-        # Check if gamma is effectively constant
+        # Two asymmetric probes: a provably constant gamma takes the constant path.
         g1 = float(self.gamma(jnp.array([0.1]), jnp.array([0.2]), jnp.array([0.3]), t)[0])
         g2 = float(self.gamma(jnp.array([0.7]), jnp.array([0.4]), jnp.array([0.15]), t)[0])
         if abs(g1 - g2) < 1e-14 * (abs(g1) + 1.0):
@@ -73,7 +61,7 @@ class Laplacian(EqTerm):
         if not callable(self.gamma):
             raise TypeError(f"gamma must be callable or number, got {type(self.gamma)}")
 
-        # Evaluate gamma at two asymmetric points to check if constant
+        # Two asymmetric probes: a provably constant gamma takes the constant path.
         g1 = float(self.gamma(jnp.array([0.1]), jnp.array([0.2]), jnp.array([0.3]), t)[0])
         g2 = float(self.gamma(jnp.array([0.7]), jnp.array([0.4]), jnp.array([0.15]), t)[0])
         if abs(g1 - g2) < 1e-14 * (abs(g1) + 1.0):
@@ -83,7 +71,6 @@ class Laplacian(EqTerm):
                 ncomp=ncomp,
             )
 
-        # Variable gamma — evaluate on grown-box grids
         gamma_buf, gamma_offsets = _build_gamma_buffer(
             self.gamma,
             mf,
@@ -105,17 +92,17 @@ class Laplacian(EqTerm):
 
 
 def _build_gamma_buffer(gamma_func, mf, geom, bucket, t):
-    """Evaluate gamma_func on grown-box grids and build a flat buffer.
+    """Evaluate gamma_func on the grown-box grids.
 
-    Returns (gamma_buf, gamma_offsets) where gamma_buf is a 1D contiguous
-    array and gamma_offsets[i] is the start of box i's gamma data.
+    Returns ``(gamma_buf, gamma_offsets)``: a 1D contiguous array, and the start index
+    of each box's gamma data within it.
     """
     dx = geom.cell_size()
     prob_lo = geom.prob_lo()
     ng = bucket.ng
     meta = mf.fab_metadata()
 
-    # Evaluate gamma per box (MFIterator order = meta order)
+    # MFIterator order == meta order.
     gamma_per_box = {}
     box_idx = 0
     for mfi in blockamr.MFIterator(mf):
@@ -129,12 +116,11 @@ def _build_gamma_buffer(gamma_func, mf, geom, bucket, t):
         zs = jnp.array([prob_lo[2] + (lo[2] - ng + k + 0.5) * dx[2] for k in range(bNz)])
         X, Y, Z = jnp.meshgrid(xs, ys, zs, indexing="ij")
         gamma_3d = gamma_func(X, Y, Z, t)
-        # Flatten in Fortran order: i fastest, then j, then k
+        # Fortran order: i fastest.
         gamma_flat = gamma_3d.transpose(2, 1, 0).reshape(-1)
         gamma_per_box[box_idx] = gamma_flat
         box_idx += 1
 
-    # Build contiguous buffer for this bucket's boxes
     parts = []
     offsets = []
     cur = 0
@@ -143,7 +129,6 @@ def _build_gamma_buffer(gamma_func, mf, geom, bucket, t):
         parts.append(g)
         offsets.append(cur)
         cur += len(g)
-    # Pad offsets to max_boxes
     dummy = offsets[0] if offsets else 0
     for _ in range(bucket.max_boxes - len(bucket.box_indices)):
         offsets.append(dummy)

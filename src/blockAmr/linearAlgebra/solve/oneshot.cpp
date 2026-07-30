@@ -44,13 +44,9 @@ SolveResult solveMlmgSystem(
 {
     MLMG mlmg(lp);
 
-    // A SerialExecutor keeps the Krylov vector ops on the CPU; a
-    // GPUExecutor runs them on the device. The mat-vec (MLMG::apply) is
-    // on the GPU either way. The default is resolved at CALL time, not at
-    // binding-registration time, so importing blockamr does not require
-    // neon to have been imported first (converting a NeoN::Executor default
-    // needs _neon's nb::class_ registrations, and getting that order wrong
-    // raises std::bad_cast at import).
+    // SerialExecutor keeps the Krylov vector ops on the CPU, GPUExecutor on the device; the
+    // mat-vec is on the GPU either way. The default is resolved at CALL time, not at binding
+    // registration -- converting one there needs _neon's registrations, else bad_cast on import.
     auto exec = makeExecutor(executor.value_or(NeoN::createDefaultExecutor()));
     const BoxArray& ba = sol.boxArray();
     const DistributionMapping& dm = sol.DistributionMap();
@@ -59,9 +55,8 @@ SolveResult solveMlmgSystem(
     // Op construction runs one apply to record c0 = L_inhom(0).
     auto op = gko::share(AmrexOp::create(exec, &mlmg, ba, dm, n, sign));
 
-    // r0 = rhs - L_inhom(x0), x0 = incoming sol. MLMG::apply needs a
-    // ghost cell on the input (and overwrites it), so copy sol's valid
-    // region into a zero-initialized scratch rather than passing sol.
+    // r0 = rhs - L_inhom(x0), x0 = incoming sol. MLMG::apply needs a ghost cell on the input
+    // and overwrites it, so sol's valid region goes into zero-initialized scratch.
     MultiFab scratch(ba, dm, 1, 1, MFInfo().SetArena(The_Pinned_Arena()));
     scratch.setVal(0.0);
     MultiFab::Copy(scratch, sol, 0, 0, 1, 0);
@@ -70,22 +65,17 @@ SolveResult solveMlmgSystem(
     // Xpay: dst = src + a*dst, i.e. r0 = rhs - L_inhom(x0).
     MultiFab::Xpay(r0, -1.0, rhs, 0, 0, 1, 0);
 
-    // b = sign*r0, matching the sign inside AmrexOp; the correction
-    // delta starts at zero.
-    // gather writes host-side; build b on the executor's host master,
-    // then move it to the (possibly device) solver executor.
+    // b = sign*r0, matching the sign inside AmrexOp; the correction delta starts at zero.
+    // gather writes host-side, so b is built on the host master and then moved to exec.
     auto bHost = Dense::create(exec->get_master(), gko::dim<2> {n, 1});
     gather(r0, bHost->get_values(), sign);
     auto b = gko::clone(exec, bHost);
     auto x = Dense::create(exec, gko::dim<2> {n, 1});
     x->fill(0.0);
 
-    // Stop on ||r_k|| <= rtol * ||rhs|| of the ORIGINAL system (an
-    // absolute criterion here): the correction system's own rhs is
-    // sign*r0, and relative to that a warm start (tiny r0) would grind
-    // to reduce an already-converged residual by another factor rtol.
-    // The correction residual equals the original-system residual, so
-    // atol > 0 adds the plain absolute stop ||r_k|| <= atol.
+    // Stop on ||r_k||_2 <= rtol*||rhs||_2 of the ORIGINAL system, as an ABSOLUTE criterion:
+    // relative to the correction system's own rhs (sign*r0) a warm start would grind to reduce
+    // an already-converged residual again. atol > 0 adds the plain stop ||r_k||_2 <= atol.
     const double rhsNorm = rhs.norm2(0);
     const double stopTol = (rhsNorm > 0.0) ? rtol * rhsNorm : rtol;
     auto criteria = makeCriteria(exec, max_iter, gko::stop::mode::absolute, stopTol, atol);
@@ -159,10 +149,8 @@ SolveResult solveComposite(
         );
     };
 
-    // Consistent rhs: coarse cells covered by a finer level are slaved
-    // (their operator columns are zero — see CompositeAmrexOp), so
-    // their rhs entries must be the average_down of the fine rhs for
-    // the system to be solvable. Pinned copies; caller's rhs untouched.
+    // Consistent rhs: covered coarse cells are slaved (zero operator columns), so their rhs
+    // entries must be the average_down of the fine rhs. Pinned copies; caller's rhs untouched.
     Vector<MultiFab> rhsC(nlevs);
     for (int lev = 0; lev < nlevs; ++lev)
     {
@@ -180,9 +168,8 @@ SolveResult solveComposite(
         average_down(rhsC[lev + 1], rhsC[lev], 0, 1, refRatio(lev));
     }
 
-    // r0 = rhs - L_inhom(x0), x0 = incoming sol (per level). MLMG::apply
-    // needs a ghost cell on the input (and overwrites it), so copy sol's
-    // valid region into zero-initialized scratch rather than passing sol.
+    // r0 = rhs - L_inhom(x0) per level, x0 = incoming sol. MLMG::apply needs a ghost cell on
+    // the input and overwrites it, so sol's valid region goes into zero-initialized scratch.
     Vector<MultiFab> scratch(nlevs), r0(nlevs);
     Vector<MultiFab*> scratchP(nlevs), r0P(nlevs);
     for (int lev = 0; lev < nlevs; ++lev)
@@ -213,8 +200,7 @@ SolveResult solveComposite(
         MultiFab::Xpay(r0[lev], -1.0, rhsC[lev], 0, 0, 1, 0);
     }
 
-    // b = sign*r0 packed level-by-level; the correction delta starts
-    // at zero.
+    // b = sign*r0 packed level-by-level; the correction delta starts at zero.
     auto bHost = Dense::create(exec->get_master(), gko::dim<2> {n, 1});
     for (int lev = 0; lev < nlevs; ++lev)
     {
@@ -224,8 +210,8 @@ SolveResult solveComposite(
     auto x = Dense::create(exec, gko::dim<2> {n, 1});
     x->fill(0.0);
 
-    // Stop on the composite ||rhs|| of the ORIGINAL system, as an
-    // absolute criterion (see solveMlmgSystem for the warm-start rationale).
+    // Stop on the composite ||rhs||_2 of the ORIGINAL system, as an absolute criterion (see
+    // solveMlmgSystem for the warm-start rationale).
     double rhsNorm2 = 0.0;
     for (int lev = 0; lev < nlevs; ++lev)
     {
@@ -243,10 +229,8 @@ SolveResult solveComposite(
     gsolver->add_logger(resLogger);
     gsolver->apply(b, x);
 
-    // sol = x0 + delta per level, then enforce the covered-cell
-    // convention: coarse covered cells = average_down of the fine
-    // solution (matching MLMG::solve — the covered entries of x are
-    // Krylov by-products, not DOFs).
+    // sol = x0 + delta per level, then the covered-cell convention: covered coarse cells are
+    // the average_down of the fine solution, since x's covered entries are not DOFs.
     auto xHost = gko::clone(exec->get_master(), x);
     for (int lev = 0; lev < nlevs; ++lev)
     {
@@ -305,23 +289,20 @@ SolveResult solveFaceCoeffs(
     const DistributionMapping& dm = sol.DistributionMap();
     const auto n = static_cast<gko::size_type>(ba.numPts());
 
-    // No NeoN executor reaches this entry point; the Ginkgo one above is fixed to
-    // Reference, so the matching NeoN alternative is SerialExecutor.
+    // No NeoN executor reaches this entry point, and the Ginkgo one is fixed to Reference.
     auto op = gko::share(FaceCoeffOp::create(
         exec,
         NeoN::Executor {NeoN::SerialExecutor {}},
         MeshLevel {ba, dm, geom},
         n,
-        // Non-owning handles: this entry point is handed the caller's MultiFabs
-        // by reference and does not take ownership of them.
+        // Non-owning handles: the caller's MultiFabs, by reference.
         CellFieldLevel {nonOwning(alpha)},
         FaceFieldLevel {{nonOwning(ux), nonOwning(uy), nonOwning(uz)}},
         FaceFieldLevel {{nonOwning(lx), nonOwning(ly), nonOwning(lz)}}
     ));
 
-    // Plain linear solve A x = b: the face coefficients are the full
-    // (BC-folded) matrix, so no affine offset. Incoming sol seeds the
-    // initial guess (Ginkgo uses x's initial values), rhs is b.
+    // Plain linear solve A x = b: the face coefficients are the full BC-folded matrix, so there
+    // is no affine offset. Incoming sol seeds the initial guess, rhs is b.
     auto b = Dense::create(exec, gko::dim<2> {n, 1});
     gather(rhs, b->get_values(), 1.0);
     auto x = Dense::create(exec, gko::dim<2> {n, 1});
@@ -348,10 +329,8 @@ SolveResult solveFaceCoeffs(
     auto norm = Dense::create(exec, gko::dim<2> {1, 1});
     res->compute_norm2(norm);
 
-    // Historical 2-key surface only (num_iters, res_norm): converged/
-    // res_history/contraction/diagnostic are left unset, and the nanobind
-    // converter in ginkgoSolve.cpp omits keys for unset fields, so the
-    // Python-visible dict is unchanged.
+    // Historical 2-key surface (num_iters, res_norm): the other fields are left unset, and
+    // toDict omits keys for unset fields, so the Python-visible dict is unchanged.
     SolveResult result;
     result.num_iters = static_cast<std::int64_t>(logger->get_num_iterations());
     result.res_norm = norm->at(0, 0);

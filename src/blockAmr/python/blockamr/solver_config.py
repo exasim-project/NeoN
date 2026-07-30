@@ -2,14 +2,13 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Validated configuration for the solvers: the GMG V-cycle knobs, and la.Solver.
+"""Validated pydantic configuration for the solvers.
 
-``GmgConfig`` collects the ``precond="gmg"`` V-cycle knobs of
-``FaceCoeffSolver`` (see ``src/blockAmr/bindings/ginkgoSolve.cpp``) into one
-validated pydantic model. ``kwargs()`` returns the ``gmg_*`` / ``precond_cycles``
-constructor keyword arguments to splat into ``FaceCoeffSolver(...)``.
-
-``SolverConfig`` does the same for ``blockamr.linear_algebra.Solver``.
+``GmgConfig`` collects the ``precond="gmg"`` V-cycle knobs of ``FaceCoeffSolver``
+(see ``src/blockAmr/bindings/ginkgoSolve.cpp``); its ``kwargs()`` emits the ``gmg_*``
+keys plus ``precond_cycles`` to splat into the constructor. ``SolverConfig`` does the
+same for ``blockamr.linear_algebra.Solver``. Every field default here must match the
+corresponding C++ ``nb::arg`` default exactly.
 """
 
 from __future__ import annotations
@@ -22,28 +21,19 @@ from pydantic import BaseModel, ConfigDict, Field
 class GmgConfig(BaseModel):
     """Knobs for the native matrix-free GMG V-cycle preconditioner.
 
-    Defaults mirror the C++ binding's (2+2 red-black Gauss-Seidel sweeps, 16
-    coarsest sweeps, unlimited coarsening down to a 2-cell bottom, omega=1.1) —
-    a measured V-cycle shape rather than a historical one. Preconditioned CG on
-    the periodic Helmholtz takes 8 iterations at 64^3, 128^3 and 256^3 alike;
-    the previous 8/4/1.0 shape took 11/11/12, so this is both ~1.4x faster at
-    256^3 and mesh-independent, which it was not. See ``ginkgoSolve.cpp`` for
-    the per-knob measurements and the omega turnover curve.
+    Defaults mirror the C++ binding's and are a measured V-cycle shape: 8 CG
+    iterations on the periodic Helmholtz at 64^3, 128^3 and 256^3 alike, against
+    11/11/12 for the previous 8/4/1.0. Per-knob measurements are in
+    ``ginkgoSolve.cpp``.
 
     Notes
     -----
-    ``pre_sweeps`` and ``post_sweeps`` should be equal for a CG-safe symmetric
-    preconditioner: with unequal counts the post-smoother is no longer the exact
-    adjoint of the pre-smoother, so the V-cycle is non-symmetric and CG may
-    stall or diverge (the C++ solver warns in that case).
-
-    ``omega`` != 1.0 breaks that symmetry too, by a smaller amount that the
-    measurements say is worth paying up to ~1.1 and not beyond. Set it back to
-    1.0 for a bit-for-bit self-adjoint V-cycle.
-
-    The two do not compose: with ``pre_sweeps != post_sweeps`` the default
-    ``omega=1.1`` stops CG converging at all, where either breaker alone is fine.
-    If you set unequal sweeps, set ``omega=1.0`` with them.
+    CG needs a symmetric preconditioner. ``pre_sweeps`` != ``post_sweeps`` makes the
+    post-smoother something other than the pre-smoother's adjoint, so CG may stall or
+    diverge (the C++ solver warns); ``omega`` != 1.0 breaks symmetry more mildly, and
+    1.0 gives a bit-for-bit self-adjoint V-cycle. The two do not compose — unequal
+    sweeps at the default ``omega=1.1`` stops CG converging at all, so pass
+    ``omega=1.0`` with them.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -55,42 +45,15 @@ class GmgConfig(BaseModel):
     min_bottom: int = Field(default=2, ge=2)
     smoother: Literal["rbgs", "chebyshev"] = "rbgs"
     cycles: int = Field(default=1, ge=1)  # V-cycles per preconditioner apply
-    # RB-SOR relaxation: sol <- sol + omega * (gs - sol). Ignored by
-    # smoother="chebyshev". Must stay in (0, 2) to be a convergent relaxation.
+    # RB-SOR relaxation: sol <- sol + omega * (gs - sol). Ignored by smoother="chebyshev".
     omega: float = Field(default=1.1, gt=0.0, lt=2.0)
-    # V-cycle hierarchy precision: "fp32" (default), "fp64" (byte-for-byte the
-    # historical behaviour) or "bf16" (quarters the traffic; stored in bfloat16,
-    # still computed in fp32).
-    #
-    # fp32 is the default because the V-cycle is bandwidth-bound and only steers
-    # CG — the outer operator, residual and stopping test stay fp64. Measured at
-    # 128^3: 1.49x faster for an identical iteration count, with the converged
-    # answer moving 2.7e-18, below the fp64 path's own run-to-run noise floor.
-    #
-    # "bf16" needs ``precond="gmg_kokkos"`` — the shipped GMG hierarchy carries
-    # fp64/fp32 only, and the solver raises for the other precond values. It is a
-    # measured negative result rather than a recommended setting: 1.36x off the
-    # V-cycle, but psi's storage error reaches the coarse grid multiplied by
-    # ||A|| ~ 6/dx^2, so the cycle weakens as n^2 and the CG iteration count more
-    # than doubles already at 64^3 (11 -> 25) and reaches 273 vs 12 at 256^3.
-    # There is no size at which it wins. See solvers/bf16.hpp.
+    # V-cycle hierarchy storage, validated; "bf16" needs ``precond="gmg_kokkos"`` (the
+    # shipped hierarchy carries fp64/fp32 only, and the solver raises for the others).
+    # Measured: report/blockamr-precision-measurements.md#why-fp32-is-the-default
     precision: Literal["fp64", "fp32", "bf16"] = "fp32"
-    # Storage type of the COEFFICIENTS alone (alpha and the face arrays); "" means
-    # the same as ``precision``, which is what every level did before this existed.
-    # May not be wider than ``precision``, and needs ``precond="gmg_kokkos"``.
-    #
-    # This is the half of the bf16 experiment above that survives. Rounding psi is
-    # amplified — the cycle restricts ``b - A psi``, so psi's storage error reaches
-    # the coarse grid times ``||A|| ~ 6/dx^2``. Rounding a COEFFICIENT only perturbs
-    # the preconditioner's operator by the same ~0.4%; the operator CG applies and
-    # the residual it stops on stay fp64, so it can cost iterations but never
-    # correctness.
-    #
-    # Measured at 256^3 with a varying b, fields/coeffs: fp32/bf16 takes the
-    # V-cycle from 12.52 to 10.60 ms at a residual reduction of 0.70147 against
-    # fp32/fp32's 0.70185 — same cycle, 1.18x cheaper, 9 CG iterations either way
-    # (solve 213 -> 195 ms). fp64/bf16 is 1.11x SLOWER: narrow the coefficients
-    # only once the fields are narrow.
+    # Storage of the COEFFICIENTS alone (alpha and the face arrays); "" means the same as
+    # ``precision``. Validated: may not be wider than ``precision``, needs "gmg_kokkos".
+    # Measured: report/blockamr-precision-measurements.md#why-fp32-is-the-default
     coeff_precision: Literal["", "fp64", "fp32", "bf16"] = ""
 
     def kwargs(self) -> dict:
@@ -112,34 +75,23 @@ class GmgConfig(BaseModel):
 class SolverConfig(BaseModel):
     """Everything ``blockamr.linear_algebra.Solver`` needs besides the system.
 
-    Use it for the ``la`` surface (``Solver(SolverConfig(solver="cg")).solve(...)``).
-    ``GmgConfig`` above is the V-cycle shape, and it is NESTED here rather than
-    respelled: ``SolverConfig(precond="gmg", gmg=GmgConfig(pre_sweeps=4))`` is the
-    same model the legacy ``FaceCoeffSolver`` splats, so the two surfaces cannot
-    describe different cycles.
-
-    Frozen, like ``GmgConfig``: a config is a value, and a solver holds the one it
-    was built with.
+    ``GmgConfig`` is NESTED rather than respelled, so the ``la`` surface and the legacy
+    ``FaceCoeffSolver`` cannot describe different V-cycles. Frozen: a config is a value.
 
     Notes
     -----
-    ``solver`` and ``precond`` are plain strings, deliberately not ``Literal``.
-    The spellings are parsed exactly once, in C++
-    (``linearAlgebra/solverConfig.hpp``'s ``parseSolverKind`` /
-    ``parsePrecondKind``, called by the ``Solver`` binding's constructor), and
-    every dispatch below that compares the resulting enum. Repeating the list here
-    would be a second parse that has to be kept in step with the first.
+    ``solver`` and ``precond`` are deliberately not ``Literal`` — the spellings are
+    parsed exactly once, in C++ (``linearAlgebra/solverConfig.hpp``), and repeating the
+    list here would be a second parse to keep in step with the first.
 
-    ``precond`` is REACHABLE: the preconditioner is built by the MATRIX, from the
-    coefficients it holds, so ``"gmg"`` / ``"gmg_kokkos"`` / ``"mlmg"`` work on a
-    format that can build them and ``Solver.solve`` raises -- naming the format and
-    the precond -- on one that cannot (``CsrMatrix`` takes ``"none"``/``"mlmg"``
-    only). ``gmg`` below is what shapes the V-cycle.
+    ``precond`` is built by the MATRIX from the coefficients it holds, so
+    ``Solver.solve`` raises -- naming the format and the precond -- on a format that
+    cannot build it (``CsrMatrix`` takes ``"none"``/``"mlmg"`` only).
 
-    ``solver`` in ``("gmg", "ir", "mpir")`` is still accepted here and REFUSED by
+    ``solver`` in ``("gmg", "ir", "mpir")`` is accepted here and REFUSED by
     ``Solver.solve``: those want the hierarchy as the SOLVER rather than as a
-    preconditioner of one, which is a different object with a different stopping
-    test. Use ``FaceCoeffSolver`` for them.
+    preconditioner of one, a different object with a different stopping test. Use
+    ``FaceCoeffSolver`` for them.
 
     Examples
     --------
@@ -158,7 +110,7 @@ class SolverConfig(BaseModel):
     atol: float = Field(default=0.0, ge=0.0)
     project_nullspace: bool = False
     norm: str = "l2"
-    # Inert unless ``precond`` names a GMG variant, exactly as the C++ GmgConfig is.
+    # Inert unless ``precond`` names a GMG variant, as the C++ GmgConfig is.
     gmg: GmgConfig = GmgConfig()
 
     def kwargs(self) -> dict:
@@ -171,7 +123,6 @@ class SolverConfig(BaseModel):
             "atol": self.atol,
             "project_nullspace": self.project_nullspace,
             "norm": self.norm,
-            # The same dict FaceCoeffSolver is splatted with -- one spelling of the
-            # V-cycle knobs, consumed by two bindings.
+            # The same dict FaceCoeffSolver is splatted with: one spelling, two bindings.
             **self.gmg.kwargs(),
         }

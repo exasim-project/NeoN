@@ -2,32 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-// The definitions -- and, below, the explicit instantiations -- of the handful of
-// Kokkos launchers that kernels.hpp and halo.hpp only DECLARE:
-// gmgGsColorKokkosFused, gmgResidRestrictKokkosFused, gmgProlongAddKokkosFused,
-// execCopyPlan and gmgZeroKokkos.
-//
-// Why these five and not the rest of the bench's launchers: every one of them opens
-// an extended __host__ __device__ lambda (BLOCKAMR_LAMBDA / KOKKOS_LAMBDA) directly, and
-// every one of them is reached from KokkosOptGmgBackend (vcycle.hpp), which is shared
-// by apply.cpp (production) and bench/gmgVcycleBench.cpp (the bench
-// harness -- kokkos_fused also calls the first three of the five directly). Both
-// files land in the same final shared object (blockamr_kokkos is an OBJECT library
-// linked into _blockamr, not a separate .so -- see CMakeLists.txt), so a
-// header-inline template definition here used to be instantiated once per including
-// TU: two textually-identical extended-lambda-bearing functions compiled into two
-// CUDA translation units of the SAME binary. That is an nvcc trap, not a portable
-// C++ template pattern: the linker's weak/COMDAT folding keeps one TU's host-side
-// stub, but the two TUs' device-side kernel registrations are not guaranteed
-// consistent with it, and the observed failure is a null function-pointer call at
-// runtime -- not a compile or link diagnostic (found via T2 retry 1: 43/102 gate
-// tests SIGSEGV inside launchKokkosTeamNamed for exactly the kokkos_fused/kokkos_opt
-// cases, i.e. exactly the callers of these five functions).
-//
-// The fix is the standard one for a kernel-launching template that must be visible
-// from more than one TU: define it in exactly one TU and explicitly instantiate every
-// combination that TU's callers need, so every OTHER including TU sees only a
-// declaration and links against this single definition instead of generating its own.
+// The five kernels.hpp/halo.hpp launchers that open an extended device lambda and are reached from
+// both apply.cpp and bench/gmgVcycleBench.cpp: nvcc needs such a kernel declaration-only in the
+// header, defined here. Why: report/blockamr-linear-algebra-notes.md#the-nvcc-multi-tu-trap
 
 #include "NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
@@ -160,8 +137,7 @@ void execCopyPlan(
         return;
     }
     constexpr int VL = 32;
-    // Function-local: a namespace-scope constexpr has no device symbol to reference
-    // from the kernel body below.
+    // Function-local: a namespace-scope constexpr has no device symbol for the kernel body.
     constexpr int MT = kCopyBlock;
     const auto tasks = plan.tasks;
     using Policy = Kokkos::TeamPolicy<Kokkos::DefaultExecutionSpace>;
@@ -181,9 +157,8 @@ void execCopyPlan(
                     const int i = t.lo[0] + c % nx;
                     const int j = t.lo[1] + (c / nx) % t.len[1];
                     const int k = t.lo[2] + c / nxy;
-                    // The compute type, not T: for a bf16 level the two arms of the
-                    // ternary would otherwise be Bf16 and float, each convertible to
-                    // the other, which is ambiguous. Both the load and the sign flip
+                    // The compute type, not T: on a bf16 level the ternary's arms Bf16 and
+                    // float are mutually convertible, hence ambiguous. Load and sign flip
                     // are exact in it, so the copy still moves values unchanged.
                     const la::GmgComputeT<T> v = src[t.src](i + t.sh[0], j + t.sh[1], k + t.sh[2]);
                     dst[t.dst](i, j, k) = (t.sign < 0) ? -v : v;
@@ -202,9 +177,8 @@ void gmgZeroKokkos(la::GmgFab<T>& mf)
     );
 }
 
-// The six (field, coefficient) pairs Vcycle<KokkosOptGmgBackend, T, TC> is
-// instantiated for (both here and in vcycle.hpp -- see PrecPair), plus kokkos_fused's
-// (double, double), which is the same pair.
+// The six (field, coefficient) pairs Vcycle<KokkosOptGmgBackend, T, TC> is instantiated for.
+// A missing instantiation is a null device function pointer at runtime, not a link error.
 template void gmgGsColorKokkosFused<double, double>(
     la::GmgFab<double>&,
     const la::GmgFab<double>&,
@@ -376,9 +350,8 @@ template void gmgProlongAddKokkosFused<float>(const la::GmgFab<float>&, la::GmgF
 template void
 gmgProlongAddKokkosFused<la::Bf16>(const la::GmgFab<la::Bf16>&, la::GmgFab<la::Bf16>&, bool);
 
-// execCopyPlan/gmgZeroKokkos are templated on the FIELD type alone (the data
-// movements they drive -- halo, zero fill, agglomeration transfer -- never touch the
-// coefficients), so three instantiations cover every level the amrexFree_ path builds.
+// Field type alone: halo, zero fill and agglomeration transfer never touch the coefficients, so
+// three instantiations cover every level the amrexFree_ path builds.
 template void execCopyPlan<
     double>(const char*, const amrex::MultiArray4<double>&, const amrex::MultiArray4<const double>&, const CopyPlan&);
 template void execCopyPlan<

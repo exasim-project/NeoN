@@ -21,10 +21,6 @@ def forward_euler(spatial_kernels, dt_over_coeff):
     return FusedEulerKernel(spatial_kernels=spatial_kernels, dt_over_coeff=dt_over_coeff)
 
 
-# ---------------------------------------------------------------------------
-# Tiled Pallas dispatch using TileLayout
-# ---------------------------------------------------------------------------
-
 BF = 8
 NUM_WARPS = 8
 NUM_STAGES = 1
@@ -51,7 +47,7 @@ def _forward_euler_level(expr, cell_field, lev, t, dt, ddt_coeff):
 
 @functools.partial(jax.jit, static_argnums=(0, 1, 2, 3, 4))
 def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf, phi_flat, tiles, cvs, *k_leaves):
-    """JIT'd Pallas dispatch. Static args define the compilation key.
+    """JIT'd Pallas dispatch; the static args are the compilation key.
 
     cvs: per-box cell-valid-start offsets (int32, n_boxes_padded).
     """
@@ -81,7 +77,7 @@ def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf, phi_flat, tiles, cv
             lj = jnp.arange(bf)[None, :, None]
             lk = jnp.arange(bf)[None, None, :]
 
-            # Compute box-local valid indices from tile offset
+            # Box-local valid indices, recovered from the tile offset.
             cell_vs = plt.load(cvs_ref.at[bid])
             delta = cell_off - cell_vs
             vi0 = delta % c_sy
@@ -93,7 +89,7 @@ def _run_pallas(k_treedef, n_tiles, n_padded, total_phi, bf, phi_flat, tiles, cv
 
             phi = FlatCellRef(phi_ref, cell_vs, c_sx, c_sy, c_sz)
 
-            # Bind real box_id on face refs (replaces dummy box_id=0)
+            # Bind the real box_id on face refs, replacing the dummy 0.
             fn_bound = fn
             face_axes = [
                 leaf
@@ -160,17 +156,15 @@ def _extract_valid_boxes(flat, meta, ng, ncomp):
 
 
 def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
-    """Tiled Pallas dispatch. Kernel holds all data as equinox leaves.
+    """Tiled Pallas dispatch. The kernel holds all data as equinox leaves.
 
-    For ncomp>1, processes each component separately — the kernel always
-    operates on phi[i,j,k,0] (single component). The tile offsets point
-    to the same flat buffer; for comp c we shift by c * plane_size per box.
-    With uniform boxes (all same size), plane_size is total_phi / ncomp.
+    The kernel always sees a single component at phi[i,j,k,0], so ncomp>1 runs it once
+    per component with the tile offsets shifted by c * plane_size per box.
     """
     mf = cell_field.mf[lev]
     phi_flat = mf.contiguous_array()
 
-    # Reduce bf so it evenly divides all valid dimensions across all boxes
+    # Halve bf until it divides every box's valid dimensions.
     ng = mf.n_grow()
     meta = mf.fab_metadata()
     while bf > 1:
@@ -187,7 +181,7 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
     k_leaves, k_treedef = jax.tree.flatten(kernel)
     k_leaves = [jnp.asarray(leaf) if not hasattr(leaf, "shape") else leaf for leaf in k_leaves]
 
-    # Per-box cell-valid-start: offset to first valid cell (ng, ng, ng)
+    # Per-box offset to the first valid cell (ng, ng, ng).
     n_boxes = len(meta)
     mb = 1
     while mb < n_boxes:
@@ -212,18 +206,15 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
             cvs,
             *k_leaves,
         )
-        # Extract valid cells only — ghost cells must not be overwritten
+        # Valid cells only — ghost cells must not be overwritten.
         results = _extract_valid_boxes(out_flat, meta, ng, ncomp=1)
         target_mf.copy_arrays(results)
     else:
-        # For ncomp>1: run the kernel once per component.
-        # Shift tile offsets so phi[i,j,k,0] reads component c's data.
-        # Fortran order: comp c starts at c*M within each box (M=Nx*Ny*Nz).
+        # Fortran order: component c starts at c*M within each box (M = Nx*Ny*Nz).
         n_boxes = len(meta)
         n_t = layout.n_tiles_padded
         offset_idx = jnp.arange(n_t) * 5
 
-        # Per-tile component stride (M = Nx*Ny*Nz per box)
         box_Ms = [m[1] * m[2] * m[3] for m in meta]
         M0 = box_Ms[0]
         uniform = all(bM == M0 for bM in box_Ms)
@@ -240,7 +231,6 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
             box_ids = layout.tiles[4::5][:n_t]
             per_tile_M = padded_strides[box_ids]
 
-        # Run kernel per component, extract valid cells
         comp_valid = []  # comp_valid[c][bi] = (vNx, vNy, vNz) array
         for c in range(ncomp):
             shifted_tiles = layout.tiles.at[offset_idx].add(per_tile_M * c)
@@ -261,7 +251,6 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
                 shifted_cvs,
                 *k_leaves,
             )
-            # Extract valid cells for comp c from each box
             per_box = []
             for bi, m in enumerate(meta):
                 off, Nx, Ny, Nz = int(m[0]), m[1], m[2], m[3]
@@ -269,7 +258,6 @@ def parallel_for(kernel, cell_field, lev, bf=BF, out_mf=None):
                 per_box.append(_gather_valid(out_c, off + c * bM, Nx, Ny, Nz, ng))
             comp_valid.append(per_box)
 
-        # Assemble per-box (vNx, vNy, vNz, ncomp) and write back
         results = []
         for bi in range(n_boxes):
             results.append(jnp.stack([comp_valid[c][bi] for c in range(ncomp)], axis=-1))
@@ -293,7 +281,6 @@ class JaxBackend:
         spatial_kernels = tuple(op.build_kernel_3d(ctx, t) for op in terms)
         kernel = CombinedSource(spatial_kernels)
 
-        # Create temp MultiFab for output
         out_mf = blockamr.MultiFab(
             mesh.box_array(lev), mesh.dm(lev), cell_field.ncomp, ng, memory="default"
         )
@@ -301,7 +288,6 @@ class JaxBackend:
 
         parallel_for(kernel, cell_field, lev, out_mf=out_mf)
 
-        # Extract per-box valid results
         meta = mf.fab_metadata()
         lev_results = []
         for arr, m in zip(out_mf.arrays(), meta):

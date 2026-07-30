@@ -2,11 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Stencil slicing primitives for structured-grid operators.
-
-These are pure functions on JAX arrays. They are inlined by `jax.jit` at trace
-time — no runtime overhead. All functions operate on arrays that include ghost
-cells and return views (slices) into them.
+"""Stencil slicing primitives: pure functions that take GHOSTED JAX arrays and return
+slices into them. Inlined by `jax.jit` at trace time, so no runtime overhead.
 """
 from __future__ import annotations
 
@@ -14,10 +11,9 @@ from jax import Array
 
 
 def S(u: Array, k: int, ax: int) -> Array:
-    """Stencil slice along axis *ax*.
+    """Stencil slice along axis *ax*: k = -1 left, 0 centre, +1 right.
 
-    k = -1 → left neighbour, 0 → centre, +1 → right neighbour.
-    Trims one cell from each end of axis *ax* (total trim = 2).
+    Trims one cell from each end of *ax* (total trim 2).
     """
     start: int = k + 1
     sl: list[slice] = [slice(None)] * u.ndim
@@ -26,10 +22,8 @@ def S(u: Array, k: int, ax: int) -> Array:
 
 
 def S_wide(u: Array, k: int, ax: int, width: int) -> Array:
-    """Stencil slice for a wider stencil.
-
-    *width* is the half-width: trims *width* cells from each end.
-    k ranges from -width to +width.
+    """Wider stencil slice: *width* is the half-width, trimmed from each end, and k
+    ranges over -width..+width.
     """
     start: int = k + width
     trim: int = 2 * width
@@ -39,10 +33,10 @@ def S_wide(u: Array, k: int, ax: int, width: int) -> Array:
 
 
 def face(f: Array, side: int, ax: int) -> Array:
-    """Extract the left (*side*=0) or right (*side*=1) face of each cell.
+    """Left (*side*=0) or right (*side*=1) face of each cell.
 
-    *f* is a face-centred array with one more element than cells along *ax*.
-    The result has the same number of elements as cells along *ax*.
+    *f* is face-centred, one element longer than the cell count along *ax*; the result
+    matches the cell count.
     """
     sl: list[slice] = [slice(None)] * f.ndim
     sl[ax] = slice(side, side + f.shape[ax] - 1)
@@ -50,10 +44,7 @@ def face(f: Array, side: int, ax: int) -> Array:
 
 
 def interior(v: Array, skip_ax: int, width: int = 1) -> Array:
-    """Trim *v* to interior cells along every axis except *skip_ax*.
-
-    *width* is the number of cells to trim from each end (matches stencil half-width).
-    """
+    """Trim *v* to interior cells on every axis but *skip_ax*, *width* cells per end."""
     for ax in range(v.ndim):
         if ax != skip_ax:
             v = S_wide(v, 0, ax, width)

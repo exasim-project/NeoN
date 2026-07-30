@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 class SchemesDict:
-    """Runtime scheme selection dictionary."""
+    """Runtime scheme selection dictionary, with a ``"default"`` fallback key."""
 
     def __init__(self, schemes=None):
         self._schemes = schemes or {}
