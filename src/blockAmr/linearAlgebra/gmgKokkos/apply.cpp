@@ -21,7 +21,19 @@ class KokkosGmgApplyImpl final : public KokkosGmgApply
 {
 public:
 
-    KokkosGmgApplyImpl(const GmgArgs& args, int nCycles) : v_(args), nCycles_(nCycles) {}
+    KokkosGmgApplyImpl(
+        const amrex::Geometry& geom,
+        const amrex::MultiFab& alpha,
+        const amrex::MultiFab& ux,
+        const amrex::MultiFab& lx,
+        const amrex::MultiFab& uy,
+        const amrex::MultiFab& ly,
+        const amrex::MultiFab& uz,
+        const amrex::MultiFab& lz,
+        const KokkosGmgOpts& opts
+    )
+        : v_(geom, alpha, ux, lx, uy, ly, uz, lz, opts), nCycles_(opts.cycles)
+    {}
 
     void apply(const double* r, double* z) override { v_.applyFlat(r, z, nCycles_); }
 
@@ -50,47 +62,32 @@ std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
 )
 {
     // No bc/geometry check here: la::parseBc already refuses a mismatch and is the only path in.
-    GmgArgs args;
-    args.geom = &geom;
-    args.rhs = nullptr; // the hierarchy is built from the coefficients alone
-    args.alpha = &alpha;
-    args.ux = &ux;
-    args.lx = &lx;
-    args.uy = &uy;
-    args.ly = &ly;
-    args.uz = &uz;
-    args.lz = &lz;
-    args.preSweeps = opts.preSweeps;
-    args.postSweeps = opts.postSweeps;
-    args.coarsestSweeps = opts.coarsestSweeps;
-    args.maxLevels = opts.maxLevels;
-    args.minBottom = opts.minBottom;
-    args.omega = opts.omega;
-    args.agglomerate = opts.agglomerate;
-    args.aggGridSize = opts.aggGridSize;
-    args.precision = opts.precision;
-    args.coeffPrecision = opts.coeffPrecision;
-    args.shareCoeffs = opts.shareCoeffs;
-    args.bc = opts.bc;
-    args.aggLevel0Size = opts.aggLevel0Size;
+    // The setup arguments are named once, so each (field, coefficient) pair stays one line; the
+    // tag arguments carry the two types, as buildGmgHierarchy's makeGmg does for the shipped one.
+    auto make = [&](auto field, auto coeff) -> std::unique_ptr<KokkosGmgApply>
+    {
+        return std::make_unique<KokkosGmgApplyImpl<decltype(field), decltype(coeff)>>(
+            geom, alpha, ux, lx, uy, ly, uz, lz, opts
+        );
+    };
 
     const Precision coeff = parseCoeffPrecision(opts.coeffPrecision, opts.precision);
     switch (precPair(parsePrecision(opts.precision), coeff))
     {
     case PrecPair::f64c32:
-        return std::make_unique<KokkosGmgApplyImpl<double, float>>(args, opts.cycles);
+        return make(double {}, float {});
     case PrecPair::f64c16:
-        return std::make_unique<KokkosGmgApplyImpl<double, la::Bf16>>(args, opts.cycles);
+        return make(double {}, la::Bf16 {});
     case PrecPair::f32c32:
-        return std::make_unique<KokkosGmgApplyImpl<float>>(args, opts.cycles);
+        return make(float {}, float {});
     case PrecPair::f32c16:
-        return std::make_unique<KokkosGmgApplyImpl<float, la::Bf16>>(args, opts.cycles);
+        return make(float {}, la::Bf16 {});
     case PrecPair::f16c16:
-        return std::make_unique<KokkosGmgApplyImpl<la::Bf16>>(args, opts.cycles);
+        return make(la::Bf16 {}, la::Bf16 {});
     case PrecPair::f64c64:
         break;
     }
-    return std::make_unique<KokkosGmgApplyImpl<double>>(args, opts.cycles);
+    return make(double {}, double {});
 }
 
 } // namespace blockamr

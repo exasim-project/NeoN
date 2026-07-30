@@ -4,12 +4,13 @@
 
 #pragma once
 
-#include <array>
 #include <string>
 #include <vector>
 
-// Deliberately free of both Kokkos and nanobind headers: it is the only thing the
-// blockamr_kokkos object library and the _blockamr bindings share.
+#include "NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp"
+
+// Deliberately free of both Kokkos and nanobind headers: with gmgOpts.hpp (equally free of them)
+// it is all the blockamr_kokkos object library and the _blockamr bindings share.
 
 namespace amrex
 {
@@ -95,43 +96,13 @@ struct GmgArgs
     const amrex::MultiFab* ly = nullptr;
     const amrex::MultiFab* uz = nullptr;
     const amrex::MultiFab* lz = nullptr;
-    int preSweeps = 2;
-    int postSweeps = 2;
-    int coarsestSweeps = 8;
-    int maxLevels = 0; // 0 = coarsen as far as the grid allows
-    int minBottom = 2;
-    double omega = 1.0;
 
-    // Coarse-grid agglomeration. Off = production, the fine BoxArray coarsened in place,
-    // so the coarsest level launches as many kernels as the finest. On = a fresh
-    // aggGridSize-capped decomposition when it has fewer boxes. Cost, not arithmetic.
-    bool agglomerate = false;
-    int aggGridSize = 32;
-
-    // Target box size for LEVEL 0's own decomposition; 0 leaves it on the caller's boxes.
-    // Level 0 holds 7/8 of the cells and a box's halo traffic falls as its side grows (19%
-    // overhead at 32^3, 9.4% at 64^3). Ignored unless it yields fewer boxes. kokkos_opt.
-    int aggLevel0Size = 0;
-
-    // Hierarchy storage type ("fp64" | "fp32" | "bf16"), production's gmg_precision;
-    // fields and the residual gate stay fp64. Changes ARITHMETIC (bf16 measurably
-    // weaker), so kokkos_opt only -- the baselines stay fp64, which keeps them baselines.
-    std::string precision = "fp64";
-
-    // Storage type of the COEFFICIENTS; empty means "same as precision", never WIDER. A
-    // rounded coefficient only perturbs the PRECONDITIONER, where a rounded psi is
-    // amplified by ||A||. Measured: report/blockamr-precision-measurements.md.
-    std::string coeffPrecision;
-
-    // ONE face coefficient per direction instead of an upper/lower pair: for a SYMMETRIC
-    // operator the two fabs hold identical numbers, so this is no approximation. Symmetry
-    // is CHECKED bitwise at setup; GmgResult::sharedCoeffs reports it. kokkos_opt only.
-    bool shareCoeffs = false;
-
-    // Homogeneous domain BCs per side (xlo, xhi, ylo, yhi, zlo, zhi): 0 periodic, 1
-    // Dirichlet, 2 Neumann -- la::BcArray respelled to keep this header AMReX-free.
-    // All-zero (the default) is the triply periodic mesh the bench itself uses.
-    std::array<int, 6> bc {};
+    // The cycle shape, production's own struct: the bench measures the SAME knobs the
+    // preconditioner runs. Reduced precision, share_coeffs and aggLevel0Size are honoured by
+    // the kokkos_opt backend alone -- benchGmgVcycle refuses them elsewhere rather than
+    // reporting an fp64 timing under another label. `cycles` is unused here: benchGmgVcycle
+    // takes its own `iters`, so a batch's cycle count is the bench's, not the caller's.
+    KokkosGmgOpts opts;
 };
 
 struct GmgResult
@@ -151,7 +122,7 @@ struct GmgResult
     // Whether the hierarchy really shares one coefficient per direction (asymmetric: no).
     bool sharedCoeffs = false;
 
-    // Whether level 0 actually got its own decomposition (GmgArgs::aggLevel0Size).
+    // Whether level 0 actually got its own decomposition (KokkosGmgOpts::aggLevel0Size).
     bool aggLevel0 = false;
 };
 

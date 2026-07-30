@@ -22,6 +22,7 @@
 #include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
+#include "NeoN/blockAmr/bench/kokkosBench.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp"
 
 namespace blockamr
@@ -175,7 +176,17 @@ void fenceAll()
 template<class Backend, class T, class TC = T>
 GmgResult run(const GmgArgs& args, int iters, int batches)
 {
-    Vcycle<Backend, T, TC> v(args);
+    Vcycle<Backend, T, TC> v(
+        *args.geom,
+        *args.alpha,
+        *args.ux,
+        *args.lx,
+        *args.uy,
+        *args.ly,
+        *args.uz,
+        *args.lz,
+        args.opts
+    );
 
     GmgResult r;
     r.nlevels = v.nlevels();
@@ -235,31 +246,32 @@ GmgResult benchGmgVcycle(const std::string& backend, const GmgArgs& args, int it
 {
     // Parsed before the dispatch: the baselines stay fp64 by refusal, not by ignoring a reduced
     // precision they have no hierarchy for and reporting an fp64 timing under its label.
-    const Precision prec = parsePrecision(args.precision);
-    const Precision coeffPrec = parseCoeffPrecision(args.coeffPrecision, args.precision);
+    const Precision prec = parsePrecision(args.opts.precision);
+    const Precision coeffPrec = parseCoeffPrecision(args.opts.coeffPrecision, args.opts.precision);
     if (prec != Precision::fp64 && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(
-            "benchGmgVcycle: precision '" + args.precision + "' is implemented for the '"
+            "benchGmgVcycle: precision '" + args.opts.precision + "' is implemented for the '"
             + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
         );
     }
     if (coeffPrec != prec && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(
-            "benchGmgVcycle: coeff_precision '" + args.coeffPrecision + "' is implemented for the '"
-            + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
+            "benchGmgVcycle: coeff_precision '" + args.opts.coeffPrecision
+            + "' is implemented for the '" + std::string(KokkosOptGmgBackend::tag)
+            + "' backend only, not '" + backend + "'"
         );
     }
     // Same reason: a baseline ignoring these would report its timing under another label.
-    if (args.aggLevel0Size > 0 && backend != KokkosOptGmgBackend::tag)
+    if (args.opts.aggLevel0Size > 0 && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(
             "benchGmgVcycle: agg_level0_size is implemented for the '"
             + std::string(KokkosOptGmgBackend::tag) + "' backend only, not '" + backend + "'"
         );
     }
-    if (args.shareCoeffs && backend != KokkosOptGmgBackend::tag)
+    if (args.opts.shareCoeffs && backend != KokkosOptGmgBackend::tag)
     {
         throw std::runtime_error(
             "benchGmgVcycle: share_coeffs is implemented for the '"

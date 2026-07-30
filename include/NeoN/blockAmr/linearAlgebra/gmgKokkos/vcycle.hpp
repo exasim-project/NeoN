@@ -23,10 +23,10 @@
 #include <AMReX_ParallelReduce.H>
 #include <AMReX_Reduce.H>
 
-#include "NeoN/blockAmr/bench/kokkosBench.hpp"
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
+#include "NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp"
 #include "NeoN/blockAmr/linearAlgebra/stencil.hpp"
@@ -200,19 +200,31 @@ public:
     using Fab = la::GmgFab<T>;
     using CoeffFab = la::GmgFab<TC>;
 
-    Vcycle(const GmgArgs& args)
-        : preSweeps_(args.preSweeps), postSweeps_(args.postSweeps),
-          coarsestSweeps_(args.coarsestSweeps), omega_(args.omega), bc_(args.bc),
-          hasPhysBc_(std::any_of(args.bc.begin(), args.bc.end(), [](int b) { return b != 0; })),
+    // The coefficient fields are read at SETUP only (copyCallerCoeffs); the rhs is not read here
+    // at all, so it stays a per-call argument of reset/applyFlat.
+    Vcycle(
+        const amrex::Geometry& geom,
+        const amrex::MultiFab& alpha,
+        const amrex::MultiFab& ux,
+        const amrex::MultiFab& lx,
+        const amrex::MultiFab& uy,
+        const amrex::MultiFab& ly,
+        const amrex::MultiFab& uz,
+        const amrex::MultiFab& lz,
+        const KokkosGmgOpts& opts
+    )
+        : preSweeps_(opts.preSweeps), postSweeps_(opts.postSweeps),
+          coarsestSweeps_(opts.coarsestSweeps), omega_(opts.omega), bc_(opts.bc),
+          hasPhysBc_(std::any_of(opts.bc.begin(), opts.bc.end(), [](int b) { return b != 0; })),
           amrexFree_(Backend::amrexFreeCycle && amrex::ParallelContext::NProcsSub() == 1)
     {
-        const amrex::BoxArray& ba = args.alpha->boxArray();
-        const amrex::DistributionMapping& dm = args.alpha->DistributionMap();
+        const amrex::BoxArray& ba = alpha.boxArray();
+        const amrex::DistributionMapping& dm = alpha.DistributionMap();
 
         // One face coefficient per direction instead of a pair -- only when asked, only if the
         // backend allows it, and only if the operator really is symmetric.
-        shared_ = Backend::canShareCoeffs && args.shareCoeffs && sameField(*args.ux, *args.lx)
-               && sameField(*args.uy, *args.ly) && sameField(*args.uz, *args.lz);
+        shared_ = Backend::canShareCoeffs && opts.shareCoeffs && sameField(ux, lx)
+               && sameField(uy, ly) && sameField(uz, lz);
 
         // Level 0 on ITS OWN decomposition, when asked: bigger boxes cost an interface but cut
         // halo traffic on the level holding 7/8 of the cells (notes#agglomeration).
@@ -221,10 +233,10 @@ public:
         // Only available where the plans are; on >1 rank the caller's layout is kept.
         if (amrexFree_)
         {
-            if (args.aggLevel0Size > 0)
+            if (opts.aggLevel0Size > 0)
             {
-                amrex::BoxArray tba(args.geom->Domain());
-                tba.maxSize(args.aggLevel0Size);
+                amrex::BoxArray tba(geom.Domain());
+                tba.maxSize(opts.aggLevel0Size);
                 // Strictly fewer boxes, or the interface is pure cost.
                 if (tba.size() < ba.size())
                 {
@@ -235,25 +247,25 @@ public:
             }
         }
 
-        levels_.push_back(makeLevel(l0ba, l0dm, *args.geom, shared_));
+        levels_.push_back(makeLevel(l0ba, l0dm, geom, shared_));
         if (aggL0_)
         {
             // The convert-copies need matching layouts, so rediscretise there and copy across.
-            Level t = makeLevel(ba, dm, *args.geom, shared_);
-            copyCallerCoeffs(args, t);
+            Level t = makeLevel(ba, dm, geom, shared_);
+            copyCallerCoeffs(alpha, ux, lx, uy, ly, uz, lz, t);
             copyCoeffs(t, levels_[0]);
             iface_ = makeMf(ba, dm, 0);
         }
         else
         {
-            copyCallerCoeffs(args, levels_[0]);
+            copyCallerCoeffs(alpha, ux, lx, uy, ly, uz, lz, levels_[0]);
         }
 
         // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps >= minBottom
         // cells. Without agglomeration only the box SIZE shrinks — hence a launch-bound bottom.
         while (true)
         {
-            if (args.maxLevels > 0 && static_cast<int>(levels_.size()) >= args.maxLevels)
+            if (opts.maxLevels > 0 && static_cast<int>(levels_.size()) >= opts.maxLevels)
             {
                 break;
             }
@@ -266,7 +278,7 @@ public:
                 break;
             }
             const amrex::Box cdom = amrex::coarsen(fgeom.Domain(), 2);
-            if (cdom.shortside() < args.minBottom)
+            if (cdom.shortside() < opts.minBottom)
             {
                 break;
             }
@@ -285,10 +297,10 @@ public:
             amrex::BoxArray aba = cba;
             amrex::DistributionMapping adm = fdm;
             bool agg = false;
-            if (args.agglomerate)
+            if (opts.agglomerate)
             {
                 amrex::BoxArray tba(cdom);
-                tba.maxSize(args.aggGridSize);
+                tba.maxSize(opts.aggGridSize);
                 if (tba.size() < cba.size())
                 {
                     aba = tba;
@@ -525,17 +537,26 @@ private:
 
     // The caller's fields converted into level 0's OWN fabs, read at SETUP only: later caller
     // writes go unseen, so a changed operator means a rebuilt preconditioner.
-    static void copyCallerCoeffs(const GmgArgs& args, Level& L)
+    static void copyCallerCoeffs(
+        const amrex::MultiFab& alpha,
+        const amrex::MultiFab& ux,
+        const amrex::MultiFab& lx,
+        const amrex::MultiFab& uy,
+        const amrex::MultiFab& ly,
+        const amrex::MultiFab& uz,
+        const amrex::MultiFab& lz,
+        Level& L
+    )
     {
-        la::gmgConvertCopy(*L.alpha, *args.alpha, /*onDevice=*/true);
-        la::gmgConvertCopy(*L.ux, *args.ux, /*onDevice=*/true);
-        la::gmgConvertCopy(*L.uy, *args.uy, /*onDevice=*/true);
-        la::gmgConvertCopy(*L.uz, *args.uz, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.alpha, alpha, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.ux, ux, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.uy, uy, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.uz, uz, /*onDevice=*/true);
         if (!L.shared())
         {
-            la::gmgConvertCopy(*L.lx, *args.lx, /*onDevice=*/true);
-            la::gmgConvertCopy(*L.ly, *args.ly, /*onDevice=*/true);
-            la::gmgConvertCopy(*L.lz, *args.lz, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.lx, lx, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.ly, ly, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.lz, lz, /*onDevice=*/true);
         }
     }
 

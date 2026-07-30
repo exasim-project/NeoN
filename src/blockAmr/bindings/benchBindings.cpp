@@ -185,18 +185,18 @@ void registerKokkosBench(nb::module_& m)
             args.ly = (fy_lo != nullptr) ? fy_lo : &fy;
             args.uz = &fz;
             args.lz = (fz_lo != nullptr) ? fz_lo : &fz;
-            args.preSweeps = pre_sweeps;
-            args.postSweeps = post_sweeps;
-            args.coarsestSweeps = coarsest_sweeps;
-            args.maxLevels = max_levels;
-            args.minBottom = min_bottom;
-            args.omega = omega;
-            args.agglomerate = agglomerate;
-            args.aggGridSize = agg_grid_size;
-            args.precision = precision;
-            args.coeffPrecision = coeff_precision;
-            args.shareCoeffs = share_coeffs;
-            args.aggLevel0Size = agg_level0_size;
+            args.opts.preSweeps = pre_sweeps;
+            args.opts.postSweeps = post_sweeps;
+            args.opts.coarsestSweeps = coarsest_sweeps;
+            args.opts.maxLevels = max_levels;
+            args.opts.minBottom = min_bottom;
+            args.opts.omega = omega;
+            args.opts.agglomerate = agglomerate;
+            args.opts.aggGridSize = agg_grid_size;
+            args.opts.precision = precision;
+            args.opts.coeffPrecision = coeff_precision;
+            args.opts.shareCoeffs = share_coeffs;
+            args.opts.aggLevel0Size = agg_level0_size;
             // Integers, not the solver's bc strings: parseBc lives in the Ginkgo-only half of the
             // module and this binding is always built. Empty = periodic.
             if (!bc.empty())
@@ -208,7 +208,7 @@ void registerKokkosBench(nb::module_& m)
                 }
                 for (std::size_t i = 0; i < 6; ++i)
                 {
-                    args.bc[i] = bc[i];
+                    args.opts.bc[i] = bc[i];
                 }
             }
 
