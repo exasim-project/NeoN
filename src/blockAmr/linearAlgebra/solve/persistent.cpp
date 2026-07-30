@@ -25,6 +25,8 @@
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/precond.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
+#include "NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp"
+#include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/mixedPrecision.hpp"
 #include "NeoN/blockAmr/linearAlgebra/precond.hpp"

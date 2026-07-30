@@ -14,9 +14,9 @@
 #include <utility>
 
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
+#include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 #include "NeoN/blockAmr/linearAlgebra/linearSystem.hpp"
-#include "NeoN/blockAmr/linearAlgebra/solve/persistent.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 #include "NeoN/core/executor/executor.hpp"
 

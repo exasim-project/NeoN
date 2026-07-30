@@ -32,6 +32,7 @@
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
+#include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 #include "NeoN/blockAmr/linearAlgebra/linearSystem.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrix.hpp"
