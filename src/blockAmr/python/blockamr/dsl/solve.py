@@ -4,6 +4,11 @@
 
 import blockamr
 from .. import backends
+from ..field import FaceField
+from ..linear_algebra import LinearSystem, MFFaceCoeffs, Solver, SolverConfig, laplacian
+from ..operators.face_gradient import cell_gradient
+from ..operators.interpolate import interpolate
+from ..operators.mac_project import _face_divergence, _la_bc_from_pressure_bc
 from ..schemes.ddt_schemes import ForwardEuler, RungeKutta2, RungeKutta4
 from ..schemes.registry import lookup_scheme
 
@@ -35,6 +40,8 @@ def solve(equation, *, dt=None, t=None, solution=None):
             solution=sol_p)
         → implicit NODAL MLMG solve (AMReX C++), configured by ``solution``
           (solver/rtol/atol/maxIter/bottomSolver/verbose/bottomVerbose).
+          ``solution["projection"] = "cell"`` selects the cell-centred route
+          instead; see :func:`_solve_implicit`.
     """
     from .equation import Equation
 
@@ -160,6 +167,12 @@ def _check_solution_keys(solution):
             )
 
 
+# The pressure discretisations ``solution["projection"]`` selects. Nodal is FIRST
+# because it is the default and the one the physical validation oracles were measured
+# against; cell is opt-in until that measurement is repeated for it.
+_PROJECTION_ROUTES = ("nodal", "cell")
+
+
 class ImplicitSolveCache:
     """Cached AMReX MLMG solver objects for one field's implicit solve.
 
@@ -181,8 +194,19 @@ class ImplicitSolveCache:
 def _solve_implicit(eqn, solution=None):
     """Solve imp.laplacian(sigma, p) == exp.div(U). Single- or multi-level.
 
-    ``solution["solver"]`` accepts only ``"MLMG"``. The pressure solve is NODAL; the
-    gradient stored on ``p.grad`` is CELL-CENTRED:
+    ``solution["solver"]`` accepts only ``"MLMG"``. ``solution["projection"]`` picks the
+    DISCRETISATION, defaulting to ``"nodal"`` — the validated route the cavity Ghia
+    profiles and the cylinder Cd/Cl/St numbers are the acceptance oracles for:
+
+    * ``"nodal"`` — 27-point ``MLNodeLaplacian``, nodal unknowns, nodal rhs from
+      ``compDivergence``. Steps below.
+    * ``"cell"`` — compact 7-point face-coefficient operator through
+      ``blockamr.linear_algebra``, cell unknowns; see :func:`_solve_implicit_cell`.
+
+    Both fill ``p.grad`` with the same CELL-CENTRED shape, so ``correct()`` and the whole
+    DSL surface are identical either way.
+
+    The nodal route:
 
     1. Pack U into ncomp=3 MultiFab with ghost cells (per level)
     2. compDivergence → nodal RHS (per level)
@@ -200,6 +224,18 @@ def _solve_implicit(eqn, solution=None):
     solver_name = cfg.get("solver", "MLMG")
     if solver_name != "MLMG":
         raise ValueError(f"Unknown solution['solver']='{solver_name}': only 'MLMG' is supported.")
+
+    projection = cfg.get("projection", "nodal")
+    if projection not in _PROJECTION_ROUTES:
+        raise ValueError(
+            f"Unknown solution['projection']='{projection}': accepted values are "
+            + ", ".join(repr(route) for route in _PROJECTION_ROUTES)
+            + "."
+        )
+    if projection == "cell":
+        _solve_implicit_cell(imp_op, rhs_op, cfg)
+        return
+
     rtol = cfg.get("rtol", 1e-10)
     atol = cfg.get("atol", 1e-12)
     max_iter = cfg.get("maxIter", 200)
@@ -327,3 +363,145 @@ def _solve_implicit(eqn, solution=None):
     for lev in range(n_levels):
         box_grads = [-arr / sigma for arr in cache.fluxes_mfs[lev].arrays()]
         p_field.grad.append(box_grads)
+
+
+class CellSolveCache:
+    """Cached ``blockamr.linear_algebra`` objects for one field's CELL-centred solve.
+
+    Stored on the field (``p_field._cell_imp_cache``), the same regrid-invalidation route
+    as ``ImplicitSolveCache``. As in ``mac_project.MacProjectLaCache``, the matrix and the
+    rhs must OUTLIVE the non-owning system and ``ops::Laplacian`` holds gamma by POINTER,
+    so all three are kept here rather than let go of.
+    """
+
+    def __init__(self, lev, bc, flux, gamma_mf, matrix, system, p_mf, rhs_mf, solver):
+        self.lev = lev
+        self.bc = bc
+        self.flux = flux
+        self.gamma_mf = gamma_mf
+        self.matrix = matrix
+        self.system = system
+        self.p_mf = p_mf
+        self.rhs_mf = rhs_mf
+        self.solver = solver
+
+
+def _solve_implicit_cell(imp_op, rhs_op, cfg):
+    """``div(sigma grad p) == div(U)`` with CELL unknowns, through the la layer.
+
+    The MAC pattern of ``operators/mac_project.py``, moved from the face flux to the
+    pressure projection: a compact 7-point operator differencing between ADJACENT cells,
+    solved by ``cg``+``gmg``, with T08's face-based ``cell_gradient`` reconstructing the
+    ``p.grad`` that ``correct()`` reads.
+
+    The rhs is the face divergence of a FRESHLY interpolated ``U``, mirroring what the
+    nodal route asks ``compDivergence`` for. Reusing the ``phi`` that ``momentum`` left
+    behind would not be a projection at all: ``mac_project`` has already made that flux
+    divergence-free, so its divergence is at solve tolerance and the correction would be
+    the zero field.
+
+    What the correction removes is therefore the divergence of the interpolated
+    PREDICTED velocity — exactly the quantity ``mac_project`` will re-project at the top
+    of the next step, and the cell-centred counterpart of the nodal ``compDivergence(U)``.
+    """
+    p_field = imp_op.field
+    U_field = rhs_op.vel_field
+    sigma = imp_op.sigma
+    mesh = U_field.mesh
+    n_levels = mesh.n_levels()
+    if n_levels != 1:
+        raise NotImplementedError(
+            f"solution['projection']='cell' is single-level only, got {n_levels} levels. "
+            "The nodal route solves every level simultaneously; a per-level cell solve is "
+            "a different problem, not a cheaper spelling of the same one."
+        )
+
+    lev = 0
+    geom = mesh.geom(lev)
+    cache = _ensure_cell_cache(p_field, U_field, lev, cfg)
+
+    interpolate(U_field, cache.flux)
+
+    # ``laplacian`` writes each face coefficient as -gamma/dx**2, so the assembled system
+    # is -div(grad(p)) and the rhs is negated to match — the same sign pairing
+    # ``mac_project`` uses. sigma rides on the rhs instead of on gamma, which leaves the
+    # matrix (and its multigrid hierarchy) valid when dt changes.
+    cache.rhs_mf.copy_arrays([-arr / sigma for arr in _face_divergence(cache.flux, lev)])
+
+    # Cold start, as the MAC solve does: the pressure written back below is then a
+    # function of this step's rhs alone, and not of how many steps preceded it.
+    cache.p_mf.set_val(0.0)
+    cache.solver.solve(cache.system, cache.p_mf)
+
+    # The nodal route cannot write its solution to ``p`` (nodal values, cell-centred
+    # field), so ``p`` stays zero there. This route's unknowns ARE the cells, so the
+    # field that is named p and marked for output can finally hold p.
+    ng = cache.p_mf.n_grow()
+    valid = []
+    for arr in cache.p_mf.arrays():
+        n = [int(arr.shape[ax]) - 2 * ng for ax in range(3)]
+        sl = tuple(slice(ng, ng + n[ax]) for ax in range(3))
+        valid.append(arr[sl[0], sl[1], sl[2], 0])
+    p_field.mf[lev].copy_arrays(valid)
+
+    # Last, because it OVERWRITES p_mf's ghost layer — that layer is what carries the
+    # boundary condition into the outermost face difference.
+    p_field.grad = [cell_gradient(cache.p_mf, geom, cache.bc)]
+
+
+def _ensure_cell_cache(p_field, U_field, lev, cfg):
+    """Build or return the cached linear-algebra objects for the cell-centred solve."""
+    cache = getattr(p_field, "_cell_imp_cache", None)
+    if cache is not None and cache.lev == lev:
+        return cache
+
+    mesh = U_field.mesh
+    geom = mesh.geom(lev)
+    ba = mesh.box_array(lev)
+    dm = mesh.dm(lev)
+    bc = _la_bc_from_pressure_bc(getattr(p_field, "pressure_bc", None), geom)
+
+    matrix = MFFaceCoeffs.symmetric(blockamr.MeshLevel(ba, dm, geom), bc=bc)
+
+    gamma_mf = blockamr.MultiFab(ba, dm, 1, 0)
+    gamma_mf.set_val(1.0)
+
+    p_mf = blockamr.MultiFab(ba, dm, 1, 1)
+    p_mf.set_val(0.0)
+    rhs_mf = blockamr.MultiFab(ba, dm, 1, 0)
+    rhs_mf.set_val(0.0)
+
+    system = LinearSystem(matrix, rhs_mf)
+    # alpha=0: NO diagonal source. The coefficients are constant on a fixed level and
+    # operators ACCUMULATE, so the Laplacian is assembled once here, not per step.
+    system += laplacian(gamma_mf, geom, bc=bc)
+
+    solver = Solver(
+        SolverConfig(
+            solver="cg",
+            precond="gmg",
+            max_iter=cfg.get("maxIter", 200),
+            rtol=cfg.get("rtol", 1e-10),
+            atol=cfg.get("atol", 1e-12),
+            # Without a Dirichlet side the operator is singular; MLMG absorbs the
+            # constant nullspace internally, the Krylov route has to be told. Setting
+            # this on a PINNED system would silently solve a different problem.
+            project_nullspace="dirichlet" not in bc,
+        )
+    )
+
+    cache = CellSolveCache(
+        lev=lev,
+        bc=bc,
+        # The rhs the nodal route gets from compDivergence(U): a face flux interpolated
+        # from U, freshly, every step. Kept on the cache so it is allocated once.
+        flux=FaceField(mesh, ncomp=1, ngrow=0, name=f"{p_field.name}_predicted_flux"),
+        gamma_mf=gamma_mf,
+        matrix=matrix,
+        system=system,
+        p_mf=p_mf,
+        rhs_mf=rhs_mf,
+        solver=solver,
+    )
+    p_field._cell_imp_cache = cache
+    return cache
