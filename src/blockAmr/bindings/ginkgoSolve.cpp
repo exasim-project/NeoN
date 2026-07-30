@@ -50,6 +50,15 @@ using namespace blockamr::la;
 namespace
 {
 
+// Every nb::arg default below reads from here, so solverConfig.hpp holds the one C++ default
+// list and the two Python constructors cannot drift from it or from each other. Function-local
+// so it is built on first use, not during this translation unit's static initialisation.
+const SolverConfig& configDefaults()
+{
+    static const SolverConfig defaults {};
+    return defaults;
+}
+
 // The one place a SolveResult crosses into Python. converged/res_history/contraction/
 // diagnostic appear in the dict only when the corresponding field is set, which is what
 // keeps ginkgo_solve_face_coeffs' 2-key surface (num_iters, res_norm) exactly as it was.
@@ -246,71 +255,71 @@ void bindPersistent(nb::module_& m, const char* name)
             // Krylov "cg"|"bicgstab"|"gmres"|"gcr"|"fcg", or "gmg"/"ir": the native stationary
             // V-cycle loop and its Ginkgo Ir twin, which build the hierarchy, IGNORE `precond`
             // and want gmg_coarsest_sweeps raised. "mpir" needs precond="gmg_kokkos".
-            nb::arg("solver") = "bicgstab",
-            nb::arg("max_iter") = 1000,
-            nb::arg("rtol") = 1e-10,
-            nb::arg("atol") = 0.0,
-            nb::arg("project_nullspace") = false,
+            nb::arg("solver") = configDefaults().solver,
+            nb::arg("max_iter") = configDefaults().maxIter,
+            nb::arg("rtol") = configDefaults().rtol,
+            nb::arg("atol") = configDefaults().atol,
+            nb::arg("project_nullspace") = configDefaults().projectNullspace,
             nb::arg("precond_mlmg").none() = nb::none(),
-            nb::arg("precond_cycles") = 1,
+            nb::arg("precond_cycles") = configDefaults().precondCycles,
             // Domain BCs in order (xlo, xhi, ylo, yhi, zlo, zhi); each entry is "periodic",
             // "dirichlet" (homogeneous, u=0 on the face) or "neumann" (homogeneous, du/dn=0).
             // Must match the geometry's periodicity per direction. Both solvers.
-            nb::arg("bc") = std::vector<std::string>(6, "periodic"),
+            nb::arg("bc") = configDefaults().bc,
             // "none" (default; precond_mlmg alone implies "mlmg"), "mlmg" (requires
             // precond_mlmg) or "gmg" (native matrix-free GMG on the face coefficients, no
             // MLMG involved; matrix-free solver only).
-            nb::arg("precond") = "none",
+            nb::arg("precond") = configDefaults().precond,
             // V-cycle knobs: pre/post_sweeps (RB-GS sweeps or Chebyshev degree per smooth,
             // keep equal for a CG-safe symmetric cycle), coarsest_sweeps (bottom smoothing),
             // max_levels (0 = unlimited), min_bottom (shortside floor), smoother rbgs|chebyshev.
-            nb::arg("gmg_pre_sweeps") = 2,
-            nb::arg("gmg_post_sweeps") = 2,
+            nb::arg("gmg_pre_sweeps") = configDefaults().gmg.preSweeps,
+            nb::arg("gmg_post_sweeps") = configDefaults().gmg.postSweeps,
             // 2/16/1.1 is a MEASURED shape, flat in N where the historical 4/8/1.0 was not:
             // report/blockamr-precision-measurements.md#the-default-v-cycle-shape
-            nb::arg("gmg_coarsest_sweeps") = 16,
-            nb::arg("gmg_max_levels") = 0,
-            nb::arg("gmg_min_bottom") = 2,
-            nb::arg("gmg_smoother") = "rbgs",
+            nb::arg("gmg_coarsest_sweeps") = configDefaults().gmg.coarsestSweeps,
+            nb::arg("gmg_max_levels") = configDefaults().gmg.maxLevels,
+            nb::arg("gmg_min_bottom") = configDefaults().gmg.minBottom,
+            nb::arg("gmg_smoother") = configDefaults().gmg.smoother,
             // Storage type of the whole V-cycle: "fp32" (default), "fp64" (the historical
             // behaviour) or "bf16", which needs precond="gmg_kokkos" and is a measured negative
             // (bf16.hpp). Matrix-free solver only; the outer CG/operator/residual stay double.
-            nb::arg("gmg_precision") = "fp32",
+            nb::arg("gmg_precision") = configDefaults().gmg.precision,
             // Storage type of the COEFFICIENTS alone; "" (default) means the same as
             // gmg_precision. May not be wider than gmg_precision, and needs
             // precond="gmg_kokkos". Measured: report/blockamr-precision-measurements.md
-            nb::arg("gmg_coeff_precision") = "",
+            nb::arg("gmg_coeff_precision") = configDefaults().gmg.coeffPrecision,
             // RB-SOR relaxation for gmg_smoother="rbgs": sol <- sol + gmg_omega*(gs - sol), in
             // (0, 2); ignored by "chebyshev". It breaks V-cycle symmetry, and DIVERGES combined
             // with gmg_pre_sweeps != gmg_post_sweeps -- use 1.0 whenever the sweeps differ.
-            nb::arg("gmg_omega") = 1.1,
+            nb::arg("gmg_omega") = configDefaults().gmg.omega,
             // Target box size for LEVEL 0 of the gmg_kokkos hierarchy; 0 (default) leaves the
             // caller's boxes. Bigger boxes cut halo traffic but cost one copy per apply, since
             // the solver's flat vectors are in the CALLER's cell order. precond="gmg_kokkos".
-            nb::arg("gmg_agg_l0_size") = 0,
+            nb::arg("gmg_agg_l0_size") = configDefaults().gmg.aggLevel0Size,
             // Whether the caller DECLARES the operator symmetric (never sniffed). REFUSES, never
             // warns: gmg_omega != 1.0, gmg_smoother="chebyshev", gmg_bottom_solver="cg"/"fcg" --
             // all rest on self-adjointness. The outer solver is the caller's own and not gated.
-            nb::arg("symmetric") = true,
+            nb::arg("symmetric") = configDefaults().gmg.symmetric,
             // Coarsest-level solve. "smoother" (default) = gmg_coarsest_sweeps sweeps with no
             // residual test: cheap and exactly stationary (what a CG preconditioner needs) but
             // on its own unable to converge the bottom's constant mode, since p(0) = 1.
-            nb::arg("gmg_bottom_solver") = "smoother",
+            nb::arg("gmg_bottom_solver") = configDefaults().gmg.bottomSolver,
             // "cg"/"fcg" (need symmetric=True) or "bicgstab"/"gmres"/"gcr" generate a Ginkgo
             // bottom solver instead, driven by these two knobs.
-            nb::arg("gmg_bottom_max_iter") = 200,
+            nb::arg("gmg_bottom_max_iter") = configDefaults().gmg.bottomMaxIter,
             // Keep TIGHT: an adaptive bottom makes the V-cycle a different operator on each
             // apply, which an outer Cg may not assume -- or use solver="gcr"/"fcg".
-            nb::arg("gmg_bottom_rtol") = 1e-12,
+            nb::arg("gmg_bottom_rtol") = configDefaults().gmg.bottomRtol,
             // solver="mpir" only: the relative residual the INNER fp32 Cg stops at, and its
             // iteration cap. The outer contraction factor IS the inner tolerance, so 1e-2 means
             // ~2 digits per outer step. Ignored by every other solver.
-            nb::arg("mp_inner_rtol") = 1e-2,
-            nb::arg("mp_inner_max_iter") = 20,
+            nb::arg("mp_inner_rtol") = configDefaults().mpInnerRtol,
+            nb::arg("mp_inner_max_iter") = configDefaults().mpInnerMaxIter,
             // Which norm the stopping test and the reported res_norm measure: "l2" (default,
             // ||r||_2 <= rtol*||b||_2) or "linf", MLMG's ||r||_inf <= rtol*||b||_inf -- what
             // makes an iteration count comparable with mlmg's. Krylov and solver="gmg" alike.
-            nb::arg("norm") = "l2",
+            nb::arg("norm") = configDefaults().norm,
             // INHOMOGENEOUS domain BC data, None (default) = homogeneous; layout and per-side
             // meaning in the `solve` docstring. REFERENCED, not copied (device path), so an
             // in-place update takes effect next solve. Matrix-free only; needs a non-periodic side.
@@ -1259,48 +1268,59 @@ void registerGinkgoSolve(nb::module_& m)
                const std::string& gmg_coeff_precision,
                double gmg_omega)
             {
-                SolverConfig cfg;
-                cfg.solver = solver;
-                cfg.solverKind = parseSolverKind(solver);
-                cfg.maxIter = max_iter;
-                cfg.rtol = rtol;
-                cfg.atol = atol;
-                cfg.projectNullspace = project_nullspace;
-                cfg.precond = precond;
-                cfg.precondKind = parsePrecondKind(precond);
-                cfg.norm = norm;
-                // The V-cycle shape, into the same C++ GmgConfig FaceCoeffSolver fills. The
-                // four knobs not modelled here (gmg_agg_l0_size, symmetric, gmg_bottom_*)
-                // keep their C++ defaults and are refused rather than accepted and ignored.
-                cfg.precondCycles = precond_cycles;
-                cfg.gmg.preSweeps = gmg_pre_sweeps;
-                cfg.gmg.postSweeps = gmg_post_sweeps;
-                cfg.gmg.coarsestSweeps = gmg_coarsest_sweeps;
-                cfg.gmg.maxLevels = gmg_max_levels;
-                cfg.gmg.minBottom = gmg_min_bottom;
-                cfg.gmg.smoother = gmg_smoother;
-                cfg.gmg.precision = gmg_precision;
-                cfg.gmg.coeffPrecision = gmg_coeff_precision;
-                cfg.gmg.omega = gmg_omega;
-                new (self) PyLaSolver {cfg};
+                // The same builder FaceCoeffSolver goes through, so the two Python surfaces
+                // cannot describe different cycles. The arguments this class does not model --
+                // the MLMG preconditioner, bc/bc_data, the mixed-precision inner tolerances,
+                // and DELIBERATELY the five knobs gmg_agg_l0_size/symmetric/gmg_bottom_* -- are
+                // passed as their C++ defaults, so they stay unreachable here rather than
+                // becoming a new public knob, and are refused rather than accepted and ignored.
+                new (self) PyLaSolver {parseSolverConfig(
+                    solver,
+                    max_iter,
+                    rtol,
+                    atol,
+                    project_nullspace,
+                    configDefaults().precondMlmg,
+                    precond_cycles,
+                    configDefaults().bc,
+                    precond,
+                    gmg_pre_sweeps,
+                    gmg_post_sweeps,
+                    gmg_coarsest_sweeps,
+                    gmg_max_levels,
+                    gmg_min_bottom,
+                    gmg_smoother,
+                    gmg_precision,
+                    gmg_coeff_precision,
+                    gmg_omega,
+                    configDefaults().gmg.aggLevel0Size,
+                    configDefaults().gmg.symmetric,
+                    configDefaults().gmg.bottomSolver,
+                    configDefaults().gmg.bottomMaxIter,
+                    configDefaults().gmg.bottomRtol,
+                    configDefaults().mpInnerRtol,
+                    configDefaults().mpInnerMaxIter,
+                    norm,
+                    configDefaults().bcData
+                )};
             },
-            nb::arg("solver") = "bicgstab",
-            nb::arg("max_iter") = 1000,
-            nb::arg("rtol") = 1e-10,
-            nb::arg("atol") = 0.0,
-            nb::arg("project_nullspace") = false,
-            nb::arg("precond") = "none",
-            nb::arg("norm") = "l2",
-            nb::arg("precond_cycles") = 1,
-            nb::arg("gmg_pre_sweeps") = 2,
-            nb::arg("gmg_post_sweeps") = 2,
-            nb::arg("gmg_coarsest_sweeps") = 16,
-            nb::arg("gmg_max_levels") = 0,
-            nb::arg("gmg_min_bottom") = 2,
-            nb::arg("gmg_smoother") = "rbgs",
-            nb::arg("gmg_precision") = "fp32",
-            nb::arg("gmg_coeff_precision") = "",
-            nb::arg("gmg_omega") = 1.1
+            nb::arg("solver") = configDefaults().solver,
+            nb::arg("max_iter") = configDefaults().maxIter,
+            nb::arg("rtol") = configDefaults().rtol,
+            nb::arg("atol") = configDefaults().atol,
+            nb::arg("project_nullspace") = configDefaults().projectNullspace,
+            nb::arg("precond") = configDefaults().precond,
+            nb::arg("norm") = configDefaults().norm,
+            nb::arg("precond_cycles") = configDefaults().precondCycles,
+            nb::arg("gmg_pre_sweeps") = configDefaults().gmg.preSweeps,
+            nb::arg("gmg_post_sweeps") = configDefaults().gmg.postSweeps,
+            nb::arg("gmg_coarsest_sweeps") = configDefaults().gmg.coarsestSweeps,
+            nb::arg("gmg_max_levels") = configDefaults().gmg.maxLevels,
+            nb::arg("gmg_min_bottom") = configDefaults().gmg.minBottom,
+            nb::arg("gmg_smoother") = configDefaults().gmg.smoother,
+            nb::arg("gmg_precision") = configDefaults().gmg.precision,
+            nb::arg("gmg_coeff_precision") = configDefaults().gmg.coeffPrecision,
+            nb::arg("gmg_omega") = configDefaults().gmg.omega
         )
         .def(
             "solve",

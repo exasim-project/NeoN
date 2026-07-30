@@ -66,9 +66,9 @@ inline PrecondKind parsePrecondKind(const std::string& precond)
 }
 
 // Native-GMG hierarchy knobs (precond="gmg"/"gmg_kokkos", solver="gmg"/"ir"/"mpir").
-// INVARIANT: every field name and default matches the historical nb::arg exactly. No enum
-// twin for the string knobs: read only on a GMG path, so validating them here would newly
-// reject values that are inert today. They stay validated where they are read.
+// THE default list: the bindings' nb::arg defaults read these values rather than restate
+// them. No enum twin for the string knobs: read only on a GMG path, so validating them here
+// would newly reject values that are inert today. They stay validated where they are read.
 struct GmgConfig
 {
     int preSweeps = 2;
@@ -85,6 +85,11 @@ struct GmgConfig
     std::string bottomSolver = "smoother";
     int bottomMaxIter = 200;
     double bottomRtol = 1e-12;
+
+    // Compiler-generated, so it covers a knob added above without anyone remembering to
+    // extend it -- which is what lets validateForCsr refuse a non-default V-cycle by asking
+    // one question instead of comparing every field by hand.
+    friend bool operator==(const GmgConfig&, const GmgConfig&) = default;
 };
 
 // Every non-coefficient, non-geometry, non-executor constructor argument of

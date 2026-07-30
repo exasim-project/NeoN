@@ -7,8 +7,14 @@
 ``GmgConfig`` collects the ``precond="gmg"`` V-cycle knobs of ``FaceCoeffSolver``
 (see ``src/blockAmr/bindings/ginkgoSolve.cpp``); its ``kwargs()`` emits the ``gmg_*``
 keys plus ``precond_cycles`` to splat into the constructor. ``SolverConfig`` does the
-same for ``blockamr.linear_algebra.Solver``. Every field default here must match the
-corresponding C++ ``nb::arg`` default exactly.
+same for ``blockamr.linear_algebra.Solver``.
+
+These models are a VALIDATED MIRROR, not a source: the one C++ default list is
+``la::SolverConfig``/``la::GmgConfig`` in
+``include/NeoN/blockAmr/linearAlgebra/solverConfig.hpp``, which every
+``nb::arg`` default of both bindings now reads from. Every field default here must still
+match it exactly -- nothing enforces that automatically, so change the C++ struct first
+and this file second.
 """
 
 from __future__ import annotations

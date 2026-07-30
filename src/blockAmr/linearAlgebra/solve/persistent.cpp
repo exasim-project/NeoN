@@ -15,6 +15,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -792,36 +793,51 @@ SolveResult FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 namespace
 {
 
+// The nb::arg spelling of every GmgConfig knob next to the member it fills. It supplies NAMES
+// for the message only: the refusal itself is the whole-struct comparison in validateForCsr,
+// so a knob added to GmgConfig and forgotten here is still refused, just not named.
+constexpr auto kGmgKnobNames = std::make_tuple(
+    std::pair {"gmg_pre_sweeps", &GmgConfig::preSweeps},
+    std::pair {"gmg_post_sweeps", &GmgConfig::postSweeps},
+    std::pair {"gmg_coarsest_sweeps", &GmgConfig::coarsestSweeps},
+    std::pair {"gmg_max_levels", &GmgConfig::maxLevels},
+    std::pair {"gmg_min_bottom", &GmgConfig::minBottom},
+    std::pair {"gmg_smoother", &GmgConfig::smoother},
+    std::pair {"gmg_precision", &GmgConfig::precision},
+    std::pair {"gmg_coeff_precision", &GmgConfig::coeffPrecision},
+    std::pair {"gmg_omega", &GmgConfig::omega},
+    std::pair {"gmg_agg_l0_size", &GmgConfig::aggLevel0Size},
+    std::pair {"symmetric", &GmgConfig::symmetric},
+    std::pair {"gmg_bottom_solver", &GmgConfig::bottomSolver},
+    std::pair {"gmg_bottom_max_iter", &GmgConfig::bottomMaxIter},
+    std::pair {"gmg_bottom_rtol", &GmgConfig::bottomRtol}
+);
+
 // FaceCoeffCsrSolver has no matrix-free GMG hierarchy and no fp32 inner solve, so these 16
 // knobs do nothing. REFUSED rather than ignored: accepting a knob that does nothing would
-// report a configuration that was never applied.
+// report a configuration that was never applied. Both the knobs and their defaults come from
+// solverConfig.hpp, so this function has no default list of its own to keep in step.
 void validateForCsr(const SolverConfig& config)
 {
-    static const GmgConfig kDefaultGmg {};
+    static const SolverConfig kDefault {};
     std::vector<std::string> offending;
-    if (config.gmg.preSweeps != kDefaultGmg.preSweeps) offending.push_back("gmg_pre_sweeps");
-    if (config.gmg.postSweeps != kDefaultGmg.postSweeps) offending.push_back("gmg_post_sweeps");
-    if (config.gmg.coarsestSweeps != kDefaultGmg.coarsestSweeps)
-        offending.push_back("gmg_coarsest_sweeps");
-    if (config.gmg.maxLevels != kDefaultGmg.maxLevels) offending.push_back("gmg_max_levels");
-    if (config.gmg.minBottom != kDefaultGmg.minBottom) offending.push_back("gmg_min_bottom");
-    if (config.gmg.smoother != kDefaultGmg.smoother) offending.push_back("gmg_smoother");
-    if (config.gmg.precision != kDefaultGmg.precision) offending.push_back("gmg_precision");
-    if (config.gmg.coeffPrecision != kDefaultGmg.coeffPrecision)
-        offending.push_back("gmg_coeff_precision");
-    if (config.gmg.omega != kDefaultGmg.omega) offending.push_back("gmg_omega");
-    if (config.gmg.aggLevel0Size != kDefaultGmg.aggLevel0Size)
-        offending.push_back("gmg_agg_l0_size");
-    if (config.gmg.symmetric != kDefaultGmg.symmetric) offending.push_back("symmetric");
-    if (config.gmg.bottomSolver != kDefaultGmg.bottomSolver)
-        offending.push_back("gmg_bottom_solver");
-    if (config.gmg.bottomMaxIter != kDefaultGmg.bottomMaxIter)
-        offending.push_back("gmg_bottom_max_iter");
-    if (config.gmg.bottomRtol != kDefaultGmg.bottomRtol) offending.push_back("gmg_bottom_rtol");
-    static constexpr double kDefaultMpInnerRtol = 1e-2;
-    static constexpr int kDefaultMpInnerMaxIter = 20;
-    if (config.mpInnerRtol != kDefaultMpInnerRtol) offending.push_back("mp_inner_rtol");
-    if (config.mpInnerMaxIter != kDefaultMpInnerMaxIter) offending.push_back("mp_inner_max_iter");
+    const auto note = [&offending](const char* name, bool differs)
+    {
+        if (differs) offending.emplace_back(name);
+    };
+    if (!(config.gmg == kDefault.gmg))
+    {
+        std::apply(
+            [&](const auto&... knob)
+            { (note(knob.first, config.gmg.*(knob.second) != kDefault.gmg.*(knob.second)), ...); },
+            kGmgKnobNames
+        );
+        // An empty list here means GmgConfig grew a knob kGmgKnobNames does not know about.
+        // Still refuse it -- silently accepting an inert knob is the bug this guards.
+        note("a gmg_* V-cycle knob", offending.empty());
+    }
+    note("mp_inner_rtol", config.mpInnerRtol != kDefault.mpInnerRtol);
+    note("mp_inner_max_iter", config.mpInnerMaxIter != kDefault.mpInnerMaxIter);
     if (offending.empty())
     {
         return;
