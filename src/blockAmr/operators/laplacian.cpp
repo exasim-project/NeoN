@@ -162,15 +162,15 @@ void Laplacian::assemble(la::Coefficients c) const
     const auto dx = c.mesh.dx();
 
     // Validate the datum carrier once, up front, and only when a side actually reads one.
-    // `diag` and `rhs` are non-nullable handles, so their presence needs no check.
+    // `alpha` and `rhs` are non-nullable handles, so their presence needs no check.
     const bool anyPhysBc = std::any_of(bc_.begin(), bc_.end(), [](int b) { return b != 0; });
     if (anyPhysBc && bcData_ != nullptr)
     {
         requireSameLayout(*c.rhs, g, "the system's rhs");
-        // `diag` is the layout checkBcData compares against, so it must be the layout the
+        // `alpha` is the layout checkBcData compares against, so it must be the layout the
         // fold below reads the datum THROUGH.
-        requireSameLayout(*c.diag, g, "the matrix's diagonal source");
-        la::checkBcData(*bcData_, *c.diag, bc_, "ops::Laplacian");
+        requireSameLayout(*c.alpha, g, "the matrix's diagonal source");
+        la::checkBcData(*bcData_, *c.alpha, bc_, "ops::Laplacian");
     }
     else if (bcData_ != nullptr)
     {

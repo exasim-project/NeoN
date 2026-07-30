@@ -21,16 +21,23 @@
 namespace blockamr::la::conceptCheck
 {
 
-// Declared, not defined: a concept checks signatures in an unevaluated context.
+// The member functions are declared, not defined: a concept checks signatures in an unevaluated
+// context. The coefficient fields have to be real members, since that is what IsMatrix requires.
 struct StubMatrix
 {
+    NeoN::Executor exec;
+    BcArray bc;
+    MeshLevel mesh;
+    CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    std::optional<FaceFieldLevel> lower;
+
     std::shared_ptr<const gko::LinOp> op() const;
     bool isAssembled() const;
-    MatrixCoefficients coefficients();
+    void markStale();
     void zero();
     Symmetry symmetry() const;
     std::size_t localRows() const;
-    const NeoN::Executor& executor() const;
     std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
     const char* name() const;
 };
@@ -50,12 +57,18 @@ static_assert(IsOperator<StubOperator>);
 // Missing member: zero() is gone, nothing else changed.
 struct StubMatrixNoZero
 {
+    NeoN::Executor exec;
+    BcArray bc;
+    MeshLevel mesh;
+    CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    std::optional<FaceFieldLevel> lower;
+
     std::shared_ptr<const gko::LinOp> op() const;
     bool isAssembled() const;
-    MatrixCoefficients coefficients();
+    void markStale();
     Symmetry symmetry() const;
     std::size_t localRows() const;
-    const NeoN::Executor& executor() const;
     std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
     const char* name() const;
 };
@@ -64,13 +77,19 @@ struct StubMatrixNoZero
 // which a validity-only concept would accept.
 struct StubMatrixNarrowLocalRows
 {
+    NeoN::Executor exec;
+    BcArray bc;
+    MeshLevel mesh;
+    CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    std::optional<FaceFieldLevel> lower;
+
     std::shared_ptr<const gko::LinOp> op() const;
     bool isAssembled() const;
-    MatrixCoefficients coefficients();
+    void markStale();
     void zero();
     Symmetry symmetry() const;
     int localRows() const;
-    const NeoN::Executor& executor() const;
     std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
     const char* name() const;
 };
@@ -80,28 +99,58 @@ struct StubMatrixNarrowLocalRows
 // described.
 struct StubMatrixPrecondKindOnly
 {
+    NeoN::Executor exec;
+    BcArray bc;
+    MeshLevel mesh;
+    CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    std::optional<FaceFieldLevel> lower;
+
     std::shared_ptr<const gko::LinOp> op() const;
     bool isAssembled() const;
-    MatrixCoefficients coefficients();
+    void markStale();
     void zero();
     Symmetry symmetry() const;
     std::size_t localRows() const;
-    const NeoN::Executor& executor() const;
     std::shared_ptr<const gko::LinOp> makePrecond(PrecondKind) const;
     const char* name() const;
 };
 
-// Present member, WRONG parameter: assemble() takes the matrix-side subset rather than the
-// Coefficients an operator is handed, which carries the rhs too. The two are not convertible,
-// so the call in the requires-expression does not compile.
+// Present field, WRONG constness: the coefficient requirements read
+// `{ t.alpha } -> std::same_as<CellFieldLevel&>`, so a const member yields a const& and stops
+// matching. This is the drift the MEMBER requirements are exposed to and the accessors were
+// not, and a requires-expression that only checked validity would accept it.
+struct StubMatrixConstAlpha
+{
+    NeoN::Executor exec;
+    BcArray bc;
+    MeshLevel mesh;
+    const CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    std::optional<FaceFieldLevel> lower;
+
+    std::shared_ptr<const gko::LinOp> op() const;
+    bool isAssembled() const;
+    void markStale();
+    void zero();
+    Symmetry symmetry() const;
+    std::size_t localRows() const;
+    std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig&) const;
+    const char* name() const;
+};
+
+// Present member, WRONG parameter: assemble() takes one coefficient field rather than the
+// Coefficients an operator is handed, which carries the mesh, the faces and the rhs too. The
+// two are not convertible, so the call in the requires-expression does not compile.
 struct StubOperatorWrongArgument
 {
-    void assemble(MatrixCoefficients) const;
+    void assemble(CellFieldLevel) const;
 };
 
 static_assert(!IsMatrix<StubMatrixNoZero>);
 static_assert(!IsMatrix<StubMatrixNarrowLocalRows>);
 static_assert(!IsMatrix<StubMatrixPrecondKindOnly>);
+static_assert(!IsMatrix<StubMatrixConstAlpha>);
 static_assert(!IsOperator<StubOperatorWrongArgument>);
 
 // A type that is not a matrix at all -- the floor these concepts must clear.
@@ -113,25 +162,38 @@ static_assert(!IsOperator<int>);
 // are asserted here.
 
 // 1. Operator::assemble is PRIVATE (friend: LinearSystem), so the erasure does NOT satisfy
-//    IsOperator: the one place its shape deliberately departs from Matrix, which does assert
-//    IsMatrix<Matrix>. Make `assemble` public and this fires.
+//    IsOperator -- for a reason of its own, not the reason Matrix fails IsMatrix (which wants
+//    the coefficient DATA MEMBERS). Make `assemble` public and this fires.
 static_assert(!IsOperator<Operator>);
 
 // 2. Coefficients' ctor is private (friend: LinearSystem) and is_constructible respects access
-//    control, so operator+= is the only way to PRODUCE one. The list is the REAL 3-arg ctor's;
+//    control, so operator+= is the only way to PRODUCE one. The list is the REAL 6-arg ctor's;
 //    StubPrivateCtor asserts it BINDS, without which the negative below would go vacuous.
 struct StubPrivateCtor
 {
-    StubPrivateCtor(MatrixCoefficients, CellFieldLevel, const NeoN::Executor&);
+    StubPrivateCtor(
+        MeshLevel mesh,
+        CellFieldLevel alpha,
+        FaceFieldLevel upper,
+        std::optional<FaceFieldLevel> lower,
+        CellFieldLevel rhs,
+        const NeoN::Executor& exec
+    );
 };
 static_assert(std::is_constructible_v<
               StubPrivateCtor,
-              MatrixCoefficients,
+              MeshLevel,
+              CellFieldLevel,
+              FaceFieldLevel,
+              std::optional<FaceFieldLevel>,
               CellFieldLevel,
               NeoN::Executor>);
 static_assert(!std::is_constructible_v<
               Coefficients,
-              MatrixCoefficients,
+              MeshLevel,
+              CellFieldLevel,
+              FaceFieldLevel,
+              std::optional<FaceFieldLevel>,
               CellFieldLevel,
               NeoN::Executor>);
 // A Coefficients a caller was handed can of course be copied -- which is what makes
@@ -140,11 +202,10 @@ static_assert(std::is_copy_constructible_v<Coefficients>);
 
 // Absence has exactly ONE spelling and only `lower` has it: with CellFieldLevel/FaceFieldLevel
 // non-nullable, "empty" is not expressible, which is why _la_matrix_probe's diag_empty/
-// upper_empty keys now emit a literal false. Turn either into an optional and this fires.
-static_assert(std::is_same_v<decltype(MatrixCoefficients::diag), CellFieldLevel>);
-static_assert(std::is_same_v<decltype(MatrixCoefficients::upper), FaceFieldLevel>);
-static_assert(std::is_same_v<decltype(MatrixCoefficients::lower), std::optional<FaceFieldLevel>>);
-static_assert(std::is_same_v<decltype(Coefficients::diag), CellFieldLevel>);
+// upper_empty keys now emit a literal false. Turn either into an optional and this fires. The
+// FORMATS' own fields are pinned by IsMatrix's member requirements instead, which
+// static_assert(IsMatrix<MFFaceCoeffs>) / <CsrMatrix> check for both of them.
+static_assert(std::is_same_v<decltype(Coefficients::alpha), CellFieldLevel>);
 static_assert(std::is_same_v<decltype(Coefficients::upper), FaceFieldLevel>);
 static_assert(std::is_same_v<decltype(Coefficients::lower), std::optional<FaceFieldLevel>>);
 static_assert(std::is_same_v<decltype(Coefficients::rhs), CellFieldLevel>);
@@ -152,7 +213,6 @@ static_assert(std::is_same_v<decltype(Coefficients::rhs), CellFieldLevel>);
 // The mesh TRAVELS with the coefficients, not optional and not a pointer: an operator cannot
 // write a face coefficient without dx, and passing it alongside made a mismatch representable
 // (ops::Laplacian used to hold its own amrex::Geometry).
-static_assert(std::is_same_v<decltype(MatrixCoefficients::mesh), MeshLevel>);
 static_assert(std::is_same_v<decltype(Coefficients::mesh), MeshLevel>);
 
 // ops::Laplacian takes no Geometry any more: the old `Laplacian(gamma, geom, bc)` spelling

@@ -39,178 +39,159 @@ namespace blockamr::la
 namespace detail
 {
 
-/* @brief The storage both face-coefficient formats own: ONE MatrixCoefficients, plus the
- *        executor and domain BCs op() needs. The fields sit behind shared_ptr (MultiFab is not
- *        copyable), so a copy SHARES them and a write through one is seen through the other.
+/* @brief Allocate the coefficient fields `mesh` implies. Free functions rather than a shared
+ *        base: the two formats hold the fields themselves, and the only thing they share is
+ *        how the AMReX layouts are derived from the mesh.
  */
-struct FaceCoeffFields
+inline void allocateCoefficients(
+    const MeshLevel& mesh,
+    Symmetry sym,
+    CellFieldLevel& alpha,
+    FaceFieldLevel& upper,
+    std::optional<FaceFieldLevel>& lower
+)
 {
-    NeoN::Executor exec {NeoN::SerialExecutor {}};
-    la::BcArray bc {};
-    // `mc.mesh` is the layout make() ALLOCATED the fields from and nothing repoints them, so
-    // it is the source for ba/dm rather than a second one competing with alpha's.
-    MatrixCoefficients mc;
-
-    // `mesh` by value and MOVED into mc; a const& would add a Geometry copy per matrix.
-    static FaceCoeffFields
-    make(const NeoN::Executor& exec, MeshLevel mesh, Symmetry sym, const la::BcArray& bc)
+    // MultiFabs are not zero-initialised (the arena recycles memory), so a freshly built
+    // matrix is explicitly zeroed -- callers write only what their operator contributes.
+    auto zeroed = [](const amrex::BoxArray& ba, const amrex::DistributionMapping& dm)
     {
-        // MultiFabs are not zero-initialised (the arena recycles memory), so a freshly built
-        // matrix is explicitly zeroed -- callers write only what their operator contributes.
-        auto zeroed = [](const amrex::BoxArray& ba, const amrex::DistributionMapping& dm)
-        {
-            auto mf = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
-            mf->setVal(0.0);
-            return mf;
-        };
-        const bool asym = (sym == Symmetry::asymmetric);
-        FaceCoeffFields f;
-        f.exec = exec;
-        f.bc = bc;
-        f.mc.diag = CellFieldLevel {zeroed(mesh.ba, mesh.dm)};
-        FaceFieldLevel lower {};
-        for (int d = 0; d < 3; ++d)
-        {
-            const auto i = static_cast<std::size_t>(d);
-            const amrex::BoxArray fba =
-                amrex::convert(mesh.ba, amrex::IntVect::TheDimensionVector(d));
-            f.mc.upper.dir[i] = zeroed(fba, mesh.dm);
-            if (asym)
-            {
-                lower.dir[i] = zeroed(fba, mesh.dm);
-            }
-        }
+        auto mf = std::make_shared<amrex::MultiFab>(ba, dm, 1, 0);
+        mf->setVal(0.0);
+        return mf;
+    };
+    const bool asym = (sym == Symmetry::asymmetric);
+    alpha = CellFieldLevel {zeroed(mesh.ba, mesh.dm)};
+    FaceFieldLevel low {};
+    for (int d = 0; d < 3; ++d)
+    {
+        const auto i = static_cast<std::size_t>(d);
+        const amrex::BoxArray fba = amrex::convert(mesh.ba, amrex::IntVect::TheDimensionVector(d));
+        upper.dir[i] = zeroed(fba, mesh.dm);
         if (asym)
         {
-            f.mc.lower = lower;
+            low.dir[i] = zeroed(fba, mesh.dm);
         }
-        f.mc.mesh = std::move(mesh);
-        return f;
     }
-
-    const MeshLevel& mesh() const { return mc.mesh; }
-
-    // The negSumDiag seam: `mc.diag` is STILL `alpha`, the cell-centred diagonal SOURCE
-    // (ddt/Sp/reaction), NOT the matrix diagonal alpha - (aE+aW+aN+aS+aT+aB) -- that is the
-    // derived field MFFaceCoeffs::diagonal() below, which an operator's += must not land on.
-    MatrixCoefficients coefficients() const { return mc; }
-
-    /* @brief The STORED low side, which always exists -- `upper` itself when symmetric, the
-     *        alias FaceCoeffOp's convention wants. Deliberately NOT coefficients()'s reading,
-     *        where `lower` is ABSENT; the differing types keep the two from being confused.
-     */
-    FaceFieldLevel storedLower() const { return mc.lower.value_or(mc.upper); }
-
-    // Derived from `mc.lower`, so no stored enum can drift from the storage.
-    Symmetry symmetry() const
+    if (asym)
     {
-        return mc.symmetric() ? Symmetry::symmetric : Symmetry::asymmetric;
+        lower = low;
     }
+}
 
-    void zero()
+inline void
+zeroCoefficients(CellFieldLevel& alpha, FaceFieldLevel& upper, std::optional<FaceFieldLevel>& lower)
+{
+    (*alpha).setVal(0.0);
+    for (int d = 0; d < 3; ++d)
     {
-        (*mc.diag).setVal(0.0);
-        for (int d = 0; d < 3; ++d)
+        upper[d].setVal(0.0);
+        // Nothing separate to zero when symmetric.
+        if (lower.has_value())
         {
-            mc.upper[d].setVal(0.0);
-            // Nothing separate to zero when symmetric.
-            if (mc.lower.has_value())
-            {
-                (*mc.lower)[d].setVal(0.0);
-            }
+            (*lower)[d].setVal(0.0);
         }
     }
-
-    // Rows this rank owns. localCount(), NOT numPts(): numPts() counts EVERY rank's cells.
-    std::size_t localRows() const { return la::localCount(*mc.diag); }
-
-    // The row/column DIMENSION every rank must agree on -- the one place numPts() is right.
-    gko::size_type globalRows() const { return static_cast<gko::size_type>(mc.mesh.ba.numPts()); }
-};
+}
 
 } // namespace detail
 
 /* @class MFFaceCoeffs
  * @brief Matrix-free face-coefficient format: op() is a FaceCoeffOp over the coefficient
  *        fields and no MATRIX is ever assembled. One derived field is kept, the diagonal
- *        (see diagonal()). Build with symmetric()/asymmetric(), fill through coefficients().
+ *        (see refreshedDiagonal()). Build with symmetric()/asymmetric(), then write the
+ *        coefficient fields directly.
  */
 class MFFaceCoeffs
 {
 public:
 
+    // The fields below sit behind shared_ptr (MultiFab is not copyable), so a copy of the
+    // format SHARES them and a write through one is seen through the other.
+    NeoN::Executor exec {NeoN::SerialExecutor {}};
+    la::BcArray bc {};
+    // The layout the fields were ALLOCATED from, and nothing repoints them, so it is the one
+    // source for ba/dm rather than a second one competing with alpha's.
+    MeshLevel mesh;
+    // The negSumDiag seam: `alpha` is the cell-centred diagonal SOURCE (ddt/Sp/reaction), NOT
+    // the matrix diagonal alpha - (aE+aW+aN+aS+aT+aB) -- that is `diagonal` below, which an
+    // operator's += must not land on.
+    CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    // No low side to WRITE when symmetric: an operator writing both would double every
+    // coefficient. Storage still has one -- storedLower().
+    std::optional<FaceFieldLevel> lower; // nullopt when symmetric
+
+    // The derived matrix diagonal and its freshness flag. The MultiFab is written IN PLACE, so
+    // a copy's own shared_ptr already shares it and only the flag needs one of its own.
+    CellFieldLevel diagonal;
+    std::shared_ptr<bool> diagonalDirty;
+
     // `bc` defaults to all-periodic (BcArray 0 == periodic).
     static MFFaceCoeffs
     symmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
-        return MFFaceCoeffs(
-            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::symmetric, bc)
-        );
+        return MFFaceCoeffs(exec, std::move(mesh), Symmetry::symmetric, bc);
     }
 
     static MFFaceCoeffs
     asymmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
-        return MFFaceCoeffs(
-            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::asymmetric, bc)
-        );
+        return MFFaceCoeffs(exec, std::move(mesh), Symmetry::asymmetric, bc);
     }
 
     // Built fresh per call, not cached: the operator stages PINNED COPIES of the coefficient
-    // fields on the host path, so a cached one would go stale after a write through
-    // coefficients() on that path. This is a per-solve call, not a per-iteration one.
+    // fields on the host path, so a cached one would go stale after a write to them on that
+    // path. This is a per-solve call, not a per-iteration one.
     std::shared_ptr<const gko::LinOp> op() const
     {
         // PROTOTYPE (C1): no refresh -- the stencil recomputes the centre term inline, so the
         // diagonal passed below is unused.
         return gko::share(la::FaceCoeffOp::create(
-            la::makeExecutor(f_.exec),
-            f_.exec,
-            f_.mesh(),
-            f_.globalRows(),
-            f_.mc.diag,
-            f_.mc.upper,
+            la::makeExecutor(exec),
+            exec,
+            mesh,
+            globalRows(),
+            alpha,
+            upper,
             // The STORED lower, not the interface's: symmetric ALIASES upper here,
-            // exactly FaceCoeffOp's convention; coefficients() reports it ABSENT.
-            f_.storedLower(),
+            // exactly FaceCoeffOp's convention; `lower` itself is ABSENT.
+            storedLower(),
             // The caller's `bc`: the ghost reflection it drives is what applies the
             // homogeneous domain BC.
-            f_.bc,
+            bc,
             nullptr,
-            CellFieldLevel {state_->diag}
+            diagonal
         ));
     }
 
-    /* @brief The stored matrix diagonal alpha - (aE+aW+aN+aS+aT+aB): a field of the MATRIX,
-     *        not of MatrixCoefficients, whose `diag` is still alpha. Recomputed lazily off
-     *        `dirty`, which the write handles set. PROTOTYPE (C1): the stencils bypass it.
+    /* @brief The stored matrix diagonal alpha - (aE+aW+aN+aS+aT+aB): a field of the MATRIX and
+     *        not a coefficient, since `alpha` is only its SOURCE. Recomputed lazily off
+     *        `diagonalDirty`, which markStale() sets. PROTOTYPE (C1): the stencils bypass it.
      */
-    const amrex::MultiFab& diagonal() const
+    const amrex::MultiFab& refreshedDiagonal() const
     {
-        if (state_->dirty)
+        if (*diagonalDirty)
         {
-            la::computeFaceCoeffDiag(
-                f_.exec, CellFieldLevel {state_->diag}, f_.mc.diag, f_.mc.upper, f_.storedLower()
-            );
-            state_->dirty = false;
+            la::computeFaceCoeffDiag(exec, diagonal, alpha, upper, storedLower());
+            *diagonalDirty = false;
         }
-        return *state_->diag;
+        return *diagonal;
     }
 
     /* @brief The preconditioner for `config`, from THIS matrix's own coefficients:
-     *        none / gmg / gmg_kokkos / mlmg, never declined. `storedLower()` and not
-     *        coefficients().lower -- the hierarchy wants the ALIASED low side, as op() does.
+     *        none / gmg / gmg_kokkos / mlmg, never declined. `storedLower()` and not `lower` --
+     *        the hierarchy wants the ALIASED low side, as op() does.
      */
     std::shared_ptr<const gko::LinOp> makePrecond(const SolverConfig& config) const
     {
         return makeFaceCoeffPrecond(
-                   la::makeExecutor(f_.exec),
-                   f_.globalRows(),
-                   f_.mc.diag,
-                   f_.mc.upper,
-                   f_.storedLower(),
-                   f_.mesh(),
-                   f_.bc,
+                   la::makeExecutor(exec),
+                   globalRows(),
+                   alpha,
+                   upper,
+                   storedLower(),
+                   mesh,
+                   bc,
                    config
         )
             .op;
@@ -220,43 +201,43 @@ public:
 
     bool isAssembled() const { return false; }
 
-    // The only warning this format gets that its stored diagonal is stale -- see diagonal().
-    MatrixCoefficients coefficients()
-    {
-        state_->dirty = true;
-        return f_.coefficients();
-    }
+    // The only warning this format gets that its stored diagonal is stale -- the coefficient
+    // fields are public, so nothing else can observe a write.
+    void markStale() { *diagonalDirty = true; }
 
     void zero()
     {
-        state_->dirty = true;
-        f_.zero();
+        markStale();
+        detail::zeroCoefficients(alpha, upper, lower);
     }
 
-    Symmetry symmetry() const { return f_.symmetry(); }
+    /* @brief The STORED low side, which always exists -- `upper` itself when symmetric, the
+     *        alias FaceCoeffOp's convention wants. Deliberately NOT `lower`'s reading, where a
+     *        symmetric matrix has none; the differing types keep the two from being confused.
+     */
+    FaceFieldLevel storedLower() const { return lower.value_or(upper); }
 
-    std::size_t localRows() const { return f_.localRows(); }
+    // Derived from `lower`, so no stored enum can drift from the storage.
+    Symmetry symmetry() const { return lower ? Symmetry::asymmetric : Symmetry::symmetric; }
 
-    const NeoN::Executor& executor() const { return f_.exec; }
+    // Rows this rank owns. localCount(), NOT numPts(): numPts() counts EVERY rank's cells.
+    std::size_t localRows() const { return la::localCount(*alpha); }
 
 private:
 
-    // Shared with every copy, like the fields themselves; see diagonal().
-    struct Diagonal
+    MFFaceCoeffs(
+        const NeoN::Executor& executor, MeshLevel meshLevel, Symmetry sym, const la::BcArray& bcs
+    )
+        : exec(executor), bc(bcs), mesh(std::move(meshLevel)),
+          diagonalDirty(std::make_shared<bool>(true))
     {
-        std::shared_ptr<amrex::MultiFab> diag;
-        bool dirty = true;
-    };
-
-    explicit MFFaceCoeffs(detail::FaceCoeffFields f)
-        : f_(std::move(f)), state_(std::make_shared<Diagonal>())
-    {
-        // Not zeroed: `dirty` starts true, so nothing reads it before it is written.
-        state_->diag = std::make_shared<amrex::MultiFab>(f_.mesh().ba, f_.mesh().dm, 1, 0);
+        detail::allocateCoefficients(mesh, sym, alpha, upper, lower);
+        // Not zeroed: `diagonalDirty` starts true, so nothing reads it before it is written.
+        diagonal = CellFieldLevel {std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0)};
     }
 
-    detail::FaceCoeffFields f_;
-    std::shared_ptr<Diagonal> state_;
+    // The row/column DIMENSION every rank must agree on -- the one place numPts() is right.
+    gko::size_type globalRows() const { return static_cast<gko::size_type>(mesh.ba.numPts()); }
 };
 
 /* @class CsrMatrix
@@ -268,20 +249,31 @@ class CsrMatrix
 {
 public:
 
+    // The fields below sit behind shared_ptr (MultiFab is not copyable), so a copy of the
+    // format SHARES them and a write through one is seen through the other.
+    NeoN::Executor exec {NeoN::SerialExecutor {}};
+    la::BcArray bc {};
+    // The layout the fields were ALLOCATED from, and nothing repoints them, so it is the one
+    // source for ba/dm rather than a second one competing with alpha's.
+    MeshLevel mesh;
+    // The cell-centred diagonal SOURCE (ddt/Sp/reaction), not the assembled diagonal: the
+    // negSumDiag fold is assembleFaceCoeffCsr's job.
+    CellFieldLevel alpha;
+    FaceFieldLevel upper;
+    // No low side to WRITE when symmetric: an operator writing both would double every
+    // coefficient. Storage still has one -- storedLower().
+    std::optional<FaceFieldLevel> lower; // nullopt when symmetric
+
     static CsrMatrix
     symmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
-        return CsrMatrix(
-            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::symmetric, bc)
-        );
+        return CsrMatrix(exec, std::move(mesh), Symmetry::symmetric, bc);
     }
 
     static CsrMatrix
     asymmetric(const NeoN::Executor& exec, MeshLevel mesh, const la::BcArray& bc = {})
     {
-        return CsrMatrix(
-            detail::FaceCoeffFields::make(exec, std::move(mesh), Symmetry::asymmetric, bc)
-        );
+        return CsrMatrix(exec, std::move(mesh), Symmetry::asymmetric, bc);
     }
 
     // Assembles on the first call and after any write; otherwise hands back the matrix it
@@ -291,17 +283,17 @@ public:
         if (state_->dirty)
         {
             state_->csr = la::assembleFaceCoeffCsr(
-                la::makeExecutor(f_.exec),
-                f_.mesh(),
-                f_.mc.diag,
-                f_.mc.upper,
+                la::makeExecutor(exec),
+                mesh,
+                alpha,
+                upper,
                 // The STORED low side, aliasing upper when symmetric: the assembly reads
                 // both sides of every face.
-                f_.storedLower(),
+                storedLower(),
                 // The caller's `bc`: it makes csr.cpp's side() DROP the boundary column
                 // instead of emitting an explicit 0.0 at the wraparound one, and fold the
                 // homogeneous domain BC onto the diagonal as `diag += sign*aFace`.
-                f_.bc
+                bc
             );
             state_->dirty = false;
         }
@@ -318,49 +310,62 @@ public:
         {
             return nullptr;
         }
-        return makeMlmgPrecond(la::makeExecutor(f_.exec), f_.globalRows(), *f_.mc.diag, config);
+        return makeMlmgPrecond(la::makeExecutor(exec), globalRows(), *alpha, config);
     }
 
     const char* name() const { return "CsrMatrix"; }
 
     bool isAssembled() const { return true; }
 
-    // Handing out write handles is the only warning this format gets that its assembly is
-    // stale -- there is no "done writing" call to hook, so the flag is set pessimistically:
-    // a caller that writes nothing pays one redundant assembly instead of needing finalize().
-    MatrixCoefficients coefficients()
-    {
-        state_->dirty = true;
-        return f_.coefficients();
-    }
+    // The only warning this format gets that its assembly is stale -- the coefficient fields
+    // are public, so nothing else can observe a write, and there is no "done writing" call to
+    // hook: a caller that then writes nothing pays one redundant assembly rather than needing
+    // finalize().
+    void markStale() { state_->dirty = true; }
 
     void zero()
     {
-        state_->dirty = true;
-        f_.zero();
+        markStale();
+        detail::zeroCoefficients(alpha, upper, lower);
     }
 
-    Symmetry symmetry() const { return f_.symmetry(); }
+    /* @brief The STORED low side, which always exists -- `upper` itself when symmetric, the
+     *        alias the assembly's convention wants. Deliberately NOT `lower`'s reading, where a
+     *        symmetric matrix has none; the differing types keep the two from being confused.
+     */
+    FaceFieldLevel storedLower() const { return lower.value_or(upper); }
 
-    std::size_t localRows() const { return f_.localRows(); }
+    // Derived from `lower`, so no stored enum can drift from the storage.
+    Symmetry symmetry() const { return lower ? Symmetry::asymmetric : Symmetry::symmetric; }
 
-    const NeoN::Executor& executor() const { return f_.exec; }
+    // Rows this rank owns. localCount(), NOT numPts(): numPts() counts EVERY rank's cells.
+    std::size_t localRows() const { return la::localCount(*alpha); }
 
 private:
 
-    // Shared with every copy, like the fields: copies address the same coefficients, so a
-    // per-object flag would let a write through one leave another handing out a stale matrix.
+    /* @brief Shared with every copy, like the fields: copies address the same coefficients, so
+     *        a per-object flag would let a write through one leave another handing out a stale
+     *        matrix. A SLOT rather than flat members, because reassembly RE-SEATS `csr` with a
+     *        new LinOp and a flat member assigned through one copy would leave the others on
+     *        the old one.
+     */
     struct Assembly
     {
         std::shared_ptr<const gko::LinOp> csr;
         bool dirty = true;
     };
 
-    explicit CsrMatrix(detail::FaceCoeffFields f)
-        : f_(std::move(f)), state_(std::make_shared<Assembly>())
-    {}
+    CsrMatrix(
+        const NeoN::Executor& executor, MeshLevel meshLevel, Symmetry sym, const la::BcArray& bcs
+    )
+        : exec(executor), bc(bcs), mesh(std::move(meshLevel)), state_(std::make_shared<Assembly>())
+    {
+        detail::allocateCoefficients(mesh, sym, alpha, upper, lower);
+    }
 
-    detail::FaceCoeffFields f_;
+    // The row/column DIMENSION every rank must agree on -- the one place numPts() is right.
+    gko::size_type globalRows() const { return static_cast<gko::size_type>(mesh.ba.numPts()); }
+
     std::shared_ptr<Assembly> state_;
 };
 

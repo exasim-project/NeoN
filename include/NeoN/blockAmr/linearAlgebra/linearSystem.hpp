@@ -32,9 +32,15 @@ public:
     // contribute. The operator sees only a Coefficients.
     LinearSystem& operator+=(const Operator& op)
     {
-        // nonOwning: the rhs belongs to the caller, so the handle borrows it.
+        // The one site the six fields are ORDERED, hence the only place a transposition could
+        // hide. nonOwning: the rhs belongs to the caller, so the handle borrows it.
         op.assemble(Coefficients {
-            matrix_->coefficients(), CellFieldLevel {nonOwning(*rhs_)}, matrix_->executor()
+            matrix_->mesh(),
+            matrix_->alpha(),
+            matrix_->upper(),
+            matrix_->lower(),
+            CellFieldLevel {nonOwning(*rhs_)},
+            matrix_->executor()
         });
         return *this;
     }

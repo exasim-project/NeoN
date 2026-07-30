@@ -10,7 +10,9 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <utility>
 
+#include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
@@ -29,33 +31,25 @@ enum class Symmetry
     asymmetric
 };
 
-// The matrix-side handles, grouped by role -- lduMatrix's split. `diag` is STILL the
-// diagonal SOURCE alpha, not the matrix diagonal (faceCoeffMatrix.hpp); `mesh` travels with
-// them because a face coefficient cannot be written without dx and the periodicity.
-struct MatrixCoefficients
-{
-    MeshLevel mesh;
-    CellFieldLevel diag;
-    FaceFieldLevel upper;
-    // No low side to WRITE when symmetric: an operator writing both would double every
-    // coefficient. Storage still has one -- FaceCoeffFields::storedLower().
-    std::optional<FaceFieldLevel> lower; // nullopt when symmetric
-
-    bool symmetric() const { return !lower.has_value(); }
-};
-
 class LinearSystem;
 
 // What an OPERATOR writes through: the matrix coefficients plus the rhs, which lives on the
 // system rather than the matrix. Format-agnostic. Only LinearSystem can build one (private
-// ctor + friend), so `system += op` is the only route to a Coefficients.
+// ctor + friend), so `system += op` is the only route to a Coefficients -- and its ctor is
+// the single site where the six fields get ORDERED, where a transposition would otherwise hide.
 class Coefficients
 {
 public:
 
+    // Travels with the coefficients because a face coefficient cannot be written without dx
+    // and the periodicity.
     MeshLevel mesh;
-    CellFieldLevel diag;
+    // The cell-centred diagonal SOURCE (ddt/Sp/reaction), NOT the matrix diagonal
+    // alpha - (aE+aW+aN+aS+aT+aB), which the format derives (faceCoeffMatrix.hpp).
+    CellFieldLevel alpha;
     FaceFieldLevel upper;
+    // No low side to WRITE when symmetric: an operator writing both would double every
+    // coefficient. Storage still has one -- the format's storedLower().
     std::optional<FaceFieldLevel> lower; // nullopt when symmetric
     CellFieldLevel rhs;
     // Where the operator's kernels launch (blockamr::parallelFor). It comes from the MATRIX,
@@ -66,25 +60,56 @@ private:
 
     friend class LinearSystem;
 
-    Coefficients(MatrixCoefficients mc, CellFieldLevel rhs, const NeoN::Executor& exec)
-        : mesh(mc.mesh), diag(mc.diag), upper(mc.upper), lower(mc.lower), rhs(rhs), exec(exec)
+    Coefficients(
+        MeshLevel mesh,
+        CellFieldLevel alpha,
+        FaceFieldLevel upper,
+        std::optional<FaceFieldLevel> lower,
+        CellFieldLevel rhs,
+        const NeoN::Executor& exec
+    )
+        : mesh(std::move(mesh)), alpha(alpha), upper(upper), lower(lower), rhs(rhs), exec(exec)
     {}
 };
 
-// What it takes to BE a matrix format -- no base class. makePrecond is the FORMAT'S job: a
-// solver holds only a gko::LinOp, by which point erasure has discarded the coefficients a
-// GMG hierarchy rediscretises. Null = declined. report/blockamr-linear-algebra-notes.md
+// What it takes to BE a matrix format -- no base class. The coefficient fields are required as
+// MEMBERS: they are public in every format (writing all six is an operator's whole job), and a
+// data member cannot share a name with a member function, so there are no accessors to require.
+// makePrecond is the FORMAT'S job: a solver holds only a gko::LinOp, by which point erasure has
+// discarded the coefficients a GMG hierarchy rediscretises. Null = declined.
+// report/blockamr-linear-algebra-notes.md
 template<typename T>
 concept IsMatrix = requires(T t, const T ct, const SolverConfig& config) {
+    {
+        t.exec
+    } -> std::same_as<NeoN::Executor&>;
+    {
+        t.bc
+    } -> std::same_as<BcArray&>;
+    {
+        t.mesh
+    } -> std::same_as<MeshLevel&>;
+    {
+        t.alpha
+    } -> std::same_as<CellFieldLevel&>;
+    {
+        t.upper
+    } -> std::same_as<FaceFieldLevel&>;
+    {
+        t.lower
+    } -> std::same_as<std::optional<FaceFieldLevel>&>;
     {
         ct.op()
     } -> std::same_as<std::shared_ptr<const gko::LinOp>>;
     {
         ct.isAssembled()
     } -> std::same_as<bool>;
+    // Whatever the format DERIVES from the coefficients (an assembly, a stored diagonal) is
+    // stale once they are written, and there is no "done writing" call to hook -- so acquiring
+    // a write handle marks it through this, pessimistically.
     {
-        t.coefficients()
-    } -> std::same_as<MatrixCoefficients>;
+        t.markStale()
+    } -> std::same_as<void>;
     {
         t.zero()
     } -> std::same_as<void>;
@@ -94,9 +119,6 @@ concept IsMatrix = requires(T t, const T ct, const SolverConfig& config) {
     {
         ct.localRows()
     } -> std::same_as<std::size_t>;
-    {
-        ct.executor()
-    } -> std::same_as<const NeoN::Executor&>;
     {
         ct.makePrecond(config)
     } -> std::same_as<std::shared_ptr<const gko::LinOp>>;
