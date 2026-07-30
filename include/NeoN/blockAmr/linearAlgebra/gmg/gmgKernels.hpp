@@ -16,6 +16,7 @@
 
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp"
+#include "NeoN/blockAmr/linearAlgebra/stencil.hpp"
 
 namespace blockamr::la
 {
@@ -40,44 +41,7 @@ struct FaceCoeffs
     const GmgFab<T>* lz;
 };
 
-// The 6 face-coefficient VALUES at one cell (a loop body holds Array4 views, not FabArrays).
-template<class T>
-struct FaceCoeffVals
-{
-    T aE, aW, aN, aS, aT, aB;
-};
-
-template<class T>
-AMREX_GPU_HOST_DEVICE FaceCoeffVals<T> loadFaceCoeffs(
-    const amrex::Array4<const T>& ux,
-    const amrex::Array4<const T>& lx,
-    const amrex::Array4<const T>& uy,
-    const amrex::Array4<const T>& ly,
-    const amrex::Array4<const T>& uz,
-    const amrex::Array4<const T>& lz,
-    int i,
-    int j,
-    int k
-) noexcept
-{
-    return {
-        ux(i + 1, j, k), lx(i, j, k), uy(i, j + 1, k), ly(i, j, k), uz(i, j, k + 1), lz(i, j, k)
-    };
-}
-
-// Summation order aE+aW+aN+aS+aT+aB must stay bit-for-bit identical at every site.
-template<class T>
-AMREX_GPU_HOST_DEVICE T stencilDiag(T alpha, const FaceCoeffVals<T>& c) noexcept
-{
-    return alpha - (c.aE + c.aW + c.aN + c.aS + c.aT + c.aB);
-}
-
-template<class T>
-AMREX_GPU_HOST_DEVICE T
-stencilOffDiag(const FaceCoeffVals<T>& c, T pE, T pW, T pN, T pS, T pT, T pB) noexcept
-{
-    return c.aE * pE + c.aW * pW + c.aN * pN + c.aS * pS + c.aT * pT + c.aB * pB;
-}
+// FaceCoeffVals / loadFaceCoeffs / stencilDiag / stencilOffDiag: linearAlgebra/stencil.hpp.
 
 // |diagonal| floor guarding the RB-GS division; per type because 1e-300 is not a float.
 template<class T>

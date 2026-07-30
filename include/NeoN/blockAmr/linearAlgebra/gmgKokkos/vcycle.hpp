@@ -29,6 +29,7 @@
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp"
+#include "NeoN/blockAmr/linearAlgebra/stencil.hpp"
 
 namespace blockamr
 {
@@ -421,16 +422,19 @@ public:
             amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
             {
-                const double aE = ax[box](i + 1, j, k);
-                const double aW = lxa[box](i, j, k);
-                const double aN = ay[box](i, j + 1, k);
-                const double aS = lya[box](i, j, k);
-                const double aT = az[box](i, j, k + 1);
-                const double aB = lza[box](i, j, k);
-                const double off = aE * psi[box](i + 1, j, k) + aW * psi[box](i - 1, j, k)
-                                 + aN * psi[box](i, j + 1, k) + aS * psi[box](i, j - 1, k)
-                                 + aT * psi[box](i, j, k + 1) + aB * psi[box](i, j, k - 1);
-                const double diag = al[box](i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const auto c = la::loadFaceCoeffs<double>(
+                    ax[box], lxa[box], ay[box], lya[box], az[box], lza[box], i, j, k
+                );
+                const double off = la::stencilOffDiag(
+                    c,
+                    psi[box](i + 1, j, k),
+                    psi[box](i - 1, j, k),
+                    psi[box](i, j + 1, k),
+                    psi[box](i, j - 1, k),
+                    psi[box](i, j, k + 1),
+                    psi[box](i, j, k - 1)
+                );
+                const double diag = la::stencilDiag(al[box](i, j, k), c);
                 const double r = b[box](i, j, k) - (diag * psi[box](i, j, k) + off);
                 return {r * r};
             }

@@ -5,6 +5,7 @@
 #include "NeoN/blockAmr/linearAlgebra/sparse/csr.hpp"
 
 #include "NeoN/blockAmr/core/bc.hpp"
+#include "NeoN/blockAmr/linearAlgebra/stencil.hpp"
 
 #include <AMReX_GpuLaunch.H>
 
@@ -73,13 +74,8 @@ std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
             for (int i = 0; i < ni; ++i)
             {
                 const int ia = lo.x + i, ja = lo.y + j, ka = lo.z + k;
-                const double aE = Ux(ia + 1, ja, ka);
-                const double aW = Lx(ia, ja, ka);
-                const double aN = Uy(ia, ja + 1, ka);
-                const double aS = Ly(ia, ja, ka);
-                const double aT = Uz(ia, ja, ka + 1);
-                const double aB = Lz(ia, ja, ka);
-                double diag = A(ia, ja, ka) - (aE + aW + aN + aS + aT + aB);
+                const auto c = loadFaceCoeffs<double>(Ux, Lx, Uy, Ly, Uz, Lz, ia, ja, ka);
+                double diag = stencilDiag(A(ia, ja, ka), c);
 
                 // At most 7 entries (col, val): a non-periodic boundary side contributes none.
                 std::array<std::pair<long, double>, 7> e {};
@@ -102,12 +98,12 @@ std::shared_ptr<gko::matrix::Csr<double, int>> assembleFaceCoeffCsr(
                 };
 
                 // Side order (xlo, xhi, ylo, yhi, zlo, zhi) matches BcArray.
-                side(0, i == 0, aW, idx((i - 1 + ni) % ni, j, k));
-                side(1, i == ni - 1, aE, idx((i + 1) % ni, j, k));
-                side(2, j == 0, aS, idx(i, (j - 1 + nj) % nj, k));
-                side(3, j == nj - 1, aN, idx(i, (j + 1) % nj, k));
-                side(4, k == 0, aB, idx(i, j, (k - 1 + nk) % nk));
-                side(5, k == nk - 1, aT, idx(i, j, (k + 1) % nk));
+                side(0, i == 0, c.aW, idx((i - 1 + ni) % ni, j, k));
+                side(1, i == ni - 1, c.aE, idx((i + 1) % ni, j, k));
+                side(2, j == 0, c.aS, idx(i, (j - 1 + nj) % nj, k));
+                side(3, j == nj - 1, c.aN, idx(i, (j + 1) % nj, k));
+                side(4, k == 0, c.aB, idx(i, j, (k - 1 + nk) % nk));
+                side(5, k == nk - 1, c.aT, idx(i, j, (k + 1) % nk));
                 // Last, so every side's fold is already in `diag`.
                 e[ne++] = {idx(i, j, k), diag};
 

@@ -10,6 +10,7 @@
 #include <AMReX_MultiFab.H>
 
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
+#include "NeoN/blockAmr/linearAlgebra/stencil.hpp"
 #include "NeoN/blockAmr/core/launch.hpp"
 
 // Kokkos twins of the three V-cycle kernels the timed cycle runs (gmgGsColor,
@@ -45,15 +46,17 @@ struct GmgGsCell
         {
             return;
         }
-        const C aE = ax(i + 1, j, k);
-        const C aW = lxa(i, j, k);
-        const C aN = ay(i, j + 1, k);
-        const C aS = lya(i, j, k);
-        const C aT = az(i, j, k + 1);
-        const C aB = lza(i, j, k);
-        const C off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k) + aN * psi(i, j + 1, k)
-                    + aS * psi(i, j - 1, k) + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-        const C diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+        const auto c = la::loadFaceCoeffs<C>(ax, lxa, ay, lya, az, lza, i, j, k);
+        const C off = la::stencilOffDiag(
+            c,
+            psi(i + 1, j, k),
+            psi(i - 1, j, k),
+            psi(i, j + 1, k),
+            psi(i, j - 1, k),
+            psi(i, j, k + 1),
+            psi(i, j, k - 1)
+        );
+        const C diag = la::stencilDiag(al(i, j, k), c);
         if (amrex::Math::abs(diag) > la::gmgDiagFloor<C>())
         {
             const C gs = (b(i, j, k) - off) / diag;
@@ -81,16 +84,17 @@ struct GmgResidRestrictCell
                 for (int di = 0; di < 2; ++di)
                 {
                     const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                    const C aE = ax(i + 1, j, k);
-                    const C aW = lxa(i, j, k);
-                    const C aN = ay(i, j + 1, k);
-                    const C aS = lya(i, j, k);
-                    const C aT = az(i, j, k + 1);
-                    const C aB = lza(i, j, k);
-                    const C off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
-                    const C diag = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const auto c = la::loadFaceCoeffs<C>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const C off = la::stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
+                    const C diag = la::stencilDiag(al(i, j, k), c);
                     acc += b(i, j, k) - (diag * psi(i, j, k) + off);
                 }
             }

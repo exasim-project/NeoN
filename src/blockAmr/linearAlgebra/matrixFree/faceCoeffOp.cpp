@@ -13,6 +13,7 @@
 
 #include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
+#include "NeoN/blockAmr/linearAlgebra/stencil.hpp"
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 
 namespace blockamr::la
@@ -43,14 +44,8 @@ void computeFaceCoeffDiag(
             vbx,
             [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept
             {
-                // Same association order as the two stencils: aE=ux(high face), aW=lx(low), ...
-                const amrex::Real aE = ax(i + 1, j, k);
-                const amrex::Real aW = lxa(i, j, k);
-                const amrex::Real aN = ay(i, j + 1, k);
-                const amrex::Real aS = lya(i, j, k);
-                const amrex::Real aT = az(i, j, k + 1);
-                const amrex::Real aB = lza(i, j, k);
-                dg(i, j, k) = al(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                const auto c = loadFaceCoeffs<amrex::Real>(ax, lxa, ay, lya, az, lza, i, j, k);
+                dg(i, j, k) = stencilDiag(al(i, j, k), c);
             }
         );
     }
@@ -111,16 +106,11 @@ void faceCoeffStencilFusedDevice(
                 const V pS = (j > lo.y) ? b[idx - ni] : static_cast<V>(psi(i, j - 1, k));
                 const V pT = (k < hi.z) ? b[idx + nij] : static_cast<V>(psi(i, j, k + 1));
                 const V pB = (k > lo.z) ? b[idx - nij] : static_cast<V>(psi(i, j, k - 1));
-                const V aE = static_cast<V>(ax(i + 1, j, k));
-                const V aW = static_cast<V>(lxa(i, j, k));
-                const V aN = static_cast<V>(ay(i, j + 1, k));
-                const V aS = static_cast<V>(lya(i, j, k));
-                const V aT = static_cast<V>(az(i, j, k + 1));
-                const V aB = static_cast<V>(lza(i, j, k));
-                const V offd = aE * pE + aW * pW + aN * pN + aS * pS + aT * pT + aB * pB;
+                const auto c = loadFaceCoeffs<V>(ax, lxa, ay, lya, az, lza, i, j, k);
+                const V offd = stencilOffDiag(c, pE, pW, pN, pS, pT, pB);
                 // PROTOTYPE (C1): centre term recomputed inline instead of read from a stored
                 // diagonal; same association order as computeFaceCoeffDiag.
-                const V diag = static_cast<V>(al(i, j, k)) - (aE + aW + aN + aS + aT + aB);
+                const V diag = stencilDiag(static_cast<V>(al(i, j, k)), c);
                 xo[idx] = diag * pC + offd;
             }
         );
@@ -324,18 +314,18 @@ void FaceCoeffOpT<V>::applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) 
             {
                 for (int i = lo.x; i <= hi.x; ++i)
                 {
-                    // Off-diagonals: aE=ux(high face), aW=lx(low face), etc.
-                    const double aE = ax(i + 1, j, k);
-                    const double aW = lxa(i, j, k);
-                    const double aN = ay(i, j + 1, k);
-                    const double aS = lya(i, j, k);
-                    const double aT = az(i, j, k + 1);
-                    const double aB = lza(i, j, k);
-                    const double off = aE * psi(i + 1, j, k) + aW * psi(i - 1, j, k)
-                                     + aN * psi(i, j + 1, k) + aS * psi(i, j - 1, k)
-                                     + aT * psi(i, j, k + 1) + aB * psi(i, j, k - 1);
+                    const auto c = loadFaceCoeffs<double>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const double off = stencilOffDiag(
+                        c,
+                        psi(i + 1, j, k),
+                        psi(i - 1, j, k),
+                        psi(i, j + 1, k),
+                        psi(i, j - 1, k),
+                        psi(i, j, k + 1),
+                        psi(i, j, k - 1)
+                    );
                     // PROTOTYPE (C1): inline centre term, same association order.
-                    const double dgv = dg(i, j, k) - (aE + aW + aN + aS + aT + aB);
+                    const double dgv = stencilDiag(dg(i, j, k), c);
                     o(i, j, k) = dgv * psi(i, j, k) + off;
                 }
             }
