@@ -17,6 +17,10 @@ Inheritance diagram for NeoN\+::finite\+Volume\+::cell\+Centred\+::Surface\+Boun
 \item 
 virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}{correct\+Boundary\+Condition}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&field)=0
 \item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a7cf9bd6e98631b3ae53370953bc22d72}{set}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector)
+\begin{DoxyCompactList}\small\item\em One-\/time patch initialisation, applied once per field before the first \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}{update()}. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}{update}} (\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&domain\+Vector)
+\begin{DoxyCompactList}\small\item\em Per-\/iteration boundary update, applied on every correct\+Boundary\+Conditions() call. \end{DoxyCompactList}\item 
 virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Surface\+Boundary\+Factory}} $>$ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a33c858a6c846aa18e6b1f8a2f49f799c}{clone}} () const =0
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Patch\+Mixin}}}
@@ -105,6 +109,36 @@ static std\+::string \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1
 
 
 Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a7cf9bd6e98631b3ae53370953bc22d72}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a7cf9bd6e98631b3ae53370953bc22d72} 
+\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!set@{set}}
+\index{set@{set}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{set()}{set()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+One-\/time patch initialisation, applied once per field before the first \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}{update()}. 
+
+For patch data fixed for the lifetime of the field (e.\+g. constant mixed-\/\+BC coefficients). Default\+: no-\/op. 
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551}\label{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_a2d8adf06aa62c69686fc792a5ecc2551} 
+\index{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}!update@{update}}
+\index{update@{update}!NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$@{NeoN::finiteVolume::cellCentred::SurfaceBoundaryFactory$<$ ValueType $>$}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type $>$ \\
+virtual void \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Surface\+Boundary\+Factory}}$<$ Value\+Type $>$\+::update (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Field}{Field}}$<$ Value\+Type $>$ \&}]{domain\+Vector }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Per-\/iteration boundary update, applied on every correct\+Boundary\+Conditions() call. 
+
+Default forwards to \doxylink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundaryFactory_ad2366da040f76e43102964a5333f1479}{correct\+Boundary\+Condition()} so non-\/split BCs are unchanged. 
+
+Definition at line \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source_l00048}{48}} of file \mbox{\hyperlink{surfaceBoundaryFactory_8hpp_source}{surface\+Boundary\+Factory.\+hpp}}.
 
 
 

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['patchid_5f_0',['patchID_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#adbf45e525a5c07ad1b0d9f6707806011',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]]
+  ['owner_0',['owner',['../structNeoN_1_1detail_1_1FaceData.html#a35120a2928f5010779cfcaab17ccba41',1,'NeoN::detail::FaceData']]],
+  ['owneroffset_1',['ownerOffset',['../structNeoN_1_1la_1_1FaceToMatrixView.html#a697be4e8e03b17fa65dd5b70c8dc92da',1,'NeoN::la::FaceToMatrixView']]]
 ];

@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['rungekutta_2ehpp_0',['rungeKutta.hpp',['../rungeKutta_8hpp.html',1,'']]],
-  ['runtimeselectionfactory_2ehpp_1',['runtimeSelectionFactory.hpp',['../runtimeSelectionFactory_8hpp.html',1,'']]]
+  ['parallelalgorithms_2ehpp_0',['parallelAlgorithms.hpp',['../parallelAlgorithms_8hpp.html',1,'']]],
+  ['partitioning_2ehpp_1',['partitioning.hpp',['../partitioning_8hpp.html',1,'']]],
+  ['petsc_2ehpp_2',['petsc.hpp',['../petsc_8hpp.html',1,'']]],
+  ['petscsolvercontext_2ehpp_3',['petscSolverContext.hpp',['../petscSolverContext_8hpp.html',1,'']]],
+  ['processor_2ehpp_4',['processor.hpp',['../surface_2processor_8hpp.html',1,'(Global Namespace)'],['../volume_2processor_8hpp.html',1,'(Global Namespace)']]]
 ];

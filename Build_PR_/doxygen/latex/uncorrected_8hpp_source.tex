@@ -2,7 +2,7 @@
 \hypertarget{uncorrected_8hpp_source}{}\label{uncorrected_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp}}
 \mbox{\hyperlink{uncorrected_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00004}00004\ }
@@ -59,23 +59,26 @@
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00055}00055\ }
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00056}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_a994f86a6c6d51e240428fe3461f1ee3c}{00056}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_a994f86a6c6d51e240428fe3461f1ee3c}{deltaCoeffs}}()\textcolor{keyword}{\ const\ override}}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00057}00057\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ geometryScheme\_-\/>nonOrthDeltaCoeffs();}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00059}00059\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_af1c1b2abeb550dc7b6fda809a9791e96}{00061}}\ \ \ \ \ std::unique\_ptr<FaceNormalGradientFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_af1c1b2abeb550dc7b6fda809a9791e96}{clone}}()\textcolor{keyword}{\ const\ override}}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00062}00062\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Uncorrected>(*\textcolor{keyword}{this});}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00064}00064\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00065}00065\ }
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00066}00066\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00067}00067\ }
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00069}00069\ \};}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ uncorrected\ surface-\/normal\ gradient\ uses\ nonOrthDeltaCoeffs\ (1/(n.d)),\ NOT\ the}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ orthogonal\ 1/|d|:\ on\ a\ non-\/orthogonal\ mesh\ 1/(n.d)\ is\ the\ consistent\ normal-\/gradient}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ coefficient.\ The\ two\ coincide\ on\ orthogonal\ meshes.}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ geometryScheme\_-\/>nonOrthDeltaCoeffs();}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00062}00062\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00064}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_af1c1b2abeb550dc7b6fda809a9791e96}{00064}}\ \ \ \ \ std::unique\_ptr<FaceNormalGradientFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Uncorrected_af1c1b2abeb550dc7b6fda809a9791e96}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00065}00065\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Uncorrected>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00067}00067\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00069}00069\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00070}00070\ }
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00071}00071\ \textcolor{comment}{//\ instantiate\ the\ template\ class}}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00072}00072\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }Uncorrected<scalar>;}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00073}00073\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }Uncorrected<Vec3>;}
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00074}00074\ }
-\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00075}00075\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00072}00072\ \};}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00074}00074\ \textcolor{comment}{//\ instantiate\ the\ template\ class}}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00075}00075\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }Uncorrected<scalar>;}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00076}00076\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }Uncorrected<Vec3>;}
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{uncorrected_8hpp_source_l00078}00078\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

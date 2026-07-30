@@ -35,3 +35,4 @@ After the system is assembled or solved, it provides access to the linear system
 
     equation.rst
     operator.rst
+    relaxation.rst

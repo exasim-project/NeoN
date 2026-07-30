@@ -81,6 +81,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="dictionary_8hpp_source.html">NeoN/core/dictionary.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="tensor_8hpp_source.html">NeoN/core/primitives/tensor.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="symmTensor_8hpp_source.html">NeoN/core/primitives/symmTensor.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="unstructuredMesh_8hpp_source.html">NeoN/mesh/unstructured/unstructuredMesh.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="volume_2empty_8hpp_source.html">boundary/volume/empty.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="volume_2calculated_8hpp_source.html">boundary/volume/calculated.hpp</a>&quot;</code><br />
@@ -88,6 +90,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="volume_2fixedValue_8hpp_source.html">boundary/volume/fixedValue.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="fixedGradient_8hpp_source.html">boundary/volume/fixedGradient.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="volume_2symmetry_8hpp_source.html">boundary/volume/symmetry.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="slip_8hpp_source.html">boundary/volume/slip.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="inletOutlet_8hpp_source.html">boundary/volume/inletOutlet.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="surface_2empty_8hpp_source.html">boundary/surface/empty.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="surface_2calculated_8hpp_source.html">boundary/surface/calculated.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="surface_2fixedValue_8hpp_source.html">boundary/surface/fixedValue.hpp</a>&quot;</code><br />
@@ -98,6 +102,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceNeoN" id="r_namespaceNeoN"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html">NeoN</a></td></tr>
+<tr class="memdesc:namespaceNeoN"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer types used throughout <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceNeoN_1_1finiteVolume" id="r_namespaceNeoN_1_1finiteVolume"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume.html">NeoN::finiteVolume</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -109,6 +114,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ab918b7425253d07393f1e18b71aa4e22" id="r_ab918b7425253d07393f1e18b71aa4e22"><td class="memTemplParams" colspan="2">template&lt;typename BoundaryType &gt; </td></tr>
 <tr class="memitem:ab918b7425253d07393f1e18b71aa4e22"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; BoundaryType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ab918b7425253d07393f1e18b71aa4e22">NeoN::finiteVolume::cellCentred::createCalculatedBCs</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:ab918b7425253d07393f1e18b71aa4e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a414c82b2d4caf60720f2acddb8cb7749" id="r_a414c82b2d4caf60720f2acddb8cb7749"><td class="memTemplParams" colspan="2">template&lt;typename BoundaryType &gt; </td></tr>
+<tr class="memitem:a414c82b2d4caf60720f2acddb8cb7749"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; BoundaryType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a414c82b2d4caf60720f2acddb8cb7749">NeoN::finiteVolume::cellCentred::createCalculatedProcBCs</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:a414c82b2d4caf60720f2acddb8cb7749"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac219f7675251df9d46327915c48c74e4" id="r_ac219f7675251df9d46327915c48c74e4"><td class="memTemplParams" colspan="2">template&lt;typename BoundaryType &gt; </td></tr>
 <tr class="memitem:ac219f7675251df9d46327915c48c74e4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; BoundaryType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#ac219f7675251df9d46327915c48c74e4">NeoN::finiteVolume::cellCentred::createExtrapolatedBCs</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
 <tr class="separator:ac219f7675251df9d46327915c48c74e4"><td class="memSeparator" colspan="2">&#160;</td></tr>

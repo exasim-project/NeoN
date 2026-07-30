@@ -2,7 +2,7 @@
 \hypertarget{tokenList_8hpp_source}{}\label{tokenList_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/core/tokenList.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/core/tokenList.hpp}}
 \mbox{\hyperlink{tokenList_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2025\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
 \DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
 \DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
 \DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00004}00004\ }
@@ -50,71 +50,79 @@
 \DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00079}00079\ }
 \DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00084}\mbox{\hyperlink{classNeoN_1_1TokenList_a0d4febf5e08758a5bc181e66226b7e14}{00084}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classNeoN_1_1TokenList_a0d4febf5e08758a5bc181e66226b7e14}{size}}()\ \textcolor{keyword}{const};}
 \DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00085}00085\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00095}\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{00095}}\ \ \ \ \ [[nodiscard]]\ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\&\ idx)}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00096}00096\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_cast<ReturnType\&>(data\_.at(idx));}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::bad\_any\_cast\&\ e)}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ logBadAnyCast<ReturnType>(e,\ idx,\ data\_);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\&\ e)}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ae6c3ff7eb69df45b568b04b852294339}{logOutRange}}(e,\ idx,\ data\_);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00111}00111\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00112}00112\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00121}\mbox{\hyperlink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{00121}}\ \ \ \ \ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next}}()}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00122}00122\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ ReturnType\&\ retValue\ =\ get<ReturnType\&>(nextIndex\_);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ nextIndex\_++;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ retValue;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00126}00126\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00127}00127\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00136}00136\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00137}\mbox{\hyperlink{classNeoN_1_1TokenList_a673b7e1c3b79ecd2889a69f05e32e677}{00137}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a673b7e1c3b79ecd2889a69f05e32e677}{get}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\&\ idx)\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00138}00138\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_cast<const\ ReturnType\&>(data\_.at(idx));}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::bad\_any\_cast\&\ e)}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ logBadAnyCast<ReturnType>(e,\ idx,\ data\_);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\&\ e)}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ae6c3ff7eb69df45b568b04b852294339}{logOutRange}}(e,\ idx,\ data\_);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00153}00153\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00154}00154\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00162}00162\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00163}\mbox{\hyperlink{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6}{00163}}\ \ \ \ \ \textcolor{keyword}{const}\ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6}{next}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00164}00164\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ReturnType\&\ retValue\ =\ get<ReturnType>(nextIndex\_);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ nextIndex\_++;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ retValue;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00168}00168\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00169}00169\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00175}\mbox{\hyperlink{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75}{00175}}\ \ \ \ \ [[nodiscard]]\ std::any\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75}{operator[]}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\&\ idx);}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00176}00176\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00177}\mbox{\hyperlink{classNeoN_1_1TokenList_a425275584ae4a65106260e1f1d7057b1}{00177}}\ \ \ \ \ [[nodiscard]]\ std::vector<std::any>\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a425275584ae4a65106260e1f1d7057b1}{tokens}}();}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00178}00178\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00179}00179\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00180}00180\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00181}00181\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00182}00182\ \ \ \ \ std::vector<std::any>\ data\_;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00183}00183\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{size\_t}\ nextIndex\_;}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00184}00184\ \};}
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00185}00185\ }
-\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00186}00186\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00090}\mbox{\hyperlink{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7}{00090}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7}{reset}}()\textcolor{keyword}{\ const\ }\{\ nextIndex\_\ =\ 0;\ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00100}00100\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00101}\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{00101}}\ \ \ \ \ [[nodiscard]]\ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\&\ idx)}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00102}00102\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_cast<ReturnType\&>(data\_.at(idx));}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::bad\_any\_cast\&\ e)}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ logBadAnyCast<ReturnType>(e,\ idx,\ data\_);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\&\ e)}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ae6c3ff7eb69df45b568b04b852294339}{logOutRange}}(e,\ idx,\ data\_);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00117}00117\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00126}00126\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00127}\mbox{\hyperlink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{00127}}\ \ \ \ \ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a904185b715739ed4b1c9e28134fab94f}{next}}()}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00128}00128\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ ReturnType\&\ retValue\ =\ get<ReturnType\&>(nextIndex\_);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ nextIndex\_++;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ retValue;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00132}00132\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00142}00142\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00143}\mbox{\hyperlink{classNeoN_1_1TokenList_a673b7e1c3b79ecd2889a69f05e32e677}{00143}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a673b7e1c3b79ecd2889a69f05e32e677}{get}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\&\ idx)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00144}00144\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_cast<const\ ReturnType\&>(data\_.at(idx));}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::bad\_any\_cast\&\ e)}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ logBadAnyCast<ReturnType>(e,\ idx,\ data\_);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\&\ e)}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_ae6c3ff7eb69df45b568b04b852294339}{logOutRange}}(e,\ idx,\ data\_);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00159}00159\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00169}\mbox{\hyperlink{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6}{00169}}\ \ \ \ \ \textcolor{keyword}{const}\ ReturnType\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_ab8719773710f0ea044a0949c034a70b6}{next}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00170}00170\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ReturnType\&\ retValue\ =\ get<ReturnType>(nextIndex\_);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ nextIndex\_++;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ retValue;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00174}00174\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00175}00175\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00182}00182\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ReturnType>}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00183}\mbox{\hyperlink{classNeoN_1_1TokenList_ae2b92686bfe2ffcd626229ff89733224}{00183}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1TokenList_ae2b92686bfe2ffcd626229ff89733224}{peekIs}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00184}00184\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nextIndex\_\ <\ data\_.size()\ \&\&\ data\_[nextIndex\_].type()\ ==\ \textcolor{keyword}{typeid}(ReturnType);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00186}00186\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00193}\mbox{\hyperlink{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75}{00193}}\ \ \ \ \ [[nodiscard]]\ std::any\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a69172da9b405bbb67b0bf6ca0f41cc75}{operator[]}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\&\ idx);}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00195}\mbox{\hyperlink{classNeoN_1_1TokenList_a425275584ae4a65106260e1f1d7057b1}{00195}}\ \ \ \ \ [[nodiscard]]\ std::vector<std::any>\&\ \mbox{\hyperlink{classNeoN_1_1TokenList_a425275584ae4a65106260e1f1d7057b1}{tokens}}();}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00198}00198\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00200}00200\ \ \ \ \ std::vector<std::any>\ data\_;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00201}00201\ \ \ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{size\_t}\ nextIndex\_;}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00202}00202\ \};}
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{tokenList_8hpp_source_l00204}00204\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

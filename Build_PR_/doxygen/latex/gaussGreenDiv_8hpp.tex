@@ -3,19 +3,19 @@
 {\ttfamily \#include "{}Neo\+N/fields/field.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/executor/executor.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/mesh/unstructured/unstructured\+Mesh.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/linear\+Algebra/sparsity\+Pattern.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/operators/div\+Operator.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/finite\+Volume/cell\+Centred/interpolation/surface\+Interpolation.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/mesh\+Iteration\+Strategies.\+hpp"{}}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Gauss\+Green\+Div$<$ Value\+Type $>$}}
+class \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDiv}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Gauss\+Green\+Div$<$ Field\+Value\+Type, Assembly\+Type $>$}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
 namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
-\item 
+\begin{DoxyCompactList}\small\item\em Integer types used throughout \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
 namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume}{Neo\+N\+::finite\+Volume}}
 \item 
 namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{Neo\+N\+::finite\+Volume\+::cell\+Centred}}
@@ -23,7 +23,11 @@ namespace \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{Neo\+N\
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_adebf18ffc07511e7a497371f83f92fc3}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Div\+Exp}} (const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{Surface\+Interpolation}}$<$ Value\+Type $>$ \&surf\+Interp, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&div\+Phi, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)
+{\footnotesize template$<$typename Field\+Value\+Type , typename Assembly\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a655723b74791ab94830593ccae60bb9e}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::add\+Div\+Correction\+To\+Rhs}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Assembly\+Type, Field\+Value\+Type $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ Field\+Value\+Type $>$ \&correction, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling)
 \item 
-{\footnotesize template$<$typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a91df1880106d9d15a41fd75153aac3f7}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::compute\+Div\+Imp}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Value\+Type, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ \&ls, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&face\+Flux, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{Volume\+Field}}$<$ Value\+Type $>$ \&phi, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolation}{Surface\+Interpolation}}$<$ Value\+Type $>$ \&surf\+Interp, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}} operator\+Scaling, const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{la\+::\+Sparsity\+Pattern}} \&sparsity\+Pattern)
+template void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_acc9cb8ccd4becd6fca6b27878029e1af}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::add\+Div\+Correction\+To\+Rhs}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}})
+\item 
+template void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a3bd96e0c8137cbaf0a4e24d4c4f48f76}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::add\+Div\+Correction\+To\+Rhs}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}})
+\item 
+template void \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ae5461c8baf9da045ef94157a975a19fb}{Neo\+N\+::finite\+Volume\+::cell\+Centred\+::add\+Div\+Correction\+To\+Rhs}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{Surface\+Field}}$<$ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} $>$ \&, const \mbox{\hyperlink{classNeoN_1_1dsl_1_1Coeff}{dsl\+::\+Coeff}})
 \end{DoxyCompactItemize}

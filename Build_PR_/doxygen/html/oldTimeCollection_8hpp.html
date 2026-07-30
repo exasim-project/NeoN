@@ -86,6 +86,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="collection_8hpp_source.html">NeoN/core/database/collection.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="document_8hpp_source.html">NeoN/core/database/document.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="fieldCollection_8hpp_source.html">NeoN/core/database/fieldCollection.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="volumeField_8hpp_source.html">NeoN/finiteVolume/cellCentred/fields/volumeField.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="surfaceField_8hpp_source.html">NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp</a>&quot;</code><br />
 </div>
 <p><a href="oldTimeCollection_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -99,6 +101,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceNeoN" id="r_namespaceNeoN"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html">NeoN</a></td></tr>
+<tr class="memdesc:namespaceNeoN"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer types used throughout <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceNeoN_1_1finiteVolume" id="r_namespaceNeoN_1_1finiteVolume"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume.html">NeoN::finiteVolume</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +118,14 @@ Functions</h2></td></tr>
 <tr class="memitem:aff55801e0df1fcf7be8f26668fa963e5"><td class="memTemplItemLeft" align="right" valign="top">const VectorType &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#aff55801e0df1fcf7be8f26668fa963e5">NeoN::finiteVolume::cellCentred::oldTime</a> (const VectorType &amp;field)</td></tr>
 <tr class="memdesc:aff55801e0df1fcf7be8f26668fa963e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the old time field of a given field (const version).  <br /></td></tr>
 <tr class="separator:aff55801e0df1fcf7be8f26668fa963e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51914b93645b7482628ef0fc97f75df0" id="r_a51914b93645b7482628ef0fc97f75df0"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
+<tr class="memitem:a51914b93645b7482628ef0fc97f75df0"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a51914b93645b7482628ef0fc97f75df0">NeoN::finiteVolume::cellCentred::oldTimeLevel</a> (const VectorType &amp;field)</td></tr>
+<tr class="memdesc:a51914b93645b7482628ef0fc97f75df0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to retrieve the history depth of a field in oldTimeCollection.  <br /></td></tr>
+<tr class="separator:a51914b93645b7482628ef0fc97f75df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a564c89c16f64e7d3a9de82d871ea3170" id="r_a564c89c16f64e7d3a9de82d871ea3170"><td class="memTemplParams" colspan="2">template&lt;typename VectorType &gt; </td></tr>
+<tr class="memitem:a564c89c16f64e7d3a9de82d871ea3170"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a564c89c16f64e7d3a9de82d871ea3170">NeoN::finiteVolume::cellCentred::rotateOldTimes</a> (VectorType &amp;field)</td></tr>
+<tr class="memdesc:a564c89c16f64e7d3a9de82d871ea3170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate time levels for a field. Meaning of <code>level</code> (computed via oldTimeLevel(field)): level == 0 : no history exists yet level == 1 : φ^{n} exists (one oldTime buffer) level &gt;= 2 : φ^{n} and φ^{n-1} exist (old and oldOld)  <br /></td></tr>
+<tr class="separator:a564c89c16f64e7d3a9de82d871ea3170"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

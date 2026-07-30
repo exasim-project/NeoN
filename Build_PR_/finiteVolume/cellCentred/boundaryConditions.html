@@ -6,10 +6,10 @@
 <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Case Study: The Gauss Green Div Kernel" href="case_study.html"><link rel="prev" title="FiniteVolume" href="index.html">
         <link rel="canonical" href="https://exasim-project.com/NeoN/finiteVolume/cellCentred/boundaryConditions.html">
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2025.09.25 -->
+    <!-- Generated with Sphinx 7.2.6 and Furo 2025.12.19 -->
         <title>Boundary Conditions - NeoN documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=acfd86a5" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=6a4ff913" />
@@ -212,6 +212,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../dsl/index.html">Domain Specific Language (DSL)</a><input aria-label="Toggle navigation of Domain Specific Language (DSL)" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../dsl/equation.html">Expression</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../dsl/operator.html">Operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dsl/relaxation.html">Under-Relaxation</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../timeIntegration/index.html">Time Integration</a><input aria-label="Toggle navigation of Time Integration" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -228,6 +229,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../datastructures/unstructuredMesh.html">UnstructuredMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../datastructures/dictionary.html">Dictionary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../datastructures/database.html">Database</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../linearAlgebra/index.html">Linear Algebra</a><input aria-label="Toggle navigation of Linear Algebra" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../linearAlgebra/matrixAddressing.html">Matrix Addressing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../linearAlgebra/operatorAssembly.html">Operator Assembly</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../mpi_architecture.html">MPI Architecture</a></li>
@@ -325,7 +331,7 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
 <span class="w">    </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">parallel_for</span><span class="p">(</span>
 <span class="w">        </span><span class="s">&quot;fvccScalarFixedValueBoundaryVector&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="n">Kokkos</span><span class="o">::</span><span class="n">RangePolicy</span><span class="o">&lt;</span><span class="n">executor</span><span class="o">&gt;</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span><span class="w"> </span><span class="n">end_</span><span class="p">),</span>
-<span class="w">        </span><span class="n">KOKKOS_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NEON_LAMBDA</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">localIdx</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">s_value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uniformValue</span><span class="p">;</span>
 <span class="w">            </span><span class="n">s_refValue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uniformValue</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
@@ -338,6 +344,52 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
 - fixedValue
 - zeroGradient
 - calculated</p>
+</section>
+<section id="slip-symmetry-boundary-conditions">
+<h2>Slip / Symmetry boundary conditions<a class="headerlink" href="#slip-symmetry-boundary-conditions" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">slip</span></code> and <code class="docutils literal notranslate"><span class="pre">symmetry</span></code> share a single implementation. They differ only in their
+registered name and in where they may be applied (<code class="docutils literal notranslate"><span class="pre">slip</span></code> on a wall/regular patch,
+<code class="docutils literal notranslate"><span class="pre">symmetry</span></code> on a symmetry plane). Per face the operator is:</p>
+<ul class="simple">
+<li><p><strong>scalar field</strong> =&gt; zero-gradient (there is no normal component, so the mode below is
+irrelevant).</p></li>
+<li><p><strong>vector field</strong> =&gt; the boundary value is the <em>tangential projection</em> of the cell value
+(the wall-normal component is removed), plus a <strong>normal-damping</strong> term
+<span class="math notranslate nohighlight">\(-\Delta\,(\mathbf{v}\cdot\mathbf{n})\,\mathbf{n}\)</span> that drives the normal component
+of the cell value towards zero.</p></li>
+</ul>
+<p>The velocity vector field is assembled as a single shared scalar matrix and solved with a
+Vec3 (multi-RHS) solve, so the same matrix diagonal is used for all three components. The
+normal-damping coefficient <span class="math notranslate nohighlight">\(\gamma\,|S|\,\Delta\,|n_c|\)</span> is <strong>direction dependent</strong>
+(it carries a per-component <span class="math notranslate nohighlight">\(|n_c|\)</span> factor) and therefore cannot be held by the shared
+scalar diagonal. NeoN offers two ways to realise it, selected per patch by the <code class="docutils literal notranslate"><span class="pre">implicit</span></code>
+key:</p>
+<dl class="simple">
+<dt>Deferred (<code class="docutils literal notranslate"><span class="pre">implicit</span> <span class="pre">no</span></code>)</dt><dd><p>The damping is written into <code class="docutils literal notranslate"><span class="pre">refGrad</span></code> as
+<span class="math notranslate nohighlight">\(-\Delta\,(\mathbf{v}\cdot\mathbf{n})\,\mathbf{n}\)</span> and enters the per-component
+<strong>RHS</strong> through the existing fixed-gradient assembly. This keeps the shared scalar matrix
+and the fast multi-RHS solve intact. Because the term uses the previous iteration’s
+velocity, the normal coupling <strong>lags by one outer iteration</strong>; on a developed field this
+can be too weak to hold the normal component and lets it diverge in the momentum solve.</p>
+</dd>
+<dt>Implicit (<code class="docutils literal notranslate"><span class="pre">implicit</span> <span class="pre">yes</span></code>, the default)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">refGrad</span></code> is left zero; instead the <code class="docutils literal notranslate"><span class="pre">BoundaryAttributes::transformImplicit</span></code> flag tells
+the Laplacian assembly to accumulate the per-component diagonal correction
+<span class="math notranslate nohighlight">\(\gamma\,|S|\,\Delta\,|n_c|\)</span> into the linear system’s <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> store. Since this
+correction differs per column, the solver drops the multi-RHS solve and runs the three
+components <strong>segregated</strong>, temporarily subtracting each column’s correction from the shared
+diagonal in place (no matrix copy). The constraint is applied <em>inside</em> the solve, so it does
+not lag — at the cost of three solves instead of one multi-RHS solve.</p>
+</dd>
+</dl>
+<p>The default is <strong>implicit</strong>: the deferred variant was observed to let the wall-normal velocity
+run away at slip/symmetry boundaries on developed external-aerodynamics cases. Set
+<code class="docutils literal notranslate"><span class="pre">implicit</span> <span class="pre">no</span></code> on a patch to opt back into the deferred, multi-RHS-friendly treatment.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A future <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> specialisation (e.g. a transported Reynolds-stress field) must use the
+full reflective transform <span class="math notranslate nohighlight">\((T + H\,T\,H)/2\)</span> with <span class="math notranslate nohighlight">\(H = I - 2\,\mathbf{n}\otimes\mathbf{n}\)</span>,
+<strong>not</strong> the per-component projection used for vectors.</p>
+</div>
 </section>
 </section>
 
@@ -400,6 +452,7 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
 <li><a class="reference internal" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE"><code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred::VolumeBoundary</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE"><code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred::SurfaceBoundary</span></code></a></li>
 <li><a class="reference internal" href="#boundary-conditions-for-volumevector-s">Boundary Conditions for VolumeVector’s</a></li>
+<li><a class="reference internal" href="#slip-symmetry-boundary-conditions">Slip / Symmetry boundary conditions</a></li>
 </ul>
 </li>
 </ul>
@@ -415,5 +468,6 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
