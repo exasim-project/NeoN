@@ -82,6 +82,48 @@ We provide a set of unit tests which can be executed via ctest or
 
     cmake --build . --target test
 
+### Installing the Python bindings
+
+NeoN ships Python bindings as the `neon_pde` distribution (imported as `neon`).
+The package requires Python 3.9–3.13 and NumPy.
+
+**CPU (from PyPI).** Pre-built CPU wheels are published to PyPI for Linux
+(x86-64/ARM64), Windows (AMD64) and macOS (Apple Silicon/Intel):
+
+    pip install neon_pde
+
+**CUDA (from GitHub Releases).** GPU wheels are *not* published to PyPI because
+they are large and depend on the NVIDIA driver. They are attached to the
+corresponding [GitHub Release](https://github.com/exasim-project/NeoN/releases)
+and carry a local version suffix such as `+cuda128`. Download the wheel matching
+your Python version, or install it directly by URL:
+
+    # CUDA 12.8, CPython 3.12, Linux x86-64, NVIDIA Ampere (sm_80)
+    pip install https://github.com/exasim-project/NeoN/releases/download/v0.1.0/neon_pde-0.1.0+cuda128-cp312-cp312-manylinux_2_34_x86_64.whl
+
+The CUDA wheel needs a host NVIDIA driver providing `libcuda.so.1` (it is
+intentionally not bundled). It does not require a local CUDA toolkit at runtime.
+
+**From source.** Building the bindings uses `scikit-build-core` and compiles the
+C++ library, so a C++20 compiler and CMake ≥ 3.22 are required:
+
+    pip install .                       # CPU build (production preset)
+
+    # CUDA build (matching the released wheels)
+    pip install . --config-settings=cmake.define.Kokkos_ENABLE_CUDA=ON \
+                  --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=80 \
+                  --config-settings=cmake.define.CMAKE_CUDA_STANDARD=20
+
+Verify an installation with:
+
+```python
+import neon
+print(neon.__version__, neon.__has_serial__, neon.__has_cpu__, neon.__has_gpu__)
+```
+
+See [the documentation](https://exasim-project.com/NeoN/latest) for the full
+install-and-release workflow.
+
 ### Python Wheels
 
 The Python distribution name is `neon_pde`, which produces wheel filenames

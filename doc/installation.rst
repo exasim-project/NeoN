@@ -46,6 +46,11 @@ To browse the full list of build options it is recommended to use a build tool l
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
 NeoN specific build flags are prefixed by ``NeoN_``.
 
+.. note::
+
+   To install or build the Python bindings (the ``neon_pde`` package), including
+   the CUDA variant, see :doc:`python_bindings`.
+
 Building for GPUs
 ^^^^^^^^^^^^^^^^^^
 NeoN will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
