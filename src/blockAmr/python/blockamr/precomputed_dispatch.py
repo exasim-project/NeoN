@@ -17,7 +17,7 @@ import equinox as eqx
 
 from .flattened_boxes import (
     FlattenedBoxes, FlattenedFaceBoxes, flattened_boxes_from_mf,
-    CELL_TIERS, _cell_tier, _next_power_of_2,
+    CELL_TIERS, _cell_tier, TOTAL_TIERS, _total_tier,
 )
 
 
@@ -79,19 +79,6 @@ class PrecomputedOffsets(eqx.Module):
     fx_stride_r: int = eqx.field(static=True)
     fy_stride_r: int = eqx.field(static=True)
     fz_stride_r: int = eqx.field(static=True)
-
-
-TOTAL_TIERS = [
-    1024, 2048, 4096, 8192, 16384, 32768, 65536,
-    131072, 262144, 524288, 1048576, 2097152, 4194304,
-]
-
-
-def _total_tier(n):
-    for t in TOTAL_TIERS:
-        if n <= t:
-            return t
-    return _next_power_of_2(n)
 
 
 def build_local_offsets(bx, by, bz, ng):
