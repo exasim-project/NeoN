@@ -24,6 +24,7 @@ Table of Contents
 
    self
    installation
+   python_bindings
    contributing
    basics/index
    dsl/index
