@@ -14,7 +14,11 @@ set(NeoN_ADIOS2_VERSION "2.10.2")
 set(NeoN_SUNDIALS_VERSION "7.5.0")
 set(NeoN_JSON_VERSION "3.11.3")
 set(NeoN_GINKGO_VERSION "2.0.0")
-set(NeoN_GINKGO_TAG "241decabe949533cb2e7e8e1a1025f8a7b4423ec")
+# Tip of ginkgo-project/ginkgo `reuse_pgm_update_rebase` (the branch the champion build uses). The
+# two ginkgo patches under cmake/patches/ apply on top of it: ginkgo_local_stack.patch
+# (pmis/schwarz/multigrid/matrix update_matrix_value) then ginkgo_pgm_fine_op_cache.patch (fine-op
+# reuse cache).
+set(NeoN_GINKGO_TAG "ba5e66073e7a9652ee5e6426c1f8fded4ce9c59a")
 set(NeoN_CATCH2_VERSION "3.4.0")
 set(NeoN_SPDLOG_VERSION "1.16.0")
 set(NeoN_NANOBIND_VERSION "2.9.2")

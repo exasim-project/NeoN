@@ -243,6 +243,11 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # Apply the local ginkgo stack, then the fine-op reuse cache, in one git invocation (git applies
+    # them cumulatively, in order). See the patch headers; disable the fine-op cache at runtime with
+    # GINKGO_PGM_REUSE_FINE_OP=0.
+    set(GINKGO_PATCH git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_local_stack.patch
+                     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ginkgo_pgm_fine_op_cache.patch)
     cpmaddpackage(
       NAME
       Ginkgo
@@ -252,6 +257,8 @@ if(${NeoN_WITH_GINKGO})
       ginkgo-project/ginkgo
       GIT_TAG
       ${NeoN_GINKGO_TAG}
+      PATCH_COMMAND
+      ${GINKGO_PATCH}
       SYSTEM
       YES
       OPTIONS
