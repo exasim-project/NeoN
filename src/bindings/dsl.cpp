@@ -19,10 +19,13 @@
 #include "bindings.hpp"
 
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/faceNormalGradient/limitedCorrected.hpp" // these are required for registration
 
 // TODO(operator-registration workaround): drop this once the runtime-selection registry is shared
 // across shared objects (e.g. exporting the factory table with default visibility). The operators
@@ -37,6 +40,9 @@ namespace NeoN::finiteVolume::cellCentred
 template class GaussGreenDiv<scalar>;
 template class GaussGreenDiv<Vec3>;
 template class GaussGreenDiv<Vec3, scalar>;
+template class BoundedDiv<scalar>;
+template class BoundedDiv<Vec3>;
+template class BoundedDiv<Vec3, scalar>;
 template class GaussGreenLaplacian<scalar>;
 template class GaussGreenLaplacian<Vec3>;
 template class GaussGreenLaplacian<Vec3, scalar>;
