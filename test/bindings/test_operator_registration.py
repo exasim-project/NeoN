@@ -112,9 +112,9 @@ def test_gauss_vector_operators_resolve(executor):
 # Equality (below) makes this the source of truth: force-instantiate another scheme in
 # ``dsl.cpp`` and this must be updated in lockstep, so registration drift is caught.
 EXPECTED_SCHEMES = {
-    "div<scalar>": {"Gauss"},
-    "div<Vector>": {"Gauss"},
-    "div<Vector,scalar>": {"Gauss"},
+    "div<scalar>": {"Gauss", "bounded"},
+    "div<Vector>": {"Gauss", "bounded"},
+    "div<Vector,scalar>": {"Gauss", "bounded"},
     "laplacian<scalar>": {"Gauss"},
     "laplacian<Vector>": {"Gauss"},
     "laplacian<Vector,scalar>": {"Gauss"},

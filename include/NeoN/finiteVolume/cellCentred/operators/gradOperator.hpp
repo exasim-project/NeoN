@@ -193,7 +193,13 @@ public:
 
     std::string getName() const { return "GradOperator"; }
 
-    Dictionary getConfig() const { return {}; }
+    Dictionary getConfig() const
+    {
+        // Expose the operand like DivOperator does, so scheme-default expansion
+        // (which needs "grad(<field>)" keys) can learn the field's name.
+        const auto& ret = this->getVector();
+        return {{"field", NeoN::detail::RefHolder<VolumeField<scalar>> {ret}}};
+    }
 
 private:
 

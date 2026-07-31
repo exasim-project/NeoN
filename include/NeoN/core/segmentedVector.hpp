@@ -13,6 +13,41 @@
 namespace NeoN
 {
 
+namespace detail
+{
+
+/* @brief Prefix-sum kernel of segmentsFromIntervals.
+ *
+ * A named functor rather than a NEON_LAMBDA: under nvcc a NEON_LAMBDA is an
+ * extended lambda whose host-side callable is registered per translation unit,
+ * and for an enclosing *function template* the registration belongs to a comdat
+ * group the linker may drop while keeping the body. The surviving copy then
+ * calls a null pointer — every segmentsFromIntervals<localIdx> call inside
+ * libNeoN segfaults (e.g. CellToFaceStencil::computeInternalStencil, the
+ * stencil CellLimitedGrad builds). A functor carries no such registration.
+ */
+template<typename IndexType>
+struct IntervalOffsetScan
+{
+    using value_type = IndexType;
+
+    View<const IndexType> intervals;
+    View<IndexType> offsets;
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const localIdx i, IndexType& update, const bool final) const
+    {
+        update += intervals[i];
+        if (final)
+        {
+            // offsets is a view, thus [] takes unsigned idx
+            offsets[i] = update;
+        }
+    }
+};
+
+} // namespace detail
+
 /**
  * @brief Compute segment offsets from an input field corresponding to lengths by computing a prefix
  * sum.
@@ -39,14 +74,7 @@ IndexType segmentsFromIntervals(const Vector<IndexType>& intervals, Vector<Index
     NeoN::parallelScan(
         intervals.exec(),
         {0, offsView.size()},
-        NEON_LAMBDA(const localIdx i, IndexType& update, const bool final) {
-            update += inView[i];
-            if (final)
-            {
-                // offView is a view, thus [] takes unsigned idx
-                offsView[i] = update;
-            }
-        },
+        detail::IntervalOffsetScan<IndexType> {inView, offsView},
         finalValue
     );
     return finalValue;
