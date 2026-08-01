@@ -112,6 +112,13 @@ file(
   RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
   *.hpp)
 
+# NeoN/blockAmr/ is excluded unconditionally, not gated on NeoN_WITH_BLOCKAMR: NeoN.hpp is the
+# convenience header for NeoN core consumers, and every blockAmr header needs AMReX (and most need
+# Ginkgo), which NeoN core neither links nor requires. Letting the glob pick them up would make
+# every consumer of NeoN.hpp depend on AMReX, and would break outright with NeoN_WITH_AMREX=OFF.
+# blockAmr sources include their own headers by full path.
+list(FILTER include_files EXCLUDE REGEX "^NeoN/blockAmr/")
+
 # Convert the list of files into #includes
 foreach(include_file ${include_files})
   set(include_statements "${include_statements}#include \"${include_file}\"\n")

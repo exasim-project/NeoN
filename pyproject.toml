@@ -83,6 +83,16 @@ testpaths = ["test"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
+markers = [
+    # Selects the tests that need more than one rank. `mpirun -n 2 pytest -m mpi`
+    # is the whole CI lane (the "Test blockAMR on 2 MPI ranks" step of NeoFOAM's
+    # build-python job -- NeoN's own workflows build no AMReX); a bare `pytest`
+    # still collects them and they skip themselves. The selection has to be a marker
+    # rather than `-k`, because running the REST of the suite under mpirun would
+    # have every rank redo the same single-rank test over a different box
+    # distribution.
+    "mpi: needs >1 MPI rank; skips itself otherwise",
+]
 
 [tool.ruff]
 line-length = 100
