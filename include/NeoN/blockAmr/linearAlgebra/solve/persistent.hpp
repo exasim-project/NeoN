@@ -16,7 +16,7 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
-#include "NeoN/blockAmr/linearAlgebra/precond.hpp" // FaceCoeffLevel
+#include "NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 
 namespace blockamr::la

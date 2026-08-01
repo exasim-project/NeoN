@@ -348,7 +348,10 @@ void GmgStationarySolver::stageCoefficients(
     if (onDevice_)
     {
         // The device residual kernel reads the caller's coefficients directly, so in-place
-        // updates ARE seen -- this path derives its diagonal per apply, unlike FaceCoeffOp.
+        // updates ARE seen. Same rule as FaceCoeffOp's device path (faceCoeffOp.hpp): both
+        // derive the diagonal per apply under PROTOTYPE (C1), so neither stores one to go
+        // stale. What IS stale on both is the GMG hierarchy, which copies into its own arena
+        // -- a preconditioner, so it costs iterations rather than the answer.
         alpha_ = &*level.alpha;
         ux_ = &level.upper[0];
         lx_ = &level.lower[0];
