@@ -394,15 +394,14 @@ if(${NeoN_BUILD_PYTHON_BINDINGS})
     Python
     COMPONENTS Interpreter ${DEV_MODULE}
     REQUIRED)
-  cpmaddpackage(
-    NAME
-    nanobind
-    GITHUB_REPOSITORY
-    wjakob/nanobind
-    VERSION
-    ${NeoN_NANOBIND_VERSION}
-    SYSTEM
-    YES)
+  # Use the nanobind shipped in the active Python environment (a build requirement, see pyproject).
+  # pybFoam is built against that same copy, so _neon and pybFoam share one libnanobind ABI by
+  # construction — no version pin to keep in sync.
+  execute_process(
+    COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE nanobind_ROOT)
+  find_package(nanobind CONFIG REQUIRED)
 endif()
 
 if(NeoN_BUILD_TESTS OR NeoN_BUILD_BENCHMARKS)

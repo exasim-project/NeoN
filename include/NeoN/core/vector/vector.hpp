@@ -145,6 +145,18 @@ public:
     void operator=(const Vector<ValueType>& rhs);
 
     /**
+     * @brief Move-assignment operator — transfers ownership of the data buffer.
+     *
+     * Swaps the data pointer and size from rhs in O(1) without launching any GPU
+     * kernel.  The old buffer owned by *this is freed first (after a fence if on GPU).
+     * After the move, rhs is left in an empty (size=0, data=nullptr) state.
+     * The executor is unchanged — exec_ is const and cannot be moved.
+     *
+     * @warning Invalidates any existing View objects that point into *this.
+     */
+    Vector<ValueType>& operator=(Vector<ValueType>&& rhs) noexcept;
+
+    /**
      * @brief Arithmetic add operator, addition of a second field.
      * @param rhs The field to add with this field.
      * @returns The result of the addition.

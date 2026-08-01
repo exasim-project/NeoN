@@ -4,6 +4,7 @@
 
 #include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/macros.hpp"
+#include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -111,10 +112,7 @@ void VolumeField<ValueType>::correctBoundaryConditions()
     {
         boundaryCondition.update(this->field_);
     }
-    // Drain the processor-halo exchange once, after all proc patches have posted. This leaves
-    // boundaryData().value() holding the true neighbour values on return; without it the result
-    // would depend on whether a later value() read happens to drain first (it often does not),
-    // silently leaving the owner seed at processor faces.
+    // Drain the processor-halo exchange once, after all proc patches have posted.
     this->field_.boundaryData().waitAll();
 }
 

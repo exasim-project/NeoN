@@ -5,3 +5,4 @@
 neon_unit_test(volFixedValue)
 neon_unit_test(volFixedGradient)
 neon_unit_test(volSymmetry)
+neon_unit_test(volInletOutlet)

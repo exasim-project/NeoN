@@ -23,14 +23,9 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
 
-// TODO(operator-registration workaround): drop this once the runtime-selection registry is shared
-// across shared objects (e.g. exporting the factory table with default visibility). The operators
-// above are declared `extern template`, so simply including the headers does NOT instantiate them
-// here and their self-registration only fires in libNeoN. The `_neon` module is compiled
-// `-fvisibility=hidden`, giving it a private, empty copy of the factory's lookup table, so scheme
-// resolution at assembly time (e.g. "Gauss" for div/laplacian) aborts with "Could not find
-// constructor for Gauss". Forcing explicit instantiation here runs the self-registration inside
-// `_neon` so its table is populated.
+// The operators above are `extern template`, so including the headers does not instantiate
+// them and their self-registration only fires in libNeoN. `_neon` is built `-fvisibility=hidden`
+// (private, empty factory table), so force the instantiations here to register the schemes.
 namespace NeoN::finiteVolume::cellCentred
 {
 template class GaussGreenDiv<scalar>;
@@ -154,10 +149,6 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
             "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
         )
         .def("size", &Expr::size)
-        // Resolve each operator's discretisation scheme from a schemes Dictionary
-        // (e.g. {"divSchemes": {"div(phi,U)": ["Gauss", "linear"]}}). This is the call
-        // that drives the runtime-selection factory lookup (create("Gauss")), so it is
-        // also the regression hook for operator self-registration inside _neon.
         .def(
             "read",
             [](Expr& self, const Dictionary& schemes) { self.read(schemes); },
@@ -193,6 +184,8 @@ void registerDSL(nb::module_& m)
     imp_m.def("laplacian", &dsl::imp::laplacian<Vec3>);
     imp_m.def("source", &dsl::imp::source<scalar>);
     imp_m.def("source", &dsl::imp::source<Vec3>);
+    imp_m.def("susp", &dsl::imp::susp<scalar>);
+    imp_m.def("susp", &dsl::imp::susp<Vec3>);
 
     // Explicit factories
     exp_m.def("ddt", &dsl::exp::ddt<scalar>);
@@ -234,6 +227,26 @@ void registerDSL(nb::module_& m)
            scalar dt,
            const Dictionary& schemes,
            const Dictionary& solution) { return dsl::solve(exp, sol, t, dt, schemes, solution); }
+    );
+
+    // Registered runtime-selection scheme names per operator factory, keyed by
+    // "<operator><value-type>". Regression hook for the force-instantiated operator
+    // registration above: an empty list means self-registration did not fire in _neon.
+    namespace fvcc = NeoN::finiteVolume::cellCentred;
+    m.def(
+        "registered_operator_schemes",
+        []()
+        {
+            nb::dict schemes;
+            schemes["div<scalar>"] = fvcc::DivOperatorFactory<scalar>::entries();
+            schemes["div<Vector>"] = fvcc::DivOperatorFactory<Vec3>::entries();
+            schemes["div<Vector,scalar>"] = fvcc::DivOperatorFactory<Vec3, scalar>::entries();
+            schemes["laplacian<scalar>"] = fvcc::LaplacianOperatorFactory<scalar>::entries();
+            schemes["laplacian<Vector>"] = fvcc::LaplacianOperatorFactory<Vec3>::entries();
+            schemes["laplacian<Vector,scalar>"] =
+                fvcc::LaplacianOperatorFactory<Vec3, scalar>::entries();
+            return schemes;
+        }
     );
 }
 

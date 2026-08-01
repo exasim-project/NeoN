@@ -76,14 +76,16 @@ TEST_CASE("symmetry_slip_volume")
 
             boundary->correctBoundaryCondition(field);
 
-            auto [refValuesH, valuesH, refGradH, nHatH, faceCellsH, internalH] = copyToHosts(
-                field.boundaryData().refValue(),
-                field.boundaryData().value(),
-                field.boundaryData().refGrad(),
-                mesh.boundaryMesh().faceUnitNormals(),
-                mesh.boundaryMesh().faceOwners(),
-                field.internalVector()
-            );
+            auto [refValuesH, valuesH, refGradH, nHatH, deltaCoeffsH, faceCellsH, internalH] =
+                copyToHosts(
+                    field.boundaryData().refValue(),
+                    field.boundaryData().value(),
+                    field.boundaryData().refGrad(),
+                    mesh.boundaryMesh().faceUnitNormals(),
+                    mesh.boundaryMesh().deltaCoeffs(),
+                    mesh.boundaryMesh().faceOwners(),
+                    field.internalVector()
+                );
 
             for (auto& boundaryValueV : refValuesH.view(boundary->range()))
             {
@@ -91,7 +93,6 @@ TEST_CASE("symmetry_slip_volume")
                 const auto ownerV = faceCellsH.view()[i];
                 const auto nV = nHatH.view()[i];
                 const auto intV = internalH.view()[ownerV];
-                // const auto vn = vInt & n;
                 const auto vExpected = intV - nV * (intV & nV); // half-symmetry
 
                 for (auto d = 0u; d < 3; ++d)
@@ -100,11 +101,17 @@ TEST_CASE("symmetry_slip_volume")
                 }
             }
 
+            // deferred mode: refGrad = -deltaCoeffs * (U·n) * n  (purely normal => refGrad ∥ n)
             for (auto& gradValueV : refGradH.view(boundary->range()))
             {
+                const auto i = static_cast<NeoN::localIdx>(&gradValueV - refGradH.data());
+                const auto nV = nHatH.view()[i];
+                const auto intV = internalH.view()[faceCellsH.view()[i]];
+                const auto gExpected = nV * (-deltaCoeffsH.view()[i] * (intV & nV));
+
                 for (auto d = 0u; d < 3; ++d)
                 {
-                    REQUIRE(gradValueV[d] == Catch::Approx(0.0));
+                    REQUIRE(gradValueV[d] == Catch::Approx(gExpected[d]));
                 }
             }
         }

@@ -140,6 +140,113 @@ private:
 };
 
 
+/**
+ * @class FixedValueConstraints
+ * @brief Post-assembly functor that pins a set of cells to prescribed values.
+ *
+ * For every constrained cell c:
+ *   A[c, j] = 0  for j != c   (zero row off-diagonals)
+ *   A[j, c] = 0  for j != c   (zero column in neighbour rows, rhs[j] absorbs the dropped term)
+ *   rhs[c]  = A[c,c] * value[c]
+ *
+ * Pinning via both the row and column cut avoids large cancellation errors when
+ * pinned values are orders of magnitude larger than neighbouring unknowns.
+ * Off-rank coupling in offDiagonalMatrix is also zeroed for pinned rows.
+ *
+ * Restricted to scalar ValueType: the segregated vector-solve path dispatches
+ * through applyScalarMatrix(), which this class does not implement.
+ *
+ * mask[cell] != 0 marks a constrained cell; value[cell] holds its target.
+ * Both views are sized nCells and must outlive the functor.
+ */
+template<typename ValueType, typename IndexType = localIdx>
+class FixedValueConstraints : public PostAssemblyBase<ValueType, IndexType>
+{
+    static_assert(
+        std::is_same_v<ValueType, scalar>,
+        "FixedValueConstraints only supports scalar fields. "
+        "For non-scalar fields implement applyScalarMatrix()."
+    );
+
+public:
+
+    FixedValueConstraints(View<const scalar> mask, View<const ValueType> values, localIdx nCells)
+        : mask_(mask), values_(values), nCells_(nCells)
+    {}
+
+    void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
+    ) const override
+    {
+        auto lsView = ls.view();
+        const auto rowOffs = ls.matrix().sparsity()->rowOffs().view();
+        const auto colIdxs = ls.matrix().sparsity()->colIdxs().view();
+        auto matrixValues = lsView.matrix.values;
+        auto rhs = lsView.rhs;
+        auto mask = mask_;
+        auto vals = values_;
+        // Sweep every row: pinned rows drop their off-diagonals; non-pinned rows that couple into
+        // a pinned column absorb the term into their rhs and zero the coefficient. Parallelising
+        // over rows avoids atomics since each row owns its own rhs entry and off-diagonal slots.
+        parallelFor(
+            ls.exec(),
+            {0, nCells_},
+            NEON_LAMBDA(const localIdx row) {
+                const bool rowPinned = mask[row] != scalar(0);
+                ValueType diagVal = zero<ValueType>();
+                for (auto o = rowOffs[row]; o < rowOffs[row + 1]; ++o)
+                {
+                    const auto col = colIdxs[o];
+                    if (col == row)
+                    {
+                        diagVal = matrixValues[o];
+                        continue;
+                    }
+                    if (rowPinned)
+                    {
+                        // pinned cell's own row: decouple it entirely
+                        matrixValues[o] = zero<ValueType>();
+                    }
+                    else if (mask[col] != scalar(0))
+                    {
+                        // column cut: absorb coupling into rhs, zero the coefficient
+                        rhs[row] -= matrixValues[o] * vals[col];
+                        matrixValues[o] = zero<ValueType>();
+                    }
+                }
+                if (rowPinned)
+                {
+                    rhs[row] = diagVal * vals[row];
+                }
+            },
+            "FixedValueConstraints"
+        );
+        // Zero offDiagonalMatrix entries for pinned rows so that proc-boundary
+        // couplings do not contribute to the residual of constrained cells.
+        auto& offDiag = ls.offDiagonalMatrix();
+        const localIdx nnz = offDiag.nNonZeros();
+        if (nnz > 0)
+        {
+            const auto offRowIdxs = offDiag.sparsity()->rowIdxs().view();
+            auto offValues = offDiag.values().view();
+            parallelFor(
+                ls.exec(),
+                {0, nnz},
+                NEON_LAMBDA(const localIdx i) {
+                    if (mask[offRowIdxs[i]] != scalar(0)) offValues[i] = zero<ValueType>();
+                },
+                "FixedValueConstraints::offDiag"
+            );
+        }
+    }
+
+private:
+
+    View<const scalar> mask_;
+    View<const ValueType> values_;
+    localIdx nCells_;
+};
+
+
 template<typename ValueType, typename IndexType = localIdx>
 class Expression
 {

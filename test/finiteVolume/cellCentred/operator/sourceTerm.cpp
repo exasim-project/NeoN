@@ -66,6 +66,42 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
             REQUIRE(values[ii] - 2 * volView[0] * one<TestType>() == TestType(0.0));
         }
     }
+
+    SECTION("implicit SuSp positive coefficient" + execName)
+    {
+        // coeff = +2 >= 0: SuSp behaves exactly like Sp — diagonal += coeff*vol,
+        // rhs untouched (max(coeff,0) = coeff, min(coeff,0) = 0).
+        fvcc::SourceTerm<TestType> sTerm(Operator::Type::Implicit, coeff, phi, /*suSp=*/true);
+
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+        sTerm.implicitOperation(ls);
+        auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto& volView = vol.view();
+        const auto& values = lsHost.matrix().values().view();
+        const auto& rhs = lsHost.rhs().view();
+
+        REQUIRE(values[0] - 2 * volView[0] * one<TestType>() == TestType(0.0));
+        REQUIRE(rhs[0] == zero<TestType>());
+    }
+
+    SECTION("implicit SuSp negative coefficient" + execName)
+    {
+        // coeff = -3 < 0: SuSp puts nothing on the diagonal (max(-3,0) = 0) and the
+        // whole term on the rhs — rhs -= min(coeff,0)*vol*phi = +3*vol*phi.
+        fill(coeff.internalVector(), -3.0);
+        fvcc::SourceTerm<TestType> sTerm(Operator::Type::Implicit, coeff, phi, /*suSp=*/true);
+
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+        sTerm.implicitOperation(ls);
+        auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto& volView = vol.view();
+        const auto& values = lsHost.matrix().values().view();
+        const auto& rhs = lsHost.rhs().view();
+
+        REQUIRE(values[0] == zero<TestType>());
+        // phi = 10, so rhs = 3 * vol * 10 = 30 * vol
+        REQUIRE(rhs[0] - 30 * volView[0] * one<TestType>() == TestType(0.0));
+    }
 }
 
 TEMPLATE_TEST_CASE("SourceTerm Su constructor", "[template]", NeoN::scalar, NeoN::Vec3)
