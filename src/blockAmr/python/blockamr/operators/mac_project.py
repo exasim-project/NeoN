@@ -214,7 +214,13 @@ def _ensure_mac_la_cache(phi, lev, sol_p):
     solver = Solver(
         SolverConfig(
             solver="cg",
-            precond="gmg",
+            # gmg_kokkos runs the same V-cycle under one fused Kokkos launch per level
+            # instead of one AMReX launch per box, which is where its margin comes from:
+            # identical iteration counts, ~1.4-1.7x MLMG's wall clock against "gmg"'s
+            # 0.6-1.2x (benchmarks/blockAmr/bench_solvers2.py, 32-256 cubed). Its three
+            # refusals are all satisfied by the defaults this config leaves alone --
+            # smoother bottom, symmetric operator, red-black smoother.
+            precond=cfg.get("precond", "gmg_kokkos"),
             max_iter=cfg.get("maxIter", 200),
             rtol=cfg.get("rtol", 1e-10),
             atol=cfg.get("atol", 1e-12),
