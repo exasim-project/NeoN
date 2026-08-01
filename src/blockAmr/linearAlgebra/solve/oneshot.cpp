@@ -19,6 +19,7 @@
 
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp"

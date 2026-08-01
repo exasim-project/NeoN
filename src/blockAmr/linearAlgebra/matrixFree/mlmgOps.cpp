@@ -8,6 +8,7 @@
 
 #include <cstddef>
 
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
 
 namespace blockamr::la

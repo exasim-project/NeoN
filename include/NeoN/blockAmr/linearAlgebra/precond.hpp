@@ -16,10 +16,11 @@
 #include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 
-// Preconditioner construction in ONE place -- the seam that makes them reachable through
-// la::Matrix, which cannot build them itself: the GMG hierarchy comes from the coefficient
-// FIELDS. DECLARATIONS ONLY (definitions in precond.cpp), and bitwise equivalence to the
-// pre-existing hierarchies is gated by plans/bench/compare_gmg_baseline.py.
+// Preconditioner construction in ONE place -- the seam that makes them reachable from a
+// la::MFFaceCoeffs (through la::makeHierarchy, ginkgo/adapt.hpp): the GMG hierarchy comes
+// from the coefficient FIELDS, not from a LinOp. DECLARATIONS ONLY (definitions in
+// precond.cpp), and bitwise equivalence to the pre-existing hierarchies is gated by
+// plans/bench/compare_gmg_baseline.py.
 
 namespace blockamr
 {

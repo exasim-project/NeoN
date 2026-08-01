@@ -205,10 +205,10 @@ def _ensure_mac_la_cache(phi, lev, sol_p):
     rhs_mf.set_val(0.0)
 
     system = LinearSystem(matrix, rhs_mf)
-    # alpha=0: NO diagonal source, so Matrix.diagonal_source is never called. The
+    # alpha=0: NO diagonal source, so MFFaceCoeffs.diagonal_source is never called. The
     # coefficients do not change from step to step (gamma=1 on a fixed level) and
     # operators ACCUMULATE, so the Laplacian is assembled once here, not per step.
-    system += laplacian(gamma_mf, geom, bc=bc)
+    system += laplacian(gamma_mf)
 
     cfg = sol_p or {}
     solver = Solver(

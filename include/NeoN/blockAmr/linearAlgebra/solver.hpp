@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "NeoN/blockAmr/linearAlgebra/ginkgo/adapt.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
@@ -49,15 +50,7 @@ public:
             );
         }
         // ASKED FOR, not decided here: the hierarchy comes from the coefficient FIELDS.
-        std::shared_ptr<const gko::LinOp> precond = system.matrix().makePrecond(cfg_);
-        if (cfg_.precondKind != la::PrecondKind::none && precond == nullptr)
-        {
-            throw std::runtime_error(
-                "la::Solver: matrix format '" + std::string(system.matrix().name())
-                + "' cannot build precond '" + cfg_.precond
-                + "'; it builds its preconditioner from its own coefficients and declined this one"
-            );
-        }
+        std::shared_ptr<const gko::LinOp> precond = la::makeHierarchy(system.matrix(), cfg_);
         SystemKrylovSolver s(exec_, system, cfg_, std::move(precond));
         // The rhs is READ, never written (gather takes a const FA&); the cast lives here,
         // once, rather than widening ISolver's signature.
@@ -66,7 +59,7 @@ public:
 
 private:
 
-    // Runs a LinearSystem through the Krylov machinery: Matrix::op() is a LinOp.
+    // Runs a LinearSystem through the Krylov machinery: la::toLinOp gives it a LinOp.
     class SystemKrylovSolver : public la::KrylovSolver
     {
     public:
@@ -81,13 +74,13 @@ private:
                 la::makeExecutor(exec),
                 // Global dimension, which every rank MUST agree on -- so it comes from
                 // the operator rather than being recomputed here.
-                system.matrix().op()->get_size()[0],
+                la::toLinOp(system.matrix())->get_size()[0],
                 system.localRows()
             )
         {
             // const_pointer_cast: Ginkgo's factories store a non-const system matrix.
             build(
-                std::const_pointer_cast<gko::LinOp>(system.matrix().op()),
+                std::const_pointer_cast<gko::LinOp>(la::toLinOp(system.matrix())),
                 cfg.solver,
                 cfg.maxIter,
                 cfg.rtol,

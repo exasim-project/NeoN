@@ -2,9 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
-// Nanobind bindings for the blockAmr Ginkgo solve entry points. The MLLinOp mat-vec
-// (MLMG::apply) is AFFINE, not linear, so those solves run in residual-correction form:
-// A_home(delta) = sign*(rhs - L_inhom(x0)), sol = x0 + delta -- `sign` per the docstrings.
+// Nanobind bindings for the blockAmr linear-algebra layer (include/NeoN/blockAmr/linearAlgebra):
+// the matrix formats, LinearSystem, the solvers and the one-shot solve entry points. Ginkgo is
+// what they are BUILT on, not what they expose, so the file is named for the layer.
+//
+// The MLLinOp mat-vec (MLMG::apply) is AFFINE, not linear, so those solves run in
+// residual-correction form: A_home(delta) = sign*(rhs - L_inhom(x0)), sol = x0 + delta --
+// `sign` per the docstrings.
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
@@ -31,12 +35,12 @@
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp"
+#include "NeoN/blockAmr/linearAlgebra/ginkgo/adapt.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 #include "NeoN/blockAmr/linearAlgebra/linearSystem.hpp"
-#include "NeoN/blockAmr/linearAlgebra/matrix.hpp"
-#include "NeoN/blockAmr/linearAlgebra/operator.hpp"
+#include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solve/oneshot.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solve/persistent.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solver.hpp"
@@ -367,16 +371,16 @@ void bindPersistent(nb::module_& m, const char* name)
 }
 
 // blockAmr has NO C++ test target (NeoN_BUILD_TESTS is OFF for the Python build), so the
-// bindings below exist to make la::Matrix, la::MFFaceCoeffs and la::CsrMatrix reachable from
-// pytest, which is the only place this component is testable at all.
+// bindings below exist to make la::MFFaceCoeffs reachable from pytest, which is the only place
+// this component is testable at all.
 
-// Runs a la::Matrix through the existing Krylov machinery: Matrix::op() is a LinOp.
+// Runs a la::MFFaceCoeffs through the existing Krylov machinery: la::toLinOp gives it a LinOp.
 class MatrixKrylovSolver : public KrylovSolver
 {
 public:
 
     MatrixKrylovSolver(
-        const blockamr::la::Matrix& matrix,
+        const blockamr::la::MFFaceCoeffs& matrix,
         gko::size_type nGlobal,
         const std::string& solver,
         int maxIter,
@@ -384,12 +388,12 @@ public:
         double atol,
         bool projectNullspace
     )
-        : KrylovSolver(makeExecutor(matrix.executor()), nGlobal, matrix.localRows())
+        : KrylovSolver(makeExecutor(matrix.exec), nGlobal, matrix.localRows())
     {
         // const_pointer_cast: build() takes a mutable LinOp (Ginkgo's solver factories store
         // a non-const system matrix) and nothing here writes through it.
         build(
-            std::const_pointer_cast<gko::LinOp>(matrix.op()),
+            std::const_pointer_cast<gko::LinOp>(toLinOp(matrix)),
             solver,
             maxIter,
             rtol,
@@ -399,8 +403,7 @@ public:
     }
 };
 
-blockamr::la::Matrix makeLaMatrix(
-    const std::string& format,
+blockamr::la::MFFaceCoeffs makeLaMatrix(
     const std::string& symmetry,
     const NeoN::Executor& nexec,
     const amrex::MultiFab& like,
@@ -409,24 +412,14 @@ blockamr::la::Matrix makeLaMatrix(
 )
 {
     const blockamr::MeshLevel mesh {like.boxArray(), like.DistributionMap(), geom};
-    const bool sym = (symmetry == "symmetric");
     if (symmetry != "symmetric" && symmetry != "asymmetric")
     {
         throw std::runtime_error(
             "la matrix: unknown symmetry '" + symmetry + "' (expected 'symmetric' or 'asymmetric')"
         );
     }
-    if (format == "mf")
-    {
-        return sym ? blockamr::la::Matrix(blockamr::la::MFFaceCoeffs::symmetric(nexec, mesh, bc))
-                   : blockamr::la::Matrix(blockamr::la::MFFaceCoeffs::asymmetric(nexec, mesh, bc));
-    }
-    if (format == "csr")
-    {
-        return sym ? blockamr::la::Matrix(blockamr::la::CsrMatrix::symmetric(nexec, mesh, bc))
-                   : blockamr::la::Matrix(blockamr::la::CsrMatrix::asymmetric(nexec, mesh, bc));
-    }
-    throw std::runtime_error("la matrix: unknown format '" + format + "' (expected 'mf' or 'csr')");
+    return (symmetry == "symmetric") ? blockamr::la::MFFaceCoeffs::symmetric(nexec, mesh, bc)
+                                     : blockamr::la::MFFaceCoeffs::asymmetric(nexec, mesh, bc);
 }
 
 // Copy one caller-supplied field into the field the format allocated for it. The layout check
@@ -443,10 +436,10 @@ void writeField(amrex::MultiFab& dst, const amrex::MultiFab& src, const char* wh
     amrex::MultiFab::Copy(dst, src, 0, 0, 1, 0);
 }
 
-// Fill a matrix from the seven caller fields through Matrix's coefficient handles and nothing
-// else. l* are read only when the matrix is asymmetric; a symmetric one has no `lower` at all.
+// Fill a matrix from the seven caller fields through its coefficient fields and nothing else.
+// l* are read only when the matrix is asymmetric; a symmetric one has no `lower` at all.
 void writeCoefficients(
-    blockamr::la::Matrix& matrix,
+    blockamr::la::MFFaceCoeffs& matrix,
     const amrex::MultiFab& alpha,
     const amrex::MultiFab& ux,
     const amrex::MultiFab& lx,
@@ -457,35 +450,34 @@ void writeCoefficients(
 )
 {
     // negSumDiag convention: the matrix's `alpha` is the cell-centred diagonal SOURCE, not the
-    // matrix diagonal alpha - sum(faces), which the matrix-free format stores separately.
-    writeField(*matrix.alpha(), alpha, "alpha");
-    auto upper = matrix.upper();
-    writeField(upper[0], ux, "ux");
-    writeField(upper[1], uy, "uy");
-    writeField(upper[2], uz, "uz");
-    if (auto lower = matrix.lower(); lower.has_value())
+    // matrix diagonal alpha - sum(faces), which no format stores -- the stencil derives it.
+    writeField(*matrix.alpha, alpha, "alpha");
+    writeField(matrix.upper[0], ux, "ux");
+    writeField(matrix.upper[1], uy, "uy");
+    writeField(matrix.upper[2], uz, "uz");
+    if (matrix.lower.has_value())
     {
-        writeField((*lower)[0], lx, "lx");
-        writeField((*lower)[1], ly, "ly");
-        writeField((*lower)[2], lz, "lz");
+        writeField((*matrix.lower)[0], lx, "lx");
+        writeField((*matrix.lower)[1], ly, "ly");
+        writeField((*matrix.lower)[2], lz, "lz");
     }
 }
 
-// The LinearSystem / Operator / Solver seam, test-facing for the same reason. Underscore-
+// The LinearSystem / Laplacian / Solver seam, test-facing for the same reason. Underscore-
 // prefixed, so `from ._blockamr import *` does not re-export them.
 
 // The diagonal SOURCE alpha (ddt/Sp/reaction) has no operator yet, so it is written straight
-// through the matrix's coefficient handles; the FACES are what `system += ops::Laplacian` writes.
-void writeDiagSource(blockamr::la::Matrix& matrix, const amrex::MultiFab& alpha)
+// into the matrix's own field; the FACES are what `system += ops::Laplacian` writes.
+void writeDiagSource(blockamr::la::MFFaceCoeffs& matrix, const amrex::MultiFab& alpha)
 {
-    writeField(*matrix.alpha(), alpha, "alpha");
+    writeField(*matrix.alpha, alpha, "alpha");
 }
 
 // Copy the coefficients back out so a test can compare them BITWISE against a hand-built set.
-// The three l*Out are OPTIONAL and written only when the matrix reports a `lower` view --
-// otherwise left exactly as passed, which lets a test assert nothing reached the low side.
+// The three l*Out are OPTIONAL and written only when the matrix has a `lower` -- otherwise
+// left exactly as passed, which lets a test assert nothing reached the low side.
 void readCoefficients(
-    blockamr::la::Matrix& matrix,
+    const blockamr::la::MFFaceCoeffs& matrix,
     amrex::MultiFab& alphaOut,
     amrex::MultiFab& uxOut,
     amrex::MultiFab& uyOut,
@@ -495,19 +487,17 @@ void readCoefficients(
     amrex::MultiFab* lzOut = nullptr
 )
 {
-    writeField(alphaOut, *matrix.alpha(), "alpha_out");
-    auto upper = matrix.upper();
-    writeField(uxOut, upper[0], "ux_out");
-    writeField(uyOut, upper[1], "uy_out");
-    writeField(uzOut, upper[2], "uz_out");
-    auto lower = matrix.lower();
+    writeField(alphaOut, *matrix.alpha, "alpha_out");
+    writeField(uxOut, matrix.upper[0], "ux_out");
+    writeField(uyOut, matrix.upper[1], "uy_out");
+    writeField(uzOut, matrix.upper[2], "uz_out");
     const bool wantLower =
-        lxOut != nullptr && lyOut != nullptr && lzOut != nullptr && lower.has_value();
+        lxOut != nullptr && lyOut != nullptr && lzOut != nullptr && matrix.lower.has_value();
     if (wantLower)
     {
-        writeField(*lxOut, (*lower)[0], "lx_out");
-        writeField(*lyOut, (*lower)[1], "ly_out");
-        writeField(*lzOut, (*lower)[2], "lz_out");
+        writeField(*lxOut, (*matrix.lower)[0], "lx_out");
+        writeField(*lyOut, (*matrix.lower)[1], "ly_out");
+        writeField(*lzOut, (*matrix.lower)[2], "lz_out");
     }
 }
 
@@ -526,7 +516,7 @@ struct PyLaSolver
 
 } // namespace
 
-void registerGinkgoSolve(nb::module_& m)
+void registerLinearAlgebra(nb::module_& m)
 {
     using namespace amrex;
 
@@ -665,16 +655,13 @@ void registerGinkgoSolve(nb::module_& m)
         "||r_k||_2 <= rtol*||rhs||_2. Returns a dict with num_iters and res_norm."
     );
 
-    // Persistent solvers: operator + Ginkgo solver built once, solved many times.
-    // FaceCoeffSolver recomputes the mat-vec from the face coefficients each apply;
-    // FaceCoeffCsrSolver assembles the same matrix into a CSR (single-box) for comparison.
+    // Persistent solver: operator + Ginkgo solver built once, solved many times.
+    // FaceCoeffSolver recomputes the mat-vec from the face coefficients each apply.
     bindPersistent<FaceCoeffSolver>(m, "FaceCoeffSolver");
-    bindPersistent<FaceCoeffCsrSolver>(m, "FaceCoeffCsrSolver");
 
     m.def(
         "_la_matrix_solve",
-        [](const std::string& format,
-           MultiFab& alpha,
+        [](MultiFab& alpha,
            MultiFab& ux,
            MultiFab& lx,
            MultiFab& uy,
@@ -697,18 +684,18 @@ void registerGinkgoSolve(nb::module_& m)
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
             const BcArray bcArr = parseBc(bc, geom, "_la_matrix_solve");
-            auto matrix = makeLaMatrix(format, symmetry, nexec, alpha, geom, bcArr);
+            auto matrix = makeLaMatrix(symmetry, nexec, alpha, geom, bcArr);
             if (assemble_before_write)
             {
-                // Force an op() over the still-zero coefficients: an assembled format that
-                // missed the write below would then solve with that zero matrix.
-                auto stale = matrix.op();
+                // Force a toLinOp() over the still-zero coefficients: an operator cached
+                // across the write below would then solve with the zero matrix.
+                auto stale = toLinOp(matrix);
                 (void)stale;
             }
             writeCoefficients(matrix, alpha, ux, lx, uy, ly, uz, lz);
-            // Exercises Matrix::clone(): the copy shares the coefficient fields and, for the
-            // assembled format, the assembly-freshness state with them.
-            blockamr::la::Matrix work = via_copy ? blockamr::la::Matrix(matrix) : std::move(matrix);
+            // A COPY shares the coefficient fields with the original (they sit behind
+            // shared_ptr), so it must land on identical bits.
+            blockamr::la::MFFaceCoeffs work = via_copy ? matrix : std::move(matrix);
             MatrixKrylovSolver s(
                 work,
                 static_cast<gko::size_type>(alpha.boxArray().numPts()),
@@ -719,12 +706,10 @@ void registerGinkgoSolve(nb::module_& m)
                 project_nullspace
             );
             nb::dict d = toDict(s.solve(rhs, sol));
-            d["is_assembled"] = work.isAssembled();
             d["local_rows"] = work.localRows();
             d["symmetric"] = work.symmetry() == blockamr::la::Symmetry::symmetric;
             return d;
         },
-        nb::arg("format"),
         nb::arg("alpha"),
         nb::arg("ux"),
         nb::arg("lx"),
@@ -745,19 +730,17 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("bc") = std::vector<std::string>(6, "periodic"),
         nb::arg("via_copy") = false,
         nb::arg("assemble_before_write") = false,
-        "Solve A sol = rhs through a blockamr::la::Matrix holding format='mf'\n"
-        "(MFFaceCoeffs, matrix-free) or 'csr' (CsrMatrix, assembled).\n\n"
+        "Solve A sol = rhs through a blockamr::la::MFFaceCoeffs (matrix-free).\n\n"
         "The matrix allocates its OWN coefficient fields; the seven passed here are copied\n"
-        "into them through Matrix's coefficient handles. With symmetry='symmetric' the `lower`\n"
-        "handle is absent and l* are ignored. via_copy=True solves through a COPY of the\n"
-        "Matrix (its clone() path); assemble_before_write=True calls op() once before the\n"
-        "coefficients are written, which an assembled format must notice.\n\n"
-        "Returns the usual solve dict plus is_assembled, local_rows and symmetric."
+        "into them. With symmetry='symmetric' there is no `lower` and l* are ignored.\n"
+        "via_copy=True solves through a COPY of the matrix, which SHARES those fields;\n"
+        "assemble_before_write=True calls la::toLinOp once before the coefficients are\n"
+        "written, which must not freeze the operator.\n\n"
+        "Returns the usual solve dict plus local_rows and symmetric."
     );
     m.def(
         "_la_matrix_probe",
-        [](const std::string& format,
-           MultiFab& alpha,
+        [](MultiFab& alpha,
            MultiFab& ux,
            MultiFab& lx,
            MultiFab& uy,
@@ -771,44 +754,40 @@ void registerGinkgoSolve(nb::module_& m)
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
             const BcArray bcArr = parseBc(bc, geom, "_la_matrix_probe");
-            auto matrix = makeLaMatrix(format, symmetry, nexec, alpha, geom, bcArr);
+            auto matrix = makeLaMatrix(symmetry, nexec, alpha, geom, bcArr);
 
             nb::dict d;
-            d["is_assembled"] = matrix.isAssembled();
             d["symmetric"] = matrix.symmetry() == blockamr::la::Symmetry::symmetric;
             d["local_rows"] = matrix.localRows();
             {
-                const auto lower = matrix.lower();
-                d["lower_empty"] = !lower.has_value();
+                d["lower_empty"] = !matrix.lower.has_value();
                 // Structurally false: Cell/FaceFieldLevel have no empty state, so the
-                // invariant is asserted at compile time (coefficientsConcepts.cpp) instead.
+                // invariant is asserted at compile time (faceCoeffMatrix.hpp) instead.
                 d["upper_empty"] = false;
                 d["diag_empty"] = false;
-                // The ABSENCE of the `lower` handle is what "symmetric" means to a coefficient
-                // reader; the format's own symmetry() derives from the same storage.
-                d["reports_symmetric"] = !lower.has_value();
+                // The ABSENCE of `lower` is what "symmetric" means to a coefficient reader;
+                // symmetry() derives from the same storage.
+                d["reports_symmetric"] = !matrix.lower.has_value();
             }
             writeCoefficients(matrix, alpha, ux, lx, uy, ly, uz, lz);
 
-            // Every op() below is held alive to the end of the scope, so two distinct
-            // assemblies can never land on the same address.
-            auto op1 = matrix.op();
-            auto op2 = matrix.op();
+            // Every toLinOp() below is held alive to the end of the scope, so two distinct
+            // operators can never land on the same address.
+            auto op1 = toLinOp(matrix);
+            auto op2 = toLinOp(matrix);
             d["op_rows"] = static_cast<std::size_t>(op1->get_size()[0]);
             d["op_stable_without_write"] = (op1.get() == op2.get());
-            {
-                // Acquiring a write handle is the whole warning, even with nothing written.
-                auto handle = matrix.alpha();
-                (void)handle;
-            }
-            auto op3 = matrix.op();
+            // A REAL write to the diagonal source, not merely acquiring a handle: with the
+            // coefficient fields public there is no "handle taken" moment left to observe,
+            // so the probe writes what a caller would write.
+            writeField(*matrix.alpha, alpha, "alpha");
+            auto op3 = toLinOp(matrix);
             d["op_rebuilt_after_coefficients"] = (op3.get() != op2.get());
             matrix.zero();
-            auto op4 = matrix.op();
+            auto op4 = toLinOp(matrix);
             d["op_rebuilt_after_zero"] = (op4.get() != op3.get());
             return d;
         },
-        nb::arg("format"),
         nb::arg("alpha"),
         nb::arg("ux"),
         nb::arg("lx"),
@@ -820,15 +799,14 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("executor") = nb::none(),
         nb::arg("symmetry") = "symmetric",
         nb::arg("bc") = std::vector<std::string>(6, "periodic"),
-        "Introspect a blockamr::la::Matrix without solving: isAssembled, symmetry,\n"
-        "localRows, whether the `lower` handle is absent, the row count op() hands back, and\n"
-        "whether op() is rebuilt after a coefficient handle is taken / zero() or reused."
+        "Introspect a blockamr::la::MFFaceCoeffs without solving: symmetry, localRows,\n"
+        "whether `lower` is absent, the row count la::toLinOp hands back, and whether that\n"
+        "operator is rebuilt after a coefficient write / zero() or reused."
     );
 
     m.def(
         "_la_system_solve",
-        [](const std::string& format,
-           MultiFab& gamma,
+        [](MultiFab& gamma,
            MultiFab& alpha,
            const Geometry& geom,
            MultiFab& rhs,
@@ -852,11 +830,11 @@ void registerGinkgoSolve(nb::module_& m)
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
             const BcArray bcArr = parseBc(bc, geom, "_la_system_solve");
-            auto matrix = makeLaMatrix(format, symmetry, nexec, gamma, geom, bcArr);
+            auto matrix = makeLaMatrix(symmetry, nexec, gamma, geom, bcArr);
             writeDiagSource(matrix, alpha);
 
             blockamr::la::LinearSystem system(matrix, rhs);
-            system += blockamr::la::Operator(blockamr::ops::Laplacian(gamma, bcArr, bc_data));
+            system += blockamr::ops::Laplacian(gamma, bc_data);
             readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out, lx_out, ly_out, lz_out);
 
             SolverConfig cfg;
@@ -869,14 +847,12 @@ void registerGinkgoSolve(nb::module_& m)
 
             blockamr::la::Solver s(nexec, cfg);
             nb::dict d = toDict(s.solve(system, sol));
-            d["is_assembled"] = system.matrix().isAssembled();
             d["local_rows"] = system.localRows();
             d["symmetric"] = system.matrix().symmetry() == blockamr::la::Symmetry::symmetric;
             // Non-owning: the rhs the solve reads IS the caller's MultiFab.
             d["rhs_aliases_input"] = (&system.rhs() == &rhs);
             return d;
         },
-        nb::arg("format"),
         nb::arg("gamma"),
         nb::arg("alpha"),
         nb::arg("geom"),
@@ -898,23 +874,21 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("project_nullspace") = false,
         nb::arg("bc") = std::vector<std::string>(6, "periodic"),
         nb::arg("bc_data").none() = nb::none(),
-        "Assemble A through `system += ops::Laplacian(gamma, geom, bc)` and solve\n"
+        "Assemble A through `system += ops::Laplacian(gamma)` and solve\n"
         "A sol = rhs with blockamr::la::Solver.\n\n"
-        "`alpha` is the cell-centred diagonal SOURCE and is written through\n"
-        "Matrix::alpha() directly -- there is no ops::Ddt yet. The FACE coefficients\n"
+        "`alpha` is the cell-centred diagonal SOURCE and is written into the matrix's own\n"
+        "field directly -- there is no ops::Ddt yet. The FACE coefficients\n"
         "are the operator's alone, as is the BC fold: a non-periodic side gets a zero face\n"
         "coefficient and (sign-1)*aF on alpha, and with bc_data set also -aF*scale*g on the\n"
         "rhs -- which MUTATES the rhs passed in, since LinearSystem is non-owning. The\n"
         "assembled coefficients are copied back into alpha_out/u{x,y,z}_out for a bitwise\n"
         "comparison; the optional l{x,y,z}_out receive the LOW side and are written only when\n"
-        "the matrix reports a `lower` view, i.e. with symmetry='asymmetric'.\n\n"
-        "Returns the usual solve dict plus is_assembled, local_rows, symmetric and\n"
-        "rhs_aliases_input."
+        "the matrix has a `lower`, i.e. with symmetry='asymmetric'.\n\n"
+        "Returns the usual solve dict plus local_rows, symmetric and rhs_aliases_input."
     );
     m.def(
         "_la_system_probe",
-        [](const std::string& format,
-           MultiFab& gamma,
+        [](MultiFab& gamma,
            MultiFab& alpha,
            const Geometry& geom,
            MultiFab& rhs,
@@ -930,18 +904,17 @@ void registerGinkgoSolve(nb::module_& m)
            const std::vector<std::string>& bc,
            int n_apply,
            bool zero_after,
-           const MultiFab* bc_data,
-           bool report_structure)
+           const MultiFab* bc_data)
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
             const BcArray bcArr = parseBc(bc, geom, "_la_system_probe");
-            auto matrix = makeLaMatrix(format, symmetry, nexec, gamma, geom, bcArr);
+            auto matrix = makeLaMatrix(symmetry, nexec, gamma, geom, bcArr);
             writeDiagSource(matrix, alpha);
 
             blockamr::la::LinearSystem system(matrix, rhs);
             for (int i = 0; i < n_apply; ++i)
             {
-                system += blockamr::la::Operator(blockamr::ops::Laplacian(gamma, bcArr, bc_data));
+                system += blockamr::ops::Laplacian(gamma, bc_data);
             }
             if (zero_after)
             {
@@ -950,38 +923,12 @@ void registerGinkgoSolve(nb::module_& m)
             readCoefficients(matrix, alpha_out, ux_out, uy_out, uz_out, lx_out, ly_out, lz_out);
 
             nb::dict d;
-            d["is_assembled"] = system.matrix().isAssembled();
             d["local_rows"] = system.localRows();
             d["symmetric"] = system.matrix().symmetry() == blockamr::la::Symmetry::symmetric;
             d["rhs_aliases_input"] = (&system.rhs() == &rhs);
             d["rhs_sum"] = system.rhs().sum(0);
-            if (report_structure)
-            {
-                // The SPARSITY of the assembled matrix: a test can pin that a non-periodic
-                // row DROPS its boundary column rather than carrying an explicit 0.0 at the
-                // wraparound one, which no numerical check can see (sparse/csr.cpp side()).
-                auto csr = std::dynamic_pointer_cast<const gko::matrix::Csr<double, int>>(
-                    system.matrix().op()
-                );
-                if (csr == nullptr)
-                {
-                    throw std::runtime_error(
-                        "_la_system_probe: report_structure needs format='csr' -- only the "
-                        "assembled format has a row structure to report"
-                    );
-                }
-                // Through the master executor, so the arrays are host-readable on any one.
-                auto host = gko::clone(csr->get_executor()->get_master(), csr);
-                const int* rowPtrs = host->get_const_row_ptrs();
-                const int* colIdxs = host->get_const_col_idxs();
-                const auto nRows = static_cast<std::size_t>(host->get_size()[0]);
-                d["csr_row_ptrs"] = std::vector<int>(rowPtrs, rowPtrs + nRows + 1);
-                d["csr_col_idxs"] =
-                    std::vector<int>(colIdxs, colIdxs + host->get_num_stored_elements());
-            }
             return d;
         },
-        nb::arg("format"),
         nb::arg("gamma"),
         nb::arg("alpha"),
         nb::arg("geom"),
@@ -999,21 +946,17 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("n_apply") = 1,
         nb::arg("zero_after") = false,
         nb::arg("bc_data").none() = nb::none(),
-        nb::arg("report_structure") = false,
         "Assemble a blockamr::la::LinearSystem without solving it.\n\n"
         "Applies ops::Laplacian `n_apply` times (operators ACCUMULATE, so twice is twice the\n"
         "coefficients) and optionally calls LinearSystem::zero() afterwards, which clears the\n"
         "coefficients AND the rhs. Copies the result into alpha_out/u{x,y,z}_out -- and into\n"
-        "the optional l{x,y,z}_out, but only when the matrix reports a `lower` view\n"
-        "(symmetry='asymmetric') -- and reports local_rows, symmetric, is_assembled,\n"
-        "rhs_aliases_input and the rhs sum.\n\n"
-        "report_structure=True additionally calls op() and returns the assembled matrix's\n"
-        "csr_row_ptrs and csr_col_idxs (host copies), so a test can check the SPARSITY of a\n"
-        "boundary row. Raises unless format='csr'."
+        "the optional l{x,y,z}_out, but only when the matrix has a `lower`\n"
+        "(symmetry='asymmetric') -- and reports local_rows, symmetric, rhs_aliases_input\n"
+        "and the rhs sum."
     );
 
-    // MFFaceCoeffs' stored fine-level diagonal, reached through the concrete format: the
-    // diagonal is deliberately NOT a coefficient, so the erasure cannot see it.
+    // The fine-level diagonal computeFaceCoeffDiag derives from an MFFaceCoeffs' own
+    // coefficients: the diagonal is deliberately NOT stored on the matrix at all.
     m.def(
         "_la_stored_diagonal",
         [](MultiFab& alpha,
@@ -1044,7 +987,6 @@ void registerGinkgoSolve(nb::module_& m)
                        ? blockamr::la::MFFaceCoeffs::symmetric(nexec, mesh, bcArr)
                        : blockamr::la::MFFaceCoeffs::asymmetric(nexec, mesh, bcArr);
             {
-                m.markStale();
                 writeField(*m.alpha, alpha, "alpha");
                 writeField(m.upper[0], ux, "ux");
                 writeField(m.upper[1], uy, "uy");
@@ -1056,7 +998,21 @@ void registerGinkgoSolve(nb::module_& m)
                     writeField((*m.lower)[2], lz, "lz");
                 }
             }
-            writeField(diag_out, m.refreshedDiagonal(), "diag_out");
+            // The format stores no diagonal, so the probe derives one the way any consumer
+            // does: computeFaceCoeffDiag over the matrix's own coefficients, into scratch.
+            auto copyOutDiagonal = [&m](MultiFab& out, const char* what)
+            {
+                MultiFab diag(m.mesh.ba, m.mesh.dm, 1, 0);
+                computeFaceCoeffDiag(
+                    m.exec,
+                    blockamr::CellFieldLevel {blockamr::nonOwning(diag)},
+                    m.alpha,
+                    m.upper,
+                    m.storedLower()
+                );
+                writeField(out, diag, what);
+            };
+            copyOutDiagonal(diag_out, "diag_out");
 
             if (alpha2 != nullptr)
             {
@@ -1064,25 +1020,23 @@ void registerGinkgoSolve(nb::module_& m)
                 {
                     throw std::runtime_error("_la_stored_diagonal: alpha2 needs diag2_out");
                 }
-                // A copy shares the fields AND the diagonal state, so a write through it must
-                // be visible to the diagonal the ORIGINAL hands out.
+                // A copy shares the coefficient fields, so a write through it must be visible
+                // in the diagonal derived from the ORIGINAL.
                 if (rewrite_through_copy)
                 {
                     blockamr::la::MFFaceCoeffs copy = m;
-                    copy.markStale();
                     writeField(*copy.alpha, *alpha2, "alpha2");
                 }
                 else
                 {
-                    m.markStale();
                     writeField(*m.alpha, *alpha2, "alpha2");
                 }
-                writeField(*diag2_out, m.refreshedDiagonal(), "diag2_out");
+                copyOutDiagonal(*diag2_out, "diag2_out");
             }
             if (diag_zero_out != nullptr)
             {
                 m.zero();
-                writeField(*diag_zero_out, m.refreshedDiagonal(), "diag_zero_out");
+                copyOutDiagonal(*diag_zero_out, "diag_zero_out");
             }
         },
         nb::arg("alpha"),
@@ -1101,17 +1055,16 @@ void registerGinkgoSolve(nb::module_& m)
         nb::arg("symmetry") = "symmetric",
         nb::arg("bc") = std::vector<std::string>(6, "periodic"),
         nb::arg("rewrite_through_copy") = false,
-        "Copy out MFFaceCoeffs' stored fine-level diagonal, alpha - sum(faces).\n\n"
+        "Copy out an MFFaceCoeffs' fine-level diagonal, alpha - sum(faces).\n\n"
         "Writes the seven coefficients through the format's own field handles and copies\n"
-        "the resulting diagonal into diag_out. With alpha2/diag2_out, rewrites the diagonal\n"
-        "SOURCE afterwards and copies the refreshed diagonal too (rewrite_through_copy routes\n"
-        "that write through a COPY of the format, which shares the freshness state). With\n"
+        "the diagonal derived from them into diag_out. With alpha2/diag2_out, rewrites the\n"
+        "diagonal SOURCE afterwards and copies the diagonal again (rewrite_through_copy routes\n"
+        "that write through a COPY of the format, which shares the coefficient fields). With\n"
         "diag_zero_out, calls zero() last and copies the diagonal that follows."
     );
 
     // blockamr::la as real Python classes, over the same machinery the underscore-prefixed
-    // seams above drive. `blockamr.linear_algebra` gives these their public names; the format
-    // classes live there, since at this level a format is a FACTORY of the erased Matrix.
+    // seams above drive. `blockamr.linear_algebra` re-exports them under their public names.
 
     // The layout triple as one object (core/meshLevel.hpp). Constructor only -- nothing reads
     // a MeshLevel's members back from Python.
@@ -1131,8 +1084,8 @@ void registerGinkgoSolve(nb::module_& m)
             "it. Held by value -- ba/dm are refcounted handles, so a copy shares the layout."
         );
 
-    // One binding per factory rather than one taking a format string: the point of the
-    // erasure is that the format is chosen once and never dispatched on again.
+    // One binding per factory rather than one taking a format string: there is one matrix,
+    // and its symmetry is chosen once at allocation and never dispatched on again.
     const auto matrixFactory = [](auto make)
     {
         return [make](
@@ -1142,87 +1095,64 @@ void registerGinkgoSolve(nb::module_& m)
                )
         {
             const NeoN::Executor nexec = executor.value_or(NeoN::createDefaultExecutor());
-            return blockamr::la::Matrix(make(nexec, mesh, parseBc(bc, mesh.geom, "la matrix")));
+            return make(nexec, mesh, parseBc(bc, mesh.geom, "la matrix"));
         };
     };
-    nb::class_<blockamr::la::Matrix>(m, "Matrix")
+    nb::class_<blockamr::la::MFFaceCoeffs>(m, "MFFaceCoeffs")
         .def_static(
-            "mf_symmetric",
+            "symmetric",
             matrixFactory([](auto&&... a) { return blockamr::la::MFFaceCoeffs::symmetric(a...); }),
             nb::arg("mesh"),
             nb::arg("executor") = nb::none(),
             nb::arg("bc") = std::vector<std::string>(6, "periodic")
         )
         .def_static(
-            "mf_asymmetric",
+            "asymmetric",
             matrixFactory([](auto&&... a) { return blockamr::la::MFFaceCoeffs::asymmetric(a...); }),
             nb::arg("mesh"),
             nb::arg("executor") = nb::none(),
             nb::arg("bc") = std::vector<std::string>(6, "periodic")
         )
-        .def_static(
-            "csr_symmetric",
-            matrixFactory([](auto&&... a) { return blockamr::la::CsrMatrix::symmetric(a...); }),
-            nb::arg("mesh"),
-            nb::arg("executor") = nb::none(),
-            nb::arg("bc") = std::vector<std::string>(6, "periodic")
-        )
-        .def_static(
-            "csr_asymmetric",
-            matrixFactory([](auto&&... a) { return blockamr::la::CsrMatrix::asymmetric(a...); }),
-            nb::arg("mesh"),
-            nb::arg("executor") = nb::none(),
-            nb::arg("bc") = std::vector<std::string>(6, "periodic")
-        )
-        .def("is_assembled", &blockamr::la::Matrix::isAssembled)
-        .def("local_rows", &blockamr::la::Matrix::localRows)
+        .def("local_rows", &blockamr::la::MFFaceCoeffs::localRows)
         .def(
             "is_symmetric",
-            [](const blockamr::la::Matrix& mat)
+            [](const blockamr::la::MFFaceCoeffs& mat)
             { return mat.symmetry() == blockamr::la::Symmetry::symmetric; }
         )
-        .def("zero", &blockamr::la::Matrix::zero)
+        .def("zero", &blockamr::la::MFFaceCoeffs::zero)
         .def(
             "diagonal_source",
-            [](blockamr::la::Matrix& mat, const MultiFab& alpha) { writeDiagSource(mat, alpha); },
+            [](blockamr::la::MFFaceCoeffs& mat, const MultiFab& alpha)
+            { writeDiagSource(mat, alpha); },
             nb::arg("alpha"),
-            "Write the cell-centred diagonal SOURCE (ddt/Sp/reaction) straight through\n"
-            "Matrix::alpha(). There is no ops::Ddt yet, so this is the only way to set\n"
+            "Write the cell-centred diagonal SOURCE (ddt/Sp/reaction) straight into the\n"
+            "matrix's `alpha`. There is no ops::Ddt yet, so this is the only way to set\n"
             "it; it is NOT the matrix diagonal, which stays alpha - sum(faces)."
         );
 
-    // Opaque on purpose: an Operator's whole surface is `assemble`, private to LinearSystem
-    // (operator.hpp), so `system += op` is all a caller can do with one -- here as in C++.
-    nb::class_<blockamr::la::Operator>(m, "Operator");
+    // Opaque on purpose: an operator's whole surface is `assemble`, which takes the system --
+    // so `system += op` is all a caller can do with one, here as in C++.
+    nb::class_<blockamr::ops::Laplacian>(m, "Laplacian");
 
     m.def(
         "la_laplacian",
-        [](const MultiFab& gamma,
-           const Geometry& geom,
-           const std::vector<std::string>& bc,
-           const MultiFab* bcData)
-        {
-            // `geom` is used ONLY to parse the bc strings -- parseBc refuses a "periodic" side
-            // the geometry disagrees with. The operator scales by the dx on the coefficients.
-            const BcArray bcArr = parseBc(bc, geom, "laplacian");
-            return blockamr::la::Operator(blockamr::ops::Laplacian(gamma, bcArr, bcData));
-        },
+        [](const MultiFab& gamma, const MultiFab* bcData)
+        { return blockamr::ops::Laplacian(gamma, bcData); },
         nb::arg("gamma"),
-        nb::arg("geom"),
-        nb::arg("bc") = std::vector<std::string>(6, "periodic"),
         nb::arg("bc_data").none() = nb::none(),
         // gamma and bc_data are held BY POINTER (laplacian.hpp, LIFETIME) and
         // read when `system +=` runs, which may be much later.
         nb::keep_alive<0, 1>(),
-        nb::keep_alive<0, 4>(),
+        nb::keep_alive<0, 2>(),
         "The implicit diffusion term as face coefficients: `system += laplacian(...)`.\n\n"
-        "Named `la_laplacian` here because `blockamr.laplacian` is already the stencil-kernel\n"
-        "binding; `blockamr.linear_algebra.laplacian` is the name callers use."
+        "The mesh and the domain BCs are read off the system's MATRIX, so neither is an\n"
+        "argument here. Named `la_laplacian` because `blockamr.laplacian` is already the\n"
+        "stencil-kernel binding; `blockamr.linear_algebra.laplacian` is the name callers use."
     );
 
     nb::class_<blockamr::la::LinearSystem>(m, "LinearSystem")
         .def(
-            nb::init<blockamr::la::Matrix&, MultiFab&>(),
+            nb::init<blockamr::la::MFFaceCoeffs&, MultiFab&>(),
             nb::arg("matrix"),
             nb::arg("rhs"),
             // Non-owning by design: both must outlive the system, and the rhs an
@@ -1233,7 +1163,7 @@ void registerGinkgoSolve(nb::module_& m)
         .def(
             "__iadd__",
             [](blockamr::la::LinearSystem& s,
-               const blockamr::la::Operator& op) -> blockamr::la::LinearSystem&
+               const blockamr::ops::Laplacian& op) -> blockamr::la::LinearSystem&
             {
                 s += op;
                 return s;
@@ -1243,8 +1173,16 @@ void registerGinkgoSolve(nb::module_& m)
         )
         .def("zero", &blockamr::la::LinearSystem::zero)
         .def("local_rows", &blockamr::la::LinearSystem::localRows)
-        .def("matrix", &blockamr::la::LinearSystem::matrix, nb::rv_policy::reference_internal)
-        .def("rhs", &blockamr::la::LinearSystem::rhs, nb::rv_policy::reference_internal);
+        .def(
+            "matrix",
+            nb::overload_cast<>(&blockamr::la::LinearSystem::matrix),
+            nb::rv_policy::reference_internal
+        )
+        .def(
+            "rhs",
+            nb::overload_cast<>(&blockamr::la::LinearSystem::rhs),
+            nb::rv_policy::reference_internal
+        );
 
     nb::class_<PyLaSolver>(m, "Solver")
         .def(
@@ -1330,9 +1268,8 @@ void registerGinkgoSolve(nb::module_& m)
             nb::arg("sol"),
             "Solve `system` into `sol` (in place; its incoming values seed the initial\n"
             "guess). The executor comes from the system's MATRIX.\n\n"
-            "The preconditioner is built by the MATRIX from the coefficients it holds, so\n"
-            "precond='gmg'/'gmg_kokkos'/'mlmg' work here on a format that can build them; a\n"
-            "format that cannot RAISES, naming itself and the precond.\n\n"
+            "The preconditioner is built from the coefficients the MATRIX holds, so\n"
+            "precond='gmg'/'gmg_kokkos'/'mlmg' all work here.\n\n"
             "solver in ('gmg', 'ir', 'mpir') also RAISES: those want the hierarchy as the\n"
             "SOLVER rather than as a preconditioner. Use blockamr.FaceCoeffSolver for them."
         );

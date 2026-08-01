@@ -4,18 +4,16 @@
 
 """``blockamr::la::LinearSystem`` and the first operator, ``ops::Laplacian``.
 
-A ``LinearSystem`` is a ``Matrix`` and an rhs, and its ``operator+=`` is the only
-way an operator ever runs: ``Coefficients`` (what an operator writes through) has
-a private constructor whose sole friend is ``LinearSystem``, and
-``Operator::assemble`` is private with the same friend. Neither gate is testable
-from here -- code that violated one would not compile -- so both are asserted in
-``linearAlgebra/coefficientsConcepts.cpp`` instead.
+A ``LinearSystem`` is an ``MFFaceCoeffs`` and an rhs, and its template
+``operator+=`` is the only way an operator ever runs: ``assemble`` is handed the
+SYSTEM, so an operator reads the mesh and the domain BCs off the matrix it is
+writing into and has nowhere to keep a copy of either.
 
-What IS testable, and is what this file checks:
+What is checked here:
 
-* ``system += ops::Laplacian(gamma, geom, bc)`` writes **bitwise** the face
-  coefficients a caller writes by hand today, periodic and non-periodic, on both
-  matrix formats -- and the two paths then solve to the same answer. Non-periodic
+* ``system += ops::Laplacian(gamma)`` writes **bitwise** the face
+  coefficients a caller writes by hand today, periodic and non-periodic -- and
+  the two paths then solve to the same answer. Non-periodic
   is the same statement and not a special case: the boundary condition is applied
   by the matrix from the live coefficient, so the operator writes no diagonal
   source and drops no face (see ``operators/laplacian.hpp``);
@@ -27,8 +25,8 @@ What IS testable, and is what this file checks:
 * operators ACCUMULATE -- applying the same one twice doubles the coefficients;
 * ``zero()`` clears the coefficients *and* the rhs.
 
-The boundary condition itself -- every kind, both formats, the inhomogeneous rhs
-term -- lives in ``test_la_boundary_conditions.py``; what is pinned here is the
+The boundary condition itself -- every kind, the inhomogeneous rhs term -- lives
+in ``test_la_boundary_conditions.py``; what is pinned here is the
 operator's coefficient arithmetic and the ``LinearSystem`` mechanics around it.
 
 Bitwise, not ``allclose``: the claim is that the operator writes *exactly* what
@@ -36,7 +34,7 @@ the hand-built path writes, and a tolerance would hide an off-by-one-cell or a
 factor that happens to be small on this mesh.
 
 The entry points are ``blockamr._blockamr._la_system_solve`` / ``_la_system_probe``
--- test-facing bindings in the same style S4 added for ``Matrix``, since blockAmr
+-- test-facing bindings in the same style S4 added for the matrix, since blockAmr
 has no C++ test target that builds.
 """
 
@@ -170,7 +168,6 @@ _SOLVE_KWARGS = dict(solver="cg", max_iter=5000, rtol=1e-14, atol=0.0)
 # Periodic and one non-periodic case. The coefficients an operator writes are the
 # same either way EXCEPT for which cells a domain face averages gamma over, which
 # only the varying-gamma row below can see (`nonperiodic` selects its expectation).
-# The non-periodic row is the one S6a made reachable through CsrMatrix.
 _BC_CASES = [
     ("periodic", [1, 1, 1], ["periodic"] * 6, False),
     ("dirichlet", [0, 0, 0], ["dirichlet"] * 6, True),
@@ -187,10 +184,9 @@ def _skip_on_missing_ginkgo(exc, executor="reference"):
     raise exc
 
 
-def _probe(fmt, gamma, alpha, geom, ba, dm, n, bc, out, **kwargs):
+def _probe(gamma, alpha, geom, ba, dm, n, bc, out, **kwargs):
     try:
         return _ext._la_system_probe(
-            fmt,
             gamma,
             alpha,
             geom,
@@ -204,10 +200,9 @@ def _probe(fmt, gamma, alpha, geom, ba, dm, n, bc, out, **kwargs):
         _skip_on_missing_ginkgo(exc)
 
 
-def _system_solve(fmt, gamma, alpha, geom, ba, dm, rhs, sol, bc, out, executor):
+def _system_solve(gamma, alpha, geom, ba, dm, rhs, sol, bc, out, executor):
     try:
         return _ext._la_system_solve(
-            fmt,
             gamma,
             alpha,
             geom,
@@ -248,10 +243,9 @@ def _reference_solve(geom, ba, dm, n, rhs, bc, executor):
     return sol, stats
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
 @pytest.mark.parametrize("case, periodic, bc, nonperiodic", _BC_CASES)
 def test_laplacian_writes_the_hand_built_coefficients(
-    blockamr_session, fmt, case, periodic, bc, nonperiodic
+    blockamr_session, case, periodic, bc, nonperiodic
 ):
     """`system += ops::Laplacian(gamma=1, ...)` gives bitwise the hand-built faces.
 
@@ -269,21 +263,16 @@ def test_laplacian_writes_the_hand_built_coefficients(
     alpha = _const_cell(ba, dm, 1.0)
     out = _out_fields(geom, ba, dm, n)
 
-    _probe(fmt, gamma, alpha, geom, ba, dm, n, bc, out)
+    _probe(gamma, alpha, geom, ba, dm, n, bc, out)
 
     want_faces = _hand_built_faces(geom, dm, n)
-    np.testing.assert_array_equal(
-        _one_box(out[0]), _expected_alpha(alpha), err_msg=f"{fmt}/{case} alpha"
-    )
+    np.testing.assert_array_equal(_one_box(out[0]), _expected_alpha(alpha), err_msg=f"{case} alpha")
     for d, name in enumerate("xyz"):
-        _assert_bitwise(out[1 + d], want_faces[d], f"{fmt}/{case} u{name}")
+        _assert_bitwise(out[1 + d], want_faces[d], f"{case} u{name}")
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
 @pytest.mark.parametrize("case, periodic, bc, nonperiodic", _BC_CASES)
-def test_system_solve_matches_hand_built_solver(
-    blockamr_session, fmt, case, periodic, bc, nonperiodic
-):
+def test_system_solve_matches_hand_built_solver(blockamr_session, case, periodic, bc, nonperiodic):
     """The assembled system solves to the hand-built solver's answer.
 
     Same mesh, same coefficients, same CG. The random rhs is deliberate: a smooth
@@ -300,16 +289,15 @@ def test_system_solve_matches_hand_built_solver(
 
     sol = _zero_sol(ba, dm)
     out = _out_fields(geom, ba, dm, n)
-    stats = _system_solve(fmt, gamma, alpha, geom, ba, dm, rhs, sol, bc, out, "reference")
+    stats = _system_solve(gamma, alpha, geom, ba, dm, rhs, sol, bc, out, "reference")
 
-    assert stats["converged"] is True, f"{fmt}/{case} did not converge: {dict(stats)}"
-    assert stats["num_iters"] > 10, f"{fmt}/{case}: too few CG iterations to mean anything"
-    assert stats["is_assembled"] is (fmt == "csr")
+    assert stats["converged"] is True, f"{case} did not converge: {dict(stats)}"
+    assert stats["num_iters"] > 10, f"{case}: too few CG iterations to mean anything"
     assert stats["local_rows"] == n**3
 
     diff = _max_abs_diff(ref, sol)
     assert diff < _AGREE_TOL, (
-        f"{fmt}/{case}: |FaceCoeffSolver - LinearSystem({fmt})| = {diff} exceeds {_AGREE_TOL} "
+        f"{case}: |FaceCoeffSolver - LinearSystem| = {diff} exceeds {_AGREE_TOL} "
         f"(ref {dict(ref_stats)}, got {dict(stats)})"
     )
 
@@ -336,7 +324,7 @@ def test_laplacian_face_gamma_is_the_two_cell_average(
     alpha = _const_cell(ba, dm, 1.0)
     out = _out_fields(geom, ba, dm, n)
 
-    _probe("mf", gamma, alpha, geom, ba, dm, n, bc, out)
+    _probe(gamma, alpha, geom, ba, dm, n, bc, out)
 
     g = _one_box(gamma)
     wrap = case == "periodic"
@@ -373,8 +361,8 @@ def test_operator_accumulates_rather_than_assigns(blockamr_session):
 
     once = _out_fields(geom, ba, dm, n)
     twice = _out_fields(geom, ba, dm, n)
-    _probe("mf", gamma, alpha, geom, ba, dm, n, bc, once, n_apply=1)
-    _probe("mf", gamma, alpha, geom, ba, dm, n, bc, twice, n_apply=2)
+    _probe(gamma, alpha, geom, ba, dm, n, bc, once, n_apply=1)
+    _probe(gamma, alpha, geom, ba, dm, n, bc, twice, n_apply=2)
 
     for d, name in enumerate("xyz"):
         np.testing.assert_array_equal(
@@ -394,17 +382,16 @@ def test_system_zero_clears_coefficients_and_rhs(blockamr_session):
     bc = ["periodic"] * 6
     out = _out_fields(geom, ba, dm, n)
 
-    kept = _probe("mf", gamma, alpha, geom, ba, dm, n, bc, out)
+    kept = _probe(gamma, alpha, geom, ba, dm, n, bc, out)
     assert kept["rhs_sum"] != 0.0  # the random rhs the probe built
 
-    cleared = _probe("mf", gamma, alpha, geom, ba, dm, n, bc, out, zero_after=True)
+    cleared = _probe(gamma, alpha, geom, ba, dm, n, bc, out, zero_after=True)
     assert cleared["rhs_sum"] == 0.0
     for field in out:
         assert np.count_nonzero(_one_box(field)) == 0
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
-def test_system_reports_the_matrix_shape_and_holds_the_caller_rhs(blockamr_session, fmt):
+def test_system_reports_the_matrix_shape_and_holds_the_caller_rhs(blockamr_session):
     """localRows() comes from the matrix, and the rhs is the caller's own MultiFab.
 
     localRows() is the RANK-LOCAL count; it coincides with numPts() on one rank,
@@ -419,10 +406,9 @@ def test_system_reports_the_matrix_shape_and_holds_the_caller_rhs(blockamr_sessi
     alpha = _const_cell(ba, dm, 1.0)
     out = _out_fields(geom, ba, dm, n)
 
-    d = _probe(fmt, gamma, alpha, geom, ba, dm, n, ["periodic"] * 6, out)
+    d = _probe(gamma, alpha, geom, ba, dm, n, ["periodic"] * 6, out)
     assert d["local_rows"] == n**3
     assert d["symmetric"] is True
-    assert d["is_assembled"] is (fmt == "csr")
     assert d["rhs_aliases_input"] is True
 
 
@@ -445,7 +431,7 @@ def test_system_solve_stats_keys_match_face_coeff_solver(blockamr_session):
     _, ref_stats = _reference_solve(geom, ba, dm, n, rhs, bc, "reference")
     sol = _zero_sol(ba, dm)
     out = _out_fields(geom, ba, dm, n)
-    stats = _system_solve("mf", gamma, alpha, geom, ba, dm, rhs, sol, bc, out, "reference")
+    stats = _system_solve(gamma, alpha, geom, ba, dm, rhs, sol, bc, out, "reference")
 
-    extra = {"is_assembled", "local_rows", "symmetric", "rhs_aliases_input"}
+    extra = {"local_rows", "symmetric", "rhs_aliases_input"}
     assert set(stats.keys()) - extra == set(ref_stats.keys())

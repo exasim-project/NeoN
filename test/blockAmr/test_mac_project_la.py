@@ -17,7 +17,7 @@ outflow-Dirichlet configuration and an all-Neumann one:
   ``-gamma/dx**2``, so a system of that term alone is ``-div(grad p)`` -- the same sign
   as MLABecLaplacian at alpha=0/beta=1 -- and the rhs stays ``-div(phi)``. Nothing here
   flips a sign, and the two routes agreeing on ``p_mac`` is what says none was needed;
-* NO diagonal source is written: alpha=0 has none, so ``Matrix.diagonal_source`` is
+* NO diagonal source is written: alpha=0 has none, so ``MFFaceCoeffs.diagonal_source`` is
   never called (``test_la_boundary_conditions.py`` pins the same statement at
   coefficient level);
 * the six-element BC list is ORDERED (xlo, xhi, ylo, yhi, zlo, zhi) as ``la::parseBc``

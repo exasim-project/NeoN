@@ -1150,33 +1150,6 @@ def test_gmg_kokkos_multirank(blockamr_session, cfg):
     assert stats["num_iters"] <= 20
 
 
-@pytest.mark.mpi
-@pytest.mark.skipif(_n_ranks() < 2, reason="single rank; run under `mpirun -n 2 pytest`")
-def test_csr_refuses_multirank(blockamr_session):
-    """The CSR path still sizes its flat vectors globally, so it must RAISE on >1 rank.
-
-    Its assembly is single-box only, which on more than one rank means one rank
-    holding every row while the others hold none, and its vectors were never given
-    the distributed views the Krylov paths got -- so its reductions are rank-local
-    and the answer is wrong, not merely slow. Refusing is the point: a silently
-    rank-local reduction is exactly what let the residual norm go wrong unnoticed
-    for months, and it went unnoticed because nothing complained.
-
-    Constructed directly rather than through _make_solver_or_skip -- that helper
-    turns a RuntimeError into a skip, which would swallow the very error under test.
-    """
-    if not hasattr(blockamr, "FaceCoeffCsrSolver"):
-        pytest.skip("blockamr.FaceCoeffCsrSolver binding not available")
-    shape = (16, 16, 16)
-    geom, ba, dm = _make_mesh(shape)
-    coeffs, _, _ = _coeffs(geom, ba, dm, shape)
-    with pytest.raises(RuntimeError) as exc:
-        blockamr.FaceCoeffCsrSolver(*coeffs, geom, executor=gko_executor("reference"))
-    if "without Ginkgo" in str(exc.value):
-        pytest.skip("blockamr built without Ginkgo")
-    assert "single-rank only" in str(exc.value)
-
-
 # ---------------------------------------------------------------------------
 # 9. multi-component fields
 # ---------------------------------------------------------------------------

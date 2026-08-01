@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 
 // MLMG's stopping norm, which Ginkgo lacks: max|r_i| reduced with amrex::Reduce over

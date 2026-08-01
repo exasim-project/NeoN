@@ -5,9 +5,8 @@
 """Boundary conditions on the ``blockamr::la`` path: left on the face coefficients.
 
 A domain boundary reaches the mat-vec as a GHOST value — ``FaceCoeffOp``
-reflecting the ghost layer, ``assembleFaceCoeffCsr`` folding the same reflection
-onto the diagonal — and ``ops::Laplacian`` writes coefficients that carry no
-boundary condition of their own:
+reflecting the ghost layer — and ``ops::Laplacian`` writes coefficients that carry
+no boundary condition of their own:
 
     aF      -> -0.5*(gC + gC)/dx**2   the boundary CELL's gamma, twice: a domain
                                       face has no second cell to average over
@@ -16,8 +15,7 @@ boundary condition of their own:
 ``(sign, scale)`` is ``(-1, 2)`` for Dirichlet and ``(+1, dx[d])`` for Neumann,
 straight out of ``core/bc.hpp``'s ghost fill. ``sign`` never appears in what the
 operator writes: the consumer derives ``(sign-1)*aF`` from the live ``aF`` — the
-stencil as ``aF*(sign*pC)`` against a stored diagonal of ``alpha - sum(faces)``,
-``csr.cpp`` as ``diag += sign*aFace`` on a column it then drops.
+stencil as ``aF*(sign*pC)`` against a diagonal of ``alpha - sum(faces)``.
 
 S6b briefly had ``ops::Laplacian`` fold instead (``aF -> 0`` plus ``(sign-1)*aF``
 on ``alpha``), which gives the same FINE matrix and was reverted for the coarse
@@ -31,19 +29,16 @@ What is checked here, on periodic / Dirichlet / Neumann / a mixed array:
   faces and the ``alpha`` it must leave alone, on a symmetric AND on an
   asymmetric matrix (the latter is the only row in the suite that reaches the
   operator's low-side write at all);
-* the two formats, given the same operator, agree — bitwise on the coefficients
-  and to ``_AGREE_TOL`` on the solve;
-* both formats reproduce the LEGACY ``FaceCoeffSolver``. That is the load-bearing
+* the format reproduces the LEGACY ``FaceCoeffSolver``. That is the load-bearing
   test: it is the only one that can tell a self-consistent wrong convention from
   the right one;
 * the inhomogeneous rhs term, bitwise against the datum, and again against the
   legacy path's ``bc_data`` answer — with an anti-vacuity check that dropping the
-  datum moves the answer;
-* the assembled matrix's SPARSITY: a non-periodic row drops its boundary column
-  rather than carrying an explicit ``0.0`` at the wraparound one. Nothing else in
-  this suite can see that, because the two spellings of the row are numerically
-  identical — which is exactly how the ``bc`` removal that S6b first shipped got
-  as far as a green suite (handoff §10, §11).
+  datum moves the answer.
+
+The BC contract against a reference that shares no C++ code at all —
+``test_la_dense_oracle.py`` — is where the fold is checked against an independent
+numpy operator rather than against a second path through ``stencil.hpp``.
 
 The legacy path is deliberately NOT changed and never folded into its
 coefficients: it shares them with the GMG hierarchy, which reflects ghosts of its
@@ -222,10 +217,9 @@ def _skip_on_missing_ginkgo(exc, executor="reference"):
     raise exc
 
 
-def _probe(fmt, gamma, alpha, geom, rhs, bc, out, **kwargs):
+def _probe(gamma, alpha, geom, rhs, bc, out, **kwargs):
     try:
         return _ext._la_system_probe(
-            fmt,
             gamma,
             alpha,
             geom,
@@ -239,10 +233,9 @@ def _probe(fmt, gamma, alpha, geom, rhs, bc, out, **kwargs):
         _skip_on_missing_ginkgo(exc)
 
 
-def _system_solve(fmt, gamma, alpha, geom, rhs, sol, bc, out, **kwargs):
+def _system_solve(gamma, alpha, geom, rhs, sol, bc, out, **kwargs):
     try:
         return _ext._la_system_solve(
-            fmt,
             gamma,
             alpha,
             geom,
@@ -355,12 +348,10 @@ def _expected_rhs_fold(geom, bc, datum):
     return out
 
 
-@pytest.mark.parametrize(
-    "fmt, symmetry", [("mf", "symmetric"), ("csr", "symmetric"), ("mf", "asymmetric")]
-)
+@pytest.mark.parametrize("symmetry", ["symmetric", "asymmetric"])
 @pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
 def test_laplacian_writes_the_boundary_face_coefficient(
-    blockamr_session, fmt, symmetry, case, periodic, bc
+    blockamr_session, symmetry, case, periodic, bc
 ):
     """What the operator wrote, per BC kind, asserted BITWISE.
 
@@ -388,9 +379,9 @@ def test_laplacian_writes_the_boundary_face_coefficient(
     gamma = _const_cell(ba, dm, 1.0)
     alpha = _const_cell(ba, dm, 1.0)
     out = _out_fields(geom, ba, dm)
-    tag = f"{fmt}/{symmetry}/{case}"
+    tag = f"{symmetry}/{case}"
 
-    _probe(fmt, gamma, alpha, geom, _random_rhs(ba, dm), bc, out, symmetry=symmetry)
+    _probe(gamma, alpha, geom, _random_rhs(ba, dm), bc, out, symmetry=symmetry)
 
     np.testing.assert_array_equal(
         _one_box(out[0]), _expected_alpha(), err_msg=f"{tag}: alpha must be untouched"
@@ -403,60 +394,18 @@ def test_laplacian_writes_the_boundary_face_coefficient(
     for d, name in enumerate("xyz"):
         high = _one_box(want[d])
         want_low = high if symmetry == "asymmetric" else np.zeros_like(high)
-        np.testing.assert_array_equal(
-            _one_box(out[4 + d]), want_low, err_msg=f"{tag}: l{name}"
-        )
+        np.testing.assert_array_equal(_one_box(out[4 + d]), want_low, err_msg=f"{tag}: l{name}")
 
 
 @pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
-def test_the_two_formats_agree_through_the_laplacian(blockamr_session, case, periodic, bc):
-    """MFFaceCoeffs and CsrMatrix, one operator, one answer -- for every BC kind.
-
-    The coefficients are the same fields written by the same operator, so those are
-    compared bitwise; the solve is two genuinely different mat-vecs (a stencil over
-    a ghosted scratch, an explicit sparse matrix) and gets the solve tolerance.
-    Agreement here is what says the fold is expressible in both representations,
-    which is the point of moving it into the coefficients.
-    """
-    _require_bindings()
-    geom, ba, dm = _make_mesh(periodic)
-    gamma = _const_cell(ba, dm, 1.0)
-    alpha = _const_cell(ba, dm, 1.0)
-
-    sols = {}
-    outs = {}
-    for fmt in ("mf", "csr"):
-        sol = _zero_sol(ba, dm)
-        out = _out_fields(geom, ba, dm)
-        stats = _system_solve(fmt, gamma, alpha, geom, _random_rhs(ba, dm), sol, bc, out)
-        assert stats["converged"] is True, f"{fmt}/{case} did not converge: {dict(stats)}"
-        assert stats["num_iters"] > 10, f"{fmt}/{case}: too few CG iterations to mean anything"
-        sols[fmt] = sol
-        outs[fmt] = out
-
-    for i, name in enumerate(("alpha", "ux", "uy", "uz")):
-        np.testing.assert_array_equal(
-            _one_box(outs["mf"][i]),
-            _one_box(outs["csr"][i]),
-            err_msg=f"{case}: formats disagree on {name}",
-        )
-    diff = _max_abs_diff(sols["mf"], sols["csr"])
-    assert diff < _AGREE_TOL, f"{case}: |mf - csr| = {diff} exceeds {_AGREE_TOL}"
-
-
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
-@pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
-def test_folded_system_matches_the_legacy_face_coeff_solver(
-    blockamr_session, fmt, case, periodic, bc
-):
+def test_folded_system_matches_the_legacy_face_coeff_solver(blockamr_session, case, periodic, bc):
     """The assembled matrix IS the matrix the legacy ghost reflection applies.
 
     The reference gets HAND-WRITTEN raw coefficients plus `bc`; this path gets the
     same `bc` and coefficients ops::Laplacian assembled. Two independently written
     coefficient sets under one boundary convention, so this is the test that can
     tell a self-consistent wrong convention (a gamma read off the wrong side of a
-    domain face, a scale of 1 where 2 belongs) from the right one -- which the
-    format-agreement test above cannot, since both formats would be wrong together.
+    domain face, a scale of 1 where 2 belongs) from the right one.
     """
     _require_bindings()
     geom, ba, dm = _make_mesh(periodic)
@@ -467,13 +416,13 @@ def test_folded_system_matches_the_legacy_face_coeff_solver(
 
     sol = _zero_sol(ba, dm)
     out = _out_fields(geom, ba, dm)
-    stats = _system_solve(fmt, gamma, alpha, geom, _random_rhs(ba, dm), sol, bc, out)
+    stats = _system_solve(gamma, alpha, geom, _random_rhs(ba, dm), sol, bc, out)
 
-    assert stats["converged"] is True, f"{fmt}/{case} did not converge: {dict(stats)}"
-    assert stats["num_iters"] > 10, f"{fmt}/{case}: too few CG iterations to mean anything"
+    assert stats["converged"] is True, f"{case} did not converge: {dict(stats)}"
+    assert stats["num_iters"] > 10, f"{case}: too few CG iterations to mean anything"
     diff = _max_abs_diff(ref, sol)
     assert diff < _AGREE_TOL, (
-        f"{fmt}/{case}: |FaceCoeffSolver - folded LinearSystem({fmt})| = {diff} "
+        f"{case}: |FaceCoeffSolver - folded LinearSystem| = {diff} "
         f"exceeds {_AGREE_TOL} (ref {dict(ref_stats)}, got {dict(stats)})"
     )
 
@@ -497,7 +446,7 @@ def test_laplacian_writes_the_inhomogeneous_datum_into_the_rhs(
     rhs = _const_cell(ba, dm, 0.0)
     out = _out_fields(geom, ba, dm)
 
-    _probe("mf", gamma, alpha, geom, rhs, bc, out, bc_data=data)
+    _probe(gamma, alpha, geom, rhs, bc, out, bc_data=data)
 
     np.testing.assert_array_equal(
         _one_box(rhs),
@@ -506,18 +455,16 @@ def test_laplacian_writes_the_inhomogeneous_datum_into_the_rhs(
     )
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
 @pytest.mark.parametrize("case, periodic, bc", _INHOM_CASES)
 def test_inhomogeneous_system_matches_the_legacy_face_coeff_solver(
-    blockamr_session, fmt, case, periodic, bc
+    blockamr_session, case, periodic, bc
 ):
     """The affine term, folded at assembly, gives the legacy path's answer.
 
     The legacy path keeps `apply` linear and folds c0 = L(0) into the rhs once per
     solve; this one folds the same constant while assembling. The datum fab is the
     SAME object for both, which is what makes this a comparison of the fold rather
-    than of two data conventions. It also reaches the assembled format, which the
-    legacy path refuses bc_data on entirely (test_ginkgo_bc.py::test_csr_refuses_bc_data).
+    than of two data conventions.
     """
     _require_bindings()
     geom, ba, dm = _make_mesh(periodic)
@@ -529,108 +476,13 @@ def test_inhomogeneous_system_matches_the_legacy_face_coeff_solver(
 
     sol = _zero_sol(ba, dm)
     out = _out_fields(geom, ba, dm)
-    stats = _system_solve(fmt, gamma, alpha, geom, _random_rhs(ba, dm), sol, bc, out, bc_data=data)
+    stats = _system_solve(gamma, alpha, geom, _random_rhs(ba, dm), sol, bc, out, bc_data=data)
 
-    assert stats["converged"] is True, f"{fmt}/{case} did not converge: {dict(stats)}"
+    assert stats["converged"] is True, f"{case} did not converge: {dict(stats)}"
     diff = _max_abs_diff(ref, sol)
     assert diff < _AGREE_TOL, (
-        f"{fmt}/{case}: |FaceCoeffSolver(bc_data) - LinearSystem({fmt}, bc_data)| = {diff} "
+        f"{case}: |FaceCoeffSolver(bc_data) - LinearSystem(bc_data)| = {diff} "
         f"exceeds {_AGREE_TOL} (ref {dict(ref_stats)}, got {dict(stats)})"
-    )
-
-
-def _expected_csr_columns(bc):
-    """The exact column set of every row of the assembled matrix, per BC.
-
-    Row and column index is ``(k*N + j)*N + i``, the flattening ``csr.cpp``'s
-    ``idx`` lambda uses. A side contributes its neighbour column unless the cell
-    sits on that domain face AND the side is non-periodic — on a periodic side the
-    neighbour is the modular wraparound, on a non-periodic one the coupling does
-    not exist at all and no entry is emitted. Sets, not lists: N is 16, so all
-    seven neighbours of a cell are distinct and nothing collapses.
-    """
-
-    def idx(i, j, k):
-        return (k * N + j) * N + i
-
-    rows = []
-    for k in range(N):
-        for j in range(N):
-            for i in range(N):
-                cols = {idx(i, j, k)}
-                sides = [
-                    (0, i == 0, ((i - 1) % N, j, k)),
-                    (1, i == N - 1, ((i + 1) % N, j, k)),
-                    (2, j == 0, (i, (j - 1) % N, k)),
-                    (3, j == N - 1, (i, (j + 1) % N, k)),
-                    (4, k == 0, (i, j, (k - 1) % N)),
-                    (5, k == N - 1, (i, j, (k + 1) % N)),
-                ]
-                for s, leaves_domain, neighbour in sides:
-                    if leaves_domain and bc[s] != "periodic":
-                        continue
-                    cols.add(idx(*neighbour))
-                rows.append(sorted(cols))
-    return rows
-
-
-@pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
-def test_csr_boundary_rows_drop_the_wraparound_column(blockamr_session, case, periodic, bc):
-    """A non-periodic row carries 6 entries, not 7 with an explicit zero.
-
-    This is the one property in this file that is NOT visible in any number the
-    solver produces: a boundary row spelled with a 0.0 at the modular-wraparound
-    column and one spelled without that column give the identical mat-vec. So no
-    solve, no residual and no coefficient comparison can tell them apart — and
-    when S6b first (wrongly) took `bc` off CsrMatrix, the whole suite stayed green
-    while every non-periodic row silently grew a periodic coupling that does not
-    exist. This test is the guard that would have objected.
-
-    The assertion is the exact column SET of every row, not just a count, so it
-    pins which column disappeared and not merely that one did. The periodic case
-    is in the same parametrization deliberately: it must keep all 7 everywhere, so
-    the test discriminates between the two regimes rather than counting down.
-    """
-    _require_bindings()
-    geom, ba, dm = _make_mesh(periodic)
-    gamma = _const_cell(ba, dm, 1.0)
-    alpha = _const_cell(ba, dm, 1.0)
-
-    d = _probe(
-        "csr",
-        gamma,
-        alpha,
-        geom,
-        _random_rhs(ba, dm),
-        bc,
-        _out_fields(geom, ba, dm),
-        report_structure=True,
-    )
-
-    row_ptrs = d["csr_row_ptrs"]
-    col_idxs = d["csr_col_idxs"]
-    want = _expected_csr_columns(bc)
-
-    assert len(row_ptrs) == N**3 + 1, f"{case}: row_ptrs does not describe {N**3} rows"
-    assert row_ptrs[-1] == len(col_idxs), f"{case}: row_ptrs tail disagrees with col_idxs"
-    assert len(col_idxs) == sum(len(r) for r in want), (
-        f"{case}: total nnz {len(col_idxs)} != {sum(len(r) for r in want)} "
-        "-- a boundary row is carrying a column it should have dropped"
-    )
-    for row, expected in enumerate(want):
-        got = col_idxs[row_ptrs[row] : row_ptrs[row + 1]]
-        assert got == expected, f"{case}: row {row} columns {got} != {expected}"
-
-    # The counting half of the claim, stated on its own so a regression reads as
-    # "boundary rows grew back to 7" and not as a column-set mismatch. A cell loses
-    # one column per non-periodic DIRECTION it sits on the edge of, so the corner
-    # cell of a fully non-periodic mesh carries 4.
-    lengths = [row_ptrs[r + 1] - row_ptrs[r] for r in range(N**3)]
-    non_periodic_dirs = sum(1 for d in range(3) if bc[2 * d] != "periodic")
-    assert max(lengths) == 7, f"{case}: interior rows must still carry the full 7-point stencil"
-    assert min(lengths) == 7 - non_periodic_dirs, f"{case}: corner row is {min(lengths)} entries"
-    assert (min(lengths) == 7) is (case == "periodic"), (
-        f"{case}: entry counts do not distinguish the periodic regime from the folded one"
     )
 
 
@@ -649,11 +501,10 @@ def test_dropping_bc_data_moves_the_answer(blockamr_session):
 
     homogeneous = _zero_sol(ba, dm)
     _system_solve(
-        "mf", gamma, alpha, geom, _random_rhs(ba, dm), homogeneous, bc, _out_fields(geom, ba, dm)
+        gamma, alpha, geom, _random_rhs(ba, dm), homogeneous, bc, _out_fields(geom, ba, dm)
     )
     inhomogeneous = _zero_sol(ba, dm)
     _system_solve(
-        "mf",
         gamma,
         alpha,
         geom,

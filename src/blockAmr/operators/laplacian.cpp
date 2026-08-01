@@ -5,6 +5,7 @@
 #include "NeoN/blockAmr/operators/laplacian.hpp"
 
 #include <AMReX_Box.H>
+#include <AMReX_Geometry.H>
 #include <AMReX_GpuLaunch.H>
 #include <AMReX_IntVect.H>
 #include <AMReX_MFIter.H>
@@ -12,8 +13,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 
+#include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
 
 namespace blockamr::ops
@@ -145,43 +148,48 @@ void foldBoundaryDatum(
 
 } // namespace
 
-Laplacian::Laplacian(const amrex::MultiFab& gamma, la::BcArray bc, const amrex::MultiFab* bcData)
-    : gamma_(&gamma), bc_(bc), bcData_(bcData)
+Laplacian::Laplacian(const amrex::MultiFab& gamma, const amrex::MultiFab* bcData)
+    : gamma_(&gamma), bcData_(bcData)
 {}
 
-void Laplacian::assemble(la::Coefficients c) const
+void Laplacian::assemble(la::LinearSystem& sys) const
 {
+    auto& m = sys.matrix();
+    // Read off the MATRIX by name: the operator holds neither, so neither can disagree
+    // with the coefficients it is writing.
+    const la::BcArray& bc = m.bc;
+
     // One-ghost staging copy of gamma: a face coefficient is the mean of the two cells the
     // face separates, and at a box edge the second lives in a ghost FillBoundary supplies.
     // A non-periodic domain face has no second cell, so the kernels use the interior one.
     amrex::MultiFab g(gamma_->boxArray(), gamma_->DistributionMap(), 1, 1);
     amrex::MultiFab::Copy(g, *gamma_, 0, 0, 1, 0);
-    c.mesh.fillHalo(g);
+    m.mesh.fillHalo(g);
 
-    const amrex::Box dom = c.mesh.geom.Domain();
-    const auto dx = c.mesh.dx();
+    const amrex::Box dom = m.mesh.geom.Domain();
+    const auto dx = m.mesh.dx();
 
     // Validate the datum carrier once, up front, and only when a side actually reads one.
     // `alpha` and `rhs` are non-nullable handles, so their presence needs no check.
-    const bool anyPhysBc = std::any_of(bc_.begin(), bc_.end(), [](int b) { return b != 0; });
+    const bool anyPhysBc = std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; });
     if (anyPhysBc && bcData_ != nullptr)
     {
-        requireSameLayout(*c.rhs, g, "the system's rhs");
+        requireSameLayout(sys.rhs(), g, "the system's rhs");
         // `alpha` is the layout checkBcData compares against, so it must be the layout the
         // fold below reads the datum THROUGH.
-        requireSameLayout(*c.alpha, g, "the matrix's diagonal source");
-        la::checkBcData(*bcData_, *c.alpha, bc_, "ops::Laplacian");
+        requireSameLayout(*m.alpha, g, "the matrix's diagonal source");
+        la::checkBcData(*bcData_, *m.alpha, bc, "ops::Laplacian");
     }
     else if (bcData_ != nullptr)
     {
         // Refused rather than ignored, as FaceCoeffSolver refuses it: a datum no side
         // reads is a solver bug, not a configuration one.
-        la::checkBcData(*bcData_, *gamma_, bc_, "ops::Laplacian");
+        la::checkBcData(*bcData_, *gamma_, bc, "ops::Laplacian");
     }
 
     for (int d = 0; d < 3; ++d)
     {
-        amrex::MultiFab& upper = c.upper[d];
+        amrex::MultiFab& upper = m.upper[d];
 
         const amrex::IntVect dv = amrex::IntVect::TheDimensionVector(d);
         if (upper.DistributionMap() != g.DistributionMap()
@@ -196,8 +204,8 @@ void Laplacian::assemble(la::Coefficients c) const
         }
 
         // Per SIDE, not per direction: BcArray is (xlo, xhi, ylo, yhi, zlo, zhi).
-        const bool periodicLo = bc_[static_cast<std::size_t>(2 * d)] == 0;
-        const bool periodicHi = bc_[static_cast<std::size_t>(2 * d + 1)] == 0;
+        const bool periodicLo = bc[static_cast<std::size_t>(2 * d)] == 0;
+        const bool periodicHi = bc[static_cast<std::size_t>(2 * d + 1)] == 0;
         const int domLo = dom.smallEnd(d);
         const int domHi = dom.bigEnd(d);
         const int ex = (d == 0) ? 1 : 0;
@@ -207,13 +215,13 @@ void Laplacian::assemble(la::Coefficients c) const
 
         // Symmetry dispatched HERE, on the host. A nullopt `lower` IS the interface saying
         // there is no low side: for a symmetric format lower[d] ALIASES upper[d].
-        if (c.lower.has_value())
+        if (m.lower.has_value())
         {
             accumulateFaceCoefficients<true>(
-                c.exec,
+                m.exec,
                 g,
                 upper,
-                &(*c.lower)[d],
+                &(*m.lower)[d],
                 ex,
                 ey,
                 ez,
@@ -227,7 +235,7 @@ void Laplacian::assemble(la::Coefficients c) const
         else
         {
             accumulateFaceCoefficients<false>(
-                c.exec, g, upper, nullptr, ex, ey, ez, periodicLo, periodicHi, domLo, domHi, invDx2
+                m.exec, g, upper, nullptr, ex, ey, ez, periodicLo, periodicHi, domLo, domHi, invDx2
             );
         }
 
@@ -242,7 +250,7 @@ void Laplacian::assemble(la::Coefficients c) const
         // to one cell on a domain one cell thick. Low and high are separate launches.
         for (int s = 2 * d; s <= 2 * d + 1; ++s)
         {
-            const int kind = bc_[static_cast<std::size_t>(s)];
+            const int kind = bc[static_cast<std::size_t>(s)];
             if (kind == 0)
             {
                 continue;
@@ -261,10 +269,22 @@ void Laplacian::assemble(la::Coefficients c) const
             slab.setSmall(d, cell);
             slab.setBig(d, cell);
 
-            foldBoundaryDatum(c.exec, g, *c.rhs, *bcData_, slab, ox, oy, oz, scale, invDx2);
+            foldBoundaryDatum(m.exec, g, sys.rhs(), *bcData_, slab, ox, oy, oz, scale, invDx2);
         }
     }
     amrex::Gpu::streamSynchronize();
 }
+
+// The operator holds NEITHER a Geometry NOR the domain BCs any more -- both are read off the
+// system's matrix -- so neither of the two older spellings compiles. Asserted in the shipped
+// object library rather than under test/, because blockAmr has no C++ test target; these two
+// outlived linearAlgebra/coefficientsConcepts.cpp, whose subject (IsMatrix/IsOperator/
+// Coefficients) no longer exists.
+static_assert(!std::is_constructible_v<
+              Laplacian,
+              const amrex::MultiFab&,
+              amrex::Geometry,
+              la::BcArray>);
+static_assert(!std::is_constructible_v<Laplacian, const amrex::MultiFab&, la::BcArray>);
 
 } // namespace blockamr::ops

@@ -236,15 +236,10 @@ def test_gmg_dirichlet(blockamr_session, executor):
 
 
 def test_gmg_validation_errors(blockamr_session):
-    """precond='gmg' on the CSR solver raises; gmg + precond_mlmg raises."""
+    """gmg + precond_mlmg raises; an unknown precond raises."""
     N = 8
     geom, ba, dm = _make_mesh(N)
     coeffs = _helmholtz_coeffs(geom, ba, dm, N)
-
-    with pytest.raises(RuntimeError, match="matrix-free only"):
-        _make_solver_or_skip(
-            coeffs, geom, "reference", cls="FaceCoeffCsrSolver", solver="cg", precond="gmg"
-        )
 
     mlmg_holder = []  # an MLMG needs an MLABecLaplacian; build the minimal one
     abec = blockamr.MLABecLaplacian(geom, ba, dm)

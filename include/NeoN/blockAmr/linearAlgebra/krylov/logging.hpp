@@ -9,7 +9,7 @@
 #include <cmath>
 #include <vector>
 
-#include "NeoN/blockAmr/core/types.hpp"
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 
 namespace blockamr::la
 {

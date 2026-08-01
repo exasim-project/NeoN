@@ -139,8 +139,7 @@ def _mlmg_poisson_reference(geom, ba, dm, n, rhs):
 
 
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
-@pytest.mark.parametrize("cls", ["FaceCoeffSolver", "FaceCoeffCsrSolver"])
-def test_singular_poisson_projected_matches_mlmg(blockamr_session, cls, executor):
+def test_singular_poisson_projected_matches_mlmg(blockamr_session, executor):
     """Cases (a)+(b): mean-zero rhs, project_nullspace=True.
 
     The solve converges, the returned solution is mean-zero, and after
@@ -155,7 +154,7 @@ def test_singular_poisson_projected_matches_mlmg(blockamr_session, cls, executor
     _fill_values(rhs, _meanzero_values(N))
 
     s = _make_solver_or_skip(
-        cls,
+        "FaceCoeffSolver",
         coeffs,
         geom,
         executor,

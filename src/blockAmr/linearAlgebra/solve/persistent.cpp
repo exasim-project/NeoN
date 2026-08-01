@@ -15,7 +15,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -31,28 +30,11 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/mixedPrecision.hpp"
 #include "NeoN/blockAmr/linearAlgebra/precond.hpp"
-#include "NeoN/blockAmr/linearAlgebra/sparse/csr.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/mlmgOps.hpp"
 
 namespace blockamr::la
 {
-
-// REFUSED on >1 rank: the CSR path's flat vectors never got the local sizing plus distributed
-// view makeGlobalVec gives the Krylov ones, so they size by the global cell count and reduce
-// rank-locally -- a wrong answer rather than a slow one.
-static void requireSingleRank(const char* what)
-{
-    if (amrex::ParallelContext::NProcsSub() > 1)
-    {
-        throw std::runtime_error(
-            std::string(what)
-            + " is single-rank only; it has not been converted to the "
-              "distributed vectors the fp64 Krylov path uses, and on more than one rank its "
-              "reductions are rank-local. Run it on one rank, or use solver='cg'/'gmg'."
-        );
-    }
-}
 
 // Declared in distVec.hpp. Duplicated rather than templated because nvcc rejects any template
 // signature returning shared_ptr<LinOp> here -- see the note in distVec.hpp.
@@ -250,7 +232,7 @@ void forbidPrecondMlmg(const SolverConfig& config, bool active, const char* what
 } // namespace
 
 // buildGmgHierarchy, shared by the three native-GMG call sites below, lives in
-// linearAlgebra/precond.cpp so la::Matrix can build the same hierarchy (precond.hpp).
+// linearAlgebra/precond.cpp so la::makeHierarchy builds the same one (precond.hpp).
 
 namespace
 {
@@ -633,7 +615,7 @@ FaceCoeffKrylovSolver::FaceCoeffKrylovSolver(
     }
 
     // The whole precond= fork -- gmg, gmg_kokkos, mlmg and their refusals -- lives in
-    // makeFaceCoeffPrecond (precond.cpp), which la::Matrix also builds through.
+    // makeFaceCoeffPrecond (precond.cpp), which la::makeHierarchy also builds through.
     FaceCoeffPrecond built =
         makeFaceCoeffPrecond(exec_, n_, alphaLevel, upper, lower, mesh, bcArr, config);
     std::shared_ptr<const gko::LinOp> pc = std::move(built.op);
@@ -788,153 +770,6 @@ FaceCoeffSolver::FaceCoeffSolver(
 SolveResult FaceCoeffSolver::solve(amrex::MultiFab& rhs, amrex::MultiFab& sol)
 {
     return impl_->solve(rhs, sol);
-}
-
-namespace
-{
-
-// The nb::arg spelling of every GmgConfig knob next to the member it fills. It supplies NAMES
-// for the message only: the refusal itself is the whole-struct comparison in validateForCsr,
-// so a knob added to GmgConfig and forgotten here is still refused, just not named.
-constexpr auto kGmgKnobNames = std::make_tuple(
-    std::pair {"gmg_pre_sweeps", &GmgConfig::preSweeps},
-    std::pair {"gmg_post_sweeps", &GmgConfig::postSweeps},
-    std::pair {"gmg_coarsest_sweeps", &GmgConfig::coarsestSweeps},
-    std::pair {"gmg_max_levels", &GmgConfig::maxLevels},
-    std::pair {"gmg_min_bottom", &GmgConfig::minBottom},
-    std::pair {"gmg_smoother", &GmgConfig::smoother},
-    std::pair {"gmg_precision", &GmgConfig::precision},
-    std::pair {"gmg_coeff_precision", &GmgConfig::coeffPrecision},
-    std::pair {"gmg_omega", &GmgConfig::omega},
-    std::pair {"gmg_agg_l0_size", &GmgConfig::aggLevel0Size},
-    std::pair {"symmetric", &GmgConfig::symmetric},
-    std::pair {"gmg_bottom_solver", &GmgConfig::bottomSolver},
-    std::pair {"gmg_bottom_max_iter", &GmgConfig::bottomMaxIter},
-    std::pair {"gmg_bottom_rtol", &GmgConfig::bottomRtol}
-);
-
-// FaceCoeffCsrSolver has no matrix-free GMG hierarchy and no fp32 inner solve, so these 16
-// knobs do nothing. REFUSED rather than ignored: accepting a knob that does nothing would
-// report a configuration that was never applied. Both the knobs and their defaults come from
-// solverConfig.hpp, so this function has no default list of its own to keep in step.
-void validateForCsr(const SolverConfig& config)
-{
-    static const SolverConfig kDefault {};
-    std::vector<std::string> offending;
-    const auto note = [&offending](const char* name, bool differs)
-    {
-        if (differs) offending.emplace_back(name);
-    };
-    if (!(config.gmg == kDefault.gmg))
-    {
-        std::apply(
-            [&](const auto&... knob)
-            { (note(knob.first, config.gmg.*(knob.second) != kDefault.gmg.*(knob.second)), ...); },
-            kGmgKnobNames
-        );
-        // An empty list here means GmgConfig grew a knob kGmgKnobNames does not know about.
-        // Still refuse it -- silently accepting an inert knob is the bug this guards.
-        note("a gmg_* V-cycle knob", offending.empty());
-    }
-    note("mp_inner_rtol", config.mpInnerRtol != kDefault.mpInnerRtol);
-    note("mp_inner_max_iter", config.mpInnerMaxIter != kDefault.mpInnerMaxIter);
-    if (offending.empty())
-    {
-        return;
-    }
-    std::string joined;
-    for (std::size_t i = 0; i < offending.size(); ++i)
-    {
-        if (i) joined += ", ";
-        joined += offending[i];
-    }
-    throw std::runtime_error(
-        "FaceCoeffCsrSolver: " + joined
-        + " only apply to the matrix-free GMG hierarchy (precond='gmg'/'gmg_kokkos' or "
-          "solver='gmg'/'ir'/'mpir') and are not accepted by the assembled-CSR solver — use "
-          "FaceCoeffSolver, or omit them to keep the default."
-    );
-}
-
-} // namespace
-
-FaceCoeffCsrSolver::FaceCoeffCsrSolver(
-    const NeoN::Executor& executor,
-    amrex::Geometry geom,
-    amrex::MultiFab* alpha,
-    amrex::MultiFab* ux,
-    amrex::MultiFab* lx,
-    amrex::MultiFab* uy,
-    amrex::MultiFab* ly,
-    amrex::MultiFab* uz,
-    amrex::MultiFab* lz,
-    const SolverConfig& config
-)
-    : KrylovSolver(
-        makeExecutor(executor),
-        static_cast<gko::size_type>(alpha->boxArray().numPts()),
-        localCount(*alpha)
-    )
-{
-    validateForCsr(config);
-    // The assembly is single-box only (csr.cpp), which on >1 rank would mean one
-    // rank holding every row while the others hold none.
-    requireSingleRank("FaceCoeffCsrSolver");
-    // Periodic sides keep their wraparound column; homogeneous dirichlet/neumann sides are
-    // folded onto the diagonal by assembleFaceCoeffCsr, the assembled twin of FaceCoeffOp's
-    // ghost reflection. parseBc rejects a bc that disagrees with the geometry's periodicity.
-    const BcArray bcArr = parseBc(config.bc, geom, "FaceCoeffCsrSolver");
-    // bc_data stays REFUSED: inhomogeneous BCs are an affine term L(x) = A x + c0, i.e. an rhs
-    // fold rather than a matrix one, and this path has no c0. A silently-dropped datum would
-    // look like a wrong answer instead of a missing feature.
-    if (config.bcData != nullptr)
-    {
-        throw std::runtime_error(
-            "FaceCoeffCsrSolver: bc_data is not supported — the assembled matrix folds "
-            "homogeneous dirichlet/neumann and periodic boundaries only; inhomogeneous BC "
-            "data needs FaceCoeffSolver"
-        );
-    }
-    // CSR's own, narrower combination legality (the spelling was validated at the boundary):
-    // with no matrix-free operator, 'gmg' and 'gmg_kokkos' are REFUSED.
-    if (config.precondKind == PrecondKind::gmg)
-    {
-        throw std::runtime_error(
-            "FaceCoeffCsrSolver: precond='gmg' is matrix-free only — use FaceCoeffSolver"
-        );
-    }
-    if (config.precondKind != PrecondKind::none && config.precondKind != PrecondKind::mlmg)
-    {
-        throw std::runtime_error(
-            "FaceCoeffCsrSolver: unknown precond '" + config.precond
-            + "' (expected 'none' or 'mlmg')"
-        );
-    }
-    if (config.precondKind == PrecondKind::mlmg && config.precondMlmg == nullptr)
-    {
-        throw std::runtime_error("FaceCoeffCsrSolver: precond='mlmg' requires precond_mlmg");
-    }
-    // Non-owning handles onto the caller's fields, grouped (core/fieldLevel.hpp).
-    auto op = assembleFaceCoeffCsr(
-        exec_,
-        MeshLevel {alpha->boxArray(), alpha->DistributionMap(), geom},
-        CellFieldLevel {nonOwning(*alpha)},
-        FaceFieldLevel {{nonOwning(*ux), nonOwning(*uy), nonOwning(*uz)}},
-        FaceFieldLevel {{nonOwning(*lx), nonOwning(*ly), nonOwning(*lz)}},
-        bcArr
-    );
-    // Null when there is no precond_mlmg to wrap (precond.cpp).
-    std::shared_ptr<const gko::LinOp> pc = makeMlmgPrecond(exec_, n_, *alpha, config);
-    build(
-        op,
-        config.solver,
-        config.maxIter,
-        config.rtol,
-        config.atol,
-        config.projectNullspace,
-        std::move(pc),
-        config.norm
-    );
 }
 
 } // namespace blockamr::la

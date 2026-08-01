@@ -2,32 +2,31 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Assemble a linear system from operators and solve it, format-agnostically.
+"""Assemble a linear system from operators and solve it.
 
-Three layers, each knowing only the one below: a matrix FORMAT (:class:`MFFaceCoeffs`
-matrix-free, :class:`CsrMatrix` assembled), OPERATORS that discretise a term into
+Three layers, each knowing only the one below: the MATRIX
+(:class:`MFFaceCoeffs`, matrix-free), OPERATORS that discretise a term into
 coefficients (:func:`laplacian`), and a :class:`Solver` handed a
-:class:`LinearSystem` -- a matrix and an rhs, pure data -- that cannot tell which
-format it got. Use ``FaceCoeffSolver`` instead when you want GMG as the SOLVER.
+:class:`LinearSystem` -- a matrix and an rhs, pure data. Use ``FaceCoeffSolver``
+instead when you want GMG as the SOLVER.
 
-A format is allocated on a ``blockamr.MeshLevel(ba, dm, geom)`` -- one AMR level's
+The matrix is allocated on a ``blockamr.MeshLevel(ba, dm, geom)`` -- one AMR level's
 layout as a single object, NOT the multi-level ``blockamr.Mesh``.
 
 The system is NON-OWNING: the matrix and the rhs must OUTLIVE it, and the rhs an
 operator writes IS the field you passed in. Operators ACCUMULATE, so a reused system
-is ``zero()``-ed first. The executor is given to the MATRIX and reaches the solve from
-there, so the two cannot disagree.
+is ``zero()``-ed first. The executor, the layout and the domain BCs are all given to
+the MATRIX and reach the operator and the solve from there, so none of them can
+disagree.
 
 PRECONDITIONERS ARE THE MATRIX'S, not the solver's: ``precond="gmg"`` /
-``"gmg_kokkos"`` / ``"mlmg"`` are built by the FORMAT from the coefficients it holds,
+``"gmg_kokkos"`` / ``"mlmg"`` are built from the coefficients the matrix holds,
 and shaped by :class:`~blockamr.solver_config.GmgConfig` nested on the config::
 
     Solver(SolverConfig(solver="cg", precond="gmg_kokkos",
                         gmg=GmgConfig(pre_sweeps=2, post_sweeps=2))).solve(system, sol)
 
-:class:`MFFaceCoeffs` builds all four; :class:`CsrMatrix` takes ``"none"`` and
-``"mlmg"`` only and :meth:`Solver.solve` raises for the rest, naming the format and
-the precond.
+:class:`MFFaceCoeffs` builds all four.
 
 Two things this surface deliberately does not reach:
 
@@ -37,111 +36,43 @@ Two things this surface deliberately does not reach:
   different stopping test. Use ``blockamr.FaceCoeffSolver`` for those.
 * **Only one operator exists**, :func:`laplacian`. There is no ``ddt``, so the
   cell-centred diagonal SOURCE is written directly with
-  ``Matrix.diagonal_source(alpha)``.
+  ``MFFaceCoeffs.diagonal_source(alpha)``.
 
 Example
 -------
 >>> mesh = blockamr.MeshLevel(ba, dm, geom)
 >>> mat = MFFaceCoeffs.symmetric(mesh, executor=exec, bc=["dirichlet"] * 6)
 >>> system = LinearSystem(mat, rhs)
->>> system += laplacian(gamma, geom, bc=["dirichlet"] * 6)
+>>> system += laplacian(gamma)
 >>> stats = Solver(SolverConfig(solver="cg", precond="gmg", rtol=1e-10)).solve(system, sol)
 >>> stats["num_iters"]
 """
 
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
-from ._blockamr import LinearSystem, Matrix, Operator
+from ._blockamr import Laplacian, LinearSystem, MFFaceCoeffs
 from ._blockamr import Solver as _Solver
 from ._blockamr import la_laplacian as _la_laplacian
 from .solver_config import GmgConfig, SolverConfig
 
 __all__ = [
-    "CsrMatrix",
     "GmgConfig",
+    "Laplacian",
     "LinearSystem",
     "MFFaceCoeffs",
-    "Matrix",
-    "Operator",
     "Solver",
     "SolverConfig",
     "laplacian",
 ]
 
-_PERIODIC = ["periodic"] * 6
-
-
-class MFFaceCoeffs:
-    """Matrix-free face-coefficient format: no matrix is ever assembled.
-
-    :class:`CsrMatrix` is the assembled alternative and takes identical operator calls,
-    so switching is one line. Not instantiable: ``symmetric`` / ``asymmetric`` hand back
-    a :class:`Matrix`, which OWNS its coefficient fields and starts zeroed.
-
-    Example
-    -------
-    >>> mat = MFFaceCoeffs.symmetric(blockamr.MeshLevel(ba, dm, geom), executor=exec)
-    """
-
-    @staticmethod
-    def symmetric(
-        mesh: Any,
-        executor: Optional[Any] = None,
-        bc: Optional[Sequence[str]] = None,
-    ) -> Matrix:
-        """Allocate diag + upper; `lower` aliases `upper` and is reported empty."""
-        return Matrix.mf_symmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
-
-    @staticmethod
-    def asymmetric(
-        mesh: Any,
-        executor: Optional[Any] = None,
-        bc: Optional[Sequence[str]] = None,
-    ) -> Matrix:
-        """Additionally allocate `lower`; a convecting operator needs it."""
-        return Matrix.mf_asymmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
-
-
-class CsrMatrix:
-    """Assembled format: the same coefficients, held as an explicit Ginkgo CSR.
-
-    The baseline :class:`MFFaceCoeffs` is measured against. SINGLE-BOX meshes only
-    (``assembleFaceCoeffCsr``'s restriction). Assembly is lazy and re-run after any
-    write through the coefficients. Not instantiable, as :class:`MFFaceCoeffs`.
-
-    Example
-    -------
-    >>> mat = CsrMatrix.symmetric(blockamr.MeshLevel(ba, dm, geom), executor=exec)
-    """
-
-    @staticmethod
-    def symmetric(
-        mesh: Any,
-        executor: Optional[Any] = None,
-        bc: Optional[Sequence[str]] = None,
-    ) -> Matrix:
-        """Allocate diag + upper; `lower` aliases `upper` and is reported empty."""
-        return Matrix.csr_symmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
-
-    @staticmethod
-    def asymmetric(
-        mesh: Any,
-        executor: Optional[Any] = None,
-        bc: Optional[Sequence[str]] = None,
-    ) -> Matrix:
-        """Additionally allocate `lower`; a convecting operator needs it."""
-        return Matrix.csr_asymmetric(mesh, executor=executor, bc=list(bc or _PERIODIC))
-
 
 def laplacian(
     gamma: Any,
-    geom: Any,
-    bc: Optional[Sequence[str]] = None,
     bc_data: Optional[Any] = None,
-) -> Operator:
-    """The implicit diffusion term: ``system += laplacian(gamma, geom, bc=bc)``.
+) -> Laplacian:
+    """The implicit diffusion term: ``system += laplacian(gamma)``.
 
     ``gamma`` is the physical diffusivity. Each face coefficient is written as
     ``-gammaFace/dx**2``, NEGATIVE, so a system of this term alone is
@@ -151,15 +82,16 @@ def laplacian(
     coefficient. With ``bc_data`` the inhomogeneous constant is written onto the rhs,
     MUTATING the rhs the system holds.
 
-    `geom` is an argument because a :class:`LinearSystem` carries no geometry.
-    `gamma` and `bc_data` are held by POINTER and read when ``+=`` runs, so both must
-    OUTLIVE this operator.
+    The mesh and the domain BCs are read off the system's MATRIX, so neither is an
+    argument: the operator has nowhere to keep a copy that could disagree with the
+    coefficients it writes. `gamma` and `bc_data` are held by POINTER and read when
+    ``+=`` runs, so both must OUTLIVE this operator.
 
     Example
     -------
-    >>> system += laplacian(gamma, geom, bc=["dirichlet"] * 6)
+    >>> system += laplacian(gamma)
     """
-    return _la_laplacian(gamma, geom, bc=list(bc or _PERIODIC), bc_data=bc_data)
+    return _la_laplacian(gamma, bc_data=bc_data)
 
 
 class Solver(_Solver):

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""MLMG vs Ginkgo (matrix-free and assembled CSR) on the GPU, over grid size.
+"""MLMG vs the matrix-free Ginkgo solvers on the GPU, over grid size.
 
 Solves the SAME symmetric periodic Helmholtz operator (phi - laplacian phi)
 several ways, all on the GPU, and times the solve:
@@ -51,10 +51,6 @@ several ways, all on the GPU, and times the solve:
                    (Dense pack/unpack + per-iteration LinOp-boundary crossings), so
                    ``gmg`` vs ``gmg-ir`` isolates the cost of the Ginkgo-idiomatic
                    loop over the fully-native one.
-* ``csr``        — persistent ``FaceCoeffCsrSolver`` CG: the SAME matrix assembled
-                   into a Ginkgo CSR. Unpreconditioned, so ``mf`` vs ``csr`` is a
-                   clean apples-to-apples measure of matrix-free (recompute) vs
-                   assembled (stream the matrix) — and of the assembly setup cost.
 
 Fairness: identical operator (Helmholtz alpha=beta=a=b=1), identical zero
 initial guess, identical relative tolerance, all on one GPU. The convergence
@@ -63,11 +59,9 @@ Ginkgo on the 2-norm, so an iteration count from one is not directly comparable
 with the other's. ``--norm linf`` puts the Ginkgo methods on MLMG's criterion
 (MLMG's own norm is not configurable), which is the apples-to-apples setting;
 ``--norm l2`` (the default) keeps each side's native convention. Timing is the
-median of ``--repeats`` solves after ``--warmup`` untimed solves. For ``mf``/
-``csr`` the one-time operator/solver build (matrix assembly, for ``csr``) is the
-reported ``setup_ms`` and is excluded from ``solve_ms``; the one-shot methods
-re-pay their build every solve. ``mf`` and ``csr`` use the same unpreconditioned
-CG and differ only in how the mat-vec is evaluated.
+median of ``--repeats`` solves after ``--warmup`` untimed solves. For the ``mf``
+methods the one-time operator/solver build is the reported ``setup_ms`` and is
+excluded from ``solve_ms``; the one-shot methods re-pay their build every solve.
 
 The ``iters`` column is each solver's NATURAL iteration unit: ``mlmg`` reports
 V-cycles (few, ~independent of N), while ``mlmg-nomg`` and ``ginkgo`` report
@@ -111,7 +105,6 @@ METHODS = (
     "mf-mpir",
     "gmg",
     "gmg-ir",
-    "csr",
 )
 # Smoother for the native-GMG preconditioner (mf-gmg); "rbgs" reproduces the
 # historical default, "chebyshev" is the M4 polynomial smoother. Set from --gmg-smoother.
@@ -158,7 +151,6 @@ PERSISTENT = {
     "mf-mpir": "FaceCoeffSolver",
     "gmg": "FaceCoeffSolver",
     "gmg-ir": "FaceCoeffSolver",
-    "csr": "FaceCoeffCsrSolver",
 }
 
 
@@ -254,7 +246,7 @@ def solution_to_host(mf):
 # ---------------------------------------------------------------------------
 # Face-coefficient form of the SAME periodic Helmholtz (phi - lap phi): diagonal
 # source alpha=1, symmetric face coefficients -1/dx^2. Handed to the persistent
-# matrix-free / CSR solvers exactly as an external discretiser would.
+# matrix-free solvers exactly as an external discretiser would.
 # ---------------------------------------------------------------------------
 def build_face_coeffs(geom, ba, dm, max_size):
     dx = geom.cell_size()
@@ -541,19 +533,27 @@ def main():
     # reproduces the historical table; they exist so the REFERENCE can be tuned on
     # the same axes as ours instead of being compared at stock settings.
     ap.add_argument(
-        "--mlmg-pre-smooth", type=int, default=2,
+        "--mlmg-pre-smooth",
+        type=int,
+        default=2,
         help="MLMG nu1, pre-smoothing sweeps (AMReX default 2)",
     )
     ap.add_argument(
-        "--mlmg-post-smooth", type=int, default=2,
+        "--mlmg-post-smooth",
+        type=int,
+        default=2,
         help="MLMG nu2, post-smoothing sweeps (AMReX default 2)",
     )
     ap.add_argument(
-        "--mlmg-bottom-smooth", type=int, default=0,
+        "--mlmg-bottom-smooth",
+        type=int,
+        default=0,
         help="MLMG nub, extra smoothing after the bottom solve (AMReX default 0)",
     )
     ap.add_argument(
-        "--mlmg-semicoarsening", type=int, default=0,
+        "--mlmg-semicoarsening",
+        type=int,
+        default=0,
         help="MLMG max semicoarsening levels (0 = off, AMReX's default). Coarsens only "
         "the strongly-coupled direction; the designed answer to anisotropic cells",
     )

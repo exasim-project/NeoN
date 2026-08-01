@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"

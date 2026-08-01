@@ -5,7 +5,7 @@
 """Validated pydantic configuration for the solvers.
 
 ``GmgConfig`` collects the ``precond="gmg"`` V-cycle knobs of ``FaceCoeffSolver``
-(see ``src/blockAmr/bindings/ginkgoSolve.cpp``); its ``kwargs()`` emits the ``gmg_*``
+(see ``src/blockAmr/bindings/linearAlgebra.cpp``); its ``kwargs()`` emits the ``gmg_*``
 keys plus ``precond_cycles`` to splat into the constructor. ``SolverConfig`` does the
 same for ``blockamr.linear_algebra.Solver``.
 
@@ -30,7 +30,7 @@ class GmgConfig(BaseModel):
     Defaults mirror the C++ binding's and are a measured V-cycle shape: 8 CG
     iterations on the periodic Helmholtz at 64^3, 128^3 and 256^3 alike, against
     11/11/12 for the previous 8/4/1.0. Per-knob measurements are in
-    ``ginkgoSolve.cpp``.
+    ``linearAlgebra.cpp``.
 
     Notes
     -----
@@ -90,9 +90,8 @@ class SolverConfig(BaseModel):
     parsed exactly once, in C++ (``linearAlgebra/solverConfig.hpp``), and repeating the
     list here would be a second parse to keep in step with the first.
 
-    ``precond`` is built by the MATRIX from the coefficients it holds, so
-    ``Solver.solve`` raises -- naming the format and the precond -- on a format that
-    cannot build it (``CsrMatrix`` takes ``"none"``/``"mlmg"`` only).
+    ``precond`` is built from the coefficients the MATRIX holds rather than from the
+    LinOp the solver sees; ``MFFaceCoeffs`` builds all four.
 
     ``solver`` in ``("gmg", "ir", "mpir")`` is accepted here and REFUSED by
     ``Solver.solve``: those want the hierarchy as the SOLVER rather than as a

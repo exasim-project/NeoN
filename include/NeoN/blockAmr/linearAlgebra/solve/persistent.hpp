@@ -49,26 +49,4 @@ private:
     std::unique_ptr<ISolver> impl_;
 };
 
-// Assembled-CSR persistent solver: the same matrix stored explicitly, so its SpMV streams
-// it from memory where FaceCoeffSolver recomputes it -- the matrix-free comparison. Always
-// a Ginkgo Krylov solve, so it derives from KrylovSolver directly.
-class FaceCoeffCsrSolver : public KrylovSolver
-{
-public:
-
-    // Non-const because nonOwning() builds assembleFaceCoeffCsr's handles from mutable fields.
-    FaceCoeffCsrSolver(
-        const NeoN::Executor& executor,
-        amrex::Geometry geom,
-        amrex::MultiFab* alpha,
-        amrex::MultiFab* ux,
-        amrex::MultiFab* lx,
-        amrex::MultiFab* uy,
-        amrex::MultiFab* ly,
-        amrex::MultiFab* uz,
-        amrex::MultiFab* lz,
-        const SolverConfig& config
-    );
-};
-
 } // namespace blockamr::la

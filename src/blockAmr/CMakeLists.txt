@@ -14,17 +14,16 @@
 # which is all the ordering guarantee the link below needs.
 
 # The Ginkgo-gated matrix-free solver stack (core/ linearAlgebra/). Only exists when Ginkgo is
-# available; without it _blockamr compiles bindings/ginkgoSolveStub.cpp instead and this target is
+# available; without it _blockamr compiles bindings/linearAlgebraStub.cpp instead and this target is
 # never defined.
 if(NeoN_WITH_GINKGO)
   set(_blockamr_solvers_sources
       core/profiling.cpp
       core/bc.cpp
-      linearAlgebra/coefficientsConcepts.cpp
       operators/laplacian.cpp
+      linearAlgebra/ginkgo/adapt.cpp
       linearAlgebra/matrixFree/mlmgOps.cpp
       linearAlgebra/matrixFree/faceCoeffOp.cpp
-      linearAlgebra/sparse/csr.cpp
       linearAlgebra/krylov/krylov.cpp
       linearAlgebra/precond.cpp
       linearAlgebra/solve/persistent.cpp
@@ -114,7 +113,7 @@ set(_blockamr_sources
 
 # The registrar for the Ginkgo-gated matrix-free solver stack built above as the blockamr_solvers
 # OBJECT library and linked below.
-set(_blockamr_ginkgo_sources bindings/ginkgoSolve.cpp)
+set(_blockamr_ginkgo_sources bindings/linearAlgebra.cpp)
 
 nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
 
@@ -123,14 +122,14 @@ nanobind_add_module(_blockamr NOMINSIZE ${_blockamr_sources})
 # MultiFab memory.
 target_link_libraries(_blockamr PRIVATE amrex NeoN::NeoN)
 
-# The real bindings/ginkgoSolve.cpp (and the blockamr_solvers stack it drives) only compiles against
-# Ginkgo; without it a stub raising RuntimeError is built instead, so bindings/module.cpp stays
-# unconditional.
+# The real bindings/linearAlgebra.cpp (and the blockamr_solvers stack it drives) only compiles
+# against Ginkgo; without it a stub raising RuntimeError is built instead, so bindings/module.cpp
+# stays unconditional.
 if(NeoN_WITH_GINKGO)
   target_sources(_blockamr PRIVATE ${_blockamr_ginkgo_sources})
   target_link_libraries(_blockamr PRIVATE Ginkgo::ginkgo blockamr_solvers)
 else()
-  target_sources(_blockamr PRIVATE bindings/ginkgoSolveStub.cpp)
+  target_sources(_blockamr PRIVATE bindings/linearAlgebraStub.cpp)
 endif()
 
 # AMReX helper: propagate CUDA target & source properties (same as pyamrex)
@@ -161,7 +160,7 @@ if(NeoN_AMREX_GPU_BACKEND STREQUAL "CUDA")
   if(NeoN_WITH_GINKGO)
     set_source_files_properties(${_blockamr_ginkgo_sources} PROPERTIES LANGUAGE CUDA)
   else()
-    set_source_files_properties(bindings/ginkgoSolveStub.cpp PROPERTIES LANGUAGE CUDA)
+    set_source_files_properties(bindings/linearAlgebraStub.cpp PROPERTIES LANGUAGE CUDA)
   endif()
 endif()
 

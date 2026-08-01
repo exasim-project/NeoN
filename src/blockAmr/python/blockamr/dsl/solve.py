@@ -474,7 +474,7 @@ def _ensure_cell_cache(p_field, U_field, lev, cfg):
     system = LinearSystem(matrix, rhs_mf)
     # alpha=0: NO diagonal source. The coefficients are constant on a fixed level and
     # operators ACCUMULATE, so the Laplacian is assembled once here, not per step.
-    system += laplacian(gamma_mf, geom, bc=bc)
+    system += laplacian(gamma_mf)
 
     solver = Solver(
         SolverConfig(

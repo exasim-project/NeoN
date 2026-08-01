@@ -51,8 +51,8 @@ enum class PrecondKind
     gmg_kokkos
 };
 
-// Throws with FaceCoeffSolver's historical wording, the more permissive of the two;
-// FaceCoeffCsrSolver's narrower check still runs downstream on the parsed enum.
+// Throws with FaceCoeffSolver's historical wording; per-class legality still runs downstream
+// on the parsed enum.
 inline PrecondKind parsePrecondKind(const std::string& precond)
 {
     if (precond == "none") return PrecondKind::none;
@@ -87,13 +87,13 @@ struct GmgConfig
     double bottomRtol = 1e-12;
 
     // Compiler-generated, so it covers a knob added above without anyone remembering to
-    // extend it -- which is what lets validateForCsr refuse a non-default V-cycle by asking
-    // one question instead of comparing every field by hand.
+    // extend it -- which lets a validator ask one question instead of comparing every field
+    // by hand.
     friend bool operator==(const GmgConfig&, const GmgConfig&) = default;
 };
 
 // Every non-coefficient, non-geometry, non-executor constructor argument of
-// FaceCoeffSolver/FaceCoeffCsrSolver, built once by parseSolverConfig (ginkgoSolve.cpp).
+// FaceCoeffSolver, built once by parseSolverConfig (bindings/linearAlgebra.cpp).
 struct SolverConfig
 {
     std::string solver = "bicgstab";

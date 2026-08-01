@@ -21,9 +21,9 @@ stored diagonal is invisible from the outside until it is stale or wrong:
   could land before the BC move (S6b) rather than after it;
 * it distinguishes the low-side coefficients from the high-side ones, which
   constant coefficients cannot show;
-* the freshness rule — it is recomputed after a write through ``coefficients()``
+* the freshness rule — it is recomputed after a write to the coefficient fields
   or ``zero()``, including a write through a COPY of the matrix, which shares the
-  freshness state exactly as ``CsrMatrix``'s assembly state is shared.
+  coefficient fields with the original.
 
 The coefficients are seeded random rather than constant throughout: with
 ``ux == lx == uy == ...`` every wrong choice of the six faces yields the same
@@ -31,7 +31,7 @@ number, and a bitwise assertion over that proves nothing.
 
 The entry point is ``blockamr._blockamr._la_stored_diagonal`` — a test-facing
 binding, since blockAmr has no C++ test target that builds and the diagonal is
-deliberately not part of ``MatrixCoefficients``.
+deliberately not stored on the matrix at all.
 """
 
 import numpy as np

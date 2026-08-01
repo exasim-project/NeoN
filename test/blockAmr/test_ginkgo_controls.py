@@ -62,13 +62,6 @@ def _random_rhs(ba, dm, seed=42):
     return rhs
 
 
-def _max_abs_diff(a, b):
-    """Max-norm difference between the valid regions of two cell MultiFabs."""
-    a_boxes = [a.copy_to_host(mfi) for mfi in blockamr.MFIterator(a)]
-    b_boxes = [b.copy_to_host(mfi) for mfi in blockamr.MFIterator(b)]
-    return max(float(np.max(np.abs(x - y))) for x, y in zip(a_boxes, b_boxes))
-
-
 def _helmholtz_coeffs(geom, ba, dm, n):
     """alpha=1 cell source + symmetric -1/dx^2 face coeffs (periodic Helmholtz)."""
     dx = geom.cell_size()
@@ -127,8 +120,7 @@ def test_atol_stops_earlier(blockamr_session, executor):
     stats_atol = s_atol.solve(rhs, _zero_sol(ba, dm))
 
     assert stats_atol["num_iters"] < stats_base["num_iters"], (
-        f"atol solve took {stats_atol['num_iters']} iters, "
-        f"rtol-only took {stats_base['num_iters']}"
+        f"atol solve took {stats_atol['num_iters']} iters, rtol-only took {stats_base['num_iters']}"
     )
     assert stats_atol["converged"] is True
     assert stats_atol["res_norm"] <= atol, (
@@ -137,8 +129,7 @@ def test_atol_stops_earlier(blockamr_session, executor):
 
 
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
-@pytest.mark.parametrize("cls", ["FaceCoeffSolver", "FaceCoeffCsrSolver"])
-def test_res_history_matches_num_iters(blockamr_session, cls, executor):
+def test_res_history_matches_num_iters(blockamr_session, executor):
     """len(res_history) == num_iters + 1 (initial residual + one entry per iteration).
 
     The history starts at ||rhs|| (zero initial guess), decreases from first to
@@ -149,7 +140,9 @@ def test_res_history_matches_num_iters(blockamr_session, cls, executor):
     coeffs = _helmholtz_coeffs(geom, ba, dm, N)
     rhs = _random_rhs(ba, dm)
 
-    s = _make_solver_or_skip(cls, coeffs, geom, executor, solver="cg", max_iter=500, rtol=1e-10)
+    s = _make_solver_or_skip(
+        "FaceCoeffSolver", coeffs, geom, executor, solver="cg", max_iter=500, rtol=1e-10
+    )
     stats = s.solve(rhs, _zero_sol(ba, dm))
 
     hist = stats["res_history"]
@@ -157,8 +150,11 @@ def test_res_history_matches_num_iters(blockamr_session, cls, executor):
     assert all(math.isfinite(v) for v in hist)
     assert hist[-1] < hist[0], f"history not decreasing: first {hist[0]}, last {hist[-1]}"
     # Zero initial guess -> the first logged residual norm is ||rhs||.
-    rhs_norm = math.sqrt(sum(float(np.sum(b**2)) for b in
-                             (rhs.copy_to_host(mfi) for mfi in blockamr.MFIterator(rhs))))
+    rhs_norm = math.sqrt(
+        sum(
+            float(np.sum(b**2)) for b in (rhs.copy_to_host(mfi) for mfi in blockamr.MFIterator(rhs))
+        )
+    )
     assert hist[0] == pytest.approx(rhs_norm, rel=1e-10)
 
     # Per-call history: a second solve reports its own iterations, not a growing log.
@@ -187,60 +183,6 @@ def test_converged_flag(blockamr_session, executor):
     stats_cut = s_cut.solve(rhs, _zero_sol(ba, dm))
     assert stats_cut["converged"] is False
     assert stats_cut["num_iters"] == 2
-
-
-@pytest.mark.parametrize("executor", ["reference", "cuda"])
-def test_default_no_atol_unchanged(blockamr_session, executor):
-    """Without atol the solve behaves as before: mf and csr solvers agree.
-
-    Same matrix, same stopping rule (Iteration + rhs_norm ResidualNorm), so the
-    two solutions match and both converge.
-    """
-    N = 16
-    geom, ba, dm = _make_periodic_mesh(N)
-    coeffs = _helmholtz_coeffs(geom, ba, dm, N)
-    rhs = _random_rhs(ba, dm)
-
-    s_mf = _make_solver_or_skip(
-        "FaceCoeffSolver", coeffs, geom, executor, solver="cg", max_iter=500, rtol=1e-10
-    )
-    sol_mf = _zero_sol(ba, dm)
-    stats_mf = s_mf.solve(rhs, sol_mf)
-
-    s_csr = _make_solver_or_skip(
-        "FaceCoeffCsrSolver", coeffs, geom, executor, solver="cg", max_iter=500, rtol=1e-10
-    )
-    sol_csr = _zero_sol(ba, dm)
-    stats_csr = s_csr.solve(rhs, sol_csr)
-
-    assert stats_mf["converged"] is True
-    assert stats_csr["converged"] is True
-    assert stats_mf["res_norm"] < 1e-6
-    assert stats_csr["res_norm"] < 1e-6
-    max_diff = _max_abs_diff(sol_mf, sol_csr)
-    assert max_diff < 1e-6, f"Max |sol_mf - sol_csr| = {max_diff} exceeds 1e-6"
-
-
-def test_csr_rejects_gmg_only_knobs(blockamr_session):
-    """FaceCoeffCsrSolver refuses matrix-free-only GMG/mixed-precision knobs
-    instead of silently ignoring them (T8: the 16 previously-inert constructor
-    parameters became a validateForCsr(config) rejection).
-    """
-    N = 16
-    geom, ba, dm = _make_periodic_mesh(N)
-    coeffs = _helmholtz_coeffs(geom, ba, dm, N)
-
-    with pytest.raises(RuntimeError, match="gmg_pre_sweeps"):
-        _make_solver_or_skip(
-            "FaceCoeffCsrSolver", coeffs, geom, "reference", solver="cg", gmg_pre_sweeps=4
-        )
-    with pytest.raises(RuntimeError, match="mp_inner_max_iter"):
-        _make_solver_or_skip(
-            "FaceCoeffCsrSolver", coeffs, geom, "reference", solver="cg", mp_inner_max_iter=5
-        )
-    # All-default construction is unaffected (existing behaviour, no exception).
-    s = _make_solver_or_skip("FaceCoeffCsrSolver", coeffs, geom, "reference", solver="cg")
-    assert s is not None
 
 
 def test_ginkgo_solve_controls(blockamr_session):

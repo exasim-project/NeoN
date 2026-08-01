@@ -11,7 +11,7 @@
 
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
-#include "NeoN/blockAmr/core/types.hpp"
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 
 // An FP32 inner solver wearing an FP64 LinOp's clothes so gko::solver::Ir<double> can
 // drive it; the answer stays in the outer fp64 loop. Measured and REJECTED (1.41x slower

@@ -14,7 +14,7 @@ implementations of the same idea, which is exactly what this refactor exists to
 prevent.
 
 Bitwise is a legitimate demand here and not a lucky one: both paths build the
-same format, write the same diagonal source, accumulate the same
+same matrix, write the same diagonal source, accumulate the same
 ``ops::Laplacian`` and hand the result to the same ``la::Solver`` on the same
 executor, so every floating-point operation is the same operation in the same
 order. If it ever stops being bitwise, something moved.
@@ -22,19 +22,19 @@ order. If it ever stops being bitwise, something moved.
 The problem is a Helmholtz one, ``alpha*phi - div(gamma grad phi)`` with
 ``alpha = gamma = 1`` and homogeneous Dirichlet on all six sides. Dirichlet
 rather than periodic on purpose: it makes the matrix non-singular without a
-nullspace projection, and it is the case where ``laplacian()``'s ``bc`` argument
-is load-bearing -- with periodic sides a dropped ``bc`` would be invisible.
+nullspace projection, and it is the case where the matrix's ``bc`` is
+load-bearing -- with periodic sides a dropped ``bc`` would be invisible.
 ``alpha`` is non-zero for the same reason: it is what makes
-``Matrix.diagonal_source()`` observable.
+``MFFaceCoeffs.diagonal_source()`` observable.
 
 The rhs is seeded random rather than smooth: a smooth rhs on this problem is
 nearly an eigenvector and CG converges in a few iterations, which barely
 exercises the mat-vec (S4 handoff §9).
 
-The second half of the file is about PRECONDITIONERS, which are the MATRIX's to
-build (``la::Matrix::makePrecond``) rather than the solver's, because the GMG
+The second half of the file is about PRECONDITIONERS, which are built from the
+MATRIX (``la::makeHierarchy``) rather than by the solver, because the GMG
 hierarchy is rediscretised from the coefficient FIELDS and the solver holds only
-an erased ``gko::LinOp``. The gate there is CG's own behaviour: a preconditioner
+a ``gko::LinOp``. The gate there is CG's own behaviour: a preconditioner
 cannot move the fixed point, only the number of iterations needed to reach it, so
 "same answer" and "materially fewer iterations" together say the cycle is both
 correct and actually running.
@@ -54,7 +54,6 @@ import pytest
 
 import blockamr
 from blockamr.linear_algebra import (
-    CsrMatrix,
     GmgConfig,
     LinearSystem,
     MFFaceCoeffs,
@@ -70,7 +69,6 @@ _ext = getattr(blockamr, "_blockamr", None)
 _N = 8
 _BC = ["dirichlet"] * 6
 _SOLVE = dict(solver="cg", max_iter=5000, rtol=1e-14, atol=0.0)
-_FORMATS = {"mf": MFFaceCoeffs, "csr": CsrMatrix}
 
 # The preconditioner tests solve a bigger problem to a looser tolerance -- see
 # _precond_system for the size, and note the tolerance: at rtol=1e-14 CG runs into
@@ -117,7 +115,7 @@ def _boxes(mf):
     return [mf.copy_to_host(mfi) for mfi in blockamr.MFIterator(mf)]
 
 
-def _solve_through_the_python_api(fmt, executor):
+def _solve_through_the_python_api(executor):
     """The surface under test, spelled the way the design's example spells it."""
     geom, ba, dm = _mesh()
     gamma = _const_cell(ba, dm, 1.0)
@@ -125,17 +123,17 @@ def _solve_through_the_python_api(fmt, executor):
     rhs = _random_rhs(ba, dm)
     sol = _zero_sol(ba, dm)
 
-    matrix = _FORMATS[fmt].symmetric(
+    matrix = MFFaceCoeffs.symmetric(
         blockamr.MeshLevel(ba, dm, geom), executor=gko_executor(executor), bc=_BC
     )
     matrix.diagonal_source(alpha)
     system = LinearSystem(matrix, rhs)
-    system += laplacian(gamma, geom, bc=_BC)
+    system += laplacian(gamma)
     stats = Solver(SolverConfig(**_SOLVE)).solve(system, sol)
     return stats, sol, matrix
 
 
-def _solve_through_the_system_binding(fmt, executor):
+def _solve_through_the_system_binding(executor):
     """The S5 seam the S4/S5/S6b tests use, on an identical problem."""
     geom, ba, dm = _mesh()
     gamma = _const_cell(ba, dm, 1.0)
@@ -147,7 +145,6 @@ def _solve_through_the_system_binding(fmt, executor):
         *(_face_out(geom, dm, d) for d in range(3)),
     )
     stats = _ext._la_system_solve(
-        fmt,
         gamma,
         alpha,
         geom,
@@ -173,29 +170,30 @@ def _face_out(geom, dm, d):
 
 
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
-def test_python_api_reproduces_the_system_binding_bitwise(fmt, executor):
-    """The two spellings of one solve land on the same bits, format by format."""
-    api_stats, api_sol, _ = _solve_through_the_python_api(fmt, executor)
-    ref_stats, ref_sol = _solve_through_the_system_binding(fmt, executor)
+def test_python_api_reproduces_the_system_binding_bitwise(executor):
+    """The two spellings of one solve land on the same bits."""
+    api_stats, api_sol, _ = _solve_through_the_python_api(executor)
+    ref_stats, ref_sol = _solve_through_the_system_binding(executor)
 
     assert api_stats["num_iters"] == ref_stats["num_iters"]
     assert float(api_stats["res_norm"]).hex() == float(ref_stats["res_norm"]).hex()
     for i, (got, want) in enumerate(zip(_boxes(api_sol), _boxes(ref_sol))):
         np.testing.assert_array_equal(
-            got, want, err_msg=f"{fmt}/{executor}: solution box {i} differs bitwise"
+            got, want, err_msg=f"{executor}: solution box {i} differs bitwise"
         )
 
 
-@pytest.mark.parametrize("fmt,assembled", [("mf", False), ("csr", True)])
-def test_matrix_reports_the_format_it_holds(fmt, assembled):
-    """The erasure still answers the three questions a caller may ask of it."""
+def test_matrix_reports_its_symmetry_and_shape():
+    """The two questions a caller may ask of the matrix without solving.
+
+    (It used to be three: ``is_assembled()`` went with the format erasure, which
+    had two formats to distinguish and now has none.)
+    """
     geom, ba, dm = _mesh()
-    matrix = _FORMATS[fmt].symmetric(
+    matrix = MFFaceCoeffs.symmetric(
         blockamr.MeshLevel(ba, dm, geom), executor=gko_executor("reference"), bc=_BC
     )
 
-    assert matrix.is_assembled() is assembled
     assert matrix.is_symmetric() is True
     assert matrix.local_rows() == _N**3
 
@@ -218,7 +216,7 @@ def _precond_system(executor, n=_PRECOND_N):
     )
     matrix.diagonal_source(alpha)
     system = LinearSystem(matrix, rhs)
-    system += laplacian(gamma, geom, bc=_BC)
+    system += laplacian(gamma)
     # gamma/alpha/rhs are held by pointer or non-owningly; returning them keeps
     # them alive for as long as the system is.
     return system, sol, (geom, ba, dm, gamma, alpha, rhs)
@@ -323,27 +321,6 @@ def test_the_gmg_vcycle_knobs_reach_the_hierarchy():
     )
 
 
-def test_csr_declines_gmg_naming_the_format_and_the_precond():
-    """A format that cannot build a preconditioner declines, and the error says which.
-
-    ``CsrMatrix`` takes 'none'/'mlmg' only -- the assembled solver's historical
-    restriction. The message has to name BOTH the format and the precond, because
-    neither alone tells a caller what to change.
-    """
-    geom, ba, dm = _mesh()
-    gamma = _const_cell(ba, dm, 1.0)
-    rhs = _random_rhs(ba, dm)
-    sol = _zero_sol(ba, dm)
-    matrix = CsrMatrix.symmetric(
-        blockamr.MeshLevel(ba, dm, geom), executor=gko_executor("reference"), bc=_BC
-    )
-    system = LinearSystem(matrix, rhs)
-    system += laplacian(gamma, geom, bc=_BC)
-
-    with pytest.raises(RuntimeError, match="CsrMatrix.*cannot build precond 'gmg'"):
-        Solver(SolverConfig(solver="cg", precond="gmg")).solve(system, sol)
-
-
 @pytest.mark.parametrize("solver", ["gmg", "ir", "mpir"])
 def test_gmg_family_solvers_are_refused_with_the_hierarchy_explanation(solver):
     """solver='gmg'/'ir'/'mpir' need the coefficient-field hierarchy, not a LinOp."""
@@ -355,7 +332,7 @@ def test_gmg_family_solvers_are_refused_with_the_hierarchy_explanation(solver):
         blockamr.MeshLevel(ba, dm, geom), executor=gko_executor("reference"), bc=_BC
     )
     system = LinearSystem(matrix, rhs)
-    system += laplacian(gamma, geom, bc=_BC)
+    system += laplacian(gamma)
 
     with pytest.raises(RuntimeError, match="needs the GMG hierarchy"):
         Solver(SolverConfig(solver=solver)).solve(system, sol)

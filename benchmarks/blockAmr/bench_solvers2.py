@@ -2,14 +2,13 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Solver comparison through the type-erased ``blockamr.linear_algebra`` seam.
+"""Solver comparison through the ``blockamr.linear_algebra`` seam.
 
 The counterpart of ``bench_solvers.py``, which drives the LEGACY
-``FaceCoeffSolver`` / ``FaceCoeffCsrSolver`` facades. Here the operator is
-assembled the way a discretiser would assemble it —
-``MFFaceCoeffs.symmetric(MeshLevel(...))`` + ``Matrix.diagonal_source(alpha)`` +
-``system += laplacian(gamma, geom, bc=...)`` — and handed to
-``la.Solver(SolverConfig(...))``, which never learns what format it got.
+``FaceCoeffSolver`` facade. Here the operator is assembled the way a discretiser
+would assemble it —
+``MFFaceCoeffs.symmetric(MeshLevel(...))`` + ``MFFaceCoeffs.diagonal_source(alpha)`` +
+``system += laplacian(gamma)`` — and handed to ``la.Solver(SolverConfig(...))``.
 
 The same symmetric Helmholtz operator (``alpha*phi - div(gamma grad phi)``,
 alpha = gamma = 1) is solved by every row, so the table is a like-for-like
@@ -37,12 +36,10 @@ the distinction IS part of the result::
                 mat-vec, only the assembly route differs. Building it is part of
                 `setup_ms`, outside the timed region.
 
-Deliberately ABSENT: the assembled CSR format. ``bench_solvers.py``'s ``csr`` row
-is the matrix-free-vs-assembled comparison and stays there.
-
-Also absent, because the seam refuses them by design: ``solver="gmg"/"ir"/"mpir"``
-want the hierarchy as the SOLVER rather than as a preconditioner of one. Use
-``FaceCoeffSolver`` (``bench_solvers.py``'s ``gmg`` / ``gmg-ir`` / ``mf-mpir``).
+Deliberately absent, because the seam refuses them by design:
+``solver="gmg"/"ir"/"mpir"`` want the hierarchy as the SOLVER rather than as a
+preconditioner of one. Use ``FaceCoeffSolver`` (``bench_solvers.py``'s ``gmg`` /
+``gmg-ir`` / ``mf-mpir``).
 
 WHY THE DIRICHLET CONFIGURATION EXISTS
 --------------------------------------
@@ -226,7 +223,7 @@ def make_la_system(geom, ba, dm, bc, rhs, executor):
     matrix = MFFaceCoeffs.symmetric(blockamr.MeshLevel(ba, dm, geom), executor=executor, bc=bc)
     matrix.diagonal_source(alpha)
     system = LinearSystem(matrix, rhs)
-    system += laplacian(gamma, geom, bc=bc)
+    system += laplacian(gamma)
     return system, (matrix, gamma, alpha)
 
 
@@ -234,7 +231,7 @@ def make_legacy_solver(geom, ba, dm, max_size, bc, rtol, atol, max_iter):
     """The legacy facade on hand-written coefficients: alpha=1, face=-gamma/dx**2.
 
     The BCs are DECLARED (`bc=`) and folded by the solver, which is the legacy
-    equivalent of what `laplacian(bc=...)` folds into the coefficients — so this
+    equivalent of what the matrix's `bc=` folds into the coefficients — so this
     and the `la-cg` row are the same matrix, reached two different ways.
     """
     dx = geom.cell_size()

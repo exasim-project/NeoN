@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-// Compiled instead of ginkgoSolve.cpp when NeoN_WITH_GINKGO is OFF, so module.cpp stays
+// Compiled instead of linearAlgebra.cpp when NeoN_WITH_GINKGO is OFF, so module.cpp stays
 // unconditional and every symbol still exists, raising on first use.
 
 #include <nanobind/nanobind.h>
@@ -13,7 +13,7 @@
 
 namespace nb = nanobind;
 
-void registerGinkgoSolve(nb::module_& m)
+void registerLinearAlgebra(nb::module_& m)
 {
     m.def(
         "ginkgo_solve",
@@ -31,19 +31,10 @@ void registerGinkgoSolve(nb::module_& m)
     struct FaceCoeffSolverStub
     {
     };
-    struct FaceCoeffCsrSolverStub
-    {
-    };
     nb::class_<FaceCoeffSolverStub>(m, "FaceCoeffSolver")
         .def(
             "__init__",
             [](FaceCoeffSolverStub*, nb::args, nb::kwargs)
-            { throw std::runtime_error("built without Ginkgo"); }
-        );
-    nb::class_<FaceCoeffCsrSolverStub>(m, "FaceCoeffCsrSolver")
-        .def(
-            "__init__",
-            [](FaceCoeffCsrSolverStub*, nb::args, nb::kwargs)
             { throw std::runtime_error("built without Ginkgo"); }
         );
 
@@ -74,10 +65,10 @@ void registerGinkgoSolve(nb::module_& m)
         [](nb::args, nb::kwargs) { throw std::runtime_error("built without Ginkgo"); }
     );
 
-    struct MatrixStub
+    struct MFFaceCoeffsStub
     {
     };
-    struct OperatorStub
+    struct LaplacianStub
     {
     };
     struct LinearSystemStub
@@ -86,13 +77,13 @@ void registerGinkgoSolve(nb::module_& m)
     struct LaSolverStub
     {
     };
-    nb::class_<MatrixStub>(m, "Matrix")
+    nb::class_<MFFaceCoeffsStub>(m, "MFFaceCoeffs")
         .def(
             "__init__",
-            [](MatrixStub*, nb::args, nb::kwargs)
+            [](MFFaceCoeffsStub*, nb::args, nb::kwargs)
             { throw std::runtime_error("built without Ginkgo"); }
         );
-    nb::class_<OperatorStub>(m, "Operator");
+    nb::class_<LaplacianStub>(m, "Laplacian");
     nb::class_<LinearSystemStub>(m, "LinearSystem")
         .def(
             "__init__",

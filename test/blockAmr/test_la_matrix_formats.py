@@ -2,23 +2,20 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""The ``blockamr::la`` matrix formats behind the ``Matrix`` type erasure.
+"""The ``blockamr::la`` matrix, ``MFFaceCoeffs``.
 
-``Matrix`` holds any type satisfying ``IsMatrix``; two do. ``MFFaceCoeffs`` is
-matrix-free (``op()`` is a ``FaceCoeffOp`` over the coefficient fields, nothing is
-assembled), ``CsrMatrix`` is assembled (``op()`` is the explicit Ginkgo Csr that
-``assembleFaceCoeffCsr`` builds from the SAME fields). Both allocate their own
-``alpha`` plus the six face fields and hand out the same ``CellView``/``FaceView``,
-which is the whole point: one write face, one view type, no second erasure.
+It is matrix-free (``la::toLinOp`` builds a ``FaceCoeffOp`` over the coefficient
+fields, nothing is assembled) and allocates its own ``alpha`` plus the face fields,
+which callers write directly.
 
 What is checked here:
 
-* both formats, filled only through ``Matrix::coefficients()``, reproduce a
-  hand-built ``FaceCoeffSolver`` on the same problem — periodic and non-periodic;
-* the erasure's ``clone()``: a copy of a ``Matrix`` solves the same problem;
-* the assembly-freshness rule — ``CsrMatrix::op()`` reassembles after a write
-  through ``coefficients()`` or ``zero()`` and reuses its matrix when nothing was
-  written;
+* the matrix, filled through its coefficient fields, reproduces a hand-built
+  ``FaceCoeffSolver`` on the same problem — periodic and non-periodic;
+* a COPY shares those fields (they sit behind ``shared_ptr``) and solves the same
+  problem;
+* ``la::toLinOp`` is not frozen by an earlier call: taking an operator before the
+  coefficients are written must not make the solve run against the zero matrix;
 * ``localRows()`` is the rank-local count and the operator's row count is global.
 
 The entry points are ``blockamr._blockamr._la_matrix_solve`` / ``_la_matrix_probe``
@@ -143,13 +140,12 @@ def _reference_solve(coeffs, geom, ba, dm, rhs, executor, bc):
     return sol, stats
 
 
-def _matrix_solve(fmt, coeffs, geom, ba, dm, rhs, executor, bc, **kwargs):
-    """Solve through a blockamr::la::Matrix holding the named format."""
+def _matrix_solve(coeffs, geom, ba, dm, rhs, executor, bc, **kwargs):
+    """Solve through a blockamr::la::MFFaceCoeffs."""
     alpha, fx, fy, fz = coeffs
     sol = _zero_sol(ba, dm)
     try:
         stats = _ext._la_matrix_solve(
-            fmt,
             alpha,
             fx,
             fx,
@@ -174,11 +170,10 @@ def _matrix_solve(fmt, coeffs, geom, ba, dm, rhs, executor, bc, **kwargs):
     return sol, stats
 
 
-# The two boundary cases the formats must agree on. Periodic is what S4's
-# acceptance asks for; the non-periodic row is only reachable because S6a taught
-# assembleFaceCoeffCsr about boundaries, and it is the direct rehearsal for S6b's
-# format-agreement check. alpha=1 (Helmholtz) keeps both nonsingular, so no
-# nullspace projection enters the comparison.
+# The two boundary cases the format must reproduce the legacy solver on. Periodic
+# is what S4's acceptance asks for; the non-periodic row is the one that exercises
+# the BC fold. alpha=1 (Helmholtz) keeps both nonsingular, so no nullspace
+# projection enters the comparison.
 _BC_CASES = [
     ("periodic", [1, 1, 1], ["periodic"] * 6),
     ("dirichlet", [0, 0, 0], ["dirichlet"] * 6),
@@ -188,14 +183,13 @@ _AGREE_TOL = 1e-12
 
 
 @pytest.mark.parametrize("executor", ["reference", "cuda"])
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
 @pytest.mark.parametrize("case, periodic, bc", _BC_CASES)
-def test_format_matches_hand_built_solver(blockamr_session, executor, fmt, case, periodic, bc):
-    """Both formats, filled through Matrix::coefficients(), reproduce FaceCoeffSolver.
+def test_format_matches_hand_built_solver(blockamr_session, executor, case, periodic, bc):
+    """The matrix, filled through its coefficient fields, reproduces FaceCoeffSolver.
 
-    Same mesh, same coefficients, same CG, one answer. This is what makes the
-    erasure worth having: nothing above Matrix knows whether it drove a
-    matrix-free operator or an assembled Csr, and the answer does not either.
+    Same mesh, same coefficients, same CG, one answer -- reached once by writing
+    the coefficients by hand into the legacy facade and once through
+    ``MFFaceCoeffs``.
     """
     _require_bindings()
     n = 16
@@ -204,28 +198,25 @@ def test_format_matches_hand_built_solver(blockamr_session, executor, fmt, case,
     rhs = _random_rhs(ba, dm)
 
     ref, ref_stats = _reference_solve(coeffs, geom, ba, dm, rhs, executor, bc)
-    got, stats = _matrix_solve(fmt, coeffs, geom, ba, dm, rhs, executor, bc)
+    got, stats = _matrix_solve(coeffs, geom, ba, dm, rhs, executor, bc)
 
-    assert stats["converged"] is True, f"{fmt}/{case} did not converge: {dict(stats)}"
-    assert stats["num_iters"] > 10, f"{fmt}/{case}: too few CG iterations to mean anything"
-    assert stats["is_assembled"] is (fmt == "csr")
+    assert stats["converged"] is True, f"mf/{case} did not converge: {dict(stats)}"
+    assert stats["num_iters"] > 10, f"mf/{case}: too few CG iterations to mean anything"
     assert stats["local_rows"] == n**3
     assert stats["symmetric"] is True
 
     diff = _max_abs_diff(ref, got)
     assert diff < _AGREE_TOL, (
-        f"{fmt}/{case}: |FaceCoeffSolver - Matrix({fmt})| = {diff} exceeds {_AGREE_TOL} "
+        f"mf/{case}: |FaceCoeffSolver - MFFaceCoeffs| = {diff} exceeds {_AGREE_TOL} "
         f"(ref {dict(ref_stats)}, got {dict(stats)})"
     )
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
-def test_matrix_copy_solves_identically(blockamr_session, fmt):
-    """A copied Matrix is the same matrix — the erasure's clone() path.
+def test_matrix_copy_solves_identically(blockamr_session):
+    """A copied MFFaceCoeffs is the same matrix.
 
-    The copy shares the coefficient fields (amrex::MultiFab cannot be copied) and,
-    for the assembled format, the assembly-freshness state with them, so it must
-    land on exactly the original's answer, not merely near it.
+    The copy shares the coefficient fields (amrex::MultiFab cannot be copied), so
+    it must land on exactly the original's answer, not merely near it.
     """
     _require_bindings()
     n = 16
@@ -234,21 +225,20 @@ def test_matrix_copy_solves_identically(blockamr_session, fmt):
     rhs = _random_rhs(ba, dm)
     bc = ["periodic"] * 6
 
-    direct, _ = _matrix_solve(fmt, coeffs, geom, ba, dm, rhs, "reference", bc)
-    copied, _ = _matrix_solve(fmt, coeffs, geom, ba, dm, rhs, "reference", bc, via_copy=True)
+    direct, _ = _matrix_solve(coeffs, geom, ba, dm, rhs, "reference", bc)
+    copied, _ = _matrix_solve(coeffs, geom, ba, dm, rhs, "reference", bc, via_copy=True)
     assert _max_abs_diff(direct, copied) == 0.0
 
 
-@pytest.mark.parametrize("fmt", ["mf", "csr"])
-def test_op_before_write_does_not_freeze_the_matrix(blockamr_session, fmt):
-    """op() called BEFORE the coefficients are written still solves the right system.
+def test_op_before_write_does_not_freeze_the_matrix(blockamr_session):
+    """toLinOp() called BEFORE the coefficients are written still solves the right system.
 
-    The formats allocate their fields zeroed, so an op() taken at that point is an
-    operator for the zero matrix. A CsrMatrix that cached it and did not notice the
-    subsequent write through coefficients() would then solve with that zero matrix
-    — this is the assembly-freshness rule under test. Since S7 the matrix-free
-    format is no longer merely the control: op() also computes and caches the
-    stored diagonal, so an MFFaceCoeffs missing the same flag fails here too.
+    The matrix allocates its fields zeroed, so an operator taken at that point is
+    an operator for the zero matrix. A matrix that cached it and did not notice the
+    subsequent coefficient write would then solve with the zero matrix.
+    MFFaceCoeffs has no cache to go stale (see
+    test_matrix_free_op_is_rebuilt_every_call), which is what this row pins from
+    the outside: the earlier operator leaves no trace on the answer.
     """
     _require_bindings()
     n = 16
@@ -257,9 +247,9 @@ def test_op_before_write_does_not_freeze_the_matrix(blockamr_session, fmt):
     rhs = _random_rhs(ba, dm)
     bc = ["periodic"] * 6
 
-    fresh, _ = _matrix_solve(fmt, coeffs, geom, ba, dm, rhs, "reference", bc)
+    fresh, _ = _matrix_solve(coeffs, geom, ba, dm, rhs, "reference", bc)
     stale, stats = _matrix_solve(
-        fmt, coeffs, geom, ba, dm, rhs, "reference", bc, assemble_before_write=True
+        coeffs, geom, ba, dm, rhs, "reference", bc, assemble_before_write=True
     )
     assert stats["converged"] is True, dict(stats)
     assert _max_abs_diff(fresh, stale) == 0.0
@@ -280,21 +270,18 @@ def test_asymmetric_factory_matches_symmetric_one(blockamr_session):
     rhs = _random_rhs(ba, dm)
     bc = ["periodic"] * 6
 
-    sym, _ = _matrix_solve("mf", coeffs, geom, ba, dm, rhs, "reference", bc, symmetry="symmetric")
-    asym, stats = _matrix_solve(
-        "mf", coeffs, geom, ba, dm, rhs, "reference", bc, symmetry="asymmetric"
-    )
+    sym, _ = _matrix_solve(coeffs, geom, ba, dm, rhs, "reference", bc, symmetry="symmetric")
+    asym, stats = _matrix_solve(coeffs, geom, ba, dm, rhs, "reference", bc, symmetry="asymmetric")
     assert stats["symmetric"] is False
     assert _max_abs_diff(sym, asym) == 0.0
 
 
-def _probe(fmt, symmetry="symmetric"):
+def _probe(symmetry="symmetric"):
     n = 16
     geom, ba, dm = _make_mesh(n, [1, 1, 1])
     alpha, fx, fy, fz = _poisson_coeffs(geom, ba, dm, n, 1.0)
     try:
         return n, _ext._la_matrix_probe(
-            fmt,
             alpha,
             fx,
             fx,
@@ -312,8 +299,7 @@ def _probe(fmt, symmetry="symmetric"):
         raise
 
 
-@pytest.mark.parametrize("fmt, assembled", [("mf", False), ("csr", True)])
-def test_matrix_reports_its_shape(blockamr_session, fmt, assembled):
+def test_matrix_reports_its_shape(blockamr_session):
     """localRows() is the rank-local count; op()'s row count is the global one.
 
     They coincide on one rank, which is exactly why the distinction is worth
@@ -322,8 +308,7 @@ def test_matrix_reports_its_shape(blockamr_session, fmt, assembled):
     handed to every vector built over the matrix.
     """
     _require_bindings()
-    n, d = _probe(fmt)
-    assert d["is_assembled"] is assembled
+    n, d = _probe()
     assert d["symmetric"] is True
     assert d["local_rows"] == n**3
     assert d["op_rows"] == n**3
@@ -331,11 +316,12 @@ def test_matrix_reports_its_shape(blockamr_session, fmt, assembled):
 
 @pytest.mark.parametrize("symmetry, lower_empty", [("symmetric", True), ("asymmetric", False)])
 def test_coefficient_views_report_symmetry(blockamr_session, symmetry, lower_empty):
-    """A symmetric matrix reports an EMPTY `lower` view — that is how the interface
-    says "there is no low side to write", and MatrixCoefficients::symmetric() is
-    defined as exactly that."""
+    """A symmetric matrix has NO `lower` at all — that is how the storage says
+    "there is no low side to write", and MFFaceCoeffs::symmetry() is derived from
+    exactly that. diag_empty/upper_empty are structurally false, pinned by the
+    field-type static_asserts in faceCoeffMatrix.hpp."""
     _require_bindings()
-    _, d = _probe("mf", symmetry=symmetry)
+    _, d = _probe(symmetry=symmetry)
     assert d["diag_empty"] is False
     assert d["upper_empty"] is False
     assert d["lower_empty"] is lower_empty
@@ -343,31 +329,15 @@ def test_coefficient_views_report_symmetry(blockamr_session, symmetry, lower_emp
     assert d["symmetric"] is (symmetry == "symmetric")
 
 
-def test_csr_assembles_once_until_written(blockamr_session):
-    """The dirty flag: assemble on demand, once, and again after every write.
-
-    Two op() calls with nothing between return the SAME matrix; a write through
-    coefficients() or zero() forces the next one to reassemble. The flag is set
-    when the handles are handed out, not when a value actually changes — there is
-    no "done writing" call to hook, so a caller that takes the handles and writes
-    nothing pays one redundant assembly.
-    """
-    _require_bindings()
-    _, d = _probe("csr")
-    assert d["op_stable_without_write"] is True
-    assert d["op_rebuilt_after_coefficients"] is True
-    assert d["op_rebuilt_after_zero"] is True
-
-
 def test_matrix_free_op_is_rebuilt_every_call(blockamr_session):
-    """MFFaceCoeffs builds a fresh operator on every op() call, which is why its
-    freshness rule is about the stored DIAGONAL and not about the operator: on the
-    host path the operator stages PINNED COPIES of the coefficients at
-    construction, so a cached operator would go stale after a write on that path
-    and not on the device path. What is cached across calls is the diagonal
-    (test_la_stored_diagonal.py), and this test pins that the operator is not."""
+    """la::toLinOp builds a fresh operator on every call, and nothing on the matrix
+    caches one: on the host path the operator stages PINNED COPIES of the
+    coefficients at construction, so a cached operator would go stale after a write
+    on that path and not on the device path. The matrix stores nothing derived at
+    all -- not even the diagonal (test_la_stored_diagonal.py derives it on demand)
+    -- and this test pins that the operator is rebuilt rather than reused."""
     _require_bindings()
-    _, d = _probe("mf")
+    _, d = _probe()
     assert d["op_stable_without_write"] is False
     assert d["op_rebuilt_after_coefficients"] is True
     assert d["op_rebuilt_after_zero"] is True

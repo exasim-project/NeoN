@@ -24,7 +24,7 @@
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/profiling.hpp"
 #include "NeoN/blockAmr/linearAlgebra/transfer.hpp"
-#include "NeoN/blockAmr/core/types.hpp"
+#include "NeoN/blockAmr/core/gkoTypes.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgBottom.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp"
 
