@@ -17,14 +17,6 @@ if(APPLE)
 endif()
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-# Ninja requires this to avoid RPATH relinking errors during install. Must be a CACHE variable so it
-# survives cmake re-configuration when CMAKE_CUDA_COMPILER changes mid-configure.
-if(DEFINED SKBUILD)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH
-      ON
-      CACHE BOOL "" FORCE)
-endif()
-
 # Add the cmake folder so the find_package command finds custom packages
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -129,8 +121,8 @@ if(DEFINED SKBUILD)
 endif()
 
 # Enable CUDA early so Kokkos doesn't replace CMAKE_CXX_COMPILER with
-# kokkos_launch_compiler, which triggers a CMake re-configure that loses
-# all -D flags and preset variables.
+# kokkos_launch_compiler, which triggers a CMake re-configure that loses all -D
+# flags and preset variables (e.g. NeoN_WITH_AMREX / NeoN_AMREX_GPU_BACKEND).
 include(CheckLanguage)
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
@@ -255,7 +247,34 @@ endif()
 
 include(cmake/banner.cmake)
 
-if(NOT DEFINED SKBUILD)
+install(
+  TARGETS NeoN NeoN_public_api NeoN_options NeoN_warnings
+  EXPORT NeoNTargets
+  INCLUDES
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(
+  EXPORT NeoNTargets
+  FILE NeoNTargets.cmake
+  NAMESPACE NeoN::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+
+# install internal ginkgo version
+if(ginkgo_POPULATED)
   install(
     TARGETS ginkgo
     EXPORT GinkgoTargets
@@ -306,85 +325,12 @@ if(fmt_ADDED)
   install(DIRECTORY "${fmt_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 endif()
 
-  install(
-    EXPORT NeoNTargets
-    FILE NeoNTargets.cmake
-    NAMESPACE NeoN::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
+# install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
+# sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
+# SundialsTargets NAMESPACE SUNDIALS::) endif()
 
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/NeoN/NeoN.hpp
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
-  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/NeoN/
-          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NeoN)
-
-  include(CMakePackageConfigHelpers)
-  configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/NeoNConfig.cmake.in
-    "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
-
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
-
-  # install internal ginkgo version
-  if(ginkgo_POPULATED)
-    install(
-      TARGETS ginkgo
-      EXPORT GinkgoTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
-  endif()
-
-  if(nlohmann_json_POPULATED)
-    install(
-      TARGETS nlohmann_json
-      EXPORT nlohmannTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
-  endif()
-
-  # umpire installs its own targets when fetched via CPM
-
-  # install internal cpptrace version
-  if(cpptrace_POPULATED)
-    install(
-      TARGETS cpptrace
-      EXPORT CpptraceTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
-  endif()
-
-  # install internal spdlog version TODO why does spdlog_POPULATED not work?
-  if(spdlog_ADDED)
-    install(
-      TARGETS spdlog_header_only
-      EXPORT SpdlogTargets
-      INCLUDES
-      DESTINATION include)
-    install(
-      EXPORT SpdlogTargets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/spdlog
-      NAMESPACE spdlog::)
-  endif()
-
-  if(fmt_ADDED)
-    install(
-      TARGETS fmt-header-only
-      EXPORT NeoNTargets
-      INCLUDES
-      DESTINATION include)
-  endif()
-
-  # install internal sundials version if(sundials_POPULATED) install( TARGETS cvode nvec arkode
-  # sundials_core_shared EXPORT SundialsTargets INCLUDES DESTINATION include) install(EXPORT
-  # SundialsTargets NAMESPACE SUNDIALS::) endif()
-
-  if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
-    export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
-  else()
-    message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
-  endif()
-endif() # NOT DEFINED SKBUILD
+if(NOT kokkos_POPULATED AND NOT umpire_ADDED)
+  export(EXPORT NeoNTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/NeoNTargets.cmake")
+else()
+  message(WARNING "Unable to create NeoNTargets.cmake with bundled Kokkos or Umpire")
+endif()
