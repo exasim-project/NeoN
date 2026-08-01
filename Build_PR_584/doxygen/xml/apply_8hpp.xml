@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="apply_8hpp" kind="file" language="C++">
+    <compoundname>apply.hpp</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">AMReX_Geometry.H</includes>
+    <includes local="no">AMReX_MultiFab.H</includes>
+    <includes refid="fieldLevel_8hpp" local="yes">NeoN/blockAmr/core/fieldLevel.hpp</includes>
+    <includes refid="gmgOpts_8hpp" local="yes">NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp</includes>
+    <includedby refid="gmgKokkos_2precond_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/precond.hpp</includedby>
+    <incdepgraph>
+      <node id="5">
+        <label>NeoN/blockAmr/core/fieldLevel.hpp</label>
+        <link refid="fieldLevel_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp</label>
+        <link refid="apply_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp</label>
+        <link refid="gmgOpts_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>AMReX_Geometry.H</label>
+      </node>
+      <node id="4">
+        <label>AMReX_MultiFab.H</label>
+      </node>
+      <node id="6">
+        <label>array</label>
+      </node>
+      <node id="7">
+        <label>cstddef</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="9">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp</label>
+        <link refid="apply_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/precond.hpp</label>
+        <link refid="gmgKokkos_2precond_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classblockamr_1_1KokkosGmgApply" prot="public">blockamr::KokkosGmgApply</innerclass>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_Geometry.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_MultiFab.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="fieldLevel_8hpp" kindref="compound">NeoN/blockAmr/core/fieldLevel.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="gmgOpts_8hpp" kindref="compound">NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>optimised<sp/>(kokkos_opt)<sp/>V-cycle<sp/>as<sp/>a<sp/>preconditioner<sp/>apply,<sp/>behind<sp/>an<sp/>interface<sp/>that</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>mentions<sp/>neither<sp/>Kokkos<sp/>nor<sp/>Ginkgo<sp/>--<sp/>the<sp/>two<sp/>stacks<sp/>compile<sp/>in<sp/>separate<sp/>object<sp/>libraries.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Why<sp/>an<sp/>opaque<sp/>handle,<sp/>and<sp/>why<sp/>a<sp/>preconditioner:<sp/>report/blockamr-gmg-notes.md#kokkos-handle.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr" kindref="compound">blockamr</ref></highlight></codeline>
+<codeline lineno="20"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>z<sp/>=<sp/>M^{-1}<sp/>r<sp/>on<sp/>flat<sp/>DEVICE<sp/>vectors<sp/>in<sp/>the<sp/>solver&apos;s<sp/>cell<sp/>ordering<sp/>(transfer.hpp).<sp/>Two<sp/>widths</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>because<sp/>the<sp/>Krylov<sp/>vectors<sp/>have<sp/>two;<sp/>both<sp/>are<sp/>independent<sp/>of<sp/>the<sp/>HIERARCHY&apos;s<sp/>storage<sp/>type.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="classblockamr_1_1KokkosGmgApply" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classblockamr_1_1KokkosGmgApply" kindref="compound">KokkosGmgApply</ref></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="classblockamr_1_1KokkosGmgApply_1a7d92d73ebbe2e19669ebaa20e9d13dab" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1KokkosGmgApply_1a7d92d73ebbe2e19669ebaa20e9d13dab" kindref="member">KokkosGmgApply</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="29" refid="classblockamr_1_1KokkosGmgApply_1a884be069ab7ae7fb6d0fd1f5bba7a48f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1KokkosGmgApply_1a884be069ab7ae7fb6d0fd1f5bba7a48f" kindref="member">~KokkosGmgApply</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30" refid="classblockamr_1_1KokkosGmgApply_1aa9773aa7e7da1135fbe5d6c969215be1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1KokkosGmgApply_1aa9773aa7e7da1135fbe5d6c969215be1" kindref="member">KokkosGmgApply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1KokkosGmgApply" kindref="compound">KokkosGmgApply</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="31" refid="classblockamr_1_1KokkosGmgApply_1aa12b1159fb931d7607d71530f97eef6e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1KokkosGmgApply" kindref="compound">KokkosGmgApply</ref>&amp;<sp/><ref refid="classblockamr_1_1KokkosGmgApply_1aa12b1159fb931d7607d71530f97eef6e" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1KokkosGmgApply" kindref="compound">KokkosGmgApply</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="classblockamr_1_1KokkosGmgApply_1acadb9a93228edfc6e7fe5608edd3afa2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1KokkosGmgApply_1acadb9a93228edfc6e7fe5608edd3afa2" kindref="member">apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>r,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>z)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="34" refid="classblockamr_1_1KokkosGmgApply_1a183698b1033c18aa3a4661525c5cf0ab" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1KokkosGmgApply_1a183698b1033c18aa3a4661525c5cf0ab" kindref="member">apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>z)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="classblockamr_1_1KokkosGmgApply_1a59543502a25b9052dd3b06d54d7705ee" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>[[nodiscard]]<sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1KokkosGmgApply_1a59543502a25b9052dd3b06d54d7705ee" kindref="member">nlevels</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Build<sp/>the<sp/>hierarchy<sp/>from<sp/>the<sp/>same<sp/>face-coefficient<sp/>pieces<sp/>FaceCoeffOp<sp/>takes.<sp/>The<sp/>fields<sp/>are</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>read<sp/>at<sp/>SETUP<sp/>only<sp/>and<sp/>level<sp/>0<sp/>keeps<sp/>its<sp/>own<sp/>copies,<sp/>so<sp/>later<sp/>caller<sp/>writes<sp/>go<sp/>unseen<sp/>--<sp/>a</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">//<sp/>changed<sp/>operator<sp/>needs<sp/>a<sp/>rebuilt<sp/>object.<sp/>Red-black<sp/>only;<sp/>homogeneous<sp/>BCs<sp/>via<sp/>opts.bc.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>READ-ONLY<sp/>field<sp/>bundles<sp/>(core/fieldLevel.hpp),<sp/>so<sp/>the<sp/>six<sp/>ux/lx/uy/ly/uz/lz<sp/>arguments<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment">//<sp/>identical<sp/>type<sp/>--<sp/>where<sp/>transposing<sp/>two<sp/>compiles<sp/>and<sp/>answers<sp/>wrongly<sp/>--<sp/>cannot<sp/>be<sp/>transposed.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="namespaceblockamr_1adde689155a46c5f96a6859d37f6e3fcf" refkind="member"><highlight class="normal">std::unique_ptr&lt;KokkosGmgApply&gt;<sp/><ref refid="namespaceblockamr_1adde689155a46c5f96a6859d37f6e3fcf" kindref="member">makeKokkosGmgApply</ref>(</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::Geometry&amp;<sp/><ref refid="vcycle_8hpp_1aba4186e3457cb03d2abce7b3029ed530" kindref="member">geom</ref>,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1ConstCellFieldLevel" kindref="compound">ConstCellFieldLevel</ref>&amp;<sp/><ref refid="vcycle_8hpp_1ae47025b73cbfce4f61d918b2058005ba" kindref="member">alpha</ref>,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1ConstFaceFieldLevel" kindref="compound">ConstFaceFieldLevel</ref>&amp;<sp/>upper,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1ConstFaceFieldLevel" kindref="compound">ConstFaceFieldLevel</ref>&amp;<sp/>lower,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts" kindref="compound">KokkosGmgOpts</ref>&amp;<sp/>opts</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp"/>
+  </compounddef>
+</doxygen>

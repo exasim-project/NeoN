@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="transfer_8hpp" kind="file" language="C++">
+    <compoundname>transfer.hpp</compoundname>
+    <includes local="no">AMReX_Arena.H</includes>
+    <includes local="no">AMReX_GpuLaunch.H</includes>
+    <includes local="no">AMReX_MultiFab.H</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="faceCoeffMatrix_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp</includedby>
+    <includedby refid="gmgBottom_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgBottom.hpp</includedby>
+    <includedby refid="gmgPrecond_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp</includedby>
+    <includedby refid="vcycle_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/transfer.hpp</label>
+        <link refid="transfer_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>AMReX_Arena.H</label>
+      </node>
+      <node id="3">
+        <label>AMReX_GpuLaunch.H</label>
+      </node>
+      <node id="4">
+        <label>AMReX_MultiFab.H</label>
+      </node>
+      <node id="5">
+        <label>cstddef</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp</label>
+        <link refid="faceCoeffMatrix_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/ginkgo/adapt.hpp</label>
+        <link refid="adapt_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgBottom.hpp</label>
+        <link refid="gmgBottom_8hpp"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp</label>
+        <link refid="gmgPrecond_8hpp"/>
+      </node>
+      <node id="9">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp</label>
+        <link refid="vcycle_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/linearSystem.hpp</label>
+        <link refid="blockAmr_2linearAlgebra_2linearSystem_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solver.hpp</label>
+        <link refid="blockAmr_2linearAlgebra_2solver_8hpp"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/transfer.hpp</label>
+        <link refid="transfer_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/operators/laplacian.hpp</label>
+        <link refid="laplacian_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la">blockamr::la</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_Arena.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_GpuLaunch.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_MultiFab.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la" kindref="compound">blockamr::la</ref></highlight></codeline>
+<codeline lineno="15"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Cells<sp/>this<sp/>rank<sp/>owns<sp/>--<sp/>the<sp/>length<sp/>of<sp/>the<sp/>flat<sp/>vectors<sp/>below.<sp/>NEVER</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>boxArray().numPts(),<sp/>which<sp/>counts<sp/>EVERY<sp/>rank&apos;s<sp/>cells:<sp/>that<sp/>was<sp/>the<sp/>long-standing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>multi-rank<sp/>bug.<sp/>Counted<sp/>by<sp/>the<sp/>same<sp/>MFIter<sp/>walk<sp/>gather/scatter<sp/>use,<sp/>so<sp/>it<sp/>agrees.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>FA&gt;</highlight></codeline>
+<codeline lineno="21" refid="namespaceblockamr_1_1la_1a477702478ae69e18a705451b8d6712a5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>std::size_t<sp/><ref refid="namespaceblockamr_1_1la_1a477702478ae69e18a705451b8d6712a5" kindref="member">localCount</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FA</ref>&amp;<sp/>mf)</highlight></codeline>
+<codeline lineno="22"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>std::size_t<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(amrex::MFIter<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>(mf);<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>.isValid();<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref><sp/>+=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>.validbox().numPts());</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref>;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Flat-vector<sp/>&lt;-&gt;<sp/>MultiFab<sp/>transfer<sp/>(component<sp/>0,<sp/>valid<sp/>cells<sp/>only).<sp/>INVARIANT:<sp/>gather<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>scatter<sp/>MUST<sp/>traverse<sp/>in<sp/>the<sp/>identical<sp/>order<sp/>--<sp/>MFIter<sp/>without<sp/>tiling,<sp/>then<sp/>k,j,i<sp/>over<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/>valid<sp/>box.<sp/>`scale`<sp/>lets<sp/>gather<sp/>apply<sp/>the<sp/>SPD<sp/>sign<sp/>flip<sp/>(-L)<sp/>in<sp/>one<sp/>pass.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>V,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>FA&gt;</highlight></codeline>
+<codeline lineno="35" refid="namespaceblockamr_1_1la_1a55680ac3fc8cd773335b0dfaa573de5c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a55680ac3fc8cd773335b0dfaa573de5c" kindref="member">gather</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FA</ref>&amp;<sp/>mf,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref>*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">buf</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">scale</ref>)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>FA::value_type;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hostOk</ref><sp/>=<sp/>mf.arena()-&gt;isHostAccessible();</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>amrex::Gpu::streamSynchronize();</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>std::size_t<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">idx</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(amrex::MFIter<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>(mf);<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>.isValid();<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::Box&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vbx</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>.validbox();</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref><sp/>=<sp/>mf[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>];</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::Box&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fbx</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.box();</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;T&gt;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">arr</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.const_array();</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hostOk</ref>)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Component<sp/>0<sp/>occupies<sp/>the<sp/>first<sp/>numPts()<sp/>elements<sp/>of<sp/>the<sp/>fab.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.resize(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fbx</ref>.numPts()));</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>amrex::Gpu::dtoh_memcpy(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.data(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.dataPtr(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.size()<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T));</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">arr</ref><sp/>=<sp/>amrex::makeArray4&lt;const<sp/>T&gt;(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.data(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fbx</ref>,<sp/>1);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>lo<sp/>=<sp/>amrex::lbound(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vbx</ref>);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref><sp/>=<sp/>amrex::ubound(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vbx</ref>);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref><sp/>=<sp/>lo.z;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref><sp/>&lt;=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>.z;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref>)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref><sp/>=<sp/>lo.y;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref><sp/>&lt;=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>.y;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref>)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>=<sp/>lo.x;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>&lt;=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>.x;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">buf</ref>[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">idx</ref>++]<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref></highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">scale</ref><sp/>*<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">arr</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref>)));</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>V,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>FA&gt;</highlight></codeline>
+<codeline lineno="71" refid="namespaceblockamr_1_1la_1a1133c65e148daf83756e2087a140e6a5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a1133c65e148daf83756e2087a140e6a5" kindref="member">scatter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref>*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">buf</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FA</ref>&amp;<sp/>mf)</highlight></codeline>
+<codeline lineno="72"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">T<sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>FA::value_type;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hostOk</ref><sp/>=<sp/>mf.arena()-&gt;isHostAccessible();</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>amrex::Gpu::streamSynchronize();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>std::size_t<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">idx</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(amrex::MFIter<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>(mf);<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>.isValid();<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::Box&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vbx</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>.validbox();</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref><sp/>=<sp/>mf[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">mfi</ref>];</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::Box&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fbx</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.box();</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;T&gt;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">arr</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.array();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hostOk</ref>)</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Round-trip<sp/>the<sp/>full<sp/>fab<sp/>so<sp/>ghost<sp/>values<sp/>survive<sp/>the<sp/>update.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.resize(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fbx</ref>.numPts()));</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>amrex::Gpu::dtoh_memcpy(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.data(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.dataPtr(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.size()<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T));</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">arr</ref><sp/>=<sp/>amrex::makeArray4&lt;T&gt;(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.data(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fbx</ref>,<sp/>1);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>lo<sp/>=<sp/>amrex::lbound(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vbx</ref>);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref><sp/>=<sp/>amrex::ubound(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vbx</ref>);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref><sp/>=<sp/>lo.z;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref><sp/>&lt;=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>.z;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref>)</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref><sp/>=<sp/>lo.y;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref><sp/>&lt;=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>.y;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref>)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>=<sp/>lo.x;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>&lt;=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>.x;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>)</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">arr</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">j</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">k</ref>)<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">T</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">buf</ref>[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">idx</ref>++]);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hostOk</ref>)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>amrex::Gpu::htod_memcpy(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fab</ref>.dataPtr(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.data(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stage</ref>.size()<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T));</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Device<sp/>pack/unpack<sp/>between<sp/>a<sp/>Ginkgo<sp/>vector<sp/>and<sp/>a<sp/>device-resident<sp/>MultiFab,<sp/>so<sp/>the<sp/>mat-vec</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="comment">//<sp/>never<sp/>round-trips<sp/>the<sp/>host;<sp/>same<sp/>flat<sp/>index<sp/>as<sp/>gather/scatter<sp/>above.<sp/>nvcc<sp/>TRAP:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment">//<sp/>declaration-only,<sp/>or<sp/>the<sp/>lambda<sp/>is<sp/>extended<sp/>across<sp/>three<sp/>CUDA<sp/>TUs;<sp/>deviceKernels.cpp.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>V,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>FA&gt;</highlight></codeline>
+<codeline lineno="114" refid="namespaceblockamr_1_1la_1aafb839cbf9473b28517136d017746e93" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1aafb839cbf9473b28517136d017746e93" kindref="member">scatter_device</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref>*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vec</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FA</ref>&amp;<sp/>mf);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>V,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>FA&gt;</highlight></codeline>
+<codeline lineno="117" refid="namespaceblockamr_1_1la_1a9ca1702bf5d05cb3cd273b6a69558c6a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a9ca1702bf5d05cb3cd273b6a69558c6a" kindref="member">gather_device</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FA</ref>&amp;<sp/>mf,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref>*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">vec</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">scale</ref>);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr::la</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/transfer.hpp"/>
+  </compounddef>
+</doxygen>

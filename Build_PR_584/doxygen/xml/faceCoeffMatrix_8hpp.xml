@@ -1,0 +1,541 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="faceCoeffMatrix_8hpp" kind="file" language="C++">
+    <compoundname>faceCoeffMatrix.hpp</compoundname>
+    <includes local="no">AMReX_BoxArray.H</includes>
+    <includes local="no">AMReX_DistributionMapping.H</includes>
+    <includes local="no">AMReX_Geometry.H</includes>
+    <includes local="no">AMReX_IntVect.H</includes>
+    <includes local="no">AMReX_MultiFab.H</includes>
+    <includes local="no">array</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">type_traits</includes>
+    <includes local="no">utility</includes>
+    <includes refid="bc_8hpp" local="yes">NeoN/blockAmr/core/bc.hpp</includes>
+    <includes refid="fieldLevel_8hpp" local="yes">NeoN/blockAmr/core/fieldLevel.hpp</includes>
+    <includes refid="meshLevel_8hpp" local="yes">NeoN/blockAmr/core/meshLevel.hpp</includes>
+    <includes refid="transfer_8hpp" local="yes">NeoN/blockAmr/linearAlgebra/transfer.hpp</includes>
+    <includes refid="core_2executor_2executor_8hpp" local="yes">NeoN/core/executor/executor.hpp</includes>
+    <includedby refid="adapt_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/ginkgo/adapt.hpp</includedby>
+    <includedby refid="blockAmr_2linearAlgebra_2linearSystem_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/linearSystem.hpp</includedby>
+    <incdepgraph>
+      <node id="13">
+        <label>NeoN/blockAmr/core/bc.hpp</label>
+        <link refid="bc_8hpp"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>NeoN/blockAmr/core/fieldLevel.hpp</label>
+        <link refid="fieldLevel_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>NeoN/blockAmr/core/meshLevel.hpp</label>
+        <link refid="meshLevel_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp</label>
+        <link refid="faceCoeffMatrix_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>NeoN/blockAmr/linearAlgebra/transfer.hpp</label>
+        <link refid="transfer_8hpp"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>NeoN/core/executor/CPUExecutor.hpp</label>
+        <link refid="CPUExecutor_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>NeoN/core/executor/GPUExecutor.hpp</label>
+        <link refid="GPUExecutor_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>NeoN/core/executor/executor.hpp</label>
+        <link refid="core_2executor_2executor_8hpp"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>NeoN/core/executor/serialExecutor.hpp</label>
+        <link refid="serialExecutor_8hpp"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
+      </node>
+      <node id="21">
+        <label>NeoN/core/logging.hpp</label>
+        <link refid="core_2logging_8hpp"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>NeoN/core/memory/allocator.hpp</label>
+        <link refid="allocator_8hpp"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>NeoN/core/memory/kokkos.hpp</label>
+        <link refid="kokkos_8hpp"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>NeoN/core/mpi/environment.hpp</label>
+        <link refid="environment_8hpp"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>AMReX_Arena.H</label>
+      </node>
+      <node id="14">
+        <label>AMReX_Box.H</label>
+      </node>
+      <node id="2">
+        <label>AMReX_BoxArray.H</label>
+      </node>
+      <node id="3">
+        <label>AMReX_DistributionMapping.H</label>
+      </node>
+      <node id="4">
+        <label>AMReX_Geometry.H</label>
+      </node>
+      <node id="15">
+        <label>AMReX_GpuLaunch.H</label>
+      </node>
+      <node id="5">
+        <label>AMReX_IntVect.H</label>
+      </node>
+      <node id="6">
+        <label>AMReX_MultiFab.H</label>
+      </node>
+      <node id="35">
+        <label>Kokkos_Core.hpp</label>
+      </node>
+      <node id="7">
+        <label>array</label>
+      </node>
+      <node id="22">
+        <label>chrono</label>
+      </node>
+      <node id="8">
+        <label>cstddef</label>
+      </node>
+      <node id="28">
+        <label>cstdlib</label>
+      </node>
+      <node id="30">
+        <label>exception</label>
+      </node>
+      <node id="26">
+        <label>fmt/chrono.h</label>
+      </node>
+      <node id="25">
+        <label>fmt/core.h</label>
+      </node>
+      <node id="31">
+        <label>iostream</label>
+      </node>
+      <node id="9">
+        <label>memory</label>
+      </node>
+      <node id="10">
+        <label>optional</label>
+      </node>
+      <node id="23">
+        <label>source_location</label>
+      </node>
+      <node id="32">
+        <label>sstream</label>
+      </node>
+      <node id="16">
+        <label>string</label>
+      </node>
+      <node id="24">
+        <label>string_view</label>
+      </node>
+      <node id="11">
+        <label>type_traits</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="19">
+        <label>variant</label>
+      </node>
+      <node id="17">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp</label>
+        <link refid="faceCoeffMatrix_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/ginkgo/adapt.hpp</label>
+        <link refid="adapt_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/linearSystem.hpp</label>
+        <link refid="blockAmr_2linearAlgebra_2linearSystem_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solver.hpp</label>
+        <link refid="blockAmr_2linearAlgebra_2solver_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/operators/laplacian.hpp</label>
+        <link refid="laplacian_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classblockamr_1_1la_1_1MFFaceCoeffs" prot="public">blockamr::la::MFFaceCoeffs</innerclass>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la">blockamr::la</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la_1_1detail">blockamr::la::detail</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_BoxArray.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_DistributionMapping.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_Geometry.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_IntVect.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_MultiFab.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;type_traits&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="bc_8hpp" kindref="compound">NeoN/blockAmr/core/bc.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="fieldLevel_8hpp" kindref="compound">NeoN/blockAmr/core/fieldLevel.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="meshLevel_8hpp" kindref="compound">NeoN/blockAmr/core/meshLevel.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="transfer_8hpp" kindref="compound">NeoN/blockAmr/linearAlgebra/transfer.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="core_2executor_2executor_8hpp" kindref="compound">NeoN/core/executor/executor.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>matrix.<sp/>AMReX<sp/>and<sp/>NeoN<sp/>only<sp/>--<sp/>deliberately<sp/>NO<sp/>Ginkgo,<sp/>so<sp/>an<sp/>operator<sp/>writing<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/>coefficients<sp/>(operators/laplacian.hpp)<sp/>never<sp/>compiles<sp/>against<sp/>one;<sp/>the<sp/>LinOp<sp/>and<sp/>the<sp/>GMG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/>hierarchy<sp/>are<sp/>built<sp/>from<sp/>it<sp/>by<sp/>the<sp/>free<sp/>functions<sp/>in<sp/>linearAlgebra/ginkgo/adapt.hpp.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>It<sp/>--<sp/>and<sp/>ONLY<sp/>it<sp/>--<sp/>applies<sp/>the<sp/>homogeneous<sp/>domain<sp/>BC;<sp/>the<sp/>operator&apos;s<sp/>half<sp/>of<sp/>that</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>contract:<sp/>operators/laplacian.hpp.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la" kindref="compound">blockamr::la</ref></highlight></codeline>
+<codeline lineno="33"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Whether<sp/>the<sp/>format<sp/>allocates<sp/>a<sp/>separate<sp/>LOW<sp/>side.<sp/>Lives<sp/>here,<sp/>with<sp/>the<sp/>only<sp/>storage<sp/>that</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment">//<sp/>answers<sp/>to<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeb" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeb" kindref="member">Symmetry</ref></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaebafeca3c730601be7fd57f1f0b668b4637" kindref="member">symmetric</ref>,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeba188fda84cd10112124b8477615ee021d" kindref="member">asymmetric</ref></highlight></codeline>
+<codeline lineno="41"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="namespaceblockamr_1_1la_1_1detail" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">detail</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>Allocate<sp/>the<sp/>coefficient<sp/>fields<sp/>`mesh`<sp/>implies.<sp/>A<sp/>free<sp/>function<sp/>rather<sp/>than<sp/>a<sp/>base</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>class:<sp/>the<sp/>format<sp/>holds<sp/>the<sp/>fields<sp/>itself,<sp/>and<sp/>this<sp/>is<sp/>only<sp/>the<sp/>derivation<sp/>of<sp/>the</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AMReX<sp/>layouts<sp/>from<sp/>the<sp/>mesh.</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="namespaceblockamr_1_1la_1_1detail_1a7b6820dd57cb0e87ea7272520a8d2c43" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1_1detail_1a7b6820dd57cb0e87ea7272520a8d2c43" kindref="member">allocateCoefficients</ref>(</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1MeshLevel" kindref="compound">MeshLevel</ref>&amp;<sp/>mesh,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeb" kindref="member">Symmetry</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">sym</ref>,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref>&amp;<sp/><ref refid="vcycle_8hpp_1ae47025b73cbfce4f61d918b2058005ba" kindref="member">alpha</ref>,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref>&amp;<sp/>upper,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;FaceFieldLevel&gt;&amp;<sp/>lower</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">)</highlight></codeline>
+<codeline lineno="57"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>MultiFabs<sp/>are<sp/>not<sp/>zero-initialised<sp/>(the<sp/>arena<sp/>recycles<sp/>memory),<sp/>so<sp/>a<sp/>freshly<sp/>built</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>matrix<sp/>is<sp/>explicitly<sp/>zeroed<sp/>--<sp/>callers<sp/>write<sp/>only<sp/>what<sp/>their<sp/>operator<sp/>contributes.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">zeroed</ref><sp/>=<sp/>[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::BoxArray&amp;<sp/>ba,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::DistributionMapping&amp;<sp/>dm)</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>mf<sp/>=<sp/>std::make_shared&lt;amrex::MultiFab&gt;(ba,<sp/>dm,<sp/>1,<sp/>0);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mf-&gt;setVal(0.0);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>mf;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">asym</ref><sp/>=<sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">sym</ref><sp/>==<sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeba188fda84cd10112124b8477615ee021d" kindref="member">Symmetry::asymmetric</ref>);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="vcycle_8hpp_1ae47025b73cbfce4f61d918b2058005ba" kindref="member">alpha</ref><sp/>=<sp/><ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref><sp/>{<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">zeroed</ref>(mesh.<ref refid="structblockamr_1_1MeshLevel_1a0d72344a61193b80de9cf8a86398f8d7" kindref="member">ba</ref>,<sp/>mesh.<ref refid="structblockamr_1_1MeshLevel_1ab6543b2d0500afc3ef9cc57f1ff95881" kindref="member">dm</ref>)};</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">low</ref><sp/>{};</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref><sp/>=<sp/>0;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref><sp/>&lt;<sp/>3;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref>)</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::size_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref>);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::BoxArray<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fba</ref><sp/>=<sp/>amrex::convert(mesh.<ref refid="structblockamr_1_1MeshLevel_1a0d72344a61193b80de9cf8a86398f8d7" kindref="member">ba</ref>,<sp/>amrex::IntVect::TheDimensionVector(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref>));</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>upper.dir[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>]<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">zeroed</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fba</ref>,<sp/>mesh.<ref refid="structblockamr_1_1MeshLevel_1ab6543b2d0500afc3ef9cc57f1ff95881" kindref="member">dm</ref>);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">asym</ref>)</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">low</ref>.dir[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>]<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">zeroed</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">fba</ref>,<sp/>mesh.<ref refid="structblockamr_1_1MeshLevel_1ab6543b2d0500afc3ef9cc57f1ff95881" kindref="member">dm</ref>);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">asym</ref>)</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lower<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">low</ref>;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="namespaceblockamr_1_1la_1_1detail_1a302ccbbdcf70023538716211af5efda0" refkind="member"><highlight class="normal"><ref refid="namespaceblockamr_1_1la_1_1detail_1a302ccbbdcf70023538716211af5efda0" kindref="member">zeroCoefficients</ref>(<ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref>&amp;<sp/><ref refid="vcycle_8hpp_1ae47025b73cbfce4f61d918b2058005ba" kindref="member">alpha</ref>,<sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref>&amp;<sp/>upper,<sp/>std::optional&lt;FaceFieldLevel&gt;&amp;<sp/>lower)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>(*alpha).setVal(0.0);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref><sp/>=<sp/>0;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref><sp/>&lt;<sp/>3;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref>)</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>upper[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref>].setVal(0.0);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Nothing<sp/>separate<sp/>to<sp/>zero<sp/>when<sp/>symmetric.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(lower.has_value())</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(*lower)[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">d</ref>].setVal(0.0);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>detail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@class<sp/>MFFaceCoeffs</highlight></codeline>
+<codeline lineno="103"><highlight class="comment"><sp/>*<sp/>@brief<sp/>Matrix-free<sp/>face-coefficient<sp/>storage:<sp/>no<sp/>MATRIX<sp/>is<sp/>ever<sp/>assembled<sp/>--<sp/>la::toLinOp</highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>turns<sp/>these<sp/>fields<sp/>into<sp/>a<sp/>FaceCoeffOp<sp/>per<sp/>solve.<sp/>Build<sp/>with<sp/>symmetric()/</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>asymmetric(),<sp/>then<sp/>write<sp/>the<sp/>coefficient<sp/>fields<sp/>directly.</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classblockamr_1_1la_1_1MFFaceCoeffs" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs" kindref="compound">MFFaceCoeffs</ref></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>fields<sp/>below<sp/>sit<sp/>behind<sp/>shared_ptr<sp/>(MultiFab<sp/>is<sp/>not<sp/>copyable),<sp/>so<sp/>a<sp/>copy<sp/>of<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>format<sp/>SHARES<sp/>them<sp/>and<sp/>a<sp/>write<sp/>through<sp/>one<sp/>is<sp/>seen<sp/>through<sp/>the<sp/>other.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" kindref="member">exec</ref><sp/>{<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">NeoN::SerialExecutor</ref><sp/>{}};</highlight></codeline>
+<codeline lineno="114" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>la::BcArray<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" kindref="member">bc</ref><sp/>{};</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>layout<sp/>the<sp/>fields<sp/>were<sp/>ALLOCATED<sp/>from,<sp/>and<sp/>nothing<sp/>repoints<sp/>them,<sp/>so<sp/>it<sp/>is<sp/>the<sp/>one</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>source<sp/>for<sp/>ba/dm<sp/>rather<sp/>than<sp/>a<sp/>second<sp/>one<sp/>competing<sp/>with<sp/>alpha&apos;s.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1MeshLevel" kindref="compound">MeshLevel</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>negSumDiag<sp/>seam:<sp/>`alpha`<sp/>is<sp/>the<sp/>cell-centred<sp/>diagonal<sp/>SOURCE<sp/>(ddt/Sp/reaction),<sp/>NOT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>matrix<sp/>diagonal<sp/>alpha<sp/>-<sp/>(aE+aW+aN+aS+aT+aB),<sp/>which<sp/>an<sp/>operator&apos;s<sp/>+=<sp/>must<sp/>not<sp/>land<sp/>on;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>deriving<sp/>that<sp/>one<sp/>is<sp/>the<sp/>stencil&apos;s<sp/>job.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a072c3d4c5f99a38bcc9043df0980d707" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a072c3d4c5f99a38bcc9043df0980d707" kindref="member">alpha</ref>;</highlight></codeline>
+<codeline lineno="122" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab03612cf62550f264e45795f8e80402a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab03612cf62550f264e45795f8e80402a" kindref="member">upper</ref>;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>low<sp/>side<sp/>to<sp/>WRITE<sp/>when<sp/>symmetric:<sp/>an<sp/>operator<sp/>writing<sp/>both<sp/>would<sp/>double<sp/>every</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coefficient.<sp/>Storage<sp/>still<sp/>has<sp/>one<sp/>--<sp/>storedLower().</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;FaceFieldLevel&gt;<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" kindref="member">lower</ref>;<sp/></highlight><highlight class="comment">//<sp/>nullopt<sp/>when<sp/>symmetric</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>`bc`<sp/>defaults<sp/>to<sp/>all-periodic<sp/>(BcArray<sp/>0<sp/>==<sp/>periodic).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs" kindref="compound">MFFaceCoeffs</ref></highlight></codeline>
+<codeline lineno="129" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1aa144a99487ce075992110b66fb243eb5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1aa144a99487ce075992110b66fb243eb5" kindref="member">symmetric</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref>&amp;<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" kindref="member">exec</ref>,<sp/><ref refid="structblockamr_1_1MeshLevel" kindref="compound">MeshLevel</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>la::BcArray&amp;<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" kindref="member">bc</ref><sp/>=<sp/>{})</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs" kindref="compound">MFFaceCoeffs</ref>(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" kindref="member">exec</ref>,<sp/>std::move(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>),<sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaebafeca3c730601be7fd57f1f0b668b4637" kindref="member">Symmetry::symmetric</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" kindref="member">bc</ref>);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>MFFaceCoeffs</highlight></codeline>
+<codeline lineno="135" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ad9c3c6056c2a12e31ef1112bac5b26fe" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ad9c3c6056c2a12e31ef1112bac5b26fe" kindref="member">asymmetric</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref>&amp;<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" kindref="member">exec</ref>,<sp/><ref refid="structblockamr_1_1MeshLevel" kindref="compound">MeshLevel</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>la::BcArray&amp;<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" kindref="member">bc</ref><sp/>=<sp/>{})</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs" kindref="compound">MFFaceCoeffs</ref>(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" kindref="member">exec</ref>,<sp/>std::move(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>),<sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeba188fda84cd10112124b8477615ee021d" kindref="member">Symmetry::asymmetric</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" kindref="member">bc</ref>);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a1814729e969cd57af949c24874890727" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a1814729e969cd57af949c24874890727" kindref="member">zero</ref>()<sp/>{<sp/><ref refid="namespaceblockamr_1_1la_1_1detail_1a302ccbbdcf70023538716211af5efda0" kindref="member">detail::zeroCoefficients</ref>(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a072c3d4c5f99a38bcc9043df0980d707" kindref="member">alpha</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab03612cf62550f264e45795f8e80402a" kindref="member">upper</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" kindref="member">lower</ref>);<sp/>}</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>@brief<sp/>The<sp/>STORED<sp/>low<sp/>side,<sp/>which<sp/>always<sp/>exists<sp/>--<sp/>`upper`<sp/>itself<sp/>when<sp/>symmetric,<sp/>the</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>alias<sp/>FaceCoeffOp&apos;s<sp/>convention<sp/>wants.<sp/>Deliberately<sp/>NOT<sp/>`lower`&apos;s<sp/>reading,<sp/>where<sp/>a</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>symmetric<sp/>matrix<sp/>has<sp/>none;<sp/>the<sp/>differing<sp/>types<sp/>keep<sp/>the<sp/>two<sp/>from<sp/>being<sp/>confused.</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a19d5a3f475f0a8f141e5e0b0e92589a6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a19d5a3f475f0a8f141e5e0b0e92589a6" kindref="member">storedLower</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" kindref="member">lower</ref>.value_or(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab03612cf62550f264e45795f8e80402a" kindref="member">upper</ref>);<sp/>}</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Derived<sp/>from<sp/>`lower`,<sp/>so<sp/>no<sp/>stored<sp/>enum<sp/>can<sp/>drift<sp/>from<sp/>the<sp/>storage.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afb2ac67099b9c8ecb97d9b1b49f375d9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeb" kindref="member">Symmetry</ref><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afb2ac67099b9c8ecb97d9b1b49f375d9" kindref="member">symmetry</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" kindref="member">lower</ref><sp/>?<sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeba188fda84cd10112124b8477615ee021d" kindref="member">Symmetry::asymmetric</ref><sp/>:<sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaebafeca3c730601be7fd57f1f0b668b4637" kindref="member">Symmetry::symmetric</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Rows<sp/>this<sp/>rank<sp/>owns.<sp/>localCount(),<sp/>NOT<sp/>numPts():<sp/>numPts()<sp/>counts<sp/>EVERY<sp/>rank&apos;s<sp/>cells.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152" refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a0e4b5aee3841d8809e1cf0db52365b0a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::size_t<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a0e4b5aee3841d8809e1cf0db52365b0a" kindref="member">localRows</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>la::localCount(*<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a072c3d4c5f99a38bcc9043df0980d707" kindref="member">alpha</ref>);<sp/>}</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs" kindref="compound">MFFaceCoeffs</ref>(</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref>&amp;<sp/>executor,<sp/><ref refid="structblockamr_1_1MeshLevel" kindref="compound">MeshLevel</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">meshLevel</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1a5c2931db78392cd12817e44ae1facaeb" kindref="member">Symmetry</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">sym</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>la::BcArray&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bcs</ref></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a71952d45b6747bd6fabcff13b176b365" kindref="member">exec</ref>(executor),<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1abeb37597d9f3716e9fcccca9f66bbcc8" kindref="member">bc</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bcs</ref>),<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>(std::<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">move</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">meshLevel</ref>))</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1_1detail_1a7b6820dd57cb0e87ea7272520a8d2c43" kindref="member">detail::allocateCoefficients</ref>(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">mesh</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">sym</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a072c3d4c5f99a38bcc9043df0980d707" kindref="member">alpha</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab03612cf62550f264e45795f8e80402a" kindref="member">upper</ref>,<sp/><ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" kindref="member">lower</ref>);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Absence<sp/>has<sp/>exactly<sp/>ONE<sp/>spelling<sp/>and<sp/>only<sp/>`lower`<sp/>has<sp/>it:<sp/>with<sp/>CellFieldLevel/FaceFieldLevel</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment">//<sp/>non-nullable,<sp/>&quot;empty&quot;<sp/>is<sp/>not<sp/>expressible,<sp/>which<sp/>is<sp/>why<sp/>_la_matrix_probe&apos;s<sp/>diag_empty/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment">//<sp/>upper_empty<sp/>keys<sp/>emit<sp/>a<sp/>literal<sp/>false.<sp/>Turn<sp/>either<sp/>into<sp/>an<sp/>optional<sp/>and<sp/>this<sp/>fires.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="comment">//<sp/>(Was<sp/>asserted<sp/>in<sp/>linearAlgebra/coefficientsConcepts.cpp,<sp/>deleted<sp/>with<sp/>the<sp/>concepts.)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(std::is_same_v&lt;</highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1a072c3d4c5f99a38bcc9043df0980d707" kindref="member">MFFaceCoeffs::alpha</ref>),<sp/>CellFieldLevel&gt;);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(std::is_same_v&lt;</highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab03612cf62550f264e45795f8e80402a" kindref="member">MFFaceCoeffs::upper</ref>),<sp/>FaceFieldLevel&gt;);</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(std::is_same_v&lt;</highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1afc2c3fd2c2d5528013c5577c80fc34e2" kindref="member">MFFaceCoeffs::lower</ref>),<sp/>std::optional&lt;FaceFieldLevel&gt;&gt;);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>mesh<sp/>TRAVELS<sp/>with<sp/>the<sp/>coefficients,<sp/>not<sp/>optional<sp/>and<sp/>not<sp/>a<sp/>pointer:<sp/>an<sp/>operator<sp/>cannot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight><highlight class="comment">//<sp/>write<sp/>a<sp/>face<sp/>coefficient<sp/>without<sp/>dx,<sp/>and<sp/>passing<sp/>it<sp/>alongside<sp/>made<sp/>a<sp/>mismatch<sp/>representable</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment">//<sp/>(ops::Laplacian<sp/>used<sp/>to<sp/>hold<sp/>its<sp/>own<sp/>amrex::Geometry).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(std::is_same_v&lt;</highlight><highlight class="keyword">decltype</highlight><highlight class="normal">(<ref refid="classblockamr_1_1la_1_1MFFaceCoeffs_1ab43595d0195ad5af867e3640c6552d9e" kindref="member">MFFaceCoeffs::mesh</ref>),<sp/>MeshLevel&gt;);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr::la</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/faceCoeffMatrix.hpp"/>
+  </compounddef>
+</doxygen>

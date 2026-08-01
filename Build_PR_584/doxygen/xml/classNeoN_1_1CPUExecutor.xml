@@ -1,0 +1,300 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1CPUExecutor" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::CPUExecutor</compoundname>
+    <basecompoundref refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin" prot="public" virt="non-virtual">NeoN::Logging::SupportsLoggingMixin</basecompoundref>
+    <includes refid="CPUExecutor_8hpp" local="no">CPUExecutor.hpp</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1CPUExecutor_1ad27d6bca464690d7239bbac64c8eda85" prot="public" static="no">
+        <type>Kokkos::DefaultHostExecutionSpace</type>
+        <definition>using NeoN::CPUExecutor::exec =  Kokkos::DefaultHostExecutionSpace</definition>
+        <argsstring></argsstring>
+        <name>exec</name>
+        <qualifiedname>NeoN::CPUExecutor::exec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="28" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="28" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1CPUExecutor_1aa0cdaeb1286dda906888f62cc577260a" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classNeoN_1_1AllocatorContext" kindref="compound">AllocatorContext</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;AllocatorContext&gt; NeoN::CPUExecutor::allocContext_</definition>
+        <argsstring></argsstring>
+        <name>allocContext_</name>
+        <qualifiedname>NeoN::CPUExecutor::allocContext_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="24" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1a6877549842d855dc98f628b93e98b7d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::CPUExecutor::CPUExecutor</definition>
+        <argsstring>()</argsstring>
+        <name>CPUExecutor</name>
+        <qualifiedname>NeoN::CPUExecutor::CPUExecutor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="30" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1a0d16ce1c1919e9beae4cc63960cb5518" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::CPUExecutor::CPUExecutor</definition>
+        <argsstring>(std::unique_ptr&lt; AllocatorStrategy &gt; strategy)</argsstring>
+        <name>CPUExecutor</name>
+        <qualifiedname>NeoN::CPUExecutor::CPUExecutor</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classNeoN_1_1AllocatorStrategy" kindref="compound">AllocatorStrategy</ref> &gt;</type>
+          <declname>strategy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1aa6533b93eed68e0d81d28c72755a0d69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::CPUExecutor::~CPUExecutor</definition>
+        <argsstring>()</argsstring>
+        <name>~CPUExecutor</name>
+        <qualifiedname>NeoN::CPUExecutor::~CPUExecutor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="34" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1a4081246491262b9adbe63d4b63c5e7ae" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T *</type>
+        <definition>T * NeoN::CPUExecutor::alloc</definition>
+        <argsstring>(size_t elements) const</argsstring>
+        <name>alloc</name>
+        <qualifiedname>NeoN::CPUExecutor::alloc</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>elements</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="37" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="37" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1a0a184c08e94aabf6c32b435eeb71f08b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T *</type>
+        <definition>T * NeoN::CPUExecutor::realloc</definition>
+        <argsstring>(void *ptr, size_t elements) const</argsstring>
+        <name>realloc</name>
+        <qualifiedname>NeoN::CPUExecutor::realloc</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>elements</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="47" column="7" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="47" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1af6160d830ceda8c68786c82637bcf131" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void NeoN::CPUExecutor::free</definition>
+        <argsstring>(void *ptr) const noexcept</argsstring>
+        <name>free</name>
+        <qualifiedname>NeoN::CPUExecutor::free</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="56" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1adfabb48ec4fe6768ae952dfed3b8fc33" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kindref="member">MemorySpace</ref></type>
+        <definition>MemorySpace NeoN::CPUExecutor::memorySpace</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>memorySpace</name>
+        <qualifiedname>NeoN::CPUExecutor::memorySpace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="58" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1a5232ea309a5b0c1bc39b12fb1a791093" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ValueType</type>
+          </param>
+        </templateparamlist>
+        <type>decltype(auto)</type>
+        <definition>decltype(auto) NeoN::CPUExecutor::createKokkosView</definition>
+        <argsstring>(ValueType *ptr, size_t size) const</argsstring>
+        <name>createKokkosView</name>
+        <qualifiedname>NeoN::CPUExecutor::createKokkosView</qualifiedname>
+        <param>
+          <type>ValueType *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>create a Kokkos view for a given ptr </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Based on the executor this function creates a Kokkos view into the data managed by ptr <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to data for which a view should be created </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of elements this view contains </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ValueType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value type the underlying memory holds </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="68" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="68" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1ad9d9cf933b83b89bbab498b34215442d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string NeoN::CPUExecutor::name</definition>
+        <argsstring>() const</argsstring>
+        <name>name</name>
+        <qualifiedname>NeoN::CPUExecutor::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="73" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="73" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1CPUExecutor_1a45988fe8dd99e92612b1c4c97dd2384b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1CPUExecutor_1ad27d6bca464690d7239bbac64c8eda85" kindref="member">exec</ref></type>
+        <definition>exec NeoN::CPUExecutor::underlyingExec</definition>
+        <argsstring>() const</argsstring>
+        <name>underlyingExec</name>
+        <qualifiedname>NeoN::CPUExecutor::underlyingExec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="75" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="75" bodyend="75"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Executor for handling multicore CPU based parallelization. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>NeoN::CPUExecutor</label>
+        <link refid="classNeoN_1_1CPUExecutor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::Logging::SupportsLoggingMixin</label>
+        <link refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>NeoN::CPUExecutor</label>
+        <link refid="classNeoN_1_1CPUExecutor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>NeoN::Logging::SupportsLoggingMixin</label>
+        <link refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" line="22" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/executor/CPUExecutor.hpp" bodystart="23" bodyend="76"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1CPUExecutor_1a4081246491262b9adbe63d4b63c5e7ae" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>alloc</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1aa0cdaeb1286dda906888f62cc577260a" prot="private" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>allocContext_</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1a6877549842d855dc98f628b93e98b7d1" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>CPUExecutor</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1a0d16ce1c1919e9beae4cc63960cb5518" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>CPUExecutor</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1a5232ea309a5b0c1bc39b12fb1a791093" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>createKokkosView</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1ad27d6bca464690d7239bbac64c8eda85" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>exec</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1af6160d830ceda8c68786c82637bcf131" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>free</name></member>
+      <member refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin_1a5ca3bdb7a9ec27a52c318eccf5c508ed" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>getLogger</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1adfabb48ec4fe6768ae952dfed3b8fc33" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>memorySpace</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1ad9d9cf933b83b89bbab498b34215442d" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>name</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1a0a184c08e94aabf6c32b435eeb71f08b" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>realloc</name></member>
+      <member refid="classNeoN_1_1Logging_1_1SupportsLoggingMixin_1a5c05a02dde4c15bb400c32a2361e84ce" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>setLogger</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1a45988fe8dd99e92612b1c4c97dd2384b" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>underlyingExec</name></member>
+      <member refid="classNeoN_1_1CPUExecutor_1aa6533b93eed68e0d81d28c72755a0d69" prot="public" virt="non-virtual"><scope>NeoN::CPUExecutor</scope><name>~CPUExecutor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

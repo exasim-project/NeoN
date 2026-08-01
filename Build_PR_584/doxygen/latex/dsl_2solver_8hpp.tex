@@ -1,0 +1,54 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/dsl/solver.hpp File Reference}
+\hypertarget{dsl_2solver_8hpp}{}\label{dsl_2solver_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/dsl/solver.hpp}}
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include $<$concepts$>$}\newline
+{\ttfamily \#include "{}Neo\+N/fields/field.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/scalar.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/vec3.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/logging.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/input.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/primitives/label.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/dsl/expression.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/dsl/optimizer.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/time\+Integration/time\+Integration.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/linear\+System.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/solver.\+hpp"{}}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1dsl}{Neo\+N\+::dsl}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail}{Neo\+N\+::dsl\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Vector\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_ae90a6e47f89931541f21ef22ce8c86b5}{Neo\+N\+::dsl\+::detail\+::iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&ls, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\})
+\item 
+{\footnotesize template$<$typename Vector\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_1_1detail_aa5c1f7a5cd6aa007933aed142fba87fb}{Neo\+N\+::dsl\+::detail\+::iterative\+Solve\+Impl}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ ps=\{\})
+\item 
+{\footnotesize template$<$typename Vector\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{structNeoN_1_1la_1_1SolverStats}{la\+::\+Solver\+Stats}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_abab926565f9bac963ac87c73de1805e3}{Neo\+N\+::dsl\+::solve}} (\mbox{\hyperlink{classNeoN_1_1dsl_1_1Expression}{Expression}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \&exp, Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} t, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} dt, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Schemes, const \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}} \&fv\+Solution, std\+::vector$<$ const \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase}{Post\+Assembly\+Base}}$<$ typename Vector\+Type\+::\+Element\+Type, Index\+Type $>$ \texorpdfstring{$\ast$}{*} $>$ p=\{\})
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_aa8c4bbbd2314b97f5b320603d3944bd5}{Neo\+N\+::dsl\+::copy\+Sign}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s)
+\begin{DoxyCompactList}\small\item\em Returns \texorpdfstring{$\vert$}{|}mag\texorpdfstring{$\vert$}{|} carrying the sign of s (scalar overload). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_aefc1ea1369d0aa731dade6398306a704}{Neo\+N\+::dsl\+::component\+Copy\+Sign}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} s)
+\begin{DoxyCompactList}\small\item\em Componentwise sign-\/copy (scalar overload). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_a81ab21f0056f9e062cae72b33cfd5576}{Neo\+N\+::dsl\+::component\+Copy\+Sign}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&\mbox{\hyperlink{namespaceNeoN_a5a92d3d1550bcfb32325f9f4112a5626}{mag}}, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&s)
+\begin{DoxyCompactList}\small\item\em Componentwise sign-\/copy (\doxylink{classNeoN_1_1Vec3}{Vec3} overload — all 3 components). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_a7716d28ec754e7ddc3fb47373f600ea5}{Neo\+N\+::dsl\+::component\+Mag}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} value)
+\begin{DoxyCompactList}\small\item\em Componentwise magnitude (scalar overload). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_adebc143d47e3d4b3fcd9331b155c2c98}{Neo\+N\+::dsl\+::component\+Mag}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&value)
+\begin{DoxyCompactList}\small\item\em Componentwise magnitude (\doxylink{classNeoN_1_1Vec3}{Vec3} overload — keeps all 3 components, does NOT collapse to the L2 norm that the global mag(\+Vec3) returns). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_a9c676ccb03ef3bdb99e5e966e02682ab}{Neo\+N\+::dsl\+::component\+Max}} (const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} lhs, const \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}})
+\begin{DoxyCompactList}\small\item\em Componentwise max (scalar overload). \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_1_1dsl_acc1d1676ec9101b1d7149b1fb993af25}{Neo\+N\+::dsl\+::component\+Max}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}})
+\begin{DoxyCompactList}\small\item\em Componentwise max (\doxylink{classNeoN_1_1Vec3}{Vec3} overload — per component). \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Vector\+Type , typename Matrix\+Value\+Type , typename RHSValue\+Type , typename System\+Matrix\+Type , typename Boundary\+Matrix\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1dsl_acb4a1670448315e4420fc6bca058fdc5}{Neo\+N\+::dsl\+::apply\+Matrix\+Relaxation}} (\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \&ls, const Vector\+Type \&solution, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}})
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_1_1dsl_a15bc014f2770ea7255fa1e0c2870f020}{Neo\+N\+::dsl\+::apply\+Field\+Relaxation}} (Vector\+Type \&solution, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Vector\+Type\+::\+Element\+Type $>$ \&previous, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}})
+\item 
+{\footnotesize template$<$typename Vector\+Type $>$ }\\auto \mbox{\hyperlink{namespaceNeoN_1_1dsl_ab83523772e0d4f96349392ea3d980c7c}{Neo\+N\+::dsl\+::field\+Relaxation\+Snapshot}} (const Vector\+Type \&field)
+\end{DoxyCompactItemize}

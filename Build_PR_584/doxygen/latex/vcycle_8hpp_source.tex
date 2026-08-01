@@ -1,0 +1,777 @@
+\doxysection{vcycle.\+hpp}
+\hypertarget{vcycle_8hpp_source}{}\label{vcycle_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp}}
+\mbox{\hyperlink{vcycle_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00005}00005\ \textcolor{comment}{//\ The\ production\ Kokkos\ GMG\ V-\/cycle:\ Vcycle<Backend,T,TC>\ plus\ LevelT,\ sameField,}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00006}00006\ \textcolor{comment}{//\ KokkosOptGmgBackend\ and\ the\ Precision/PrecPair\ enums.\ A\ header\ because\ Vcycle\ is\ a\ template:}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00007}00007\ \textcolor{comment}{//\ apply.cpp\ instantiates\ one\ backend,\ bench/gmgVcycleBench.cpp\ all\ four.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00022}00022\ \textcolor{preprocessor}{\#include\ <AMReX\_ParallelContext.H>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#include\ <AMReX\_ParallelReduce.H>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00024}00024\ \textcolor{preprocessor}{\#include\ <AMReX\_Reduce.H>}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{bc_8hpp}{NeoN/blockAmr/core/bc.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{transfer_8hpp}{NeoN/blockAmr/linearAlgebra/transfer.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00028}00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gmgKernels_8hpp}{NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00029}00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gmgOpts_8hpp}{NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00030}00030\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{halo_8hpp}{NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{kernels_8hpp}{NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00032}00032\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{stencil_8hpp}{NeoN/blockAmr/linearAlgebra/stencil.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00034}00034\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00035}00035\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00037}00037\ \textcolor{keyword}{namespace}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00040}00040\ \textcolor{comment}{//\ The\ level\ scalar\ is\ a\ template\ parameter,\ as\ in\ GmgPrecondT:\ the\ hierarchy\ below\ level\ 0\ can}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00041}00041\ \textcolor{comment}{//\ run\ narrower\ while\ the\ operator\ and\ the\ caller's\ fields\ stay\ fp64.\ bf16\ is\ STORAGE\ only}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00042}00042\ \textcolor{comment}{//\ (gmg/bf16.hpp);\ only\ kokkos\_opt\ is\ instantiated\ narrow,\ so\ the\ baselines\ stay\ baselines.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00043}00043\ \textcolor{keyword}{enum\ class}\ Precision}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00044}00044\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00045}00045\ \ \ \ \ fp64,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00046}00046\ \ \ \ \ fp32,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00047}00047\ \ \ \ \ bf16}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00048}00048\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00050}00050\ Precision\ parsePrecision(\textcolor{keyword}{const}\ std::string\&\ p)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00051}00051\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keywordflow}{if}\ (p\ ==\ \textcolor{stringliteral}{"{}fp64"{}})}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Precision::fp64;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00055}00055\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordflow}{if}\ (p\ ==\ \textcolor{stringliteral}{"{}fp32"{}})}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00057}00057\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Precision::fp32;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00059}00059\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keywordflow}{if}\ (p\ ==\ \textcolor{stringliteral}{"{}bf16"{}})}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00061}00061\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Precision::bf16;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00063}00063\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{comment}{//\ Not\ "{}benchGmgVcycle"{}:\ apply.cpp\ reaches\ this\ from\ the\ production\ factory,\ where\ a}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{comment}{//\ bench-\/flavoured\ prefix\ names\ a\ function\ the\ caller\ never\ invoked.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}blockAmr\ GMG:\ unknown\ precision\ '"{}}\ +\ p\ +\ \textcolor{stringliteral}{"{}'\ (expected\ 'fp64',\ 'fp32'\ or\ 'bf16')"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00068}00068\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00069}00069\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00071}00071\ \textcolor{comment}{//\ Only\ used\ to\ reject\ a\ coefficient\ type\ WIDER\ than\ the\ field\ type:\ a\ configuration\ mistake.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00072}00072\ \textcolor{keywordtype}{int}\ precisionBytes(Precision\ p)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00073}00073\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00074}00074\ \ \ \ \ \textcolor{keywordflow}{switch}\ (p)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00075}00075\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::fp64:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 8;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00078}00078\ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::fp32:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 4;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::bf16:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 2;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00082}00082\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{keywordflow}{return}\ 8;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00084}00084\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00086}00086\ \textcolor{comment}{//\ The\ coefficient\ precision\ defaults\ to\ the\ field\ precision.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00087}00087\ Precision\ parseCoeffPrecision(\textcolor{keyword}{const}\ std::string\&\ coeff,\ \textcolor{keyword}{const}\ std::string\&\ field)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00088}00088\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keyword}{const}\ Precision\ f\ =\ parsePrecision(field);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keywordflow}{if}\ (coeff.empty())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00091}00091\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ f;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00093}00093\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keyword}{const}\ Precision\ c\ =\ parsePrecision(coeff);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keywordflow}{if}\ (precisionBytes(c)\ >\ precisionBytes(f))}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00096}00096\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}blockAmr\ GMG:\ coeff\_precision\ '"{}}\ +\ coeff\ +\ \textcolor{stringliteral}{"{}'\ is\ wider\ than\ precision\ '"{}}\ +\ field}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}';\ narrow\ the\ fields\ first"{}}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00101}00101\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordflow}{return}\ c;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00103}00103\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00105}00105\ \textcolor{comment}{//\ The\ fused\ kernels\ with\ every\ AMReX\ operation\ lifted\ out\ of\ the\ timed\ cycle\ (halo.hpp),\ so\ the}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00106}00106\ \textcolor{comment}{//\ per-\/kernel\ fence\ goes\ too:\ consecutive\ Kokkos\ kernels\ on\ one\ execution\ space\ are\ already}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00107}00107\ \textcolor{comment}{//\ stream-\/ordered.\ ONE\ RANK\ ONLY,\ a\ limit\ of\ the\ plans,\ decided\ in\ \`{}Vcycle::amrexFree\_`.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00108}00108\ \textcolor{keyword}{struct\ }KokkosOptGmgBackend}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00109}00109\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ tag\ =\ \textcolor{stringliteral}{"{}kokkos\_opt"{}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ amrexFreeCycle\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ canShareCoeffs\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00114}00114\ \ \ \ \ \textcolor{comment}{//\ The\ reset/residual\ path\ still\ crosses\ into\ AMReX,\ outside\ the\ timed\ region.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00115}00115\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ beforeAmrexRead()\ \{\ Kokkos::fence();\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ afterAmrexWrite()\ \{\ amrex::Gpu::streamSynchronizeAll();\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ The\ level\ scalar\ is\ deduced\ from\ the\ fabs,\ so\ this\ backend\ alone\ can\ run\ narrow.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{class}...\ \mbox{\hyperlink{classA}{A}}>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ gsColor(\mbox{\hyperlink{classA}{A}}\&\&...\ a)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00122}00122\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a4fb57a27755c9ef89dec660d00ac64e4}{gmgGsColorKokkosFused}}(std::forward<A>(a)...,\ \textcolor{comment}{/*fence=*/}\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00124}00124\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00126}00126\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{class}...\ \mbox{\hyperlink{classA}{A}}>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00127}00127\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ residRestrict(\mbox{\hyperlink{classA}{A}}\&\&...\ a)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00128}00128\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_aa020101bcf7d874c2cfccee853594a99}{gmgResidRestrictKokkosFused}}(std::forward<A>(a)...,\ \textcolor{comment}{/*fence=*/}\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00130}00130\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{class}...\ \mbox{\hyperlink{classA}{A}}>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00133}00133\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ prolongAdd(\mbox{\hyperlink{classA}{A}}\&\&...\ a)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00134}00134\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_ad2d7422a51c2fa4cd61ebdd4230ec258}{gmgProlongAddKokkosFused}}(std::forward<A>(a)...,\ \textcolor{comment}{/*fence=*/}\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00136}00136\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00137}00137\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00138}00138\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00139}00139\ \textcolor{comment}{//\ Are\ these\ two\ fields\ the\ same\ numbers\ everywhere?\ ux\ ==\ lx\ pointwise\ IS\ symmetry\ of\ the}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00140}00140\ \textcolor{comment}{//\ operator,\ and\ so\ the\ exact\ condition\ for\ one\ array\ to\ stand\ in\ for\ both.\ Bitwise\ on\ purpose}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00141}00141\ \textcolor{comment}{//\ (report/blockamr-\/gmg-\/notes.md\#share-\/coeffs);\ setup\ only,\ so\ the\ reduction\ is\ never\ timed.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00142}00142\ \textcolor{keywordtype}{bool}\ sameField(\textcolor{keyword}{const}\ amrex::MultiFab\&\ a,\ \textcolor{keyword}{const}\ amrex::MultiFab\&\ b)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00143}00143\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00144}00144\ \ \ \ \ \textcolor{keywordflow}{if}\ (\&a\ ==\ \&b)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00145}00145\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00147}00147\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00148}00148\ \ \ \ \ \textcolor{keywordflow}{if}\ (a.boxArray()\ !=\ b.boxArray()\ ||\ a.DistributionMap()\ !=\ b.DistributionMap())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00149}00149\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00151}00151\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ aa\ =\ a.const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00153}00153\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ bb\ =\ b.const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00154}00154\ \ \ \ \ \textcolor{keywordtype}{double}\ diff\ =\ amrex::ParReduce(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ amrex::TypeList<amrex::ReduceOpMax>\ \{\},}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ amrex::TypeList<double>\ \{\},}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ a,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ amrex::IntVect(0),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ [=]\ AMREX\_GPU\_DEVICE(\textcolor{keywordtype}{int}\ box,\ \textcolor{keywordtype}{int}\ i,\ \textcolor{keywordtype}{int}\ j,\ \textcolor{keywordtype}{int}\ k)\ -\/>\ amrex::GpuTuple<double>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \{\ \textcolor{keywordflow}{return}\ \{amrex::Math::abs(aa[box](i,\ j,\ k)\ -\/\ bb[box](i,\ j,\ k))\};\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00161}00161\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00162}00162\ \ \ \ \ \textcolor{comment}{//\ ParReduce\ is\ rank-\/local,\ and\ ranks\ that\ disagreed\ would\ build\ different\ hierarchies.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00163}00163\ \ \ \ \ amrex::ParallelAllReduce::Max(diff,\ amrex::ParallelContext::CommunicatorSub());}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keywordflow}{return}\ diff\ ==\ 0.0;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00165}00165\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00167}00167\ \textcolor{comment}{//\ The\ caller's\ 7\ coefficient\ fields\ as\ one\ argument,\ in\ the\ constructor's\ positional\ order.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00168}00168\ \textcolor{comment}{//\ la::FaceCoeffs\ cannot\ stand\ in:\ these\ are\ amrex::MultiFabs,\ not\ the\ la::GmgFab<TC>\ a\ level\ owns.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00169}00169\ \textcolor{keyword}{struct\ }CallerCoeffs}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00170}00170\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00171}\mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{00171}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00172}\mbox{\hyperlink{vcycle_8hpp_ab8a68eb30461454573e202a210f72b1c}{00172}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_ab8a68eb30461454573e202a210f72b1c}{ux}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00173}\mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{00173}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00174}\mbox{\hyperlink{vcycle_8hpp_afbd160ac8c5eeb73df928e7db50d0a17}{00174}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_afbd160ac8c5eeb73df928e7db50d0a17}{uy}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00175}\mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{00175}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{ly}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00176}\mbox{\hyperlink{vcycle_8hpp_a318af672a052537142ab134dc2c6682e}{00176}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_a318af672a052537142ab134dc2c6682e}{uz}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00177}\mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{00177}}\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab*\ \mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{lz}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00178}00178\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00180}00180\ \textcolor{comment}{//\ One\ multigrid\ level,\ as\ in\ GmgLevelT:\ geometry,\ coefficients,\ work\ fields\ (sol\ has\ 1\ ghost).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00181}00181\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T,\ \textcolor{keyword}{class}\ TC>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00182}00182\ \textcolor{keyword}{struct\ }LevelT}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00183}00183\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00184}00184\ \ \ \ \ \textcolor{comment}{//\ Production's\ fab\ type,\ so\ the\ production\ kernels\ apply\ unchanged;\ fields\ T,\ coeffs\ TC.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00185}00185\ \ \ \ \ \textcolor{keyword}{using\ }Fab\ =\ la::GmgFab<T>;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00186}00186\ \ \ \ \ \textcolor{keyword}{using\ }CoeffFab\ =\ la::GmgFab<TC>;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00188}\mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{00188}}\ \ \ \ \ amrex::Geometry\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00189}00189\ \ \ \ \ std::unique\_ptr<CoeffFab>\ \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}},\ \mbox{\hyperlink{vcycle_8hpp_ab8a68eb30461454573e202a210f72b1c}{ux}},\ \mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}},\ \mbox{\hyperlink{vcycle_8hpp_afbd160ac8c5eeb73df928e7db50d0a17}{uy}},\ \mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{ly}},\ \mbox{\hyperlink{vcycle_8hpp_a318af672a052537142ab134dc2c6682e}{uz}},\ \mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{lz}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00190}\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{00190}}\ \ \ \ \ std::unique\_ptr<Fab>\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}},\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00192}00192\ \ \ \ \ \textcolor{comment}{//\ lx/ly/lz\ are\ NULL\ on\ a\ level\ sharing\ one\ face\ coefficient\ per\ direction\ (kokkos\_opt\ only).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{comment}{//\ Always\ read\ the\ lower\ coefficients\ through\ these\ accessors\ (notes\#share-\/coeffs).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00194}00194\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ CoeffFab\&\ lxf()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}}\ ?\ *\mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}}\ :\ *\mbox{\hyperlink{vcycle_8hpp_ab8a68eb30461454573e202a210f72b1c}{ux}};\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00195}00195\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ CoeffFab\&\ lyf()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{ly}}\ ?\ *\mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{ly}}\ :\ *\mbox{\hyperlink{vcycle_8hpp_afbd160ac8c5eeb73df928e7db50d0a17}{uy}};\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00196}00196\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{const}\ CoeffFab\&\ lzf()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{lz}}\ ?\ *\mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{lz}}\ :\ *\mbox{\hyperlink{vcycle_8hpp_a318af672a052537142ab134dc2c6682e}{uz}};\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00197}00197\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{bool}\ shared()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}}\ ==\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00198}00198\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00199}00199\ \ \ \ \ \textcolor{comment}{//\ Agglomerated\ levels\ only:\ the\ restriction\ output\ and\ prolongation\ input\ on\ coarsen(fine}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{comment}{//\ BoxArray,\ 2)\ with\ the\ FINE\ DistributionMapping,\ since\ the\ inter-\/level\ kernels\ address}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00201}00201\ \ \ \ \ \textcolor{comment}{//\ fine\ and\ coarse\ at\ the\ SAME\ local\ box\ index\ (notes\#agglomeration).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00202}\mbox{\hyperlink{vcycle_8hpp_ae5f9cff986d17cb3283539e0a75556fc}{00202}}\ \ \ \ \ std::unique\_ptr<Fab>\ \mbox{\hyperlink{vcycle_8hpp_ae5f9cff986d17cb3283539e0a75556fc}{xferRhs}},\ \mbox{\hyperlink{vcycle_8hpp_ac29ab85214442e4a27483bee883fc0bf}{xferSol}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00203}\mbox{\hyperlink{vcycle_8hpp_a5d457c6d0ef8384ce3bd4998e609dc96}{00203}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{vcycle_8hpp_a5d457c6d0ef8384ce3bd4998e609dc96}{agglomerated}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00204}00204\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00205}00205\ \ \ \ \ \textcolor{comment}{//\ kokkos\_opt\ only,\ empty\ otherwise:\ this\ level's\ data\ movements\ resolved\ to\ device\ tables.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00206}\mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{00206}}\ \ \ \ \ CopyPlan\ \mbox{\hyperlink{vcycle_8hpp_a2b554d065594e141f7078105bc09f85a}{halo}},\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},\ \mbox{\hyperlink{vcycle_8hpp_a8b6ce0d991f448f132cfad3982af9e43}{xferIn}},\ \mbox{\hyperlink{vcycle_8hpp_adcfc07218fb6b6ade12ff0966c383df5}{xferOut}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00207}00207\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00208}00208\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00209}00209\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ Backend,\ \textcolor{keyword}{class}\ T,\ \textcolor{keyword}{class}\ TC\ =\ T>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00210}00210\ \textcolor{keyword}{class\ }Vcycle}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00211}00211\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00212}00212\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00214}00214\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ =\ LevelT<T,\ TC>;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00215}00215\ \ \ \ \ \textcolor{keyword}{using\ }Fab\ =\ la::GmgFab<T>;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00216}00216\ \ \ \ \ \textcolor{keyword}{using\ }CoeffFab\ =\ la::GmgFab<TC>;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00217}00217\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00218}00218\ \ \ \ \ \textcolor{comment}{//\ The\ coefficient\ fields\ are\ read\ at\ SETUP\ only\ (copyCallerCoeffs);\ the\ rhs\ is\ not\ read\ here}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00219}00219\ \ \ \ \ \textcolor{comment}{//\ at\ all,\ so\ it\ stays\ a\ per-\/call\ argument\ of\ reset/applyFlat.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00220}00220\ \ \ \ \ Vcycle(\textcolor{keyword}{const}\ amrex::Geometry\&\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},\ \textcolor{keyword}{const}\ CallerCoeffs\&\ c,\ \textcolor{keyword}{const}\ KokkosGmgOpts\&\ opts)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00221}00221\ \ \ \ \ \ \ \ \ :\ preSweeps\_(opts.preSweeps),\ postSweeps\_(opts.postSweeps),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ coarsestSweeps\_(opts.coarsestSweeps),\ omega\_(opts.omega),\ bc\_(opts.bc),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ hasPhysBc\_(std::any\_of(opts.bc.begin(),\ opts.bc.end(),\ [](\textcolor{keywordtype}{int}\ b)\ \{\ return\ b\ !=\ 0;\ \})),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ amrexFree\_(Backend::amrexFreeCycle\ \&\&\ amrex::ParallelContext::NProcsSub()\ ==\ 1)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00225}00225\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ One\ face\ coefficient\ per\ direction\ instead\ of\ a\ pair\ -\/-\/\ only\ when\ asked,\ only\ if\ the}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ backend\ allows\ it,\ and\ only\ if\ the\ operator\ really\ is\ symmetric.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00228}00228\ \ \ \ \ \ \ \ \ shared\_\ =\ Backend::canShareCoeffs\ \&\&\ opts.shareCoeffs\ \&\&\ sameField(*c.ux,\ *c.lx)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ sameField(*c.uy,\ *c.ly)\ \&\&\ sameField(*c.uz,\ *c.lz);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00231}00231\ \ \ \ \ \ \ \ \ buildLevel0(\mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},\ c,\ opts);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00232}00232\ \ \ \ \ \ \ \ \ coarsenHierarchy(opts);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00233}00233\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (amrexFree\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00234}00234\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ resolvePlans();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00236}00236\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00237}00237\ \ \ \ \ \ \ \ \ amrex::Gpu::streamSynchronize();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00238}00238\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00239}00239\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00240}00240\ \ \ \ \ \textcolor{comment}{//\ L0\ rhs\ :=\ the\ caller's\ rhs,\ L0\ sol\ :=\ 0\ —\ z0\ =\ 0\ applies\ M\string^\{-\/1\},\ not\ a\ warm\ start.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00241}00241\ \ \ \ \ \textcolor{keywordtype}{void}\ reset(\textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}})}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00242}00242\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aggL0\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00244}00244\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*iface\_,\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ Backend::afterAmrexWrite();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ gmgCopyKokkos<T>(*levels\_[0].\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ *iface\_,\ ifaceIn\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ gmgZeroKokkos<T>(*levels\_[0].\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::fence();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00251}00251\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00252}00252\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();\ \textcolor{comment}{//\ a\ previous\ cycle's\ kernels\ may\ still\ be\ in\ flight}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00253}00253\ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*levels\_[0].\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00254}00254\ \ \ \ \ \ \ \ \ levels\_[0].sol-\/>setVal(T(0));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00255}00255\ \ \ \ \ \ \ \ \ amrex::Gpu::streamSynchronize();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00256}00256\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00257}00257\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00258}00258\ \ \ \ \ \textcolor{keywordtype}{void}\ cycles(\textcolor{keywordtype}{int}\ n)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00259}00259\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00260}00260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ c\ =\ 0;\ c\ <\ n;\ ++c)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00261}00261\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ vcycle(0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00263}00263\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00264}00264\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00265}00265\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00266}00266\ \ \ \ \ \textcolor{comment}{//\ Preconditioner\ apply\ on\ flat\ device\ vectors:\ L0\ rhs\ <-\/\ r,\ L0\ sol\ <-\/\ 0,\ n\ V-\/cycles,}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00267}00267\ \ \ \ \ \textcolor{comment}{//\ z\ <-\/\ L0\ sol.\ Same\ sequence\ as\ GmgPrecondT::apply\_impl,\ so\ a\ comparison\ measures\ the\ cycle.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00268}00268\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00269}00269\ \ \ \ \ \textcolor{keywordtype}{void}\ applyFlat(\textcolor{keyword}{const}\ V*\ r,\ V*\ z,\ \textcolor{keywordtype}{int}\ nCycles)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00270}00270\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00271}00271\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ L0\ =\ levels\_.front();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00272}00272\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ flat\ vector's\ cell\ order\ is\ the\ CALLER's,\ so\ an\ agglomerated\ level\ 0\ needs\ a}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00273}00273\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ staging\ fab\ and\ a\ plan\ copy\ each\ way\ -\/-\/\ once\ per\ APPLY,\ which\ more\ cycles\ amortise.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00274}00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aggL0\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00275}00275\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ la::scatter\_device(r,\ *iface\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ Backend::afterAmrexWrite();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ gmgCopyKokkos<T>(*L0.rhs,\ *iface\_,\ ifaceIn\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ gmgZeroKokkos<T>(*L0.sol);\ \textcolor{comment}{//\ z0\ =\ 0:\ apply\ M\string^\{-\/1\},\ not\ a\ warm-\/started\ solve}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ cycles(nCycles);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ gmgCopyKokkos<T>(*iface\_,\ *L0.sol,\ ifaceOut\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ la::gather\_device(*iface\_,\ z,\ 1.0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::Gpu::streamSynchronize();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00286}00286\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00287}00287\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();\ \textcolor{comment}{//\ a\ previous\ apply's\ kernels\ may\ still\ be\ in\ flight}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00288}00288\ \ \ \ \ \ \ \ \ la::scatter\_device(r,\ *L0.rhs);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00289}00289\ \ \ \ \ \ \ \ \ L0.sol-\/>setVal(T(0));\ \textcolor{comment}{//\ z0\ =\ 0:\ apply\ M\string^\{-\/1\},\ not\ a\ warm-\/started\ solve}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00290}00290\ \ \ \ \ \ \ \ \ Backend::afterAmrexWrite();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00291}00291\ \ \ \ \ \ \ \ \ cycles(nCycles);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00292}00292\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00293}00293\ \ \ \ \ \ \ \ \ la::gather\_device(*L0.sol,\ z,\ 1.0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00294}00294\ \ \ \ \ \ \ \ \ amrex::Gpu::streamSynchronize();\ \textcolor{comment}{//\ z\ complete\ before\ the\ caller\ reads\ it}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00295}00295\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00296}00296\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00297}00297\ \ \ \ \ \textcolor{comment}{//\ sum((rhs\ -\/\ A\ sol)\string^2)\ on\ the\ finest\ level.\ Reporting\ only\ -\/-\/\ the\ gate\ that\ says\ the\ timed}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00298}00298\ \ \ \ \ \textcolor{comment}{//\ cycle\ did\ the\ work\ -\/-\/\ so\ it\ stays\ an\ AMReX\ reduction\ and\ is\ never\ timed.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00299}00299\ \ \ \ \ \textcolor{keywordtype}{double}\ residSumSq()}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00300}00300\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00301}00301\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ L\ =\ levels\_.front();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00302}00302\ \ \ \ \ \ \ \ \ fillGhosts(L);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00303}00303\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00304}00304\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ psi\ =\ L.sol-\/>const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00305}00305\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ b\ =\ L.rhs-\/>const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00306}00306\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ax\ =\ L.ux-\/>const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00307}00307\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lxa\ =\ L.lxf().const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00308}00308\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ay\ =\ L.uy-\/>const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00309}00309\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lya\ =\ L.lyf().const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00310}00310\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ az\ =\ L.uz-\/>const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00311}00311\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lza\ =\ L.lzf().const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00312}00312\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ al\ =\ L.alpha-\/>const\_arrays();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00313}00313\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sum\ =\ amrex::ParReduce(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::TypeList<amrex::ReduceOpSum>\ \{\},}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::TypeList<double>\ \{\},}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ *L.rhs,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::IntVect(0),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ [=]\ AMREX\_GPU\_DEVICE(\textcolor{keywordtype}{int}\ box,\ \textcolor{keywordtype}{int}\ i,\ \textcolor{keywordtype}{int}\ j,\ \textcolor{keywordtype}{int}\ k)\ -\/>\ amrex::GpuTuple<double>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ la::FaceCoeffArrays<TC>\ faces\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ax[box],\ lxa[box],\ ay[box],\ lya[box],\ az[box],\ lza[box]}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00322}00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ c\ =\ la::loadFaceCoeffs<double>(faces,\ i,\ j,\ k);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00324}00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ off\ =\ la::stencilOffDiag(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00325}00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ c,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00326}00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psi[box](i\ +\ 1,\ j,\ k),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00327}00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psi[box](i\ -\/\ 1,\ j,\ k),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00328}00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psi[box](i,\ j\ +\ 1,\ k),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psi[box](i,\ j\ -\/\ 1,\ k),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00330}00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psi[box](i,\ j,\ k\ +\ 1),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psi[box](i,\ j,\ k\ -\/\ 1)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00333}00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ diag\ =\ la::stencilDiag(al[box](i,\ j,\ k),\ c);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ r\ =\ b[box](i,\ j,\ k)\ -\/\ (diag\ *\ psi[box](i,\ j,\ k)\ +\ off);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{r\ *\ r\};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00336}00336\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00337}00337\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00338}00338\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ rank's\ boxes\ only,\ like\ every\ ParReduce;\ the\ caller\ prints\ its\ root.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00339}00339\ \ \ \ \ \ \ \ \ amrex::ParallelAllReduce::Sum(sum,\ amrex::ParallelContext::CommunicatorSub());}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00340}00340\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sum;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00341}00341\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00342}00342\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00343}00343\ \ \ \ \ \textcolor{keywordtype}{int}\ nlevels()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(levels\_.size());\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00344}00344\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00345}00345\ \ \ \ \ \textcolor{comment}{//\ What\ the\ hierarchy\ actually\ does,\ not\ what\ was\ requested\ (see\ sameField).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00346}00346\ \ \ \ \ \textcolor{keywordtype}{bool}\ sharedCoeffs()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ shared\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00347}00347\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00348}00348\ \ \ \ \ \textcolor{comment}{//\ Whether\ level\ 0\ really\ got\ its\ own\ decomposition;\ asking\ does\ not\ guarantee\ it.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00349}00349\ \ \ \ \ \textcolor{keywordtype}{bool}\ aggLevel0()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ aggL0\_;\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00350}00350\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00351}00351\ \ \ \ \ \textcolor{comment}{//\ Boxes\ and\ cells\ PER\ LEVEL:\ the\ point\ is\ that\ the\ box\ count\ does\ not\ shrink\ as\ cells\ do.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00352}00352\ \ \ \ \ std::vector<int>\ boxesPerLevel()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00353}00353\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00354}00354\ \ \ \ \ \ \ \ \ std::vector<int>\ v;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00355}00355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ Level\&\ L\ :\ levels\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00356}00356\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00357}00357\ \ \ \ \ \ \ \ \ \ \ \ \ v.push\_back(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(L.alpha-\/>boxArray().size()));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00358}00358\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00359}00359\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ v;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00360}00360\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00361}00361\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00362}00362\ \ \ \ \ std::vector<long>\ cellsPerLevel()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00363}00363\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00364}00364\ \ \ \ \ \ \ \ \ std::vector<long>\ v;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00365}00365\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ Level\&\ L\ :\ levels\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00366}00366\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ v.push\_back(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{long}\textcolor{keyword}{>}(L.alpha-\/>boxArray().numPts()));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00368}00368\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00369}00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ v;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00370}00370\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00371}00371\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00372}00372\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00373}00373\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00374}00374\ \ \ \ \ \textcolor{comment}{//\ Templated\ on\ the\ value\ type\ so\ field\ and\ coefficient\ fabs\ share\ one\ allocation\ path.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00375}00375\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00376}00376\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<la::GmgFab<V>>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00377}00377\ \ \ \ \ makeFab(\textcolor{keyword}{const}\ amrex::BoxArray\&\ ba,\ \textcolor{keyword}{const}\ amrex::DistributionMapping\&\ dm,\ \textcolor{keywordtype}{int}\ ng)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00378}00378\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00379}00379\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mf\ =\ std::make\_unique<la::GmgFab<V>>(ba,\ dm,\ 1,\ ng);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00380}00380\ \ \ \ \ \ \ \ \ mf-\/>setVal(V(0));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00381}00381\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mf;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00382}00382\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00383}00383\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00384}00384\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Fab>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00385}00385\ \ \ \ \ makeMf(\textcolor{keyword}{const}\ amrex::BoxArray\&\ ba,\ \textcolor{keyword}{const}\ amrex::DistributionMapping\&\ dm,\ \textcolor{keywordtype}{int}\ ng)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00386}00386\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00387}00387\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ makeFab<T>(ba,\ dm,\ ng);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00388}00388\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00389}00389\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00390}00390\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<CoeffFab>}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00391}00391\ \ \ \ \ makeCoeffMf(\textcolor{keyword}{const}\ amrex::BoxArray\&\ ba,\ \textcolor{keyword}{const}\ amrex::DistributionMapping\&\ dm,\ \textcolor{keywordtype}{int}\ ng)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00392}00392\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00393}00393\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ makeFab<TC>(ba,\ dm,\ ng);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00394}00394\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00395}00395\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00396}00396\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ makeLevel(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00397}00397\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxArray\&\ ba,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00398}00398\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::DistributionMapping\&\ dm,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00399}00399\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Geometry\&\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00400}00400\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ shared}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00401}00401\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00402}00402\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00403}00403\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ L;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00404}00404\ \ \ \ \ \ \ \ \ L.geom\ =\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00405}00405\ \ \ \ \ \ \ \ \ L.alpha\ =\ makeCoeffMf(ba,\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00406}00406\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ fba\ =\ [\&ba](\textcolor{keywordtype}{int}\ d)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00407}00407\ \ \ \ \ \ \ \ \ \{\ \textcolor{keywordflow}{return}\ amrex::convert(ba,\ amrex::IntVect::TheDimensionVector(d));\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00408}00408\ \ \ \ \ \ \ \ \ L.ux\ =\ makeCoeffMf(fba(0),\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00409}00409\ \ \ \ \ \ \ \ \ L.uy\ =\ makeCoeffMf(fba(1),\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00410}00410\ \ \ \ \ \ \ \ \ L.uz\ =\ makeCoeffMf(fba(2),\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00411}00411\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!shared)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00412}00412\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00413}00413\ \ \ \ \ \ \ \ \ \ \ \ \ L.lx\ =\ makeCoeffMf(fba(0),\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00414}00414\ \ \ \ \ \ \ \ \ \ \ \ \ L.ly\ =\ makeCoeffMf(fba(1),\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00415}00415\ \ \ \ \ \ \ \ \ \ \ \ \ L.lz\ =\ makeCoeffMf(fba(2),\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00416}00416\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00417}00417\ \ \ \ \ \ \ \ \ L.sol\ =\ makeMf(ba,\ dm,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00418}00418\ \ \ \ \ \ \ \ \ L.rhs\ =\ makeMf(ba,\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00419}00419\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ L;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00420}00420\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00421}00421\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00422}00422\ \ \ \ \ \textcolor{comment}{//\ This\ level's\ 7\ coefficient\ fields\ as\ one\ argument,\ the\ lower\ faces\ through\ the\ accessors\ so}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00423}00423\ \ \ \ \ \textcolor{comment}{//\ a\ shared\ level\ hands\ out\ its\ upper\ twin\ (notes\#share-\/coeffs).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00424}00424\ \ \ \ \ \textcolor{keyword}{static}\ la::FaceCoeffs<TC>\ levelCoeffs(\textcolor{keyword}{const}\ Level\&\ L)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00425}00425\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00426}00426\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{L.alpha.get(),\ L.ux.get(),\ \&L.lxf(),\ L.uy.get(),\ \&L.lyf(),\ L.uz.get(),\ \&L.lzf()\};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00427}00427\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00428}00428\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00429}00429\ \ \ \ \ \textcolor{comment}{//\ The\ caller's\ fields\ converted\ into\ the\ level's\ OWN\ fabs,\ read\ at\ SETUP\ only:\ later\ caller}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00430}00430\ \ \ \ \ \textcolor{comment}{//\ writes\ go\ unseen,\ so\ a\ changed\ operator\ means\ a\ rebuilt\ preconditioner.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00431}00431\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ copyCallerCoeffs(\textcolor{keyword}{const}\ CallerCoeffs\&\ c,\ Level\&\ L)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00432}00432\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00433}00433\ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.alpha,\ *c.alpha,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00434}00434\ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.ux,\ *c.ux,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00435}00435\ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.uy,\ *c.uy,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00436}00436\ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.uz,\ *c.uz,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00437}00437\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!L.shared())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00438}00438\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00439}00439\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.lx,\ *c.lx,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00440}00440\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.ly,\ *c.ly,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00441}00441\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgConvertCopy(*L.lz,\ *c.lz,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00442}00442\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00443}00443\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00444}00444\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00445}00445\ \ \ \ \ \textcolor{comment}{//\ The\ finest\ level,\ on\ the\ caller's\ decomposition\ or\ -\/-\/\ when\ asked,\ and\ only\ where\ the\ plans}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00446}00446\ \ \ \ \ \textcolor{comment}{//\ are\ -\/-\/\ on\ its\ own:\ bigger\ boxes\ cost\ an\ interface\ but\ cut\ halo\ traffic\ on\ the\ level\ holding}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00447}00447\ \ \ \ \ \textcolor{comment}{//\ 7/8\ of\ the\ cells\ (notes\#agglomeration).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00448}00448\ \ \ \ \ \textcolor{keywordtype}{void}\ buildLevel0(\textcolor{keyword}{const}\ amrex::Geometry\&\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},\ \textcolor{keyword}{const}\ CallerCoeffs\&\ c,\ \textcolor{keyword}{const}\ KokkosGmgOpts\&\ opts)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00449}00449\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00450}00450\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxArray\&\ ba\ =\ c.alpha-\/>boxArray();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00451}00451\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::DistributionMapping\&\ dm\ =\ c.alpha-\/>DistributionMap();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00452}00452\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00453}00453\ \ \ \ \ \ \ \ \ amrex::BoxArray\ l0ba\ =\ ba;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00454}00454\ \ \ \ \ \ \ \ \ amrex::DistributionMapping\ l0dm\ =\ dm;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00455}00455\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ On\ >1\ rank\ there\ are\ no\ plans,\ so\ the\ caller's\ layout\ is\ kept.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00456}00456\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (amrexFree\_\ \&\&\ opts.aggLevel0Size\ >\ 0)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00457}00457\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00458}00458\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::BoxArray\ tba(\mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}}.Domain());}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00459}00459\ \ \ \ \ \ \ \ \ \ \ \ \ tba.maxSize(opts.aggLevel0Size);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00460}00460\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Strictly\ fewer\ boxes,\ or\ the\ interface\ is\ pure\ cost.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00461}00461\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tba.size()\ <\ ba.size())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00462}00462\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00463}00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l0ba\ =\ tba;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00464}00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l0dm\ =\ amrex::DistributionMapping(tba);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00465}00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aggL0\_\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00466}00466\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00467}00467\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00468}00468\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00469}00469\ \ \ \ \ \ \ \ \ levels\_.push\_back(makeLevel(l0ba,\ l0dm,\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},\ shared\_));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00470}00470\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!aggL0\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00471}00471\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00472}00472\ \ \ \ \ \ \ \ \ \ \ \ \ copyCallerCoeffs(c,\ levels\_[0]);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00473}00473\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00474}00474\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00475}00475\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ convert-\/copies\ need\ matching\ layouts,\ so\ rediscretise\ there\ and\ copy\ across.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00476}00476\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ t\ =\ makeLevel(ba,\ dm,\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},\ shared\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00477}00477\ \ \ \ \ \ \ \ \ copyCallerCoeffs(c,\ t);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00478}00478\ \ \ \ \ \ \ \ \ copyCoeffs(t,\ levels\_[0]);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00479}00479\ \ \ \ \ \ \ \ \ iface\_\ =\ makeMf(ba,\ dm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00480}00480\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00481}00481\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00482}00482\ \ \ \ \ \textcolor{comment}{//\ Each\ level\ carries\ its\ OWN\ geometry:\ the\ coefficients\ belong\ to\ this\ level's\ dx.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00483}00483\ \ \ \ \ \textcolor{keyword}{static}\ amrex::Geometry\ coarseGeom(\textcolor{keyword}{const}\ amrex::Geometry\&\ fine,\ \textcolor{keyword}{const}\ amrex::Box\&\ cdom)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00484}00484\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00485}00485\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00486}00486\ \ \ \ \ \ \ \ \ \ \ \ \ cdom,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00487}00487\ \ \ \ \ \ \ \ \ \ \ \ \ fine.ProbDomain(),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00488}00488\ \ \ \ \ \ \ \ \ \ \ \ \ fine.Coord(),}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00489}00489\ \ \ \ \ \ \ \ \ \ \ \ \ \{fine.isPeriodic(0),\ fine.isPeriodic(1),\ fine.isPeriodic(2)\}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00490}00490\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00491}00491\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00492}00492\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00493}00493\ \ \ \ \ \textcolor{comment}{//\ Coarsen\ while\ the\ BoxArray\ stays\ coarsenable\ and\ the\ coarse\ domain\ keeps\ >=\ minBottom}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00494}00494\ \ \ \ \ \textcolor{comment}{//\ cells.\ Without\ agglomeration\ only\ the\ box\ SIZE\ shrinks\ —\ hence\ a\ launch-\/bound\ bottom.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00495}00495\ \ \ \ \ \textcolor{keywordtype}{void}\ coarsenHierarchy(\textcolor{keyword}{const}\ KokkosGmgOpts\&\ opts)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00496}00496\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00497}00497\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (opts.maxLevels\ <=\ 0\ ||\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(levels\_.size())\ <\ opts.maxLevels)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00498}00498\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00499}00499\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Copies,\ not\ references:\ addCoarseLevel's\ push\_back\ moves\ the\ Level\ structs.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00500}00500\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxArray\ fba\ =\ levels\_.back().alpha-\/>boxArray();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00501}00501\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::DistributionMapping\ fdm\ =\ levels\_.back().alpha-\/>DistributionMap();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00502}00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Geometry\ fgeom\ =\ levels\_.back().geom;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00503}00503\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!fba.coarsenable(2,\ 2))}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00504}00504\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00505}00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00506}00506\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00507}00507\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\ cdom\ =\ amrex::coarsen(fgeom.Domain(),\ 2);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00508}00508\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cdom.shortside()\ <\ opts.minBottom)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00509}00509\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00510}00510\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00511}00511\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00512}00512\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::BoxArray\ cba\ =\ fba;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00513}00513\ \ \ \ \ \ \ \ \ \ \ \ \ cba.coarsen(2);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00514}00514\ \ \ \ \ \ \ \ \ \ \ \ \ addCoarseLevel(coarseGeom(fgeom,\ cdom),\ cba,\ fdm,\ opts);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00515}00515\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00516}00516\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00517}00517\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00518}00518\ \ \ \ \ \textcolor{comment}{//\ Append\ the\ level\ below\ the\ current\ bottom\ and\ rediscretise\ onto\ it.\ Agglomeration:\ a\ fresh}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00519}00519\ \ \ \ \ \textcolor{comment}{//\ aggGridSize-\/capped\ decomposition\ of\ the\ coarse\ domain,\ taken\ only\ when\ it\ has\ strictly}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00520}00520\ \ \ \ \ \textcolor{comment}{//\ fewer\ boxes\ (notes\#agglomeration).}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00521}00521\ \ \ \ \ \textcolor{keywordtype}{void}\ addCoarseLevel(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00522}00522\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Geometry\&\ cgeom,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00523}00523\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxArray\&\ cba,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00524}00524\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::DistributionMapping\&\ fdm,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00525}00525\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ KokkosGmgOpts\&\ opts}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00526}00526\ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00527}00527\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00528}00528\ \ \ \ \ \ \ \ \ amrex::BoxArray\ aba\ =\ cba;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00529}00529\ \ \ \ \ \ \ \ \ amrex::DistributionMapping\ adm\ =\ fdm;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00530}00530\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ agg\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00531}00531\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (opts.agglomerate)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00532}00532\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00533}00533\ \ \ \ \ \ \ \ \ \ \ \ \ amrex::BoxArray\ tba(cgeom.Domain());}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00534}00534\ \ \ \ \ \ \ \ \ \ \ \ \ tba.maxSize(opts.aggGridSize);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00535}00535\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tba.size()\ <\ cba.size())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00536}00536\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00537}00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aba\ =\ tba;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00538}00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ adm\ =\ amrex::DistributionMapping(tba);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00539}00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ agg\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00540}00540\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00541}00541\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00542}00542\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00543}00543\ \ \ \ \ \ \ \ \ levels\_.push\_back(makeLevel(aba,\ adm,\ cgeom,\ shared\_));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00544}00544\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ fl\ =\ levels\_[levels\_.size()\ -\/\ 2];}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00545}00545\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ c\ =\ levels\_.back();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00546}00546\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!agg)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00547}00547\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00548}00548\ \ \ \ \ \ \ \ \ \ \ \ \ restrictCoeffs(fl,\ c);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00549}00549\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00550}00550\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00551}00551\ \ \ \ \ \ \ \ \ c.agglomerated\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00552}00552\ \ \ \ \ \ \ \ \ c.xferRhs\ =\ makeMf(cba,\ fdm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00553}00553\ \ \ \ \ \ \ \ \ c.xferSol\ =\ makeMf(cba,\ fdm,\ 0);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00554}00554\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ restriction\ kernels\ only\ speak\ the\ fine\ layout:\ rediscretise\ there,\ copy.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00555}00555\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\ t\ =\ makeLevel(cba,\ fdm,\ cgeom,\ shared\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00556}00556\ \ \ \ \ \ \ \ \ restrictCoeffs(fl,\ t);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00557}00557\ \ \ \ \ \ \ \ \ copyCoeffs(t,\ c);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00558}00558\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00559}00559\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00560}00560\ \ \ \ \ \textcolor{comment}{//\ Resolve\ the\ data\ movements\ once\ the\ hierarchy\ is\ final:\ a\ device\ table\ per\ movement.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00561}00561\ \ \ \ \ \textcolor{keywordtype}{void}\ resolvePlans()}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00562}00562\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00563}00563\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aggL0\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00564}00564\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00565}00565\ \ \ \ \ \ \ \ \ \ \ \ \ ifaceIn\_\ =\ \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{makeCopyPlan}}(*levels\_[0].\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ *iface\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00566}00566\ \ \ \ \ \ \ \ \ \ \ \ \ ifaceOut\_\ =\ \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{makeCopyPlan}}(*iface\_,\ *levels\_[0].\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00567}00567\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00568}00568\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (Level\&\ L\ :\ levels\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00569}00569\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00570}00570\ \ \ \ \ \ \ \ \ \ \ \ \ L.halo\ =\ \mbox{\hyperlink{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2}{makeHaloPlan}}(*L.sol,\ L.geom.periodicity());}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00571}00571\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hasPhysBc\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00572}00572\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00573}00573\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Coarse\ domains\ are\ the\ fine\ one\ coarsened,\ so\ one\ bc\ spec\ applies.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00574}00574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ L.bc\ =\ \mbox{\hyperlink{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e}{makeBcPlan}}(*L.sol,\ L.geom.Domain(),\ bc\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00575}00575\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00576}00576\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (L.agglomerated)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00577}00577\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00578}00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ L.xferIn\ =\ \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{makeCopyPlan}}(*L.rhs,\ *L.xferRhs);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00579}00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ L.xferOut\ =\ \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{makeCopyPlan}}(*L.xferSol,\ *L.sol);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00580}00580\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00581}00581\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00582}00582\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00583}00583\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00584}00584\ \ \ \ \ \textcolor{comment}{//\ Rediscretise\ on\ the\ coarse\ level:\ faces\ via\ gmgCoarsenFace\ (4\ fine\ faces\ averaged,\ then}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00585}00585\ \ \ \ \ \textcolor{comment}{//\ rescaled\ for\ the\ doubled\ dx),\ alpha\ via\ gmgRestrict's\ plain\ 8-\/child\ average\ -\/-\/\ correct}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00586}00586\ \ \ \ \ \textcolor{comment}{//\ only\ because\ alpha\ is\ dx-\/INDEPENDENT.\ A\ shared\ level\ does\ three\ faces,\ not\ six.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00587}00587\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ restrictCoeffs(\textcolor{keyword}{const}\ Level\&\ f,\ Level\&\ c)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00588}00588\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00589}00589\ \ \ \ \ \ \ \ \ la::gmgRestrict<TC>(*f.alpha,\ *c.alpha,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00590}00590\ \ \ \ \ \ \ \ \ la::gmgCoarsenFace<TC>(*f.ux,\ *c.ux,\ 0,\ 4.0,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00591}00591\ \ \ \ \ \ \ \ \ la::gmgCoarsenFace<TC>(*f.uy,\ *c.uy,\ 1,\ 4.0,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00592}00592\ \ \ \ \ \ \ \ \ la::gmgCoarsenFace<TC>(*f.uz,\ *c.uz,\ 2,\ 4.0,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00593}00593\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!c.shared())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00594}00594\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00595}00595\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgCoarsenFace<TC>(f.lxf(),\ *c.lx,\ 0,\ 4.0,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00596}00596\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgCoarsenFace<TC>(f.lyf(),\ *c.ly,\ 1,\ 4.0,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00597}00597\ \ \ \ \ \ \ \ \ \ \ \ \ la::gmgCoarsenFace<TC>(f.lzf(),\ *c.lz,\ 2,\ 4.0,\ \textcolor{comment}{/*onDevice=*/}\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00598}00598\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00599}00599\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00600}00600\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00601}00601\ \ \ \ \ \textcolor{comment}{//\ Move\ the\ rediscretised\ coefficients\ onto\ another\ decomposition\ of\ the\ same\ region.\ A}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00602}00602\ \ \ \ \ \textcolor{comment}{//\ shared\ internal\ face\ carries\ one\ value,\ so\ which\ source\ box\ wins\ does\ not\ matter.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00603}00603\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ copyCoeffs(\textcolor{keyword}{const}\ Level\&\ src,\ Level\&\ dst)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00604}00604\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00605}00605\ \ \ \ \ \ \ \ \ dst.alpha-\/>ParallelCopy(*src.alpha,\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00606}00606\ \ \ \ \ \ \ \ \ dst.ux-\/>ParallelCopy(*src.ux,\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00607}00607\ \ \ \ \ \ \ \ \ dst.uy-\/>ParallelCopy(*src.uy,\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00608}00608\ \ \ \ \ \ \ \ \ dst.uz-\/>ParallelCopy(*src.uz,\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00609}00609\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!dst.shared())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00610}00610\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00611}00611\ \ \ \ \ \ \ \ \ \ \ \ \ dst.lx-\/>ParallelCopy(src.lxf(),\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00612}00612\ \ \ \ \ \ \ \ \ \ \ \ \ dst.ly-\/>ParallelCopy(src.lyf(),\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00613}00613\ \ \ \ \ \ \ \ \ \ \ \ \ dst.lz-\/>ParallelCopy(src.lzf(),\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00614}00614\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00615}00615\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00616}00616\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00617}00617\ \ \ \ \ \textcolor{comment}{//\ Periodic/internal\ ghosts,\ then\ the\ homogeneous\ physical-\/BC\ reflection\ —\ production's\ order.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00618}00618\ \ \ \ \ \textcolor{keywordtype}{void}\ fillGhosts(Level\&\ L)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00619}00619\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00620}00620\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (amrexFree\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00621}00621\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00622}00622\ \ \ \ \ \ \ \ \ \ \ \ \ gmgFillBoundaryKokkos<T>(*L.sol,\ L.halo);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00623}00623\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hasPhysBc\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00624}00624\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00625}00625\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gmgFillDomainBcKokkos<T>(*L.sol,\ L.bc);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00626}00626\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00627}00627\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00628}00628\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00629}00629\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AMReX\ is\ about\ to\ READ\ sol,\ which\ the\ last\ colour\ sweep\ wrote.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00630}00630\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00631}00631\ \ \ \ \ \ \ \ \ L.sol-\/>FillBoundary(L.geom.periodicity());}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00632}00632\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hasPhysBc\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00633}00633\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00634}00634\ \ \ \ \ \ \ \ \ \ \ \ \ la::fillDomainBcGhostsDevice(*L.sol,\ L.geom.Domain(),\ bc\_);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00635}00635\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00636}00636\ \ \ \ \ \ \ \ \ Backend::afterAmrexWrite();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00637}00637\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00638}00638\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00639}00639\ \ \ \ \ \textcolor{comment}{//\ RB\ colour\ sweeps;\ \`{}reversed`\ is\ the\ forward\ sweep's\ adjoint,\ so\ the\ V-\/cycle\ stays\ symmetric.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00640}00640\ \ \ \ \ \textcolor{keywordtype}{void}\ smooth(std::size\_t\ l,\ \textcolor{keywordtype}{int}\ sweeps,\ \textcolor{keywordtype}{bool}\ reversed)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00641}00641\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00642}00642\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ L\ =\ levels\_[l];}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00643}00643\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ s\ =\ 0;\ s\ <\ sweeps;\ ++s)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00644}00644\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00645}00645\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ c\ =\ 0;\ c\ <\ 2;\ ++c)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00646}00646\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00647}00647\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ parity\ =\ (reversed\ ?\ 1\ +\ c\ :\ c)\ \&\ 1;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00648}00648\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fillGhosts(L);\ \textcolor{comment}{//\ the\ other\ colour\ changed\ —\ refresh\ ghosts}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00649}00649\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Backend::gsColor(*L.sol,\ *L.rhs,\ levelCoeffs(L),\ la::GsSweep\ \{parity,\ omega\_\});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00650}00650\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00651}00651\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00652}00652\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00653}00653\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00654}00654\ \ \ \ \ \textcolor{keywordtype}{void}\ vcycle(std::size\_t\ l)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00655}00655\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00656}00656\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ L\ =\ levels\_[l];}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00657}00657\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (l\ +\ 1\ ==\ levels\_.size())}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00658}00658\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00659}00659\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Forward\ +\ reversed\ halves\ keep\ the\ coarsest\ "{}solve"{}\ self-\/adjoint.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00660}00660\ \ \ \ \ \ \ \ \ \ \ \ \ smooth(l,\ coarsestSweeps\_\ /\ 2,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00661}00661\ \ \ \ \ \ \ \ \ \ \ \ \ smooth(l,\ coarsestSweeps\_\ /\ 2,\ \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00662}00662\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00663}00663\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00664}00664\ \ \ \ \ \ \ \ \ smooth(l,\ preSweeps\_,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00665}00665\ \ \ \ \ \ \ \ \ fillGhosts(L);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00666}00666\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1Logging_a8cfeee86930e70637e61a759b7361214}{Level}}\&\ C\ =\ levels\_[l\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00667}00667\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ On\ an\ agglomerated\ level\ the\ kernels\ use\ the\ transfer\ fab,\ and\ a\ copy\ bridges\ across.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00668}00668\ \ \ \ \ \ \ \ \ Backend::residRestrict(}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00669}00669\ \ \ \ \ \ \ \ \ \ \ \ \ *L.sol,\ *L.rhs,\ C.agglomerated\ ?\ *C.xferRhs\ :\ *C.\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ levelCoeffs(L)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00670}00670\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00671}00671\ \ \ \ \ \ \ \ \ seedCoarse(C);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00672}00672\ \ \ \ \ \ \ \ \ vcycle(l\ +\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00673}00673\ \ \ \ \ \ \ \ \ gatherCoarseCorrection(C);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00674}00674\ \ \ \ \ \ \ \ \ Backend::prolongAdd(C.agglomerated\ ?\ *C.xferSol\ :\ *C.\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}},\ *L.\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00675}00675\ \ \ \ \ \ \ \ \ smooth(l,\ postSweeps\_,\ \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00676}00676\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00677}00677\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00678}00678\ \ \ \ \ \textcolor{comment}{//\ The\ coarse\ right-\/hand\ side\ in\ place\ and\ its\ solution\ zeroed,\ ready\ for\ the\ coarse\ cycle.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00679}00679\ \ \ \ \ \textcolor{keywordtype}{void}\ seedCoarse(Level\&\ C)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00680}00680\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00681}00681\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (amrexFree\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00682}00682\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00683}00683\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.agglomerated)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00684}00684\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00685}00685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gmgCopyKokkos<T>(*C.rhs,\ *C.xferRhs,\ C.xferIn);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00686}00686\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00687}00687\ \ \ \ \ \ \ \ \ \ \ \ \ gmgZeroKokkos<T>(*C.sol);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00688}00688\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00689}00689\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00690}00690\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();\ \textcolor{comment}{//\ residRestrict\ just\ wrote\ xferRhs}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00691}00691\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.agglomerated)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00692}00692\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00693}00693\ \ \ \ \ \ \ \ \ \ \ \ \ C.rhs-\/>ParallelCopy(*C.xferRhs,\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00694}00694\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00695}00695\ \ \ \ \ \ \ \ \ C.sol-\/>setVal(T(0));}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00696}00696\ \ \ \ \ \ \ \ \ Backend::afterAmrexWrite();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00697}00697\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00698}00698\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00699}00699\ \ \ \ \ \textcolor{comment}{//\ The\ coarse\ correction\ back\ on\ the\ fine\ layout;\ nothing\ to\ do\ unless\ agglomerated.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00700}00700\ \ \ \ \ \textcolor{keywordtype}{void}\ gatherCoarseCorrection(Level\&\ C)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00701}00701\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00702}00702\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!C.agglomerated)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00703}00703\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00704}00704\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00705}00705\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00706}00706\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (amrexFree\_)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00707}00707\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00708}00708\ \ \ \ \ \ \ \ \ \ \ \ \ gmgCopyKokkos<T>(*C.xferSol,\ *C.sol,\ C.xferOut);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00709}00709\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00710}00710\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00711}00711\ \ \ \ \ \ \ \ \ Backend::beforeAmrexRead();\ \textcolor{comment}{//\ the\ coarse\ cycle\ just\ wrote\ C.sol}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00712}00712\ \ \ \ \ \ \ \ \ C.xferSol-\/>ParallelCopy(*C.sol,\ 0,\ 0,\ 1);}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00713}00713\ \ \ \ \ \ \ \ \ Backend::afterAmrexWrite();}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00714}00714\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00715}00715\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00716}00716\ \ \ \ \ \textcolor{keywordtype}{int}\ preSweeps\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00717}00717\ \ \ \ \ \textcolor{keywordtype}{int}\ postSweeps\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00718}00718\ \ \ \ \ \textcolor{keywordtype}{int}\ coarsestSweeps\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00719}00719\ \ \ \ \ \textcolor{keywordtype}{double}\ omega\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00720}00720\ \ \ \ \ la::BcArray\ bc\_\ \{\};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00721}00721\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasPhysBc\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00722}00722\ \ \ \ \ \textcolor{keywordtype}{bool}\ shared\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00723}00723\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00724}00724\ \ \ \ \ \textcolor{comment}{//\ Whether\ the\ timed\ cycle\ really\ is\ AMReX-\/free:\ the\ backend\ must\ offer\ the\ Kokkos\ data}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00725}00725\ \ \ \ \ \textcolor{comment}{//\ movements\ AND\ every\ box\ they\ name\ must\ be\ local.\ False\ changes\ no\ arithmetic.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00726}00726\ \ \ \ \ \textcolor{keywordtype}{bool}\ amrexFree\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00727}00727\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00728}00728\ \ \ \ \ \textcolor{comment}{//\ Level-\/0\ agglomeration\ only:\ the\ caller-\/layout\ staging\ fab\ and\ its\ plans.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00729}00729\ \ \ \ \ \textcolor{keywordtype}{bool}\ aggL0\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00730}00730\ \ \ \ \ std::unique\_ptr<Fab>\ iface\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00731}00731\ \ \ \ \ CopyPlan\ ifaceIn\_,\ ifaceOut\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00732}00732\ \ \ \ \ std::vector<Level>\ levels\_;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00733}00733\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00734}00734\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00735}00735\ \textcolor{comment}{//\ The\ six\ (field,\ coefficient)\ pairs;\ parseCoeffPrecision\ rejected\ the\ other\ three\ of\ the\ 3x3.}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00736}00736\ \textcolor{keyword}{enum\ class}\ PrecPair}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00737}00737\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00738}00738\ \ \ \ \ f64c64,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00739}00739\ \ \ \ \ f64c32,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00740}00740\ \ \ \ \ f64c16,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00741}00741\ \ \ \ \ f32c32,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00742}00742\ \ \ \ \ f32c16,}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00743}00743\ \ \ \ \ f16c16}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00744}00744\ \};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00745}00745\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00746}00746\ PrecPair\ precPair(Precision\ field,\ Precision\ coeff)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00747}00747\ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00748}00748\ \ \ \ \ \textcolor{keywordflow}{switch}\ (field)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00749}00749\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00750}00750\ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::fp64:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00751}00751\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (coeff)}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00752}00752\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00753}00753\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::fp32:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00754}00754\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ PrecPair::f64c32;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00755}00755\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::bf16:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00756}00756\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ PrecPair::f64c16;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00757}00757\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::fp64:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00758}00758\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00759}00759\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00760}00760\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ PrecPair::f64c64;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00761}00761\ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::fp32:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00762}00762\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ coeff\ ==\ Precision::bf16\ ?\ PrecPair::f32c16\ :\ PrecPair::f32c32;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00763}00763\ \ \ \ \ \textcolor{keywordflow}{case}\ Precision::bf16:}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00764}00764\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00765}00765\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00766}00766\ \ \ \ \ \textcolor{keywordflow}{return}\ PrecPair::f16c16;}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00767}00767\ \}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00768}00768\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00769}00769\ \}\ \textcolor{comment}{//\ namespace}}
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00770}00770\ }
+\DoxyCodeLine{\Hypertarget{vcycle_8hpp_source_l00771}00771\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}

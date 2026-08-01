@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['kcopyblock_0',['kCopyBlock',['../namespaceblockamr.html#a8e0e4fcdcd370165548820d3e62321b0',1,'blockamr']]],
+  ['keepfacefluxcorrection_1',['keepfacefluxcorrection',['../classNeoN_1_1la_1_1LinearSystem.html#a0de166fc56197b36ad0fc9ab59c59ddf',1,'NeoN::la::LinearSystem::keepFaceFluxCorrection(bool keep)'],['../classNeoN_1_1la_1_1LinearSystem.html#a832ecda24e344d7e34c79029d0d4827e',1,'NeoN::la::LinearSystem::keepFaceFluxCorrection() const']]],
+  ['kernels_2ehpp_2',['kernels.hpp',['../kernels_8hpp.html',1,'']]],
+  ['key_3',['key',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1FieldDatabaseMixin.html#ab1ea0a9e16f0d7fdfe345d755b069d30',1,'NeoN::finiteVolume::cellCentred::FieldDatabaseMixin']]],
+  ['keys_4',['keys',['../classNeoN_1_1Dictionary.html#ab7a9dfa55b6449147a8115f107771e88',1,'NeoN::Dictionary']]],
+  ['kokkos_2ehpp_5',['kokkos.hpp',['../kokkos_8hpp.html',1,'']]],
+  ['kokkosallocactor_6',['KokkosAllocactor',['../classKokkosAllocactor.html',1,'']]],
+  ['kokkosallocator_7',['KokkosAllocator',['../classNeoN_1_1KokkosAllocator.html',1,'NeoN']]],
+  ['kokkosbench_2ehpp_8',['kokkosBench.hpp',['../kokkosBench_8hpp.html',1,'']]],
+  ['kokkosexecutionspace_9',['kokkosExecutionSpace',['../namespaceblockamr.html#abda2e18cd9152ebcf48f0ab918b7b8b1',1,'blockamr']]],
+  ['kokkosfinalize_10',['kokkosFinalize',['../namespaceblockamr.html#a9dcd9480c7a2fadbde1b11426ea8193f',1,'blockamr']]],
+  ['kokkosfinalized_11',['kokkosFinalized',['../namespaceblockamr.html#a30643cbfc3123774ad4959e829f9e3ca',1,'blockamr']]],
+  ['kokkosgmgapply_12',['kokkosgmgapply',['../classblockamr_1_1KokkosGmgApply.html#a7d92d73ebbe2e19669ebaa20e9d13dab',1,'blockamr::KokkosGmgApply::KokkosGmgApply()=default'],['../classblockamr_1_1KokkosGmgApply.html#aa9773aa7e7da1135fbe5d6c969215be1',1,'blockamr::KokkosGmgApply::KokkosGmgApply(const KokkosGmgApply &amp;)=delete'],['../classblockamr_1_1KokkosGmgApply.html',1,'blockamr::KokkosGmgApply']]],
+  ['kokkosgmgopts_13',['KokkosGmgOpts',['../structblockamr_1_1KokkosGmgOpts.html',1,'blockamr']]],
+  ['kokkosinitialize_14',['kokkosInitialize',['../namespaceblockamr.html#a1e1da30509c74672843460b0b9393f39',1,'blockamr']]],
+  ['kokkosinitialized_15',['kokkosInitialized',['../namespaceblockamr.html#a5e5ba174f849961f626239551b4b96b8',1,'blockamr']]],
+  ['kokkosmfsum_16',['kokkosMfSum',['../namespaceblockamr.html#a67024ec1305cdda60c9892914107f809',1,'blockamr']]],
+  ['kokkosselftest_17',['kokkosSelftest',['../namespaceblockamr.html#aa1df6187be595ac6bc1fa3345c31941f',1,'blockamr']]],
+  ['kokkosvcycle_18',['kokkosVcycle',['../structblockamr_1_1la_1_1FaceCoeffPrecond.html#a7c18c7aedc3d0bc7afb3e315f70d702d',1,'blockamr::la::FaceCoeffPrecond']]],
+  ['krylov_2ehpp_19',['krylov.hpp',['../krylov_8hpp.html',1,'']]],
+  ['krylovsolver_20',['krylovsolver',['../classblockamr_1_1la_1_1KrylovSolver.html#aa1e595b34176e97d3a5a9e7a4bbf18db',1,'blockamr::la::KrylovSolver::KrylovSolver()'],['../classblockamr_1_1la_1_1KrylovSolver.html',1,'blockamr::la::KrylovSolver']]],
+  ['krylovsolver_2ehpp_21',['krylovSolver.hpp',['../krylovSolver_8hpp.html',1,'']]]
+];

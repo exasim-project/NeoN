@@ -1,0 +1,936 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classblockamr_1_1la_1_1GmgPrecondT" kind="class" language="C++" prot="public">
+    <compoundname>blockamr::la::GmgPrecondT</compoundname>
+    <basecompoundref refid="classblockamr_1_1la_1_1AmrexLinOpBase" prot="public" virt="non-virtual">blockamr::la::AmrexLinOpBase&lt; GmgPrecondT&lt; T &gt; &gt;</basecompoundref>
+    <basecompoundref refid="classblockamr_1_1la_1_1GmgApplyMf" prot="public" virt="non-virtual">blockamr::la::GmgApplyMf</basecompoundref>
+    <includes refid="gmgPrecond_8hpp" local="no">gmgPrecond.hpp</includes>
+    <innerclass refid="structblockamr_1_1la_1_1GmgPrecondT_1_1ChebRecurrence" prot="private">blockamr::la::GmgPrecondT::ChebRecurrence</innerclass>
+    <templateparamlist>
+      <param>
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">class</ref> T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1aefb7c6bceb1e907bb23a4f4dc3c62755" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">constexpr</ref> <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+        <definition>constexpr double blockamr::la::GmgPrecondT&lt; T &gt;::kChebEigRatio</definition>
+        <argsstring></argsstring>
+        <name>kChebEigRatio</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::kChebEigRatio</qualifiedname>
+        <initializer>= 6.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="212" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1ae95eb1fb8dff875448aa725f0bcd778a" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">constexpr</ref> <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+        <definition>constexpr double blockamr::la::GmgPrecondT&lt; T &gt;::kChebSafety</definition>
+        <argsstring></argsstring>
+        <name>kChebSafety</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::kChebSafety</qualifiedname>
+        <initializer>= 1.05</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="213" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="213" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1af6b8169c910cdb637272937260453843" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">constexpr</ref> <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+        <definition>constexpr int blockamr::la::GmgPrecondT&lt; T &gt;::kPowerIters</definition>
+        <argsstring></argsstring>
+        <name>kPowerIters</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::kPowerIters</qualifiedname>
+        <initializer>= 15</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="214" column="26" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="214" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1abf49641fc69674a0afdbd63da3cdf5cd" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1a5d3db556e29a5aefa129dc88010ec14c" kindref="member">BcArray</ref></type>
+        <definition>BcArray blockamr::la::GmgPrecondT&lt; T &gt;::bc_</definition>
+        <argsstring></argsstring>
+        <name>bc_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bc_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="635" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="635" bodyend="635"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a913439b160cb728886638c2e2a8a42b5" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::GmgPrecondT&lt; T &gt;::hasPhysBc_</definition>
+        <argsstring></argsstring>
+        <name>hasPhysBc_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::hasPhysBc_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="636" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="636" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1af4ab37d563ebcc7cf8121bd07b6da0f6" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::GmgPrecondT&lt; T &gt;::onDevice_</definition>
+        <argsstring></argsstring>
+        <name>onDevice_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::onDevice_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="637" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="637" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1add8286d08923ea97bd5cc8f5b131ab92" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+        <definition>int blockamr::la::GmgPrecondT&lt; T &gt;::nCycles_</definition>
+        <argsstring></argsstring>
+        <name>nCycles_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::nCycles_</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="638" column="9" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="638" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1ae5d47c78f2a8bf8c27b227f785634608" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+        <definition>int blockamr::la::GmgPrecondT&lt; T &gt;::preSweeps_</definition>
+        <argsstring></argsstring>
+        <name>preSweeps_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::preSweeps_</qualifiedname>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="639" column="9" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="639" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1af5df17864e08f1a5b50895c2eb1d6f21" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+        <definition>int blockamr::la::GmgPrecondT&lt; T &gt;::postSweeps_</definition>
+        <argsstring></argsstring>
+        <name>postSweeps_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::postSweeps_</qualifiedname>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="640" column="9" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="640" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1ac3402fecf7be51f4d3ed64176e4fd38c" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+        <definition>int blockamr::la::GmgPrecondT&lt; T &gt;::coarsestSweeps_</definition>
+        <argsstring></argsstring>
+        <name>coarsestSweeps_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::coarsestSweeps_</qualifiedname>
+        <initializer>= 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="641" column="9" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="641" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a17ea2e7e01ceadfc3157fe65793567fe" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::GmgPrecondT&lt; T &gt;::useCheb_</definition>
+        <argsstring></argsstring>
+        <name>useCheb_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::useCheb_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="642" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="642" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a55d671f84d8231936af817101990c590" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+        <definition>double blockamr::la::GmgPrecondT&lt; T &gt;::omega_</definition>
+        <argsstring></argsstring>
+        <name>omega_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::omega_</qualifiedname>
+        <initializer>= 1.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="644" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="644" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1aeb8447b5584706607cac5f93692f97cf" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::GmgPrecondT&lt; T &gt;::symmetric_</definition>
+        <argsstring></argsstring>
+        <name>symmetric_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::symmetric_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">true</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="646" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="646" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1ad3daa111225f12773aa4d4d2686c3477" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structblockamr_1_1la_1_1GmgLevelT" kindref="compound">GmgLevelT</ref>&lt; T &gt; &gt;</type>
+        <definition>std::vector&lt;GmgLevelT&lt;T&gt; &gt; blockamr::la::GmgPrecondT&lt; T &gt;::levels_</definition>
+        <argsstring></argsstring>
+        <name>levels_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::levels_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="647" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="647" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a6ec2de05a816ecf0eca5a31856968711" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="classblockamr_1_1la_1_1GmgBottomOp" kindref="compound">GmgBottomOp</ref>&lt; T &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;const GmgBottomOp&lt;T&gt; &gt; blockamr::la::GmgPrecondT&lt; T &gt;::bottomOp_</definition>
+        <argsstring></argsstring>
+        <name>bottomOp_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomOp_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="649" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="649" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1afcc5e0d769dfc66da18ba03f1ffc225a" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt;const gko::LinOp&gt; blockamr::la::GmgPrecondT&lt; T &gt;::bottomSolver_</definition>
+        <argsstring></argsstring>
+        <name>bottomSolver_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomSolver_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="650" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="650" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a14fd64fea7407a744266f99aad61d234" prot="private" static="no" mutable="yes">
+        <type>std::shared_ptr&lt; gko::matrix::Dense&lt; T &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;gko::matrix::Dense&lt;T&gt; &gt; blockamr::la::GmgPrecondT&lt; T &gt;::bottomB_</definition>
+        <argsstring></argsstring>
+        <name>bottomB_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomB_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="651" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="651" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a06f9166e33a9d3330508f49b84d4cce8" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; gko::matrix::Dense&lt; T &gt; &gt;</type>
+        <definition>std::shared_ptr&lt;gko::matrix::Dense&lt;T&gt; &gt; blockamr::la::GmgPrecondT&lt; T &gt;::bottomX_</definition>
+        <argsstring></argsstring>
+        <name>bottomX_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomX_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="651" column="38" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="651" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1ae726afddd642f21c2d01dcf66642a2fb" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt;gko::LinOp&gt; blockamr::la::GmgPrecondT&lt; T &gt;::bottomBGlobal_</definition>
+        <argsstring></argsstring>
+        <name>bottomBGlobal_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomBGlobal_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="652" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="652" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1GmgPrecondT_1a247b94b5340a973da08dae7588a86428" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; gko::LinOp &gt;</type>
+        <definition>std::shared_ptr&lt;gko::LinOp&gt; blockamr::la::GmgPrecondT&lt; T &gt;::bottomXGlobal_</definition>
+        <argsstring></argsstring>
+        <name>bottomXGlobal_</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomXGlobal_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="652" column="36" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="652" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1ad0ba6085aa0a2d1a77bc0cbaf9fdf86d" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>blockamr::la::GmgPrecondT&lt; T &gt;::GmgPrecondT</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec)</argsstring>
+        <name>GmgPrecondT</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::GmgPrecondT</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="74" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="74" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1acd4954c71dbdeaa54698ea4b4957732b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>blockamr::la::GmgPrecondT&lt; T &gt;::GmgPrecondT</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec, gko::size_type n, const FaceCoeffLevel &amp;level, BcArray bc, const GmgPrecondSpec &amp;spec)</argsstring>
+        <name>GmgPrecondT</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::GmgPrecondT</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>gko::size_type</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1FaceCoeffLevel" kindref="compound">FaceCoeffLevel</ref> &amp;</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1a5d3db556e29a5aefa129dc88010ec14c" kindref="member">BcArray</ref></type>
+          <declname>bc</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1GmgPrecondSpec" kindref="compound">GmgPrecondSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="78" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="78" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a4d4753b9bc9c6e66811cf3305a2d3dd0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="structblockamr_1_1la_1_1ResidNorms" kindref="compound">ResidNorms</ref></type>
+        <definition>ResidNorms blockamr::la::GmgPrecondT&lt; T &gt;::residScatterNorm</definition>
+        <argsstring>(const GmgResidualInput &amp;in) const override</argsstring>
+        <name>residScatterNorm</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::residScatterNorm</qualifiedname>
+        <reimplements refid="classblockamr_1_1la_1_1GmgApplyMf_1a6e1d85e18161287f0dfec4a8cea5eed3">residScatterNorm</reimplements>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1GmgResidualInput" kindref="compound">GmgResidualInput</ref> &amp;</type>
+          <declname>in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="116" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="116" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1aef62b6c82a3f980a4618ab37c0560f42" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::vcycleGather</definition>
+        <argsstring>(amrex::MultiFab &amp;x) const override</argsstring>
+        <name>vcycleGather</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::vcycleGather</qualifiedname>
+        <reimplements refid="classblockamr_1_1la_1_1GmgApplyMf_1a2131437cf7b078f14abf2b709a6aa69a">vcycleGather</reimplements>
+        <param>
+          <type>amrex::MultiFab &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="128" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="128" bodyend="155"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a700b79601145ab498cd699b75ab33276" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::apply_impl</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x) const override</argsstring>
+        <name>apply_impl</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::apply_impl</qualifiedname>
+        <reimplements refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a076a2cc40c0134854594cab04844f038">apply_impl</reimplements>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="162" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="162" bodyend="206"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a5e75e92b59c32452e551b750ec393853" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::validateOptions</definition>
+        <argsstring>(const GmgConfig &amp;gmg) const</argsstring>
+        <name>validateOptions</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::validateOptions</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1GmgConfig" kindref="compound">GmgConfig</ref> &amp;</type>
+          <declname>gmg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="218" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="218" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1af06c6bff713a4578954280129eb65eff" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::buildCoarseLevels</definition>
+        <argsstring>(const amrex::DistributionMapping &amp;dm, int max_levels, int min_bottom)</argsstring>
+        <name>buildCoarseLevels</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::buildCoarseLevels</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::DistributionMapping &amp;</type>
+          <declname>dm</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>max_levels</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>min_bottom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="264" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="264" bodyend="289"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a58621d1063d5370541801b0a8afe34f6" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::GmgPrecondT&lt; T &gt;::canCoarsen</definition>
+        <argsstring>(int max_levels, int min_bottom) const</argsstring>
+        <name>canCoarsen</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::canCoarsen</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>max_levels</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>min_bottom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="292" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="292" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a9b85e0a4296f66262d8aed3e95f6891c" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::setupChebyshev</definition>
+        <argsstring>()</argsstring>
+        <name>setupChebyshev</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::setupChebyshev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="307" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="307" bodyend="318"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a84d682c45e02673161c82c0d1afc23e9" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::setupBottomSolver</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec, const std::string &amp;bottom_solver, int bottom_max_iter, double bottom_rtol)</argsstring>
+        <name>setupBottomSolver</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::setupBottomSolver</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> std::string &amp;</type>
+          <declname>bottom_solver</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>bottom_max_iter</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+          <declname>bottom_rtol</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="321" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="321" bodyend="346"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1af01c49a7424293f2c80b91c1734d979a" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1a55d554f55feb001ae97948540b583a5e" kindref="member">GmgFab</ref>&lt; T &gt; &gt;</type>
+        <definition>std::shared_ptr&lt; GmgFab&lt; T &gt; &gt; blockamr::la::GmgPrecondT&lt; T &gt;::makeMf</definition>
+        <argsstring>(const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm, int ng) const</argsstring>
+        <name>makeMf</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::makeMf</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::BoxArray &amp;</type>
+          <declname>ba</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::DistributionMapping &amp;</type>
+          <declname>dm</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>ng</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="349" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="349" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1ac94eeac3a73cc255bcb42033c8c02ee2" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1la_1_1GmgLevelT" kindref="compound">GmgLevelT</ref>&lt; T &gt;</type>
+        <definition>GmgLevelT&lt; T &gt; blockamr::la::GmgPrecondT&lt; T &gt;::makeLevel</definition>
+        <argsstring>(const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm, const amrex::Geometry &amp;geom) const</argsstring>
+        <name>makeLevel</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::makeLevel</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::BoxArray &amp;</type>
+          <declname>ba</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::DistributionMapping &amp;</type>
+          <declname>dm</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::Geometry &amp;</type>
+          <declname>geom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="359" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="359" bodyend="377"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1ad273620bec0e81f20c5d5eaee92b78a0" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::copyCoeff</definition>
+        <argsstring>(GmgFab&lt; T &gt; &amp;dst, const amrex::MultiFab &amp;src) const</argsstring>
+        <name>copyCoeff</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::copyCoeff</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1a55d554f55feb001ae97948540b583a5e" kindref="member">GmgFab</ref>&lt; T &gt; &amp;</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::MultiFab &amp;</type>
+          <declname>src</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="381" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="381" bodyend="393"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a0525e6c59e7ab2208e5d6c668e62f86c" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::fillGhosts</definition>
+        <argsstring>(const GmgLevelT&lt; T &gt; &amp;L, int lvl) const</argsstring>
+        <name>fillGhosts</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::fillGhosts</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1GmgLevelT" kindref="compound">GmgLevelT</ref>&lt; T &gt; &amp;</type>
+          <declname>L</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>lvl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="397" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="397" bodyend="416"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a1a3182e8016387976ebb625cc51608ff" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::smooth</definition>
+        <argsstring>(std::size_t l, int sweeps, bool reversed) const</argsstring>
+        <name>smooth</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::smooth</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>l</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>sweeps</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+          <declname>reversed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="419" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="419" bodyend="429"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a04c645e510b793cee5b5e63106026dd0" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::rbgsSmooth</definition>
+        <argsstring>(std::size_t l, int sweeps, bool reversed) const</argsstring>
+        <name>rbgsSmooth</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::rbgsSmooth</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>l</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>sweeps</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+          <declname>reversed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="441" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="441" bodyend="462"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a583be308ee81510d36754d73759dac60" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::chebyshevSmooth</definition>
+        <argsstring>(std::size_t l, int degree) const</argsstring>
+        <name>chebyshevSmooth</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::chebyshevSmooth</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>l</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>degree</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="500" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="500" bodyend="529"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1aa9043b642570250c74219abc53e19029" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+        <definition>double blockamr::la::GmgPrecondT&lt; T &gt;::estimateLambdaMax</definition>
+        <argsstring>(std::size_t l) const</argsstring>
+        <name>estimateLambdaMax</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::estimateLambdaMax</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>l</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="532" column="12" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="532" bodyend="569"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1ade0bb311436f77e6f6094e9f901a61c4" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::bottomSolve</definition>
+        <argsstring>(const GmgLevelT&lt; T &gt; &amp;L) const</argsstring>
+        <name>bottomSolve</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::bottomSolve</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1GmgLevelT" kindref="compound">GmgLevelT</ref>&lt; T &gt; &amp;</type>
+          <declname>L</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="573" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="573" bodyend="596"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1af26ed7c59ba2fde6d7996e217f50fc48" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::GmgPrecondT&lt; T &gt;::vcycle</definition>
+        <argsstring>(std::size_t l) const</argsstring>
+        <name>vcycle</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::vcycle</qualifiedname>
+        <param>
+          <type>std::size_t</type>
+          <declname>l</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="599" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="599" bodyend="633"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a48da16434a714b39c9490ed9ab8c8909" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1la_1_1FaceCoeffs" kindref="compound">FaceCoeffs</ref>&lt; T &gt;</type>
+        <definition>static FaceCoeffs&lt; T &gt; blockamr::la::GmgPrecondT&lt; T &gt;::levelCoeffs</definition>
+        <argsstring>(const GmgLevelT&lt; T &gt; &amp;L)</argsstring>
+        <name>levelCoeffs</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::levelCoeffs</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1GmgLevelT" kindref="compound">GmgLevelT</ref>&lt; T &gt; &amp;</type>
+          <declname>L</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="432" column="23" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="432" bodyend="437"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1a02228df06136b8f249a9b339dfc68364" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>ChebRecurrence</type>
+        <definition>static ChebRecurrence blockamr::la::GmgPrecondT&lt; T &gt;::chebRecurrence</definition>
+        <argsstring>(double lambdaMax)</argsstring>
+        <name>chebRecurrence</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::chebRecurrence</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+          <declname>lambdaMax</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="474" column="27" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="474" bodyend="482"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1GmgPrecondT_1ad3959acaa37526c52f8318a1e46e4912" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1la_1_1ChebStep" kindref="compound">ChebStep</ref>&lt; T &gt;</type>
+        <definition>static ChebStep&lt; T &gt; blockamr::la::GmgPrecondT&lt; T &gt;::nextChebStep</definition>
+        <argsstring>(int m, ChebRecurrence &amp;rec)</argsstring>
+        <name>nextChebStep</name>
+        <qualifiedname>blockamr::la::GmgPrecondT::nextChebStep</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">int</ref></type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>ChebRecurrence &amp;</type>
+          <declname>rec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="485" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="485" bodyend="496"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>blockamr::la::AmrexLinOpBase&lt; GmgPrecondT&lt; T &gt; &gt;</label>
+        <link refid="classblockamr_1_1la_1_1AmrexLinOpBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>blockamr::la::GmgApplyMf</label>
+        <link refid="classblockamr_1_1la_1_1GmgApplyMf"/>
+      </node>
+      <node id="1">
+        <label>blockamr::la::GmgPrecondT&lt; T &gt;</label>
+        <link refid="classblockamr_1_1la_1_1GmgPrecondT"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>gko::EnableCreateMethod&lt; GmgPrecondT&lt; T &gt; &gt;</label>
+      </node>
+      <node id="3">
+        <label>gko::EnableLinOp&lt; GmgPrecondT&lt; T &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>blockamr::la::AmrexLinOpBase&lt; GmgPrecondT&lt; T &gt; &gt;</label>
+        <link refid="classblockamr_1_1la_1_1AmrexLinOpBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>blockamr::la::GmgApplyMf</label>
+        <link refid="classblockamr_1_1la_1_1GmgApplyMf"/>
+      </node>
+      <node id="1">
+        <label>blockamr::la::GmgPrecondT&lt; T &gt;</label>
+        <link refid="classblockamr_1_1la_1_1GmgPrecondT"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>gko::EnableCreateMethod&lt; GmgPrecondT&lt; T &gt; &gt;</label>
+      </node>
+      <node id="3">
+        <label>gko::EnableLinOp&lt; GmgPrecondT&lt; T &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" line="70" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp" bodystart="71" bodyend="653"/>
+    <listofallmembers>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a354252a218b3a6c2938c2b57e7eef7a9" prot="protected" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>AmrexLinOpBase</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a856129536b8014470e9835d5b4329a6d" prot="protected" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>AmrexLinOpBase</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a700b79601145ab498cd699b75ab33276" prot="protected" virt="virtual"><scope>blockamr::la::GmgPrecondT</scope><name>apply_impl</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a56cf0a9f9d75506bfe93d373764f835a" prot="protected" virt="non-virtual" ambiguityscope="AmrexLinOpBase&lt; GmgPrecondT&lt; T &gt; &gt;::"><scope>blockamr::la::GmgPrecondT</scope><name>apply_impl</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1abf49641fc69674a0afdbd63da3cdf5cd" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bc_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a14fd64fea7407a744266f99aad61d234" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomB_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ae726afddd642f21c2d01dcf66642a2fb" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomBGlobal_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a6ec2de05a816ecf0eca5a31856968711" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomOp_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ade0bb311436f77e6f6094e9f901a61c4" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomSolve</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1afcc5e0d769dfc66da18ba03f1ffc225a" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomSolver_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a06f9166e33a9d3330508f49b84d4cce8" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomX_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a247b94b5340a973da08dae7588a86428" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>bottomXGlobal_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1af06c6bff713a4578954280129eb65eff" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>buildCoarseLevels</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a58621d1063d5370541801b0a8afe34f6" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>canCoarsen</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a02228df06136b8f249a9b339dfc68364" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>chebRecurrence</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a583be308ee81510d36754d73759dac60" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>chebyshevSmooth</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ac3402fecf7be51f4d3ed64176e4fd38c" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>coarsestSweeps_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ad273620bec0e81f20c5d5eaee92b78a0" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>copyCoeff</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1adfdfe912d368b79845e297bd4f8569c7" prot="protected" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>DenseV</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1aa9043b642570250c74219abc53e19029" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>estimateLambdaMax</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a0525e6c59e7ab2208e5d6c668e62f86c" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>fillGhosts</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ad0ba6085aa0a2d1a77bc0cbaf9fdf86d" prot="public" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>GmgPrecondT</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1acd4954c71dbdeaa54698ea4b4957732b" prot="public" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>GmgPrecondT</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a913439b160cb728886638c2e2a8a42b5" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>hasPhysBc_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1aefb7c6bceb1e907bb23a4f4dc3c62755" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>kChebEigRatio</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ae95eb1fb8dff875448aa725f0bcd778a" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>kChebSafety</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1af6b8169c910cdb637272937260453843" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>kPowerIters</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a48da16434a714b39c9490ed9ab8c8909" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>levelCoeffs</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ad3daa111225f12773aa4d4d2686c3477" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>levels_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ac94eeac3a73cc255bcb42033c8c02ee2" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>makeLevel</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1af01c49a7424293f2c80b91c1734d979a" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>makeMf</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1add8286d08923ea97bd5cc8f5b131ab92" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>nCycles_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ad3959acaa37526c52f8318a1e46e4912" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>nextChebStep</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a55d671f84d8231936af817101990c590" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>omega_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1af4ab37d563ebcc7cf8121bd07b6da0f6" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>onDevice_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1af5df17864e08f1a5b50895c2eb1d6f21" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>postSweeps_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1ae5d47c78f2a8bf8c27b227f785634608" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>preSweeps_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a04c645e510b793cee5b5e63106026dd0" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>rbgsSmooth</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a4d4753b9bc9c6e66811cf3305a2d3dd0" prot="public" virt="virtual"><scope>blockamr::la::GmgPrecondT</scope><name>residScatterNorm</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a84d682c45e02673161c82c0d1afc23e9" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>setupBottomSolver</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a9b85e0a4296f66262d8aed3e95f6891c" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>setupChebyshev</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a1a3182e8016387976ebb625cc51608ff" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>smooth</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1aeb8447b5584706607cac5f93692f97cf" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>symmetric_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a17ea2e7e01ceadfc3157fe65793567fe" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>useCheb_</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1a5e75e92b59c32452e551b750ec393853" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>validateOptions</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1af26ed7c59ba2fde6d7996e217f50fc48" prot="private" virt="non-virtual"><scope>blockamr::la::GmgPrecondT</scope><name>vcycle</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgPrecondT_1aef62b6c82a3f980a4618ab37c0560f42" prot="public" virt="virtual"><scope>blockamr::la::GmgPrecondT</scope><name>vcycleGather</name></member>
+      <member refid="classblockamr_1_1la_1_1GmgApplyMf_1a73471473ea7da4b6b021e0412399077d" prot="public" virt="virtual"><scope>blockamr::la::GmgPrecondT</scope><name>~GmgApplyMf</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

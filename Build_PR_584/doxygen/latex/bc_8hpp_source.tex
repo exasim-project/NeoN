@@ -1,0 +1,183 @@
+\doxysection{bc.\+hpp}
+\hypertarget{bc_8hpp_source}{}\label{bc_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/bc.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/bc.hpp}}
+\mbox{\hyperlink{bc_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_Box.H>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_Geometry.H>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuLaunch.H>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{core_2executor_2executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00020}\mbox{\hyperlink{namespaceblockamr_1_1la}{00020}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00023}00023\ \textcolor{comment}{//\ Domain-\/boundary\ condition\ per\ side,\ order\ (xlo,\ xhi,\ ylo,\ yhi,\ zlo,\ zhi):}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00024}00024\ \textcolor{comment}{//\ 0\ =\ periodic\ (FillBoundary's\ job),\ 1\ =\ Dirichlet\ (u\ =\ 0\ on\ the\ face),}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00025}00025\ \textcolor{comment}{//\ 2\ =\ Neumann\ (du/dn\ =\ 0\ on\ the\ face).}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00026}\mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{00026}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\ =\ std::array<int,\ 6>;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00028}00028\ \textcolor{comment}{//\ Ghost-\/fill\ spec\ for\ domain\ side\ s\ (0..5)\ of\ a\ valid\ box:\ the\ layer\ to\ write,\ the}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00029}00029\ \textcolor{comment}{//\ reflection\ sign\ (-\/1\ Dirichlet\ reflect-\/odd,\ +1\ Neumann\ reflect-\/even)\ and\ the\ offset\ to}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00030}00030\ \textcolor{comment}{//\ the\ mirror\ interior\ cell.\ False\ when\ periodic\ or\ the\ box\ does\ not\ touch\ that\ face.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00031}\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill}{00031}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill}{BcGhostFill}}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00033}\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{00033}}\ \ \ \ \ amrex::Box\ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00034}\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a26578c14995894acb514bdf2d6ba6600}{00034}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a26578c14995894acb514bdf2d6ba6600}{sign}};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00035}\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_ac3ec521046f2bb6b395101cacfd8bdc1}{00035}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_ac3ec521046f2bb6b395101cacfd8bdc1}{di}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adee418cdf5022f820b4427b888e9123d}{dj}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a6d9c082e533cdc3daad4ab431525e991}{dk}};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00036}00036\ \};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00038}\mbox{\hyperlink{namespaceblockamr_1_1la_a5e83c31e3a38eb38cf662b9b32af30e8}{00038}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5e83c31e3a38eb38cf662b9b32af30e8}{bcGhostFill}}(}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ vbx,\ \textcolor{keyword}{const}\ amrex::Box\&\ domain,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},\ \textcolor{keywordtype}{int}\ s,\ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill}{BcGhostFill}}\&\ f}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00040}00040\ )}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00041}00041\ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}}[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(s)]\ ==\ 0)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00043}00043\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00045}00045\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ dir\ =\ s\ /\ 2;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ low\ =\ (s\ \%\ 2)\ ==\ 0;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ touches\ =}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ low\ ?\ vbx.smallEnd(dir)\ ==\ domain.smallEnd(dir)\ :\ vbx.bigEnd(dir)\ ==\ domain.bigEnd(dir);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keywordflow}{if}\ (!touches)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00051}00051\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00053}00053\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ gpos\ =\ low\ ?\ vbx.smallEnd(dir)\ -\/\ 1\ :\ vbx.bigEnd(dir)\ +\ 1;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00055}00055\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}}\ =\ vbx;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00056}00056\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}}.setSmall(dir,\ gpos);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00057}00057\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}}.setBig(dir,\ gpos);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00058}00058\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a26578c14995894acb514bdf2d6ba6600}{sign}}\ =\ (\mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}}[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(s)]\ ==\ 1)\ ?\ -\/1.0\ :\ 1.0;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ shift\ =\ low\ ?\ 1\ :\ -\/1;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00060}00060\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_ac3ec521046f2bb6b395101cacfd8bdc1}{di}}\ =\ (dir\ ==\ 0)\ ?\ shift\ :\ 0;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00061}00061\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adee418cdf5022f820b4427b888e9123d}{dj}}\ =\ (dir\ ==\ 1)\ ?\ shift\ :\ 0;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00062}00062\ \ \ \ \ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a6d9c082e533cdc3daad4ab431525e991}{dk}}\ =\ (dir\ ==\ 2)\ ?\ shift\ :\ 0;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00064}00064\ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00066}00066\ \textcolor{comment}{//\ Fill\ \`{}mf`'s\ domain\ BC\ ghost\ layer\ (1\ ghost,\ comp\ 0,\ face\ layers\ only):\ Dirichlet\ ghost}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00067}00067\ \textcolor{comment}{//\ =\ -\/interior,\ Neumann\ ghost\ =\ interior.\ Declaration-\/only\ for\ the\ nvcc\ extended-\/lambda}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00068}00068\ \textcolor{comment}{//\ trap\ -\/-\/\ four\ CUDA\ TUs\ in\ one\ .so;\ defined\ in\ core/deviceKernels.cpp.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00069}00069\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ FA>}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00070}\mbox{\hyperlink{namespaceblockamr_1_1la_aabd3cef419237556c5cb065665568764}{00070}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1la_aabd3cef419237556c5cb065665568764}{fillDomainBcGhostsDevice}}(FA\&\ mf,\ \textcolor{keyword}{const}\ amrex::Box\&\ domain,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}});}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00072}00072\ \textcolor{comment}{//\ Host-\/loop\ twin\ of\ fillDomainBcGhostsDevice\ for\ the\ ReferenceExecutor\ path.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00073}00073\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ FA>}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00074}\mbox{\hyperlink{namespaceblockamr_1_1la_a5a1f0813fc165abc2e0e4c607d4aeee3}{00074}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5a1f0813fc165abc2e0e4c607d4aeee3}{fillDomainBcGhostsHost}}(FA\&\ mf,\ \textcolor{keyword}{const}\ amrex::Box\&\ domain,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}})}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00075}00075\ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keywordflow}{for}\ (amrex::MFIter\ mfi(mf);\ mfi.isValid();\ ++mfi)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00077}00077\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ vbx\ =\ mfi.validbox();}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ a\ =\ mf.array(mfi);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ s\ =\ 0;\ s\ <\ 6;\ ++s)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill}{BcGhostFill}}\ f;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{namespaceblockamr_1_1la_a5e83c31e3a38eb38cf662b9b32af30e8}{bcGhostFill}}(vbx,\ domain,\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},\ s,\ f))}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ amrex::lbound(f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}});}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ hi\ =\ amrex::ubound(f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}});}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ lo.z;\ k\ <=\ hi.z;\ ++k)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ lo.y;\ j\ <=\ hi.y;\ ++j)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ lo.x;\ i\ <=\ hi.x;\ ++i)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ a(i,\ j,\ k)\ =\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a26578c14995894acb514bdf2d6ba6600}{sign}}\ *\ a(i\ +\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_ac3ec521046f2bb6b395101cacfd8bdc1}{di}},\ j\ +\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adee418cdf5022f820b4427b888e9123d}{dj}},\ k\ +\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a6d9c082e533cdc3daad4ab431525e991}{dk}});}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00101}00101\ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00103}00103\ \textcolor{comment}{//\ Inhomogeneous\ twin:\ ghost\ =\ sign*interior\ +\ scale*g,\ g\ from\ bcdata's\ SAME\ ghost\ cell}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00104}00104\ \textcolor{comment}{//\ (MLMG's\ setLevelBC\ contract);\ scale\ 2\ Dirichlet\ (g\ =\ u\ ON\ the\ face),\ dx\ Neumann\ (g\ =}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00105}00105\ \textcolor{comment}{//\ du/dn\ outward;\ a\ low\ side's\ two\ flips\ cancel,\ so\ no\ side\ sign).\ For\ the\ OUTER\ residual}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00106}00106\ \textcolor{comment}{//\ only.\ Declaration-\/only,\ same\ nvcc\ trap;\ defined\ in\ core/deviceKernels.cpp.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00107}\mbox{\hyperlink{namespaceblockamr_1_1la_ab3e0a41198697d85ec0fe025fd476e94}{00107}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ab3e0a41198697d85ec0fe025fd476e94}{fillDomainBcGhostsInhomDevice}}(}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00109}00109\ \ \ \ \ amrex::MultiFab\&\ mf,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ bcdata,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ domain,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00113}00113\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Real*\ dx}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00114}00114\ );}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00116}00116\ \textcolor{comment}{//\ Host-\/loop\ twin\ of\ fillDomainBcGhostsInhomDevice\ for\ the\ ReferenceExecutor\ path.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00117}\mbox{\hyperlink{namespaceblockamr_1_1la_ac3d797ad25a47f481f1b6bd8c5054e7a}{00117}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ac3d797ad25a47f481f1b6bd8c5054e7a}{fillDomainBcGhostsInhomHost}}(}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00118}00118\ \ \ \ \ amrex::MultiFab\&\ mf,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ bcdata,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ domain,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Real*\ dx}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00123}00123\ )}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00124}00124\ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00125}00125\ \ \ \ \ \textcolor{keywordflow}{for}\ (amrex::MFIter\ mfi(mf);\ mfi.isValid();\ ++mfi)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00126}00126\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ vbx\ =\ mfi.validbox();}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ a\ =\ mf.array(mfi);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ g\ =\ bcdata.const\_array(mfi);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ s\ =\ 0;\ s\ <\ 6;\ ++s)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill}{BcGhostFill}}\ f;}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{namespaceblockamr_1_1la_a5e83c31e3a38eb38cf662b9b32af30e8}{bcGhostFill}}(vbx,\ domain,\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},\ s,\ f))}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ scale\ =\ (\mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}}[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(s)]\ ==\ 1)\ ?\ 2.0\ :\ dx[s\ /\ 2];}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ amrex::lbound(f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}});}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ hi\ =\ amrex::ubound(f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adfa983f890956e0b535bec2a2388ebaa}{gbx}});}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ lo.z;\ k\ <=\ hi.z;\ ++k)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ lo.y;\ j\ <=\ hi.y;\ ++j)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ lo.x;\ i\ <=\ hi.x;\ ++i)}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ a(i,\ j,\ k)\ =\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a26578c14995894acb514bdf2d6ba6600}{sign}}\ *\ a(i\ +\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_ac3ec521046f2bb6b395101cacfd8bdc1}{di}},\ j\ +\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_adee418cdf5022f820b4427b888e9123d}{dj}},\ k\ +\ f.\mbox{\hyperlink{structblockamr_1_1la_1_1BcGhostFill_a6d9c082e533cdc3daad4ab431525e991}{dk}})\ +\ scale\ *\ g(i,\ j,\ k);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00151}00151\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00152}00152\ \}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00153}00153\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00154}00154\ \textcolor{comment}{//\ Host-\/accessible\ (pinned)\ copy:\ the\ coefficient\ fields\ arrive\ in\ the\ device\ arena,\ but}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00155}00155\ \textcolor{comment}{//\ the\ face-\/coeff\ stencil\ runs\ host-\/side\ on\ the\ ReferenceExecutor.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00156}\mbox{\hyperlink{namespaceblockamr_1_1la_acc6133657ab63d24ef863264f5f9ca59}{00156}}\ std::shared\_ptr<amrex::MultiFab>\ \mbox{\hyperlink{namespaceblockamr_1_1la_acc6133657ab63d24ef863264f5f9ca59}{pinnedCopy}}(\textcolor{keyword}{const}\ amrex::MultiFab\&\ src);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00158}00158\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00159}\mbox{\hyperlink{namespaceblockamr_1_1la_ad926da9e2effb34dbd953ac9a20d9211}{00159}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad926da9e2effb34dbd953ac9a20d9211}{parseBc}}(\textcolor{keyword}{const}\ std::vector<std::string>\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},\ \textcolor{keyword}{const}\ amrex::Geometry\&\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},\ \textcolor{keyword}{const}\ std::string\&\ who);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00161}00161\ \textcolor{comment}{//\ Validate\ an\ inhomogeneous-\/BC\ carrier:\ same\ layout\ as\ \`{}like`,\ >=\ 1\ ghost\ layer,\ and\ at}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00162}00162\ \textcolor{comment}{//\ least\ one\ non-\/periodic\ side\ to\ read\ it\ on.\ Refused\ rather\ than\ ignored.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00163}\mbox{\hyperlink{namespaceblockamr_1_1la_ad0423f676425662b1beea42de1d2402a}{00163}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad0423f676425662b1beea42de1d2402a}{checkBcData}}(}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ bcdata,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00165}00165\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ like,}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00166}00166\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00167}00167\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ who}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00168}00168\ );}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00170}00170\ \textcolor{comment}{//\ Scatter\ ONLY\ the\ ghost-\/adjacent\ shell\ (outer\ 1-\/cell\ layer\ of\ each\ valid\ box):\ that\ is}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00171}00171\ \textcolor{comment}{//\ all\ FillBoundary\ and\ the\ reflect\ domain-\/BC\ fill\ read,\ while\ interior\ cells\ are\ read}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00172}00172\ \textcolor{comment}{//\ straight\ from\ the\ flat\ vector.\ Flat\ index\ matches\ scatter\_device\ (box-\/by-\/box,\ i}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00173}00173\ \textcolor{comment}{//\ fastest).\ Instantiated\ for\ V\ =\ double\ and\ float\ in\ bc.cpp.}}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00174}00174\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00175}\mbox{\hyperlink{namespaceblockamr_1_1la_a5b07943e36b004ca21bb1e026a01c13e}{00175}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5b07943e36b004ca21bb1e026a01c13e}{scatterShellDevice}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,\ \textcolor{keyword}{const}\ V*\ vec,\ amrex::MultiFab\&\ mf);}
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00176}00176\ }
+\DoxyCodeLine{\Hypertarget{bc_8hpp_source_l00177}00177\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

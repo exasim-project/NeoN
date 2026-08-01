@@ -1,0 +1,376 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="stopNormInf_8hpp" kind="file" language="C++">
+    <compoundname>stopNormInf.hpp</compoundname>
+    <includes local="no">ginkgo/ginkgo.hpp</includes>
+    <includes local="no">AMReX_ParallelContext.H</includes>
+    <includes local="no">AMReX_ParallelReduce.H</includes>
+    <includes local="no">AMReX_Reduce.H</includes>
+    <includes local="no">algorithm</includes>
+    <includes local="no">cmath</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">stdexcept</includes>
+    <includes local="no">string</includes>
+    <includes local="no">utility</includes>
+    <includes refid="linOpBase_8hpp" local="yes">NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp</includes>
+    <includes refid="gkoTypes_8hpp" local="yes">NeoN/blockAmr/core/gkoTypes.hpp</includes>
+    <includes refid="types_8hpp" local="yes">NeoN/blockAmr/core/types.hpp</includes>
+    <includedby refid="krylov_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp</includedby>
+    <includedby refid="krylovSolver_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp</includedby>
+    <incdepgraph>
+      <node id="17">
+        <label>NeoN/blockAmr/core/gkoTypes.hpp</label>
+        <link refid="gkoTypes_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>NeoN/blockAmr/core/profiling.hpp</label>
+        <link refid="profiling_8hpp"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>NeoN/blockAmr/core/types.hpp</label>
+        <link refid="types_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>NeoN/blockAmr/linearAlgebra/distVec.hpp</label>
+        <link refid="distVec_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp</label>
+        <link refid="stopNormInf_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp</label>
+        <link refid="linOpBase_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>AMReX_MLMG.H</label>
+      </node>
+      <node id="20">
+        <label>AMReX_MultiFab.H</label>
+      </node>
+      <node id="3">
+        <label>AMReX_ParallelContext.H</label>
+      </node>
+      <node id="4">
+        <label>AMReX_ParallelReduce.H</label>
+      </node>
+      <node id="5">
+        <label>AMReX_Reduce.H</label>
+      </node>
+      <node id="6">
+        <label>algorithm</label>
+      </node>
+      <node id="15">
+        <label>chrono</label>
+      </node>
+      <node id="7">
+        <label>cmath</label>
+      </node>
+      <node id="2">
+        <label>ginkgo/ginkgo.hpp</label>
+      </node>
+      <node id="16">
+        <label>map</label>
+      </node>
+      <node id="8">
+        <label>memory</label>
+      </node>
+      <node id="9">
+        <label>stdexcept</label>
+      </node>
+      <node id="10">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp</label>
+        <link refid="krylov_8hpp"/>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp</label>
+        <link refid="krylovSolver_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp</label>
+        <link refid="stopNormInf_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solve/persistent.hpp</label>
+        <link refid="persistent_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solver.hpp</label>
+        <link refid="blockAmr_2linearAlgebra_2solver_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classblockamr_1_1la_1_1ResidualNormInf" prot="public">blockamr::la::ResidualNormInf</innerclass>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la">blockamr::la</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/ginkgo.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_ParallelContext.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_ParallelReduce.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_Reduce.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;algorithm&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cmath&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdexcept&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="linOpBase_8hpp" kindref="compound">NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="gkoTypes_8hpp" kindref="compound">NeoN/blockAmr/core/gkoTypes.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="types_8hpp" kindref="compound">NeoN/blockAmr/core/types.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">//<sp/>MLMG&apos;s<sp/>stopping<sp/>norm,<sp/>which<sp/>Ginkgo<sp/>lacks:<sp/>max|r_i|<sp/>reduced<sp/>with<sp/>amrex::Reduce<sp/>over</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Ginkgo&apos;s<sp/>own<sp/>device<sp/>pointer<sp/>(Dense<sp/>offers<sp/>compute_norm2/compute_norm1<sp/>only).<sp/>Why<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//<sp/>norm<sp/>is<sp/>a<sp/>choice,<sp/>and<sp/>the<sp/>measured<sp/>comparison:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/>report/blockamr-linear-algebra-notes.md#norms</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la" kindref="compound">blockamr::la</ref></highlight></codeline>
+<codeline lineno="30"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Which<sp/>norm<sp/>the<sp/>stopping<sp/>criterion<sp/>(and<sp/>the<sp/>reported<sp/>residual)<sp/>measures.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecb" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecb" kindref="member">NormKind</ref></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3" kindref="member">l2</ref>,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecba707f3c5e9c59c9e5f347d2cbec59c66b" kindref="member">linf</ref></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="namespaceblockamr_1_1la_1aadef856bc037056f189fd3724ec4dc22" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecb" kindref="member">NormKind</ref><sp/><ref refid="namespaceblockamr_1_1la_1aadef856bc037056f189fd3724ec4dc22" kindref="member">parseNorm</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>norm)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(norm<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;l2&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3" kindref="member">NormKind::l2</ref>;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(norm<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;linf&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a3eaf1161dae6a9e0496ff4241fd66ecba707f3c5e9c59c9e5f347d2cbec59c66b" kindref="member">NormKind::linf</ref>;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;ginkgo:<sp/>unknown<sp/>norm<sp/>&apos;&quot;</highlight><highlight class="normal"><sp/>+<sp/>norm<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;&apos;<sp/>(expected<sp/>&apos;l2&apos;<sp/>or<sp/>&apos;linf&apos;;<sp/>&apos;linf&apos;<sp/>is<sp/>MLMG&apos;s)&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">//<sp/>max<sp/>|v_i|<sp/>over<sp/>a<sp/>single-column<sp/>Dense:<sp/>on<sp/>its<sp/>own<sp/>executor<sp/>(hence<sp/>the<sp/>synchronize<sp/>--</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">//<sp/>AMReX&apos;s<sp/>stream<sp/>is<sp/>unordered<sp/>against<sp/>the<sp/>one<sp/>Ginkgo<sp/>wrote<sp/>`v`<sp/>on)<sp/>and<sp/>Max-reduced<sp/>across</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ranks,<sp/>or<sp/>a<sp/>rank<sp/>stops<sp/>on<sp/>its<sp/>own<sp/>residual.<sp/>Size<sp/>and<sp/>values<sp/>come<sp/>from<sp/>the<sp/>local</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment">//<sp/>accessors:<sp/>get_size()<sp/>on<sp/>a<sp/>distributed<sp/>vector<sp/>is<sp/>the<sp/>GLOBAL<sp/>row<sp/>count.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="classblockamr_1_1la_1_1ResidualNormInf_1a5ef4a490cf5db4e46d49e0a587d70834" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1a5b028eee159d1080ae661ef85581fdfb" kindref="member">normInf</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>v)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1abd37af0ad31b74df5f4126fcc80b41a9" kindref="member">localRows</ref>(v);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">m</ref><sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref><sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">p</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">localValues&lt;double&gt;</ref>(v);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>v-&gt;get_executor();</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(exec-&gt;get_master().get()<sp/>==<sp/>exec.get())</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(gko::size_type<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>=<sp/>0;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>&lt;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref>;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>)</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">m</ref><sp/>=<sp/>std::max(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">m</ref>,<sp/>std::abs(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">p</ref>[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>]));</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exec-&gt;synchronize();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Max<sp/>and<sp/>Min<sp/>rather<sp/>than<sp/>a<sp/>Max<sp/>over<sp/>|p_i|:<sp/>the<sp/>pointer<sp/>overloads<sp/>take<sp/>no</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>device<sp/>lambda,<sp/>so<sp/>this<sp/>header<sp/>stays<sp/>includable<sp/>anywhere.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref><sp/>=<sp/>amrex::Reduce::Max&lt;double&gt;(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">p</ref>);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>lo<sp/>=<sp/>amrex::Reduce::Min&lt;double&gt;(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">p</ref>);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">m</ref><sp/>=<sp/>std::max(std::abs(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">hi</ref>),<sp/>std::abs(lo));</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>amrex::ParallelAllReduce::Max(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">m</ref>,<sp/>amrex::ParallelContext::CommunicatorSub());</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">m</ref>;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment">//<sp/>||r||_inf<sp/>&lt;=<sp/>tau<sp/>*<sp/>baseline.<sp/>Single<sp/>right-hand<sp/>side<sp/>only:<sp/>a<sp/>per-column<sp/>inf-norm<sp/>would</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment">//<sp/>need<sp/>a<sp/>per-column<sp/>reduction<sp/>amrex::Reduce<sp/>cannot<sp/>express<sp/>over<sp/>a<sp/>flat<sp/>pointer.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="classblockamr_1_1la_1_1ResidualNormInf" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classblockamr_1_1la_1_1ResidualNormInf" kindref="compound">ResidualNormInf</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>gko::EnablePolymorphicObject&lt;ResidualNormInf,<sp/>gko::stop::Criterion&gt;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">gko::EnablePolymorphicObject&lt;<ref refid="classblockamr_1_1la_1_1ResidualNormInf" kindref="compound">ResidualNormInf</ref>,<sp/>gko::stop::Criterion&gt;;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classblockamr_1_1la_1_1ResidualNormInf_1a270dbc38bed159ff88f3d1fbda7edbf5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1ResidualNormInf_1a270dbc38bed159ff88f3d1fbda7edbf5" kindref="member">GKO_CREATE_FACTORY_PARAMETERS</ref>(parameters,<sp/>Factory)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>As<sp/>in<sp/>gko::stop::ResidualNorm:<sp/>the<sp/>factor<sp/>the<sp/>baseline<sp/>is<sp/>multiplied<sp/>by.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">GKO_FACTORY_PARAMETER_SCALAR</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">reduction_factor</ref>,<sp/>1<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">e</ref>-10);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>absolute<sp/>|<sp/>rhs_norm<sp/>|<sp/>initial_resnorm,<sp/>as<sp/>gko::stop::ResidualNorm<sp/>but<sp/>in<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>inf-norm.<sp/>MLMG<sp/>uses<sp/>the<sp/>GREATER<sp/>of<sp/>the<sp/>two,<sp/>which<sp/>coincide<sp/>at<sp/>a<sp/>zero<sp/>guess.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::stop::mode<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">GKO_FACTORY_PARAMETER_SCALAR</ref>(baseline,<sp/>gko::stop::mode::rhs_norm);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="104" refid="classblockamr_1_1la_1_1ResidualNormInf_1a9e5bc332cf2a75c59eae1909e3de72fd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1ResidualNormInf_1a9e5bc332cf2a75c59eae1909e3de72fd" kindref="member">GKO_ENABLE_CRITERION_FACTORY</ref>(<ref refid="classblockamr_1_1la_1_1ResidualNormInf" kindref="compound">ResidualNormInf</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">parameters</ref>,<sp/><ref refid="classFactory" kindref="compound">Factory</ref>);</highlight></codeline>
+<codeline lineno="105" refid="classblockamr_1_1la_1_1ResidualNormInf_1a26c67847dae7c7c31f17e54a669a259e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1ResidualNormInf_1a26c67847dae7c7c31f17e54a669a259e" kindref="member">GKO_ENABLE_BUILD_METHOD</ref>(<ref refid="classFactory" kindref="compound">Factory</ref>);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Required<sp/>by<sp/>Ginkgo&apos;s<sp/>polymorphic-object<sp/>machinery<sp/>(create_default/clear).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="classblockamr_1_1la_1_1ResidualNormInf_1a8c9853809cd8a6962300d1861199c2ef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1ResidualNormInf_1a8c9853809cd8a6962300d1861199c2ef" kindref="member">ResidualNormInf</ref>(std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec)</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>gko::EnablePolymorphicObject&lt;<ref refid="classblockamr_1_1la_1_1ResidualNormInf" kindref="compound">ResidualNormInf</ref>,<sp/>gko::<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop</ref>::<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">Criterion</ref>&gt;(std::<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">move</ref>(exec))</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114" refid="classblockamr_1_1la_1_1ResidualNormInf_1a006d008520284145d026ce1189d1d5d3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1ResidualNormInf_1a006d008520284145d026ce1189d1d5d3" kindref="member">ResidualNormInf</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classFactory" kindref="compound">Factory</ref>*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">factory</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::stop::CriterionArgs&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">args</ref>)</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>gko::EnablePolymorphicObject&lt;<ref refid="classblockamr_1_1la_1_1ResidualNormInf" kindref="compound">ResidualNormInf</ref>,<sp/>gko::<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop</ref>::<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">Criterion</ref>&gt;(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">factory</ref>-&gt;<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">get_executor</ref>(</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)),</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">parameters_</ref><sp/>{<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">factory</ref>-&gt;<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">get_parameters</ref>()}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">tau</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">parameters_</ref>.reduction_factor;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">parameters_</ref>.baseline)</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>gko::stop::mode::absolute:</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">tau</ref>;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>gko::stop::mode::rhs_norm:</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">tau</ref><sp/>*<sp/>baselineNorm(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">args</ref>.b.get(),<sp/></highlight><highlight class="stringliteral">&quot;b&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>gko::stop::mode::initial_resnorm:</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>target_<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">tau</ref><sp/>*<sp/>baselineNorm(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">args</ref>.initial_residual,<sp/></highlight><highlight class="stringliteral">&quot;initial_residual&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classblockamr_1_1la_1_1ResidualNormInf_1aeb08061b3fe23332fdc11a1f77d22c09" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1ResidualNormInf_1aeb08061b3fe23332fdc11a1f77d22c09" kindref="member">check_impl</ref>(</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::uint8<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stoppingId</ref>,</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">setFinalized</ref>,</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::array&lt;gko::stopping_status&gt;*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop_status</ref>,</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal">*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">one_changed</ref>,</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">Updater</ref>&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">updater</ref></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight><highlight class="keyword"><sp/>override</highlight></codeline>
+<codeline lineno="141"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">r</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">updater</ref>.residual_;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">r</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal"><sp/>&amp;&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">updater</ref>.ignore_residual_check_)</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Not<sp/>a<sp/>missing<sp/>residual:<sp/>Ir<sp/>asks<sp/>for<sp/>the<sp/>cheap<sp/>checks<sp/>first<sp/>and<sp/>calls<sp/>again</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>with<sp/>it.<sp/>Throwing<sp/>here<sp/>instead<sp/>made<sp/>ResidualNormInf<sp/>unusable<sp/>with<sp/>ir/mpir.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">r</ref><sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>solver<sp/>publishing<sp/>only<sp/>the<sp/>implicit<sp/>squared<sp/>2-norm<sp/>cannot<sp/>be<sp/>stopped<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>an<sp/>inf-norm;<sp/>refuse<sp/>rather<sp/>than<sp/>silently<sp/>stop<sp/>on<sp/>a<sp/>different<sp/>criterion.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>gko::NotSupported(</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">__FILE__</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">__LINE__</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">__func__</ref>,<sp/></highlight><highlight class="stringliteral">&quot;ResidualNormInf<sp/>needs<sp/>the<sp/>residual<sp/>vector&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>last_<sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1a5b028eee159d1080ae661ef85581fdfb" kindref="member">normInf</ref>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">r</ref>);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>converged<sp/>=<sp/>last_<sp/>&lt;=<sp/>target_;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(converged<sp/>&amp;&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop_status</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exec<sp/>=<sp/>this-&gt;<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">get_executor</ref>();</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop_status</ref>-&gt;get_size();</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gko::array&lt;gko::stopping_status&gt;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">host</ref>(exec-&gt;get_master(),<sp/>*<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop_status</ref>);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(gko::size_type<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>=<sp/>0;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref><sp/>&lt;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref>;<sp/>++<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>)</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">host</ref>.get_data()[<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">i</ref>].converge(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stoppingId</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">setFinalized</ref>);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>copy_from<sp/>into<sp/>the<sp/>existing<sp/>storage:<sp/>the<sp/>solver<sp/>holds<sp/>pointers<sp/>into<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exec-&gt;copy_from(exec-&gt;get_master(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">n</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">host</ref>.get_const_data(),<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">stop_status</ref>-&gt;get_data());</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">one_changed</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">one_changed</ref><sp/>=<sp/>converged;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>converged;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>baselineNorm(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>v,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>what)</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(v<sp/>==<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>gko::NotSupported(</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">__FILE__</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">__LINE__</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">__func__</ref>,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;ResidualNormInf<sp/>needs<sp/>&quot;</highlight><highlight class="normal">)<sp/>+<sp/>what</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">nrm</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1a5b028eee159d1080ae661ef85581fdfb" kindref="member">normInf</ref>(v);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>zero<sp/>baseline<sp/>would<sp/>make<sp/>the<sp/>target<sp/>0<sp/>and<sp/>the<sp/>solve<sp/>unstoppable.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">nrm</ref><sp/>&gt;<sp/>0.0)<sp/>?<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">nrm</ref><sp/>:<sp/>1.0;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>target_<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>last_<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr::la</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp"/>
+  </compounddef>
+</doxygen>

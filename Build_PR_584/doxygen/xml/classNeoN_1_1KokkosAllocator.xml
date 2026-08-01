@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1KokkosAllocator" kind="class" language="C++" prot="public">
+    <compoundname>NeoN::KokkosAllocator</compoundname>
+    <basecompoundref refid="classNeoN_1_1AllocatorStrategy" prot="public" virt="non-virtual">NeoN::AllocatorStrategy</basecompoundref>
+    <includes refid="kokkos_8hpp" local="no">kokkos.hpp</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" prot="public" static="no">
+        <type>Kokkos::DefaultExecutionSpace::memory_space</type>
+        <definition>using NeoN::KokkosAllocator::GPUMemSpace =  Kokkos::DefaultExecutionSpace::memory_space</definition>
+        <argsstring></argsstring>
+        <name>GPUMemSpace</name>
+        <qualifiedname>NeoN::KokkosAllocator::GPUMemSpace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="23" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" prot="public" static="no">
+        <type>Kokkos::HostSpace</type>
+        <definition>using NeoN::KokkosAllocator::CPUMemSpace =  Kokkos::HostSpace</definition>
+        <argsstring></argsstring>
+        <name>CPUMemSpace</name>
+        <qualifiedname>NeoN::KokkosAllocator::CPUMemSpace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="24" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void *</type>
+        <definition>void * NeoN::KokkosAllocator::alloc</definition>
+        <argsstring>(size_t size) override</argsstring>
+        <name>alloc</name>
+        <qualifiedname>NeoN::KokkosAllocator::alloc</qualifiedname>
+        <reimplements refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f">alloc</reimplements>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>allocate a block of size bytes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="26" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void *</type>
+        <definition>void * NeoN::KokkosAllocator::realloc</definition>
+        <argsstring>(void *ptr, size_t size) override</argsstring>
+        <name>realloc</name>
+        <qualifiedname>NeoN::KokkosAllocator::realloc</qualifiedname>
+        <reimplements refid="classNeoN_1_1AllocatorStrategy_1a7fd6091797b5f980d130c26dce8a7c3c">realloc</reimplements>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>reallocate a block of size bytes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="28" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void NeoN::KokkosAllocator::free</definition>
+        <argsstring>(void *ptr) override</argsstring>
+        <name>free</name>
+        <qualifiedname>NeoN::KokkosAllocator::free</qualifiedname>
+        <reimplements refid="classNeoN_1_1AllocatorStrategy_1a9e790e5347a62749bca6056c97f74d88">free</reimplements>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+<para>free a block of size bytes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="30" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>NeoN::KokkosAllocator::~KokkosAllocator</definition>
+        <argsstring>() override</argsstring>
+        <name>~KokkosAllocator</name>
+        <qualifiedname>NeoN::KokkosAllocator::~KokkosAllocator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="32" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" bodystart="32" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>NeoN::AllocatorStrategy</label>
+        <link refid="classNeoN_1_1AllocatorStrategy"/>
+      </node>
+      <node id="1">
+        <label>NeoN::KokkosAllocator</label>
+        <link refid="classNeoN_1_1KokkosAllocator"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>NeoN::AllocatorStrategy</label>
+        <link refid="classNeoN_1_1AllocatorStrategy"/>
+      </node>
+      <node id="1">
+        <label>NeoN::KokkosAllocator</label>
+        <link refid="classNeoN_1_1KokkosAllocator"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" line="18" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/kokkos.hpp" bodystart="19" bodyend="33"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a" prot="public" virt="virtual"><scope>NeoN::KokkosAllocator</scope><name>alloc</name></member>
+      <member refid="classNeoN_1_1KokkosAllocator_1a901f9e55d858a8e420ca4a1730dfae67" prot="public" virt="non-virtual"><scope>NeoN::KokkosAllocator</scope><name>CPUMemSpace</name></member>
+      <member refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db" prot="public" virt="virtual"><scope>NeoN::KokkosAllocator</scope><name>free</name></member>
+      <member refid="classNeoN_1_1KokkosAllocator_1a42230221368a63067552a1a7feaf3ea9" prot="public" virt="non-virtual"><scope>NeoN::KokkosAllocator</scope><name>GPUMemSpace</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a3905c8c5f49fca35e0dcce51ba78e634" prot="protected" virt="non-virtual"><scope>NeoN::KokkosAllocator</scope><name>memSpace_</name></member>
+      <member refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e" prot="public" virt="virtual"><scope>NeoN::KokkosAllocator</scope><name>realloc</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a352505b0c16b94ff5e70e6bae2c0d588" prot="public" virt="non-virtual"><scope>NeoN::KokkosAllocator</scope><name>setMemSpace</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1ad5d883bae20050e38db1e462f1b64db2" prot="public" virt="virtual"><scope>NeoN::KokkosAllocator</scope><name>~AllocatorStrategy</name></member>
+      <member refid="classNeoN_1_1KokkosAllocator_1ae40eaa8ecec1fd373202acb92fed4d7a" prot="public" virt="non-virtual"><scope>NeoN::KokkosAllocator</scope><name>~KokkosAllocator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,142 @@
+\doxysection{dist\+Vec.\+hpp}
+\hypertarget{distVec_8hpp_source}{}\label{distVec_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/distVec.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/distVec.hpp}}
+\mbox{\hyperlink{distVec_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00011}00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00014}00014\ \textcolor{comment}{//\ Vectors\ are\ Dense\ on\ one\ rank\ and\ distributed::Vector\ on\ several\ -\/-\/\ unrelated\ types,\ so}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00015}00015\ \textcolor{comment}{//\ \`{}gko::as<Dense>`\ throws\ on\ the\ latter;\ these\ accessors\ are\ the\ seam.\ The\ distributed\ type}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00016}00016\ \textcolor{comment}{//\ exists\ only\ so\ the\ dots/norms\ inside\ Ginkgo's\ Krylov\ solvers\ become\ allreduces.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#if\ GINKGO\_BUILD\_MPI}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00018}00018\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00019}00019\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec}}\ =\ gko::experimental::distributed::Vector<V>;}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00022}00022\ \textcolor{comment}{//\ Writable\ raw\ pointer\ to\ the\ process-\/local\ values\ of\ x.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00023}00023\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00024}\mbox{\hyperlink{namespaceblockamr_1_1la_a3140b23b050fd6fe07efd1db149e4e46}{00024}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{V}}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3140b23b050fd6fe07efd1db149e4e46}{localValues}}(gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#if\ GINKGO\_BUILD\_MPI}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}\ =\ \textcolor{keyword}{dynamic\_cast<}\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec<V>}}*\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}))}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00028}00028\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00029}00029\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}-\/>get\_local\_values();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00030}00030\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::as<gko::matrix::Dense<V>>(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{get\_values}}();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00033}00033\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00035}00035\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00036}\mbox{\hyperlink{namespaceblockamr_1_1la_a97663d4f84cde29059da64fdec8af8e0}{00036}}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{V}}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3140b23b050fd6fe07efd1db149e4e46}{localValues}}(\textcolor{keyword}{const}\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00037}00037\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00038}00038\ \textcolor{preprocessor}{\#if\ GINKGO\_BUILD\_MPI}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}\ =\ \textcolor{keyword}{dynamic\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec<V>}}*\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}))}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00040}00040\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}-\/>get\_const\_local\_values();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00042}00042\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00043}00043\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00044}00044\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::as<const\ gko::matrix::Dense<V>>(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{get\_const\_values}}();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00045}00045\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00047}00047\ \textcolor{comment}{//\ Process-\/local\ row\ count.\ NOT\ get\_size()[0],\ which\ on\ a\ distributed\ vector\ is\ the\ GLOBAL}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00048}00048\ \textcolor{comment}{//\ count\ -\/-\/\ sizing\ flat\ vectors\ by\ it\ was\ a\ multi-\/rank\ bug.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00049}\mbox{\hyperlink{namespaceblockamr_1_1la_abd37af0ad31b74df5f4126fcc80b41a9}{00049}}\ \textcolor{keyword}{inline}\ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_abd37af0ad31b74df5f4126fcc80b41a9}{localRows}}(\textcolor{keyword}{const}\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00050}00050\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00051}00051\ \textcolor{preprocessor}{\#if\ GINKGO\_BUILD\_MPI}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}\ =\ \textcolor{keyword}{dynamic\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec<double>}}*\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}))}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}-\/>get\_local\_vector()-\/>get\_size()[0];}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00055}00055\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}\ =\ \textcolor{keyword}{dynamic\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec<float>}}*\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}))}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00057}00057\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}-\/>get\_local\_vector()-\/>get\_size()[0];}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00059}00059\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00060}00060\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}-\/>get\_size()[0];}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00062}00062\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00064}00064\ \textcolor{comment}{//\ Non-\/owning\ Dense\ VIEW\ of\ the\ process-\/local\ part.\ Aliases\ x:\ writes\ go\ through\ to\ x.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00065}00065\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00066}\mbox{\hyperlink{namespaceblockamr_1_1la_ac50098408e81400d4d368fcd250d4472}{00066}}\ std::unique\_ptr<gko::matrix::Dense<V>>\ \mbox{\hyperlink{namespaceblockamr_1_1la_ac50098408e81400d4d368fcd250d4472}{localView}}(gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00067}00067\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_abd37af0ad31b74df5f4126fcc80b41a9}{localRows}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}-\/>get\_executor();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::matrix::Dense<V>::create(}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ exec,\ gko::dim<2>\ \{\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ 1\},\ gko::make\_array\_view(exec,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{localValues<V>}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})),\ 1}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00072}00072\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00073}00073\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00075}00075\ \textcolor{comment}{//\ const\ overload,\ for\ the\ host\ paths\ that\ clone\ b\ to\ the\ master\ executor.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00076}00076\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ V>}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00077}\mbox{\hyperlink{namespaceblockamr_1_1la_adad6a4b80009757a9982f5e3f294e307}{00077}}\ std::unique\_ptr<const\ gko::matrix::Dense<V>>\ \mbox{\hyperlink{namespaceblockamr_1_1la_ac50098408e81400d4d368fcd250d4472}{localView}}(\textcolor{keyword}{const}\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00078}00078\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00079}00079\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_abd37af0ad31b74df5f4126fcc80b41a9}{localRows}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}}-\/>get\_executor();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::matrix::Dense<V>::create\_const(}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ exec,\ gko::dim<2>\ \{\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ 1\},\ gko::make\_const\_array\_view(exec,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{localValues<V>}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})),\ 1}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00083}00083\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00084}00084\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00086}00086\ \textcolor{comment}{//\ ||v||\_2\ and\ v.w\ over\ ALL\ ranks:\ Ginkgo's\ own\ routines\ carry\ the\ allreduce.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00087}\mbox{\hyperlink{namespaceblockamr_1_1la_a264485ac499f91797d8065a28fb55f7a}{00087}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a264485ac499f91797d8065a28fb55f7a}{reduceScalar}}(\textcolor{keyword}{const}\ gko::LinOp*\ v,\ \textcolor{keyword}{const}\ gko::matrix::Dense<double>*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00088}00088\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keywordflow}{return}\ gko::clone(v-\/>get\_executor()-\/>get\_master(),\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}})-\/>at(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00090}00090\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00092}\mbox{\hyperlink{namespaceblockamr_1_1la_a65e1665a1962fd2fe3587a0ca2af8d42}{00092}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a65e1665a1962fd2fe3587a0ca2af8d42}{globalNorm2}}(\textcolor{keyword}{const}\ gko::LinOp*\ v)}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00093}00093\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ v-\/>get\_executor();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}}\ =\ gko::matrix::Dense<double>::create(exec,\ gko::dim<2>\ \{1,\ 1\});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00096}00096\ \textcolor{preprocessor}{\#if\ GINKGO\_BUILD\_MPI}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00097}00097\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}\ =\ \textcolor{keyword}{dynamic\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec<double>}}*\textcolor{keyword}{>}(v))}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00098}00098\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}-\/>compute\_norm2(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a264485ac499f91797d8065a28fb55f7a}{reduceScalar}}(v,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}}.get());}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00101}00101\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00102}00102\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00103}00103\ \ \ \ \ gko::as<const\ gko::matrix::Dense<double>>(v)-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{compute\_norm2}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a264485ac499f91797d8065a28fb55f7a}{reduceScalar}}(v,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}}.get());}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00105}00105\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00107}\mbox{\hyperlink{namespaceblockamr_1_1la_afcd5b48a187c394fb84ccb24a91ce260}{00107}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_afcd5b48a187c394fb84ccb24a91ce260}{globalDot}}(\textcolor{keyword}{const}\ gko::LinOp*\ v,\ \textcolor{keyword}{const}\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{w}})}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00108}00108\ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ v-\/>get\_executor();}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{res}}\ =\ gko::matrix::Dense<double>::create(exec,\ gko::dim<2>\ \{1,\ 1\});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00111}00111\ \textcolor{preprocessor}{\#if\ GINKGO\_BUILD\_MPI}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}\ =\ \textcolor{keyword}{dynamic\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{DistVec<double>}}*\textcolor{keyword}{>}(v))}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00113}00113\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{d}}-\/>compute\_dot(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{w}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{res}});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a264485ac499f91797d8065a28fb55f7a}{reduceScalar}}(v,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{res}}.get());}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00116}00116\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00117}00117\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00118}00118\ \ \ \ \ gko::as<const\ gko::matrix::Dense<double>>(v)-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{compute\_dot}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{w}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{res}});}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a264485ac499f91797d8065a28fb55f7a}{reduceScalar}}(v,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{res}}.get());}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00120}00120\ \}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00122}00122\ \textcolor{comment}{//\ Ginkgo-\/side\ view\ of\ a\ rank-\/local\ Dense\ buffer:\ on\ >1\ rank\ a\ distributed::Vector\ aliasing}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00123}00123\ \textcolor{comment}{//\ it,\ so\ a\ solver's\ dots/norms\ become\ allreduces\ -\/-\/\ on\ AMReX's\ communicator,\ NOT}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00124}00124\ \textcolor{comment}{//\ MPI\_COMM\_WORLD.\ nvcc\ TRAP:\ two\ overloads,\ not\ a\ template,\ whose\ signature\ nvcc\ rejects.}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00125}\mbox{\hyperlink{namespaceblockamr_1_1la_aae72a462eeadc400a10b13bc81c857a1}{00125}}\ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{namespaceblockamr_1_1la_aae72a462eeadc400a10b13bc81c857a1}{makeGlobalVec}}(}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00126}00126\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00127}00127\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nGlobal}},}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00128}00128\ \ \ \ \ gko::matrix::Dense<double>*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{local}}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00129}00129\ );}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00130}\mbox{\hyperlink{namespaceblockamr_1_1la_acea933f1afb58354e7dbb91917641ef9}{00130}}\ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{namespaceblockamr_1_1la_aae72a462eeadc400a10b13bc81c857a1}{makeGlobalVec}}(}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00131}00131\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00132}00132\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nGlobal}},}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00133}00133\ \ \ \ \ gko::matrix::Dense<float>*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{local}}}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00134}00134\ );}
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{distVec_8hpp_source_l00136}00136\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

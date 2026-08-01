@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classblockamr_1_1la_1_1AmrexLinOpBase" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>blockamr::la::AmrexLinOpBase</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">gko::EnableLinOp&lt; D &gt;</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">gko::EnableCreateMethod&lt; D &gt;</basecompoundref>
+    <includes refid="linOpBase_8hpp" local="no">linOpBase.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">class</ref> <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">D</ref></type>
+      </param>
+      <param>
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">class</ref> <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref></type>
+        <defval><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="protected-type">
+      <memberdef kind="typedef" id="classblockamr_1_1la_1_1AmrexLinOpBase_1adfdfe912d368b79845e297bd4f8569c7" prot="protected" static="no">
+        <type>gko::matrix::Dense&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref> &gt;</type>
+        <definition>using blockamr::la::AmrexLinOpBase&lt; D, V &gt;::DenseV =  gko::matrix::Dense&lt;V&gt;</definition>
+        <argsstring></argsstring>
+        <name>DenseV</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::DenseV</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="25" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1AmrexLinOpBase_1abbec839b1445269d8b240768fe3cb5f2" prot="private" static="no" mutable="yes">
+        <type>std::shared_ptr&lt; <ref refid="classblockamr_1_1la_1_1AmrexLinOpBase_1adfdfe912d368b79845e297bd4f8569c7" kindref="member">DenseV</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DenseV&gt; blockamr::la::AmrexLinOpBase&lt; D, V &gt;::scratch_</definition>
+        <argsstring></argsstring>
+        <name>scratch_</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::scratch_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="97" column="29" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="97" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1AmrexLinOpBase_1a354252a218b3a6c2938c2b57e7eef7a9" prot="protected" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>blockamr::la::AmrexLinOpBase&lt; D, V &gt;::AmrexLinOpBase</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec)</argsstring>
+        <name>AmrexLinOpBase</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::AmrexLinOpBase</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="28" column="14" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="28" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1AmrexLinOpBase_1a856129536b8014470e9835d5b4329a6d" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>blockamr::la::AmrexLinOpBase&lt; D, V &gt;::AmrexLinOpBase</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec, const gko::dim&lt; 2 &gt; &amp;size)</argsstring>
+        <name>AmrexLinOpBase</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::AmrexLinOpBase</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::dim&lt; 2 &gt; &amp;</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="31" column="5" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="31" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1AmrexLinOpBase_1a076a2cc40c0134854594cab04844f038" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::AmrexLinOpBase&lt; D, V &gt;::apply_impl</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x) const override=0</argsstring>
+        <name>apply_impl</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::apply_impl</qualifiedname>
+        <reimplementedby refid="classblockamr_1_1la_1_1GmgBottomOp_1a0e49d46fa03fa6ebff6eb8c9b90710bc">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1GmgPrecondT_1a700b79601145ab498cd699b75ab33276">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1GmgKokkosPrecondT_1aeb81804e173000ef1d3fdc1c647e3eb3">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1MixedPrecisionSolve_1a7343933e14ff1784909f07216fd352ab">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a3cd79f0c7fc21838780639e855a76210">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1AmrexOp_1aa46250df2e2f91f15ca4182fc02eb93b">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1CompositeAmrexOp_1a4065a45daaaefcb3be19b512f7605cd2">apply_impl</reimplementedby>
+        <reimplementedby refid="classblockamr_1_1la_1_1MlmgPrecond_1a8c9047d0e6abe890b01195e0ed69aebd">apply_impl</reimplementedby>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="36" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1AmrexLinOpBase_1a56cf0a9f9d75506bfe93d373764f835a" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::AmrexLinOpBase&lt; D, V &gt;::apply_impl</definition>
+        <argsstring>(const gko::LinOp *alpha, const gko::LinOp *b, const gko::LinOp *beta, gko::LinOp *x) const override</argsstring>
+        <name>apply_impl</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::apply_impl</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>alpha</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>beta</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="41" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="41" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1AmrexLinOpBase_1a2d0c21f5277c62ec4a21efc04d2135a2" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">double</ref></type>
+        <definition>static double blockamr::la::AmrexLinOpBase&lt; D, V &gt;::hostScalar</definition>
+        <argsstring>(const gko::LinOp *s)</argsstring>
+        <name>hostScalar</name>
+        <qualifiedname>blockamr::la::AmrexLinOpBase::hostScalar</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="84" column="19" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="84" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>blockamr::la::AmrexLinOpBase&lt; D, V &gt;</label>
+        <link refid="classblockamr_1_1la_1_1AmrexLinOpBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>gko::EnableCreateMethod&lt; D &gt;</label>
+      </node>
+      <node id="2">
+        <label>gko::EnableLinOp&lt; D &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>blockamr::la::AmrexLinOpBase&lt; D, V &gt;</label>
+        <link refid="classblockamr_1_1la_1_1AmrexLinOpBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>gko::EnableCreateMethod&lt; D &gt;</label>
+      </node>
+      <node id="2">
+        <label>gko::EnableLinOp&lt; D &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" line="21" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp" bodystart="22" bodyend="98"/>
+    <listofallmembers>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a354252a218b3a6c2938c2b57e7eef7a9" prot="protected" virt="non-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>AmrexLinOpBase</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a856129536b8014470e9835d5b4329a6d" prot="protected" virt="non-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>AmrexLinOpBase</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a076a2cc40c0134854594cab04844f038" prot="protected" virt="pure-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>apply_impl</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a56cf0a9f9d75506bfe93d373764f835a" prot="protected" virt="non-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>apply_impl</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1adfdfe912d368b79845e297bd4f8569c7" prot="protected" virt="non-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>DenseV</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a2d0c21f5277c62ec4a21efc04d2135a2" prot="private" virt="non-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>hostScalar</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1abbec839b1445269d8b240768fe3cb5f2" prot="private" virt="non-virtual"><scope>blockamr::la::AmrexLinOpBase</scope><name>scratch_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

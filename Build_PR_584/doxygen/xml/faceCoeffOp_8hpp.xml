@@ -1,0 +1,491 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="faceCoeffOp_8hpp" kind="file" language="C++">
+    <compoundname>faceCoeffOp.hpp</compoundname>
+    <includes local="no">AMReX_BoxArray.H</includes>
+    <includes local="no">AMReX_DistributionMapping.H</includes>
+    <includes local="no">AMReX_Geometry.H</includes>
+    <includes local="no">AMReX_MultiFab.H</includes>
+    <includes local="no">ginkgo/ginkgo.hpp</includes>
+    <includes local="no">memory</includes>
+    <includes refid="bc_8hpp" local="yes">NeoN/blockAmr/core/bc.hpp</includes>
+    <includes refid="fieldLevel_8hpp" local="yes">NeoN/blockAmr/core/fieldLevel.hpp</includes>
+    <includes refid="meshLevel_8hpp" local="yes">NeoN/blockAmr/core/meshLevel.hpp</includes>
+    <includes refid="linOpBase_8hpp" local="yes">NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp</includes>
+    <includes refid="faceCoeffLevel_8hpp" local="yes">NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp</includes>
+    <includes refid="types_8hpp" local="yes">NeoN/blockAmr/core/types.hpp</includes>
+    <includes refid="core_2executor_2executor_8hpp" local="yes">NeoN/core/executor/executor.hpp</includes>
+    <incdepgraph>
+      <node id="8">
+        <label>NeoN/blockAmr/core/bc.hpp</label>
+        <link refid="bc_8hpp"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>NeoN/blockAmr/core/fieldLevel.hpp</label>
+        <link refid="fieldLevel_8hpp"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>NeoN/blockAmr/core/meshLevel.hpp</label>
+        <link refid="meshLevel_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>NeoN/blockAmr/core/profiling.hpp</label>
+        <link refid="profiling_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>NeoN/blockAmr/core/types.hpp</label>
+        <link refid="types_8hpp"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>NeoN/blockAmr/linearAlgebra/distVec.hpp</label>
+        <link refid="distVec_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp</label>
+        <link refid="faceCoeffLevel_8hpp"/>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp</label>
+        <link refid="faceCoeffOp_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp</label>
+        <link refid="linOpBase_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>NeoN/core/error.hpp</label>
+        <link refid="error_8hpp"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>NeoN/core/executor/CPUExecutor.hpp</label>
+        <link refid="CPUExecutor_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>NeoN/core/executor/GPUExecutor.hpp</label>
+        <link refid="GPUExecutor_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>NeoN/core/executor/executor.hpp</label>
+        <link refid="core_2executor_2executor_8hpp"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>NeoN/core/executor/serialExecutor.hpp</label>
+        <link refid="serialExecutor_8hpp"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>info.hpp</label>
+        <link refid="info_8hpp"/>
+      </node>
+      <node id="18">
+        <label>NeoN/core/logging.hpp</label>
+        <link refid="core_2logging_8hpp"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>NeoN/core/memory/allocator.hpp</label>
+        <link refid="allocator_8hpp"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>NeoN/core/memory/kokkos.hpp</label>
+        <link refid="kokkos_8hpp"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>NeoN/core/mpi/environment.hpp</label>
+        <link refid="environment_8hpp"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>AMReX_Box.H</label>
+      </node>
+      <node id="2">
+        <label>AMReX_BoxArray.H</label>
+      </node>
+      <node id="3">
+        <label>AMReX_DistributionMapping.H</label>
+      </node>
+      <node id="4">
+        <label>AMReX_Geometry.H</label>
+      </node>
+      <node id="10">
+        <label>AMReX_GpuLaunch.H</label>
+      </node>
+      <node id="44">
+        <label>AMReX_MLMG.H</label>
+      </node>
+      <node id="5">
+        <label>AMReX_MultiFab.H</label>
+      </node>
+      <node id="32">
+        <label>Kokkos_Core.hpp</label>
+      </node>
+      <node id="11">
+        <label>array</label>
+      </node>
+      <node id="19">
+        <label>chrono</label>
+      </node>
+      <node id="12">
+        <label>cstddef</label>
+      </node>
+      <node id="25">
+        <label>cstdlib</label>
+      </node>
+      <node id="27">
+        <label>exception</label>
+      </node>
+      <node id="23">
+        <label>fmt/chrono.h</label>
+      </node>
+      <node id="22">
+        <label>fmt/core.h</label>
+      </node>
+      <node id="6">
+        <label>ginkgo/ginkgo.hpp</label>
+      </node>
+      <node id="28">
+        <label>iostream</label>
+      </node>
+      <node id="41">
+        <label>map</label>
+      </node>
+      <node id="7">
+        <label>memory</label>
+      </node>
+      <node id="20">
+        <label>source_location</label>
+      </node>
+      <node id="29">
+        <label>sstream</label>
+      </node>
+      <node id="13">
+        <label>string</label>
+      </node>
+      <node id="21">
+        <label>string_view</label>
+      </node>
+      <node id="16">
+        <label>variant</label>
+      </node>
+      <node id="14">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structblockamr_1_1la_1_1DomainBc" prot="public">blockamr::la::DomainBc</innerclass>
+    <innerclass refid="classblockamr_1_1la_1_1FaceCoeffOpT" prot="public">blockamr::la::FaceCoeffOpT</innerclass>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la">blockamr::la</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_BoxArray.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_DistributionMapping.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_Geometry.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_MultiFab.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ginkgo/ginkgo.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="bc_8hpp" kindref="compound">NeoN/blockAmr/core/bc.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="fieldLevel_8hpp" kindref="compound">NeoN/blockAmr/core/fieldLevel.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="meshLevel_8hpp" kindref="compound">NeoN/blockAmr/core/meshLevel.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="linOpBase_8hpp" kindref="compound">NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="faceCoeffLevel_8hpp" kindref="compound">NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="types_8hpp" kindref="compound">NeoN/blockAmr/core/types.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="core_2executor_2executor_8hpp" kindref="compound">NeoN/core/executor/executor.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la" kindref="compound">blockamr::la</ref></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>@brief<sp/>The<sp/>domain<sp/>boundary<sp/>condition<sp/>ONE<sp/>operator<sp/>applies:<sp/>the<sp/>per-side<sp/>spec,<sp/>whose</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>homogeneous<sp/>ghost<sp/>reflection<sp/>runs<sp/>on<sp/>every<sp/>apply,<sp/>and<sp/>the<sp/>optional<sp/>INHOMOGENEOUS</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>datum,<sp/>which<sp/>only<sp/>applyBcOffset<sp/>reads.<sp/>One<sp/>argument<sp/>because<sp/>the<sp/>datum<sp/>is</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>meaningless<sp/>without<sp/>the<sp/>sides<sp/>that<sp/>say<sp/>where<sp/>it<sp/>is<sp/>read<sp/>--<sp/>and<sp/>because<sp/>a<sp/>null</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>`data`<sp/>next<sp/>to<sp/>a<sp/>`sides`<sp/>is<sp/>exactly<sp/>the<sp/>pair<sp/>every<sp/>caller<sp/>passes.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structblockamr_1_1la_1_1DomainBc" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1la_1_1DomainBc" kindref="compound">DomainBc</ref></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="35" refid="structblockamr_1_1la_1_1DomainBc_1af7503ed869a44fe8846ed17284cc38f8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a5d3db556e29a5aefa129dc88010ec14c" kindref="member">BcArray</ref><sp/><ref refid="structblockamr_1_1la_1_1DomainBc_1af7503ed869a44fe8846ed17284cc38f8" kindref="member">sides</ref><sp/>{};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>bare<sp/>pointer:<sp/>its<sp/>source<sp/>(SolverConfig::bcData)<sp/>is<sp/>a<sp/>const<sp/>amrex::MultiFab*.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="structblockamr_1_1la_1_1DomainBc_1af4aacd34f0a77e96060ae3db5194e11d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::MultiFab*<sp/><ref refid="structblockamr_1_1la_1_1DomainBc_1af4aacd34f0a77e96060ae3db5194e11d" kindref="member">data</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>fine-level<sp/>diagonal<sp/>diag<sp/>=<sp/>alpha<sp/>-<sp/>(aE+aW+aN+aS+aT+aB)<sp/>(negSumDiag)<sp/>per<sp/>valid<sp/>cell,<sp/>in</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">//<sp/>exactly<sp/>the<sp/>association<sp/>order<sp/>the<sp/>stencils<sp/>use,<sp/>so<sp/>it<sp/>is<sp/>bitwise<sp/>what<sp/>they<sp/>derive<sp/>inline.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment">//<sp/>BC-independent:<sp/>domain<sp/>BCs<sp/>enter<sp/>through<sp/>the<sp/>ghost<sp/>reflection,<sp/>i.e.<sp/>the<sp/>off-diagonal.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="namespaceblockamr_1_1la_1ad4726c8af85a0df6f77a768153b1b87f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad4726c8af85a0df6f77a768153b1b87f" kindref="member">computeFaceCoeffDiag</ref>(</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref>&amp;<sp/>exec,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref><sp/>diag,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref>&amp;<sp/><ref refid="vcycle_8hpp_1ae47025b73cbfce4f61d918b2058005ba" kindref="member">alpha</ref>,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref>&amp;<sp/>upper,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref>&amp;<sp/>lower</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Matrix-free<sp/>face-coefficient<sp/>operator<sp/>on<sp/>one<sp/>structured<sp/>level:<sp/>the<sp/>mat-vec<sp/>is<sp/>Amul<sp/>in<sp/>pull</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment">//<sp/>form<sp/>against<sp/>diag<sp/>=<sp/>alpha<sp/>-<sp/>(aE+aW+aN+aS+aT+aB);<sp/>`alpha`<sp/>is<sp/>the<sp/>diagonal<sp/>SOURCE,<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment">//<sp/>upper[d]/lower[d]<sp/>the<sp/>HIGH/LOW<sp/>face<sp/>couplings<sp/>--<sp/>pass<sp/>the<sp/>same<sp/>fields<sp/>for<sp/>both<sp/>if<sp/>symmetric.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">//<sp/>PROTOTYPE<sp/>(C1):<sp/>the<sp/>`diag`<sp/>argument<sp/>is<sp/>IGNORED<sp/>--<sp/>both<sp/>stencils<sp/>recompute<sp/>alpha<sp/>-<sp/>sum(faces)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="comment">//<sp/>inline,<sp/>in<sp/>that<sp/>same<sp/>association<sp/>order<sp/>(faceCoeffOp.cpp).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment">//<sp/>V<sp/>types<sp/>the<sp/>flat<sp/>Ginkgo<sp/>vectors<sp/>only,<sp/>not<sp/>the<sp/>coefficients;<sp/>V<sp/>=<sp/>float<sp/>is<sp/>a<sp/>DEVICE<sp/>path<sp/>(the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment">//<sp/>host<sp/>stencil<sp/>is<sp/>double)<sp/>and<sp/>the<sp/>constructor<sp/>rejects<sp/>it<sp/>on<sp/>the<sp/>host.<sp/>Measurements:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment">//<sp/>report/blockamr-precision-measurements.md</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>V&gt;</highlight></codeline>
+<codeline lineno="62" refid="classblockamr_1_1la_1_1FaceCoeffOpT" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classblockamr_1_1la_1_1FaceCoeffOpT" kindref="compound">FaceCoeffOpT</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1AmrexLinOpBase" kindref="compound">AmrexLinOpBase</ref>&lt;FaceCoeffOpT&lt;V&gt;,<sp/>V&gt;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a1157458f84bafcd99cac79d6d81bc19c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a1157458f84bafcd99cac79d6d81bc19c" kindref="member">FaceCoeffOpT</ref>(std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>nexec<sp/>is<sp/>carried<sp/>alongside<sp/>the<sp/>Ginkgo<sp/>executor<sp/>because<sp/>the<sp/>launch<sp/>seam</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(blockamr::parallelFor)<sp/>dispatches<sp/>on<sp/>the<sp/>NeoN<sp/>variant.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="classblockamr_1_1la_1_1FaceCoeffOpT_1ac992c964daf04d30ad5b955bca7caf27" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classblockamr_1_1la_1_1FaceCoeffOpT_1ac992c964daf04d30ad5b955bca7caf27" kindref="member">FaceCoeffOpT</ref>(</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>gko::Executor&gt;<sp/>exec,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref>&amp;<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">nexec</ref>,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>coefficients<sp/>(`alpha`<sp/>the<sp/>diagonal<sp/>SOURCE,<sp/>upper/lower<sp/>the<sp/>HIGH/LOW<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>couplings)<sp/>together<sp/>with<sp/>the<sp/>allocation<sp/>layout<sp/>and<sp/>the<sp/>geometry<sp/>the<sp/>stencil&apos;s<sp/>dx<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ghost<sp/>fill<sp/>come<sp/>from.<sp/>const&amp;:<sp/>a<sp/>by-value<sp/>bundle<sp/>would<sp/>give<sp/>this<sp/>write<sp/>access.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>level.mesh.ba<sp/>also<sp/>FIXES<sp/>the<sp/>row<sp/>count:<sp/>numPts(),<sp/>the<sp/>global<sp/>one<sp/>every<sp/>rank<sp/>agrees</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>(la::globalRows),<sp/>which<sp/>is<sp/>what<sp/>every<sp/>call<sp/>site<sp/>passed<sp/>by<sp/>hand.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1la_1_1FaceCoeffLevel" kindref="compound">FaceCoeffLevel</ref>&amp;<sp/>level,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1la_1_1DomainBc" kindref="compound">DomainBc</ref><sp/><ref refid="vcycle_8hpp_1a5a2f90109ce71cea359219aefffd403d" kindref="member">bc</ref><sp/>=<sp/>{},</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>caller&apos;s<sp/>stored<sp/>diagonal;<sp/>an<sp/>empty<sp/>handle<sp/>means<sp/>compute<sp/>it<sp/>here,<sp/>once.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Ignored<sp/>while<sp/>PROTOTYPE<sp/>(C1)<sp/>is<sp/>live.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref>&amp;<sp/>diag<sp/>=<sp/>{}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>c0<sp/>=<sp/>L(0)<sp/>into<sp/>`out`:<sp/>the<sp/>constant<sp/>the<sp/>INHOMOGENEOUS<sp/>domain<sp/>BCs<sp/>add.<sp/>Keeps<sp/>`apply`</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>linear<sp/>as<sp/>Ginkgo&apos;s<sp/>Krylov<sp/>solvers<sp/>assume<sp/>--<sp/>L(x)<sp/>=<sp/>A<sp/>x<sp/>+<sp/>c0,<sp/>so<sp/>the<sp/>solve<sp/>runs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>x<sp/>=<sp/>rhs<sp/>-<sp/>c0.<sp/>Requires<sp/>a<sp/>bcData<sp/>operator;<sp/>throws<sp/>otherwise.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88" refid="classblockamr_1_1la_1_1FaceCoeffOpT_1aa394d31cb2629ddecc11da2a9c0d6891" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1FaceCoeffOpT_1aa394d31cb2629ddecc11da2a9c0d6891" kindref="member">applyBcOffset</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>zero,<sp/>gko::LinOp*<sp/>out)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Keeps<sp/>the<sp/>base&apos;s<sp/>advanced<sp/>apply_impl(alpha,<sp/>b,<sp/>beta,<sp/>x)<sp/>from<sp/>being<sp/>hidden.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classblockamr_1_1la_1_1AmrexLinOpBase" kindref="compound">AmrexLinOpBase</ref>&lt;<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FaceCoeffOpT&lt;V&gt;</ref>,<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref>&gt;<ref refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a3cd79f0c7fc21838780639e855a76210" kindref="member">::apply_impl</ref>;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a3cd79f0c7fc21838780639e855a76210" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a3cd79f0c7fc21838780639e855a76210" kindref="member">apply_impl</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>b,<sp/>gko::LinOp*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">x</ref>)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Shared<sp/>body<sp/>of<sp/>apply_impl<sp/>and<sp/>applyBcOffset;<sp/>`inhom`<sp/>picks<sp/>the<sp/>domain-BC<sp/>ghost<sp/>fill.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>applyWith(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>b,<sp/>gko::LinOp*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">x</ref>,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">inhom</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Fused<sp/>path:<sp/>the<sp/>stencil<sp/>reads<sp/>the<sp/>interior<sp/>from<sp/>the<sp/>flat<sp/>Ginkgo<sp/>vectors.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>applyFused(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>b,<sp/>gko::LinOp*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">x</ref>,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">inhom</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Everything<sp/>through<sp/>the<sp/>ghosted<sp/>scratch<sp/>MultiFab,<sp/>computing<sp/>in<sp/>double.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>applyStaged(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>gko::LinOp*<sp/>b,<sp/>gko::LinOp*<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">x</ref>,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">inhom</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Periodic/internal<sp/>ghosts<sp/>plus<sp/>the<sp/>domain-BC<sp/>reflection<sp/>on<sp/>the<sp/>device<sp/>scratch.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fillGhostsDevice(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">inhom</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Copy<sp/>the<sp/>coefficients<sp/>(and<sp/>any<sp/>bc<sp/>data)<sp/>into<sp/>pinned<sp/>memory<sp/>and<sp/>hold<sp/>those<sp/>instead.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>stagePinned(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1la_1_1FaceCoeffLevel" kindref="compound">FaceCoeffLevel</ref>&amp;<sp/>level,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::MultiFab*<sp/>bcData);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Stencil-launch<sp/>executor,<sp/>defaulted<sp/>for<sp/>the<sp/>exec-only<sp/>constructor<sp/>(create_default/clear),</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>which<sp/>builds<sp/>an<sp/>operator<sp/>with<sp/>no<sp/>fields<sp/>to<sp/>launch<sp/>over.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref><sp/>nexec_<sp/>{<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">NeoN::SerialExecutor</ref><sp/>{}};</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Homogeneous<sp/>domain<sp/>BCs<sp/>are<sp/>applied<sp/>ON<sp/>EVERY<sp/>APPLY<sp/>by<sp/>the<sp/>ghost<sp/>reflection<sp/>these<sp/>drive,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>hence<sp/>through<sp/>the<sp/>off-diagonal<sp/>alone<sp/>(the<sp/>operator&apos;s<sp/>half:<sp/>operators/laplacian.hpp).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1a5d3db556e29a5aefa129dc88010ec14c" kindref="member">BcArray</ref><sp/>bc_<sp/>{};</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>hasPhysBc_<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>onDevice_<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>What<sp/>the<sp/>stencils<sp/>read,<sp/>plus<sp/>the<sp/>mesh<sp/>they<sp/>and<sp/>the<sp/>ghost<sp/>fill<sp/>run<sp/>over;<sp/>empty<sp/>handles<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>an<sp/>operator<sp/>built<sp/>without<sp/>fields.<sp/>Host<sp/>path:<sp/>the<sp/>coefficients<sp/>are<sp/>pinned<sp/>copies,<sp/>so<sp/>a</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>caller&apos;s<sp/>in-place<sp/>write<sp/>is<sp/>NOT<sp/>observed<sp/>until<sp/>a<sp/>new<sp/>operator<sp/>is<sp/>built.<sp/>Device<sp/>path:<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>caller&apos;s<sp/>own<sp/>handles.<sp/>Under<sp/>PROTOTYPE<sp/>(C1)<sp/>level_.alpha<sp/>is<sp/>the<sp/>field<sp/>the<sp/>centre<sp/>term</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>comes<sp/>from,<sp/>the<sp/>stencils<sp/>subtracting<sp/>the<sp/>face<sp/>sum<sp/>themselves.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>FaceCoeffLevel<sp/>level_;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>diagonal<sp/>this<sp/>operator<sp/>would<sp/>compute<sp/>for<sp/>itself<sp/>(device<sp/>path);<sp/>never<sp/>assigned<sp/>while</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>PROTOTYPE<sp/>(C1)<sp/>is<sp/>live.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;amrex::MultiFab&gt;<sp/>diagOwned_;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Inhomogeneous<sp/>domain-BC<sp/>data<sp/>(null<sp/>=<sp/>homogeneous,<sp/>the<sp/>default),<sp/>staged<sp/>to<sp/>pinned<sp/>memory</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>on<sp/>the<sp/>host<sp/>path<sp/>like<sp/>the<sp/>coefficients.<sp/>dx_<sp/>scales<sp/>the<sp/>Neumann<sp/>datum.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>amrex::MultiFab*<sp/>bcData_<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;amrex::MultiFab&gt;<sp/>bcDataOwned_;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>amrex::Real<sp/>dx_[3]<sp/>{};</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;amrex::MultiFab&gt;<sp/>in_;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;amrex::MultiFab&gt;<sp/>out_;</highlight></codeline>
+<codeline lineno="138"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>fp64<sp/>operator<sp/>every<sp/>caller<sp/>means<sp/>by<sp/>&quot;FaceCoeffOp&quot;,<sp/>and<sp/>its<sp/>fp32<sp/>twin.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141" refid="namespaceblockamr_1_1la_1acaea7cf7c852bbb29576433e886352bc" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la_1acaea7cf7c852bbb29576433e886352bc" kindref="member">FaceCoeffOp</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FaceCoeffOpT&lt;double&gt;</ref>;</highlight></codeline>
+<codeline lineno="142" refid="namespaceblockamr_1_1la_1a28d831b9e0072bdfd1b588a343d6d6ab" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la_1a28d831b9e0072bdfd1b588a343d6d6ab" kindref="member">FaceCoeffOp32</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">FaceCoeffOpT&lt;float&gt;</ref>;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr::la</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp"/>
+  </compounddef>
+</doxygen>

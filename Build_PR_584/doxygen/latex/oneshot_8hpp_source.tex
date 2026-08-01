@@ -1,0 +1,82 @@
+\doxysection{oneshot.\+hpp}
+\hypertarget{oneshot_8hpp_source}{}\label{oneshot_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solve/oneshot.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solve/oneshot.hpp}}
+\mbox{\hyperlink{oneshot_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_Geometry.H>}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_MLLinOp.H>}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_Vector.H>}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{core_2executor_2executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{result_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/result.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{precond_8hpp}{NeoN/blockAmr/linearAlgebra/precond.hpp}}"{}}\ \textcolor{comment}{//\ FaceCoeffLevel}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00023}00023\ \textcolor{comment}{/*\ @brief\ What\ a\ ONE-\/SHOT\ solve\ takes\ beyond\ the\ system\ itself\ -\/-\/\ the\ union\ of\ the\ three}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00024}00024\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \`{}ginkgo\_solve*\`{}\ Python\ argument\ lists,\ so\ a\ binding\ lambda\ fills\ the\ fields\ its\ own}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00025}00025\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ surface\ exposes\ and\ leaves\ the\ rest\ at\ these\ defaults\ (which\ ARE\ the\ Python\ ones).}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00026}00026\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Not\ a\ SolverConfig:\ nothing\ here\ is\ parsed\ to\ an\ enum,\ and\ \`{}solver`\ must\ reach}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00027}00027\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ generateBasicSolver\ unvalidated\ so\ an\ unknown\ spelling\ still\ fails\ in\ its\ wording.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00028}00028\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Each\ entry\ point\ below\ names\ the\ fields\ it\ reads.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00029}00029\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00030}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec}{00030}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec}{OneshotSpec}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00031}00031\ \{}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ "{}cg"{}/"{}bicgstab"{}/"{}gmres"{}\ (generateBasicSolver's\ subset).}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00033}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a8bab80e27f6b6b7fe488e31553ec7350}{00033}}\ \ \ \ \ std::string\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a8bab80e27f6b6b7fe488e31553ec7350}{solver}}\ =\ \textcolor{stringliteral}{"{}bicgstab"{}};}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00034}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a699fe20b86d457011389fa18a6c5cb35}{00034}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a699fe20b86d457011389fa18a6c5cb35}{maxIter}}\ =\ 1000;}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ Quoted\ against\ the\ ORIGINAL\ system's\ ||rhs||,\ then\ applied\ absolutely;\ atol\ >\ 0\ adds}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ the\ plain\ ||r\_k||\_2\ <=\ atol.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00037}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a760366b2ddced63990e1f72611f22734}{00037}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a760366b2ddced63990e1f72611f22734}{rtol}}\ =\ 1\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{e}}-\/10;}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00038}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a6ac3414175bab94032f5058c124ad804}{00038}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a6ac3414175bab94032f5058c124ad804}{atol}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ sign*L\ must\ be\ SPD:\ -\/1\ for\ MLPoisson,\ +1\ for\ MLABecLaplacian.\ MLLinOp\ paths\ only.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00040}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a1d0cfc574ce36eced293352b23055b4a}{00040}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a1d0cfc574ce36eced293352b23055b4a}{sign}}\ =\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ Where\ the\ Krylov\ vector\ ops\ run;\ resolved\ at\ CALL\ time.\ MLLinOp\ paths\ only.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00042}\mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a1f801401f716deadef7436d9a9c5e091}{00042}}\ \ \ \ \ std::optional<NeoN::Executor>\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec_a1f801401f716deadef7436d9a9c5e091}{executor}};}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00043}00043\ \};}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00045}00045\ \textcolor{comment}{//\ Matrix-\/free\ residual-\/correction\ CG\ solve\ of\ the\ single-\/level\ MLLinOp\ system\ L(sol)\ =\ rhs;}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00046}00046\ \textcolor{comment}{//\ the\ body\ of\ \`{}ginkgo\_solve`,\ whose\ docstring\ carries\ the\ derivation\ and\ \`{}sign`.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00047}00047\ \textcolor{comment}{//\ Reads\ every\ OneshotSpec\ field\ but\ \`{}solver`:\ this\ operator\ is\ SPD\ by\ construction\ and\ the}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00048}00048\ \textcolor{comment}{//\ method\ is\ always\ Cg.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00049}\mbox{\hyperlink{namespaceblockamr_1_1la_a9fe981734c8dc8d9308675a3fd8d72b0}{00049}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a9fe981734c8dc8d9308675a3fd8d72b0}{solveMlmgSystem}}(}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00050}00050\ \ \ \ \ amrex::MLLinOpT<amrex::MultiFab>\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{lp}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00051}00051\ \ \ \ \ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec}{OneshotSpec}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{spec}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00054}00054\ );}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00056}00056\ \textcolor{comment}{//\ Matrix-\/free\ solve\ of\ the\ multi-\/level\ COMPOSITE\ MLLinOp\ system,\ one\ sol/rhs\ MultiFab\ per}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00057}00057\ \textcolor{comment}{//\ AMR\ level\ (coarsest\ first);\ the\ body\ of\ \`{}ginkgo\_solve\_composite`.\ Reads\ every\ field.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00058}\mbox{\hyperlink{namespaceblockamr_1_1la_a0505b2e3e7d6acc4a501f3687609ad3f}{00058}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a0505b2e3e7d6acc4a501f3687609ad3f}{solveComposite}}(}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00059}00059\ \ \ \ \ amrex::MLLinOpT<amrex::MultiFab>\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{lp}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Vector<amrex::MultiFab*>\&\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Vector<amrex::MultiFab\ const*>\&\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec}{OneshotSpec}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{spec}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00063}00063\ );}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00065}00065\ \textcolor{comment}{//\ One-\/shot\ Ginkgo\ solve\ of\ a\ general\ face-\/coefficient\ system\ A(sol)\ =\ rhs;\ the\ body\ of}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00066}00066\ \textcolor{comment}{//\ \`{}ginkgo\_solve\_face\_coeffs`,\ whose\ historical\ dict\ has\ only\ num\_iters/res\_norm.\ The}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00067}00067\ \textcolor{comment}{//\ coefficients\ ARE\ the\ matrix,\ so\ \`{}sign`\ is\ not\ read;\ nor\ is\ \`{}executor`\ -\/-\/\ this\ entry\ point}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00068}00068\ \textcolor{comment}{//\ has\ no\ NeoN\ executor\ and\ its\ Ginkgo\ one\ is\ fixed\ to\ Reference.}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00069}\mbox{\hyperlink{namespaceblockamr_1_1la_acc5c2cea520d9ad7802b0b4c027e7fa6}{00069}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_acc5c2cea520d9ad7802b0b4c027e7fa6}{solveFaceCoeffs}}(}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel}{FaceCoeffLevel}}\&\ level,}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00071}00071\ \ \ \ \ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1OneshotSpec}{OneshotSpec}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{spec}}}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00074}00074\ );}
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{oneshot_8hpp_source_l00076}00076\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

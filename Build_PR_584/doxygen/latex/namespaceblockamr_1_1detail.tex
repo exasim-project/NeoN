@@ -1,0 +1,63 @@
+\doxysection{blockamr\+::detail Namespace Reference}
+\hypertarget{namespaceblockamr_1_1detail}{}\label{namespaceblockamr_1_1detail}\index{blockamr::detail@{blockamr::detail}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{Box\+Pair}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Executor\+Type , class Kernel $>$ }\\void \mbox{\hyperlink{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}{parallel\+For\+Impl}} (const Executor\+Type \&, const amrex\+::\+Box \&bx, Kernel kernel, const std\+::string \&name)
+\item 
+{\footnotesize template$<$typename Executor\+Type , class Kernel $>$ }\\void \mbox{\hyperlink{namespaceblockamr_1_1detail_a3154d188dbaa90807b0000a38b3616e5}{parallel\+For\+Impl}} (const Executor\+Type \&, const amrex\+::\+Multi\+Fab \&mf, Kernel kernel, const std\+::string \&name)
+\item 
+\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{to\+Device}} (const std\+::vector$<$ \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}} $>$ \&host, const char \texorpdfstring{$\ast$}{*}name)
+\item 
+void \mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{add\+Task}} (std\+::vector$<$ \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}} $>$ \&out, \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{Box\+Pair}} boxes, const amrex\+::\+Box \&region, const amrex\+::\+Int\+Vect \&sh, int sign=1)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}\label{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e} 
+\index{blockamr::detail@{blockamr::detail}!addTask@{addTask}}
+\index{addTask@{addTask}!blockamr::detail@{blockamr::detail}}
+\doxysubsubsection{\texorpdfstring{addTask()}{addTask()}}
+{\footnotesize\ttfamily void blockamr\+::detail\+::add\+Task (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}} $>$ \&}]{out,  }\item[{\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{Box\+Pair}}}]{boxes,  }\item[{const amrex\+::\+Box \&}]{region,  }\item[{const amrex\+::\+Int\+Vect \&}]{sh,  }\item[{int}]{sign = {\ttfamily 1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}\label{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974} 
+\index{blockamr::detail@{blockamr::detail}!parallelForImpl@{parallelForImpl}}
+\index{parallelForImpl@{parallelForImpl}!blockamr::detail@{blockamr::detail}}
+\doxysubsubsection{\texorpdfstring{parallelForImpl()}{parallelForImpl()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Executor\+Type , class Kernel $>$ \\
+void blockamr\+::detail\+::parallel\+For\+Impl (\begin{DoxyParamCaption}\item[{const Executor\+Type \&}]{,  }\item[{const amrex\+::\+Box \&}]{bx,  }\item[{Kernel}]{kernel,  }\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_1_1detail_a3154d188dbaa90807b0000a38b3616e5}\label{namespaceblockamr_1_1detail_a3154d188dbaa90807b0000a38b3616e5} 
+\index{blockamr::detail@{blockamr::detail}!parallelForImpl@{parallelForImpl}}
+\index{parallelForImpl@{parallelForImpl}!blockamr::detail@{blockamr::detail}}
+\doxysubsubsection{\texorpdfstring{parallelForImpl()}{parallelForImpl()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Executor\+Type , class Kernel $>$ \\
+void blockamr\+::detail\+::parallel\+For\+Impl (\begin{DoxyParamCaption}\item[{const Executor\+Type \&}]{,  }\item[{const amrex\+::\+Multi\+Fab \&}]{mf,  }\item[{Kernel}]{kernel,  }\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}\label{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06} 
+\index{blockamr::detail@{blockamr::detail}!toDevice@{toDevice}}
+\index{toDevice@{toDevice}!blockamr::detail@{blockamr::detail}}
+\doxysubsubsection{\texorpdfstring{toDevice()}{toDevice()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} blockamr\+::detail\+::to\+Device (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}} $>$ \&}]{host,  }\item[{const char \texorpdfstring{$\ast$}{*}}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+

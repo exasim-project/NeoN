@@ -1,0 +1,105 @@
+\doxysection{cells.\+hpp}
+\hypertarget{cells_8hpp_source}{}\label{cells_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp}}
+\mbox{\hyperlink{cells_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuQualifiers.H>}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00009}00009\ \textcolor{comment}{//\ The\ benchmarked\ cell\ kernels,\ written\ ONCE\ and\ templated\ on\ the\ accessor\ so\ every}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00010}00010\ \textcolor{comment}{//\ launcher\ runs\ identical\ arithmetic.\ Accessors\ take\ GLOBAL\ (i,\ j,\ k);\ see\ launch.hpp.}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00012}\mbox{\hyperlink{namespaceblockamr}{00012}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00015}00015\ \textcolor{comment}{//\ y\ =\ a*x\ +\ y.\ No\ stencil,\ no\ ghosts:\ the\ pure\ bandwidth\ floor\ (2\ reads,\ 1\ write).}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00016}00016\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ In,\ \textcolor{keyword}{class}\ Out>}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00017}00017\ AMREX\_GPU\_HOST\_DEVICE\ AMREX\_FORCE\_INLINE\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00018}\mbox{\hyperlink{namespaceblockamr_a378d85fc2e9b3d2a284c37ac1fcd7c00}{00018}}\ \mbox{\hyperlink{namespaceblockamr_a378d85fc2e9b3d2a284c37ac1fcd7c00}{axpyCell}}(In\ \textcolor{keyword}{const}\&\ x,\ Out\ \textcolor{keyword}{const}\&\ y,\ \textcolor{keywordtype}{int}\ i,\ \textcolor{keywordtype}{int}\ j,\ \textcolor{keywordtype}{int}\ k,\ \textcolor{keywordtype}{double}\ a)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00020}00020\ \ \ \ \ y(i,\ j,\ k)\ =\ a\ *\ x(i,\ j,\ k)\ +\ y(i,\ j,\ k);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00021}00021\ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00023}00023\ \textcolor{comment}{//\ Constant-\/coefficient\ 7-\/point\ Laplacian,\ 1\ ghost\ -\/-\/\ the\ stencil\ shape\ the\ V-\/cycle's}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00024}00024\ \textcolor{comment}{//\ matrix-\/free\ apply\ has:\ bandwidth-\/bound,\ 8\ reads\ and\ 1\ write\ per\ cell\ before\ caching.}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00025}00025\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ In,\ \textcolor{keyword}{class}\ Out>}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00026}00026\ AMREX\_GPU\_HOST\_DEVICE\ AMREX\_FORCE\_INLINE\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00027}\mbox{\hyperlink{namespaceblockamr_abffd27a88de1fc289c1ee6c7dbd7ae6c}{00027}}\ \mbox{\hyperlink{namespaceblockamr_abffd27a88de1fc289c1ee6c7dbd7ae6c}{laplacianCell}}(In\ \textcolor{keyword}{const}\&\ in,\ Out\ \textcolor{keyword}{const}\&\ out,\ \textcolor{keywordtype}{int}\ i,\ \textcolor{keywordtype}{int}\ j,\ \textcolor{keywordtype}{int}\ k,\ \textcolor{keywordtype}{double}\ cx,\ \textcolor{keywordtype}{double}\ cy,\ \textcolor{keywordtype}{double}\ cz)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ s0\ =\ in(i,\ j,\ k);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00030}00030\ \ \ \ \ out(i,\ j,\ k)\ =\ cx\ *\ (in(i\ +\ 1,\ j,\ k)\ +\ in(i\ -\/\ 1,\ j,\ k)\ -\/\ 2.0\ *\ s0)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cy\ *\ (in(i,\ j\ +\ 1,\ k)\ +\ in(i,\ j\ -\/\ 1,\ k)\ -\/\ 2.0\ *\ s0)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00032}00032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cz\ *\ (in(i,\ j,\ k\ +\ 1)\ +\ in(i,\ j,\ k\ -\/\ 1)\ -\/\ 2.0\ *\ s0);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00033}00033\ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00035}00035\ \textcolor{comment}{//\ Harmonic-\/mean\ VanLeer\ correction,\ copied\ from\ stencilKernels.cpp\ so\ both\ stay\ comparable.}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00036}\mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{00036}}\ AMREX\_GPU\_HOST\_DEVICE\ AMREX\_FORCE\_INLINE\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(\textcolor{keywordtype}{double}\ d\_up,\ \textcolor{keywordtype}{double}\ d\_down)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00037}00037\ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ prod\ =\ d\_up\ *\ d\_down;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{return}\ (prod\ >\ 0.0)\ ?\ 2.0\ *\ prod\ /\ (d\_up\ +\ d\_down)\ :\ 0.0;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00040}00040\ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00042}00042\ \textcolor{comment}{//\ VanLeer-\/limited\ upwind\ divergence,\ mirroring\ divVanLeerCell\ in\ stencilKernels.cpp.\ Two}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00043}00043\ \textcolor{comment}{//\ ghost\ cells\ and\ three\ face\ fields\ -\/-\/\ FLOP-\/heavy\ and\ branchy,\ unlike\ the\ two\ above.}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00044}00044\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ In,\ \textcolor{keyword}{class}\ Face,\ \textcolor{keyword}{class}\ Out>}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00045}\mbox{\hyperlink{namespaceblockamr_a969845ffc8450284040138455e38ef41}{00045}}\ AMREX\_GPU\_HOST\_DEVICE\ AMREX\_FORCE\_INLINE\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a969845ffc8450284040138455e38ef41}{divVanLeerCell}}(}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00046}00046\ \ \ \ \ In\ \textcolor{keyword}{const}\&\ phi,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00047}00047\ \ \ \ \ Face\ \textcolor{keyword}{const}\&\ fx,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00048}00048\ \ \ \ \ Face\ \textcolor{keyword}{const}\&\ fy,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00049}00049\ \ \ \ \ Face\ \textcolor{keyword}{const}\&\ fz,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00050}00050\ \ \ \ \ Out\ \textcolor{keyword}{const}\&\ out,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keywordtype}{int}\ i,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{keywordtype}{int}\ j,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{keywordtype}{int}\ k,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keywordtype}{double}\ dx,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keywordtype}{double}\ dy,}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordtype}{double}\ dz}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00057}00057\ )}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keywordtype}{double}\ total\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00060}00060\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ fl\ =\ fx(i,\ j,\ k),\ fr\ =\ fx(i\ +\ 1,\ j,\ k);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ sm2\ =\ phi(i\ -\/\ 2,\ j,\ k),\ sm1\ =\ phi(i\ -\/\ 1,\ j,\ k),\ s0\ =\ phi(i,\ j,\ k),}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sp1\ =\ phi(i\ +\ 1,\ j,\ k),\ sp2\ =\ phi(i\ +\ 2,\ j,\ k);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dl\ =\ s0\ -\/\ sm1;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ pl\ =\ (fl\ >=\ 0.0)\ ?\ sm1\ +\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sm1\ -\/\ sm2,\ dl)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ s0\ -\/\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sp1\ -\/\ s0,\ dl);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dr\ =\ sp1\ -\/\ s0;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ pr\ =\ (fr\ >=\ 0.0)\ ?\ s0\ +\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(s0\ -\/\ sm1,\ dr)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ sp1\ -\/\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sp2\ -\/\ sp1,\ dr);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ total\ +=\ (fr\ *\ pr\ -\/\ fl\ *\ pl)\ /\ dx;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00072}00072\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ fl\ =\ fy(i,\ j,\ k),\ fr\ =\ fy(i,\ j\ +\ 1,\ k);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ sm2\ =\ phi(i,\ j\ -\/\ 2,\ k),\ sm1\ =\ phi(i,\ j\ -\/\ 1,\ k),\ s0\ =\ phi(i,\ j,\ k),}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sp1\ =\ phi(i,\ j\ +\ 1,\ k),\ sp2\ =\ phi(i,\ j\ +\ 2,\ k);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dl\ =\ s0\ -\/\ sm1;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ pl\ =\ (fl\ >=\ 0.0)\ ?\ sm1\ +\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sm1\ -\/\ sm2,\ dl)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ s0\ -\/\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sp1\ -\/\ s0,\ dl);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dr\ =\ sp1\ -\/\ s0;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ pr\ =\ (fr\ >=\ 0.0)\ ?\ s0\ +\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(s0\ -\/\ sm1,\ dr)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ sp1\ -\/\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sp2\ -\/\ sp1,\ dr);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ total\ +=\ (fr\ *\ pr\ -\/\ fl\ *\ pl)\ /\ dy;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00083}00083\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00084}00084\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ fl\ =\ fz(i,\ j,\ k),\ fr\ =\ fz(i,\ j,\ k\ +\ 1);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ sm2\ =\ phi(i,\ j,\ k\ -\/\ 2),\ sm1\ =\ phi(i,\ j,\ k\ -\/\ 1),\ s0\ =\ phi(i,\ j,\ k),}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sp1\ =\ phi(i,\ j,\ k\ +\ 1),\ sp2\ =\ phi(i,\ j,\ k\ +\ 2);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dl\ =\ s0\ -\/\ sm1;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ pl\ =\ (fl\ >=\ 0.0)\ ?\ sm1\ +\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sm1\ -\/\ sm2,\ dl)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ s0\ -\/\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sp1\ -\/\ s0,\ dl);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dr\ =\ sp1\ -\/\ s0;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ pr\ =\ (fr\ >=\ 0.0)\ ?\ s0\ +\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(s0\ -\/\ sm1,\ dr)}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ sp1\ -\/\ 0.5\ *\ \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleerCorr}}(sp2\ -\/\ sp1,\ dr);}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ total\ +=\ (fr\ *\ pr\ -\/\ fl\ *\ pl)\ /\ dz;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00095}00095\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00096}00096\ \ \ \ \ out(i,\ j,\ k)\ =\ total;}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00097}00097\ \}}
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{cells_8hpp_source_l00099}00099\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}

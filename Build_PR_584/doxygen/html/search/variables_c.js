@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['n_5f_0',['n_',['../classblockamr_1_1la_1_1KrylovSolver.html#aa5b6b223507d54a8217703cf6599c8fa',1,'blockamr::la::KrylovSolver']]],
+  ['name_1',['name',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#ae8f9c3ba621f5ff0cf743ad317090983',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector::name'],['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin.html#adccbbd2c1b3d558ca69c4db20e2f9392',1,'NeoN::finiteVolume::cellCentred::DomainMixin::name']]],
+  ['name_5f_2',['name_',['../classNeoN_1_1CollectionMixin.html#a019b4a98e1b7c10e7657bf5922a0ca3c',1,'NeoN::CollectionMixin']]],
+  ['nboxes_3',['nboxes',['../structblockamr_1_1BenchResult.html#ae4e10a791cb989082a7dbd78a3022532',1,'blockamr::BenchResult']]],
+  ['ncells_4',['ncells',['../structblockamr_1_1BenchResult.html#a874741d8d4ff8c7527c670a320858e9c',1,'blockamr::BenchResult']]],
+  ['ncycles_5',['nCycles',['../structblockamr_1_1la_1_1GmgPrecondSpec.html#a56838a2c46e837b9b6d2b0db3cb6974c',1,'blockamr::la::GmgPrecondSpec']]],
+  ['needsfaces_6',['needsFaces',['../structblockamr_1_1OpInfo.html#ade0d2331c6cdff5850417a6a15f5d103',1,'blockamr::OpInfo']]],
+  ['neighbour_7',['neighbour',['../structNeoN_1_1detail_1_1FaceData.html#a95a9eca3feedc6a0419a5247f3838af6',1,'NeoN::detail::FaceData']]],
+  ['neighbouroffset_8',['neighbourOffset',['../structNeoN_1_1la_1_1FaceToMatrixView.html#ae3737684bb67f8bb28c5d2bc5732ac6b',1,'NeoN::la::FaceToMatrixView']]],
+  ['nghost_9',['nghost',['../structblockamr_1_1OpInfo.html#aba561366c8d06eeb425bf223d7c62912',1,'blockamr::OpInfo']]],
+  ['nl_10',['NL',['../time_8hpp.html#a6c2bdfd6f25ccadb92fcff4173b7fec2',1,'time.hpp']]],
+  ['nlevels_11',['nlevels',['../structblockamr_1_1GmgResult.html#aa4c9060252095123d751b45f013de072',1,'blockamr::GmgResult']]],
+  ['nlocal_5f_12',['nLocal_',['../classblockamr_1_1la_1_1KrylovSolver.html#ac2d81a60750ab94a423c1c0e31078dd1',1,'blockamr::la::KrylovSolver']]],
+  ['norm_13',['norm',['../structblockamr_1_1la_1_1StopSpec.html#a8cd7af55b671a2a9fe4cd8d55a3a797c',1,'blockamr::la::StopSpec::norm'],['../structblockamr_1_1la_1_1SolverConfig.html#a8aa85d204560d6bb5a39838beba27d00',1,'blockamr::la::SolverConfig::norm']]],
+  ['norm_5f_14',['norm_',['../classblockamr_1_1la_1_1KrylovSolver.html#a739d2d6782322a4ad311eaf3e5e5711a',1,'blockamr::la::KrylovSolver']]],
+  ['normals_15',['normals',['../structNeoN_1_1detail_1_1FaceData.html#a725af2dde576e866edb25454a4d9d441',1,'NeoN::detail::FaceData']]],
+  ['num_5fiters_16',['num_iters',['../structblockamr_1_1la_1_1SolveResult.html#a8d46615d32f088c5bc907558976acffd',1,'blockamr::la::SolveResult']]],
+  ['numiter_17',['numIter',['../structNeoN_1_1la_1_1SolverStatsEntry.html#acbb96ec996ec12e705c379ba5c7f5003',1,'NeoN::la::SolverStatsEntry']]],
+  ['nx_18',['nx',['../structNeoN_1_1detail_1_1MeshParams.html#ad9362f60981ecfaa411f793619f7bc82',1,'NeoN::detail::MeshParams']]],
+  ['ny_19',['ny',['../structNeoN_1_1detail_1_1MeshParams.html#a47a2ae7affb90dc1d34c8b950f06de2f',1,'NeoN::detail::MeshParams']]],
+  ['nz_20',['nz',['../structNeoN_1_1detail_1_1MeshParams.html#a70327af024934248c1727eabbdbc719c',1,'NeoN::detail::MeshParams']]]
+];

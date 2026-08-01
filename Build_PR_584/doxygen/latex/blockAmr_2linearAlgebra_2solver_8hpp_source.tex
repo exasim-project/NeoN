@@ -1,0 +1,102 @@
+\doxysection{solver.\+hpp}
+\hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source}{}\label{blockAmr_2linearAlgebra_2solver_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solver.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/solver.hpp}}
+\mbox{\hyperlink{blockAmr_2linearAlgebra_2solver_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{adapt_8hpp}{NeoN/blockAmr/linearAlgebra/ginkgo/adapt.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockAmr_2linearAlgebra_2krylov_2executor_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{krylovSolver_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{result_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/result.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockAmr_2linearAlgebra_2linearSystem_8hpp}{NeoN/blockAmr/linearAlgebra/linearSystem.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{solverConfig_8hpp}{NeoN/blockAmr/linearAlgebra/solverConfig.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{core_2executor_2executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00024}00024\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00027}00027\ \textcolor{comment}{/*\ @class\ Solver}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00028}00028\ \textcolor{comment}{\ *\ @brief\ Solves\ a\ LinearSystem,\ holding\ only\ an\ executor\ and\ a\ SolverConfig\ by\ value.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00029}00029\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Deliberately\ NO\ factory:\ parseSolverKind\ decided\ the\ method\ once.\ Returns}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00030}00030\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ la::SolveResult,\ as\ every\ solve\ entry\ point\ here\ does.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00031}00031\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00032}\mbox{\hyperlink{classblockamr_1_1la_1_1Solver}{00032}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1Solver}{Solver}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00033}00033\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00034}00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00036}\mbox{\hyperlink{classblockamr_1_1la_1_1Solver_af147c94da4e344fb6c65e1fae744ef1c}{00036}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1Solver_af147c94da4e344fb6c65e1fae744ef1c}{Solver}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,\ \textcolor{keyword}{const}\ la::SolverConfig\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{cfg}})\ :\ exec\_(exec),\ cfg\_(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{cfg}})\ \{\}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{comment}{//\ rhs\ comes\ from\ the\ system,\ not\ the\ caller;\ \`{}sol`'s\ values\ seed\ the\ initial\ guess.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00039}\mbox{\hyperlink{classblockamr_1_1la_1_1Solver_acaea621d257e4a965f6cb2a93de7bef8}{00039}}\ \ \ \ \ la::SolveResult\ \mbox{\hyperlink{classblockamr_1_1la_1_1Solver_acaea621d257e4a965f6cb2a93de7bef8}{solve}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classblockamr_1_1la_1_1LinearSystem}{LinearSystem}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}},\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00040}00040\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Refused:\ these\ three\ want\ the\ hierarchy\ as\ the\ SOLVER,\ a\ different\ object\ with\ a}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ different\ stopping\ test.\ Checked\ before\ the\ refusal\ pays\ for\ a\ hierarchy.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cfg\_.solverKind\ ==\ \mbox{\hyperlink{namespaceblockamr_1_1la_a1aae8065653452b2c175a8d378fcaa7cab98274f8dcdebb2f22757a296771ed1f}{la::SolverKind::gmg}}\ ||\ cfg\_.solverKind\ ==\ \mbox{\hyperlink{namespaceblockamr_1_1la_a1aae8065653452b2c175a8d378fcaa7cad74eea4899a61f9fcbc527ef988ea0ff}{la::SolverKind::ir}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cfg\_.solverKind\ ==\ \mbox{\hyperlink{namespaceblockamr_1_1la_a1aae8065653452b2c175a8d378fcaa7cab8302d15ac233412661f57c04e317a76}{la::SolverKind::mpir}})}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}la::Solver:\ solver\ '"{}}\ +\ cfg\_.solver}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}'\ needs\ the\ GMG\ hierarchy,\ which\ is\ built\ from\ the\ coefficient\ fields\ rather\ "{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}than\ from\ a\ LinOp;\ use\ a\ Krylov\ method"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ASKED\ FOR,\ not\ decided\ here:\ the\ hierarchy\ comes\ from\ the\ coefficient\ FIELDS.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ precond\ =\ la::makeHierarchy(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}}.matrix(),\ cfg\_);}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ SystemKrylovSolver\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{s}}(exec\_,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}},\ cfg\_,\ std::move(precond));}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ rhs\ is\ READ,\ never\ written\ (gather\ takes\ a\ const\ FA\&);\ the\ cast\ lives\ here,}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ once,\ rather\ than\ widening\ ISolver's\ signature.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{s}}.solve(\textcolor{keyword}{const\_cast<}amrex::MultiFab\&\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}}.rhs()),\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}});}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00058}00058\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00060}00060\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{comment}{//\ Runs\ a\ LinearSystem\ through\ the\ Krylov\ machinery:\ la::toLinOp\ gives\ it\ a\ LinOp.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{keyword}{class\ }SystemKrylovSolver\ :\ \textcolor{keyword}{public}\ la::KrylovSolver}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00064}00064\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ SystemKrylovSolver(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classblockamr_1_1la_1_1LinearSystem}{LinearSystem}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}},}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ la::SolverConfig\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{cfg}},}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ precond}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{namespaceNeoN_1_1la}{la}}::\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver}{KrylovSolver}}(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1la}{la}}::\mbox{\hyperlink{namespaceblockamr_1_1la_ac598532e6ebf91f88e628a850a422c91}{makeExecutor}}(exec),}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Global\ dimension,\ which\ every\ rank\ MUST\ agree\ on.\ Asked\ of\ the\ matrix}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ rather\ than\ of\ a\ LinOp\ built\ for\ the\ question:\ toLinOp()\ stages\ pinned}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copies\ of\ every\ coefficient\ field\ on\ the\ host\ path.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1la}{la}}::\mbox{\hyperlink{namespaceblockamr_1_1la_a19b2c2c5d0f58ed617964e4db73f6271}{globalRows}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}}.matrix()),}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}}.\mbox{\hyperlink{namespaceblockamr_1_1la_abd37af0ad31b74df5f4126fcc80b41a9}{localRows}}()}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ const\_pointer\_cast:\ Ginkgo's\ factories\ store\ a\ non-\/const\ system\ matrix.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a5a7493c7ee628b54368a03429dde3a05}{build}}(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::const\_pointer\_cast<gko::LinOp>(la::toLinOp(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{system}}.matrix())),}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{cfg}}.solver,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{cfg}},}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(precond)}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00090}00090\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00092}00092\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\ exec\_;}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00093}00093\ \ \ \ \ la::SolverConfig\ cfg\_;}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00094}00094\ \};}
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2linearAlgebra_2solver_8hpp_source_l00096}00096\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

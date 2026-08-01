@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="bf16_8hpp" kind="file" language="C++">
+    <compoundname>bf16.hpp</compoundname>
+    <includes local="no">AMReX_Extension.H</includes>
+    <includes local="no">AMReX_GpuQualifiers.H</includes>
+    <includes local="no">cstdint</includes>
+    <includedby refid="gmgKernels_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp</label>
+        <link refid="bf16_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>AMReX_Extension.H</label>
+      </node>
+      <node id="3">
+        <label>AMReX_GpuQualifiers.H</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp</label>
+        <link refid="bf16_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgBottom.hpp</label>
+        <link refid="gmgBottom_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp</label>
+        <link refid="gmgKernels_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/gmgPrecond.hpp</label>
+        <link refid="gmgPrecond_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp</label>
+        <link refid="halo_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp</label>
+        <link refid="kernels_8hpp"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp</label>
+        <link refid="vcycle_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structblockamr_1_1la_1_1Bf16" prot="public">blockamr::la::Bf16</innerclass>
+    <innerclass refid="unionblockamr_1_1la_1_1Bf16_1_1Bits" prot="private">blockamr::la::Bf16::Bits</innerclass>
+    <innerclass refid="structblockamr_1_1la_1_1GmgCompute" prot="public">blockamr::la::GmgCompute</innerclass>
+    <innerclass refid="structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4" prot="public">blockamr::la::GmgCompute&lt; Bf16 &gt;</innerclass>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la">blockamr::la</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_Extension.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;AMReX_GpuQualifiers.H&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la" kindref="compound">blockamr::la</ref></highlight></codeline>
+<codeline lineno="13"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>bfloat16<sp/>as<sp/>a<sp/>STORAGE<sp/>type<sp/>for<sp/>the<sp/>GMG<sp/>level<sp/>hierarchy:<sp/>every<sp/>operation<sp/>below<sp/>converts</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>to<sp/>float<sp/>and<sp/>rounds<sp/>once<sp/>back.<sp/>Rejected<sp/>for<sp/>the<sp/>FIELDS,<sp/>kept<sp/>for<sp/>the<sp/>COEFFICIENTS<sp/>—</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>report/blockamr-precision-measurements.md<sp/>(NeoFOAM<sp/>repo).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="structblockamr_1_1la_1_1Bf16" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1la_1_1Bf16" kindref="compound">Bf16</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20" refid="structblockamr_1_1la_1_1Bf16_1a09b1d56f2adf5ecfa1aa19ad6113d4b1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::uint16_t<sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a09b1d56f2adf5ecfa1aa19ad6113d4b1" kindref="member">bits</ref>;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Trivially<sp/>default<sp/>constructible:<sp/>BaseFab&apos;s<sp/>placementNew<sp/>is<sp/>then<sp/>a<sp/>no-op.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="structblockamr_1_1la_1_1Bf16_1a38983c569b51bda7f62ac734cb2a86e5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a38983c569b51bda7f62ac734cb2a86e5" kindref="member">Bf16</ref>()<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">noexcept</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">default</ref>;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>only<sp/>converting<sp/>constructor:<sp/>a<sp/>double<sp/>overload<sp/>would<sp/>make<sp/>Bf16(0)<sp/>ambiguous.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="structblockamr_1_1la_1_1Bf16_1a22ecda2a5798c34437092626c0984cec" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_GPU_HOST_DEVICE</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_FORCE_INLINE</ref><sp/><ref refid="structblockamr_1_1la_1_1Bf16" kindref="compound">Bf16</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f)<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">noexcept</ref><sp/>:<sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a09b1d56f2adf5ecfa1aa19ad6113d4b1" kindref="member">bits</ref>(<ref refid="structblockamr_1_1la_1_1Bf16_1a4b9b743e079cfdd31f7aff54e722be3b" kindref="member">fromFloat</ref>(f))<sp/>{}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Implicit,<sp/>so<sp/>kernel<sp/>expressions<sp/>over<sp/>a<sp/>bf16<sp/>level<sp/>promote<sp/>to<sp/>float<sp/>and<sp/>compute<sp/>there.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="structblockamr_1_1la_1_1Bf16_1a8de1e32c12bb040b52d4a9dc5bdc91cd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_GPU_HOST_DEVICE</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_FORCE_INLINE</ref><sp/></highlight><highlight class="keyword">operator</highlight><highlight class="normal"><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">float</ref>()<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">noexcept</ref></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a8eab5f5857de162bef2e1cc41ca5b027" kindref="member">toFloat</ref>(<ref refid="structblockamr_1_1la_1_1Bf16_1a09b1d56f2adf5ecfa1aa19ad6113d4b1" kindref="member">bits</ref>);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>class<sp/>type<sp/>finds<sp/>no<sp/>built-in<sp/>+=,<sp/>and<sp/>the<sp/>prolongation<sp/>is<sp/>written<sp/>that<sp/>way.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="structblockamr_1_1la_1_1Bf16_1ad0f4720a10f64fcd789edfa7749ec39d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_GPU_HOST_DEVICE</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_FORCE_INLINE</ref><sp/><ref refid="structblockamr_1_1la_1_1Bf16" kindref="compound">Bf16</ref>&amp;<sp/><ref refid="structblockamr_1_1la_1_1Bf16_1ad0f4720a10f64fcd789edfa7749ec39d" kindref="member">operator+=</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="vcycle_8hpp_1a6cbbc7c85c194704aa7b4766fe971a6f" kindref="member">rhs</ref>)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a09b1d56f2adf5ecfa1aa19ad6113d4b1" kindref="member">bits</ref><sp/>=<sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a4b9b743e079cfdd31f7aff54e722be3b" kindref="member">fromFloat</ref>(<ref refid="structblockamr_1_1la_1_1Bf16_1a8eab5f5857de162bef2e1cc41ca5b027" kindref="member">toFloat</ref>(<ref refid="structblockamr_1_1la_1_1Bf16_1a09b1d56f2adf5ecfa1aa19ad6113d4b1" kindref="member">bits</ref>)<sp/>+<sp/><ref refid="vcycle_8hpp_1a6cbbc7c85c194704aa7b4766fe971a6f" kindref="member">rhs</ref>);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Round<sp/>to<sp/>nearest,<sp/>ties<sp/>to<sp/>even;<sp/>a<sp/>NaN<sp/>maps<sp/>to<sp/>a<sp/>quiet<sp/>NaN<sp/>rather<sp/>than<sp/>an<sp/>infinity.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="structblockamr_1_1la_1_1Bf16_1a4b9b743e079cfdd31f7aff54e722be3b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_GPU_HOST_DEVICE</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_FORCE_INLINE</ref><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::uint16_t<sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a4b9b743e079cfdd31f7aff54e722be3b" kindref="member">fromFloat</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Bits<sp/>b;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>b.f<sp/>=<sp/>f;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((b.u<sp/>&amp;<sp/>0x7F800000u)<sp/>==<sp/>0x7F800000u<sp/>&amp;&amp;<sp/>(b.u<sp/>&amp;<sp/>0x007FFFFFu)<sp/>!=<sp/>0u)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0x7FC0u;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::uint32_t<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">rounding</ref><sp/>=<sp/>0x7FFFu<sp/>+<sp/>((b.u<sp/>&gt;&gt;<sp/>16)<sp/>&amp;<sp/>1u);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::uint16_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">((b.u<sp/>+<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">rounding</ref>)<sp/>&gt;&gt;<sp/>16);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="structblockamr_1_1la_1_1Bf16_1a8eab5f5857de162bef2e1cc41ca5b027" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_GPU_HOST_DEVICE</ref><sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">AMREX_FORCE_INLINE</ref><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1la_1_1Bf16_1a8eab5f5857de162bef2e1cc41ca5b027" kindref="member">toFloat</ref>(std::uint16_t<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">h</ref>)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Bits<sp/>b;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>b.u<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">std::uint32_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">h</ref>)<sp/>&lt;&lt;<sp/>16;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>b.f;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Union<sp/>punning:<sp/>what<sp/>GCC,<sp/>Clang<sp/>and<sp/>nvcc<sp/>all<sp/>support;<sp/>std::bit_cast<sp/>is<sp/>not</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>device-usable<sp/>across<sp/>our<sp/>toolchains.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">union<sp/></highlight><highlight class="normal">Bits</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::uint32_t<sp/>u;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(Bf16)<sp/>==<sp/>2,<sp/></highlight><highlight class="stringliteral">&quot;Bf16<sp/>must<sp/>be<sp/>exactly<sp/>two<sp/>bytes&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>type<sp/>the<sp/>KERNELS<sp/>compute<sp/>in,<sp/>given<sp/>a<sp/>level&apos;s<sp/>STORAGE<sp/>type:<sp/>identity<sp/>except<sp/>float</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment">//<sp/>for<sp/>Bf16,<sp/>which<sp/>keeps<sp/>the<sp/>level<sp/>diagonal<sp/>exact<sp/>(report/blockamr-precision-measurements.md).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="77" refid="structblockamr_1_1la_1_1GmgCompute" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1la_1_1GmgCompute" kindref="compound">GmgCompute</ref></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="79" refid="structblockamr_1_1la_1_1GmgCompute_1aa126eb5504ebf8437c823f9a786c5dc8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1la_1_1GmgCompute_1aa126eb5504ebf8437c823f9a786c5dc8" kindref="member">type</ref><sp/>=<sp/>T;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;&gt;</highlight></codeline>
+<codeline lineno="83" refid="structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1la_1_1GmgCompute" kindref="compound">GmgCompute</ref>&lt;<ref refid="structblockamr_1_1la_1_1Bf16" kindref="compound">Bf16</ref>&gt;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="85" refid="structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4_1a349f953d93136c116190004743d6d234" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4_1a349f953d93136c116190004743d6d234" kindref="member">type</ref><sp/>=<sp/><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">float</ref>;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="89" refid="namespaceblockamr_1_1la_1a8d8429ceef73ab6427d7a918b989424a" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr_1_1la_1a8d8429ceef73ab6427d7a918b989424a" kindref="member">GmgComputeT</ref><sp/>=<sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1la_1_1GmgCompute_1aa126eb5504ebf8437c823f9a786c5dc8" kindref="member">GmgCompute&lt;T&gt;::type</ref>;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr::la</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp"/>
+  </compounddef>
+</doxygen>

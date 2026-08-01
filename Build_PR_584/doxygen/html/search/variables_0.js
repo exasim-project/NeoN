@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['a_0',['a',['../structblockamr_1_1OpArgs.html#a96116acdc7f1fe0a66e928ec94572b0d',1,'blockamr::OpArgs']]],
+  ['ab_1',['aB',['../structblockamr_1_1la_1_1FaceCoeffVals.html#aef4b6cc3215f7c291a249a945dfa1be5',1,'blockamr::la::FaceCoeffVals']]],
+  ['abortonfail_2',['abortOnFail',['../classNeoN_1_1View.html#a7e047af414596f9800112810a15a686e',1,'NeoN::View']]],
+  ['ae_3',['aE',['../structblockamr_1_1la_1_1FaceCoeffVals.html#a06b953544663c36b58288080c87ba556',1,'blockamr::la::FaceCoeffVals']]],
+  ['agggridsize_4',['aggGridSize',['../structblockamr_1_1KokkosGmgOpts.html#a6b7fbc6f0d6220d51a5c53c4b3582b22',1,'blockamr::KokkosGmgOpts']]],
+  ['agglevel0_5',['aggLevel0',['../structblockamr_1_1GmgResult.html#a8c64be39f3221c9e60be10e7a3a10830',1,'blockamr::GmgResult']]],
+  ['agglevel0size_6',['agglevel0size',['../structblockamr_1_1KokkosGmgOpts.html#a9ab91e0a750d236dca4ee27897a4ecbb',1,'blockamr::KokkosGmgOpts::aggLevel0Size'],['../structblockamr_1_1la_1_1GmgConfig.html#aa0b1d0b7d1566454775b6ab9c966d609',1,'blockamr::la::GmgConfig::aggLevel0Size']]],
+  ['agglomerate_7',['agglomerate',['../structblockamr_1_1KokkosGmgOpts.html#a518ff8d7de20b103a6d7344ef9b285ef',1,'blockamr::KokkosGmgOpts']]],
+  ['agglomerated_8',['agglomerated',['../vcycle_8hpp.html#a5d457c6d0ef8384ce3bd4998e609dc96',1,'vcycle.hpp']]],
+  ['al_9',['al',['../structblockamr_1_1GmgGsCell.html#a40925636ca08aca1e27725d896f8e08e',1,'blockamr::GmgGsCell::al'],['../structblockamr_1_1GmgResidRestrictCell.html#a04285adf9ed8cd2fa9c29d5c59c4ff3d',1,'blockamr::GmgResidRestrictCell::al']]],
+  ['alpha_10',['alpha',['../vcycle_8hpp.html#ae47025b73cbfce4f61d918b2058005ba',1,'alpha:&#160;vcycle.hpp'],['../structblockamr_1_1la_1_1GmgLevelT.html#a5d019c9ca4ce58dcb377a694d0e280d9',1,'blockamr::la::GmgLevelT::alpha'],['../structblockamr_1_1la_1_1GmgResidualInput.html#aa5619ef41e9b54c81df658044ed7d235',1,'blockamr::la::GmgResidualInput::alpha'],['../structblockamr_1_1la_1_1FaceCoeffs.html#ae3883c08e565e9c2d0baa566dd745a46',1,'blockamr::la::FaceCoeffs::alpha'],['../structblockamr_1_1la_1_1OwnedFaceCoeffs.html#ab9003d35208b760067324394300f19d4',1,'blockamr::la::OwnedFaceCoeffs::alpha'],['../classblockamr_1_1la_1_1MFFaceCoeffs.html#a072c3d4c5f99a38bcc9043df0980d707',1,'blockamr::la::MFFaceCoeffs::alpha'],['../structblockamr_1_1la_1_1FaceCoeffLevel.html#af039d1770c5f57a24d5a35c08f1a312c',1,'blockamr::la::FaceCoeffLevel::alpha'],['../structblockamr_1_1GmgArgs.html#a125f0488df8972b01ded8ea13abc3288',1,'blockamr::GmgArgs::alpha']]],
+  ['an_11',['aN',['../structblockamr_1_1la_1_1FaceCoeffVals.html#a7c511a9997758c243676416a7f37caf2',1,'blockamr::la::FaceCoeffVals']]],
+  ['areas_12',['areas',['../structNeoN_1_1detail_1_1FaceData.html#a434310466336674f1754179b30ee2552',1,'NeoN::detail::FaceData']]],
+  ['as_13',['aS',['../structblockamr_1_1la_1_1FaceCoeffVals.html#a19eb7605d3a3ea6f74f9f2a94a851fe6',1,'blockamr::la::FaceCoeffVals']]],
+  ['assignable_14',['assignable',['../structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes.html#aa84cebf42ab87cda70be20aef7454c0c',1,'NeoN::finiteVolume::cellCentred::BoundaryAttributes']]],
+  ['at_15',['aT',['../structblockamr_1_1la_1_1FaceCoeffVals.html#a589b2fc5cc18554a3b64d40f0c61f112',1,'blockamr::la::FaceCoeffVals']]],
+  ['atol_16',['atol',['../structblockamr_1_1la_1_1StopSpec.html#addcd1a7d67fac49742f113a5212c501a',1,'blockamr::la::StopSpec::atol'],['../structblockamr_1_1la_1_1OneshotSpec.html#a6ac3414175bab94032f5058c124ad804',1,'blockamr::la::OneshotSpec::atol'],['../structblockamr_1_1la_1_1SolverConfig.html#a2caf02e7fef22c4fa1f097da2e605d96',1,'blockamr::la::SolverConfig::atol']]],
+  ['attributes_5f_17',['attributes_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory.html#adad9d6655b500dd68e8fd74a55cbb081',1,'NeoN::finiteVolume::cellCentred::VolumeBoundaryFactory']]],
+  ['aw_18',['aW',['../structblockamr_1_1la_1_1FaceCoeffVals.html#ab2facbd58776d12f81ceece40a0bc87a',1,'blockamr::la::FaceCoeffVals']]]
+];

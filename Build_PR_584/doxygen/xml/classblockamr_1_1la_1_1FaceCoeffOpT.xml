@@ -1,0 +1,473 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classblockamr_1_1la_1_1FaceCoeffOpT" kind="class" language="C++" prot="public">
+    <compoundname>blockamr::la::FaceCoeffOpT</compoundname>
+    <basecompoundref refid="classblockamr_1_1la_1_1AmrexLinOpBase" prot="public" virt="non-virtual">blockamr::la::AmrexLinOpBase&lt; FaceCoeffOpT&lt; V &gt;, V &gt;</basecompoundref>
+    <includes refid="faceCoeffOp_8hpp" local="no">faceCoeffOp.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">class</ref> <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">V</ref></type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a97327af15519dc474d7e1e30a2428463" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref></type>
+        <definition>NeoN::Executor blockamr::la::FaceCoeffOpT&lt; V &gt;::nexec_</definition>
+        <argsstring></argsstring>
+        <name>nexec_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::nexec_</qualifiedname>
+        <initializer>{<ref refid="classNeoN_1_1SerialExecutor" kindref="compound">NeoN::SerialExecutor</ref> {}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="116" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="116" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1af998e504c50e4f97320bdc70976a7cf0" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1a5d3db556e29a5aefa129dc88010ec14c" kindref="member">BcArray</ref></type>
+        <definition>BcArray blockamr::la::FaceCoeffOpT&lt; V &gt;::bc_</definition>
+        <argsstring></argsstring>
+        <name>bc_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::bc_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="119" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="119" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a4cf879b74c7f500c32d4eea9b5295bda" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::FaceCoeffOpT&lt; V &gt;::hasPhysBc_</definition>
+        <argsstring></argsstring>
+        <name>hasPhysBc_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::hasPhysBc_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="120" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a92f4f7bce17bbeb82d71ee366b3fe02f" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+        <definition>bool blockamr::la::FaceCoeffOpT&lt; V &gt;::onDevice_</definition>
+        <argsstring></argsstring>
+        <name>onDevice_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::onDevice_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">false</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="121" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a5da1527df2ab1900bd2df67a0ae56034" prot="private" static="no" mutable="no">
+        <type><ref refid="structblockamr_1_1la_1_1FaceCoeffLevel" kindref="compound">FaceCoeffLevel</ref></type>
+        <definition>FaceCoeffLevel blockamr::la::FaceCoeffOpT&lt; V &gt;::level_</definition>
+        <argsstring></argsstring>
+        <name>level_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::level_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="127" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a7df79c00ff040154cc564687a0ef5bfd" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; amrex::MultiFab &gt;</type>
+        <definition>std::shared_ptr&lt;amrex::MultiFab&gt; blockamr::la::FaceCoeffOpT&lt; V &gt;::diagOwned_</definition>
+        <argsstring></argsstring>
+        <name>diagOwned_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::diagOwned_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="130" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a0fd6ce9e2769eb6fdb83e9856662fdcd" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::MultiFab *</type>
+        <definition>const amrex::MultiFab* blockamr::la::FaceCoeffOpT&lt; V &gt;::bcData_</definition>
+        <argsstring></argsstring>
+        <name>bcData_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::bcData_</qualifiedname>
+        <initializer>= <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">nullptr</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="133" column="27" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="133" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a55e8c3994f52812f3602539e28683918" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; amrex::MultiFab &gt;</type>
+        <definition>std::shared_ptr&lt;amrex::MultiFab&gt; blockamr::la::FaceCoeffOpT&lt; V &gt;::bcDataOwned_</definition>
+        <argsstring></argsstring>
+        <name>bcDataOwned_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::bcDataOwned_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="134" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1aa262e335eb62aa1c014966b5015f0b34" prot="private" static="no" mutable="no">
+        <type>amrex::Real</type>
+        <definition>amrex::Real blockamr::la::FaceCoeffOpT&lt; V &gt;::dx_[3]</definition>
+        <argsstring>[3]</argsstring>
+        <name>dx_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::dx_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="135" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="135" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a5074bb8726ddb65cca402e6027d69ef4" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; amrex::MultiFab &gt;</type>
+        <definition>std::shared_ptr&lt;amrex::MultiFab&gt; blockamr::la::FaceCoeffOpT&lt; V &gt;::in_</definition>
+        <argsstring></argsstring>
+        <name>in_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::in_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="136" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="136" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a35913345a33b0229c57320beb75d3773" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; amrex::MultiFab &gt;</type>
+        <definition>std::shared_ptr&lt;amrex::MultiFab&gt; blockamr::la::FaceCoeffOpT&lt; V &gt;::out_</definition>
+        <argsstring></argsstring>
+        <name>out_</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::out_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="137" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="137" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a1157458f84bafcd99cac79d6d81bc19c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>blockamr::la::FaceCoeffOpT&lt; V &gt;::FaceCoeffOpT</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec)</argsstring>
+        <name>FaceCoeffOpT</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::FaceCoeffOpT</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="66" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1ac992c964daf04d30ad5b955bca7caf27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>blockamr::la::FaceCoeffOpT&lt; V &gt;::FaceCoeffOpT</definition>
+        <argsstring>(std::shared_ptr&lt; const gko::Executor &gt; exec, const NeoN::Executor &amp;nexec, const FaceCoeffLevel &amp;level, DomainBc bc={}, const CellFieldLevel &amp;diag={})</argsstring>
+        <name>FaceCoeffOpT</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::FaceCoeffOpT</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::Executor &gt;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref> &amp;</type>
+          <declname>nexec</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1FaceCoeffLevel" kindref="compound">FaceCoeffLevel</ref> &amp;</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type><ref refid="structblockamr_1_1la_1_1DomainBc" kindref="compound">DomainBc</ref></type>
+          <declname>bc</declname>
+          <defval>{}</defval>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref> &amp;</type>
+          <declname>diag</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="70" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1aa394d31cb2629ddecc11da2a9c0d6891" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::applyBcOffset</definition>
+        <argsstring>(const gko::LinOp *zero, gko::LinOp *out) const</argsstring>
+        <name>applyBcOffset</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::applyBcOffset</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>zero</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="88" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a3cd79f0c7fc21838780639e855a76210" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::apply_impl</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x) const override</argsstring>
+        <name>apply_impl</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::apply_impl</qualifiedname>
+        <reimplements refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a076a2cc40c0134854594cab04844f038">apply_impl</reimplements>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="95" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a18aca1147d34cb6c4d3f1c61ab91d54b" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::applyWith</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x, bool inhom) const</argsstring>
+        <name>applyWith</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::applyWith</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+          <declname>inhom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="100" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a3dd6f18b700d76c5d79b7e446fc83357" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::applyFused</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x, bool inhom) const</argsstring>
+        <name>applyFused</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::applyFused</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+          <declname>inhom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="103" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1aa104010bfcf3a03c4d4353e152bfb969" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::applyStaged</definition>
+        <argsstring>(const gko::LinOp *b, gko::LinOp *x, bool inhom) const</argsstring>
+        <name>applyStaged</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::applyStaged</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> gko::LinOp *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>gko::LinOp *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+          <declname>inhom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="106" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a31fb6ddbae37e80603f4e59ae398fecc" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::fillGhostsDevice</definition>
+        <argsstring>(bool inhom) const</argsstring>
+        <name>fillGhostsDevice</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::fillGhostsDevice</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">bool</ref></type>
+          <declname>inhom</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="109" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classblockamr_1_1la_1_1FaceCoeffOpT_1a9674e0b8e966f6ac82b7f42e8a342671" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">void</ref></type>
+        <definition>void blockamr::la::FaceCoeffOpT&lt; V &gt;::stagePinned</definition>
+        <argsstring>(const FaceCoeffLevel &amp;level, const amrex::MultiFab *bcData)</argsstring>
+        <name>stagePinned</name>
+        <qualifiedname>blockamr::la::FaceCoeffOpT::stagePinned</qualifiedname>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> <ref refid="structblockamr_1_1la_1_1FaceCoeffLevel" kindref="compound">FaceCoeffLevel</ref> &amp;</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceblockamr_1_1la_1ad02d0d4ead9d31eb2e8229e340bf8e57" kindref="member">const</ref> amrex::MultiFab *</type>
+          <declname>bcData</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="112" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>blockamr::la::AmrexLinOpBase&lt; FaceCoeffOpT&lt; V &gt;, V &gt;</label>
+        <link refid="classblockamr_1_1la_1_1AmrexLinOpBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>blockamr::la::FaceCoeffOpT&lt; V &gt;</label>
+        <link refid="classblockamr_1_1la_1_1FaceCoeffOpT"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>gko::EnableCreateMethod&lt; FaceCoeffOpT&lt; V &gt; &gt;</label>
+      </node>
+      <node id="3">
+        <label>gko::EnableLinOp&lt; FaceCoeffOpT&lt; V &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>blockamr::la::AmrexLinOpBase&lt; FaceCoeffOpT&lt; V &gt;, V &gt;</label>
+        <link refid="classblockamr_1_1la_1_1AmrexLinOpBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>blockamr::la::FaceCoeffOpT&lt; V &gt;</label>
+        <link refid="classblockamr_1_1la_1_1FaceCoeffOpT"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>gko::EnableCreateMethod&lt; FaceCoeffOpT&lt; V &gt; &gt;</label>
+      </node>
+      <node id="3">
+        <label>gko::EnableLinOp&lt; FaceCoeffOpT&lt; V &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" line="62" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/faceCoeffOp.hpp" bodystart="63" bodyend="138"/>
+    <listofallmembers>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a354252a218b3a6c2938c2b57e7eef7a9" prot="protected" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>AmrexLinOpBase</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a856129536b8014470e9835d5b4329a6d" prot="protected" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>AmrexLinOpBase</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a3cd79f0c7fc21838780639e855a76210" prot="protected" virt="virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>apply_impl</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1a56cf0a9f9d75506bfe93d373764f835a" prot="protected" virt="non-virtual" ambiguityscope="AmrexLinOpBase&lt; FaceCoeffOpT&lt; V &gt;, V &gt;::"><scope>blockamr::la::FaceCoeffOpT</scope><name>apply_impl</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1aa394d31cb2629ddecc11da2a9c0d6891" prot="public" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>applyBcOffset</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a3dd6f18b700d76c5d79b7e446fc83357" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>applyFused</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1aa104010bfcf3a03c4d4353e152bfb969" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>applyStaged</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a18aca1147d34cb6c4d3f1c61ab91d54b" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>applyWith</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1af998e504c50e4f97320bdc70976a7cf0" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>bc_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a0fd6ce9e2769eb6fdb83e9856662fdcd" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>bcData_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a55e8c3994f52812f3602539e28683918" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>bcDataOwned_</name></member>
+      <member refid="classblockamr_1_1la_1_1AmrexLinOpBase_1adfdfe912d368b79845e297bd4f8569c7" prot="protected" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>DenseV</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a7df79c00ff040154cc564687a0ef5bfd" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>diagOwned_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1aa262e335eb62aa1c014966b5015f0b34" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>dx_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a1157458f84bafcd99cac79d6d81bc19c" prot="public" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>FaceCoeffOpT</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1ac992c964daf04d30ad5b955bca7caf27" prot="public" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>FaceCoeffOpT</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a31fb6ddbae37e80603f4e59ae398fecc" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>fillGhostsDevice</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a4cf879b74c7f500c32d4eea9b5295bda" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>hasPhysBc_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a5074bb8726ddb65cca402e6027d69ef4" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>in_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a5da1527df2ab1900bd2df67a0ae56034" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>level_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a97327af15519dc474d7e1e30a2428463" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>nexec_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a92f4f7bce17bbeb82d71ee366b3fe02f" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>onDevice_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a35913345a33b0229c57320beb75d3773" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>out_</name></member>
+      <member refid="classblockamr_1_1la_1_1FaceCoeffOpT_1a9674e0b8e966f6ac82b7f42e8a342671" prot="private" virt="non-virtual"><scope>blockamr::la::FaceCoeffOpT</scope><name>stagePinned</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

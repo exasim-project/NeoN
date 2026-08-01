@@ -1,0 +1,78 @@
+\doxysection{stencil.\+hpp}
+\hypertarget{stencil_8hpp_source}{}\label{stencil_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/stencil.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/stencil.hpp}}
+\mbox{\hyperlink{stencil_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_Array4.H>}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuQualifiers.H>}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00010}00010\ \textcolor{comment}{//\ The\ 7-\/point\ face-\/coefficient\ stencil\ at\ ONE\ cell:\ the\ negSumDiag\ diagonal}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00011}00011\ \textcolor{comment}{//\ alpha\ -\/\ (aE+aW+aN+aS+aT+aB)\ and\ its\ off-\/diagonal\ partner.\ Every\ matrix\ format,\ smoother\ and}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00012}00012\ \textcolor{comment}{//\ residual\ in\ the\ component\ must\ agree\ BIT-\/FOR-\/BIT\ on\ this\ arithmetic}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00013}00013\ \textcolor{comment}{//\ (matrixFree/faceCoeffOp.hpp:27-\/33,\ gmgKokkos/kernels.hpp:15-\/17),\ and\ that\ holds\ only\ while\ the}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00014}00014\ \textcolor{comment}{//\ association\ order\ exists\ in\ exactly\ one\ place\ -\/-\/\ so\ it\ lives\ here\ rather\ than\ in\ gmg/,\ whose}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00015}00015\ \textcolor{comment}{//\ kernels\ are\ one\ of\ four\ consumers.}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00017}00017\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00020}00020\ \textcolor{comment}{//\ The\ 6\ face-\/coefficient\ VALUES\ at\ one\ cell\ (a\ loop\ body\ holds\ Array4\ views,\ not\ FabArrays).}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00021}00021\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00022}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals}{00022}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals}{FaceCoeffVals}}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00023}00023\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00024}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_aef4b6cc3215f7c291a249a945dfa1be5}{00024}}\ \ \ \ \ T\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_a06b953544663c36b58288080c87ba556}{aE}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_ab2facbd58776d12f81ceece40a0bc87a}{aW}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_a7c511a9997758c243676416a7f37caf2}{aN}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_a19eb7605d3a3ea6f74f9f2a94a851fe6}{aS}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_a589b2fc5cc18554a3b64d40f0c61f112}{aT}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffVals_aef4b6cc3215f7c291a249a945dfa1be5}{aB}};}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00025}00025\ \};}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00027}00027\ \textcolor{comment}{//\ The\ 6\ face-\/coefficient\ VIEWS\ over\ one\ box.\ Trivially\ copyable,\ so\ it\ captures\ into\ a\ device}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00028}00028\ \textcolor{comment}{//\ lambda\ like\ the\ six\ Array4s\ it\ replaces;\ it\ exists\ so\ a\ kernel\ taking\ the\ set\ states\ that\ in}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00029}00029\ \textcolor{comment}{//\ one\ parameter\ instead\ of\ six\ that\ a\ caller\ can\ transpose.}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00030}00030\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ TC>}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00031}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays}{00031}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays}{FaceCoeffArrays}}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00033}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_aa0119f94c5c7de3dd367a8c4e05af45a}{00033}}\ \ \ \ \ amrex::Array4<const\ TC>\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_ab141cabba8a2cea2c1242acfda4656fd}{ux}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_aa0119f94c5c7de3dd367a8c4e05af45a}{lx}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_af57956ffaf2915f578fc51d27528f715}{uy}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_a2d7d48328e7f954f5ee58650ea8f5503}{ly}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_aadaed07b00eab735b501983c99192056}{uz}},\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffArrays_a7c43a550a855f1f9d2a644cbad3d376d}{lz}};}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00034}00034\ \};}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00036}00036\ \textcolor{comment}{//\ aE/aN/aT\ are\ the\ HIGH\ faces\ (upper,\ index\ +1),\ aW/aS/aB\ the\ LOW\ ones\ (lower,\ index\ 0).}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00037}00037\ \textcolor{comment}{//\ C\ is\ the\ type\ the\ CELL\ computes\ in;\ TC\ the\ coefficient\ STORAGE\ type,\ narrower\ on\ a}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00038}00038\ \textcolor{comment}{//\ reduced-\/precision\ GMG\ level\ (gmg/bf16.hpp)\ -\/-\/\ hence\ two\ parameters\ and\ not\ one.}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00039}00039\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ C,\ \textcolor{keyword}{class}\ TC>}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00040}00040\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{FaceCoeffVals<C>}}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00041}\mbox{\hyperlink{namespaceblockamr_1_1la_ad1e90eadc30bc6f14638b900a3a55953}{00041}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad1e90eadc30bc6f14638b900a3a55953}{loadFaceCoeffs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{FaceCoeffArrays<TC>}}\&\ a,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00042}00042\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}C\textcolor{keyword}{>}(a.ux(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}\ +\ 1,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}})),}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}C\textcolor{keyword}{>}(a.lx(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}})),}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}C\textcolor{keyword}{>}(a.uy(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}}\ +\ 1,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}})),}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}C\textcolor{keyword}{>}(a.ly(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}})),}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}C\textcolor{keyword}{>}(a.uz(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}}\ +\ 1)),}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}C\textcolor{keyword}{>}(a.lz(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{j}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{k}}))}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00050}00050\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00051}00051\ \}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00053}00053\ \textcolor{comment}{//\ Summation\ order\ aE+aW+aN+aS+aT+aB\ must\ stay\ bit-\/for-\/bit\ identical\ at\ every\ site.}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00054}00054\ \textcolor{comment}{//\ \`{}alpha`\ keeps\ its\ own\ deduced\ type\ and\ the\ result\ its\ natural\ one:\ where\ the\ diagonal\ SOURCE}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00055}00055\ \textcolor{comment}{//\ is\ stored\ narrower\ or\ wider\ than\ the\ cell\ computes,\ the\ single\ rounding\ must\ happen\ at\ the}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00056}00056\ \textcolor{comment}{//\ caller's\ own\ \`{}const\ C\ diag\ =\ ...`,\ exactly\ as\ it\ does\ when\ the\ formula\ is\ written\ inline.}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00057}00057\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ A,\ \textcolor{keyword}{class}\ C>}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00058}\mbox{\hyperlink{namespaceblockamr_1_1la_a2e08e0467cb5b97b4a8a582ddf229e35}{00058}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a2e08e0467cb5b97b4a8a582ddf229e35}{stencilDiag}}(\mbox{\hyperlink{classA}{A}}\ \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{FaceCoeffVals<C>}}\&\ c)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00059}00059\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}}\ -\/\ (c.aE\ +\ c.aW\ +\ c.aN\ +\ c.aS\ +\ c.aT\ +\ c.aB);}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00061}00061\ \}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00063}00063\ \textcolor{comment}{//\ Same\ rule\ for\ the\ neighbour\ values:\ P\ is\ the\ FIELD's\ type,\ which\ is\ independent\ of\ the}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00064}00064\ \textcolor{comment}{//\ coefficients'\ -\/-\/\ a\ level\ may\ store\ fp64\ fields\ against\ bf16\ coefficients.}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00065}00065\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ C,\ \textcolor{keyword}{class}\ P>}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00066}00066\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \textcolor{keyword}{auto}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00067}\mbox{\hyperlink{namespaceblockamr_1_1la_a38a3c6ecf19798210992b1f6198fa76d}{00067}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a38a3c6ecf19798210992b1f6198fa76d}{stencilOffDiag}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{FaceCoeffVals<C>}}\&\ c,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{P}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pE}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{P}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pW}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{P}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pN}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{P}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pS}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{P}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pT}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{P}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pB}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00068}00068\ \{}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keywordflow}{return}\ c.aE\ *\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pE}}\ +\ c.aW\ *\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pW}}\ +\ c.aN\ *\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pN}}\ +\ c.aS\ *\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pS}}\ +\ c.aT\ *\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pT}}\ +\ c.aB\ *\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{pB}};}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00070}00070\ \}}
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{stencil_8hpp_source_l00072}00072\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

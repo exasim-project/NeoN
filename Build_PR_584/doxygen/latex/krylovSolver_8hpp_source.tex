@@ -1,0 +1,97 @@
+\doxysection{krylov\+Solver.\+hpp}
+\hypertarget{krylovSolver_8hpp_source}{}\label{krylovSolver_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp}}
+\mbox{\hyperlink{krylovSolver_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gkoTypes_8hpp}{NeoN/blockAmr/core/gkoTypes.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{types_8hpp}{NeoN/blockAmr/core/types.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockAmr_2linearAlgebra_2krylov_2logging_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/logging.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{result_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/result.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{stopNormInf_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{solverConfig_8hpp}{NeoN/blockAmr/linearAlgebra/solverConfig.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00024}00024\ \textcolor{comment}{//\ Anything\ FaceCoeffSolver\ can\ drive:\ pack\ rhs\ -\/>\ solve\ -\/>\ unpack\ sol.\ Defined\ here\ in\ full}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00025}00025\ \textcolor{comment}{//\ so\ the\ std::unique\_ptr<ISolver>\ member\ needs\ no\ out-\/of-\/line\ destructor.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00026}\mbox{\hyperlink{classblockamr_1_1la_1_1ISolver}{00026}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1ISolver}{ISolver}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00028}00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00030}\mbox{\hyperlink{classblockamr_1_1la_1_1ISolver_a74e6fa81b13edbcbd4f10fdb3a13a377}{00030}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ISolver_a74e6fa81b13edbcbd4f10fdb3a13a377}{\string~ISolver}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00032}\mbox{\hyperlink{classblockamr_1_1la_1_1ISolver_a7a6e80ad05ae5e472169f9d321063faf}{00032}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ISolver_a7a6e80ad05ae5e472169f9d321063faf}{solve}}(amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}})\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00033}00033\ \};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00035}00035\ \textcolor{comment}{//\ Ginkgo\ Krylov\ solver\ built\ ONCE\ -\/-\/\ operator,\ generated\ solver\ and\ device\ scratch\ -\/-\/\ so\ a}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00036}00036\ \textcolor{comment}{//\ solve\ is\ pack\ -\/>\ apply\ -\/>\ unpack\ with\ no\ rebuild.\ The\ operator\ comes\ from\ a\ subclass.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00037}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver}{00037}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver}{KrylovSolver}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ISolver}{ISolver}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00039}00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00041}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_abcbe40d3e98fcebd8671949d2919bcd8}{00041}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_abcbe40d3e98fcebd8671949d2919bcd8}{\string~KrylovSolver}}()\ \textcolor{keyword}{override}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00043}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a84e5945206550fc5ee78493c61feb6db}{00043}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a84e5945206550fc5ee78493c61feb6db}{solve}}(amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}},\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}})\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00045}00045\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{comment}{//\ n\ is\ the\ GLOBAL\ cell\ count,\ nLocal\ this\ rank's\ share;\ equal\ outside\ MPI.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00048}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa1e595b34176e97d3a5a9e7a4bbf18db}{00048}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa1e595b34176e97d3a5a9e7a4bbf18db}{KrylovSolver}}(}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,\ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nLocal}}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00050}00050\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//\ Called\ by\ the\ subclass\ once\ its\ operator\ is\ built.\ The\ tolerances,\ the\ iteration\ cap,}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ project\_nullspace\ and\ \`{}norm`\ -\/-\/\ what\ the\ criteria\ and\ the\ reported\ res\_norm\ measure\ in}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ ("{}l2"{}\ |\ "{}linf"{},\ MLMG's;\ stopNormInf.hpp)\ -\/-\/\ all\ come\ from\ \`{}config`.\ \`{}solver`\ is\ passed}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ SEPARATELY\ and\ is\ not\ always\ config.solver:\ solver="{}mpir"{}\ builds\ an\ "{}ir"{}\ outer\ loop.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00056}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a5a7493c7ee628b54368a03429dde3a05}{00056}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a5a7493c7ee628b54368a03429dde3a05}{build}}(}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ std::shared\_ptr<gko::LinOp>\ op,}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ solver,}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolverConfig}{SolverConfig}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{config}},}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ precond\ =\ \textcolor{keyword}{nullptr}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00061}00061\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ v\ -\/=\ mean(v),\ on\ the\ executor.\ Takes\ the\ GLOBAL\ view,\ not\ the\ local\ Dense,\ or\ each}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{comment}{//\ rank\ would\ subtract\ its\ own\ partial\ mean.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00065}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a6c59a4f2300fbd64d7769d64209bf28f}{00065}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a6c59a4f2300fbd64d7769d64209bf28f}{subtractMean}}(gko::LinOp*\ v);}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00067}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a73f19481a5cf513aad526f4c23ec331f}{00067}}\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a73f19481a5cf513aad526f4c23ec331f}{exec\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00068}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a224e74b9d3511d2b2c319a3f3dd6d676}{00068}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a224e74b9d3511d2b2c319a3f3dd6d676}{onDevice\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00069}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa5b6b223507d54a8217703cf6599c8fa}{00069}}\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa5b6b223507d54a8217703cf6599c8fa}{n\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00070}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ac2d81a60750ab94a423c1c0e31078dd1}{00070}}\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ac2d81a60750ab94a423c1c0e31078dd1}{nLocal\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00071}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a65adffba1db4f8f8fea3a6c6ee898095}{00071}}\ \ \ \ \ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a65adffba1db4f8f8fea3a6c6ee898095}{op\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{comment}{//\ Rank-\/local\ storage,\ sized\ nLocal\_.\ gather/scatter\ fill\ these\ directly.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00073}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_abdc2d251aec7d557e98341bc0ab72dbe}{00073}}\ \ \ \ \ std::unique\_ptr<Dense>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_abdc2d251aec7d557e98341bc0ab72dbe}{b\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00074}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa94e69331186272e2df08ff56d08d9a5}{00074}}\ \ \ \ \ std::unique\_ptr<Dense>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa94e69331186272e2df08ff56d08d9a5}{x\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00075}00075\ \ \ \ \ \textcolor{comment}{//\ What\ Ginkgo\ is\ handed:\ a\ distributed::Vector\ viewing\ the\ buffer\ above\ on\ >1\ rank,\ the}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{comment}{//\ buffer\ itself\ on\ one\ -\/-\/\ which\ is\ what\ makes\ its\ dots\ and\ norms\ reduce\ across\ ranks.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00077}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_add6b3efdf9c3028a900c081c21f12211}{00077}}\ \ \ \ \ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_add6b3efdf9c3028a900c081c21f12211}{bGlobal\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00078}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ad1b43f9c29caf995d1919f6dc9d54c8e}{00078}}\ \ \ \ \ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ad1b43f9c29caf995d1919f6dc9d54c8e}{xGlobal\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00079}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa052f1505e95aac6a7e3a37b72ed9c02}{00079}}\ \ \ \ \ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa052f1505e95aac6a7e3a37b72ed9c02}{solver\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00080}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a4e743fce67f1ae8b7c2d6078bf991007}{00080}}\ \ \ \ \ std::shared\_ptr<gko::log::Convergence<double>>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a4e743fce67f1ae8b7c2d6078bf991007}{logger\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00081}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a30ae528277d2b2239d2b01a542620e4e}{00081}}\ \ \ \ \ std::shared\_ptr<ResidualHistoryLogger>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a30ae528277d2b2239d2b01a542620e4e}{resLogger\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00082}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_afb8854e064c1d1b53ae01bd5b18cdcd9}{00082}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_afb8854e064c1d1b53ae01bd5b18cdcd9}{projectNullspace\_}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00083}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a443fb6208ded63ddf685b483a6d6479e}{00083}}\ \ \ \ \ std::unique\_ptr<Dense>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a443fb6208ded63ddf685b483a6d6479e}{ones\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00084}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aea43d8cee302c356c8def6fe2e510795}{00084}}\ \ \ \ \ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aea43d8cee302c356c8def6fe2e510795}{onesGlobal\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{comment}{//\ Constant\ offset\ of\ an\ AFFINE\ operator\ (inhomogeneous\ BCs):\ op\_\ stays\ A\ and\ solve()}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ runs\ it\ on\ rhs\ -\/\ bcOffset\_.\ Null\ on\ the\ homogeneous\ default.}}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00087}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ab19d962ab59e77b62a98faa4877952c6}{00087}}\ \ \ \ \ std::unique\_ptr<Dense>\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ab19d962ab59e77b62a98faa4877952c6}{bcOffset\_}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00088}\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a739d2d6782322a4ad311eaf3e5e5711a}{00088}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{NormKind}}\ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a739d2d6782322a4ad311eaf3e5e5711a}{norm\_}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3}{NormKind::l2}};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00089}00089\ \};}
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{krylovSolver_8hpp_source_l00091}00091\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

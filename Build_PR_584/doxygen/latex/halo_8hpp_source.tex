@@ -1,0 +1,233 @@
+\doxysection{halo.\+hpp}
+\hypertarget{halo_8hpp_source}{}\label{halo_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp}}
+\mbox{\hyperlink{halo_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <AMReX\_BoxArray.H>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <AMReX\_BoxList.H>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <AMReX\_Periodicity.H>}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{bc_8hpp}{NeoN/blockAmr/core/bc.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gmgKernels_8hpp}{NeoN/blockAmr/linearAlgebra/gmg/gmgKernels.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{launch_8hpp}{NeoN/blockAmr/core/launch.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00022}00022\ \textcolor{comment}{//\ The\ V-\/cycle's\ data\ movements\ on\ Kokkos:\ the\ ghost\ exchange,\ the\ copy\ between\ two}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00023}00023\ \textcolor{comment}{//\ decompositions\ of\ one\ region,\ and\ the\ zero\ fill.\ ONE\ RANK\ ONLY\ -\/-\/\ a\ plan\ names\ LOCAL\ box}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00024}00024\ \textcolor{comment}{//\ indices.\ Why,\ and\ how\ a\ plan\ is\ built:\ report/blockamr-\/gmg-\/notes.md\#halo-\/plans.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00026}00026\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00029}00029\ \textcolor{comment}{//\ Threads\ per\ work\ block,\ and\ so\ the\ team\ size\ of\ the\ copy\ kernel.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00030}\mbox{\hyperlink{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0}{00030}}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0}{kCopyBlock}}\ =\ 128;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00032}00032\ \textcolor{comment}{//\ One\ work\ block\ of\ one\ rectangular\ region\ copy,\ in\ GLOBAL\ cell\ indices:}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00033}00033\ \textcolor{comment}{//\ \ \ dst[dstBox](i,\ j,\ k)\ =\ sign\ *\ src[srcBox](i\ +\ sh[0],\ j\ +\ sh[1],\ k\ +\ sh[2])}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00034}00034\ \textcolor{comment}{//\ over\ cells\ [base,\ base\ +\ kCopyBlock)\ of\ [lo,\ lo\ +\ len),\ i\ fastest.\ Box\ indices\ are\ LOCAL;}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00035}00035\ \textcolor{comment}{//\ \`{}sh`\ is\ 0\ for\ a\ same-\/region\ copy,\ the\ negated\ image\ shift\ for\ a\ wrapped\ ghost.\ Why}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00036}00036\ \textcolor{comment}{//\ fixed-\/size\ blocks\ and\ not\ one\ team\ per\ region:\ notes\#halo-\/plans.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00037}\mbox{\hyperlink{structblockamr_1_1CopyTask}{00037}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1CopyTask}{CopyTask}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00039}\mbox{\hyperlink{structblockamr_1_1CopyTask_a256ec1b7a55ab0ce22e5c479959830be}{00039}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_a256ec1b7a55ab0ce22e5c479959830be}{dst}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00040}\mbox{\hyperlink{structblockamr_1_1CopyTask_a23290533e49b2ef713c4653f50e8c5bc}{00040}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_a23290533e49b2ef713c4653f50e8c5bc}{src}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00041}\mbox{\hyperlink{structblockamr_1_1CopyTask_a3e37249ffb04c1f02cb22648b68cf515}{00041}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_a3e37249ffb04c1f02cb22648b68cf515}{lo}}[3];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00042}\mbox{\hyperlink{structblockamr_1_1CopyTask_a7fcc5ea1ef890113d78e3e26d5a3b700}{00042}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_a7fcc5ea1ef890113d78e3e26d5a3b700}{len}}[3];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00043}\mbox{\hyperlink{structblockamr_1_1CopyTask_a8a340c3799f7a2adce3cd2b4bd89a319}{00043}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_a8a340c3799f7a2adce3cd2b4bd89a319}{sh}}[3];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00044}\mbox{\hyperlink{structblockamr_1_1CopyTask_a261015fc2b402e7835d1309212615772}{00044}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_a261015fc2b402e7835d1309212615772}{base}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{comment}{//\ -\/1\ only\ for\ a\ reflect-\/odd\ (homogeneous\ Dirichlet)\ domain\ ghost:\ a\ mirror\ copy,\ negated.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00046}\mbox{\hyperlink{structblockamr_1_1CopyTask_ab1d36511372e1fed164892a5139275ad}{00046}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyTask_ab1d36511372e1fed164892a5139275ad}{sign}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00047}00047\ \};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00049}00049\ \textcolor{comment}{//\ A\ whole\ exchange\ as\ one\ device\ table,\ so\ it\ executes\ in\ one\ launch.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00050}\mbox{\hyperlink{structblockamr_1_1CopyPlan}{00050}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00051}00051\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00052}\mbox{\hyperlink{structblockamr_1_1CopyPlan_a4126b96ebecd534a99d8cadd384f4446}{00052}}\ \ \ \ \ Kokkos::View<CopyTask*>\ \mbox{\hyperlink{structblockamr_1_1CopyPlan_a4126b96ebecd534a99d8cadd384f4446}{tasks}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00054}\mbox{\hyperlink{structblockamr_1_1CopyPlan_a3e240f8fa1cfc62123210e90dbd894ad}{00054}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan_a3e240f8fa1cfc62123210e90dbd894ad}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\mbox{\hyperlink{structblockamr_1_1CopyPlan_a4126b96ebecd534a99d8cadd384f4446}{tasks}}.extent(0));\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00055}00055\ \};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00057}00057\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00058}00058\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00060}\mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{00060}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{toDevice}}(\textcolor{keyword}{const}\ std::vector<CopyTask>\&\ host,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00061}00061\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00062}00062\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\ plan;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ std::string,\ not\ the\ char*:\ view\_alloc\ reads\ a\ raw\ pointer\ as\ memory\ to\ wrap.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00064}00064\ \ \ \ \ plan.\mbox{\hyperlink{structblockamr_1_1CopyPlan_a4126b96ebecd534a99d8cadd384f4446}{tasks}}\ =\ Kokkos::View<CopyTask*>(}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ Kokkos::view\_alloc(std::string(name),\ Kokkos::WithoutInitializing),\ host.size()}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00066}00066\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00067}00067\ \ \ \ \ \textcolor{keyword}{auto}\ mirror\ =\ Kokkos::create\_mirror\_view(plan.\mbox{\hyperlink{structblockamr_1_1CopyPlan_a4126b96ebecd534a99d8cadd384f4446}{tasks}});}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keywordflow}{for}\ (std::size\_t\ t\ =\ 0;\ t\ <\ host.size();\ ++t)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00069}00069\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ mirror(t)\ =\ host[t];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00072}00072\ \ \ \ \ Kokkos::deep\_copy(plan.\mbox{\hyperlink{structblockamr_1_1CopyPlan_a4126b96ebecd534a99d8cadd384f4446}{tasks}},\ mirror);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{return}\ plan;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00074}00074\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00076}00076\ \textcolor{comment}{//\ The\ two\ LOCAL\ box\ indices\ one\ copy\ names.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00077}\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{00077}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{BoxPair}}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00078}00078\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00079}\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair_a59c3165137eefde6c6b97ea7232099e5}{00079}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair_a59c3165137eefde6c6b97ea7232099e5}{dst}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00080}\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair_a8c837df13f742158bb9250b17560c57a}{00080}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair_a8c837df13f742158bb9250b17560c57a}{src}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00081}00081\ \};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00083}\mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{00083}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{addTask}}(}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00084}00084\ \ \ \ \ std::vector<CopyTask>\&\ out,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00085}00085\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{BoxPair}}\ boxes,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ region,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{const}\ amrex::IntVect\&\ sh,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keywordtype}{int}\ sign\ =\ 1}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00089}00089\ )}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00090}00090\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00091}00091\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1CopyTask}{CopyTask}}\ t\ \{\};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00092}00092\ \ \ \ \ t.\mbox{\hyperlink{structblockamr_1_1CopyTask_a256ec1b7a55ab0ce22e5c479959830be}{dst}}\ =\ boxes.\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair_a59c3165137eefde6c6b97ea7232099e5}{dst}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00093}00093\ \ \ \ \ t.src\ =\ boxes.\mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair_a8c837df13f742158bb9250b17560c57a}{src}};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00094}00094\ \ \ \ \ t.sign\ =\ sign;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00095}00095\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ d\ =\ 0;\ d\ <\ 3;\ ++d)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00096}00096\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ t.lo[d]\ =\ region.smallEnd(d);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ t.len[d]\ =\ region.length(d);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00099}00099\ \ \ \ \ \ \ \ \ t.sh[d]\ =\ sh[d];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ npts\ =\ t.len[0]\ *\ t.len[1]\ *\ t.len[2];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ base\ =\ 0;\ base\ <\ npts;\ base\ +=\ \mbox{\hyperlink{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0}{kCopyBlock}})}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00103}00103\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ t.base\ =\ base;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ out.push\_back(t);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00106}00106\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00107}00107\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00109}00109\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00111}00111\ \textcolor{comment}{//\ The\ ghost\ exchange\ of\ one\ FabArray:\ for\ every\ ghost\ cell,\ the\ valid\ cell\ -\/-\/\ of\ a\ box\ or\ of\ a}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00112}00112\ \textcolor{comment}{//\ periodic\ image\ -\/-\/\ that\ FillBoundary\ would\ copy\ it\ from.\ Why\ the\ shell\ partition\ makes\ task}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00113}00113\ \textcolor{comment}{//\ order\ irrelevant:\ notes\#halo-\/plans.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00114}00114\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ FAB>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00115}\mbox{\hyperlink{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2}{00115}}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\ \mbox{\hyperlink{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2}{makeHaloPlan}}(\textcolor{keyword}{const}\ amrex::FabArray<FAB>\&\ mf,\ \textcolor{keyword}{const}\ amrex::Periodicity\&\ period)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00116}00116\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxArray\&\ ba\ =\ mf.boxArray();}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keyword}{const}\ amrex::IntVect\ ng\ =\ mf.nGrowVect();}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<amrex::IntVect>\ shifts\ =\ period.shiftIntVect();}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00121}00121\ \ \ \ \ std::vector<CopyTask>\ tasks;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00122}00122\ \ \ \ \ std::vector<std::pair<int,\ amrex::Box>>\ isects;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ li\ =\ 0;\ li\ <\ mf.local\_size();\ ++li)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00124}00124\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\ valid\ =\ ba[mf.IndexArray()[li]];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ amrex::Box\&\ shell\ :\ amrex::boxDiff(amrex::grow(valid,\ ng),\ valid))}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ amrex::IntVect\&\ img\ :\ shifts)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Shift\ the\ query\ back\ into\ the\ source\ frame\ and\ the\ answer\ forward\ again.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ba.intersections(amrex::shift(shell,\ -\/img),\ isects);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ is\ :\ isects)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{detail::addTask}}(}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tasks,\ \{li,\ mf.localindex(is.first)\},\ amrex::shift(is.second,\ img),\ -\/img}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00140}00140\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00141}00141\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{detail::toDevice}}(tasks,\ \textcolor{stringliteral}{"{}gmg\_halo\_plan"{}});}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00142}00142\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00144}00144\ \textcolor{comment}{//\ The\ homogeneous\ domain-\/boundary\ ghost\ fill\ as\ a\ plan:\ per\ valid\ box\ on\ a\ non-\/periodic\ domain}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00145}00145\ \textcolor{comment}{//\ face,\ the\ one-\/cell\ ghost\ layer\ and\ the\ mirror\ interior\ cell\ (sign\ -\/1\ Dirichlet,\ +1\ Neumann).}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00146}00146\ \textcolor{comment}{//\ Twin\ of\ fillDomainBcGhosts*\ via\ la::bcGhostFill;\ face\ layers\ only,\ and\ runs\ AFTER\ the\ halo.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00147}00147\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ FAB>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00148}\mbox{\hyperlink{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e}{00148}}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\ \mbox{\hyperlink{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e}{makeBcPlan}}(\textcolor{keyword}{const}\ amrex::FabArray<FAB>\&\ mf,\ \textcolor{keyword}{const}\ amrex::Box\&\ domain,\ \textcolor{keyword}{const}\ la::BcArray\&\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}})}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00149}00149\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00150}00150\ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxArray\&\ ba\ =\ mf.boxArray();}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00151}00151\ \ \ \ \ std::vector<CopyTask>\ tasks;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ li\ =\ 0;\ li\ <\ mf.local\_size();\ ++li)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00153}00153\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\ valid\ =\ ba[mf.IndexArray()[li]];}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ s\ =\ 0;\ s\ <\ 6;\ ++s)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ la::BcGhostFill\ f;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!la::bcGhostFill(valid,\ domain,\ \mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}},\ s,\ f))}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ A\ ghost\ layer\ comes\ from\ its\ own\ box's\ interior,\ so\ dst\ and\ src\ are\ one\ index.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{detail::addTask}}(}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tasks,\ \{li,\ li\},\ f.gbx,\ amrex::IntVect(f.di,\ f.dj,\ f.dk),\ (f.sign\ <\ 0.0)\ ?\ -\/1\ :\ 1}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00167}00167\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{detail::toDevice}}(tasks,\ \textcolor{stringliteral}{"{}gmg\_bc\_plan"{}});}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00169}00169\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00171}00171\ \textcolor{comment}{//\ The\ valid-\/to-\/valid\ copy\ between\ two\ decompositions\ of\ one\ region\ -\/-\/\ what\ ParallelCopy\ does.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00172}00172\ \textcolor{comment}{//\ Cell-\/centred\ only:\ a\ face\ cell\ can\ have\ several\ sources,\ so\ the\ result\ would\ depend\ on\ task}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00173}00173\ \textcolor{comment}{//\ order\ (notes\#halo-\/plans).}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00174}00174\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ FAB>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00175}\mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{00175}}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\ \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{makeCopyPlan}}(\textcolor{keyword}{const}\ amrex::FabArray<FAB>\&\ dst,\ \textcolor{keyword}{const}\ amrex::FabArray<FAB>\&\ src)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00176}00176\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00177}00177\ \ \ \ \ std::vector<CopyTask>\ tasks;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00178}00178\ \ \ \ \ std::vector<std::pair<int,\ amrex::Box>>\ isects;}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00179}00179\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ li\ =\ 0;\ li\ <\ dst.local\_size();\ ++li)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00180}00180\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ src.boxArray().intersections(dst.boxArray()[dst.IndexArray()[li]],\ isects);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ is\ :\ isects)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{detail::addTask}}(tasks,\ \{li,\ src.localindex(is.first)\},\ is.second,\ amrex::IntVect(0));}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00186}00186\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00187}00187\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{detail::toDevice}}(tasks,\ \textcolor{stringliteral}{"{}gmg\_copy\_plan"{}});}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00188}00188\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00190}00190\ \textcolor{comment}{//\ Executes\ a\ plan\ in\ ONE\ launch,\ one\ team\ per\ work\ block.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00191}00191\ \textcolor{comment}{//\ Instantiated\ in\ kernels.cpp;\ a\ miss\ is\ a\ null\ device\ fnptr\ at\ runtime,\ not\ a\ link\ error.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00192}00192\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00193}\mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{00193}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{execCopyPlan}}(}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00195}00195\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiArray4<T>\&\ dst,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00196}00196\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiArray4<const\ T>\&\ src,}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00197}00197\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\&\ plan}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00198}00198\ );}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00200}00200\ \textcolor{comment}{//\ Twin\ of\ FillBoundary(periodicity).\ Reads\ valid\ cells\ and\ writes\ ghosts,\ so\ one\ kernel\ is\ safe.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00201}00201\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00202}\mbox{\hyperlink{namespaceblockamr_a95486c38dfdb11c75fbf6d50216b0b89}{00202}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a95486c38dfdb11c75fbf6d50216b0b89}{gmgFillBoundaryKokkos}}(la::GmgFab<T>\&\ mf,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\&\ plan)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00203}00203\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00204}00204\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{execCopyPlan}}(\textcolor{stringliteral}{"{}gmg\_halo"{}},\ mf.arrays(),\ mf.const\_arrays(),\ plan);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00205}00205\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00206}00206\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00207}00207\ \textcolor{comment}{//\ Twin\ of\ fillDomainBcGhostsDevice,\ from\ a\ makeBcPlan\ plan;\ disjoint,\ so\ one\ kernel\ is\ safe.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00208}00208\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00209}\mbox{\hyperlink{namespaceblockamr_ae796774ec85c18d4ca19ab3ae73c365e}{00209}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_ae796774ec85c18d4ca19ab3ae73c365e}{gmgFillDomainBcKokkos}}(la::GmgFab<T>\&\ mf,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\&\ plan)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00210}00210\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00211}00211\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{execCopyPlan}}(\textcolor{stringliteral}{"{}gmg\_bc"{}},\ mf.arrays(),\ mf.const\_arrays(),\ plan);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00212}00212\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00214}00214\ \textcolor{comment}{//\ Twin\ of\ dst.ParallelCopy(src,\ 0,\ 0,\ 1).}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00215}00215\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00216}\mbox{\hyperlink{namespaceblockamr_a8547baf3b422c7797aaf8446bf90e0e0}{00216}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a8547baf3b422c7797aaf8446bf90e0e0}{gmgCopyKokkos}}(la::GmgFab<T>\&\ dst,\ \textcolor{keyword}{const}\ la::GmgFab<T>\&\ src,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1CopyPlan}{CopyPlan}}\&\ plan)}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00217}00217\ \{}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00218}00218\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{execCopyPlan}}(\textcolor{stringliteral}{"{}gmg\_copy"{}},\ dst.arrays(),\ src.const\_arrays(),\ plan);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00219}00219\ \}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00221}00221\ \textcolor{comment}{//\ Stands\ in\ for\ setVal(0)\ on\ a\ coarse\ solution,\ one\ launch\ for\ all\ boxes.\ VALID\ cells\ only,}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00222}00222\ \textcolor{comment}{//\ which\ is\ equivalent\ here\ but\ need\ not\ stay\ so\ (notes\#halo-\/plans).}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00223}00223\ \textcolor{comment}{//\ Instantiated\ in\ kernels.cpp;\ a\ miss\ is\ a\ null\ device\ fnptr\ at\ runtime,\ not\ a\ link\ error.}}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00224}00224\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00225}\mbox{\hyperlink{namespaceblockamr_aa7c210de67cb5f2619a1ead22a9e801d}{00225}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_aa7c210de67cb5f2619a1ead22a9e801d}{gmgZeroKokkos}}(la::GmgFab<T>\&\ mf);}
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00226}00226\ }
+\DoxyCodeLine{\Hypertarget{halo_8hpp_source_l00227}00227\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}

@@ -1,0 +1,1431 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceblockamr" kind="namespace" language="C++">
+    <compoundname>blockamr</compoundname>
+    <innerclass refid="structblockamr_1_1BenchResult" prot="public">blockamr::BenchResult</innerclass>
+    <innerclass refid="structblockamr_1_1CellFieldLevel" prot="public">blockamr::CellFieldLevel</innerclass>
+    <innerclass refid="structblockamr_1_1ConstCellFieldLevel" prot="public">blockamr::ConstCellFieldLevel</innerclass>
+    <innerclass refid="structblockamr_1_1ConstFaceFieldLevel" prot="public">blockamr::ConstFaceFieldLevel</innerclass>
+    <innerclass refid="structblockamr_1_1CopyPlan" prot="public">blockamr::CopyPlan</innerclass>
+    <innerclass refid="structblockamr_1_1CopyTask" prot="public">blockamr::CopyTask</innerclass>
+    <innerclass refid="structblockamr_1_1FaceFieldLevel" prot="public">blockamr::FaceFieldLevel</innerclass>
+    <innerclass refid="structblockamr_1_1GmgArgs" prot="public">blockamr::GmgArgs</innerclass>
+    <innerclass refid="structblockamr_1_1GmgGsCell" prot="public">blockamr::GmgGsCell</innerclass>
+    <innerclass refid="structblockamr_1_1GmgProlongCell" prot="public">blockamr::GmgProlongCell</innerclass>
+    <innerclass refid="structblockamr_1_1GmgResidRestrictCell" prot="public">blockamr::GmgResidRestrictCell</innerclass>
+    <innerclass refid="structblockamr_1_1GmgResult" prot="public">blockamr::GmgResult</innerclass>
+    <innerclass refid="classblockamr_1_1KokkosGmgApply" prot="public">blockamr::KokkosGmgApply</innerclass>
+    <innerclass refid="structblockamr_1_1KokkosGmgOpts" prot="public">blockamr::KokkosGmgOpts</innerclass>
+    <innerclass refid="structblockamr_1_1MeshLevel" prot="public">blockamr::MeshLevel</innerclass>
+    <innerclass refid="structblockamr_1_1OpArgs" prot="public">blockamr::OpArgs</innerclass>
+    <innerclass refid="structblockamr_1_1OpInfo" prot="public">blockamr::OpInfo</innerclass>
+    <innerclass refid="structblockamr_1_1ViewAcc" prot="public">blockamr::ViewAcc</innerclass>
+    <innernamespace refid="namespaceblockamr_1_1detail">blockamr::detail</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1la">blockamr::la</innernamespace>
+    <innernamespace refid="namespaceblockamr_1_1ops">blockamr::ops</innernamespace>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespaceblockamr_1a337f936e4368bc7449b7b76ae96f190c" prot="public" static="no">
+        <type>Kokkos::View&lt; double ***, Kokkos::LayoutLeft, Kokkos::DefaultExecutionSpace::memory_space, Kokkos::MemoryTraits&lt; Kokkos::Unmanaged &gt; &gt;</type>
+        <definition>using blockamr::FabView = typedef Kokkos::View&lt; double***, Kokkos::LayoutLeft, Kokkos::DefaultExecutionSpace::memory_space, Kokkos::MemoryTraits&lt;Kokkos::Unmanaged&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>FabView</name>
+        <qualifiedname>blockamr::FabView</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="204" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="208" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceblockamr_1a8e0e4fcdcd370165548820d3e62321b0" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int blockamr::kCopyBlock</definition>
+        <argsstring></argsstring>
+        <name>kCopyBlock</name>
+        <qualifiedname>blockamr::kCopyBlock</qualifiedname>
+        <initializer>= 128</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="30" column="15" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="30" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceblockamr_1a378d85fc2e9b3d2a284c37ac1fcd7c00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class In</type>
+          </param>
+          <param>
+            <type>class Out</type>
+          </param>
+        </templateparamlist>
+        <type>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void</type>
+        <definition>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void blockamr::axpyCell</definition>
+        <argsstring>(In const &amp;x, Out const &amp;y, int i, int j, int k, double a)</argsstring>
+        <name>axpyCell</name>
+        <qualifiedname>blockamr::axpyCell</qualifiedname>
+        <param>
+          <type>In const &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>Out const &amp;</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>j</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>a</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" line="18" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" bodystart="18" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1abffd27a88de1fc289c1ee6c7dbd7ae6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class In</type>
+          </param>
+          <param>
+            <type>class Out</type>
+          </param>
+        </templateparamlist>
+        <type>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void</type>
+        <definition>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void blockamr::laplacianCell</definition>
+        <argsstring>(In const &amp;in, Out const &amp;out, int i, int j, int k, double cx, double cy, double cz)</argsstring>
+        <name>laplacianCell</name>
+        <qualifiedname>blockamr::laplacianCell</qualifiedname>
+        <param>
+          <type>In const &amp;</type>
+          <declname>in</declname>
+        </param>
+        <param>
+          <type>Out const &amp;</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>j</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>cx</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>cy</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>cz</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" line="27" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" bodystart="27" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a5e5d559f7f3f41d182db8b33a1472b29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE double</type>
+        <definition>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE double blockamr::vanleerCorr</definition>
+        <argsstring>(double d_up, double d_down)</argsstring>
+        <name>vanleerCorr</name>
+        <qualifiedname>blockamr::vanleerCorr</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>d_up</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>d_down</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" line="36" column="49" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" bodystart="36" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a969845ffc8450284040138455e38ef41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class In</type>
+          </param>
+          <param>
+            <type>class Face</type>
+          </param>
+          <param>
+            <type>class Out</type>
+          </param>
+        </templateparamlist>
+        <type>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void</type>
+        <definition>AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void blockamr::divVanLeerCell</definition>
+        <argsstring>(In const &amp;phi, Face const &amp;fx, Face const &amp;fy, Face const &amp;fz, Out const &amp;out, int i, int j, int k, double dx, double dy, double dz)</argsstring>
+        <name>divVanLeerCell</name>
+        <qualifiedname>blockamr::divVanLeerCell</qualifiedname>
+        <param>
+          <type>In const &amp;</type>
+          <declname>phi</declname>
+        </param>
+        <param>
+          <type>Face const &amp;</type>
+          <declname>fx</declname>
+        </param>
+        <param>
+          <type>Face const &amp;</type>
+          <declname>fy</declname>
+        </param>
+        <param>
+          <type>Face const &amp;</type>
+          <declname>fz</declname>
+        </param>
+        <param>
+          <type>Out const &amp;</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>j</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>dx</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>dy</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>dz</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" line="45" column="47" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" bodystart="45" bodyend="97"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1abda2e18cd9152ebcf48f0ab918b7b8b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string blockamr::kokkosExecutionSpace</definition>
+        <argsstring>()</argsstring>
+        <name>kokkosExecutionSpace</name>
+        <qualifiedname>blockamr::kokkosExecutionSpace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="26" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="26" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1aa1df6187be595ac6bc1fa3345c31941f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double blockamr::kokkosSelftest</definition>
+        <argsstring>(long n)</argsstring>
+        <name>kokkosSelftest</name>
+        <qualifiedname>blockamr::kokkosSelftest</qualifiedname>
+        <param>
+          <type>long</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="29" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="29" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a67024ec1305cdda60c9892914107f809" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double blockamr::kokkosMfSum</definition>
+        <argsstring>(amrex::MultiFab &amp;mf)</argsstring>
+        <name>kokkosMfSum</name>
+        <qualifiedname>blockamr::kokkosMfSum</qualifiedname>
+        <param>
+          <type>amrex::MultiFab &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="33" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="33" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a5c486abbbc3a9968b467c1dddf64d0ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt; std::string &gt; blockamr::benchOperators</definition>
+        <argsstring>()</argsstring>
+        <name>benchOperators</name>
+        <qualifiedname>blockamr::benchOperators</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="72" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="72" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a649d1dddad828fa8fc26f8ec436f0663" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1OpInfo" kindref="compound">OpInfo</ref></type>
+        <definition>OpInfo blockamr::benchOperatorInfo</definition>
+        <argsstring>(const std::string &amp;name)</argsstring>
+        <name>benchOperatorInfo</name>
+        <qualifiedname>blockamr::benchOperatorInfo</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="74" column="8" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="74" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1ac74bc6e6c8666f1b24784004e3d9d09b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void blockamr::applyOperator</definition>
+        <argsstring>(const std::string &amp;name, const OpArgs &amp;args)</argsstring>
+        <name>applyOperator</name>
+        <qualifiedname>blockamr::applyOperator</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1OpArgs" kindref="compound">OpArgs</ref> &amp;</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="77" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="77" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1adb238d3f739671138175ba5be12b5724" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1BenchResult" kindref="compound">BenchResult</ref></type>
+        <definition>BenchResult blockamr::benchOperator</definition>
+        <argsstring>(const std::string &amp;name, const OpArgs &amp;args, int iters, int batches)</argsstring>
+        <name>benchOperator</name>
+        <qualifiedname>blockamr::benchOperator</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1OpArgs" kindref="compound">OpArgs</ref> &amp;</type>
+          <declname>args</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iters</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>batches</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="80" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="80" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a0200f1f350065fddafd6ea9c4fb0cc2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt; std::string &gt; blockamr::benchGmgBackends</definition>
+        <argsstring>()</argsstring>
+        <name>benchGmgBackends</name>
+        <qualifiedname>blockamr::benchGmgBackends</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="129" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="129" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a3672ffecd680cb8dfe1036ac0f4029d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1GmgResult" kindref="compound">GmgResult</ref></type>
+        <definition>GmgResult blockamr::benchGmgVcycle</definition>
+        <argsstring>(const std::string &amp;backend, const GmgArgs &amp;args, int iters, int batches)</argsstring>
+        <name>benchGmgVcycle</name>
+        <qualifiedname>blockamr::benchGmgVcycle</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>backend</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1GmgArgs" kindref="compound">GmgArgs</ref> &amp;</type>
+          <declname>args</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iters</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>batches</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" line="132" column="11" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp" declline="132" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1aa73e148d34831409c795a22091de5edb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; amrex::MultiFab &gt;</type>
+        <definition>std::shared_ptr&lt; amrex::MultiFab &gt; blockamr::nonOwning</definition>
+        <argsstring>(amrex::MultiFab &amp;mf)</argsstring>
+        <name>nonOwning</name>
+        <qualifiedname>blockamr::nonOwning</qualifiedname>
+        <param>
+          <type>amrex::MultiFab &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" line="64" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" bodystart="64" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a5f1576be480c29bce11e6888e8713733" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; const amrex::MultiFab &gt;</type>
+        <definition>std::shared_ptr&lt; const amrex::MultiFab &gt; blockamr::nonOwning</definition>
+        <argsstring>(const amrex::MultiFab &amp;mf)</argsstring>
+        <name>nonOwning</name>
+        <qualifiedname>blockamr::nonOwning</qualifiedname>
+        <param>
+          <type>const amrex::MultiFab &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" line="71" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" bodystart="71" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1aed758df3c2b00844fe8abe3b2b50daa1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1ConstCellFieldLevel" kindref="compound">ConstCellFieldLevel</ref></type>
+        <definition>ConstCellFieldLevel blockamr::constView</definition>
+        <argsstring>(const CellFieldLevel &amp;f)</argsstring>
+        <name>constView</name>
+        <qualifiedname>blockamr::constView</qualifiedname>
+        <param>
+          <type>const <ref refid="structblockamr_1_1CellFieldLevel" kindref="compound">CellFieldLevel</ref> &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" line="76" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a367a1e5b08a60d21367d943451a52a90" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1ConstFaceFieldLevel" kindref="compound">ConstFaceFieldLevel</ref></type>
+        <definition>ConstFaceFieldLevel blockamr::constView</definition>
+        <argsstring>(const FaceFieldLevel &amp;f)</argsstring>
+        <name>constView</name>
+        <qualifiedname>blockamr::constView</qualifiedname>
+        <param>
+          <type>const <ref refid="structblockamr_1_1FaceFieldLevel" kindref="compound">FaceFieldLevel</ref> &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" line="78" column="28" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/fieldLevel.hpp" bodystart="78" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a68053c6c70c67b8a0984d696dfb74ffa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchAmrex</definition>
+        <argsstring>(const amrex::Box &amp;bx, F const &amp;f)</argsstring>
+        <name>launchAmrex</name>
+        <qualifiedname>blockamr::launchAmrex</qualifiedname>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>bx</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="32" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="32" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a487357181863fa5e2a8a4a795f9f2ae3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchKokkosMd</definition>
+        <argsstring>(const amrex::Box &amp;bx, F const &amp;f)</argsstring>
+        <name>launchKokkosMd</name>
+        <qualifiedname>blockamr::launchKokkosMd</qualifiedname>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>bx</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="38" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="38" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a872f47e5548becd89a073290d75e5bd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchKokkosFlat</definition>
+        <argsstring>(const amrex::Box &amp;bx, F const &amp;f)</argsstring>
+        <name>launchKokkosFlat</name>
+        <qualifiedname>blockamr::launchKokkosFlat</qualifiedname>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>bx</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="52" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="52" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a477d77d7caf0cc3ef091d852d13ffe31" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; Kokkos::DefaultExecutionSpace &gt; *&amp;</type>
+        <definition>std::vector&lt; Kokkos::DefaultExecutionSpace &gt; *&amp; blockamr::streamPoolPtr</definition>
+        <argsstring>()</argsstring>
+        <name>streamPoolPtr</name>
+        <qualifiedname>blockamr::streamPoolPtr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="77" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="77" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1acdc67138faf00aad1a59f8a3dee8498f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>const Kokkos::DefaultExecutionSpace &amp;</type>
+        <definition>const Kokkos::DefaultExecutionSpace &amp; blockamr::benchStream</definition>
+        <argsstring>(int ibox)</argsstring>
+        <name>benchStream</name>
+        <qualifiedname>blockamr::benchStream</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>ibox</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="83" column="44" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="83" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a3b4bbb7cae0398b3ac2154025c0c215b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void blockamr::releaseStreamPool</definition>
+        <argsstring>()</argsstring>
+        <name>releaseStreamPool</name>
+        <qualifiedname>blockamr::releaseStreamPool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="97" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="97" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a4d64f00c36d7346b3c70f76be8e83067" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchKokkosMdStream</definition>
+        <argsstring>(const amrex::Box &amp;bx, int ibox, F const &amp;f)</argsstring>
+        <name>launchKokkosMdStream</name>
+        <qualifiedname>blockamr::launchKokkosMdStream</qualifiedname>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>bx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>ibox</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="104" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="104" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a3175bc511162ffc6645a226bc998cde6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchKokkosMdNamed</definition>
+        <argsstring>(const char *name, const amrex::Box &amp;bx, F const &amp;f)</argsstring>
+        <name>launchKokkosMdNamed</name>
+        <qualifiedname>blockamr::launchKokkosMdNamed</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>bx</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="119" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="119" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1ae4da72f6c91de99a25e86fbfbfb6fed9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchAmrexFused</definition>
+        <argsstring>(const amrex::MultiFab &amp;mf, F const &amp;f)</argsstring>
+        <name>launchAmrexFused</name>
+        <qualifiedname>blockamr::launchAmrexFused</qualifiedname>
+        <param>
+          <type>const amrex::MultiFab &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="135" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="135" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a1bfae649196f9e95c0d22121fa702508" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class MF</type>
+          </param>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchKokkosTeamNamed</definition>
+        <argsstring>(const char *name, const MF &amp;mf, F const &amp;f)</argsstring>
+        <name>launchKokkosTeamNamed</name>
+        <qualifiedname>blockamr::launchKokkosTeamNamed</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const MF &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="145" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="145" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1ace6b363fd302ceb97264d2776d6578c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class MF</type>
+          </param>
+          <param>
+            <type>class F</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::launchKokkosTeam</definition>
+        <argsstring>(const MF &amp;mf, F const &amp;f)</argsstring>
+        <name>launchKokkosTeam</name>
+        <qualifiedname>blockamr::launchKokkosTeam</qualifiedname>
+        <param>
+          <type>const MF &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>F const &amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="196" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="196" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a6bab5888b36cbcae0b856cdc93ef4121" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structblockamr_1_1ViewAcc" kindref="compound">ViewAcc</ref></type>
+        <definition>ViewAcc blockamr::viewAcc</definition>
+        <argsstring>(amrex::FArrayBox &amp;fab)</argsstring>
+        <name>viewAcc</name>
+        <qualifiedname>blockamr::viewAcc</qualifiedname>
+        <param>
+          <type>amrex::FArrayBox &amp;</type>
+          <declname>fab</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" line="222" column="16" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp" bodystart="222" bodyend="231"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1aea79a6857be20bdb80143a13b01e07cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Kernel</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::parallelFor</definition>
+        <argsstring>(const NeoN::Executor &amp;exec, const amrex::Box &amp;bx, Kernel kernel, std::string name=&quot;parallelFor&quot;)</argsstring>
+        <name>parallelFor</name>
+        <qualifiedname>blockamr::parallelFor</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>bx</declname>
+        </param>
+        <param>
+          <type>Kernel</type>
+          <declname>kernel</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>name</declname>
+          <defval>&quot;parallelFor&quot;</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/parallelAlgorithms.hpp" line="55" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/parallelAlgorithms.hpp" bodystart="55" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a10189b095e9743342c67b2e6af627c1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Kernel</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::parallelFor</definition>
+        <argsstring>(const NeoN::Executor &amp;exec, const amrex::MultiFab &amp;mf, Kernel kernel, std::string name=&quot;parallelFor&quot;)</argsstring>
+        <name>parallelFor</name>
+        <qualifiedname>blockamr::parallelFor</qualifiedname>
+        <param>
+          <type>const <ref refid="namespaceNeoN_1a84c514269c3ade9cf4103acb1210a65f" kindref="member">NeoN::Executor</ref> &amp;</type>
+          <declname>exec</declname>
+        </param>
+        <param>
+          <type>const amrex::MultiFab &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>Kernel</type>
+          <declname>kernel</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>name</declname>
+          <defval>&quot;parallelFor&quot;</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/parallelAlgorithms.hpp" line="67" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/parallelAlgorithms.hpp" bodystart="67" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a1e1da30509c74672843460b0b9393f39" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void blockamr::kokkosInitialize</definition>
+        <argsstring>()</argsstring>
+        <name>kokkosInitialize</name>
+        <qualifiedname>blockamr::kokkosInitialize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" line="13" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" declline="13" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a9dcd9480c7a2fadbde1b11426ea8193f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void blockamr::kokkosFinalize</definition>
+        <argsstring>()</argsstring>
+        <name>kokkosFinalize</name>
+        <qualifiedname>blockamr::kokkosFinalize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" line="14" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" declline="14" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a5e5ba174f849961f626239551b4b96b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool blockamr::kokkosInitialized</definition>
+        <argsstring>()</argsstring>
+        <name>kokkosInitialized</name>
+        <qualifiedname>blockamr::kokkosInitialized</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" line="15" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" declline="15" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a30643cbfc3123774ad4959e829f9e3ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool blockamr::kokkosFinalized</definition>
+        <argsstring>()</argsstring>
+        <name>kokkosFinalized</name>
+        <qualifiedname>blockamr::kokkosFinalized</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" line="16" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/runtime.hpp" declline="16" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1adde689155a46c5f96a6859d37f6e3fcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classblockamr_1_1KokkosGmgApply" kindref="compound">KokkosGmgApply</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; KokkosGmgApply &gt; blockamr::makeKokkosGmgApply</definition>
+        <argsstring>(const amrex::Geometry &amp;geom, const ConstCellFieldLevel &amp;alpha, const ConstFaceFieldLevel &amp;upper, const ConstFaceFieldLevel &amp;lower, const KokkosGmgOpts &amp;opts)</argsstring>
+        <name>makeKokkosGmgApply</name>
+        <qualifiedname>blockamr::makeKokkosGmgApply</qualifiedname>
+        <param>
+          <type>const amrex::Geometry &amp;</type>
+          <declname>geom</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1ConstCellFieldLevel" kindref="compound">ConstCellFieldLevel</ref> &amp;</type>
+          <declname>alpha</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1ConstFaceFieldLevel" kindref="compound">ConstFaceFieldLevel</ref> &amp;</type>
+          <declname>upper</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1ConstFaceFieldLevel" kindref="compound">ConstFaceFieldLevel</ref> &amp;</type>
+          <declname>lower</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1KokkosGmgOpts" kindref="compound">KokkosGmgOpts</ref> &amp;</type>
+          <declname>opts</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp" line="44" column="17" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp" declline="44" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a03b4f0cc13b9c4846567ae1bfd8730d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class FAB</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref></type>
+        <definition>CopyPlan blockamr::makeHaloPlan</definition>
+        <argsstring>(const amrex::FabArray&lt; FAB &gt; &amp;mf, const amrex::Periodicity &amp;period)</argsstring>
+        <name>makeHaloPlan</name>
+        <qualifiedname>blockamr::makeHaloPlan</qualifiedname>
+        <param>
+          <type>const amrex::FabArray&lt; FAB &gt; &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>const amrex::Periodicity &amp;</type>
+          <declname>period</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="115" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="115" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a15e2066994c06d41998c99b52a95f20e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class FAB</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref></type>
+        <definition>CopyPlan blockamr::makeBcPlan</definition>
+        <argsstring>(const amrex::FabArray&lt; FAB &gt; &amp;mf, const amrex::Box &amp;domain, const la::BcArray &amp;bc)</argsstring>
+        <name>makeBcPlan</name>
+        <qualifiedname>blockamr::makeBcPlan</qualifiedname>
+        <param>
+          <type>const amrex::FabArray&lt; FAB &gt; &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>const amrex::Box &amp;</type>
+          <declname>domain</declname>
+        </param>
+        <param>
+          <type>const la::BcArray &amp;</type>
+          <declname>bc</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="148" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="148" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1afe70606160d56e8dee8f7a6bd1e74224" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class FAB</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref></type>
+        <definition>CopyPlan blockamr::makeCopyPlan</definition>
+        <argsstring>(const amrex::FabArray&lt; FAB &gt; &amp;dst, const amrex::FabArray&lt; FAB &gt; &amp;src)</argsstring>
+        <name>makeCopyPlan</name>
+        <qualifiedname>blockamr::makeCopyPlan</qualifiedname>
+        <param>
+          <type>const amrex::FabArray&lt; FAB &gt; &amp;</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>const amrex::FabArray&lt; FAB &gt; &amp;</type>
+          <declname>src</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="175" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="175" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a497214f1c9291db4313af2938c78cebe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::execCopyPlan</definition>
+        <argsstring>(const char *name, const amrex::MultiArray4&lt; T &gt; &amp;dst, const amrex::MultiArray4&lt; const T &gt; &amp;src, const CopyPlan &amp;plan)</argsstring>
+        <name>execCopyPlan</name>
+        <qualifiedname>blockamr::execCopyPlan</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const amrex::MultiArray4&lt; T &gt; &amp;</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>const amrex::MultiArray4&lt; const T &gt; &amp;</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref> &amp;</type>
+          <declname>plan</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="193" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" declline="193" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a95486c38dfdb11c75fbf6d50216b0b89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgFillBoundaryKokkos</definition>
+        <argsstring>(la::GmgFab&lt; T &gt; &amp;mf, const CopyPlan &amp;plan)</argsstring>
+        <name>gmgFillBoundaryKokkos</name>
+        <qualifiedname>blockamr::gmgFillBoundaryKokkos</qualifiedname>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref> &amp;</type>
+          <declname>plan</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="202" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="202" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1ae796774ec85c18d4ca19ab3ae73c365e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgFillDomainBcKokkos</definition>
+        <argsstring>(la::GmgFab&lt; T &gt; &amp;mf, const CopyPlan &amp;plan)</argsstring>
+        <name>gmgFillDomainBcKokkos</name>
+        <qualifiedname>blockamr::gmgFillDomainBcKokkos</qualifiedname>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref> &amp;</type>
+          <declname>plan</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="209" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="209" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a8547baf3b422c7797aaf8446bf90e0e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgCopyKokkos</definition>
+        <argsstring>(la::GmgFab&lt; T &gt; &amp;dst, const la::GmgFab&lt; T &gt; &amp;src, const CopyPlan &amp;plan)</argsstring>
+        <name>gmgCopyKokkos</name>
+        <qualifiedname>blockamr::gmgCopyKokkos</qualifiedname>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structblockamr_1_1CopyPlan" kindref="compound">CopyPlan</ref> &amp;</type>
+          <declname>plan</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="216" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" bodystart="216" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1aa7c210de67cb5f2619a1ead22a9e801d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgZeroKokkos</definition>
+        <argsstring>(la::GmgFab&lt; T &gt; &amp;mf)</argsstring>
+        <name>gmgZeroKokkos</name>
+        <qualifiedname>blockamr::gmgZeroKokkos</qualifiedname>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>mf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" line="225" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp" declline="225" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a5887ed8a8d8edadb551717c1717eeecc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>amrex::MFItInfo</type>
+        <definition>amrex::MFItInfo blockamr::gmgNoSync</definition>
+        <argsstring>()</argsstring>
+        <name>gmgNoSync</name>
+        <qualifiedname>blockamr::gmgNoSync</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="25" column="24" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" bodystart="25" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a6703c3e25f13071fee2711240a29bd45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class TC</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgGsColorKokkos</definition>
+        <argsstring>(la::GmgFab&lt; T &gt; &amp;sol, const la::GmgFab&lt; T &gt; &amp;rhs, const la::FaceCoeffs&lt; TC &gt; &amp;fc, la::GsSweep sweep)</argsstring>
+        <name>gmgGsColorKokkos</name>
+        <qualifiedname>blockamr::gmgGsColorKokkos</qualifiedname>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>sol</declname>
+        </param>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <param>
+          <type>const la::FaceCoeffs&lt; TC &gt; &amp;</type>
+          <declname>fc</declname>
+        </param>
+        <param>
+          <type>la::GsSweep</type>
+          <declname>sweep</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="123" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" bodystart="123" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a0abd538ffe4dc13d997b6c63ba5d738b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class TC</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgResidRestrictKokkos</definition>
+        <argsstring>(const la::GmgFab&lt; T &gt; &amp;sol, const la::GmgFab&lt; T &gt; &amp;rhs, la::GmgFab&lt; T &gt; &amp;crhs, const la::FaceCoeffs&lt; TC &gt; &amp;fc)</argsstring>
+        <name>gmgResidRestrictKokkos</name>
+        <qualifiedname>blockamr::gmgResidRestrictKokkos</qualifiedname>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>sol</declname>
+        </param>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>crhs</declname>
+        </param>
+        <param>
+          <type>const la::FaceCoeffs&lt; TC &gt; &amp;</type>
+          <declname>fc</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="155" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" bodystart="155" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a5614bbf7afc40cddcb043732244a4212" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgProlongAddKokkos</definition>
+        <argsstring>(const la::GmgFab&lt; T &gt; &amp;crse, la::GmgFab&lt; T &gt; &amp;fine)</argsstring>
+        <name>gmgProlongAddKokkos</name>
+        <qualifiedname>blockamr::gmgProlongAddKokkos</qualifiedname>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>crse</declname>
+        </param>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>fine</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="190" column="6" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" bodystart="190" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1a4fb57a27755c9ef89dec660d00ac64e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class TC</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgGsColorKokkosFused</definition>
+        <argsstring>(la::GmgFab&lt; T &gt; &amp;sol, const la::GmgFab&lt; T &gt; &amp;rhs, const la::FaceCoeffs&lt; TC &gt; &amp;fc, la::GsSweep sweep, bool fence=true)</argsstring>
+        <name>gmgGsColorKokkosFused</name>
+        <qualifiedname>blockamr::gmgGsColorKokkosFused</qualifiedname>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>sol</declname>
+        </param>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <param>
+          <type>const la::FaceCoeffs&lt; TC &gt; &amp;</type>
+          <declname>fc</declname>
+        </param>
+        <param>
+          <type>la::GsSweep</type>
+          <declname>sweep</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>fence</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="210" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" declline="210" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1aa020101bcf7d874c2cfccee853594a99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class TC</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgResidRestrictKokkosFused</definition>
+        <argsstring>(const la::GmgFab&lt; T &gt; &amp;sol, const la::GmgFab&lt; T &gt; &amp;rhs, la::GmgFab&lt; T &gt; &amp;crhs, const la::FaceCoeffs&lt; TC &gt; &amp;fc, bool fence=true)</argsstring>
+        <name>gmgResidRestrictKokkosFused</name>
+        <qualifiedname>blockamr::gmgResidRestrictKokkosFused</qualifiedname>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>sol</declname>
+        </param>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>crhs</declname>
+        </param>
+        <param>
+          <type>const la::FaceCoeffs&lt; TC &gt; &amp;</type>
+          <declname>fc</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>fence</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="220" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" declline="220" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceblockamr_1ad2d7422a51c2fa4cd61ebdd4230ec258" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void blockamr::gmgProlongAddKokkosFused</definition>
+        <argsstring>(const la::GmgFab&lt; T &gt; &amp;crse, la::GmgFab&lt; T &gt; &amp;fine, bool fence=true)</argsstring>
+        <name>gmgProlongAddKokkosFused</name>
+        <qualifiedname>blockamr::gmgProlongAddKokkosFused</qualifiedname>
+        <param>
+          <type>const la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>crse</declname>
+        </param>
+        <param>
+          <type>la::GmgFab&lt; T &gt; &amp;</type>
+          <declname>fine</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>fence</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" line="230" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp" declline="230" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/cells.hpp" line="12" column="1"/>
+  </compounddef>
+</doxygen>

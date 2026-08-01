@@ -1,0 +1,56 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/block\+Amr/core/launch.hpp File Reference}
+\hypertarget{launch_8hpp}{}\label{launch_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp}}
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Array4.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Box.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+FArray\+Box.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Gpu\+Device.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Gpu\+Launch.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+MFParallel\+For.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Multi\+Fab.\+H$>$}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/core/parallel\+Algorithms.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1ViewAcc}{blockamr\+::\+View\+Acc}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr}{blockamr}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{blockamr\+::\+Fab\+View}} = Kokkos\+::\+View$<$ double \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}, Kokkos\+::\+Layout\+Left, Kokkos\+::\+Default\+Execution\+Space\+::memory\+\_\+space, Kokkos\+::\+Memory\+Traits$<$ Kokkos\+::\+Unmanaged $>$ $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a68053c6c70c67b8a0984d696dfb74ffa}{blockamr\+::launch\+Amrex}} (const amrex\+::\+Box \&bx, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a487357181863fa5e2a8a4a795f9f2ae3}{blockamr\+::launch\+Kokkos\+Md}} (const amrex\+::\+Box \&bx, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a872f47e5548becd89a073290d75e5bd6}{blockamr\+::launch\+Kokkos\+Flat}} (const amrex\+::\+Box \&bx, F const \&f)
+\item 
+std\+::vector$<$ Kokkos\+::\+Default\+Execution\+Space $>$ \texorpdfstring{$\ast$}{*}\& \mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{blockamr\+::stream\+Pool\+Ptr}} ()
+\item 
+const Kokkos\+::\+Default\+Execution\+Space \& \mbox{\hyperlink{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f}{blockamr\+::bench\+Stream}} (int ibox)
+\item 
+void \mbox{\hyperlink{namespaceblockamr_a3b4bbb7cae0398b3ac2154025c0c215b}{blockamr\+::release\+Stream\+Pool}} ()
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a4d64f00c36d7346b3c70f76be8e83067}{blockamr\+::launch\+Kokkos\+Md\+Stream}} (const amrex\+::\+Box \&bx, int ibox, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6}{blockamr\+::launch\+Kokkos\+Md\+Named}} (const char \texorpdfstring{$\ast$}{*}name, const amrex\+::\+Box \&bx, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ae4da72f6c91de99a25e86fbfbfb6fed9}{blockamr\+::launch\+Amrex\+Fused}} (const amrex\+::\+Multi\+Fab \&mf, F const \&f)
+\item 
+{\footnotesize template$<$class MF , class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508}{blockamr\+::launch\+Kokkos\+Team\+Named}} (const char \texorpdfstring{$\ast$}{*}name, const MF \&mf, F const \&f)
+\item 
+{\footnotesize template$<$class MF , class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ace6b363fd302ceb97264d2776d6578c8}{blockamr\+::launch\+Kokkos\+Team}} (const MF \&mf, F const \&f)
+\item 
+\mbox{\hyperlink{structblockamr_1_1ViewAcc}{View\+Acc}} \mbox{\hyperlink{namespaceblockamr_a6bab5888b36cbcae0b856cdc93ef4121}{blockamr\+::view\+Acc}} (amrex\+::\+FArray\+Box \&fab)
+\end{DoxyCompactItemize}

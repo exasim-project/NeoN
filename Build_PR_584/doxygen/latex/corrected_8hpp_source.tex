@@ -1,0 +1,100 @@
+\doxysection{corrected.\+hpp}
+\hypertarget{corrected_8hpp_source}{}\label{corrected_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/faceNormalGradient/corrected.hpp}}
+\mbox{\hyperlink{corrected_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{core_2executor_2executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceNormalGradient_8hpp}{NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gaussGreenGrad_8hpp}{NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{geometryScheme_8hpp}{NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00022}00022\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00023}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a96e58e98b2d72fe6138bec16739c1658}{00023}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a96e58e98b2d72fe6138bec16739c1658}{computeCorrectedFaceNormalGrad}}(}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ volField,}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme,}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00026}00026\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ surfaceField}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00027}00027\ );}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00029}00029\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00030}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a7892cb0867950a5ee09a2f7099f9c346}{00030}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a7892cb0867950a5ee09a2f7099f9c346}{computeCorrectionTerm}}(}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ volField,}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme,}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00033}00033\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ corrField}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00034}00034\ );}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00036}00036\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00037}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected}{00037}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected}{Corrected}}\ :}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory}{FaceNormalGradientFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<Corrected<ValueType>>}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00039}00039\ \{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradientFactory}{FaceNormalGradientFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<Corrected<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00042}00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00044}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a6484c6b55ce37a72e8060e83731c43f0}{00044}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a6484c6b55ce37a72e8060e83731c43f0}{Corrected}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}})}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ :\ Base(exec,\ mesh),\ geometryScheme\_(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{GeometryScheme}}::readOrCreate(mesh))\ \{\};}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00047}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_abb399ad34c6d9f8367a21d190fc6e49d}{00047}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_abb399ad34c6d9f8367a21d190fc6e49d}{Corrected}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh)}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ :\ Base(exec,\ mesh),\ geometryScheme\_(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{GeometryScheme}}::readOrCreate(mesh))\ \{\};}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a365578fd9fc98bd5391613c3478edf32}{00050}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a365578fd9fc98bd5391613c3478edf32}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}corrected"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00052}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_ad71b753d1a69d005ecafac53ff80ef6c}{00052}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_ad71b753d1a69d005ecafac53ff80ef6c}{doc}}()}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Corrected\ face\ normal\ gradient\ with\ explicit\ non-\/orthogonality\ correction"{}};}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00055}00055\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00057}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a39803f9fd43b68b8efca2f0f912e34af}{00057}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a39803f9fd43b68b8efca2f0f912e34af}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a2d243ea09743f10f77a19d43b24f9188}{00059}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a2d243ea09743f10f77a19d43b24f9188}{faceNormalGrad}}(}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ volField,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ surfaceField}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00061}00061\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00062}00062\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a96e58e98b2d72fe6138bec16739c1658}{computeCorrectedFaceNormalGrad}}(volField,\ geometryScheme\_,\ surfaceField);}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00064}00064\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00066}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a83fc772e89c090379138884196377ac5}{00066}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a83fc772e89c090379138884196377ac5}{deltaCoeffs}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00067}00067\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ geometryScheme\_-\/>nonOrthDeltaCoeffs();}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00069}00069\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00071}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a510d88dc0774e63c49a60d2c309ecfa1}{00071}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a510d88dc0774e63c49a60d2c309ecfa1}{hasImplicitCorrection}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00073}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a3f2e17a1ff6f3f9d809c4e1088869404}{00073}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a3f2e17a1ff6f3f9d809c4e1088869404}{implicitCorrection}}(}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ phi,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ corrField}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00075}00075\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00076}00076\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a7892cb0867950a5ee09a2f7099f9c346}{computeCorrectionTerm}}(phi,\ geometryScheme\_,\ corrField);}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00078}00078\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00080}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a14b7d1932f36565f89f491ebf6f18921}{00080}}\ \ \ \ \ std::unique\_ptr<FaceNormalGradientFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected_a14b7d1932f36565f89f491ebf6f18921}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00081}00081\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<Corrected>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00083}00083\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00085}00085\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00088}00088\ \};}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00090}00090\ \textcolor{comment}{//\ instantiate\ the\ template\ class}}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00091}00091\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }Corrected<scalar>;}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00092}00092\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }Corrected<Vec3>;}
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{corrected_8hpp_source_l00094}00094\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+
+\end{DoxyCode}

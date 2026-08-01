@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="gmgOpts_8hpp" kind="file" language="C++">
+    <compoundname>gmgOpts.hpp</compoundname>
+    <includes local="no">array</includes>
+    <includes local="no">string</includes>
+    <includedby refid="kokkosBench_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp</includedby>
+    <includedby refid="apply_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp</includedby>
+    <includedby refid="vcycle_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp</label>
+        <link refid="gmgOpts_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>array</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/bench/kokkosBench.hpp</label>
+        <link refid="kokkosBench_8hpp"/>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp</label>
+        <link refid="apply_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp</label>
+        <link refid="gmgOpts_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/precond.hpp</label>
+        <link refid="gmgKokkos_2precond_8hpp"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/vcycle.hpp</label>
+        <link refid="vcycle_8hpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structblockamr_1_1KokkosGmgOpts" prot="public">blockamr::KokkosGmgOpts</innerclass>
+    <innernamespace refid="namespaceblockamr">blockamr</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>SPDX-FileCopyrightText:<sp/>2026<sp/>NeoN<sp/>authors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SPDX-License-Identifier:<sp/>MIT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>Kokkos<sp/>V-cycle&apos;s<sp/>shape<sp/>as<sp/>ONE<sp/>struct,<sp/>in<sp/>production:<sp/>the<sp/>preconditioner<sp/>(precond.cpp),<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>cycle<sp/>itself<sp/>(vcycle.hpp)<sp/>and<sp/>the<sp/>bench<sp/>under<sp/>bench/<sp/>all<sp/>take<sp/>these<sp/>knobs<sp/>from<sp/>here,<sp/>so<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//<sp/>cycle<sp/>no<sp/>longer<sp/>reaches<sp/>into<sp/>bench/<sp/>for<sp/>them.<sp/>Free<sp/>of<sp/>Kokkos,<sp/>AMReX<sp/>and<sp/>nanobind<sp/>headers,<sp/>like</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>bench<sp/>header<sp/>that<sp/>includes<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceblockamr" kindref="compound">blockamr</ref></highlight></codeline>
+<codeline lineno="16"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="structblockamr_1_1KokkosGmgOpts" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structblockamr_1_1KokkosGmgOpts" kindref="compound">KokkosGmgOpts</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20" refid="structblockamr_1_1KokkosGmgOpts_1ab99062baae20328a8261af2ffc84da4e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1ab99062baae20328a8261af2ffc84da4e" kindref="member">cycles</ref><sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="21" refid="structblockamr_1_1KokkosGmgOpts_1acffb86295547aa9752bd628784469832" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1acffb86295547aa9752bd628784469832" kindref="member">preSweeps</ref><sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="22" refid="structblockamr_1_1KokkosGmgOpts_1abfa876a3f2eca087a1a787a63f97770c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1abfa876a3f2eca087a1a787a63f97770c" kindref="member">postSweeps</ref><sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="23" refid="structblockamr_1_1KokkosGmgOpts_1a6bd2e698b1814928f573a3041b0c9aae" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a6bd2e698b1814928f573a3041b0c9aae" kindref="member">coarsestSweeps</ref><sp/>=<sp/>8;</highlight></codeline>
+<codeline lineno="24" refid="structblockamr_1_1KokkosGmgOpts_1a7c0a58cf56ab2ea29c843b5f3d1cf7d4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a7c0a58cf56ab2ea29c843b5f3d1cf7d4" kindref="member">maxLevels</ref><sp/>=<sp/>0;<sp/></highlight><highlight class="comment">//<sp/>0<sp/>=<sp/>coarsen<sp/>as<sp/>far<sp/>as<sp/>the<sp/>grid<sp/>allows</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25" refid="structblockamr_1_1KokkosGmgOpts_1ae6b82e99831f8c434e329e8c4188af4a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1ae6b82e99831f8c434e329e8c4188af4a" kindref="member">minBottom</ref><sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="26" refid="structblockamr_1_1KokkosGmgOpts_1ae8de874a62189d529c3c3ccbe09a34f3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1ae8de874a62189d529c3c3ccbe09a34f3" kindref="member">omega</ref><sp/>=<sp/>1.0;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>level<sp/>storage<sp/>type:<sp/>&quot;fp64&quot;,<sp/>&quot;fp32&quot;<sp/>or<sp/>&quot;bf16&quot;;<sp/>the<sp/>flat<sp/>vectors<sp/>stay<sp/>fp64<sp/>regardless.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="structblockamr_1_1KokkosGmgOpts_1af907cc10bca0b51d15d4b8aceb6b89a4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1af907cc10bca0b51d15d4b8aceb6b89a4" kindref="member">precision</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;fp64&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>COEFFICIENTS&apos;<sp/>storage<sp/>type<sp/>alone;<sp/>empty<sp/>=<sp/>same<sp/>as<sp/>`precision`.<sp/>Narrowing<sp/>these<sp/>costs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>far<sp/>fewer<sp/>iterations<sp/>than<sp/>narrowing<sp/>the<sp/>fields:<sp/>report/blockamr-precision-measurements.md.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structblockamr_1_1KokkosGmgOpts_1ad685e08d54e6dc8f4a55e62583b02a39" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1ad685e08d54e6dc8f4a55e62583b02a39" kindref="member">coeffPrecision</ref>;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>On<sp/>by<sp/>default:<sp/>it<sp/>cannot<sp/>change<sp/>the<sp/>result<sp/>at<sp/>equal<sp/>depth<sp/>(notes#agglomeration).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="structblockamr_1_1KokkosGmgOpts_1a518ff8d7de20b103a6d7344ef9b285ef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a518ff8d7de20b103a6d7344ef9b285ef" kindref="member">agglomerate</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37" refid="structblockamr_1_1KokkosGmgOpts_1a6b7fbc6f0d6220d51a5c53c4b3582b22" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a6b7fbc6f0d6220d51a5c53c4b3582b22" kindref="member">aggGridSize</ref><sp/>=<sp/>32;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Target<sp/>box<sp/>size<sp/>for<sp/>level<sp/>0&apos;s<sp/>own<sp/>decomposition;<sp/>0<sp/>keeps<sp/>the<sp/>caller&apos;s<sp/>boxes.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="structblockamr_1_1KokkosGmgOpts_1a9ab91e0a750d236dca4ee27897a4ecbb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a9ab91e0a750d236dca4ee27897a4ecbb" kindref="member">aggLevel0Size</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>On<sp/>by<sp/>default;<sp/>it<sp/>cannot<sp/>change<sp/>the<sp/>result<sp/>and<sp/>drops<sp/>3<sp/>of<sp/>9<sp/>arrays<sp/>(notes#share-coeffs).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="structblockamr_1_1KokkosGmgOpts_1a8d65f28f45185bfff72a5e4c20a438c7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a8d65f28f45185bfff72a5e4c20a438c7" kindref="member">shareCoeffs</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Homogeneous<sp/>BCs<sp/>per<sp/>side,<sp/>la::BcArray&apos;s<sp/>encoding:<sp/>0<sp/>periodic,<sp/>1<sp/>Dirichlet,<sp/>2<sp/>Neumann.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="structblockamr_1_1KokkosGmgOpts_1a5b537b546a1c9445b3175767eab7f5b8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::array&lt;int,<sp/>6&gt;<sp/><ref refid="structblockamr_1_1KokkosGmgOpts_1a5b537b546a1c9445b3175767eab7f5b8" kindref="member">bc</ref><sp/>{};</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>blockamr</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp"/>
+  </compounddef>
+</doxygen>

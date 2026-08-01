@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['schema_0',['schema',['../classNeoN_1_1DerivedClassDocumentation.html#a309f623249a9a7558e51375e8e7a61eb',1,'NeoN::DerivedClassDocumentation::schema'],['../classNeoN_1_1BaseClassData.html#a052d4fcd85c84d48600307cf1441f1b6',1,'NeoN::BaseClassData::schema']]],
+  ['sec_1',['sec',['../structblockamr_1_1la_1_1prof_1_1Acc.html#adb091f72fed81795a25ed66a79a17601',1,'blockamr::la::prof::Acc']]],
+  ['segments_2',['segments',['../classNeoN_1_1SegmentedVectorView.html#a0e101da590fc55027c7a0d0e986d27d3',1,'NeoN::SegmentedVectorView']]],
+  ['sh_3',['sh',['../structblockamr_1_1CopyTask.html#a8a340c3799f7a2adce3cd2b4bd89a319',1,'blockamr::CopyTask']]],
+  ['sharecoeffs_4',['shareCoeffs',['../structblockamr_1_1KokkosGmgOpts.html#a8d65f28f45185bfff72a5e4c20a438c7',1,'blockamr::KokkosGmgOpts']]],
+  ['sharedcoeffs_5',['sharedCoeffs',['../structblockamr_1_1GmgResult.html#aefa38f5db62a870097f44d8af8fd76df',1,'blockamr::GmgResult']]],
+  ['shift_6',['shift',['../structblockamr_1_1la_1_1GmgResidualInput.html#afe973905939fe5668787087265c77e54',1,'blockamr::la::GmgResidualInput']]],
+  ['sides_7',['sides',['../structblockamr_1_1la_1_1DomainBc.html#af7503ed869a44fe8846ed17284cc38f8',1,'blockamr::la::DomainBc']]],
+  ['sign_8',['sign',['../structblockamr_1_1la_1_1BcGhostFill.html#a26578c14995894acb514bdf2d6ba6600',1,'blockamr::la::BcGhostFill::sign'],['../structblockamr_1_1CopyTask.html#ab1d36511372e1fed164892a5139275ad',1,'blockamr::CopyTask::sign'],['../structblockamr_1_1la_1_1OneshotSpec.html#a1d0cfc574ce36eced293352b23055b4a',1,'blockamr::la::OneshotSpec::sign']]],
+  ['size_9',['size',['../structNeoN_1_1la_1_1CellBasedIterator_1_1CellBasedData.html#ab4abb7da1824731e7e85d261ce29baf2',1,'NeoN::la::CellBasedIterator::CellBasedData']]],
+  ['smoother_10',['smoother',['../structblockamr_1_1la_1_1GmgConfig.html#afbe3e44f42e05146ab7354449d09d38c',1,'blockamr::la::GmgConfig']]],
+  ['sol_11',['sol',['../vcycle_8hpp.html#a89ef771e3c06a307e28e1195bf8d4b35',1,'sol:&#160;vcycle.hpp'],['../structblockamr_1_1la_1_1GmgLevelT.html#a998aa44feb92053ad3169c179d12b667',1,'blockamr::la::GmgLevelT::sol'],['../structblockamr_1_1la_1_1GmgResidualInput.html#ae38255fdc581bf2bfff26d3674bd015d',1,'blockamr::la::GmgResidualInput::sol'],['../structblockamr_1_1la_1_1GmgSystem.html#a2c652e40f513aa54260cdf72984c8625',1,'blockamr::la::GmgSystem::sol']]],
+  ['solutiondict_5f_12',['solutionDict_',['../classNeoN_1_1timeIntegration_1_1TimeIntegratorBase.html#a319d692ec559c3b0863e06216769a61a',1,'NeoN::timeIntegration::TimeIntegratorBase']]],
+  ['solver_13',['solver',['../structblockamr_1_1la_1_1OneshotSpec.html#a8bab80e27f6b6b7fe488e31553ec7350',1,'blockamr::la::OneshotSpec::solver'],['../structblockamr_1_1la_1_1SolverConfig.html#a288eeefab663d09fffd45bbedd38c50e',1,'blockamr::la::SolverConfig::solver']]],
+  ['solver_5f_14',['solver_',['../classblockamr_1_1la_1_1KrylovSolver.html#aa052f1505e95aac6a7e3a37b72ed9c02',1,'blockamr::la::KrylovSolver']]],
+  ['solverkind_15',['solverKind',['../structblockamr_1_1la_1_1SolverConfig.html#a0e5900131216dab708a4db7fafb81c85',1,'blockamr::la::SolverConfig']]],
+  ['solvetime_16',['solveTime',['../structNeoN_1_1la_1_1SolverStatsEntry.html#aacb3f3e80c3f7faa799baea6c87377b1',1,'NeoN::la::SolverStatsEntry']]],
+  ['sparsity_17',['sparsity',['../structNeoN_1_1la_1_1MatrixView.html#ab2d07a7f12d5a63c838b283c6a6d28ac',1,'NeoN::la::MatrixView']]],
+  ['src_18',['src',['../structblockamr_1_1CopyTask.html#a23290533e49b2ef713c4653f50e8c5bc',1,'blockamr::CopyTask::src'],['../structblockamr_1_1detail_1_1BoxPair.html#a8c837df13f742158bb9250b17560c57a',1,'blockamr::detail::BoxPair::src']]],
+  ['start_5f_19',['start_',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin.html#a704e4f166091d177d272ad0e55186531',1,'NeoN::finiteVolume::cellCentred::BoundaryPatchMixin']]],
+  ['subcycleindex_20',['subCycleIndex',['../classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector.html#aced149d40cd18519ea643bee33680f3f',1,'NeoN::finiteVolume::cellCentred::CreateFromExistingVector']]],
+  ['sumsq_21',['sumsq',['../structblockamr_1_1la_1_1ResidNorms.html#a4bdfd0f7865f0d4d65ebf8022f26bcfa',1,'blockamr::la::ResidNorms']]],
+  ['symmetric_22',['symmetric',['../structblockamr_1_1la_1_1GmgConfig.html#ae5c9768f4e75f94bb723ee110c7324df',1,'blockamr::la::GmgConfig']]]
+];

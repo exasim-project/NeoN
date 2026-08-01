@@ -1,0 +1,58 @@
+\doxysection{apply.\+hpp}
+\hypertarget{apply_8hpp_source}{}\label{apply_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/apply.hpp}}
+\mbox{\hyperlink{apply_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <AMReX\_Geometry.H>}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fieldLevel_8hpp}{NeoN/blockAmr/core/fieldLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gmgOpts_8hpp}{NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00015}00015\ \textcolor{comment}{//\ The\ optimised\ (kokkos\_opt)\ V-\/cycle\ as\ a\ preconditioner\ apply,\ behind\ an\ interface\ that}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00016}00016\ \textcolor{comment}{//\ mentions\ neither\ Kokkos\ nor\ Ginkgo\ -\/-\/\ the\ two\ stacks\ compile\ in\ separate\ object\ libraries.}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00017}00017\ \textcolor{comment}{//\ Why\ an\ opaque\ handle,\ and\ why\ a\ preconditioner:\ report/blockamr-\/gmg-\/notes.md\#kokkos-\/handle.}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00022}00022\ \textcolor{comment}{//\ z\ =\ M\string^\{-\/1\}\ r\ on\ flat\ DEVICE\ vectors\ in\ the\ solver's\ cell\ ordering\ (transfer.hpp).\ Two\ widths}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00023}00023\ \textcolor{comment}{//\ because\ the\ Krylov\ vectors\ have\ two;\ both\ are\ independent\ of\ the\ HIERARCHY's\ storage\ type.}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00024}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{00024}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{KokkosGmgApply}}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00026}00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00028}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a7d92d73ebbe2e19669ebaa20e9d13dab}{00028}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a7d92d73ebbe2e19669ebaa20e9d13dab}{KokkosGmgApply}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00029}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a884be069ab7ae7fb6d0fd1f5bba7a48f}{00029}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a884be069ab7ae7fb6d0fd1f5bba7a48f}{\string~KokkosGmgApply}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00030}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_aa9773aa7e7da1135fbe5d6c969215be1}{00030}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_aa9773aa7e7da1135fbe5d6c969215be1}{KokkosGmgApply}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{KokkosGmgApply}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00031}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_aa12b1159fb931d7607d71530f97eef6e}{00031}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{KokkosGmgApply}}\&\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_aa12b1159fb931d7607d71530f97eef6e}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{KokkosGmgApply}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00033}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_acadb9a93228edfc6e7fe5608edd3afa2}{00033}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_acadb9a93228edfc6e7fe5608edd3afa2}{apply}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}*\ r,\ \textcolor{keywordtype}{double}*\ z)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00034}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a183698b1033c18aa3a4661525c5cf0ab}{00034}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a183698b1033c18aa3a4661525c5cf0ab}{apply}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ r,\ \textcolor{keywordtype}{float}*\ z)\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00036}\mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a59543502a25b9052dd3b06d54d7705ee}{00036}}\ \ \ \ \ [[nodiscard]]\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply_a59543502a25b9052dd3b06d54d7705ee}{nlevels}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00037}00037\ \};}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00039}00039\ \textcolor{comment}{//\ Build\ the\ hierarchy\ from\ the\ same\ face-\/coefficient\ pieces\ FaceCoeffOp\ takes.\ The\ fields\ are}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00040}00040\ \textcolor{comment}{//\ read\ at\ SETUP\ only\ and\ level\ 0\ keeps\ its\ own\ copies,\ so\ later\ caller\ writes\ go\ unseen\ -\/-\/\ a}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00041}00041\ \textcolor{comment}{//\ changed\ operator\ needs\ a\ rebuilt\ object.\ Red-\/black\ only;\ homogeneous\ BCs\ via\ opts.bc.}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00042}00042\ \textcolor{comment}{//\ The\ READ-\/ONLY\ field\ bundles\ (core/fieldLevel.hpp),\ so\ the\ six\ ux/lx/uy/ly/uz/lz\ arguments\ of}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00043}00043\ \textcolor{comment}{//\ identical\ type\ -\/-\/\ where\ transposing\ two\ compiles\ and\ answers\ wrongly\ -\/-\/\ cannot\ be\ transposed.}}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00044}\mbox{\hyperlink{namespaceblockamr_adde689155a46c5f96a6859d37f6e3fcf}{00044}}\ std::unique\_ptr<KokkosGmgApply>\ \mbox{\hyperlink{namespaceblockamr_adde689155a46c5f96a6859d37f6e3fcf}{makeKokkosGmgApply}}(}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Geometry\&\ \mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}},}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00046}00046\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{ConstCellFieldLevel}}\&\ \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}},}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{ConstFaceFieldLevel}}\&\ upper,}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{ConstFaceFieldLevel}}\&\ lower,}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1KokkosGmgOpts}{KokkosGmgOpts}}\&\ opts}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00050}00050\ );}
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{apply_8hpp_source_l00052}00052\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}

@@ -1,0 +1,39 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/block\+Amr/linear\+Algebra/gmg\+Kokkos/kernels.hpp File Reference}
+\hypertarget{kernels_8hpp}{}\label{kernels_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/kernels.hpp}}
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Math.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Multi\+Fab.\+H$>$}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/linear\+Algebra/gmg/gmg\+Kernels.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/linear\+Algebra/stencil.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/core/launch.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgGsCell}{blockamr\+::\+Gmg\+Gs\+Cell$<$ T, TC $>$}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgResidRestrictCell}{blockamr\+::\+Gmg\+Resid\+Restrict\+Cell$<$ T, TC $>$}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgProlongCell}{blockamr\+::\+Gmg\+Prolong\+Cell$<$ T $>$}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr}{blockamr}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+amrex\+::\+MFIt\+Info \mbox{\hyperlink{namespaceblockamr_a5887ed8a8d8edadb551717c1717eeecc}{blockamr\+::gmg\+No\+Sync}} ()
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a6703c3e25f13071fee2711240a29bd45}{blockamr\+::gmg\+Gs\+Color\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc, la\+::\+Gs\+Sweep sweep)
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a0abd538ffe4dc13d997b6c63ba5d738b}{blockamr\+::gmg\+Resid\+Restrict\+Kokkos}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, la\+::\+Gmg\+Fab$<$ T $>$ \&crhs, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a5614bbf7afc40cddcb043732244a4212}{blockamr\+::gmg\+Prolong\+Add\+Kokkos}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&crse, la\+::\+Gmg\+Fab$<$ T $>$ \&fine)
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a4fb57a27755c9ef89dec660d00ac64e4}{blockamr\+::gmg\+Gs\+Color\+Kokkos\+Fused}} (la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc, la\+::\+Gs\+Sweep sweep, bool fence=true)
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_aa020101bcf7d874c2cfccee853594a99}{blockamr\+::gmg\+Resid\+Restrict\+Kokkos\+Fused}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, la\+::\+Gmg\+Fab$<$ T $>$ \&crhs, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc, bool fence=true)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ad2d7422a51c2fa4cd61ebdd4230ec258}{blockamr\+::gmg\+Prolong\+Add\+Kokkos\+Fused}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&crse, la\+::\+Gmg\+Fab$<$ T $>$ \&fine, bool fence=true)
+\end{DoxyCompactItemize}

@@ -1,0 +1,83 @@
+\doxysection{parallel\+Algorithms.\+hpp}
+\hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source}{}\label{blockAmr_2core_2parallelAlgorithms_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/parallelAlgorithms.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/parallelAlgorithms.hpp}}
+\mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <variant>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_Box.H>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuLaunch.H>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <AMReX\_MFParallelFor.H>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{core_2executor_2executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00017}00017\ \textcolor{comment}{//\ One\ lambda\ form\ for\ all\ launchers:\ \_\_host\_\_\ \_\_device\_\_\ suits\ both\ AMReX\ and\ Kokkos.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00018}\mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_aa2c47dac9570009a323e14d3b3382abe}{00018}}\ \textcolor{preprocessor}{\#define\ BLOCKAMR\_LAMBDA\ [=]\ AMREX\_GPU\_HOST\_DEVICE}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00020}00020\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00023}\mbox{\hyperlink{namespaceblockamr_1_1detail}{00023}}\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00026}00026\ \textcolor{comment}{//\ Every\ executor\ alternative\ forwards\ to\ amrex::ParallelFor:\ the\ seam,\ not\ a\ backend}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00027}00027\ \textcolor{comment}{//\ change\ -\/-\/\ swapping\ an\ arm\ to\ Kokkos\ later\ is\ one\ visible\ edit\ here\ and\ nowhere\ else.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00029}00029\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExecutorType,\ \textcolor{keyword}{class}\ Kernel>}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00030}\mbox{\hyperlink{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}{00030}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}{parallelForImpl}}(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00031}00031\ \ \ \ \ \textcolor{keyword}{const}\ ExecutorType\&,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ bx,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00033}00033\ \ \ \ \ Kernel\ kernel,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00034}00034\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ std::string\&\ name}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00035}00035\ )}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00036}00036\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00037}00037\ \ \ \ \ amrex::ParallelFor(bx,\ kernel);}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00038}00038\ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00040}00040\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ExecutorType,\ \textcolor{keyword}{class}\ Kernel>}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00041}\mbox{\hyperlink{namespaceblockamr_1_1detail_a3154d188dbaa90807b0000a38b3616e5}{00041}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}{parallelForImpl}}(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{const}\ ExecutorType\&,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ mf,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00044}00044\ \ \ \ \ Kernel\ kernel,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00045}00045\ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ std::string\&\ name}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00046}00046\ )}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00047}00047\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00048}00048\ \ \ \ \ amrex::ParallelFor(mf,\ kernel);}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00049}00049\ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00051}00051\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00053}00053\ \textcolor{comment}{//\ Per-\/box:\ kernel(i,\ j,\ k)\ over\ the\ box's\ GLOBAL\ index\ range.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00054}00054\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ Kernel>}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00055}\mbox{\hyperlink{namespaceblockamr_aea79a6857be20bdb80143a13b01e07cf}{00055}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_aea79a6857be20bdb80143a13b01e07cf}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ bx,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00058}00058\ \ \ \ \ Kernel\ kernel,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00059}00059\ \ \ \ \ std::string\ name\ =\ \textcolor{stringliteral}{"{}parallelFor"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00060}00060\ )}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00061}00061\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00062}00062\ \ \ \ \ std::visit([\&](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ e)\ \{\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}{detail::parallelForImpl}}(e,\ bx,\ kernel,\ name);\ \},\ exec);}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00063}00063\ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00065}00065\ \textcolor{comment}{//\ Fused:\ kernel(ibox,\ i,\ j,\ k)\ over\ every\ valid\ cell\ of\ every\ box\ in\ ONE\ launch.}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00066}00066\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ Kernel>}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00067}\mbox{\hyperlink{namespaceblockamr_a10189b095e9743342c67b2e6af627c1c}{00067}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_aea79a6857be20bdb80143a13b01e07cf}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00068}00068\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{NeoN::Executor}}\&\ exec,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ mf,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00070}00070\ \ \ \ \ Kernel\ kernel,}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00071}00071\ \ \ \ \ std::string\ name\ =\ \textcolor{stringliteral}{"{}parallelFor"{}}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00072}00072\ )}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00073}00073\ \{}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00074}00074\ \ \ \ \ std::visit([\&](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ e)\ \{\ \mbox{\hyperlink{namespaceblockamr_1_1detail_a4dd22034ec0cd757156e4e2ba2893974}{detail::parallelForImpl}}(e,\ mf,\ kernel,\ name);\ \},\ exec);}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00075}00075\ \}}
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00077}00077\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}

@@ -1,0 +1,295 @@
+\doxysection{blockamr\+::la\+::Krylov\+Solver Class Reference}
+\hypertarget{classblockamr_1_1la_1_1KrylovSolver}{}\label{classblockamr_1_1la_1_1KrylovSolver}\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+
+
+{\ttfamily \#include $<$krylov\+Solver.\+hpp$>$}
+
+Inheritance diagram for blockamr\+::la\+::Krylov\+Solver\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classblockamr_1_1la_1_1KrylovSolver}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_abcbe40d3e98fcebd8671949d2919bcd8}{\texorpdfstring{$\sim$}{\string~}\+Krylov\+Solver}} () \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{override}}=\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{default}}
+\item 
+\mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{Solve\+Result}} \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a84e5945206550fc5ee78493c61feb6db}{solve}} (amrex\+::\+Multi\+Fab \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, amrex\+::\+Multi\+Fab \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}) \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{override}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classblockamr_1_1la_1_1ISolver}{blockamr\+::la\+::\+ISolver}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{virtual}} \mbox{\hyperlink{classblockamr_1_1la_1_1ISolver_a74e6fa81b13edbcbd4f10fdb3a13a377}{\texorpdfstring{$\sim$}{\string~}\+ISolver}} ()=\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{default}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa1e595b34176e97d3a5a9e7a4bbf18db}{Krylov\+Solver}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor $>$ exec, gko\+::size\+\_\+type \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}}, gko\+::size\+\_\+type \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n\+Local}})
+\item 
+\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{void}} \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a5a7493c7ee628b54368a03429dde3a05}{build}} (std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ op, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} std\+::string \&solver, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} \mbox{\hyperlink{structblockamr_1_1la_1_1SolverConfig}{Solver\+Config}} \&\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{config}}, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Lin\+Op $>$ precond=\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nullptr}})
+\item 
+\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{void}} \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a6c59a4f2300fbd64d7769d64209bf28f}{subtract\+Mean}} (gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}v)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a73f19481a5cf513aad526f4c23ec331f}{exec\+\_\+}}
+\item 
+\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bool}} \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a224e74b9d3511d2b2c319a3f3dd6d676}{on\+Device\+\_\+}}
+\item 
+gko\+::size\+\_\+type \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa5b6b223507d54a8217703cf6599c8fa}{n\+\_\+}}
+\item 
+gko\+::size\+\_\+type \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ac2d81a60750ab94a423c1c0e31078dd1}{n\+Local\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a65adffba1db4f8f8fea3a6c6ee898095}{op\+\_\+}}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}} $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_abdc2d251aec7d557e98341bc0ab72dbe}{b\+\_\+}}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}} $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa94e69331186272e2df08ff56d08d9a5}{x\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_add6b3efdf9c3028a900c081c21f12211}{b\+Global\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ad1b43f9c29caf995d1919f6dc9d54c8e}{x\+Global\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aa052f1505e95aac6a7e3a37b72ed9c02}{solver\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::log\+::\+Convergence$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{double}} $>$ $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a4e743fce67f1ae8b7c2d6078bf991007}{logger\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualHistoryLogger}{Residual\+History\+Logger}} $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a30ae528277d2b2239d2b01a542620e4e}{res\+Logger\+\_\+}}
+\item 
+\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bool}} \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_afb8854e064c1d1b53ae01bd5b18cdcd9}{project\+Nullspace\+\_\+}} = \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{false}}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}} $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a443fb6208ded63ddf685b483a6d6479e}{ones\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_aea43d8cee302c356c8def6fe2e510795}{ones\+Global\+\_\+}}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}} $>$ \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_ab19d962ab59e77b62a98faa4877952c6}{bc\+Offset\+\_\+}}
+\item 
+\mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{Norm\+Kind}} \mbox{\hyperlink{classblockamr_1_1la_1_1KrylovSolver_a739d2d6782322a4ad311eaf3e5e5711a}{norm\+\_\+}} = \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3}{Norm\+Kind\+::l2}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00037}{37}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_abcbe40d3e98fcebd8671949d2919bcd8}\label{classblockamr_1_1la_1_1KrylovSolver_abcbe40d3e98fcebd8671949d2919bcd8} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!````~KrylovSolver@{\texorpdfstring{$\sim$}{\string~}KrylovSolver}}
+\index{````~KrylovSolver@{\texorpdfstring{$\sim$}{\string~}KrylovSolver}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}KrylovSolver()}{\string~KrylovSolver()}}
+{\footnotesize\ttfamily blockamr\+::la\+::\+Krylov\+Solver\+::\texorpdfstring{$\sim$}{\string~}\+Krylov\+Solver (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [default]}}
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_aa1e595b34176e97d3a5a9e7a4bbf18db}\label{classblockamr_1_1la_1_1KrylovSolver_aa1e595b34176e97d3a5a9e7a4bbf18db} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!KrylovSolver@{KrylovSolver}}
+\index{KrylovSolver@{KrylovSolver}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{KrylovSolver()}{KrylovSolver()}}
+{\footnotesize\ttfamily blockamr\+::la\+::\+Krylov\+Solver\+::\+Krylov\+Solver (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor $>$}]{exec,  }\item[{gko\+::size\+\_\+type}]{n,  }\item[{gko\+::size\+\_\+type}]{n\+Local }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a5a7493c7ee628b54368a03429dde3a05}\label{classblockamr_1_1la_1_1KrylovSolver_a5a7493c7ee628b54368a03429dde3a05} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!build@{build}}
+\index{build@{build}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{build()}{build()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{void}} blockamr\+::la\+::\+Krylov\+Solver\+::build (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$}]{op,  }\item[{\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} std\+::string \&}]{solver,  }\item[{\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} \mbox{\hyperlink{structblockamr_1_1la_1_1SolverConfig}{Solver\+Config}} \&}]{config,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Lin\+Op $>$}]{precond = {\ttfamily \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nullptr}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a84e5945206550fc5ee78493c61feb6db}\label{classblockamr_1_1la_1_1KrylovSolver_a84e5945206550fc5ee78493c61feb6db} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!solve@{solve}}
+\index{solve@{solve}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{Solve\+Result}} blockamr\+::la\+::\+Krylov\+Solver\+::solve (\begin{DoxyParamCaption}\item[{amrex\+::\+Multi\+Fab \&}]{rhs,  }\item[{amrex\+::\+Multi\+Fab \&}]{sol }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classblockamr_1_1la_1_1ISolver_a7a6e80ad05ae5e472169f9d321063faf}{blockamr\+::la\+::\+ISolver}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a6c59a4f2300fbd64d7769d64209bf28f}\label{classblockamr_1_1la_1_1KrylovSolver_a6c59a4f2300fbd64d7769d64209bf28f} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!subtractMean@{subtractMean}}
+\index{subtractMean@{subtractMean}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{subtractMean()}{subtractMean()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{void}} blockamr\+::la\+::\+Krylov\+Solver\+::subtract\+Mean (\begin{DoxyParamCaption}\item[{gko\+::\+Lin\+Op \texorpdfstring{$\ast$}{*}}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_abdc2d251aec7d557e98341bc0ab72dbe}\label{classblockamr_1_1la_1_1KrylovSolver_abdc2d251aec7d557e98341bc0ab72dbe} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!b\_@{b\_}}
+\index{b\_@{b\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{b\_}{b\_}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}}$>$ blockamr\+::la\+::\+Krylov\+Solver\+::b\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00073}{73}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_ab19d962ab59e77b62a98faa4877952c6}\label{classblockamr_1_1la_1_1KrylovSolver_ab19d962ab59e77b62a98faa4877952c6} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!bcOffset\_@{bcOffset\_}}
+\index{bcOffset\_@{bcOffset\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{bcOffset\_}{bcOffset\_}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}}$>$ blockamr\+::la\+::\+Krylov\+Solver\+::bc\+Offset\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_add6b3efdf9c3028a900c081c21f12211}\label{classblockamr_1_1la_1_1KrylovSolver_add6b3efdf9c3028a900c081c21f12211} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!bGlobal\_@{bGlobal\_}}
+\index{bGlobal\_@{bGlobal\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{bGlobal\_}{bGlobal\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$gko\+::\+Lin\+Op$>$ blockamr\+::la\+::\+Krylov\+Solver\+::b\+Global\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a73f19481a5cf513aad526f4c23ec331f}\label{classblockamr_1_1la_1_1KrylovSolver_a73f19481a5cf513aad526f4c23ec331f} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!exec\_@{exec\_}}
+\index{exec\_@{exec\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{exec\_}{exec\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor$>$ blockamr\+::la\+::\+Krylov\+Solver\+::exec\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a4e743fce67f1ae8b7c2d6078bf991007}\label{classblockamr_1_1la_1_1KrylovSolver_a4e743fce67f1ae8b7c2d6078bf991007} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!logger\_@{logger\_}}
+\index{logger\_@{logger\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{logger\_}{logger\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$gko\+::log\+::\+Convergence$<$\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{double}}$>$ $>$ blockamr\+::la\+::\+Krylov\+Solver\+::logger\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00080}{80}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_aa5b6b223507d54a8217703cf6599c8fa}\label{classblockamr_1_1la_1_1KrylovSolver_aa5b6b223507d54a8217703cf6599c8fa} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!n\_@{n\_}}
+\index{n\_@{n\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{n\_}{n\_}}
+{\footnotesize\ttfamily gko\+::size\+\_\+type blockamr\+::la\+::\+Krylov\+Solver\+::n\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_ac2d81a60750ab94a423c1c0e31078dd1}\label{classblockamr_1_1la_1_1KrylovSolver_ac2d81a60750ab94a423c1c0e31078dd1} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!nLocal\_@{nLocal\_}}
+\index{nLocal\_@{nLocal\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{nLocal\_}{nLocal\_}}
+{\footnotesize\ttfamily gko\+::size\+\_\+type blockamr\+::la\+::\+Krylov\+Solver\+::n\+Local\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a739d2d6782322a4ad311eaf3e5e5711a}\label{classblockamr_1_1la_1_1KrylovSolver_a739d2d6782322a4ad311eaf3e5e5711a} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!norm\_@{norm\_}}
+\index{norm\_@{norm\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{norm\_}{norm\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{Norm\+Kind}} blockamr\+::la\+::\+Krylov\+Solver\+::norm\+\_\+ = \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3}{Norm\+Kind\+::l2}}\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00088}{88}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a224e74b9d3511d2b2c319a3f3dd6d676}\label{classblockamr_1_1la_1_1KrylovSolver_a224e74b9d3511d2b2c319a3f3dd6d676} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!onDevice\_@{onDevice\_}}
+\index{onDevice\_@{onDevice\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{onDevice\_}{onDevice\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bool}} blockamr\+::la\+::\+Krylov\+Solver\+::on\+Device\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00068}{68}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a443fb6208ded63ddf685b483a6d6479e}\label{classblockamr_1_1la_1_1KrylovSolver_a443fb6208ded63ddf685b483a6d6479e} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!ones\_@{ones\_}}
+\index{ones\_@{ones\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{ones\_}{ones\_}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}}$>$ blockamr\+::la\+::\+Krylov\+Solver\+::ones\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_aea43d8cee302c356c8def6fe2e510795}\label{classblockamr_1_1la_1_1KrylovSolver_aea43d8cee302c356c8def6fe2e510795} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!onesGlobal\_@{onesGlobal\_}}
+\index{onesGlobal\_@{onesGlobal\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{onesGlobal\_}{onesGlobal\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$gko\+::\+Lin\+Op$>$ blockamr\+::la\+::\+Krylov\+Solver\+::ones\+Global\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a65adffba1db4f8f8fea3a6c6ee898095}\label{classblockamr_1_1la_1_1KrylovSolver_a65adffba1db4f8f8fea3a6c6ee898095} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!op\_@{op\_}}
+\index{op\_@{op\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{op\_}{op\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$gko\+::\+Lin\+Op$>$ blockamr\+::la\+::\+Krylov\+Solver\+::op\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_afb8854e064c1d1b53ae01bd5b18cdcd9}\label{classblockamr_1_1la_1_1KrylovSolver_afb8854e064c1d1b53ae01bd5b18cdcd9} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!projectNullspace\_@{projectNullspace\_}}
+\index{projectNullspace\_@{projectNullspace\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{projectNullspace\_}{projectNullspace\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bool}} blockamr\+::la\+::\+Krylov\+Solver\+::project\+Nullspace\+\_\+ = \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{false}}\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00082}{82}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_a30ae528277d2b2239d2b01a542620e4e}\label{classblockamr_1_1la_1_1KrylovSolver_a30ae528277d2b2239d2b01a542620e4e} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!resLogger\_@{resLogger\_}}
+\index{resLogger\_@{resLogger\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{resLogger\_}{resLogger\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualHistoryLogger}{Residual\+History\+Logger}}$>$ blockamr\+::la\+::\+Krylov\+Solver\+::res\+Logger\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00081}{81}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_aa052f1505e95aac6a7e3a37b72ed9c02}\label{classblockamr_1_1la_1_1KrylovSolver_aa052f1505e95aac6a7e3a37b72ed9c02} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!solver\_@{solver\_}}
+\index{solver\_@{solver\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{solver\_}{solver\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$gko\+::\+Lin\+Op$>$ blockamr\+::la\+::\+Krylov\+Solver\+::solver\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00079}{79}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_aa94e69331186272e2df08ff56d08d9a5}\label{classblockamr_1_1la_1_1KrylovSolver_aa94e69331186272e2df08ff56d08d9a5} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!x\_@{x\_}}
+\index{x\_@{x\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{x\_}{x\_}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Dense}}$>$ blockamr\+::la\+::\+Krylov\+Solver\+::x\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+\Hypertarget{classblockamr_1_1la_1_1KrylovSolver_ad1b43f9c29caf995d1919f6dc9d54c8e}\label{classblockamr_1_1la_1_1KrylovSolver_ad1b43f9c29caf995d1919f6dc9d54c8e} 
+\index{blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}!xGlobal\_@{xGlobal\_}}
+\index{xGlobal\_@{xGlobal\_}!blockamr::la::KrylovSolver@{blockamr::la::KrylovSolver}}
+\doxysubsubsection{\texorpdfstring{xGlobal\_}{xGlobal\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$gko\+::\+Lin\+Op$>$ blockamr\+::la\+::\+Krylov\+Solver\+::x\+Global\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{krylovSolver_8hpp_source_l00078}{78}} of file \mbox{\hyperlink{krylovSolver_8hpp_source}{krylov\+Solver.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/block\+Amr/linear\+Algebra/krylov/\mbox{\hyperlink{krylovSolver_8hpp}{krylov\+Solver.\+hpp}}\end{DoxyCompactItemize}

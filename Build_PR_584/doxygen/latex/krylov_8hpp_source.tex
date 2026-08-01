@@ -1,0 +1,137 @@
+\doxysection{krylov.\+hpp}
+\hypertarget{krylov_8hpp_source}{}\label{krylov_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp}}
+\mbox{\hyperlink{krylov_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockAmr_2linearAlgebra_2krylov_2logging_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/logging.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{result_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/result.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{stopNormInf_8hpp}{NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00019}00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00020}00020\ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00022}00022\ \textcolor{comment}{/*\ @brief\ The\ stopping\ test\ one\ solve\ runs,\ as\ one\ argument:\ an\ iteration\ cap,\ a\ residual}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ reduction\ by\ \`{}reductionFactor`\ against\ \`{}baseline`\ (rhs\_norm\ for\ a\ relative\ rtol,}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00024}00024\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ absolute\ when\ the\ caller\ folded\ rtol\ in),\ an\ absolute\ \`{}atol`\ when\ it\ is\ >\ 0,\ and\ the}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00025}00025\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ norm\ all\ of\ that\ is\ measured\ in\ -\/-\/\ "{}l2"{}\ (Ginkgo's)\ or\ "{}linf"{}\ (MLMG's,\ stopNormInf.hpp).}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00026}00026\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \`{}norm`\ carries\ its\ default\ here,\ so\ a\ caller\ that\ never\ names\ one\ stays\ a\ 4-\/field}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00027}00027\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ aggregate.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00028}00028\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00029}\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{00029}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{StopSpec}}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00030}00030\ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00031}\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a05b52bea0d787946b368c81e323bc0fd}{00031}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a05b52bea0d787946b368c81e323bc0fd}{maxIter}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00032}\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a523c807d6e9c4d4ee4b4ae82e1768df6}{00032}}\ \ \ \ \ gko::stop::mode\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a523c807d6e9c4d4ee4b4ae82e1768df6}{baseline}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00033}\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a0870ea1c17159ac61c869ed4a3ba8589}{00033}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a0870ea1c17159ac61c869ed4a3ba8589}{reductionFactor}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00034}\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_addcd1a7d67fac49742f113a5212c501a}{00034}}\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_addcd1a7d67fac49742f113a5212c501a}{atol}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00035}\mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a8cd7af55b671a2a9fe4cd8d55a3a797c}{00035}}\ \ \ \ \ std::string\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec_a8cd7af55b671a2a9fe4cd8d55a3a797c}{norm}}\ =\ \textcolor{stringliteral}{"{}l2"{}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00036}00036\ \};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00038}00038\ \textcolor{comment}{//\ The\ (Iteration,\ ResidualNorm[,\ ResidualNorm])\ chain\ every\ Krylov\ solve\ here\ uses.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00039}00039\ \textcolor{keyword}{inline}\ std::vector<std::shared\_ptr<const\ gko::stop::CriterionFactory>>}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00040}\mbox{\hyperlink{namespaceblockamr_1_1la_a498d4ec66152c6a8439a99973dbefdb5}{00040}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a498d4ec66152c6a8439a99973dbefdb5}{makeCriteria}}(std::shared\_ptr<const\ gko::Executor>\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{StopSpec}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}})}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00041}00041\ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{NormKind}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{kind}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_aadef856bc037056f189fd3724ec4dc22}{parseNorm}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}.norm);}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00043}00043\ \ \ \ \ std::vector<std::shared\_ptr<const\ gko::stop::CriterionFactory>>\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00044}00044\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}}.push\_back(gko::stop::Iteration::build()}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{with\_max\_iters}}(\textcolor{keyword}{static\_cast<}gko::size\_type\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}.maxIter))}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .on(exec));}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00047}00047\ \ \ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{residual}}\ =\ [\&](gko::stop::mode\ base,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{factor}})\ -\/>\ std::shared\_ptr<const\ gko::stop::CriterionFactory>}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00049}00049\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{kind}}\ ==\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecba707f3c5e9c59c9e5f347d2cbec59c66b}{NormKind::linf}})}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ResidualNormInf::build().with\_baseline(base).with\_reduction\_factor(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{factor}}).on(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ exec}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gko::stop::ResidualNorm<double>::build()}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ .with\_baseline(base)}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ .with\_reduction\_factor(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{factor}})}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ .on(exec);}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00060}00060\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00061}00061\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}}.push\_back(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{residual}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}.baseline,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}.reductionFactor));}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}.atol\ >\ 0.0)}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00063}00063\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}}.push\_back(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{residual}}(gko::stop::mode::absolute,\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}.atol));}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00065}00065\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00066}00066\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00067}00067\ \}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00069}00069\ \textcolor{comment}{//\ Build\ a\ Krylov\ solver\ over\ \`{}op`,\ stopping\ on\ the\ \`{}stop`\ chain\ above\ -\/-\/\ iteration\ count,}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00070}00070\ \textcolor{comment}{//\ ||r||\ <=\ rtol*||rhs||\ (recomputed\ per\ solve,\ so\ one\ generate()\ serves\ many\ right-\/hand\ sides)}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00071}00071\ \textcolor{comment}{//\ or,\ when\ atol\ >\ 0,\ ||r||\ <=\ atol.\ A\ non-\/null\ \`{}precond`\ becomes\ its\ generated\ preconditioner.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00072}\mbox{\hyperlink{namespaceblockamr_1_1la_acdcd42e9b4bb57be8736ab7c794899e4}{00072}}\ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{namespaceblockamr_1_1la_acdcd42e9b4bb57be8736ab7c794899e4}{buildKrylov}}(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ solver,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00074}00074\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00075}00075\ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ op,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00076}00076\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{StopSpec}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}},}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00077}00077\ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ precond}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00078}00078\ );}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00080}00080\ \textcolor{comment}{//\ The\ cg/bicgstab/gmres\ subset\ used\ by\ the\ one-\/shot\ solves\ in\ oneshot.cpp.\ The\ criteria}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00081}00081\ \textcolor{comment}{//\ come\ from\ the\ caller,\ not\ makeCriteria:\ those\ stop\ against\ a\ baseline\ computed\ once\ from}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00082}00082\ \textcolor{comment}{//\ the\ ORIGINAL\ system.\ \`{}what`\ names\ the\ caller\ in\ the\ "{}unknown\ solver"{}\ message.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00083}\mbox{\hyperlink{namespaceblockamr_1_1la_a4c892e7d16ebf48cd9bf9579532d6828}{00083}}\ std::shared\_ptr<gko::LinOp>\ \mbox{\hyperlink{namespaceblockamr_1_1la_a4c892e7d16ebf48cd9bf9579532d6828}{generateBasicSolver}}(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ solver,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00085}00085\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00086}00086\ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ op,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00087}00087\ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<const\ gko::stop::CriterionFactory>>\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}},}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00088}00088\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ what}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00089}00089\ );}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00091}00091\ \textcolor{comment}{//\ Fill\ the\ SolveResult\ every\ solve\ entry\ point\ returns.\ \`{}diagnostic`\ stays\ empty\ here:}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00092}00092\ \textcolor{comment}{//\ its\ thresholds\ are\ calibrated\ for\ a\ V-\/cycle's\ roughly\ constant\ contraction.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00093}\mbox{\hyperlink{namespaceblockamr_1_1la_a18f517a013afd81cad778abec001ef51}{00093}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a18f517a013afd81cad778abec001ef51}{makeSolveResult}}(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00094}00094\ \ \ \ \ std::int64\_t\ num\_iters,\ \textcolor{keywordtype}{double}\ res\_norm,\ \textcolor{keywordtype}{bool}\ converged,\ \textcolor{keyword}{const}\ std::vector<double>\&\ res\_history}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00095}00095\ )}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00096}00096\ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00097}00097\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00098}00098\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}.\mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult_a8d46615d32f088c5bc907558976acffd}{num\_iters}}\ =\ num\_iters;}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00099}00099\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}.res\_norm\ =\ res\_norm;}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00100}00100\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}.converged\ =\ converged;}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00101}00101\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}.res\_history\ =\ res\_history;}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ Geometric\ mean\ of\ the\ per-\/iteration\ reduction;\ the\ history\ holds\ size()\ -\/\ 1\ of\ them.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00103}00103\ \ \ \ \ \textcolor{keywordtype}{double}\ contraction\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{if}\ (res\_history.size()\ >=\ 2\ \&\&\ res\_history.front()\ >\ 0.0)}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00105}00105\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ contraction\ =\ std::pow(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ res\_history.back()\ /\ res\_history.front(),}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ 1.0\ /\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(res\_history.size()\ -\/\ 1)}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00110}00110\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00111}00111\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}.contraction\ =\ contraction;}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00112}00112\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}.diagnostic\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00113}00113\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}};}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00114}00114\ \}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00116}00116\ \textcolor{comment}{//\ Counters\ from\ a\ gko::log::Convergence\ logger,\ history\ from\ a\ ResidualHistoryLogger.}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00117}\mbox{\hyperlink{namespaceblockamr_1_1la_aefcb0c6cbfc269e2318596de11b4dc0b}{00117}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{SolveResult}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a18f517a013afd81cad778abec001ef51}{makeSolveResult}}(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{keyword}{const}\ gko::log::Convergence<double>\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{logger}},}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualHistoryLogger}{ResidualHistoryLogger}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{resLogger}},}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{keywordtype}{double}\ res\_norm}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00121}00121\ )}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00122}00122\ \{}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a18f517a013afd81cad778abec001ef51}{makeSolveResult}}(}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}std::int64\_t\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{logger}}.get\_num\_iterations()),}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ res\_norm,}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{logger}}.has\_converged(),}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{resLogger}}.history()}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00128}00128\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00129}00129\ \}}
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{krylov_8hpp_source_l00131}00131\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

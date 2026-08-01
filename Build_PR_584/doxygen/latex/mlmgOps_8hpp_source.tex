@@ -1,0 +1,141 @@
+\doxysection{mlmg\+Ops.\+hpp}
+\hypertarget{mlmgOps_8hpp_source}{}\label{mlmgOps_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/mlmgOps.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/matrixFree/mlmgOps.hpp}}
+\mbox{\hyperlink{mlmgOps_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_BoxArray.H>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_DistributionMapping.H>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <AMReX\_MLMG.H>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <AMReX\_Vector.H>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshLevel_8hpp}{NeoN/blockAmr/core/meshLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linOpBase_8hpp}{NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{types_8hpp}{NeoN/blockAmr/core/types.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00023}00023\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00024}00024\ \{}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00026}00026\ \textcolor{comment}{//\ Matrix-\/free\ SPD\ operator:\ x\ =\ sign*(L\_inhom(b)\ -\/\ c0),\ with\ MLMG::apply\ as}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00027}00027\ \textcolor{comment}{//\ the\ mat-\/vec\ and\ c0\ =\ L\_inhom(0)\ the\ affine\ BC\ offset\ recorded\ once\ at}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00028}00028\ \textcolor{comment}{//\ construction.}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00029}\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp}{00029}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp}{AmrexOp}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classblockamr_1_1la_1_1AmrexLinOpBase}{AmrexLinOpBase}}<AmrexOp>}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00030}00030\ \{}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00031}00031\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ Required\ by\ the\ polymorphic-\/object\ machinery\ (create\_default\ /\ clear).}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00034}\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_a14fed8b2a48860c01a6f0bd6e7f0f125}{00034}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_a14fed8b2a48860c01a6f0bd6e7f0f125}{AmrexOp}}(std::shared\_ptr<const\ gko::Executor>\ exec);}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ \`{}mesh`\ is\ the\ level\ the\ scratch\ fabs\ are\ allocated\ over;\ only\ its\ ba/dm\ are\ read\ (the}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00037}00037\ \ \ \ \ \textcolor{comment}{//\ geometry\ travels\ with\ them\ so\ the\ pair\ cannot\ be\ split\ or\ transposed).}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00038}\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_ad9a2021d618001ece8b23b6b41ef9b40}{00038}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_ad9a2021d618001ece8b23b6b41ef9b40}{AmrexOp}}(}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a34001263796ffecad6d5463e58c5bcec}{MLMG}}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_a4781b1d63f6b795f6aae9f868d35129aabe8256e06e7fbff57ef255dbb2b9377a}{mlmg}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1MeshLevel}{MeshLevel}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sign}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00044}00044\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00046}00046\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{comment}{//\ Keeps\ the\ base's\ advanced\ apply\_impl(alpha,\ b,\ beta,\ x)\ from\ being\ hidden.}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexLinOpBase}{AmrexLinOpBase}}<\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp}{AmrexOp}}>\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_aa46250df2e2f91f15ca4182fc02eb93b}{::apply\_impl}};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00051}\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_aa46250df2e2f91f15ca4182fc02eb93b}{00051}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1la_1_1AmrexOp_aa46250df2e2f91f15ca4182fc02eb93b}{apply\_impl}}(\textcolor{keyword}{const}\ gko::LinOp*\ b,\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00053}00053\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00055}00055\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a34001263796ffecad6d5463e58c5bcec}{MLMG}}*\ mlmg\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordtype}{double}\ sign\_\ =\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00057}00057\ \ \ \ \ std::shared\_ptr<amrex::MultiFab>\ in\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00058}00058\ \ \ \ \ std::shared\_ptr<amrex::MultiFab>\ out\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00059}00059\ \ \ \ \ std::shared\_ptr<amrex::MultiFab>\ c0\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00060}00060\ \};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00062}00062\ \textcolor{comment}{//\ Multi-\/level\ (composite\ AMR)\ AmrexOp:\ the\ Ginkgo\ vector\ concatenates\ all\ levels'\ valid\ cells}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00063}00063\ \textcolor{comment}{//\ (coarsest\ first)\ and\ the\ mat-\/vec\ is\ the\ COMPOSITE\ MLMG::apply.\ Covered\ coarse\ columns\ are}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00064}00064\ \textcolor{comment}{//\ ZERO\ and\ the\ operator\ is\ NOT\ symmetric:\ report/blockamr-\/linear-\/algebra-\/notes.md}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00065}\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp}{00065}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp}{CompositeAmrexOp}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classblockamr_1_1la_1_1AmrexLinOpBase}{AmrexLinOpBase}}<CompositeAmrexOp>}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00066}00066\ \{}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00067}00067\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00069}\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_aa5b5147af342dd08365a913ad75ded96}{00069}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_aa5b5147af342dd08365a913ad75ded96}{CompositeAmrexOp}}(std::shared\_ptr<const\ gko::Executor>\ exec);}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{comment}{//\ One\ MeshLevel\ per\ AMR\ level,\ coarsest\ first:\ the\ two\ parallel\ vectors\ this\ used\ to\ take}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{comment}{//\ could\ be\ different\ lengths,\ or\ paired\ up\ shifted,\ and\ still\ compile.}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00073}\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_ae0978398310867187aa2884226d22f4d}{00073}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_ae0978398310867187aa2884226d22f4d}{CompositeAmrexOp}}(}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a34001263796ffecad6d5463e58c5bcec}{MLMG}}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_a4781b1d63f6b795f6aae9f868d35129aabe8256e06e7fbff57ef255dbb2b9377a}{mlmg}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<MeshLevel>\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{levels}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sign}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00079}00079\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00081}00081\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00083}00083\ \ \ \ \ \textcolor{comment}{//\ Keeps\ the\ base's\ advanced\ apply\_impl(alpha,\ b,\ beta,\ x)\ from\ being\ hidden.}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexLinOpBase}{AmrexLinOpBase}}<\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp}{CompositeAmrexOp}}>\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_a4065a45daaaefcb3be19b512f7605cd2}{::apply\_impl}};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00086}\mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_a4065a45daaaefcb3be19b512f7605cd2}{00086}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1la_1_1CompositeAmrexOp_a4065a45daaaefcb3be19b512f7605cd2}{apply\_impl}}(\textcolor{keyword}{const}\ gko::LinOp*\ b,\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00088}00088\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00090}00090\ \ \ \ \ \textcolor{keyword}{static}\ amrex::Vector<amrex::MultiFab*>}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00091}00091\ \ \ \ \ ptrs(\textcolor{keyword}{const}\ std::vector<std::shared\_ptr<amrex::MultiFab>>\&\ v);}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00093}00093\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a34001263796ffecad6d5463e58c5bcec}{MLMG}}*\ mlmg\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keywordtype}{double}\ sign\_\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00095}00095\ \ \ \ \ std::vector<std::shared\_ptr<amrex::MultiFab>>\ in\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00096}00096\ \ \ \ \ std::vector<std::shared\_ptr<amrex::MultiFab>>\ out\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00097}00097\ \ \ \ \ std::vector<std::shared\_ptr<amrex::MultiFab>>\ c0\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00098}00098\ \ \ \ \ std::vector<long>\ off\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00099}00099\ \};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00101}00101\ \textcolor{comment}{//\ Multigrid\ preconditioner:\ z\ =\ M\string^\{-\/1\}\ r\ from\ a\ FIXED\ number\ of\ MLMG\ V-\/cycles\ (setFixedIter,}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00102}00102\ \textcolor{comment}{//\ which\ ignores\ solve()'s\ tolerances)\ on\ a\ caller-\/supplied\ equivalent\ operator.\ A\ V-\/cycle\ with}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00103}00103\ \textcolor{comment}{//\ Gauss-\/Seidel\ smoothing\ is\ only\ approximately\ symmetric\ -\/-\/\ CG\ tolerates\ it\ here\ (measured).}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00104}\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond}{00104}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond}{MlmgPrecond}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classblockamr_1_1la_1_1AmrexLinOpBase}{AmrexLinOpBase}}<MlmgPrecond>}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00105}00105\ \{}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00106}00106\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00108}\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_a599903647cad2976ec2bbbe9f40cea13}{00108}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_a599903647cad2976ec2bbbe9f40cea13}{MlmgPrecond}}(std::shared\_ptr<const\ gko::Executor>\ exec);}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00110}00110\ \ \ \ \ \textcolor{comment}{//\ \`{}like`\ is\ read\ for\ its\ LAYOUT\ alone\ -\/-\/\ the\ scratch\ fabs\ are\ allocated\ over\ its\ ba/dm.}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00111}00111\ \ \ \ \ \textcolor{comment}{//\ A\ fab\ rather\ than\ a\ MeshLevel\ because\ no\ geometry\ reaches\ this\ build:\ la::makeMlmgPrecond}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00112}00112\ \ \ \ \ \textcolor{comment}{//\ is\ handed\ the\ coefficient\ field\ and\ a\ SolverConfig,\ and\ nothing\ else\ (precond.hpp).}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00113}\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_aac5f46314447654d5852e311b0e7cf94}{00113}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_aac5f46314447654d5852e311b0e7cf94}{MlmgPrecond}}(}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a34001263796ffecad6d5463e58c5bcec}{MLMG}}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_a4781b1d63f6b795f6aae9f868d35129aabe8256e06e7fbff57ef255dbb2b9377a}{mlmg}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{like}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n\_cycles}}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00119}00119\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00121}00121\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00123}00123\ \ \ \ \ \textcolor{comment}{//\ Keeps\ the\ base's\ advanced\ apply\_impl(alpha,\ b,\ beta,\ x)\ from\ being\ hidden.}}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00124}00124\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classblockamr_1_1la_1_1AmrexLinOpBase}{AmrexLinOpBase}}<\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond}{MlmgPrecond}}>\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_a8c9047d0e6abe890b01195e0ed69aebd}{::apply\_impl}};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00126}\mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_a8c9047d0e6abe890b01195e0ed69aebd}{00126}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classblockamr_1_1la_1_1MlmgPrecond_a8c9047d0e6abe890b01195e0ed69aebd}{apply\_impl}}(\textcolor{keyword}{const}\ gko::LinOp*\ b,\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{x}})\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00128}00128\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00130}00130\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a34001263796ffecad6d5463e58c5bcec}{MLMG}}*\ mlmg\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00131}00131\ \ \ \ \ std::shared\_ptr<amrex::MultiFab>\ in\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00132}00132\ \ \ \ \ std::shared\_ptr<amrex::MultiFab>\ out\_;}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00133}00133\ \};}
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00134}00134\ }
+\DoxyCodeLine{\Hypertarget{mlmgOps_8hpp_source_l00135}00135\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

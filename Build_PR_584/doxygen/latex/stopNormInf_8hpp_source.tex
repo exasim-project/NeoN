@@ -1,0 +1,203 @@
+\doxysection{stop\+Norm\+Inf.\+hpp}
+\hypertarget{stopNormInf_8hpp_source}{}\label{stopNormInf_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp}}
+\mbox{\hyperlink{stopNormInf_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <AMReX\_ParallelContext.H>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <AMReX\_ParallelReduce.H>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <AMReX\_Reduce.H>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linOpBase_8hpp}{NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{gkoTypes_8hpp}{NeoN/blockAmr/core/gkoTypes.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{types_8hpp}{NeoN/blockAmr/core/types.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00024}00024\ \textcolor{comment}{//\ MLMG's\ stopping\ norm,\ which\ Ginkgo\ lacks:\ max|r\_i|\ reduced\ with\ amrex::Reduce\ over}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00025}00025\ \textcolor{comment}{//\ Ginkgo's\ own\ device\ pointer\ (Dense\ offers\ compute\_norm2/compute\_norm1\ only).\ Why\ the}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00026}00026\ \textcolor{comment}{//\ norm\ is\ a\ choice,\ and\ the\ measured\ comparison:}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00027}00027\ \textcolor{comment}{//\ report/blockamr-\/linear-\/algebra-\/notes.md\#norms}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00029}00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00030}00030\ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00032}00032\ \textcolor{comment}{//\ Which\ norm\ the\ stopping\ criterion\ (and\ the\ reported\ residual)\ measures.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00033}\mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{00033}}\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{NormKind}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00034}00034\ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00035}00035\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3}{l2}},}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecba707f3c5e9c59c9e5f347d2cbec59c66b}{linf}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00037}00037\ \};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00039}\mbox{\hyperlink{namespaceblockamr_1_1la_aadef856bc037056f189fd3724ec4dc22}{00039}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecb}{NormKind}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_aadef856bc037056f189fd3724ec4dc22}{parseNorm}}(\textcolor{keyword}{const}\ std::string\&\ norm)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00040}00040\ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keywordflow}{if}\ (norm\ ==\ \textcolor{stringliteral}{"{}l2"{}})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00042}00042\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecbabec25675775e9e0a0d783a5018b463e3}{NormKind::l2}};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00044}00044\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keywordflow}{if}\ (norm\ ==\ \textcolor{stringliteral}{"{}linf"{}})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00046}00046\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a3eaf1161dae6a9e0496ff4241fd66ecba707f3c5e9c59c9e5f347d2cbec59c66b}{NormKind::linf}};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00048}00048\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}ginkgo:\ unknown\ norm\ '"{}}\ +\ norm\ +\ \textcolor{stringliteral}{"{}'\ (expected\ 'l2'\ or\ 'linf';\ 'linf'\ is\ MLMG's)"{}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00051}00051\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00052}00052\ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00054}00054\ \textcolor{comment}{//\ max\ |v\_i|\ over\ a\ single-\/column\ Dense:\ on\ its\ own\ executor\ (hence\ the\ synchronize\ -\/-\/}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00055}00055\ \textcolor{comment}{//\ AMReX's\ stream\ is\ unordered\ against\ the\ one\ Ginkgo\ wrote\ \`{}v`\ on)\ and\ Max-\/reduced\ across}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00056}00056\ \textcolor{comment}{//\ ranks,\ or\ a\ rank\ stops\ on\ its\ own\ residual.\ Size\ and\ values\ come\ from\ the\ local}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00057}00057\ \textcolor{comment}{//\ accessors:\ get\_size()\ on\ a\ distributed\ vector\ is\ the\ GLOBAL\ row\ count.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00058}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a5ef4a490cf5db4e46d49e0a587d70834}{00058}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5b028eee159d1080ae661ef85581fdfb}{normInf}}(\textcolor{keyword}{const}\ gko::LinOp*\ v)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00059}00059\ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00060}00060\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_abd37af0ad31b74df5f4126fcc80b41a9}{localRows}}(v);}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00061}00061\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{m}}\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}}\ >\ 0)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00063}00063\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{p}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{localValues<double>}}(v);}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ v-\/>get\_executor();}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exec-\/>get\_master().get()\ ==\ exec.get())}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}\ =\ 0;\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}\ <\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}};\ ++\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{m}}\ =\ std::max(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{m}},\ std::abs(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{p}}[\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}]));}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ exec-\/>synchronize();}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Max\ and\ Min\ rather\ than\ a\ Max\ over\ |p\_i|:\ the\ pointer\ overloads\ take\ no}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ device\ lambda,\ so\ this\ header\ stays\ includable\ anywhere.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{hi}}\ =\ amrex::Reduce::Max<double>(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{p}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ amrex::Reduce::Min<double>(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{p}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{m}}\ =\ std::max(std::abs(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{hi}}),\ std::abs(lo));}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00082}00082\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00083}00083\ \ \ \ \ amrex::ParallelAllReduce::Max(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{m}},\ amrex::ParallelContext::CommunicatorSub());}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00084}00084\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{m}};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00085}00085\ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00087}00087\ \textcolor{comment}{//\ ||r||\_inf\ <=\ tau\ *\ baseline.\ Single\ right-\/hand\ side\ only:\ a\ per-\/column\ inf-\/norm\ would}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00088}00088\ \textcolor{comment}{//\ need\ a\ per-\/column\ reduction\ amrex::Reduce\ cannot\ express\ over\ a\ flat\ pointer.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00089}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf}{00089}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf}{ResidualNormInf}}\ :\ \textcolor{keyword}{public}\ gko::EnablePolymorphicObject<ResidualNormInf,\ gko::stop::Criterion>}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00090}00090\ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00091}00091\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }gko::EnablePolymorphicObject<\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf}{ResidualNormInf}},\ gko::stop::Criterion>;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00093}00093\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00095}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a270dbc38bed159ff88f3d1fbda7edbf5}{00095}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a270dbc38bed159ff88f3d1fbda7edbf5}{GKO\_CREATE\_FACTORY\_PARAMETERS}}(parameters,\ Factory)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00096}00096\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ As\ in\ gko::stop::ResidualNorm:\ the\ factor\ the\ baseline\ is\ multiplied\ by.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{GKO\_FACTORY\_PARAMETER\_SCALAR}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{reduction\_factor}},\ 1\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{e}}-\/10);}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ absolute\ |\ rhs\_norm\ |\ initial\_resnorm,\ as\ gko::stop::ResidualNorm\ but\ in\ the}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ inf-\/norm.\ MLMG\ uses\ the\ GREATER\ of\ the\ two,\ which\ coincide\ at\ a\ zero\ guess.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ gko::stop::mode\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{GKO\_FACTORY\_PARAMETER\_SCALAR}}(baseline,\ gko::stop::mode::rhs\_norm);}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00103}00103\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00104}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a9e5bc332cf2a75c59eae1909e3de72fd}{00104}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a9e5bc332cf2a75c59eae1909e3de72fd}{GKO\_ENABLE\_CRITERION\_FACTORY}}(\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf}{ResidualNormInf}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{parameters}},\ \mbox{\hyperlink{classFactory}{Factory}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00105}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a26c67847dae7c7c31f17e54a669a259e}{00105}}\ \ \ \ \ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a26c67847dae7c7c31f17e54a669a259e}{GKO\_ENABLE\_BUILD\_METHOD}}(\mbox{\hyperlink{classFactory}{Factory}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00107}00107\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{comment}{//\ Required\ by\ Ginkgo's\ polymorphic-\/object\ machinery\ (create\_default/clear).}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00110}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a8c9853809cd8a6962300d1861199c2ef}{00110}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a8c9853809cd8a6962300d1861199c2ef}{ResidualNormInf}}(std::shared\_ptr<const\ gko::Executor>\ exec)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ :\ gko::EnablePolymorphicObject<\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf}{ResidualNormInf}},\ gko::\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}::\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Criterion}}>(std::\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{move}}(exec))}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00112}00112\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00114}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a006d008520284145d026ce1189d1d5d3}{00114}}\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_a006d008520284145d026ce1189d1d5d3}{ResidualNormInf}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classFactory}{Factory}}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{factory}},\ \textcolor{keyword}{const}\ gko::stop::CriterionArgs\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{args}})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00115}00115\ \ \ \ \ \ \ \ \ :\ gko::EnablePolymorphicObject<\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf}{ResidualNormInf}},\ gko::\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}::\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Criterion}}>(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{factory}}-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{get\_executor}}(}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00116}00116\ \ \ \ \ \ \ \ \ )),}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{parameters\_}}\ \{\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{factory}}-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{get\_parameters}}()\}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00118}00118\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00119}00119\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{tau}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{parameters\_}}.reduction\_factor;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{parameters\_}}.baseline)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ gko::stop::mode::absolute:}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ target\_\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{tau}};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ gko::stop::mode::rhs\_norm:}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ target\_\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{tau}}\ *\ baselineNorm(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{args}}.b.get(),\ \textcolor{stringliteral}{"{}b"{}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ gko::stop::mode::initial\_resnorm:}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ target\_\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{tau}}\ *\ baselineNorm(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{args}}.initial\_residual,\ \textcolor{stringliteral}{"{}initial\_residual"{}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00132}00132\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00134}\mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_aeb08061b3fe23332fdc11a1f77d22c09}{00134}}\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualNormInf_aeb08061b3fe23332fdc11a1f77d22c09}{check\_impl}}(}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ gko::uint8\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stoppingId}},}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{setFinalized}},}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ gko::array<gko::stopping\_status>*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop\_status}},}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{one\_changed}},}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{Updater}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{updater}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00140}00140\ \ \ \ \ )\textcolor{keyword}{\ override}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00141}00141\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ gko::LinOp*\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{updater}}.residual\_;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}\ ==\ \textcolor{keyword}{nullptr}\ \&\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{updater}}.ignore\_residual\_check\_)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Not\ a\ missing\ residual:\ Ir\ asks\ for\ the\ cheap\ checks\ first\ and\ calls\ again}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ with\ it.\ Throwing\ here\ instead\ made\ ResidualNormInf\ unusable\ with\ ir/mpir.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}}\ ==\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ A\ solver\ publishing\ only\ the\ implicit\ squared\ 2-\/norm\ cannot\ be\ stopped\ on}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ an\ inf-\/norm;\ refuse\ rather\ than\ silently\ stop\ on\ a\ different\ criterion.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ gko::NotSupported(}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{\_\_FILE\_\_}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{\_\_LINE\_\_}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{\_\_func\_\_}},\ \textcolor{stringliteral}{"{}ResidualNormInf\ needs\ the\ residual\ vector"{}}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ last\_\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5b028eee159d1080ae661ef85581fdfb}{normInf}}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{r}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ converged\ =\ last\_\ <=\ target\_;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (converged\ \&\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop\_status}}\ !=\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ exec\ =\ this-\/>\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{get\_executor}}();}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop\_status}}-\/>get\_size();}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ gko::array<gko::stopping\_status>\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{host}}(exec-\/>get\_master(),\ *\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop\_status}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}\ =\ 0;\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}\ <\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}};\ ++\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{host}}.get\_data()[\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{i}}].converge(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stoppingId}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{setFinalized}});}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\_from\ into\ the\ existing\ storage:\ the\ solver\ holds\ pointers\ into\ it.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ exec-\/>copy\_from(exec-\/>get\_master(),\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{host}}.get\_const\_data(),\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop\_status}}-\/>get\_data());}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00171}00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{one\_changed}}\ !=\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ *\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{one\_changed}}\ =\ converged;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ converged;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00176}00176\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00178}00178\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00180}00180\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ baselineNorm(\textcolor{keyword}{const}\ gko::LinOp*\ v,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ what)}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00181}00181\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v\ ==\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ gko::NotSupported(}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{\_\_FILE\_\_}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{\_\_LINE\_\_}},\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{\_\_func\_\_}},\ std::string(\textcolor{stringliteral}{"{}ResidualNormInf\ needs\ "{}})\ +\ what}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5b028eee159d1080ae661ef85581fdfb}{normInf}}(v);}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00189}00189\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ A\ zero\ baseline\ would\ make\ the\ target\ 0\ and\ the\ solve\ unstoppable.}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}}\ >\ 0.0)\ ?\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{nrm}}\ :\ 1.0;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00191}00191\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{keywordtype}{double}\ target\_\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{keywordtype}{double}\ last\_\ =\ 0.0;}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00195}00195\ \};}
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{stopNormInf_8hpp_source_l00197}00197\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

@@ -1,0 +1,97 @@
+\doxysection{bf16.\+hpp}
+\hypertarget{bf16_8hpp_source}{}\label{bf16_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmg/bf16.hpp}}
+\mbox{\hyperlink{bf16_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_Extension.H>}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuQualifiers.H>}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00015}00015\ \textcolor{comment}{//\ bfloat16\ as\ a\ STORAGE\ type\ for\ the\ GMG\ level\ hierarchy:\ every\ operation\ below\ converts}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00016}00016\ \textcolor{comment}{//\ to\ float\ and\ rounds\ once\ back.\ Rejected\ for\ the\ FIELDS,\ kept\ for\ the\ COEFFICIENTS\ —}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00017}00017\ \textcolor{comment}{//\ report/blockamr-\/precision-\/measurements.md\ (NeoFOAM\ repo).}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00018}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16}{00018}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16}{Bf16}}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00020}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a09b1d56f2adf5ecfa1aa19ad6113d4b1}{00020}}\ \ \ \ \ std::uint16\_t\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a09b1d56f2adf5ecfa1aa19ad6113d4b1}{bits}};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00022}00022\ \ \ \ \ \textcolor{comment}{//\ Trivially\ default\ constructible:\ BaseFab's\ placementNew\ is\ then\ a\ no-\/op.}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00023}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a38983c569b51bda7f62ac734cb2a86e5}{00023}}\ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a38983c569b51bda7f62ac734cb2a86e5}{Bf16}}()\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{noexcept}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{default}};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00025}00025\ \ \ \ \ \textcolor{comment}{//\ The\ only\ converting\ constructor:\ a\ double\ overload\ would\ make\ Bf16(0)\ ambiguous.}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00026}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a22ecda2a5798c34437092626c0984cec}{00026}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_FORCE\_INLINE}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16}{Bf16}}(\textcolor{keywordtype}{float}\ f)\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{noexcept}}\ :\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a09b1d56f2adf5ecfa1aa19ad6113d4b1}{bits}}(\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a4b9b743e079cfdd31f7aff54e722be3b}{fromFloat}}(f))\ \{\}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{comment}{//\ Implicit,\ so\ kernel\ expressions\ over\ a\ bf16\ level\ promote\ to\ float\ and\ compute\ there.}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00029}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a8de1e32c12bb040b52d4a9dc5bdc91cd}{00029}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_FORCE\_INLINE}}\ \textcolor{keyword}{operator}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{float}}()\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{noexcept}}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00030}00030\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a8eab5f5857de162bef2e1cc41ca5b027}{toFloat}}(\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a09b1d56f2adf5ecfa1aa19ad6113d4b1}{bits}});}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00032}00032\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00034}00034\ \ \ \ \ \textcolor{comment}{//\ A\ class\ type\ finds\ no\ built-\/in\ +=,\ and\ the\ prolongation\ is\ written\ that\ way.}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00035}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_ad0f4720a10f64fcd789edfa7749ec39d}{00035}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_FORCE\_INLINE}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16}{Bf16}}\&\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_ad0f4720a10f64fcd789edfa7749ec39d}{operator+=}}(\textcolor{keywordtype}{float}\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00036}00036\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a09b1d56f2adf5ecfa1aa19ad6113d4b1}{bits}}\ =\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a4b9b743e079cfdd31f7aff54e722be3b}{fromFloat}}(\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a8eab5f5857de162bef2e1cc41ca5b027}{toFloat}}(\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a09b1d56f2adf5ecfa1aa19ad6113d4b1}{bits}})\ +\ \mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}});}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00039}00039\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ Round\ to\ nearest,\ ties\ to\ even;\ a\ NaN\ maps\ to\ a\ quiet\ NaN\ rather\ than\ an\ infinity.}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00042}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a4b9b743e079cfdd31f7aff54e722be3b}{00042}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_FORCE\_INLINE}}\ \textcolor{keyword}{static}\ std::uint16\_t\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a4b9b743e079cfdd31f7aff54e722be3b}{fromFloat}}(\textcolor{keywordtype}{float}\ f)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00043}00043\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ Bits\ b;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ b.f\ =\ f;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((b.u\ \&\ 0x7F800000u)\ ==\ 0x7F800000u\ \&\&\ (b.u\ \&\ 0x007FFFFFu)\ !=\ 0u)}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0x7FC0u;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::uint32\_t\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{rounding}}\ =\ 0x7FFFu\ +\ ((b.u\ >>\ 16)\ \&\ 1u);}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}std::uint16\_t\textcolor{keyword}{>}((b.u\ +\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{rounding}})\ >>\ 16);}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00052}00052\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00054}\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a8eab5f5857de162bef2e1cc41ca5b027}{00054}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_GPU\_HOST\_DEVICE}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{AMREX\_FORCE\_INLINE}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structblockamr_1_1la_1_1Bf16_a8eab5f5857de162bef2e1cc41ca5b027}{toFloat}}(std::uint16\_t\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{h}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00055}00055\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ Bits\ b;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ b.u\ =\ \textcolor{keyword}{static\_cast<}std::uint32\_t\textcolor{keyword}{>}(\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{h}})\ <<\ 16;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ b.f;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00059}00059\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00061}00061\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ Union\ punning:\ what\ GCC,\ Clang\ and\ nvcc\ all\ support;\ std::bit\_cast\ is\ not}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00064}00064\ \ \ \ \ \textcolor{comment}{//\ device-\/usable\ across\ our\ toolchains.}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keyword}{union\ }Bits}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00066}00066\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ f;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ std::uint32\_t\ u;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00069}00069\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00070}00070\ \};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00072}00072\ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{sizeof}(Bf16)\ ==\ 2,\ \textcolor{stringliteral}{"{}Bf16\ must\ be\ exactly\ two\ bytes"{}});}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00074}00074\ \textcolor{comment}{//\ The\ type\ the\ KERNELS\ compute\ in,\ given\ a\ level's\ STORAGE\ type:\ identity\ except\ float}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00075}00075\ \textcolor{comment}{//\ for\ Bf16,\ which\ keeps\ the\ level\ diagonal\ exact\ (report/blockamr-\/precision-\/measurements.md).}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00076}00076\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00077}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute}{00077}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute}{GmgCompute}}}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00078}00078\ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00079}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute_aa126eb5504ebf8437c823f9a786c5dc8}{00079}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute_aa126eb5504ebf8437c823f9a786c5dc8}{type}}\ =\ T;}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00080}00080\ \};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00082}00082\ \textcolor{keyword}{template}<>}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00083}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4}{00083}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute}{GmgCompute}}<\mbox{\hyperlink{structblockamr_1_1la_1_1Bf16}{Bf16}}>}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00084}00084\ \{}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00085}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4_a349f953d93136c116190004743d6d234}{00085}}\ \ \ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute_3_01Bf16_01_4_a349f953d93136c116190004743d6d234}{type}}\ =\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{float}};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00086}00086\ \};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00088}00088\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00089}\mbox{\hyperlink{namespaceblockamr_1_1la_a8d8429ceef73ab6427d7a918b989424a}{00089}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceblockamr_1_1la_a8d8429ceef73ab6427d7a918b989424a}{GmgComputeT}}\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structblockamr_1_1la_1_1GmgCompute_aa126eb5504ebf8437c823f9a786c5dc8}{GmgCompute<T>::type}};}
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{bf16_8hpp_source_l00091}00091\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

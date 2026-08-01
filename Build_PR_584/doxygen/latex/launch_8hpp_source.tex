@@ -1,0 +1,239 @@
+\doxysection{launch.\+hpp}
+\hypertarget{launch_8hpp_source}{}\label{launch_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/core/launch.hpp}}
+\mbox{\hyperlink{launch_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <AMReX\_Array4.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <AMReX\_Box.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ <AMReX\_FArrayBox.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuDevice.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <AMReX\_GpuLaunch.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <AMReX\_MFParallelFor.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00019}00019\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00021}00021\ \textcolor{comment}{//\ BLOCKAMR\_LAMBDA,\ the\ one\ lambda\ form\ for\ all\ launchers,\ is\ defined\ there.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp}{NeoN/blockAmr/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00024}00024\ \textcolor{comment}{//\ The\ launchers\ under\ comparison.\ PER-\/BOX,\ one\ launch\ per\ amrex::Box\ as\ NeoN's\ operators}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00025}00025\ \textcolor{comment}{//\ are\ written:\ launchAmrex\ (baseline),\ launchKokkosMd,\ launchKokkosFlat.\ FUSED,\ every}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00026}00026\ \textcolor{comment}{//\ valid\ cell\ in\ ONE\ launch:\ launchAmrexFused\ (the\ honest\ baseline),\ launchKokkosTeam.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00028}00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00029}00029\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00031}00031\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00032}\mbox{\hyperlink{namespaceblockamr_a68053c6c70c67b8a0984d696dfb74ffa}{00032}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a68053c6c70c67b8a0984d696dfb74ffa}{launchAmrex}}(\textcolor{keyword}{const}\ amrex::Box\&\ bx,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00033}00033\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00034}00034\ \ \ \ \ amrex::ParallelFor(bx,\ f);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00035}00035\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00037}00037\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00038}\mbox{\hyperlink{namespaceblockamr_a487357181863fa5e2a8a4a795f9f2ae3}{00038}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a487357181863fa5e2a8a4a795f9f2ae3}{launchKokkosMd}}(\textcolor{keyword}{const}\ amrex::Box\&\ bx,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00039}00039\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00040}00040\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ bx.smallEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00041}00041\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ hi\ =\ bx.bigEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00042}00042\ \ \ \ \ Kokkos::parallel\_for(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bench\_md"{}},}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00044}00044\ \ \ \ \ \ \ \ \ Kokkos::MDRangePolicy<Kokkos::Rank<3>>(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \{lo[0],\ lo[1],\ lo[2]\},\ \{hi[0]\ +\ 1,\ hi[1]\ +\ 1,\ hi[2]\ +\ 1\}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00047}00047\ \ \ \ \ \ \ \ \ f}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00048}00048\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00049}00049\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00051}00051\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00052}\mbox{\hyperlink{namespaceblockamr_a872f47e5548becd89a073290d75e5bd6}{00052}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a872f47e5548becd89a073290d75e5bd6}{launchKokkosFlat}}(\textcolor{keyword}{const}\ amrex::Box\&\ bx,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00053}00053\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00054}00054\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ bx.smallEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ nx\ =\ bx.length(0);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ ny\ =\ bx.length(1);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{long}\ n\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{long}\textcolor{keyword}{>}(nx)\ *\ bx.length(1)\ *\ bx.length(2);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}}\ =\ lo[0],\ \mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{ly}}\ =\ lo[1],\ \mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{lz}}\ =\ lo[2];}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00059}00059\ \ \ \ \ Kokkos::parallel\_for(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bench\_flat"{}},}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ Kokkos::RangePolicy<>(0,\ n),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ \textcolor{keywordtype}{long}\ t)\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ i\ fastest,\ matching\ Array4's\ i-\/contiguous\ layout.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ i\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(t\ \%\ nx);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ j\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}((t\ /\ nx)\ \%\ ny);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ k\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(t\ /\ (\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{long}\textcolor{keyword}{>}(nx)\ *\ ny));}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ f(i\ +\ \mbox{\hyperlink{vcycle_8hpp_abb52da2fdbfaa20c9b7f593c244c721b}{lx}},\ j\ +\ \mbox{\hyperlink{vcycle_8hpp_a34abd106468dd1f8bffbeb2ce26781e6}{ly}},\ k\ +\ \mbox{\hyperlink{vcycle_8hpp_afe37b8d9aa76a87875defd6340355a14}{lz}});}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00069}00069\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00070}00070\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00072}00072\ \textcolor{comment}{//\ Streams:\ AMReX\ round-\/robins\ its\ box\ loop\ over\ numGpuStreams()\ so\ short\ per-\/box\ kernels}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00073}00073\ \textcolor{comment}{//\ overlap;\ a\ plain\ Kokkos::parallel\_for\ issues\ to\ ONE\ -\/-\/\ the\ measured\ multi-\/box\ penalty.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00075}00075\ \textcolor{comment}{//\ Heap-\/owned,\ not\ a\ function-\/local\ static:\ the\ instances\ own\ cudaStreams\ and\ must\ die}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00076}00076\ \textcolor{comment}{//\ BEFORE\ Kokkos::finalize\ and\ amrex::Finalize,\ not\ at\ static\ teardown\ afterwards.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00077}\mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{00077}}\ \textcolor{keyword}{inline}\ std::vector<Kokkos::DefaultExecutionSpace>*\&\ \mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{streamPoolPtr}}()}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00078}00078\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00079}00079\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<Kokkos::DefaultExecutionSpace>*\ pool\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{keywordflow}{return}\ pool;}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00081}00081\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00083}\mbox{\hyperlink{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f}{00083}}\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ Kokkos::DefaultExecutionSpace\&\ \mbox{\hyperlink{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f}{benchStream}}(\textcolor{keywordtype}{int}\ ibox)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00084}00084\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{keyword}{auto}*\&\ pool\ =\ \mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{streamPoolPtr}}();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00086}00086\ \ \ \ \ \textcolor{keywordflow}{if}\ (pool\ ==\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00087}00087\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Exactly\ as\ many\ streams\ as\ AMReX\ uses,\ so\ the\ comparison\ is\ of\ the\ launcher.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ n\ =\ std::max(1,\ amrex::Gpu::Device::numGpuStreams());}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ pool\ =\ \textcolor{keyword}{new}\ std::vector<Kokkos::DefaultExecutionSpace>(Kokkos::Experimental::partition\_space(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::DefaultExecutionSpace\ \{\},\ std::vector<int>(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(n),\ 1)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ ));}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00093}00093\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00094}00094\ \ \ \ \ \textcolor{keywordflow}{return}\ (*pool)[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(ibox)\ \%\ pool-\/>size()];}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00095}00095\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00097}\mbox{\hyperlink{namespaceblockamr_a3b4bbb7cae0398b3ac2154025c0c215b}{00097}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a3b4bbb7cae0398b3ac2154025c0c215b}{releaseStreamPool}}()}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00098}00098\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{delete}\ \mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{streamPoolPtr}}();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00100}00100\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{streamPoolPtr}}()\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00101}00101\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00103}00103\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00104}\mbox{\hyperlink{namespaceblockamr_a4d64f00c36d7346b3c70f76be8e83067}{00104}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a4d64f00c36d7346b3c70f76be8e83067}{launchKokkosMdStream}}(\textcolor{keyword}{const}\ amrex::Box\&\ bx,\ \textcolor{keywordtype}{int}\ ibox,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00105}00105\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00106}00106\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ bx.smallEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ hi\ =\ bx.bigEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00108}00108\ \ \ \ \ Kokkos::parallel\_for(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bench\_md\_stream"{}},}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00110}00110\ \ \ \ \ \ \ \ \ Kokkos::MDRangePolicy<Kokkos::Rank<3>>(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f}{benchStream}}(ibox),\ \{lo[0],\ lo[1],\ lo[2]\},\ \{hi[0]\ +\ 1,\ hi[1]\ +\ 1,\ hi[2]\ +\ 1\}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ f}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00114}00114\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00115}00115\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00117}00117\ \textcolor{comment}{//\ launchKokkosMd\ under\ a\ caller-\/chosen\ kernel\ name,\ so\ a\ profile\ can\ tell\ callers\ apart.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00118}00118\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00119}\mbox{\hyperlink{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6}{00119}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6}{launchKokkosMdNamed}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name,\ \textcolor{keyword}{const}\ amrex::Box\&\ bx,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00120}00120\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ lo\ =\ bx.smallEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ hi\ =\ bx.bigEnd();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00123}00123\ \ \ \ \ Kokkos::parallel\_for(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ name,}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ Kokkos::MDRangePolicy<Kokkos::Rank<3>>(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \{lo[0],\ lo[1],\ lo[2]\},\ \{hi[0]\ +\ 1,\ hi[1]\ +\ 1,\ hi[2]\ +\ 1\}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ ),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ f}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00129}00129\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00130}00130\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00132}00132\ \textcolor{comment}{//\ Fused\ launchers:\ one\ kernel\ for\ every\ box.\ f\ takes\ (ibox,\ i,\ j,\ k).}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00134}00134\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00135}\mbox{\hyperlink{namespaceblockamr_ae4da72f6c91de99a25e86fbfbfb6fed9}{00135}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_ae4da72f6c91de99a25e86fbfbfb6fed9}{launchAmrexFused}}(\textcolor{keyword}{const}\ amrex::MultiFab\&\ mf,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00136}00136\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00137}00137\ \ \ \ \ amrex::ParallelFor(mf,\ f);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00138}00138\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00140}00140\ \textcolor{comment}{//\ The\ Kokkos\ twin\ of\ AMReX's\ fused\ path:\ MT,\ nblocks\_per\_box\ and\ the\ cached\ DEVICE}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00141}00141\ \textcolor{comment}{//\ BoxIndexer\ table\ are\ AMReX's\ own,\ so\ the\ comparison\ is\ one\ portable\ TeamPolicy\ against}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00142}00142\ \textcolor{comment}{//\ AMReX's\ per-\/backend\ launch.\ Valid\ cells\ only\ -\/-\/\ the\ MDRangePolicy\ fallback\ below\ rejects}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00143}00143\ \textcolor{comment}{//\ a\ negative\ lower\ bound.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00144}00144\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ MF,\ \textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00145}\mbox{\hyperlink{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508}{00145}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508}{launchKokkosTeamNamed}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name,\ \textcolor{keyword}{const}\ MF\&\ mf,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00146}00146\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00147}00147\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ nboxes\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(mf.IndexArray().size());}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00148}00148\ \ \ \ \ \textcolor{keywordflow}{if}\ (nboxes\ ==\ 0)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00149}00149\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00151}00151\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00152}00152\ \ \ \ \ \textcolor{keywordflow}{if}\ (nboxes\ ==\ 1)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00153}00153\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ same\ fallback\ AMReX\ makes:\ with\ one\ box\ there\ is\ nothing\ to\ fuse\ and\ the}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ team\ mapping\ costs,\ so\ the\ fused\ column\ would\ report\ a\ handicap\ AMReX\ does\ not.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\ bx\ =\ mf.box(mf.IndexArray()[0]);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6}{launchKokkosMdNamed}}(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ name,\ bx,\ \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_aa2c47dac9570009a323e14d3b3382abe}{BLOCKAMR\_LAMBDA}}(\textcolor{keywordtype}{int}\ i,\ \textcolor{keywordtype}{int}\ j,\ \textcolor{keywordtype}{int}\ k)\ \{\ f(0,\ i,\ j,\ k);\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00161}00161\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00163}00163\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ MT\ =\ 128;\ \textcolor{comment}{//\ threads\ per\ block,\ ==\ AMReX's\ CUDA\ MT}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00164}00164\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ VL\ =\ 32;\ \ \textcolor{comment}{//\ vector\ lanes\ =\ one\ warp,\ so\ blockDim\ is\ (32,\ 4,\ 1)}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00166}00166\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ info\ =\ mf.getParForInfo(amrex::IntVect(0));}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00167}00167\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ nblocksPerBox\ =\ info.getNBlocksPerBox(MT);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00168}00168\ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxIndexer*\ boxes\ =\ info.getBoxes();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00170}00170\ \ \ \ \ \textcolor{keyword}{using\ }Policy\ =\ Kokkos::TeamPolicy<Kokkos::DefaultExecutionSpace>;}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00171}00171\ \ \ \ \ Kokkos::parallel\_for(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00172}00172\ \ \ \ \ \ \ \ \ name,}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00173}00173\ \ \ \ \ \ \ \ \ Policy(nboxes\ *\ nblocksPerBox,\ MT\ /\ VL,\ VL),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00174}00174\ \ \ \ \ \ \ \ \ KOKKOS\_LAMBDA(\textcolor{keyword}{const}\ Policy::member\_type\&\ team)\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ blk\ =\ team.league\_rank();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ ibox\ =\ blk\ /\ nblocksPerBox;}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ base\ =\ \textcolor{keyword}{static\_cast<}std::uint64\_t\textcolor{keyword}{>}(blk\ -\/\ ibox\ *\ nblocksPerBox)\ *\ MT;}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ amrex::BoxIndexer\&\ indexer\ =\ boxes[ibox];}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::parallel\_for(}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Kokkos::TeamVectorRange(team,\ MT),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00181}00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [\&](\textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ t)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00182}00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::uint64\_t\ icell\ =\ base\ +\ \textcolor{keyword}{static\_cast<}std::uint64\_t\textcolor{keyword}{>}(t);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (icell\ <\ indexer.numPts())}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ ijk\ =\ indexer(icell);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f(ibox,\ ijk.x,\ ijk.y,\ ijk.z);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00191}00191\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00192}00192\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00193}00193\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00195}00195\ \textcolor{keyword}{template}<\textcolor{keyword}{class}\ MF,\ \textcolor{keyword}{class}\ F>}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00196}\mbox{\hyperlink{namespaceblockamr_ace6b363fd302ceb97264d2776d6578c8}{00196}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceblockamr_ace6b363fd302ceb97264d2776d6578c8}{launchKokkosTeam}}(\textcolor{keyword}{const}\ MF\&\ mf,\ F\ \textcolor{keyword}{const}\&\ f)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00197}00197\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00198}00198\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508}{launchKokkosTeamNamed}}(\textcolor{stringliteral}{"{}bench\_team"{}},\ mf,\ f);}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00199}00199\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00201}00201\ \textcolor{comment}{//\ Accessors:\ both\ take\ GLOBAL\ (i,\ j,\ k).\ amrex::Array4\ already\ does;\ ViewAcc\ gives\ an}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00202}00202\ \textcolor{comment}{//\ unmanaged\ Kokkos\ View\ the\ same\ convention\ by\ subtracting\ the\ fab\ box\ origin.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00204}\mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{00204}}\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{FabView}}\ =\ Kokkos::View<}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00205}00205\ \ \ \ \ \textcolor{keywordtype}{double}***,}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00206}00206\ \ \ \ \ Kokkos::LayoutLeft,}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00207}00207\ \ \ \ \ Kokkos::DefaultExecutionSpace::memory\_space,}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00208}00208\ \ \ \ \ Kokkos::MemoryTraits<Kokkos::Unmanaged>>;}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00209}00209\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00210}\mbox{\hyperlink{structblockamr_1_1ViewAcc}{00210}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1ViewAcc}{ViewAcc}}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00211}00211\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00212}\mbox{\hyperlink{structblockamr_1_1ViewAcc_a2d097296d9a534c55312507ae55d6201}{00212}}\ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{FabView}}\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_a2d097296d9a534c55312507ae55d6201}{v}};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00213}\mbox{\hyperlink{structblockamr_1_1ViewAcc_aaca90e9781c7c05cd46520ae920e2d68}{00213}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_aaca90e9781c7c05cd46520ae920e2d68}{ox}},\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_a1bfe39203231dd84da1a86b2a934ae8f}{oy}},\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_ab9a0bffdb3a18140cabe9718c3b3d27c}{oz}};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00215}\mbox{\hyperlink{structblockamr_1_1ViewAcc_a900dfd5aa3a424f410a0c6cdb0739dcc}{00215}}\ \ \ \ \ AMREX\_GPU\_HOST\_DEVICE\ AMREX\_FORCE\_INLINE\ \textcolor{keywordtype}{double}\&\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_a900dfd5aa3a424f410a0c6cdb0739dcc}{operator()}}(\textcolor{keywordtype}{int}\ i,\ \textcolor{keywordtype}{int}\ j,\ \textcolor{keywordtype}{int}\ k)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00216}00216\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_a2d097296d9a534c55312507ae55d6201}{v}}(i\ -\/\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_aaca90e9781c7c05cd46520ae920e2d68}{ox}},\ j\ -\/\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_a1bfe39203231dd84da1a86b2a934ae8f}{oy}},\ k\ -\/\ \mbox{\hyperlink{structblockamr_1_1ViewAcc_ab9a0bffdb3a18140cabe9718c3b3d27c}{oz}});}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00218}00218\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00219}00219\ \};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00221}00221\ \textcolor{comment}{//\ Unmanaged\ View\ over\ the\ whole\ fab\ box,\ origin\ recorded\ so\ the\ accessor\ is\ global.}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00222}\mbox{\hyperlink{namespaceblockamr_a6bab5888b36cbcae0b856cdc93ef4121}{00222}}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structblockamr_1_1ViewAcc}{ViewAcc}}\ \mbox{\hyperlink{namespaceblockamr_a6bab5888b36cbcae0b856cdc93ef4121}{viewAcc}}(amrex::FArrayBox\&\ fab)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00223}00223\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00224}00224\ \ \ \ \ \textcolor{keyword}{const}\ amrex::Box\&\ b\ =\ fab.box();}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00225}00225\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structblockamr_1_1ViewAcc}{ViewAcc}}\ \{}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{FabView}}(fab.dataPtr(),\ b.length(0),\ b.length(1),\ b.length(2)),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ b.smallEnd(0),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00228}00228\ \ \ \ \ \ \ \ \ b.smallEnd(1),}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00229}00229\ \ \ \ \ \ \ \ \ b.smallEnd(2)}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00230}00230\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00231}00231\ \}}
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00232}00232\ }
+\DoxyCodeLine{\Hypertarget{launch_8hpp_source_l00233}00233\ \}\ \textcolor{comment}{//\ namespace\ blockamr}}
+
+\end{DoxyCode}

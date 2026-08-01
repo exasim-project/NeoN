@@ -1,0 +1,57 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/block\+Amr/linear\+Algebra/gmg\+Kokkos/halo.hpp File Reference}
+\hypertarget{halo_8hpp}{}\label{halo_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/gmgKokkos/halo.hpp}}
+{\ttfamily \#include $<$cstddef$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$Kokkos\+\_\+\+Core.\+hpp$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Box\+Array.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Box\+List.\+H$>$}\newline
+{\ttfamily \#include $<$AMRe\+X\+\_\+\+Periodicity.\+H$>$}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/core/bc.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/linear\+Algebra/gmg/gmg\+Kernels.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/core/launch.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1CopyTask}{blockamr\+::\+Copy\+Task}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1CopyPlan}{blockamr\+::\+Copy\+Plan}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{blockamr\+::detail\+::\+Box\+Pair}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr}{blockamr}}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr_1_1detail}{blockamr\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_1_1detail_a46198e493ba0ebc6f592bbd607a09d06}{blockamr\+::detail\+::to\+Device}} (const std\+::vector$<$ \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}} $>$ \&host, const char \texorpdfstring{$\ast$}{*}name)
+\item 
+void \mbox{\hyperlink{namespaceblockamr_1_1detail_ad2b33c8fda95fb3a7a289ee7b26c277e}{blockamr\+::detail\+::add\+Task}} (std\+::vector$<$ \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}} $>$ \&out, \mbox{\hyperlink{structblockamr_1_1detail_1_1BoxPair}{Box\+Pair}} boxes, const amrex\+::\+Box \&region, const amrex\+::\+Int\+Vect \&sh, int sign=1)
+\item 
+{\footnotesize template$<$class FAB $>$ }\\\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2}{blockamr\+::make\+Halo\+Plan}} (const amrex\+::\+Fab\+Array$<$ FAB $>$ \&mf, const amrex\+::\+Periodicity \&period)
+\item 
+{\footnotesize template$<$class FAB $>$ }\\\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e}{blockamr\+::make\+Bc\+Plan}} (const amrex\+::\+Fab\+Array$<$ FAB $>$ \&mf, const amrex\+::\+Box \&domain, const la\+::\+Bc\+Array \&\mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}})
+\item 
+{\footnotesize template$<$class FAB $>$ }\\\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{blockamr\+::make\+Copy\+Plan}} (const amrex\+::\+Fab\+Array$<$ FAB $>$ \&dst, const amrex\+::\+Fab\+Array$<$ FAB $>$ \&src)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{blockamr\+::exec\+Copy\+Plan}} (const char \texorpdfstring{$\ast$}{*}name, const amrex\+::\+Multi\+Array4$<$ T $>$ \&dst, const amrex\+::\+Multi\+Array4$<$ const T $>$ \&src, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a95486c38dfdb11c75fbf6d50216b0b89}{blockamr\+::gmg\+Fill\+Boundary\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&mf, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ae796774ec85c18d4ca19ab3ae73c365e}{blockamr\+::gmg\+Fill\+Domain\+Bc\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&mf, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a8547baf3b422c7797aaf8446bf90e0e0}{blockamr\+::gmg\+Copy\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&dst, const la\+::\+Gmg\+Fab$<$ T $>$ \&src, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_aa7c210de67cb5f2619a1ead22a9e801d}{blockamr\+::gmg\+Zero\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&mf)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr int \mbox{\hyperlink{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0}{blockamr\+::k\+Copy\+Block}} = 128
+\end{DoxyCompactItemize}

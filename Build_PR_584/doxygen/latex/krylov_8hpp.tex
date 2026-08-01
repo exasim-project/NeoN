@@ -1,0 +1,36 @@
+\doxysection{/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/block\+Amr/linear\+Algebra/krylov/krylov.hpp File Reference}
+\hypertarget{krylov_8hpp}{}\label{krylov_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/krylov/krylov.hpp}}
+{\ttfamily \#include $<$ginkgo/ginkgo.\+hpp$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/linear\+Algebra/krylov/logging.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/linear\+Algebra/krylov/result.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/block\+Amr/linear\+Algebra/krylov/stop\+Norm\+Inf.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{blockamr\+::la\+::\+Stop\+Spec}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr}{blockamr}}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr\+::la}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::stop\+::\+Criterion\+Factory $>$ $>$ \mbox{\hyperlink{namespaceblockamr_1_1la_a498d4ec66152c6a8439a99973dbefdb5}{blockamr\+::la\+::make\+Criteria}} (std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor $>$ exec, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{Stop\+Spec}} \&\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}})
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{namespaceblockamr_1_1la_acdcd42e9b4bb57be8736ab7c794899e4}{blockamr\+::la\+::build\+Krylov}} (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} std\+::string \&solver, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor $>$ exec, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Lin\+Op $>$ op, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} \mbox{\hyperlink{structblockamr_1_1la_1_1StopSpec}{Stop\+Spec}} \&\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{stop}}, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Lin\+Op $>$ precond)
+\item 
+std\+::shared\+\_\+ptr$<$ gko\+::\+Lin\+Op $>$ \mbox{\hyperlink{namespaceblockamr_1_1la_a4c892e7d16ebf48cd9bf9579532d6828}{blockamr\+::la\+::generate\+Basic\+Solver}} (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} std\+::string \&solver, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Executor $>$ exec, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::\+Lin\+Op $>$ op, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::stop\+::\+Criterion\+Factory $>$ $>$ \&\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{criteria}}, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{char}} \texorpdfstring{$\ast$}{*}what)
+\item 
+\mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{Solve\+Result}} \mbox{\hyperlink{namespaceblockamr_1_1la_a18f517a013afd81cad778abec001ef51}{blockamr\+::la\+::make\+Solve\+Result}} (std\+::int64\+\_\+t num\+\_\+iters, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{double}} res\+\_\+norm, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bool}} converged, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} std\+::vector$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{double}} $>$ \&res\+\_\+history)
+\item 
+\mbox{\hyperlink{structblockamr_1_1la_1_1SolveResult}{Solve\+Result}} \mbox{\hyperlink{namespaceblockamr_1_1la_aefcb0c6cbfc269e2318596de11b4dc0b}{blockamr\+::la\+::make\+Solve\+Result}} (\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} gko\+::log\+::\+Convergence$<$ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{double}} $>$ \&\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{logger}}, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{const}} \mbox{\hyperlink{classblockamr_1_1la_1_1ResidualHistoryLogger}{Residual\+History\+Logger}} \&\mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{res\+Logger}}, \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{double}} res\+\_\+norm)
+\end{DoxyCompactItemize}

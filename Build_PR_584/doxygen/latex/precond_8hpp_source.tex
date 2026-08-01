@@ -1,0 +1,90 @@
+\doxysection{precond.\+hpp}
+\hypertarget{precond_8hpp_source}{}\label{precond_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/precond.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/blockAmr/linearAlgebra/precond.hpp}}
+\mbox{\hyperlink{precond_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <AMReX\_Geometry.H>}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <AMReX\_MultiFab.H>}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <ginkgo/ginkgo.hpp>}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{bc_8hpp}{NeoN/blockAmr/core/bc.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{fieldLevel_8hpp}{NeoN/blockAmr/core/fieldLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{meshLevel_8hpp}{NeoN/blockAmr/core/meshLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{faceCoeffLevel_8hpp}{NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{solverConfig_8hpp}{NeoN/blockAmr/linearAlgebra/solverConfig.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00020}00020\ \textcolor{comment}{//\ Preconditioner\ construction\ in\ ONE\ place\ -\/-\/\ the\ seam\ that\ makes\ them\ reachable\ from\ a}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00021}00021\ \textcolor{comment}{//\ la::MFFaceCoeffs\ (through\ la::makeHierarchy,\ ginkgo/adapt.hpp):\ the\ GMG\ hierarchy\ comes}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00022}00022\ \textcolor{comment}{//\ from\ the\ coefficient\ FIELDS,\ not\ from\ a\ LinOp.\ DECLARATIONS\ ONLY\ (definitions\ in}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00023}00023\ \textcolor{comment}{//\ precond.cpp),\ and\ bitwise\ equivalence\ to\ the\ pre-\/existing\ hierarchies\ is\ gated\ by}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00024}00024\ \textcolor{comment}{//\ plans/bench/compare\_gmg\_baseline.py.}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00026}00026\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr}{blockamr}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00028}00028\ \textcolor{keyword}{class\ }KokkosGmgApply;}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00029}00029\ \}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00031}00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceblockamr_1_1la}{blockamr::la}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00034}00034\ \textcolor{keyword}{class\ }GmgApplyMf;}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00036}00036\ \textcolor{comment}{//\ Shared\ by\ the\ native-\/GMG\ paths:\ driven\ directly\ by\ GmgStationarySolver,\ or\ used\ as\ an}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00037}00037\ \textcolor{comment}{//\ IR\ inner\ solver\ (solver="{}ir"{})\ /\ preconditioner\ (precond="{}gmg"{}).}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00038}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy}{00038}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy}{GmgHierarchy}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00039}00039\ \{}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00040}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy_af72b35e82f9d4180cbcf3743ebbc2d0e}{00040}}\ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ \mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy_af72b35e82f9d4180cbcf3743ebbc2d0e}{op}};}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00041}\mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy_af7681ac38457dbafc8d2da3aa98494d5}{00041}}\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classblockamr_1_1la_1_1GmgApplyMf}{GmgApplyMf}}*\ \mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy_af7681ac38457dbafc8d2da3aa98494d5}{mf}}\ =\ \textcolor{keyword}{nullptr};\ \textcolor{comment}{//\ only\ read\ by\ the\ stationary\ path}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00042}00042\ \};}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00044}00044\ \textcolor{comment}{//\ The\ cycle\ count\ and\ the\ hierarchy\ knobs\ come\ from\ the\ config,\ not\ loose:\ every\ caller}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00045}00045\ \textcolor{comment}{//\ already\ holds\ the\ SolverConfig\ those\ two\ live\ in.}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00046}\mbox{\hyperlink{namespaceblockamr_1_1la_a49e56b058d8a603240a2d4d2163a461e}{00046}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1GmgHierarchy}{GmgHierarchy}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a49e56b058d8a603240a2d4d2163a461e}{buildGmgHierarchy}}(}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00047}00047\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00048}00048\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel}{FaceCoeffLevel}}\&\ level,}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bcArr}},}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolverConfig}{SolverConfig}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{config}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00052}00052\ );}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00054}00054\ \textcolor{comment}{/*\ @brief\ What\ a\ face-\/coefficient\ preconditioner\ build\ hands\ back.\ \`{}op`\ is\ null\ for}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00055}00055\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ precond="{}none"{}\ and\ for\ "{}mlmg"{}\ without\ a\ precond\_mlmg.\ \`{}kokkosVcycle`\ is\ the\ same}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00056}00056\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ V-\/cycle\ \`{}op`\ wraps,\ held\ separately\ because\ solver="{}mpir"{}\ wraps\ it\ again.}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00057}00057\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00058}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond}{00058}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond}{FaceCoeffPrecond}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00059}00059\ \{}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00060}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond_a1da327b3275b02540f7d0888b6ea7b7e}{00060}}\ \ \ \ \ std::shared\_ptr<const\ gko::LinOp>\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond_a1da327b3275b02540f7d0888b6ea7b7e}{op}};}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00061}\mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond_a7c18c7aedc3d0bc7afb3e315f70d702d}{00061}}\ \ \ \ \ std::shared\_ptr<blockamr::KokkosGmgApply>\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond_a7c18c7aedc3d0bc7afb3e315f70d702d}{kokkosVcycle}};}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00062}00062\ \};}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00064}00064\ \textcolor{comment}{//\ Every\ preconditioner\ a\ MATRIX-\/FREE\ face-\/coefficient\ operator\ can\ carry:\ none\ /\ gmg\ /}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00065}00065\ \textcolor{comment}{//\ gmg\_kokkos\ /\ mlmg.\ THROWS\ (a\ refusal,\ in\ FaceCoeffSolver's\ wording)\ for\ a\ combination}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00066}00066\ \textcolor{comment}{//\ this\ path\ cannot\ serve:\ gmg\_kokkos\ with\ a\ Krylov\ bottom,\ asymmetric\ or\ non-\/red-\/black.}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00067}\mbox{\hyperlink{namespaceblockamr_1_1la_a5d937288a2721fdb2b19243b7d19c219}{00067}}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffPrecond}{FaceCoeffPrecond}}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d937288a2721fdb2b19243b7d19c219}{makeFaceCoeffPrecond}}(}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00068}00068\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00069}00069\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00070}00070\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1FaceCoeffLevel}{FaceCoeffLevel}}\&\ level,}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00071}00071\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceblockamr_1_1la_a5d3db556e29a5aefa129dc88010ec14c}{BcArray}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{bcArr}},}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00072}00072\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolverConfig}{SolverConfig}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{config}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00073}00073\ );}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00075}00075\ \textcolor{comment}{//\ An\ externally-\/built\ AMReX\ MLMG\ wrapped\ as\ a\ Ginkgo\ preconditioner.\ Null,\ not\ an\ error,}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00076}00076\ \textcolor{comment}{//\ when\ the\ config\ carries\ no\ precond\_mlmg:\ that\ refusal\ belongs\ to\ the\ callers.}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00077}\mbox{\hyperlink{namespaceblockamr_1_1la_ae8e8c5a9f3ddbfa9eb249867339077d8}{00077}}\ std::shared\_ptr<const\ gko::LinOp>\ \mbox{\hyperlink{namespaceblockamr_1_1la_ae8e8c5a9f3ddbfa9eb249867339077d8}{makeMlmgPrecond}}(}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00078}00078\ \ \ \ \ std::shared\_ptr<const\ gko::Executor>\ exec,}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00079}00079\ \ \ \ \ gko::size\_type\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{n}},}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00080}00080\ \ \ \ \ \textcolor{keyword}{const}\ amrex::MultiFab\&\ \mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}},}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structblockamr_1_1la_1_1SolverConfig}{SolverConfig}}\&\ \mbox{\hyperlink{namespaceblockamr_1_1la_ad02d0d4ead9d31eb2e8229e340bf8e57}{config}}}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00082}00082\ );}
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{precond_8hpp_source_l00084}00084\ \}\ \textcolor{comment}{//\ namespace\ blockamr::la}}
+
+\end{DoxyCode}

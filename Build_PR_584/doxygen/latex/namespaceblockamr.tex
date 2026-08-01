@@ -1,0 +1,655 @@
+\doxysection{blockamr Namespace Reference}
+\hypertarget{namespaceblockamr}{}\label{namespaceblockamr}\index{blockamr@{blockamr}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr_1_1detail}{detail}}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr_1_1la}{la}}
+\item 
+namespace \mbox{\hyperlink{namespaceblockamr_1_1ops}{ops}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1BenchResult}{Bench\+Result}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{Cell\+Field\+Level}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{Const\+Cell\+Field\+Level}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1CopyTask}{Copy\+Task}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{Face\+Field\+Level}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgArgs}{Gmg\+Args}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgGsCell}{Gmg\+Gs\+Cell}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgProlongCell}{Gmg\+Prolong\+Cell}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgResidRestrictCell}{Gmg\+Resid\+Restrict\+Cell}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1GmgResult}{Gmg\+Result}}
+\item 
+class \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{Kokkos\+Gmg\+Apply}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1KokkosGmgOpts}{Kokkos\+Gmg\+Opts}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1MeshLevel}{Mesh\+Level}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1OpArgs}{Op\+Args}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1OpInfo}{Op\+Info}}
+\item 
+struct \mbox{\hyperlink{structblockamr_1_1ViewAcc}{View\+Acc}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{Fab\+View}} = Kokkos\+::\+View$<$ double \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}, Kokkos\+::\+Layout\+Left, Kokkos\+::\+Default\+Execution\+Space\+::memory\+\_\+space, Kokkos\+::\+Memory\+Traits$<$ Kokkos\+::\+Unmanaged $>$ $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class In , class Out $>$ }\\AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE void \mbox{\hyperlink{namespaceblockamr_a378d85fc2e9b3d2a284c37ac1fcd7c00}{axpy\+Cell}} (In const \&x, Out const \&y, int i, int j, int k, double a)
+\item 
+{\footnotesize template$<$class In , class Out $>$ }\\AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE void \mbox{\hyperlink{namespaceblockamr_abffd27a88de1fc289c1ee6c7dbd7ae6c}{laplacian\+Cell}} (In const \&in, Out const \&out, int i, int j, int k, double cx, double cy, double cz)
+\item 
+AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE double \mbox{\hyperlink{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}{vanleer\+Corr}} (double d\+\_\+up, double d\+\_\+down)
+\item 
+{\footnotesize template$<$class In , class Face , class Out $>$ }\\AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE void \mbox{\hyperlink{namespaceblockamr_a969845ffc8450284040138455e38ef41}{div\+Van\+Leer\+Cell}} (In const \&phi, Face const \&fx, Face const \&fy, Face const \&fz, Out const \&out, int i, int j, int k, double dx, double dy, double dz)
+\item 
+std\+::string \mbox{\hyperlink{namespaceblockamr_abda2e18cd9152ebcf48f0ab918b7b8b1}{kokkos\+Execution\+Space}} ()
+\item 
+double \mbox{\hyperlink{namespaceblockamr_aa1df6187be595ac6bc1fa3345c31941f}{kokkos\+Selftest}} (long n)
+\item 
+double \mbox{\hyperlink{namespaceblockamr_a67024ec1305cdda60c9892914107f809}{kokkos\+Mf\+Sum}} (amrex\+::\+Multi\+Fab \&mf)
+\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{namespaceblockamr_a5c486abbbc3a9968b467c1dddf64d0ce}{bench\+Operators}} ()
+\item 
+\mbox{\hyperlink{structblockamr_1_1OpInfo}{Op\+Info}} \mbox{\hyperlink{namespaceblockamr_a649d1dddad828fa8fc26f8ec436f0663}{bench\+Operator\+Info}} (const std\+::string \&name)
+\item 
+void \mbox{\hyperlink{namespaceblockamr_ac74bc6e6c8666f1b24784004e3d9d09b}{apply\+Operator}} (const std\+::string \&name, const \mbox{\hyperlink{structblockamr_1_1OpArgs}{Op\+Args}} \&args)
+\item 
+\mbox{\hyperlink{structblockamr_1_1BenchResult}{Bench\+Result}} \mbox{\hyperlink{namespaceblockamr_adb238d3f739671138175ba5be12b5724}{bench\+Operator}} (const std\+::string \&name, const \mbox{\hyperlink{structblockamr_1_1OpArgs}{Op\+Args}} \&args, int iters, int batches)
+\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{namespaceblockamr_a0200f1f350065fddafd6ea9c4fb0cc2e}{bench\+Gmg\+Backends}} ()
+\item 
+\mbox{\hyperlink{structblockamr_1_1GmgResult}{Gmg\+Result}} \mbox{\hyperlink{namespaceblockamr_a3672ffecd680cb8dfe1036ac0f4029d1}{bench\+Gmg\+Vcycle}} (const std\+::string \&backend, const \mbox{\hyperlink{structblockamr_1_1GmgArgs}{Gmg\+Args}} \&args, int iters, int batches)
+\item 
+std\+::shared\+\_\+ptr$<$ amrex\+::\+Multi\+Fab $>$ \mbox{\hyperlink{namespaceblockamr_aa73e148d34831409c795a22091de5edb}{non\+Owning}} (amrex\+::\+Multi\+Fab \&mf)
+\item 
+std\+::shared\+\_\+ptr$<$ const amrex\+::\+Multi\+Fab $>$ \mbox{\hyperlink{namespaceblockamr_a5f1576be480c29bce11e6888e8713733}{non\+Owning}} (const amrex\+::\+Multi\+Fab \&mf)
+\item 
+\mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{Const\+Cell\+Field\+Level}} \mbox{\hyperlink{namespaceblockamr_aed758df3c2b00844fe8abe3b2b50daa1}{const\+View}} (const \mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{Cell\+Field\+Level}} \&f)
+\item 
+\mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}} \mbox{\hyperlink{namespaceblockamr_a367a1e5b08a60d21367d943451a52a90}{const\+View}} (const \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{Face\+Field\+Level}} \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a68053c6c70c67b8a0984d696dfb74ffa}{launch\+Amrex}} (const amrex\+::\+Box \&bx, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a487357181863fa5e2a8a4a795f9f2ae3}{launch\+Kokkos\+Md}} (const amrex\+::\+Box \&bx, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a872f47e5548becd89a073290d75e5bd6}{launch\+Kokkos\+Flat}} (const amrex\+::\+Box \&bx, F const \&f)
+\item 
+std\+::vector$<$ Kokkos\+::\+Default\+Execution\+Space $>$ \texorpdfstring{$\ast$}{*}\& \mbox{\hyperlink{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}{stream\+Pool\+Ptr}} ()
+\item 
+const Kokkos\+::\+Default\+Execution\+Space \& \mbox{\hyperlink{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f}{bench\+Stream}} (int ibox)
+\item 
+void \mbox{\hyperlink{namespaceblockamr_a3b4bbb7cae0398b3ac2154025c0c215b}{release\+Stream\+Pool}} ()
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a4d64f00c36d7346b3c70f76be8e83067}{launch\+Kokkos\+Md\+Stream}} (const amrex\+::\+Box \&bx, int ibox, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6}{launch\+Kokkos\+Md\+Named}} (const char \texorpdfstring{$\ast$}{*}name, const amrex\+::\+Box \&bx, F const \&f)
+\item 
+{\footnotesize template$<$class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ae4da72f6c91de99a25e86fbfbfb6fed9}{launch\+Amrex\+Fused}} (const amrex\+::\+Multi\+Fab \&mf, F const \&f)
+\item 
+{\footnotesize template$<$class MF , class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508}{launch\+Kokkos\+Team\+Named}} (const char \texorpdfstring{$\ast$}{*}name, const MF \&mf, F const \&f)
+\item 
+{\footnotesize template$<$class MF , class F $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ace6b363fd302ceb97264d2776d6578c8}{launch\+Kokkos\+Team}} (const MF \&mf, F const \&f)
+\item 
+\mbox{\hyperlink{structblockamr_1_1ViewAcc}{View\+Acc}} \mbox{\hyperlink{namespaceblockamr_a6bab5888b36cbcae0b856cdc93ef4121}{view\+Acc}} (amrex\+::\+FArray\+Box \&fab)
+\item 
+{\footnotesize template$<$class Kernel $>$ }\\void \mbox{\hyperlink{namespaceblockamr_aea79a6857be20bdb80143a13b01e07cf}{parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, const amrex\+::\+Box \&bx, Kernel kernel, std\+::string name="{}parallel\+For"{})
+\item 
+{\footnotesize template$<$class Kernel $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a10189b095e9743342c67b2e6af627c1c}{parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, const amrex\+::\+Multi\+Fab \&mf, Kernel kernel, std\+::string name="{}parallel\+For"{})
+\item 
+void \mbox{\hyperlink{namespaceblockamr_a1e1da30509c74672843460b0b9393f39}{kokkos\+Initialize}} ()
+\item 
+void \mbox{\hyperlink{namespaceblockamr_a9dcd9480c7a2fadbde1b11426ea8193f}{kokkos\+Finalize}} ()
+\item 
+bool \mbox{\hyperlink{namespaceblockamr_a5e5ba174f849961f626239551b4b96b8}{kokkos\+Initialized}} ()
+\item 
+bool \mbox{\hyperlink{namespaceblockamr_a30643cbfc3123774ad4959e829f9e3ca}{kokkos\+Finalized}} ()
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{Kokkos\+Gmg\+Apply}} $>$ \mbox{\hyperlink{namespaceblockamr_adde689155a46c5f96a6859d37f6e3fcf}{make\+Kokkos\+Gmg\+Apply}} (const amrex\+::\+Geometry \&\mbox{\hyperlink{vcycle_8hpp_aba4186e3457cb03d2abce7b3029ed530}{geom}}, const \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{Const\+Cell\+Field\+Level}} \&\mbox{\hyperlink{vcycle_8hpp_ae47025b73cbfce4f61d918b2058005ba}{alpha}}, const \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}} \&upper, const \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}} \&lower, const \mbox{\hyperlink{structblockamr_1_1KokkosGmgOpts}{Kokkos\+Gmg\+Opts}} \&opts)
+\item 
+{\footnotesize template$<$class FAB $>$ }\\\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2}{make\+Halo\+Plan}} (const amrex\+::\+Fab\+Array$<$ FAB $>$ \&mf, const amrex\+::\+Periodicity \&period)
+\item 
+{\footnotesize template$<$class FAB $>$ }\\\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e}{make\+Bc\+Plan}} (const amrex\+::\+Fab\+Array$<$ FAB $>$ \&mf, const amrex\+::\+Box \&domain, const la\+::\+Bc\+Array \&\mbox{\hyperlink{vcycle_8hpp_a5a2f90109ce71cea359219aefffd403d}{bc}})
+\item 
+{\footnotesize template$<$class FAB $>$ }\\\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \mbox{\hyperlink{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}{make\+Copy\+Plan}} (const amrex\+::\+Fab\+Array$<$ FAB $>$ \&dst, const amrex\+::\+Fab\+Array$<$ FAB $>$ \&src)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}{exec\+Copy\+Plan}} (const char \texorpdfstring{$\ast$}{*}name, const amrex\+::\+Multi\+Array4$<$ T $>$ \&dst, const amrex\+::\+Multi\+Array4$<$ const T $>$ \&src, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a95486c38dfdb11c75fbf6d50216b0b89}{gmg\+Fill\+Boundary\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&mf, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ae796774ec85c18d4ca19ab3ae73c365e}{gmg\+Fill\+Domain\+Bc\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&mf, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a8547baf3b422c7797aaf8446bf90e0e0}{gmg\+Copy\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&dst, const la\+::\+Gmg\+Fab$<$ T $>$ \&src, const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&plan)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_aa7c210de67cb5f2619a1ead22a9e801d}{gmg\+Zero\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&mf)
+\item 
+amrex\+::\+MFIt\+Info \mbox{\hyperlink{namespaceblockamr_a5887ed8a8d8edadb551717c1717eeecc}{gmg\+No\+Sync}} ()
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a6703c3e25f13071fee2711240a29bd45}{gmg\+Gs\+Color\+Kokkos}} (la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc, la\+::\+Gs\+Sweep sweep)
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a0abd538ffe4dc13d997b6c63ba5d738b}{gmg\+Resid\+Restrict\+Kokkos}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, la\+::\+Gmg\+Fab$<$ T $>$ \&crhs, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a5614bbf7afc40cddcb043732244a4212}{gmg\+Prolong\+Add\+Kokkos}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&crse, la\+::\+Gmg\+Fab$<$ T $>$ \&fine)
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_a4fb57a27755c9ef89dec660d00ac64e4}{gmg\+Gs\+Color\+Kokkos\+Fused}} (la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc, la\+::\+Gs\+Sweep sweep, bool fence=true)
+\item 
+{\footnotesize template$<$class T , class TC $>$ }\\void \mbox{\hyperlink{namespaceblockamr_aa020101bcf7d874c2cfccee853594a99}{gmg\+Resid\+Restrict\+Kokkos\+Fused}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a89ef771e3c06a307e28e1195bf8d4b35}{sol}}, const la\+::\+Gmg\+Fab$<$ T $>$ \&\mbox{\hyperlink{vcycle_8hpp_a6cbbc7c85c194704aa7b4766fe971a6f}{rhs}}, la\+::\+Gmg\+Fab$<$ T $>$ \&crhs, const la\+::\+Face\+Coeffs$<$ TC $>$ \&fc, bool fence=true)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \mbox{\hyperlink{namespaceblockamr_ad2d7422a51c2fa4cd61ebdd4230ec258}{gmg\+Prolong\+Add\+Kokkos\+Fused}} (const la\+::\+Gmg\+Fab$<$ T $>$ \&crse, la\+::\+Gmg\+Fab$<$ T $>$ \&fine, bool fence=true)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr int \mbox{\hyperlink{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0}{k\+Copy\+Block}} = 128
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\Hypertarget{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}\label{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c} 
+\index{blockamr@{blockamr}!FabView@{FabView}}
+\index{FabView@{FabView}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{FabView}{FabView}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceblockamr_a337f936e4368bc7449b7b76ae96f190c}{blockamr\+::\+Fab\+View}} = typedef Kokkos\+::\+View$<$ double\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}, Kokkos\+::\+Layout\+Left, Kokkos\+::\+Default\+Execution\+Space\+::memory\+\_\+space, Kokkos\+::\+Memory\+Traits$<$Kokkos\+::\+Unmanaged$>$ $>$}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00204}{204}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceblockamr_ac74bc6e6c8666f1b24784004e3d9d09b}\label{namespaceblockamr_ac74bc6e6c8666f1b24784004e3d9d09b} 
+\index{blockamr@{blockamr}!applyOperator@{applyOperator}}
+\index{applyOperator@{applyOperator}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{applyOperator()}{applyOperator()}}
+{\footnotesize\ttfamily void blockamr\+::apply\+Operator (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{const \mbox{\hyperlink{structblockamr_1_1OpArgs}{Op\+Args}} \&}]{args }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a378d85fc2e9b3d2a284c37ac1fcd7c00}\label{namespaceblockamr_a378d85fc2e9b3d2a284c37ac1fcd7c00} 
+\index{blockamr@{blockamr}!axpyCell@{axpyCell}}
+\index{axpyCell@{axpyCell}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{axpyCell()}{axpyCell()}}
+{\footnotesize\ttfamily template$<$class In , class Out $>$ \\
+AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE void blockamr\+::axpy\+Cell (\begin{DoxyParamCaption}\item[{In const \&}]{x,  }\item[{Out const \&}]{y,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{double}]{a }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cells_8hpp_source_l00018}{18}} of file \mbox{\hyperlink{cells_8hpp_source}{cells.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a0200f1f350065fddafd6ea9c4fb0cc2e}\label{namespaceblockamr_a0200f1f350065fddafd6ea9c4fb0cc2e} 
+\index{blockamr@{blockamr}!benchGmgBackends@{benchGmgBackends}}
+\index{benchGmgBackends@{benchGmgBackends}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{benchGmgBackends()}{benchGmgBackends()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ blockamr\+::bench\+Gmg\+Backends (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a3672ffecd680cb8dfe1036ac0f4029d1}\label{namespaceblockamr_a3672ffecd680cb8dfe1036ac0f4029d1} 
+\index{blockamr@{blockamr}!benchGmgVcycle@{benchGmgVcycle}}
+\index{benchGmgVcycle@{benchGmgVcycle}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{benchGmgVcycle()}{benchGmgVcycle()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1GmgResult}{Gmg\+Result}} blockamr\+::bench\+Gmg\+Vcycle (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{backend,  }\item[{const \mbox{\hyperlink{structblockamr_1_1GmgArgs}{Gmg\+Args}} \&}]{args,  }\item[{int}]{iters,  }\item[{int}]{batches }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_adb238d3f739671138175ba5be12b5724}\label{namespaceblockamr_adb238d3f739671138175ba5be12b5724} 
+\index{blockamr@{blockamr}!benchOperator@{benchOperator}}
+\index{benchOperator@{benchOperator}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{benchOperator()}{benchOperator()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1BenchResult}{Bench\+Result}} blockamr\+::bench\+Operator (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{const \mbox{\hyperlink{structblockamr_1_1OpArgs}{Op\+Args}} \&}]{args,  }\item[{int}]{iters,  }\item[{int}]{batches }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a649d1dddad828fa8fc26f8ec436f0663}\label{namespaceblockamr_a649d1dddad828fa8fc26f8ec436f0663} 
+\index{blockamr@{blockamr}!benchOperatorInfo@{benchOperatorInfo}}
+\index{benchOperatorInfo@{benchOperatorInfo}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{benchOperatorInfo()}{benchOperatorInfo()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1OpInfo}{Op\+Info}} blockamr\+::bench\+Operator\+Info (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a5c486abbbc3a9968b467c1dddf64d0ce}\label{namespaceblockamr_a5c486abbbc3a9968b467c1dddf64d0ce} 
+\index{blockamr@{blockamr}!benchOperators@{benchOperators}}
+\index{benchOperators@{benchOperators}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{benchOperators()}{benchOperators()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ blockamr\+::bench\+Operators (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f}\label{namespaceblockamr_acdc67138faf00aad1a59f8a3dee8498f} 
+\index{blockamr@{blockamr}!benchStream@{benchStream}}
+\index{benchStream@{benchStream}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{benchStream()}{benchStream()}}
+{\footnotesize\ttfamily const Kokkos\+::\+Default\+Execution\+Space \& blockamr\+::bench\+Stream (\begin{DoxyParamCaption}\item[{int}]{ibox }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_aed758df3c2b00844fe8abe3b2b50daa1}\label{namespaceblockamr_aed758df3c2b00844fe8abe3b2b50daa1} 
+\index{blockamr@{blockamr}!constView@{constView}}
+\index{constView@{constView}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{constView()}{constView()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{Const\+Cell\+Field\+Level}} blockamr\+::const\+View (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structblockamr_1_1CellFieldLevel}{Cell\+Field\+Level}} \&}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{fieldLevel_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{fieldLevel_8hpp_source}{field\+Level.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a367a1e5b08a60d21367d943451a52a90}\label{namespaceblockamr_a367a1e5b08a60d21367d943451a52a90} 
+\index{blockamr@{blockamr}!constView@{constView}}
+\index{constView@{constView}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{constView()}{constView()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}} blockamr\+::const\+View (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structblockamr_1_1FaceFieldLevel}{Face\+Field\+Level}} \&}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{fieldLevel_8hpp_source_l00078}{78}} of file \mbox{\hyperlink{fieldLevel_8hpp_source}{field\+Level.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a969845ffc8450284040138455e38ef41}\label{namespaceblockamr_a969845ffc8450284040138455e38ef41} 
+\index{blockamr@{blockamr}!divVanLeerCell@{divVanLeerCell}}
+\index{divVanLeerCell@{divVanLeerCell}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{divVanLeerCell()}{divVanLeerCell()}}
+{\footnotesize\ttfamily template$<$class In , class Face , class Out $>$ \\
+AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE void blockamr\+::div\+Van\+Leer\+Cell (\begin{DoxyParamCaption}\item[{In const \&}]{phi,  }\item[{Face const \&}]{fx,  }\item[{Face const \&}]{fy,  }\item[{Face const \&}]{fz,  }\item[{Out const \&}]{out,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{double}]{dx,  }\item[{double}]{dy,  }\item[{double}]{dz }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cells_8hpp_source_l00045}{45}} of file \mbox{\hyperlink{cells_8hpp_source}{cells.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a497214f1c9291db4313af2938c78cebe}\label{namespaceblockamr_a497214f1c9291db4313af2938c78cebe} 
+\index{blockamr@{blockamr}!execCopyPlan@{execCopyPlan}}
+\index{execCopyPlan@{execCopyPlan}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{execCopyPlan()}{execCopyPlan()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::exec\+Copy\+Plan (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{name,  }\item[{const amrex\+::\+Multi\+Array4$<$ T $>$ \&}]{dst,  }\item[{const amrex\+::\+Multi\+Array4$<$ const T $>$ \&}]{src,  }\item[{const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&}]{plan }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a8547baf3b422c7797aaf8446bf90e0e0}\label{namespaceblockamr_a8547baf3b422c7797aaf8446bf90e0e0} 
+\index{blockamr@{blockamr}!gmgCopyKokkos@{gmgCopyKokkos}}
+\index{gmgCopyKokkos@{gmgCopyKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgCopyKokkos()}{gmgCopyKokkos()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::gmg\+Copy\+Kokkos (\begin{DoxyParamCaption}\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{dst,  }\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{src,  }\item[{const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&}]{plan }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00216}{216}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a95486c38dfdb11c75fbf6d50216b0b89}\label{namespaceblockamr_a95486c38dfdb11c75fbf6d50216b0b89} 
+\index{blockamr@{blockamr}!gmgFillBoundaryKokkos@{gmgFillBoundaryKokkos}}
+\index{gmgFillBoundaryKokkos@{gmgFillBoundaryKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgFillBoundaryKokkos()}{gmgFillBoundaryKokkos()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::gmg\+Fill\+Boundary\+Kokkos (\begin{DoxyParamCaption}\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{mf,  }\item[{const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&}]{plan }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00202}{202}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_ae796774ec85c18d4ca19ab3ae73c365e}\label{namespaceblockamr_ae796774ec85c18d4ca19ab3ae73c365e} 
+\index{blockamr@{blockamr}!gmgFillDomainBcKokkos@{gmgFillDomainBcKokkos}}
+\index{gmgFillDomainBcKokkos@{gmgFillDomainBcKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgFillDomainBcKokkos()}{gmgFillDomainBcKokkos()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::gmg\+Fill\+Domain\+Bc\+Kokkos (\begin{DoxyParamCaption}\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{mf,  }\item[{const \mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} \&}]{plan }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00209}{209}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a6703c3e25f13071fee2711240a29bd45}\label{namespaceblockamr_a6703c3e25f13071fee2711240a29bd45} 
+\index{blockamr@{blockamr}!gmgGsColorKokkos@{gmgGsColorKokkos}}
+\index{gmgGsColorKokkos@{gmgGsColorKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgGsColorKokkos()}{gmgGsColorKokkos()}}
+{\footnotesize\ttfamily template$<$class T , class TC $>$ \\
+void blockamr\+::gmg\+Gs\+Color\+Kokkos (\begin{DoxyParamCaption}\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{sol,  }\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{rhs,  }\item[{const la\+::\+Face\+Coeffs$<$ TC $>$ \&}]{fc,  }\item[{la\+::\+Gs\+Sweep}]{sweep }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{kernels_8hpp_source_l00123}{123}} of file \mbox{\hyperlink{kernels_8hpp_source}{kernels.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a4fb57a27755c9ef89dec660d00ac64e4}\label{namespaceblockamr_a4fb57a27755c9ef89dec660d00ac64e4} 
+\index{blockamr@{blockamr}!gmgGsColorKokkosFused@{gmgGsColorKokkosFused}}
+\index{gmgGsColorKokkosFused@{gmgGsColorKokkosFused}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgGsColorKokkosFused()}{gmgGsColorKokkosFused()}}
+{\footnotesize\ttfamily template$<$class T , class TC $>$ \\
+void blockamr\+::gmg\+Gs\+Color\+Kokkos\+Fused (\begin{DoxyParamCaption}\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{sol,  }\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{rhs,  }\item[{const la\+::\+Face\+Coeffs$<$ TC $>$ \&}]{fc,  }\item[{la\+::\+Gs\+Sweep}]{sweep,  }\item[{bool}]{fence = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a5887ed8a8d8edadb551717c1717eeecc}\label{namespaceblockamr_a5887ed8a8d8edadb551717c1717eeecc} 
+\index{blockamr@{blockamr}!gmgNoSync@{gmgNoSync}}
+\index{gmgNoSync@{gmgNoSync}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgNoSync()}{gmgNoSync()}}
+{\footnotesize\ttfamily amrex\+::\+MFIt\+Info blockamr\+::gmg\+No\+Sync (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{kernels_8hpp_source_l00025}{25}} of file \mbox{\hyperlink{kernels_8hpp_source}{kernels.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a5614bbf7afc40cddcb043732244a4212}\label{namespaceblockamr_a5614bbf7afc40cddcb043732244a4212} 
+\index{blockamr@{blockamr}!gmgProlongAddKokkos@{gmgProlongAddKokkos}}
+\index{gmgProlongAddKokkos@{gmgProlongAddKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgProlongAddKokkos()}{gmgProlongAddKokkos()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::gmg\+Prolong\+Add\+Kokkos (\begin{DoxyParamCaption}\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{crse,  }\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{fine }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{kernels_8hpp_source_l00190}{190}} of file \mbox{\hyperlink{kernels_8hpp_source}{kernels.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_ad2d7422a51c2fa4cd61ebdd4230ec258}\label{namespaceblockamr_ad2d7422a51c2fa4cd61ebdd4230ec258} 
+\index{blockamr@{blockamr}!gmgProlongAddKokkosFused@{gmgProlongAddKokkosFused}}
+\index{gmgProlongAddKokkosFused@{gmgProlongAddKokkosFused}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgProlongAddKokkosFused()}{gmgProlongAddKokkosFused()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::gmg\+Prolong\+Add\+Kokkos\+Fused (\begin{DoxyParamCaption}\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{crse,  }\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{fine,  }\item[{bool}]{fence = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a0abd538ffe4dc13d997b6c63ba5d738b}\label{namespaceblockamr_a0abd538ffe4dc13d997b6c63ba5d738b} 
+\index{blockamr@{blockamr}!gmgResidRestrictKokkos@{gmgResidRestrictKokkos}}
+\index{gmgResidRestrictKokkos@{gmgResidRestrictKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgResidRestrictKokkos()}{gmgResidRestrictKokkos()}}
+{\footnotesize\ttfamily template$<$class T , class TC $>$ \\
+void blockamr\+::gmg\+Resid\+Restrict\+Kokkos (\begin{DoxyParamCaption}\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{sol,  }\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{rhs,  }\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{crhs,  }\item[{const la\+::\+Face\+Coeffs$<$ TC $>$ \&}]{fc }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{kernels_8hpp_source_l00155}{155}} of file \mbox{\hyperlink{kernels_8hpp_source}{kernels.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_aa020101bcf7d874c2cfccee853594a99}\label{namespaceblockamr_aa020101bcf7d874c2cfccee853594a99} 
+\index{blockamr@{blockamr}!gmgResidRestrictKokkosFused@{gmgResidRestrictKokkosFused}}
+\index{gmgResidRestrictKokkosFused@{gmgResidRestrictKokkosFused}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgResidRestrictKokkosFused()}{gmgResidRestrictKokkosFused()}}
+{\footnotesize\ttfamily template$<$class T , class TC $>$ \\
+void blockamr\+::gmg\+Resid\+Restrict\+Kokkos\+Fused (\begin{DoxyParamCaption}\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{sol,  }\item[{const la\+::\+Gmg\+Fab$<$ T $>$ \&}]{rhs,  }\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{crhs,  }\item[{const la\+::\+Face\+Coeffs$<$ TC $>$ \&}]{fc,  }\item[{bool}]{fence = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_aa7c210de67cb5f2619a1ead22a9e801d}\label{namespaceblockamr_aa7c210de67cb5f2619a1ead22a9e801d} 
+\index{blockamr@{blockamr}!gmgZeroKokkos@{gmgZeroKokkos}}
+\index{gmgZeroKokkos@{gmgZeroKokkos}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{gmgZeroKokkos()}{gmgZeroKokkos()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void blockamr\+::gmg\+Zero\+Kokkos (\begin{DoxyParamCaption}\item[{la\+::\+Gmg\+Fab$<$ T $>$ \&}]{mf }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_abda2e18cd9152ebcf48f0ab918b7b8b1}\label{namespaceblockamr_abda2e18cd9152ebcf48f0ab918b7b8b1} 
+\index{blockamr@{blockamr}!kokkosExecutionSpace@{kokkosExecutionSpace}}
+\index{kokkosExecutionSpace@{kokkosExecutionSpace}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosExecutionSpace()}{kokkosExecutionSpace()}}
+{\footnotesize\ttfamily std\+::string blockamr\+::kokkos\+Execution\+Space (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a9dcd9480c7a2fadbde1b11426ea8193f}\label{namespaceblockamr_a9dcd9480c7a2fadbde1b11426ea8193f} 
+\index{blockamr@{blockamr}!kokkosFinalize@{kokkosFinalize}}
+\index{kokkosFinalize@{kokkosFinalize}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosFinalize()}{kokkosFinalize()}}
+{\footnotesize\ttfamily void blockamr\+::kokkos\+Finalize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a30643cbfc3123774ad4959e829f9e3ca}\label{namespaceblockamr_a30643cbfc3123774ad4959e829f9e3ca} 
+\index{blockamr@{blockamr}!kokkosFinalized@{kokkosFinalized}}
+\index{kokkosFinalized@{kokkosFinalized}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosFinalized()}{kokkosFinalized()}}
+{\footnotesize\ttfamily bool blockamr\+::kokkos\+Finalized (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a1e1da30509c74672843460b0b9393f39}\label{namespaceblockamr_a1e1da30509c74672843460b0b9393f39} 
+\index{blockamr@{blockamr}!kokkosInitialize@{kokkosInitialize}}
+\index{kokkosInitialize@{kokkosInitialize}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosInitialize()}{kokkosInitialize()}}
+{\footnotesize\ttfamily void blockamr\+::kokkos\+Initialize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a5e5ba174f849961f626239551b4b96b8}\label{namespaceblockamr_a5e5ba174f849961f626239551b4b96b8} 
+\index{blockamr@{blockamr}!kokkosInitialized@{kokkosInitialized}}
+\index{kokkosInitialized@{kokkosInitialized}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosInitialized()}{kokkosInitialized()}}
+{\footnotesize\ttfamily bool blockamr\+::kokkos\+Initialized (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_a67024ec1305cdda60c9892914107f809}\label{namespaceblockamr_a67024ec1305cdda60c9892914107f809} 
+\index{blockamr@{blockamr}!kokkosMfSum@{kokkosMfSum}}
+\index{kokkosMfSum@{kokkosMfSum}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosMfSum()}{kokkosMfSum()}}
+{\footnotesize\ttfamily double blockamr\+::kokkos\+Mf\+Sum (\begin{DoxyParamCaption}\item[{amrex\+::\+Multi\+Fab \&}]{mf }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_aa1df6187be595ac6bc1fa3345c31941f}\label{namespaceblockamr_aa1df6187be595ac6bc1fa3345c31941f} 
+\index{blockamr@{blockamr}!kokkosSelftest@{kokkosSelftest}}
+\index{kokkosSelftest@{kokkosSelftest}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kokkosSelftest()}{kokkosSelftest()}}
+{\footnotesize\ttfamily double blockamr\+::kokkos\+Selftest (\begin{DoxyParamCaption}\item[{long}]{n }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_abffd27a88de1fc289c1ee6c7dbd7ae6c}\label{namespaceblockamr_abffd27a88de1fc289c1ee6c7dbd7ae6c} 
+\index{blockamr@{blockamr}!laplacianCell@{laplacianCell}}
+\index{laplacianCell@{laplacianCell}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{laplacianCell()}{laplacianCell()}}
+{\footnotesize\ttfamily template$<$class In , class Out $>$ \\
+AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE void blockamr\+::laplacian\+Cell (\begin{DoxyParamCaption}\item[{In const \&}]{in,  }\item[{Out const \&}]{out,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{double}]{cx,  }\item[{double}]{cy,  }\item[{double}]{cz }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cells_8hpp_source_l00027}{27}} of file \mbox{\hyperlink{cells_8hpp_source}{cells.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a68053c6c70c67b8a0984d696dfb74ffa}\label{namespaceblockamr_a68053c6c70c67b8a0984d696dfb74ffa} 
+\index{blockamr@{blockamr}!launchAmrex@{launchAmrex}}
+\index{launchAmrex@{launchAmrex}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchAmrex()}{launchAmrex()}}
+{\footnotesize\ttfamily template$<$class F $>$ \\
+void blockamr\+::launch\+Amrex (\begin{DoxyParamCaption}\item[{const amrex\+::\+Box \&}]{bx,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_ae4da72f6c91de99a25e86fbfbfb6fed9}\label{namespaceblockamr_ae4da72f6c91de99a25e86fbfbfb6fed9} 
+\index{blockamr@{blockamr}!launchAmrexFused@{launchAmrexFused}}
+\index{launchAmrexFused@{launchAmrexFused}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchAmrexFused()}{launchAmrexFused()}}
+{\footnotesize\ttfamily template$<$class F $>$ \\
+void blockamr\+::launch\+Amrex\+Fused (\begin{DoxyParamCaption}\item[{const amrex\+::\+Multi\+Fab \&}]{mf,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a872f47e5548becd89a073290d75e5bd6}\label{namespaceblockamr_a872f47e5548becd89a073290d75e5bd6} 
+\index{blockamr@{blockamr}!launchKokkosFlat@{launchKokkosFlat}}
+\index{launchKokkosFlat@{launchKokkosFlat}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchKokkosFlat()}{launchKokkosFlat()}}
+{\footnotesize\ttfamily template$<$class F $>$ \\
+void blockamr\+::launch\+Kokkos\+Flat (\begin{DoxyParamCaption}\item[{const amrex\+::\+Box \&}]{bx,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00052}{52}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a487357181863fa5e2a8a4a795f9f2ae3}\label{namespaceblockamr_a487357181863fa5e2a8a4a795f9f2ae3} 
+\index{blockamr@{blockamr}!launchKokkosMd@{launchKokkosMd}}
+\index{launchKokkosMd@{launchKokkosMd}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchKokkosMd()}{launchKokkosMd()}}
+{\footnotesize\ttfamily template$<$class F $>$ \\
+void blockamr\+::launch\+Kokkos\+Md (\begin{DoxyParamCaption}\item[{const amrex\+::\+Box \&}]{bx,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00038}{38}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6}\label{namespaceblockamr_a3175bc511162ffc6645a226bc998cde6} 
+\index{blockamr@{blockamr}!launchKokkosMdNamed@{launchKokkosMdNamed}}
+\index{launchKokkosMdNamed@{launchKokkosMdNamed}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchKokkosMdNamed()}{launchKokkosMdNamed()}}
+{\footnotesize\ttfamily template$<$class F $>$ \\
+void blockamr\+::launch\+Kokkos\+Md\+Named (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{name,  }\item[{const amrex\+::\+Box \&}]{bx,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00119}{119}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a4d64f00c36d7346b3c70f76be8e83067}\label{namespaceblockamr_a4d64f00c36d7346b3c70f76be8e83067} 
+\index{blockamr@{blockamr}!launchKokkosMdStream@{launchKokkosMdStream}}
+\index{launchKokkosMdStream@{launchKokkosMdStream}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchKokkosMdStream()}{launchKokkosMdStream()}}
+{\footnotesize\ttfamily template$<$class F $>$ \\
+void blockamr\+::launch\+Kokkos\+Md\+Stream (\begin{DoxyParamCaption}\item[{const amrex\+::\+Box \&}]{bx,  }\item[{int}]{ibox,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00104}{104}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_ace6b363fd302ceb97264d2776d6578c8}\label{namespaceblockamr_ace6b363fd302ceb97264d2776d6578c8} 
+\index{blockamr@{blockamr}!launchKokkosTeam@{launchKokkosTeam}}
+\index{launchKokkosTeam@{launchKokkosTeam}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchKokkosTeam()}{launchKokkosTeam()}}
+{\footnotesize\ttfamily template$<$class MF , class F $>$ \\
+void blockamr\+::launch\+Kokkos\+Team (\begin{DoxyParamCaption}\item[{const MF \&}]{mf,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00196}{196}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508}\label{namespaceblockamr_a1bfae649196f9e95c0d22121fa702508} 
+\index{blockamr@{blockamr}!launchKokkosTeamNamed@{launchKokkosTeamNamed}}
+\index{launchKokkosTeamNamed@{launchKokkosTeamNamed}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{launchKokkosTeamNamed()}{launchKokkosTeamNamed()}}
+{\footnotesize\ttfamily template$<$class MF , class F $>$ \\
+void blockamr\+::launch\+Kokkos\+Team\+Named (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{name,  }\item[{const MF \&}]{mf,  }\item[{F const \&}]{f }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00145}{145}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e}\label{namespaceblockamr_a15e2066994c06d41998c99b52a95f20e} 
+\index{blockamr@{blockamr}!makeBcPlan@{makeBcPlan}}
+\index{makeBcPlan@{makeBcPlan}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{makeBcPlan()}{makeBcPlan()}}
+{\footnotesize\ttfamily template$<$class FAB $>$ \\
+\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} blockamr\+::make\+Bc\+Plan (\begin{DoxyParamCaption}\item[{const amrex\+::\+Fab\+Array$<$ FAB $>$ \&}]{mf,  }\item[{const amrex\+::\+Box \&}]{domain,  }\item[{const la\+::\+Bc\+Array \&}]{bc }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00148}{148}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224}\label{namespaceblockamr_afe70606160d56e8dee8f7a6bd1e74224} 
+\index{blockamr@{blockamr}!makeCopyPlan@{makeCopyPlan}}
+\index{makeCopyPlan@{makeCopyPlan}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{makeCopyPlan()}{makeCopyPlan()}}
+{\footnotesize\ttfamily template$<$class FAB $>$ \\
+\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} blockamr\+::make\+Copy\+Plan (\begin{DoxyParamCaption}\item[{const amrex\+::\+Fab\+Array$<$ FAB $>$ \&}]{dst,  }\item[{const amrex\+::\+Fab\+Array$<$ FAB $>$ \&}]{src }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00175}{175}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2}\label{namespaceblockamr_a03b4f0cc13b9c4846567ae1bfd8730d2} 
+\index{blockamr@{blockamr}!makeHaloPlan@{makeHaloPlan}}
+\index{makeHaloPlan@{makeHaloPlan}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{makeHaloPlan()}{makeHaloPlan()}}
+{\footnotesize\ttfamily template$<$class FAB $>$ \\
+\mbox{\hyperlink{structblockamr_1_1CopyPlan}{Copy\+Plan}} blockamr\+::make\+Halo\+Plan (\begin{DoxyParamCaption}\item[{const amrex\+::\+Fab\+Array$<$ FAB $>$ \&}]{mf,  }\item[{const amrex\+::\+Periodicity \&}]{period }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00115}{115}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_adde689155a46c5f96a6859d37f6e3fcf}\label{namespaceblockamr_adde689155a46c5f96a6859d37f6e3fcf} 
+\index{blockamr@{blockamr}!makeKokkosGmgApply@{makeKokkosGmgApply}}
+\index{makeKokkosGmgApply@{makeKokkosGmgApply}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{makeKokkosGmgApply()}{makeKokkosGmgApply()}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classblockamr_1_1KokkosGmgApply}{Kokkos\+Gmg\+Apply}} $>$ blockamr\+::make\+Kokkos\+Gmg\+Apply (\begin{DoxyParamCaption}\item[{const amrex\+::\+Geometry \&}]{geom,  }\item[{const \mbox{\hyperlink{structblockamr_1_1ConstCellFieldLevel}{Const\+Cell\+Field\+Level}} \&}]{alpha,  }\item[{const \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}} \&}]{upper,  }\item[{const \mbox{\hyperlink{structblockamr_1_1ConstFaceFieldLevel}{Const\+Face\+Field\+Level}} \&}]{lower,  }\item[{const \mbox{\hyperlink{structblockamr_1_1KokkosGmgOpts}{Kokkos\+Gmg\+Opts}} \&}]{opts }\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceblockamr_aa73e148d34831409c795a22091de5edb}\label{namespaceblockamr_aa73e148d34831409c795a22091de5edb} 
+\index{blockamr@{blockamr}!nonOwning@{nonOwning}}
+\index{nonOwning@{nonOwning}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{nonOwning()}{nonOwning()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ amrex\+::\+Multi\+Fab $>$ blockamr\+::non\+Owning (\begin{DoxyParamCaption}\item[{amrex\+::\+Multi\+Fab \&}]{mf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{fieldLevel_8hpp_source_l00064}{64}} of file \mbox{\hyperlink{fieldLevel_8hpp_source}{field\+Level.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a5f1576be480c29bce11e6888e8713733}\label{namespaceblockamr_a5f1576be480c29bce11e6888e8713733} 
+\index{blockamr@{blockamr}!nonOwning@{nonOwning}}
+\index{nonOwning@{nonOwning}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{nonOwning()}{nonOwning()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$ const amrex\+::\+Multi\+Fab $>$ blockamr\+::non\+Owning (\begin{DoxyParamCaption}\item[{const amrex\+::\+Multi\+Fab \&}]{mf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{fieldLevel_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{fieldLevel_8hpp_source}{field\+Level.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_aea79a6857be20bdb80143a13b01e07cf}\label{namespaceblockamr_aea79a6857be20bdb80143a13b01e07cf} 
+\index{blockamr@{blockamr}!parallelFor@{parallelFor}}
+\index{parallelFor@{parallelFor}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{parallelFor()}{parallelFor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class Kernel $>$ \\
+void blockamr\+::parallel\+For (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{const amrex\+::\+Box \&}]{bx,  }\item[{Kernel}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00055}{55}} of file \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a10189b095e9743342c67b2e6af627c1c}\label{namespaceblockamr_a10189b095e9743342c67b2e6af627c1c} 
+\index{blockamr@{blockamr}!parallelFor@{parallelFor}}
+\index{parallelFor@{parallelFor}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{parallelFor()}{parallelFor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class Kernel $>$ \\
+void blockamr\+::parallel\+For (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{const amrex\+::\+Multi\+Fab \&}]{mf,  }\item[{Kernel}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{blockAmr_2core_2parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a3b4bbb7cae0398b3ac2154025c0c215b}\label{namespaceblockamr_a3b4bbb7cae0398b3ac2154025c0c215b} 
+\index{blockamr@{blockamr}!releaseStreamPool@{releaseStreamPool}}
+\index{releaseStreamPool@{releaseStreamPool}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{releaseStreamPool()}{releaseStreamPool()}}
+{\footnotesize\ttfamily void blockamr\+::release\+Stream\+Pool (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00097}{97}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31}\label{namespaceblockamr_a477d77d7caf0cc3ef091d852d13ffe31} 
+\index{blockamr@{blockamr}!streamPoolPtr@{streamPoolPtr}}
+\index{streamPoolPtr@{streamPoolPtr}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{streamPoolPtr()}{streamPoolPtr()}}
+{\footnotesize\ttfamily std\+::vector$<$ Kokkos\+::\+Default\+Execution\+Space $>$ \texorpdfstring{$\ast$}{*}\& blockamr\+::stream\+Pool\+Ptr (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29}\label{namespaceblockamr_a5e5d559f7f3f41d182db8b33a1472b29} 
+\index{blockamr@{blockamr}!vanleerCorr@{vanleerCorr}}
+\index{vanleerCorr@{vanleerCorr}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{vanleerCorr()}{vanleerCorr()}}
+{\footnotesize\ttfamily AMREX\+\_\+\+GPU\+\_\+\+HOST\+\_\+\+DEVICE AMREX\+\_\+\+FORCE\+\_\+\+INLINE double blockamr\+::vanleer\+Corr (\begin{DoxyParamCaption}\item[{double}]{d\+\_\+up,  }\item[{double}]{d\+\_\+down }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{cells_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{cells_8hpp_source}{cells.\+hpp}}.
+
+\Hypertarget{namespaceblockamr_a6bab5888b36cbcae0b856cdc93ef4121}\label{namespaceblockamr_a6bab5888b36cbcae0b856cdc93ef4121} 
+\index{blockamr@{blockamr}!viewAcc@{viewAcc}}
+\index{viewAcc@{viewAcc}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{viewAcc()}{viewAcc()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structblockamr_1_1ViewAcc}{View\+Acc}} blockamr\+::view\+Acc (\begin{DoxyParamCaption}\item[{amrex\+::\+FArray\+Box \&}]{fab }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{launch_8hpp_source_l00222}{222}} of file \mbox{\hyperlink{launch_8hpp_source}{launch.\+hpp}}.
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0}\label{namespaceblockamr_a8e0e4fcdcd370165548820d3e62321b0} 
+\index{blockamr@{blockamr}!kCopyBlock@{kCopyBlock}}
+\index{kCopyBlock@{kCopyBlock}!blockamr@{blockamr}}
+\doxysubsubsection{\texorpdfstring{kCopyBlock}{kCopyBlock}}
+{\footnotesize\ttfamily constexpr int blockamr\+::k\+Copy\+Block = 128\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Definition at line \mbox{\hyperlink{halo_8hpp_source_l00030}{30}} of file \mbox{\hyperlink{halo_8hpp_source}{halo.\+hpp}}.
+
