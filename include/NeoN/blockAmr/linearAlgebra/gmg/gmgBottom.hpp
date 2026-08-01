@@ -23,6 +23,27 @@
 namespace blockamr::la
 {
 
+// The 7 coefficient fabs held by shared ownership: the bottom operator is generated once and
+// applied throughout the solve, so it must keep its level's fabs alive, where FaceCoeffs<T>'s
+// raw views only have to survive one kernel call.
+template<class T>
+struct OwnedFaceCoeffs
+{
+    std::shared_ptr<GmgFab<T>> alpha, ux, lx, uy, ly, uz, lz;
+
+    FaceCoeffs<T> view() const
+    {
+        return {alpha.get(), ux.get(), lx.get(), uy.get(), ly.get(), uz.get(), lz.get()};
+    }
+};
+
+// One matrix row per cell of the level: the operator's GLOBAL size, summed over all ranks.
+template<class T>
+gko::size_type gmgLevelRows(const GmgFab<T>& alpha)
+{
+    return static_cast<gko::size_type>(alpha.boxArray().numPts());
+}
+
 // A single GMG level as a gko::LinOp: y = A x on that level's rediscretised coefficients,
 // with the level's geometry and BCs applied to x's ghosts first. The value type is the
 // HIERARCHY's T, not the outer Krylov's double — the bottom runs inside the V-cycle.
@@ -36,28 +57,24 @@ public:
         : AmrexLinOpBase<GmgBottomOp<T>, T>(exec)
     {}
 
+    // Size and layout are read off `coeffs.alpha` rather than passed alongside it, where a
+    // BoxArray from a different level would compile.
     GmgBottomOp(
         std::shared_ptr<const gko::Executor> exec,
-        gko::size_type n,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
         amrex::Geometry geom,
-        std::shared_ptr<GmgFab<T>> alpha,
-        std::shared_ptr<GmgFab<T>> ux,
-        std::shared_ptr<GmgFab<T>> lx,
-        std::shared_ptr<GmgFab<T>> uy,
-        std::shared_ptr<GmgFab<T>> ly,
-        std::shared_ptr<GmgFab<T>> uz,
-        std::shared_ptr<GmgFab<T>> lz,
+        OwnedFaceCoeffs<T> coeffs,
         BcArray bc,
         bool onDevice
     )
-        : AmrexLinOpBase<GmgBottomOp<T>, T>(exec, gko::dim<2> {n, n}), geom_(std::move(geom)),
-          alpha_(std::move(alpha)), ux_(std::move(ux)), lx_(std::move(lx)), uy_(std::move(uy)),
-          ly_(std::move(ly)), uz_(std::move(uz)), lz_(std::move(lz)), bc_(bc),
+        : AmrexLinOpBase<GmgBottomOp<T>, T>(
+            exec, gko::dim<2> {gmgLevelRows(*coeffs.alpha), gmgLevelRows(*coeffs.alpha)}
+        ),
+          geom_(std::move(geom)), coeffs_(std::move(coeffs)), bc_(bc),
           hasPhysBc_(std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; })),
           onDevice_(onDevice)
     {
+        const amrex::BoxArray& ba = coeffs_.alpha->boxArray();
+        const amrex::DistributionMapping& dm = coeffs_.alpha->DistributionMap();
         // Own work fabs, not the level's sol/rhs: aliasing would corrupt the cycle.
         const amrex::MFInfo info =
             onDevice_ ? amrex::MFInfo() : amrex::MFInfo().SetArena(amrex::The_Pinned_Arena());
@@ -103,10 +120,7 @@ protected:
             }
         }
 
-        const FaceCoeffs<T> fc {
-            alpha_.get(), ux_.get(), lx_.get(), uy_.get(), ly_.get(), uz_.get(), lz_.get()
-        };
-        gmgApply(*in_, *out_, fc, onDevice_);
+        gmgApply(*in_, *out_, coeffs_.view(), onDevice_);
         if (onDevice_)
         {
             gather_device(*out_, localValues<T>(x), 1.0);
@@ -121,7 +135,7 @@ protected:
 private:
 
     amrex::Geometry geom_;
-    std::shared_ptr<GmgFab<T>> alpha_, ux_, lx_, uy_, ly_, uz_, lz_;
+    OwnedFaceCoeffs<T> coeffs_;
     std::shared_ptr<GmgFab<T>> in_, out_;
     BcArray bc_ {};
     bool hasPhysBc_ = false;

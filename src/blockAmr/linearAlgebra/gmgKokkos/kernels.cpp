@@ -18,45 +18,28 @@ template<class T, class TC>
 void gmgGsColorKokkosFused(
     la::GmgFab<T>& sol,
     const la::GmgFab<T>& rhs,
-    const la::GmgFab<TC>& ux,
-    const la::GmgFab<TC>& lx,
-    const la::GmgFab<TC>& uy,
-    const la::GmgFab<TC>& ly,
-    const la::GmgFab<TC>& uz,
-    const la::GmgFab<TC>& lz,
-    const la::GmgFab<TC>& alpha,
-    int parity,
-    double omega,
+    const la::FaceCoeffs<TC>& fc,
+    la::GsSweep sweep,
     bool fence
 )
 {
-    const la::GmgComputeT<T> om = static_cast<la::GmgComputeT<T>>(omega);
+    const la::GmgComputeT<T> om = static_cast<la::GmgComputeT<T>>(sweep.omega);
+    const int parity = sweep.parity;
     const auto psi = sol.arrays();
     const auto b = rhs.const_arrays();
-    const auto ax = ux.const_arrays();
-    const auto lxa = lx.const_arrays();
-    const auto ay = uy.const_arrays();
-    const auto lya = ly.const_arrays();
-    const auto az = uz.const_arrays();
-    const auto lza = lz.const_arrays();
-    const auto al = alpha.const_arrays();
+    const auto ax = fc.ux->const_arrays();
+    const auto lxa = fc.lx->const_arrays();
+    const auto ay = fc.uy->const_arrays();
+    const auto lya = fc.ly->const_arrays();
+    const auto az = fc.uz->const_arrays();
+    const auto lza = fc.lz->const_arrays();
+    const auto al = fc.alpha->const_arrays();
     launchKokkosTeamNamed(
         "gmg_gs_fused",
         rhs,
         BLOCKAMR_LAMBDA(int ib, int i, int j, int k) {
-            GmgGsCell<T, TC> {
-                psi[ib],
-                b[ib],
-                ax[ib],
-                lxa[ib],
-                ay[ib],
-                lya[ib],
-                az[ib],
-                lza[ib],
-                al[ib],
-                om,
-                parity
-            }(i, j, k);
+            const la::FaceCoeffArrays<TC> faces {ax[ib], lxa[ib], ay[ib], lya[ib], az[ib], lza[ib]};
+            GmgGsCell<T, TC> {psi[ib], b[ib], faces, al[ib], om, parity}(i, j, k);
         }
     );
     if (fence)
@@ -70,33 +53,26 @@ void gmgResidRestrictKokkosFused(
     const la::GmgFab<T>& sol,
     const la::GmgFab<T>& rhs,
     la::GmgFab<T>& crhs,
-    const la::GmgFab<TC>& ux,
-    const la::GmgFab<TC>& lx,
-    const la::GmgFab<TC>& uy,
-    const la::GmgFab<TC>& ly,
-    const la::GmgFab<TC>& uz,
-    const la::GmgFab<TC>& lz,
-    const la::GmgFab<TC>& alpha,
+    const la::FaceCoeffs<TC>& fc,
     bool fence
 )
 {
     const auto cr = crhs.arrays();
     const auto psi = sol.const_arrays();
     const auto b = rhs.const_arrays();
-    const auto ax = ux.const_arrays();
-    const auto lxa = lx.const_arrays();
-    const auto ay = uy.const_arrays();
-    const auto lya = ly.const_arrays();
-    const auto az = uz.const_arrays();
-    const auto lza = lz.const_arrays();
-    const auto al = alpha.const_arrays();
+    const auto ax = fc.ux->const_arrays();
+    const auto lxa = fc.lx->const_arrays();
+    const auto ay = fc.uy->const_arrays();
+    const auto lya = fc.ly->const_arrays();
+    const auto az = fc.uz->const_arrays();
+    const auto lza = fc.lz->const_arrays();
+    const auto al = fc.alpha->const_arrays();
     launchKokkosTeamNamed(
         "gmg_residrestrict_fused",
         crhs,
         BLOCKAMR_LAMBDA(int ib, int ic, int jc, int kc) {
-            GmgResidRestrictCell<T, TC> {
-                cr[ib], psi[ib], b[ib], ax[ib], lxa[ib], ay[ib], lya[ib], az[ib], lza[ib], al[ib]
-            }(ic, jc, kc);
+            const la::FaceCoeffArrays<TC> faces {ax[ib], lxa[ib], ay[ib], lya[ib], az[ib], lza[ib]};
+            GmgResidRestrictCell<T, TC> {cr[ib], psi[ib], b[ib], faces, al[ib]}(ic, jc, kc);
         }
     );
     if (fence)
@@ -180,87 +156,29 @@ void gmgZeroKokkos(la::GmgFab<T>& mf)
 // The six (field, coefficient) pairs Vcycle<KokkosOptGmgBackend, T, TC> is instantiated for.
 // A missing instantiation is a null device function pointer at runtime, not a link error.
 template void gmgGsColorKokkosFused<double, double>(
-    la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    int,
-    double,
-    bool
+    la::GmgFab<double>&, const la::GmgFab<double>&, const la::FaceCoeffs<double>&, la::GsSweep, bool
 );
 template void gmgGsColorKokkosFused<double, float>(
-    la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    int,
-    double,
-    bool
+    la::GmgFab<double>&, const la::GmgFab<double>&, const la::FaceCoeffs<float>&, la::GsSweep, bool
 );
 template void gmgGsColorKokkosFused<double, la::Bf16>(
     la::GmgFab<double>&,
     const la::GmgFab<double>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    int,
-    double,
+    const la::FaceCoeffs<la::Bf16>&,
+    la::GsSweep,
     bool
 );
 template void gmgGsColorKokkosFused<float, float>(
-    la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    int,
-    double,
-    bool
+    la::GmgFab<float>&, const la::GmgFab<float>&, const la::FaceCoeffs<float>&, la::GsSweep, bool
 );
 template void gmgGsColorKokkosFused<float, la::Bf16>(
-    la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    int,
-    double,
-    bool
+    la::GmgFab<float>&, const la::GmgFab<float>&, const la::FaceCoeffs<la::Bf16>&, la::GsSweep, bool
 );
 template void gmgGsColorKokkosFused<la::Bf16, la::Bf16>(
     la::GmgFab<la::Bf16>&,
     const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    int,
-    double,
+    const la::FaceCoeffs<la::Bf16>&,
+    la::GsSweep,
     bool
 );
 
@@ -268,78 +186,42 @@ template void gmgResidRestrictKokkosFused<double, double>(
     const la::GmgFab<double>&,
     const la::GmgFab<double>&,
     la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
-    const la::GmgFab<double>&,
+    const la::FaceCoeffs<double>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<double, float>(
     const la::GmgFab<double>&,
     const la::GmgFab<double>&,
     la::GmgFab<double>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
+    const la::FaceCoeffs<float>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<double, la::Bf16>(
     const la::GmgFab<double>&,
     const la::GmgFab<double>&,
     la::GmgFab<double>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
+    const la::FaceCoeffs<la::Bf16>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<float, float>(
     const la::GmgFab<float>&,
     const la::GmgFab<float>&,
     la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
-    const la::GmgFab<float>&,
+    const la::FaceCoeffs<float>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<float, la::Bf16>(
     const la::GmgFab<float>&,
     const la::GmgFab<float>&,
     la::GmgFab<float>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
+    const la::FaceCoeffs<la::Bf16>&,
     bool
 );
 template void gmgResidRestrictKokkosFused<la::Bf16, la::Bf16>(
     const la::GmgFab<la::Bf16>&,
     const la::GmgFab<la::Bf16>&,
     la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
-    const la::GmgFab<la::Bf16>&,
+    const la::FaceCoeffs<la::Bf16>&,
     bool
 );
 

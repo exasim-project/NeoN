@@ -24,29 +24,29 @@ struct FaceCoeffVals
     T aE, aW, aN, aS, aT, aB;
 };
 
+// The 6 face-coefficient VIEWS over one box. Trivially copyable, so it captures into a device
+// lambda like the six Array4s it replaces; it exists so a kernel taking the set states that in
+// one parameter instead of six that a caller can transpose.
+template<class TC>
+struct FaceCoeffArrays
+{
+    amrex::Array4<const TC> ux, lx, uy, ly, uz, lz;
+};
+
 // aE/aN/aT are the HIGH faces (upper, index +1), aW/aS/aB the LOW ones (lower, index 0).
 // C is the type the CELL computes in; TC the coefficient STORAGE type, narrower on a
 // reduced-precision GMG level (gmg/bf16.hpp) -- hence two parameters and not one.
 template<class C, class TC>
-AMREX_GPU_HOST_DEVICE FaceCoeffVals<C> loadFaceCoeffs(
-    const amrex::Array4<const TC>& ux,
-    const amrex::Array4<const TC>& lx,
-    const amrex::Array4<const TC>& uy,
-    const amrex::Array4<const TC>& ly,
-    const amrex::Array4<const TC>& uz,
-    const amrex::Array4<const TC>& lz,
-    int i,
-    int j,
-    int k
-) noexcept
+AMREX_GPU_HOST_DEVICE FaceCoeffVals<C>
+loadFaceCoeffs(const FaceCoeffArrays<TC>& a, int i, int j, int k) noexcept
 {
     return {
-        static_cast<C>(ux(i + 1, j, k)),
-        static_cast<C>(lx(i, j, k)),
-        static_cast<C>(uy(i, j + 1, k)),
-        static_cast<C>(ly(i, j, k)),
-        static_cast<C>(uz(i, j, k + 1)),
-        static_cast<C>(lz(i, j, k))
+        static_cast<C>(a.ux(i + 1, j, k)),
+        static_cast<C>(a.lx(i, j, k)),
+        static_cast<C>(a.uy(i, j + 1, k)),
+        static_cast<C>(a.ly(i, j, k)),
+        static_cast<C>(a.uz(i, j, k + 1)),
+        static_cast<C>(a.lz(i, j, k))
     };
 }
 

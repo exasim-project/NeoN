@@ -14,6 +14,7 @@
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/core/meshLevel.hpp"
+#include "NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 
 // Preconditioner construction in ONE place -- the seam that makes them reachable from a
@@ -40,19 +41,14 @@ struct GmgHierarchy
     const GmgApplyMf* mf = nullptr; // only read by the stationary path
 };
 
-// The coefficients arrive as the grouped handles, not as seven loose MultiFabs:
-// `lower` is the STORED low side (aliasing upper when symmetric), and `mesh`
-// carries the ba/dm/geom the hierarchy coarsens from (core/fieldLevel.hpp).
+// The cycle count and the hierarchy knobs come from the config, not loose: every caller
+// already holds the SolverConfig those two live in.
 GmgHierarchy buildGmgHierarchy(
     std::shared_ptr<const gko::Executor> exec,
     gko::size_type n,
-    const CellFieldLevel& alpha,
-    const FaceFieldLevel& upper,
-    const FaceFieldLevel& lower,
-    const MeshLevel& mesh,
+    const FaceCoeffLevel& level,
     const BcArray& bcArr,
-    int precondCycles,
-    const GmgConfig& gmg
+    const SolverConfig& config
 );
 
 /* @brief What a face-coefficient preconditioner build hands back. `op` is null for
@@ -71,10 +67,7 @@ struct FaceCoeffPrecond
 FaceCoeffPrecond makeFaceCoeffPrecond(
     std::shared_ptr<const gko::Executor> exec,
     gko::size_type n,
-    const CellFieldLevel& alpha,
-    const FaceFieldLevel& upper,
-    const FaceFieldLevel& lower,
-    const MeshLevel& mesh,
+    const FaceCoeffLevel& level,
     const BcArray& bcArr,
     const SolverConfig& config
 );

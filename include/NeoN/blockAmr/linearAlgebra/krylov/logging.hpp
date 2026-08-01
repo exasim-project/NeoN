@@ -28,6 +28,11 @@ public:
 
 protected:
 
+    // The base declares three on_iteration_complete overloads and forwards new->old; overriding
+    // one hides the other two. Ginkgo resolves the call inside Logger's own scope, so the hiding
+    // is invisible to it -- this only silences the #611-D warning it provokes per TU.
+    using gko::log::Logger::on_iteration_complete;
+
     void on_iteration_complete(
         const gko::LinOp*,
         const gko::LinOp*,

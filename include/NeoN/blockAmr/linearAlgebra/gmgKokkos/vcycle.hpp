@@ -61,8 +61,10 @@ Precision parsePrecision(const std::string& p)
     {
         return Precision::bf16;
     }
+    // Not "benchGmgVcycle": apply.cpp reaches this from the production factory, where a
+    // bench-flavoured prefix names a function the caller never invoked.
     throw std::runtime_error(
-        "benchGmgVcycle: unknown precision '" + p + "' (expected 'fp64', 'fp32' or 'bf16')"
+        "blockAmr GMG: unknown precision '" + p + "' (expected 'fp64', 'fp32' or 'bf16')"
     );
 }
 
@@ -93,7 +95,7 @@ Precision parseCoeffPrecision(const std::string& coeff, const std::string& field
     if (precisionBytes(c) > precisionBytes(f))
     {
         throw std::runtime_error(
-            "benchGmgVcycle: coeff_precision '" + coeff + "' is wider than precision '" + field
+            "blockAmr GMG: coeff_precision '" + coeff + "' is wider than precision '" + field
             + "'; narrow the fields first"
         );
     }
@@ -162,6 +164,19 @@ bool sameField(const amrex::MultiFab& a, const amrex::MultiFab& b)
     return diff == 0.0;
 }
 
+// The caller's 7 coefficient fields as one argument, in the constructor's positional order.
+// la::FaceCoeffs cannot stand in: these are amrex::MultiFabs, not the la::GmgFab<TC> a level owns.
+struct CallerCoeffs
+{
+    const amrex::MultiFab* alpha;
+    const amrex::MultiFab* ux;
+    const amrex::MultiFab* lx;
+    const amrex::MultiFab* uy;
+    const amrex::MultiFab* ly;
+    const amrex::MultiFab* uz;
+    const amrex::MultiFab* lz;
+};
+
 // One multigrid level, as in GmgLevelT: geometry, coefficients, work fields (sol has 1 ghost).
 template<class T, class TC>
 struct LevelT
@@ -202,154 +217,22 @@ public:
 
     // The coefficient fields are read at SETUP only (copyCallerCoeffs); the rhs is not read here
     // at all, so it stays a per-call argument of reset/applyFlat.
-    Vcycle(
-        const amrex::Geometry& geom,
-        const amrex::MultiFab& alpha,
-        const amrex::MultiFab& ux,
-        const amrex::MultiFab& lx,
-        const amrex::MultiFab& uy,
-        const amrex::MultiFab& ly,
-        const amrex::MultiFab& uz,
-        const amrex::MultiFab& lz,
-        const KokkosGmgOpts& opts
-    )
+    Vcycle(const amrex::Geometry& geom, const CallerCoeffs& c, const KokkosGmgOpts& opts)
         : preSweeps_(opts.preSweeps), postSweeps_(opts.postSweeps),
           coarsestSweeps_(opts.coarsestSweeps), omega_(opts.omega), bc_(opts.bc),
           hasPhysBc_(std::any_of(opts.bc.begin(), opts.bc.end(), [](int b) { return b != 0; })),
           amrexFree_(Backend::amrexFreeCycle && amrex::ParallelContext::NProcsSub() == 1)
     {
-        const amrex::BoxArray& ba = alpha.boxArray();
-        const amrex::DistributionMapping& dm = alpha.DistributionMap();
-
         // One face coefficient per direction instead of a pair -- only when asked, only if the
         // backend allows it, and only if the operator really is symmetric.
-        shared_ = Backend::canShareCoeffs && opts.shareCoeffs && sameField(ux, lx)
-               && sameField(uy, ly) && sameField(uz, lz);
+        shared_ = Backend::canShareCoeffs && opts.shareCoeffs && sameField(*c.ux, *c.lx)
+               && sameField(*c.uy, *c.ly) && sameField(*c.uz, *c.lz);
 
-        // Level 0 on ITS OWN decomposition, when asked: bigger boxes cost an interface but cut
-        // halo traffic on the level holding 7/8 of the cells (notes#agglomeration).
-        amrex::BoxArray l0ba = ba;
-        amrex::DistributionMapping l0dm = dm;
-        // Only available where the plans are; on >1 rank the caller's layout is kept.
+        buildLevel0(geom, c, opts);
+        coarsenHierarchy(opts);
         if (amrexFree_)
         {
-            if (opts.aggLevel0Size > 0)
-            {
-                amrex::BoxArray tba(geom.Domain());
-                tba.maxSize(opts.aggLevel0Size);
-                // Strictly fewer boxes, or the interface is pure cost.
-                if (tba.size() < ba.size())
-                {
-                    l0ba = tba;
-                    l0dm = amrex::DistributionMapping(tba);
-                    aggL0_ = true;
-                }
-            }
-        }
-
-        levels_.push_back(makeLevel(l0ba, l0dm, geom, shared_));
-        if (aggL0_)
-        {
-            // The convert-copies need matching layouts, so rediscretise there and copy across.
-            Level t = makeLevel(ba, dm, geom, shared_);
-            copyCallerCoeffs(alpha, ux, lx, uy, ly, uz, lz, t);
-            copyCoeffs(t, levels_[0]);
-            iface_ = makeMf(ba, dm, 0);
-        }
-        else
-        {
-            copyCallerCoeffs(alpha, ux, lx, uy, ly, uz, lz, levels_[0]);
-        }
-
-        // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps >= minBottom
-        // cells. Without agglomeration only the box SIZE shrinks — hence a launch-bound bottom.
-        while (true)
-        {
-            if (opts.maxLevels > 0 && static_cast<int>(levels_.size()) >= opts.maxLevels)
-            {
-                break;
-            }
-            // Copies, not references: push_back below moves the Level structs.
-            const amrex::BoxArray fba = levels_.back().alpha->boxArray();
-            const amrex::DistributionMapping fdm = levels_.back().alpha->DistributionMap();
-            const amrex::Geometry fgeom = levels_.back().geom;
-            if (!fba.coarsenable(2, 2))
-            {
-                break;
-            }
-            const amrex::Box cdom = amrex::coarsen(fgeom.Domain(), 2);
-            if (cdom.shortside() < opts.minBottom)
-            {
-                break;
-            }
-            amrex::BoxArray cba = fba;
-            cba.coarsen(2);
-            // Each level carries its OWN geometry: the coefficients belong to this level's dx.
-            const amrex::Geometry cgeom(
-                cdom,
-                fgeom.ProbDomain(),
-                fgeom.Coord(),
-                {fgeom.isPeriodic(0), fgeom.isPeriodic(1), fgeom.isPeriodic(2)}
-            );
-
-            // Agglomeration: a fresh aggGridSize-capped decomposition of the coarse domain,
-            // taken only when it has strictly fewer boxes (notes#agglomeration).
-            amrex::BoxArray aba = cba;
-            amrex::DistributionMapping adm = fdm;
-            bool agg = false;
-            if (opts.agglomerate)
-            {
-                amrex::BoxArray tba(cdom);
-                tba.maxSize(opts.aggGridSize);
-                if (tba.size() < cba.size())
-                {
-                    aba = tba;
-                    adm = amrex::DistributionMapping(tba);
-                    agg = true;
-                }
-            }
-
-            levels_.push_back(makeLevel(aba, adm, cgeom, shared_));
-            const Level& fl = levels_[levels_.size() - 2];
-            Level& c = levels_.back();
-            if (!agg)
-            {
-                restrictCoeffs(fl, c);
-            }
-            else
-            {
-                c.agglomerated = true;
-                c.xferRhs = makeMf(cba, fdm, 0);
-                c.xferSol = makeMf(cba, fdm, 0);
-                // The restriction kernels only speak the fine layout: rediscretise there, copy.
-                Level t = makeLevel(cba, fdm, cgeom, shared_);
-                restrictCoeffs(fl, t);
-                copyCoeffs(t, c);
-            }
-        }
-
-        // Resolve the data movements once the hierarchy is final: a device table per movement.
-        if (amrexFree_)
-        {
-            if (aggL0_)
-            {
-                ifaceIn_ = makeCopyPlan(*levels_[0].rhs, *iface_);
-                ifaceOut_ = makeCopyPlan(*iface_, *levels_[0].sol);
-            }
-            for (Level& L : levels_)
-            {
-                L.halo = makeHaloPlan(*L.sol, L.geom.periodicity());
-                if (hasPhysBc_)
-                {
-                    // Coarse domains are the fine one coarsened, so one bc spec applies.
-                    L.bc = makeBcPlan(*L.sol, L.geom.Domain(), bc_);
-                }
-                if (L.agglomerated)
-                {
-                    L.xferIn = makeCopyPlan(*L.rhs, *L.xferRhs);
-                    L.xferOut = makeCopyPlan(*L.xferSol, *L.sol);
-                }
-            }
+            resolvePlans();
         }
         amrex::Gpu::streamSynchronize();
     }
@@ -434,9 +317,10 @@ public:
             amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int box, int i, int j, int k) -> amrex::GpuTuple<double>
             {
-                const auto c = la::loadFaceCoeffs<double>(
-                    ax[box], lxa[box], ay[box], lya[box], az[box], lza[box], i, j, k
-                );
+                const la::FaceCoeffArrays<TC> faces {
+                    ax[box], lxa[box], ay[box], lya[box], az[box], lza[box]
+                };
+                const auto c = la::loadFaceCoeffs<double>(faces, i, j, k);
                 const double off = la::stencilOffDiag(
                     c,
                     psi[box](i + 1, j, k),
@@ -535,28 +419,165 @@ private:
         return L;
     }
 
-    // The caller's fields converted into level 0's OWN fabs, read at SETUP only: later caller
-    // writes go unseen, so a changed operator means a rebuilt preconditioner.
-    static void copyCallerCoeffs(
-        const amrex::MultiFab& alpha,
-        const amrex::MultiFab& ux,
-        const amrex::MultiFab& lx,
-        const amrex::MultiFab& uy,
-        const amrex::MultiFab& ly,
-        const amrex::MultiFab& uz,
-        const amrex::MultiFab& lz,
-        Level& L
-    )
+    // This level's 7 coefficient fields as one argument, the lower faces through the accessors so
+    // a shared level hands out its upper twin (notes#share-coeffs).
+    static la::FaceCoeffs<TC> levelCoeffs(const Level& L)
     {
-        la::gmgConvertCopy(*L.alpha, alpha, /*onDevice=*/true);
-        la::gmgConvertCopy(*L.ux, ux, /*onDevice=*/true);
-        la::gmgConvertCopy(*L.uy, uy, /*onDevice=*/true);
-        la::gmgConvertCopy(*L.uz, uz, /*onDevice=*/true);
+        return {L.alpha.get(), L.ux.get(), &L.lxf(), L.uy.get(), &L.lyf(), L.uz.get(), &L.lzf()};
+    }
+
+    // The caller's fields converted into the level's OWN fabs, read at SETUP only: later caller
+    // writes go unseen, so a changed operator means a rebuilt preconditioner.
+    static void copyCallerCoeffs(const CallerCoeffs& c, Level& L)
+    {
+        la::gmgConvertCopy(*L.alpha, *c.alpha, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.ux, *c.ux, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.uy, *c.uy, /*onDevice=*/true);
+        la::gmgConvertCopy(*L.uz, *c.uz, /*onDevice=*/true);
         if (!L.shared())
         {
-            la::gmgConvertCopy(*L.lx, lx, /*onDevice=*/true);
-            la::gmgConvertCopy(*L.ly, ly, /*onDevice=*/true);
-            la::gmgConvertCopy(*L.lz, lz, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.lx, *c.lx, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.ly, *c.ly, /*onDevice=*/true);
+            la::gmgConvertCopy(*L.lz, *c.lz, /*onDevice=*/true);
+        }
+    }
+
+    // The finest level, on the caller's decomposition or -- when asked, and only where the plans
+    // are -- on its own: bigger boxes cost an interface but cut halo traffic on the level holding
+    // 7/8 of the cells (notes#agglomeration).
+    void buildLevel0(const amrex::Geometry& geom, const CallerCoeffs& c, const KokkosGmgOpts& opts)
+    {
+        const amrex::BoxArray& ba = c.alpha->boxArray();
+        const amrex::DistributionMapping& dm = c.alpha->DistributionMap();
+
+        amrex::BoxArray l0ba = ba;
+        amrex::DistributionMapping l0dm = dm;
+        // On >1 rank there are no plans, so the caller's layout is kept.
+        if (amrexFree_ && opts.aggLevel0Size > 0)
+        {
+            amrex::BoxArray tba(geom.Domain());
+            tba.maxSize(opts.aggLevel0Size);
+            // Strictly fewer boxes, or the interface is pure cost.
+            if (tba.size() < ba.size())
+            {
+                l0ba = tba;
+                l0dm = amrex::DistributionMapping(tba);
+                aggL0_ = true;
+            }
+        }
+
+        levels_.push_back(makeLevel(l0ba, l0dm, geom, shared_));
+        if (!aggL0_)
+        {
+            copyCallerCoeffs(c, levels_[0]);
+            return;
+        }
+        // The convert-copies need matching layouts, so rediscretise there and copy across.
+        Level t = makeLevel(ba, dm, geom, shared_);
+        copyCallerCoeffs(c, t);
+        copyCoeffs(t, levels_[0]);
+        iface_ = makeMf(ba, dm, 0);
+    }
+
+    // Each level carries its OWN geometry: the coefficients belong to this level's dx.
+    static amrex::Geometry coarseGeom(const amrex::Geometry& fine, const amrex::Box& cdom)
+    {
+        return {
+            cdom,
+            fine.ProbDomain(),
+            fine.Coord(),
+            {fine.isPeriodic(0), fine.isPeriodic(1), fine.isPeriodic(2)}
+        };
+    }
+
+    // Coarsen while the BoxArray stays coarsenable and the coarse domain keeps >= minBottom
+    // cells. Without agglomeration only the box SIZE shrinks — hence a launch-bound bottom.
+    void coarsenHierarchy(const KokkosGmgOpts& opts)
+    {
+        while (opts.maxLevels <= 0 || static_cast<int>(levels_.size()) < opts.maxLevels)
+        {
+            // Copies, not references: addCoarseLevel's push_back moves the Level structs.
+            const amrex::BoxArray fba = levels_.back().alpha->boxArray();
+            const amrex::DistributionMapping fdm = levels_.back().alpha->DistributionMap();
+            const amrex::Geometry fgeom = levels_.back().geom;
+            if (!fba.coarsenable(2, 2))
+            {
+                return;
+            }
+            const amrex::Box cdom = amrex::coarsen(fgeom.Domain(), 2);
+            if (cdom.shortside() < opts.minBottom)
+            {
+                return;
+            }
+            amrex::BoxArray cba = fba;
+            cba.coarsen(2);
+            addCoarseLevel(coarseGeom(fgeom, cdom), cba, fdm, opts);
+        }
+    }
+
+    // Append the level below the current bottom and rediscretise onto it. Agglomeration: a fresh
+    // aggGridSize-capped decomposition of the coarse domain, taken only when it has strictly
+    // fewer boxes (notes#agglomeration).
+    void addCoarseLevel(
+        const amrex::Geometry& cgeom,
+        const amrex::BoxArray& cba,
+        const amrex::DistributionMapping& fdm,
+        const KokkosGmgOpts& opts
+    )
+    {
+        amrex::BoxArray aba = cba;
+        amrex::DistributionMapping adm = fdm;
+        bool agg = false;
+        if (opts.agglomerate)
+        {
+            amrex::BoxArray tba(cgeom.Domain());
+            tba.maxSize(opts.aggGridSize);
+            if (tba.size() < cba.size())
+            {
+                aba = tba;
+                adm = amrex::DistributionMapping(tba);
+                agg = true;
+            }
+        }
+
+        levels_.push_back(makeLevel(aba, adm, cgeom, shared_));
+        const Level& fl = levels_[levels_.size() - 2];
+        Level& c = levels_.back();
+        if (!agg)
+        {
+            restrictCoeffs(fl, c);
+            return;
+        }
+        c.agglomerated = true;
+        c.xferRhs = makeMf(cba, fdm, 0);
+        c.xferSol = makeMf(cba, fdm, 0);
+        // The restriction kernels only speak the fine layout: rediscretise there, copy.
+        Level t = makeLevel(cba, fdm, cgeom, shared_);
+        restrictCoeffs(fl, t);
+        copyCoeffs(t, c);
+    }
+
+    // Resolve the data movements once the hierarchy is final: a device table per movement.
+    void resolvePlans()
+    {
+        if (aggL0_)
+        {
+            ifaceIn_ = makeCopyPlan(*levels_[0].rhs, *iface_);
+            ifaceOut_ = makeCopyPlan(*iface_, *levels_[0].sol);
+        }
+        for (Level& L : levels_)
+        {
+            L.halo = makeHaloPlan(*L.sol, L.geom.periodicity());
+            if (hasPhysBc_)
+            {
+                // Coarse domains are the fine one coarsened, so one bc spec applies.
+                L.bc = makeBcPlan(*L.sol, L.geom.Domain(), bc_);
+            }
+            if (L.agglomerated)
+            {
+                L.xferIn = makeCopyPlan(*L.rhs, *L.xferRhs);
+                L.xferOut = makeCopyPlan(*L.xferSol, *L.sol);
+            }
         }
     }
 
@@ -625,19 +646,7 @@ private:
             {
                 const int parity = (reversed ? 1 + c : c) & 1;
                 fillGhosts(L); // the other colour changed — refresh ghosts
-                Backend::gsColor(
-                    *L.sol,
-                    *L.rhs,
-                    *L.ux,
-                    L.lxf(),
-                    *L.uy,
-                    L.lyf(),
-                    *L.uz,
-                    L.lzf(),
-                    *L.alpha,
-                    parity,
-                    omega_
-                );
+                Backend::gsColor(*L.sol, *L.rhs, levelCoeffs(L), la::GsSweep {parity, omega_});
             }
         }
     }
@@ -657,17 +666,18 @@ private:
         Level& C = levels_[l + 1];
         // On an agglomerated level the kernels use the transfer fab, and a copy bridges across.
         Backend::residRestrict(
-            *L.sol,
-            *L.rhs,
-            C.agglomerated ? *C.xferRhs : *C.rhs,
-            *L.ux,
-            L.lxf(),
-            *L.uy,
-            L.lyf(),
-            *L.uz,
-            L.lzf(),
-            *L.alpha
+            *L.sol, *L.rhs, C.agglomerated ? *C.xferRhs : *C.rhs, levelCoeffs(L)
         );
+        seedCoarse(C);
+        vcycle(l + 1);
+        gatherCoarseCorrection(C);
+        Backend::prolongAdd(C.agglomerated ? *C.xferSol : *C.sol, *L.sol);
+        smooth(l, postSweeps_, true);
+    }
+
+    // The coarse right-hand side in place and its solution zeroed, ready for the coarse cycle.
+    void seedCoarse(Level& C)
+    {
         if (amrexFree_)
         {
             if (C.agglomerated)
@@ -675,33 +685,32 @@ private:
                 gmgCopyKokkos<T>(*C.rhs, *C.xferRhs, C.xferIn);
             }
             gmgZeroKokkos<T>(*C.sol);
+            return;
         }
-        else
-        {
-            Backend::beforeAmrexRead(); // residRestrict just wrote xferRhs
-            if (C.agglomerated)
-            {
-                C.rhs->ParallelCopy(*C.xferRhs, 0, 0, 1);
-            }
-            C.sol->setVal(T(0));
-            Backend::afterAmrexWrite();
-        }
-        vcycle(l + 1);
+        Backend::beforeAmrexRead(); // residRestrict just wrote xferRhs
         if (C.agglomerated)
         {
-            if (amrexFree_)
-            {
-                gmgCopyKokkos<T>(*C.xferSol, *C.sol, C.xferOut);
-            }
-            else
-            {
-                Backend::beforeAmrexRead(); // the coarse cycle just wrote C.sol
-                C.xferSol->ParallelCopy(*C.sol, 0, 0, 1);
-                Backend::afterAmrexWrite();
-            }
+            C.rhs->ParallelCopy(*C.xferRhs, 0, 0, 1);
         }
-        Backend::prolongAdd(C.agglomerated ? *C.xferSol : *C.sol, *L.sol);
-        smooth(l, postSweeps_, true);
+        C.sol->setVal(T(0));
+        Backend::afterAmrexWrite();
+    }
+
+    // The coarse correction back on the fine layout; nothing to do unless agglomerated.
+    void gatherCoarseCorrection(Level& C)
+    {
+        if (!C.agglomerated)
+        {
+            return;
+        }
+        if (amrexFree_)
+        {
+            gmgCopyKokkos<T>(*C.xferSol, *C.sol, C.xferOut);
+            return;
+        }
+        Backend::beforeAmrexRead(); // the coarse cycle just wrote C.sol
+        C.xferSol->ParallelCopy(*C.sol, 0, 0, 1);
+        Backend::afterAmrexWrite();
     }
 
     int preSweeps_;

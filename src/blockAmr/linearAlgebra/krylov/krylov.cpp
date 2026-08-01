@@ -15,9 +15,11 @@ namespace blockamr::la
 namespace
 {
 
+using Criteria = std::vector<std::shared_ptr<const gko::stop::CriterionFactory>>;
+
 // Attach `precond` as the generated preconditioner, shared by all five solver builders.
 // Returns `params` itself: GCC 13 rejects the unique_ptr<SolverType> -> shared_ptr<gko::LinOp>
-// conversion inside a function template, so it has to stay in buildKrylov's non-template body.
+// conversion inside a function template, so it has to stay in a non-template body.
 template<class Params>
 Params withPrecond(Params params, const std::shared_ptr<const gko::LinOp>& precond)
 {
@@ -28,26 +30,16 @@ Params withPrecond(Params params, const std::shared_ptr<const gko::LinOp>& preco
     return params;
 }
 
-} // namespace
-
-std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor)
-{
-    // No mapping of our own: NeoN owns it (memoization, the Kokkos finalize hook, the stream).
-    return NeoN::la::ginkgo::getGkoExecutor(executor);
-}
-
-std::shared_ptr<gko::LinOp> buildKrylov(
+// The five methods that take `precond` as a preconditioner. Non-template for the reason
+// withPrecond gives above.
+std::shared_ptr<gko::LinOp> generatePreconditionedKrylov(
     const std::string& solver,
-    std::shared_ptr<const gko::Executor> exec,
-    std::shared_ptr<const gko::LinOp> op,
-    int max_iter,
-    double rtol,
-    double atol,
-    std::shared_ptr<const gko::LinOp> precond,
-    const std::string& norm
+    const std::shared_ptr<const gko::Executor>& exec,
+    const std::shared_ptr<const gko::LinOp>& op,
+    const Criteria& criteria,
+    const std::shared_ptr<const gko::LinOp>& precond
 )
 {
-    auto criteria = makeCriteria(exec, max_iter, gko::stop::mode::rhs_norm, rtol, atol, norm);
     if (solver == "cg")
     {
         return withPrecond(gko::solver::Cg<double>::build().with_criteria(criteria), precond)
@@ -81,20 +73,51 @@ std::shared_ptr<gko::LinOp> buildKrylov(
             .on(exec)
             ->generate(op);
     }
+    throw std::runtime_error("ginkgo: unknown solver '" + solver + "'");
+}
+
+// Iterative refinement x <- x + relax * S(b - A x) with S = `precond`, the generated GMG
+// V-cycle; relaxation 1.0 is plain Richardson, and default_initial_guess `provided` lets
+// the incoming x seed it (warm start). Inner solver via with_generated_solver.
+std::shared_ptr<gko::LinOp> generateRefinement(
+    const std::shared_ptr<const gko::Executor>& exec,
+    const std::shared_ptr<const gko::LinOp>& op,
+    const Criteria& criteria,
+    const std::shared_ptr<const gko::LinOp>& precond
+)
+{
+    auto params = gko::solver::Ir<double>::build().with_criteria(criteria);
+    params.with_relaxation_factor(1.0);
+    if (precond)
+    {
+        params.with_generated_solver(precond);
+    }
+    return params.on(exec)->generate(op);
+}
+
+} // namespace
+
+std::shared_ptr<const gko::Executor> makeExecutor(const NeoN::Executor& executor)
+{
+    // No mapping of our own: NeoN owns it (memoization, the Kokkos finalize hook, the stream).
+    return NeoN::la::ginkgo::getGkoExecutor(executor);
+}
+
+std::shared_ptr<gko::LinOp> buildKrylov(
+    const std::string& solver,
+    std::shared_ptr<const gko::Executor> exec,
+    std::shared_ptr<const gko::LinOp> op,
+    const StopSpec& stop,
+    std::shared_ptr<const gko::LinOp> precond
+)
+{
+    auto criteria = makeCriteria(exec, stop);
+    // "ir" is the odd one out: `precond` is its inner SOLVER, not a preconditioner.
     if (solver == "ir")
     {
-        // Iterative refinement x <- x + relax * S(b - A x) with S = `precond`, the generated GMG
-        // V-cycle; relaxation 1.0 is plain Richardson, and default_initial_guess `provided` lets
-        // the incoming x seed it (warm start). Inner solver via with_generated_solver.
-        auto params = gko::solver::Ir<double>::build().with_criteria(criteria);
-        params.with_relaxation_factor(1.0);
-        if (precond)
-        {
-            params.with_generated_solver(precond);
-        }
-        return params.on(exec)->generate(op);
+        return generateRefinement(exec, op, criteria, precond);
     }
-    throw std::runtime_error("ginkgo: unknown solver '" + solver + "'");
+    return generatePreconditionedKrylov(solver, exec, op, criteria, precond);
 }
 
 std::shared_ptr<gko::LinOp> generateBasicSolver(

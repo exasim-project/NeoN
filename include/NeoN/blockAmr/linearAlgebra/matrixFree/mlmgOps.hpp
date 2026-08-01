@@ -16,6 +16,7 @@
 #include <memory>
 #include <vector>
 
+#include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 
@@ -32,11 +33,12 @@ public:
     // Required by the polymorphic-object machinery (create_default / clear).
     explicit AmrexOp(std::shared_ptr<const gko::Executor> exec);
 
+    // `mesh` is the level the scratch fabs are allocated over; only its ba/dm are read (the
+    // geometry travels with them so the pair cannot be split or transposed).
     AmrexOp(
         std::shared_ptr<const gko::Executor> exec,
         MLMG* mlmg,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
+        const MeshLevel& mesh,
         gko::size_type n,
         double sign
     );
@@ -66,11 +68,12 @@ public:
 
     explicit CompositeAmrexOp(std::shared_ptr<const gko::Executor> exec);
 
+    // One MeshLevel per AMR level, coarsest first: the two parallel vectors this used to take
+    // could be different lengths, or paired up shifted, and still compile.
     CompositeAmrexOp(
         std::shared_ptr<const gko::Executor> exec,
         MLMG* mlmg,
-        const std::vector<amrex::BoxArray>& bas,
-        const std::vector<amrex::DistributionMapping>& dms,
+        const std::vector<MeshLevel>& levels,
         gko::size_type n,
         double sign
     );
@@ -104,11 +107,13 @@ public:
 
     explicit MlmgPrecond(std::shared_ptr<const gko::Executor> exec);
 
+    // `like` is read for its LAYOUT alone -- the scratch fabs are allocated over its ba/dm.
+    // A fab rather than a MeshLevel because no geometry reaches this build: la::makeMlmgPrecond
+    // is handed the coefficient field and a SolverConfig, and nothing else (precond.hpp).
     MlmgPrecond(
         std::shared_ptr<const gko::Executor> exec,
         MLMG* mlmg,
-        const amrex::BoxArray& ba,
-        const amrex::DistributionMapping& dm,
+        const amrex::MultiFab& like,
         gko::size_type n,
         int n_cycles
     );

@@ -15,7 +15,8 @@
 
 // Kokkos twins of the three V-cycle kernels the timed cycle runs (gmgGsColor,
 // gmgResidRestrict, gmgProlongAdd): same order, same signatures, same cell arithmetic, two
-// launch forms each. Fences, accessors and what is NOT ported: report/blockamr-gmg-notes.md.
+// launch forms each. The GS twins take the same la::GsSweep gmgGsColor does.
+// Fences, accessors and what is NOT ported: report/blockamr-gmg-notes.md.
 
 namespace blockamr
 {
@@ -36,7 +37,8 @@ struct GmgGsCell
 
     amrex::Array4<T> psi;
     amrex::Array4<const T> b;
-    amrex::Array4<const TC> ax, lxa, ay, lya, az, lza, al;
+    la::FaceCoeffArrays<TC> faces;
+    amrex::Array4<const TC> al;
     C om;
     int parity;
 
@@ -46,7 +48,7 @@ struct GmgGsCell
         {
             return;
         }
-        const auto c = la::loadFaceCoeffs<C>(ax, lxa, ay, lya, az, lza, i, j, k);
+        const auto c = la::loadFaceCoeffs<C>(faces, i, j, k);
         const C off = la::stencilOffDiag(
             c,
             psi(i + 1, j, k),
@@ -72,7 +74,8 @@ struct GmgResidRestrictCell
 
     amrex::Array4<T> cr;
     amrex::Array4<const T> psi, b;
-    amrex::Array4<const TC> ax, lxa, ay, lya, az, lza, al;
+    la::FaceCoeffArrays<TC> faces;
+    amrex::Array4<const TC> al;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void operator()(int ic, int jc, int kc) const
     {
@@ -84,7 +87,7 @@ struct GmgResidRestrictCell
                 for (int di = 0; di < 2; ++di)
                 {
                     const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                    const auto c = la::loadFaceCoeffs<C>(ax, lxa, ay, lya, az, lza, i, j, k);
+                    const auto c = la::loadFaceCoeffs<C>(faces, i, j, k);
                     const C off = la::stencilOffDiag(
                         c,
                         psi(i + 1, j, k),
@@ -118,34 +121,27 @@ struct GmgProlongCell
 // One red-black over-relaxation colour pass. Twin of gmgGsColor.
 template<class T, class TC>
 void gmgGsColorKokkos(
-    la::GmgFab<T>& sol,
-    const la::GmgFab<T>& rhs,
-    const la::GmgFab<TC>& ux,
-    const la::GmgFab<TC>& lx,
-    const la::GmgFab<TC>& uy,
-    const la::GmgFab<TC>& ly,
-    const la::GmgFab<TC>& uz,
-    const la::GmgFab<TC>& lz,
-    const la::GmgFab<TC>& alpha,
-    int parity,
-    double omega
+    la::GmgFab<T>& sol, const la::GmgFab<T>& rhs, const la::FaceCoeffs<TC>& fc, la::GsSweep sweep
 )
 {
-    const la::GmgComputeT<T> om = static_cast<la::GmgComputeT<T>>(omega);
+    const la::GmgComputeT<T> om = static_cast<la::GmgComputeT<T>>(sweep.omega);
     for (amrex::MFIter mfi(rhs, gmgNoSync()); mfi.isValid(); ++mfi)
     {
+        const la::FaceCoeffArrays<TC> faces {
+            fc.ux->const_array(mfi),
+            fc.lx->const_array(mfi),
+            fc.uy->const_array(mfi),
+            fc.ly->const_array(mfi),
+            fc.uz->const_array(mfi),
+            fc.lz->const_array(mfi)
+        };
         const GmgGsCell<T, TC> cell {
             sol.array(mfi),
             rhs.const_array(mfi),
-            ux.const_array(mfi),
-            lx.const_array(mfi),
-            uy.const_array(mfi),
-            ly.const_array(mfi),
-            uz.const_array(mfi),
-            lz.const_array(mfi),
-            alpha.const_array(mfi),
+            faces,
+            fc.alpha->const_array(mfi),
             om,
-            parity
+            sweep.parity
         };
         launchKokkosMdNamed(
             "gmg_gs", mfi.validbox(), BLOCKAMR_LAMBDA(int i, int j, int k) { cell(i, j, k); }
@@ -160,28 +156,25 @@ void gmgResidRestrictKokkos(
     const la::GmgFab<T>& sol,
     const la::GmgFab<T>& rhs,
     la::GmgFab<T>& crhs,
-    const la::GmgFab<TC>& ux,
-    const la::GmgFab<TC>& lx,
-    const la::GmgFab<TC>& uy,
-    const la::GmgFab<TC>& ly,
-    const la::GmgFab<TC>& uz,
-    const la::GmgFab<TC>& lz,
-    const la::GmgFab<TC>& alpha
+    const la::FaceCoeffs<TC>& fc
 )
 {
     for (amrex::MFIter mfi(crhs, gmgNoSync()); mfi.isValid(); ++mfi)
     {
+        const la::FaceCoeffArrays<TC> faces {
+            fc.ux->const_array(mfi),
+            fc.lx->const_array(mfi),
+            fc.uy->const_array(mfi),
+            fc.ly->const_array(mfi),
+            fc.uz->const_array(mfi),
+            fc.lz->const_array(mfi)
+        };
         const GmgResidRestrictCell<T, TC> cell {
             crhs.array(mfi),
             sol.const_array(mfi),
             rhs.const_array(mfi),
-            ux.const_array(mfi),
-            lx.const_array(mfi),
-            uy.const_array(mfi),
-            ly.const_array(mfi),
-            uz.const_array(mfi),
-            lz.const_array(mfi),
-            alpha.const_array(mfi)
+            faces,
+            fc.alpha->const_array(mfi)
         };
         launchKokkosMdNamed(
             "gmg_residrestrict",
@@ -217,15 +210,8 @@ template<class T, class TC>
 void gmgGsColorKokkosFused(
     la::GmgFab<T>& sol,
     const la::GmgFab<T>& rhs,
-    const la::GmgFab<TC>& ux,
-    const la::GmgFab<TC>& lx,
-    const la::GmgFab<TC>& uy,
-    const la::GmgFab<TC>& ly,
-    const la::GmgFab<TC>& uz,
-    const la::GmgFab<TC>& lz,
-    const la::GmgFab<TC>& alpha,
-    int parity,
-    double omega,
+    const la::FaceCoeffs<TC>& fc,
+    la::GsSweep sweep,
     bool fence = true
 );
 
@@ -235,13 +221,7 @@ void gmgResidRestrictKokkosFused(
     const la::GmgFab<T>& sol,
     const la::GmgFab<T>& rhs,
     la::GmgFab<T>& crhs,
-    const la::GmgFab<TC>& ux,
-    const la::GmgFab<TC>& lx,
-    const la::GmgFab<TC>& uy,
-    const la::GmgFab<TC>& ly,
-    const la::GmgFab<TC>& uz,
-    const la::GmgFab<TC>& lz,
-    const la::GmgFab<TC>& alpha,
+    const la::FaceCoeffs<TC>& fc,
     bool fence = true
 );
 

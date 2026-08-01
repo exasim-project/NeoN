@@ -12,17 +12,30 @@
 #include <ginkgo/ginkgo.hpp>
 
 #include <memory>
-#include <vector>
 
 #include "NeoN/blockAmr/core/bc.hpp"
 #include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/core/meshLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/matrixFree/linOpBase.hpp"
+#include "NeoN/blockAmr/linearAlgebra/faceCoeffLevel.hpp"
 #include "NeoN/blockAmr/core/types.hpp"
 #include "NeoN/core/executor/executor.hpp"
 
 namespace blockamr::la
 {
+
+/* @brief The domain boundary condition ONE operator applies: the per-side spec, whose
+ *        homogeneous ghost reflection runs on every apply, and the optional INHOMOGENEOUS
+ *        datum, which only applyBcOffset reads. One argument because the datum is
+ *        meaningless without the sides that say where it is read -- and because a null
+ *        `data` next to a `sides` is exactly the pair every caller passes.
+ */
+struct DomainBc
+{
+    BcArray sides {};
+    // A bare pointer: its source (SolverConfig::bcData) is a const amrex::MultiFab*.
+    const amrex::MultiFab* data = nullptr;
+};
 
 // The fine-level diagonal diag = alpha - (aE+aW+aN+aS+aT+aB) (negSumDiag) per valid cell, in
 // exactly the association order the stencils use, so it is bitwise what they derive inline.
@@ -57,19 +70,14 @@ public:
     FaceCoeffOpT(
         std::shared_ptr<const gko::Executor> exec,
         const NeoN::Executor& nexec,
-        // Allocation layout plus the geometry the stencil's dx and ghost fill come from;
-        // only `geom` outlives the constructor, hence geom_ below.
-        const MeshLevel& mesh,
-        gko::size_type n,
-        // const&: a by-value handle would give this constructor write access.
-        const CellFieldLevel& alpha,
-        const FaceFieldLevel& upper,
-        const FaceFieldLevel& lower,
-        BcArray bc = {},
-        // A bare pointer: its source (SolverConfig::bcData) is a const amrex::MultiFab*.
-        const amrex::MultiFab* bcData = nullptr,
-        // The caller's stored diagonal (MFFaceCoeffs owns one, so it survives this
-        // operator's per-solve rebuild); an empty handle means compute it here, once.
+        // The coefficients (`alpha` the diagonal SOURCE, upper/lower the HIGH/LOW face
+        // couplings) together with the allocation layout and the geometry the stencil's dx and
+        // ghost fill come from. const&: a by-value bundle would give this write access.
+        // level.mesh.ba also FIXES the row count: numPts(), the global one every rank agrees
+        // on (la::globalRows), which is what every call site passed by hand.
+        const FaceCoeffLevel& level,
+        DomainBc bc = {},
+        // The caller's stored diagonal; an empty handle means compute it here, once.
         // Ignored while PROTOTYPE (C1) is live.
         const CellFieldLevel& diag = {}
     );
@@ -91,7 +99,18 @@ private:
     // Shared body of apply_impl and applyBcOffset; `inhom` picks the domain-BC ghost fill.
     void applyWith(const gko::LinOp* b, gko::LinOp* x, bool inhom) const;
 
-    amrex::Geometry geom_;
+    // Fused path: the stencil reads the interior from the flat Ginkgo vectors.
+    void applyFused(const gko::LinOp* b, gko::LinOp* x, bool inhom) const;
+
+    // Everything through the ghosted scratch MultiFab, computing in double.
+    void applyStaged(const gko::LinOp* b, gko::LinOp* x, bool inhom) const;
+
+    // Periodic/internal ghosts plus the domain-BC reflection on the device scratch.
+    void fillGhostsDevice(bool inhom) const;
+
+    // Copy the coefficients (and any bc data) into pinned memory and hold those instead.
+    void stagePinned(const FaceCoeffLevel& level, const amrex::MultiFab* bcData);
+
     // Stencil-launch executor, defaulted for the exec-only constructor (create_default/clear),
     // which builds an operator with no fields to launch over.
     NeoN::Executor nexec_ {NeoN::SerialExecutor {}};
@@ -100,25 +119,19 @@ private:
     BcArray bc_ {};
     bool hasPhysBc_ = false;
     bool onDevice_ = false;
-    // Host path: pinned copies, so a caller's in-place write is NOT observed until a new
-    // operator is built. Device path: empty, the pointers below reference the caller's fields
-    // directly. bcData_ is referenced either way and always picked up in place.
-    std::vector<std::shared_ptr<amrex::MultiFab>> owned_;
-    const amrex::MultiFab* ux_ = nullptr;
-    const amrex::MultiFab* lx_ = nullptr;
-    const amrex::MultiFab* uy_ = nullptr;
-    const amrex::MultiFab* ly_ = nullptr;
-    const amrex::MultiFab* uz_ = nullptr;
-    const amrex::MultiFab* lz_ = nullptr;
-    // The diagonal field the stencils read; never null on an operator built with fields. Under
-    // PROTOTYPE (C1) it is alpha itself, the stencils subtracting the face sum.
-    const amrex::MultiFab* diag_ = nullptr;
+    // What the stencils read, plus the mesh they and the ghost fill run over; empty handles on
+    // an operator built without fields. Host path: the coefficients are pinned copies, so a
+    // caller's in-place write is NOT observed until a new operator is built. Device path: the
+    // caller's own handles. Under PROTOTYPE (C1) level_.alpha is the field the centre term
+    // comes from, the stencils subtracting the face sum themselves.
+    FaceCoeffLevel level_;
     // The diagonal this operator would compute for itself (device path); never assigned while
     // PROTOTYPE (C1) is live.
     std::shared_ptr<amrex::MultiFab> diagOwned_;
     // Inhomogeneous domain-BC data (null = homogeneous, the default), staged to pinned memory
     // on the host path like the coefficients. dx_ scales the Neumann datum.
     const amrex::MultiFab* bcData_ = nullptr;
+    std::shared_ptr<amrex::MultiFab> bcDataOwned_;
     amrex::Real dx_[3] {};
     std::shared_ptr<amrex::MultiFab> in_;
     std::shared_ptr<amrex::MultiFab> out_;

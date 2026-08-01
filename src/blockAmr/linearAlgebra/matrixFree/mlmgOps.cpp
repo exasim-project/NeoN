@@ -19,17 +19,16 @@ AmrexOp::AmrexOp(std::shared_ptr<const gko::Executor> exec) : AmrexLinOpBase<Amr
 AmrexOp::AmrexOp(
     std::shared_ptr<const gko::Executor> exec,
     MLMG* mlmg,
-    const amrex::BoxArray& ba,
-    const amrex::DistributionMapping& dm,
+    const MeshLevel& mesh,
     gko::size_type n,
     double sign
 )
     : AmrexLinOpBase<AmrexOp>(exec, gko::dim<2> {n, n}), mlmg_(mlmg), sign_(sign),
       // shared_ptr, not values: MultiFab is move-only but EnablePolymorphicAssignment needs
       // AmrexOp copy-assignable. MLMG::apply needs >= 1 ghost cell on the input, hence ng=1.
-      in_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 1)),
-      out_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 0)),
-      c0_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 0))
+      in_(std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 1)),
+      out_(std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0)),
+      c0_(std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0))
 {
     in_->setVal(0.0);
     out_->setVal(0.0);
@@ -78,24 +77,23 @@ CompositeAmrexOp::CompositeAmrexOp(std::shared_ptr<const gko::Executor> exec)
 CompositeAmrexOp::CompositeAmrexOp(
     std::shared_ptr<const gko::Executor> exec,
     MLMG* mlmg,
-    const std::vector<amrex::BoxArray>& bas,
-    const std::vector<amrex::DistributionMapping>& dms,
+    const std::vector<MeshLevel>& levels,
     gko::size_type n,
     double sign
 )
     : AmrexLinOpBase<CompositeAmrexOp>(exec, gko::dim<2> {n, n}), mlmg_(mlmg), sign_(sign)
 {
     long off = 0;
-    for (std::size_t lev = 0; lev < bas.size(); ++lev)
+    for (const MeshLevel& mesh : levels)
     {
         // shared_ptr for copy-assignability (see AmrexOp); ng=1 for MLMG::apply.
-        in_.push_back(std::make_shared<amrex::MultiFab>(bas[lev], dms[lev], 1, 1));
-        out_.push_back(std::make_shared<amrex::MultiFab>(bas[lev], dms[lev], 1, 0));
-        c0_.push_back(std::make_shared<amrex::MultiFab>(bas[lev], dms[lev], 1, 0));
+        in_.push_back(std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 1));
+        out_.push_back(std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0));
+        c0_.push_back(std::make_shared<amrex::MultiFab>(mesh.ba, mesh.dm, 1, 0));
         in_.back()->setVal(0.0);
         out_.back()->setVal(0.0);
         off_.push_back(off);
-        off += bas[lev].numPts();
+        off += mesh.ba.numPts();
     }
     // Affine offset c0 = L_inhom(0) per level (set_level_bc contribution).
     mlmg_->apply(ptrs(c0_), ptrs(in_));
@@ -165,15 +163,14 @@ MlmgPrecond::MlmgPrecond(std::shared_ptr<const gko::Executor> exec)
 MlmgPrecond::MlmgPrecond(
     std::shared_ptr<const gko::Executor> exec,
     MLMG* mlmg,
-    const amrex::BoxArray& ba,
-    const amrex::DistributionMapping& dm,
+    const amrex::MultiFab& like,
     gko::size_type n,
     int n_cycles
 )
     : AmrexLinOpBase<MlmgPrecond>(exec, gko::dim<2> {n, n}), mlmg_(mlmg),
       // shared_ptr for copy-assignability (see AmrexOp).
-      in_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 1)),
-      out_(std::make_shared<amrex::MultiFab>(ba, dm, 1, 1))
+      in_(std::make_shared<amrex::MultiFab>(like.boxArray(), like.DistributionMap(), 1, 1)),
+      out_(std::make_shared<amrex::MultiFab>(like.boxArray(), like.DistributionMap(), 1, 1))
 {
     in_->setVal(0.0);
     out_->setVal(0.0);

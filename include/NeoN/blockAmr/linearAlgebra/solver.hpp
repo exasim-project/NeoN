@@ -72,9 +72,10 @@ private:
         )
             : la::KrylovSolver(
                 la::makeExecutor(exec),
-                // Global dimension, which every rank MUST agree on -- so it comes from
-                // the operator rather than being recomputed here.
-                la::toLinOp(system.matrix())->get_size()[0],
+                // Global dimension, which every rank MUST agree on. Asked of the matrix
+                // rather than of a LinOp built for the question: toLinOp() stages pinned
+                // copies of every coefficient field on the host path.
+                la::globalRows(system.matrix()),
                 system.localRows()
             )
         {
@@ -82,12 +83,8 @@ private:
             build(
                 std::const_pointer_cast<gko::LinOp>(la::toLinOp(system.matrix())),
                 cfg.solver,
-                cfg.maxIter,
-                cfg.rtol,
-                cfg.atol,
-                cfg.projectNullspace,
-                std::move(precond),
-                cfg.norm
+                cfg,
+                std::move(precond)
             );
         }
     };

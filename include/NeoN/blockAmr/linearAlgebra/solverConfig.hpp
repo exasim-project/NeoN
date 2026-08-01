@@ -92,6 +92,17 @@ struct GmgConfig
     friend bool operator==(const GmgConfig&, const GmgConfig&) = default;
 };
 
+/* @brief Everything GmgPrecondT's constructor reads that is neither executor, mesh,
+ *        coefficients nor boundary condition. The cycle count is SEPARATE from GmgConfig
+ *        because SolverConfig::precondCycles is shared with the MLMG preconditioner; the
+ *        constructor should not have to know where in the config each half came from.
+ */
+struct GmgPrecondSpec
+{
+    int nCycles = 1;
+    GmgConfig gmg {};
+};
+
 // Every non-coefficient, non-geometry, non-executor constructor argument of
 // FaceCoeffSolver, built once by parseSolverConfig (bindings/linearAlgebra.cpp).
 struct SolverConfig

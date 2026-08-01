@@ -73,18 +73,24 @@ inline CopyPlan toDevice(const std::vector<CopyTask>& host, const char* name)
     return plan;
 }
 
+// The two LOCAL box indices one copy names.
+struct BoxPair
+{
+    int dst;
+    int src;
+};
+
 inline void addTask(
     std::vector<CopyTask>& out,
-    int dst,
-    int src,
+    BoxPair boxes,
     const amrex::Box& region,
     const amrex::IntVect& sh,
     int sign = 1
 )
 {
     CopyTask t {};
-    t.dst = dst;
-    t.src = src;
+    t.dst = boxes.dst;
+    t.src = boxes.src;
     t.sign = sign;
     for (int d = 0; d < 3; ++d)
     {
@@ -126,7 +132,7 @@ CopyPlan makeHaloPlan(const amrex::FabArray<FAB>& mf, const amrex::Periodicity& 
                 for (const auto& is : isects)
                 {
                     detail::addTask(
-                        tasks, li, mf.localindex(is.first), amrex::shift(is.second, img), -img
+                        tasks, {li, mf.localindex(is.first)}, amrex::shift(is.second, img), -img
                     );
                 }
             }
@@ -155,7 +161,7 @@ CopyPlan makeBcPlan(const amrex::FabArray<FAB>& mf, const amrex::Box& domain, co
             }
             // A ghost layer comes from its own box's interior, so dst and src are one index.
             detail::addTask(
-                tasks, li, li, f.gbx, amrex::IntVect(f.di, f.dj, f.dk), (f.sign < 0.0) ? -1 : 1
+                tasks, {li, li}, f.gbx, amrex::IntVect(f.di, f.dj, f.dk), (f.sign < 0.0) ? -1 : 1
             );
         }
     }
@@ -175,7 +181,7 @@ CopyPlan makeCopyPlan(const amrex::FabArray<FAB>& dst, const amrex::FabArray<FAB
         src.boxArray().intersections(dst.boxArray()[dst.IndexArray()[li]], isects);
         for (const auto& is : isects)
         {
-            detail::addTask(tasks, li, src.localindex(is.first), is.second, amrex::IntVect(0));
+            detail::addTask(tasks, {li, src.localindex(is.first)}, is.second, amrex::IntVect(0));
         }
     }
     return detail::toDevice(tasks, "gmg_copy_plan");

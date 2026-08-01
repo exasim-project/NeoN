@@ -9,6 +9,7 @@
 #include <AMReX_Geometry.H>
 #include <AMReX_MultiFab.H>
 
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/linearAlgebra/gmgKokkos/gmgOpts.hpp"
 
 // The optimised (kokkos_opt) V-cycle as a preconditioner apply, behind an interface that
@@ -38,15 +39,13 @@ public:
 // Build the hierarchy from the same face-coefficient pieces FaceCoeffOp takes. The fields are
 // read at SETUP only and level 0 keeps its own copies, so later caller writes go unseen -- a
 // changed operator needs a rebuilt object. Red-black only; homogeneous BCs via opts.bc.
+// The READ-ONLY field bundles (core/fieldLevel.hpp), so the six ux/lx/uy/ly/uz/lz arguments of
+// identical type -- where transposing two compiles and answers wrongly -- cannot be transposed.
 std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const amrex::Geometry& geom,
-    const amrex::MultiFab& alpha,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
+    const ConstCellFieldLevel& alpha,
+    const ConstFaceFieldLevel& upper,
+    const ConstFaceFieldLevel& lower,
     const KokkosGmgOpts& opts
 );
 

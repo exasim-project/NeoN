@@ -16,6 +16,7 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/logging.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/stopNormInf.hpp"
+#include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 
 namespace blockamr::la
 {
@@ -48,17 +49,15 @@ protected:
         std::shared_ptr<const gko::Executor> exec, gko::size_type n, gko::size_type nLocal
     );
 
-    // Called by the subclass once its operator is built. `norm` selects what the criteria
-    // and the reported res_norm measure in ("l2" | "linf", MLMG's; stopNormInf.hpp).
+    // Called by the subclass once its operator is built. The tolerances, the iteration cap,
+    // project_nullspace and `norm` -- what the criteria and the reported res_norm measure in
+    // ("l2" | "linf", MLMG's; stopNormInf.hpp) -- all come from `config`. `solver` is passed
+    // SEPARATELY and is not always config.solver: solver="mpir" builds an "ir" outer loop.
     void build(
         std::shared_ptr<gko::LinOp> op,
         const std::string& solver,
-        int max_iter,
-        double rtol,
-        double atol,
-        bool project_nullspace,
-        std::shared_ptr<const gko::LinOp> precond = nullptr,
-        const std::string& norm = "l2"
+        const SolverConfig& config,
+        std::shared_ptr<const gko::LinOp> precond = nullptr
     );
 
     // v -= mean(v), on the executor. Takes the GLOBAL view, not the local Dense, or each

@@ -39,28 +39,26 @@ template void gmgConvertCopy<float, GmgFab<float>>(GmgFab<float>&, const GmgFab<
 
 template<class T>
 void gmgGsColor(
-    GmgFab<T>& sol,
-    const GmgFab<T>& rhs,
-    const FaceCoeffs<T>& fc,
-    int parity,
-    double omega,
-    bool onDevice
+    GmgFab<T>& sol, const GmgFab<T>& rhs, const FaceCoeffs<T>& fc, GsSweep sweep, bool onDevice
 )
 {
     amrex::Gpu::LaunchSafeGuard lsg(onDevice);
-    const T om = static_cast<T>(omega);
+    const int parity = sweep.parity;
+    const T om = static_cast<T>(sweep.omega);
     for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
     {
         const amrex::Box& vbx = mfi.validbox();
         const auto psi = sol.array(mfi);
         const auto b = rhs.const_array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
         const auto al = fc.alpha->const_array(mfi);
+        const FaceCoeffArrays fca {
+            fc.ux->const_array(mfi),
+            fc.lx->const_array(mfi),
+            fc.uy->const_array(mfi),
+            fc.ly->const_array(mfi),
+            fc.uz->const_array(mfi),
+            fc.lz->const_array(mfi)
+        };
         amrex::HostDeviceParallelFor(
             vbx,
             [=] AMREX_GPU_HOST_DEVICE(int i, int j, int k) noexcept
@@ -69,7 +67,7 @@ void gmgGsColor(
                 {
                     return;
                 }
-                const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                const auto c = loadFaceCoeffs<T>(fca, i, j, k);
                 const T off = stencilOffDiag(
                     c,
                     psi(i + 1, j, k),
@@ -91,11 +89,10 @@ void gmgGsColor(
 }
 
 template void gmgGsColor<double>(
-    GmgFab<double>&, const GmgFab<double>&, const FaceCoeffs<double>&, int, double, bool
+    GmgFab<double>&, const GmgFab<double>&, const FaceCoeffs<double>&, GsSweep, bool
 );
-template void gmgGsColor<float>(
-    GmgFab<float>&, const GmgFab<float>&, const FaceCoeffs<float>&, int, double, bool
-);
+template void
+gmgGsColor<float>(GmgFab<float>&, const GmgFab<float>&, const FaceCoeffs<float>&, GsSweep, bool);
 
 // Plain volume average: coarse = mean of the 8 fine children. Valid ONLY for a dx-INDEPENDENT
 // density such as alpha -- a dx-dependent coefficient needs gmgCoarsenFace's 1/scale instead.
@@ -218,13 +215,15 @@ void gmgResidRestrict(
         const auto psi = sol.const_array(mfi);
         const auto b = rhs.const_array(mfi);
         const auto cr = crhs.array(mfi);
-        const auto ax = fc.ux->const_array(mfi);
-        const auto lxa = fc.lx->const_array(mfi);
-        const auto ay = fc.uy->const_array(mfi);
-        const auto lya = fc.ly->const_array(mfi);
-        const auto az = fc.uz->const_array(mfi);
-        const auto lza = fc.lz->const_array(mfi);
         const auto al = fc.alpha->const_array(mfi);
+        const FaceCoeffArrays fca {
+            fc.ux->const_array(mfi),
+            fc.lx->const_array(mfi),
+            fc.uy->const_array(mfi),
+            fc.ly->const_array(mfi),
+            fc.uz->const_array(mfi),
+            fc.lz->const_array(mfi)
+        };
         amrex::HostDeviceParallelFor(
             vbx,
             [=] AMREX_GPU_HOST_DEVICE(int ic, int jc, int kc) noexcept
@@ -237,7 +236,7 @@ void gmgResidRestrict(
                         for (int di = 0; di < 2; ++di)
                         {
                             const int i = 2 * ic + di, j = 2 * jc + dj, k = 2 * kc + dk;
-                            const auto c = loadFaceCoeffs<T>(ax, lxa, ay, lya, az, lza, i, j, k);
+                            const auto c = loadFaceCoeffs<T>(fca, i, j, k);
                             const T off = stencilOffDiag(
                                 c,
                                 psi(i + 1, j, k),

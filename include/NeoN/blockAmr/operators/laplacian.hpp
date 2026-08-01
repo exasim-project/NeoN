@@ -28,8 +28,10 @@ public:
     // Accumulates; the signature IS the contract, no concept. Holds no geometry and no bc --
     // both are read off the system's matrix, so the operator has nowhere to keep a copy that
     // could disagree with it. A non-periodic domain face keeps its REAL coefficient -- do NOT
-    // re-zero it to fold the BC here; the diagonal half is the consumer's, per level. Also
-    // writes the inhomogeneous `rhs -= aF*scale*g`, which no la:: consumer can produce.
+    // re-zero it to fold the BC here; the diagonal half is the consumer's, per level. `gamma`
+    // on such a face is the boundary cell's own, because the ghost beyond it is never filled.
+    // Only `upper[d]` is written when the matrix is symmetric, where `lower[d]` ALIASES it.
+    // Also writes the inhomogeneous `rhs -= aF*scale*g`, which no la:: consumer can produce.
     // Tripwire:
     // test_la_boundary_conditions.py::test_laplacian_writes_the_boundary_face_coefficient. Why, and
     // the measurements: report/blockamr-linear-algebra-notes.md#laplacian-bcs

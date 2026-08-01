@@ -12,11 +12,13 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 
 #include "NeoN/blockAmr/core/bc.hpp"
+#include "NeoN/blockAmr/core/fieldLevel.hpp"
 #include "NeoN/blockAmr/core/parallelAlgorithms.hpp"
 
 namespace blockamr::ops
@@ -38,91 +40,120 @@ void requireSameLayout(const amrex::MultiFab& mf, const amrex::MultiFab& like, c
     }
 }
 
-/* @brief Accumulate one direction's face coefficients, with (Asym) or without a separate
- *        low side. ONE body with a compile-time switch, not two copies that could drift by
- *        a sign and both compile; the arithmetic is pinned bitwise by the tripwire test.
- */
-template<bool Asym>
-void accumulateFaceCoefficients(
-    const NeoN::Executor& exec,
-    const amrex::MultiFab& g,
-    amrex::MultiFab& upper,
-    amrex::MultiFab* lower, // non-null iff Asym; never dereferenced otherwise
-    int ex,
-    int ey,
-    int ez,
-    bool periodicLo,
-    bool periodicHi,
-    int domLo,
-    int domHi,
-    amrex::Real invDx2
-)
+// Everything one direction's stencil needs, as one trivially-copyable device capture.
+struct Axis
 {
-    for (amrex::MFIter mfi(upper); mfi.isValid(); ++mfi)
+    int dir;
+    int ex, ey, ez;
+    bool periodicLo, periodicHi;
+    int domLo, domHi;
+    amrex::Real invDx2;
+};
+
+// Build direction d's Axis; `bc` is indexed per SIDE, as (xlo, xhi, ylo, yhi, zlo, zhi).
+Axis makeAxis(int d, const amrex::Box& dom, const la::BcArray& bc, amrex::Real dx)
+{
+    Axis a {};
+    a.dir = d;
+    a.ex = (d == 0) ? 1 : 0;
+    a.ey = (d == 1) ? 1 : 0;
+    a.ez = (d == 2) ? 1 : 0;
+    a.periodicLo = bc[static_cast<std::size_t>(2 * d)] == 0;
+    a.periodicHi = bc[static_cast<std::size_t>(2 * d + 1)] == 0;
+    a.domLo = dom.smallEnd(d);
+    a.domHi = dom.bigEnd(d);
+    a.invDx2 = 1.0 / (dx * dx);
+    return a;
+}
+
+// Explicit rather than left to AMREX_ASSERT, compiled out in Release: a silent wrong answer.
+void requireFaceLayout(const amrex::MultiFab& upper, const amrex::MultiFab& g, int d)
+{
+    const amrex::IntVect dv = amrex::IntVect::TheDimensionVector(d);
+    if (upper.DistributionMap() != g.DistributionMap()
+        || upper.boxArray() != amrex::convert(g.boxArray(), dv))
     {
-        const amrex::Box& fbx = mfi.validbox();
-        const auto G = g.const_array(mfi);
-        const auto U = upper.array(mfi);
-        // AMReX's documented empty accessor: constexpr, host+device, p == nullptr. It
-        // replaces a dummy that was aliased onto U -- the field this kernel ACCUMULATES
-        // INTO -- where one lost guard gave a plausible matrix with every coefficient 2x.
-        amrex::Array4<amrex::Real> L {};
-        if constexpr (Asym)
-        {
-            L = lower->array(mfi);
-        }
-        // EXPLICIT capture list, required not stylistic: nvcc rejects an extended
-        // __device__ lambda that FIRST-captures a variable inside an `if constexpr` block,
-        // which is exactly where `L` would appear under a default capture.
-        blockamr::parallelFor(
-            exec,
-            fbx,
-            [G, U, L, ex, ey, ez, periodicLo, periodicHi, domLo, domHi, invDx2] AMREX_GPU_DEVICE(
-                int i, int j, int k
-            )
-            {
-                // Face f separates cell f-1 from cell f: upper[d](f) is f-1's coefficient
-                // towards f, lower[d](f) is f's towards f-1. One face value, both roles.
-                const int f = (ex != 0) ? i : ((ey != 0) ? j : k);
-                const bool atLo = !periodicLo && f == domLo;
-                const bool atHi = !periodicHi && f == domHi + 1;
-                // A non-periodic domain face keeps its REAL coefficient: DO NOT re-zero it
-                // to fold the BC here (laplacian.hpp). gamma on such a face is the
-                // boundary cell's own -- the ghost beyond it is never filled.
-                const amrex::Real gLo = atLo ? G(i, j, k) : G(i - ex, j - ey, k - ez);
-                const amrex::Real gHi = atHi ? G(i - ex, j - ey, k - ez) : G(i, j, k);
-                const amrex::Real coef = -0.5 * (gLo + gHi) * invDx2;
-                // Accumulate: several operators may share one system.
-                U(i, j, k) += coef;
-                if constexpr (Asym)
-                {
-                    L(i, j, k) += coef;
-                }
-            }
+        throw std::runtime_error(
+            "ops::Laplacian: gamma's BoxArray/DistributionMapping does not match the "
+            "matrix's face coefficients"
         );
     }
 }
 
-/* @brief Fold the INHOMOGENEOUS boundary datum of one non-periodic domain side into the
- *        rhs. The diagonal half is not here (see above); this half cannot be, because no
- *        la:: consumer receives a datum, so c0 = aF*scale*g arrives only from here.
- */
+// Validate the datum carrier once, up front, and only when a side actually reads one.
+void checkDatumCarrier(
+    la::LinearSystem& sys,
+    const amrex::MultiFab& g,
+    const amrex::MultiFab& gamma,
+    const amrex::MultiFab* bcData
+)
+{
+    if (bcData == nullptr)
+    {
+        return;
+    }
+    auto& m = sys.matrix();
+    const bool anyPhysBc = std::any_of(m.bc.begin(), m.bc.end(), [](int b) { return b != 0; });
+    if (!anyPhysBc)
+    {
+        // Refused rather than ignored, as FaceCoeffSolver refuses it: a datum no side
+        // reads is a solver bug, not a configuration one.
+        la::checkBcData(*bcData, gamma, m.bc, "ops::Laplacian");
+        return;
+    }
+    requireSameLayout(sys.rhs(), g, "the system's rhs");
+    // `alpha` is the layout checkBcData compares against, so it must be the layout the
+    // fold below reads the datum THROUGH.
+    requireSameLayout(*m.alpha, g, "the matrix's diagonal source");
+    la::checkBcData(*bcData, *m.alpha, m.bc, "ops::Laplacian");
+}
+
+// The low side to accumulate into, or nothing when the matrix is symmetric.
+amrex::Array4<amrex::Real>
+lowSideView(std::optional<FaceFieldLevel>& lower, int d, const amrex::MFIter& mfi)
+{
+    if (!lower.has_value())
+    {
+        // AMReX's documented empty accessor: constexpr, host+device, p == nullptr. It replaces
+        // a dummy that was aliased onto upper -- the field the kernel ACCUMULATES INTO -- where
+        // one lost guard gave a plausible matrix with every coefficient 2x.
+        return {};
+    }
+    return (*lower)[d].array(mfi);
+}
+
+// One non-periodic side: the slab of boundary CELLS and the offset to each one's datum ghost.
+struct BoundarySide
+{
+    Axis axis;
+    amrex::Box slab;
+    int ox, oy, oz;
+    amrex::Real scale;
+};
+
+// Build the low or high side of `axis`; `scale` is core/bc.hpp's inhomogeneous fill factor.
+BoundarySide makeBoundarySide(const Axis& axis, const amrex::Box& dom, bool low, amrex::Real scale)
+{
+    const int cell = low ? axis.domLo : axis.domHi;
+    const int step = low ? -1 : 1;
+    amrex::Box slab = dom;
+    slab.setSmall(axis.dir, cell);
+    slab.setBig(axis.dir, cell);
+    return BoundarySide {axis, slab, axis.ex * step, axis.ey * step, axis.ez * step, scale};
+}
+
+// Fold one side's INHOMOGENEOUS datum into the rhs; the diagonal half is not here (laplacian.hpp).
 void foldBoundaryDatum(
     const NeoN::Executor& exec,
     const amrex::MultiFab& g,
     amrex::MultiFab& rhs,
     const amrex::MultiFab& bcData,
-    const amrex::Box& slab,
-    int ox,
-    int oy,
-    int oz,
-    amrex::Real scale,
-    amrex::Real invDx2
+    BoundarySide side
 )
 {
     for (amrex::MFIter mfi(rhs); mfi.isValid(); ++mfi)
     {
-        const amrex::Box bx = mfi.validbox() & slab;
+        const amrex::Box bx = mfi.validbox() & side.slab;
         if (!bx.ok())
         {
             continue; // this box does not touch that domain face
@@ -130,19 +161,46 @@ void foldBoundaryDatum(
         const auto G = g.const_array(mfi);
         const auto R = rhs.array(mfi);
         const auto BD = bcData.const_array(mfi);
-        // Explicit capture list to match the kernel above; everything is by value.
         blockamr::parallelFor(
             exec,
             bx,
-            [G, R, BD, ox, oy, oz, scale, invDx2] AMREX_GPU_DEVICE(int i, int j, int k)
-            {
+            BLOCKAMR_LAMBDA(int i, int j, int k) {
                 // Recomputed rather than read back from the face field: that field is
                 // ACCUMULATED into and may carry another operator's contribution.
                 const amrex::Real gC = G(i, j, k);
-                const amrex::Real coef = -0.5 * (gC + gC) * invDx2;
-                R(i, j, k) -= coef * scale * BD(i + ox, j + oy, k + oz);
+                const amrex::Real coef = -0.5 * (gC + gC) * side.axis.invDx2;
+                R(i, j, k) -= coef * side.scale * BD(i + side.ox, j + side.oy, k + side.oz);
             }
         );
+    }
+}
+
+// Fold both of direction `axis`'s sides; a periodic or homogeneous one has nothing to fold.
+void foldBoundaryData(
+    la::LinearSystem& sys, const amrex::MultiFab& g, const amrex::MultiFab* bcData, const Axis& axis
+)
+{
+    if (bcData == nullptr)
+    {
+        return;
+    }
+    auto& m = sys.matrix();
+    const amrex::Box dom = m.mesh.geom.Domain();
+    const amrex::Real dx = m.mesh.dx()[axis.dir];
+    // Over the boundary CELLS, not faces: a face kernel would have two threads adding to one
+    // cell on a domain one cell thick. Low and high are separate launches.
+    for (int s = 2 * axis.dir; s <= 2 * axis.dir + 1; ++s)
+    {
+        const int kind = m.bc[static_cast<std::size_t>(s)];
+        if (kind == 0)
+        {
+            continue;
+        }
+        // core/bc.hpp's inhom fill: scale 2 for dirichlet (g is u ON the face), dx for
+        // neumann (g is du/dn outward; a low side's two flips cancel).
+        const amrex::Real scale = (kind == 1) ? 2.0 : dx;
+        const BoundarySide side = makeBoundarySide(axis, dom, (s % 2) == 0, scale);
+        foldBoundaryDatum(m.exec, g, sys.rhs(), *bcData, side);
     }
 }
 
@@ -155,122 +213,48 @@ Laplacian::Laplacian(const amrex::MultiFab& gamma, const amrex::MultiFab* bcData
 void Laplacian::assemble(la::LinearSystem& sys) const
 {
     auto& m = sys.matrix();
-    // Read off the MATRIX by name: the operator holds neither, so neither can disagree
-    // with the coefficients it is writing.
-    const la::BcArray& bc = m.bc;
-
-    // One-ghost staging copy of gamma: a face coefficient is the mean of the two cells the
-    // face separates, and at a box edge the second lives in a ghost FillBoundary supplies.
-    // A non-periodic domain face has no second cell, so the kernels use the interior one.
+    // One ghost: at a box edge the face's second cell is one fillHalo supplies.
     amrex::MultiFab g(gamma_->boxArray(), gamma_->DistributionMap(), 1, 1);
     amrex::MultiFab::Copy(g, *gamma_, 0, 0, 1, 0);
     m.mesh.fillHalo(g);
+    checkDatumCarrier(sys, g, *gamma_, bcData_);
 
     const amrex::Box dom = m.mesh.geom.Domain();
     const auto dx = m.mesh.dx();
-
-    // Validate the datum carrier once, up front, and only when a side actually reads one.
-    // `alpha` and `rhs` are non-nullable handles, so their presence needs no check.
-    const bool anyPhysBc = std::any_of(bc.begin(), bc.end(), [](int b) { return b != 0; });
-    if (anyPhysBc && bcData_ != nullptr)
-    {
-        requireSameLayout(sys.rhs(), g, "the system's rhs");
-        // `alpha` is the layout checkBcData compares against, so it must be the layout the
-        // fold below reads the datum THROUGH.
-        requireSameLayout(*m.alpha, g, "the matrix's diagonal source");
-        la::checkBcData(*bcData_, *m.alpha, bc, "ops::Laplacian");
-    }
-    else if (bcData_ != nullptr)
-    {
-        // Refused rather than ignored, as FaceCoeffSolver refuses it: a datum no side
-        // reads is a solver bug, not a configuration one.
-        la::checkBcData(*bcData_, *gamma_, bc, "ops::Laplacian");
-    }
-
+    const bool asym = m.lower.has_value();
     for (int d = 0; d < 3; ++d)
     {
         amrex::MultiFab& upper = m.upper[d];
-
-        const amrex::IntVect dv = amrex::IntVect::TheDimensionVector(d);
-        if (upper.DistributionMap() != g.DistributionMap()
-            || upper.boxArray() != amrex::convert(g.boxArray(), dv))
+        requireFaceLayout(upper, g, d);
+        const Axis ax = makeAxis(d, dom, m.bc, dx[d]);
+        for (amrex::MFIter mfi(upper); mfi.isValid(); ++mfi)
         {
-            // Explicit rather than left to AMREX_ASSERT, compiled out in Release: a
-            // silent wrong answer otherwise.
-            throw std::runtime_error(
-                "ops::Laplacian: gamma's BoxArray/DistributionMapping does not match the "
-                "matrix's face coefficients"
-            );
-        }
-
-        // Per SIDE, not per direction: BcArray is (xlo, xhi, ylo, yhi, zlo, zhi).
-        const bool periodicLo = bc[static_cast<std::size_t>(2 * d)] == 0;
-        const bool periodicHi = bc[static_cast<std::size_t>(2 * d + 1)] == 0;
-        const int domLo = dom.smallEnd(d);
-        const int domHi = dom.bigEnd(d);
-        const int ex = (d == 0) ? 1 : 0;
-        const int ey = (d == 1) ? 1 : 0;
-        const int ez = (d == 2) ? 1 : 0;
-        const amrex::Real invDx2 = 1.0 / (dx[d] * dx[d]);
-
-        // Symmetry dispatched HERE, on the host. A nullopt `lower` IS the interface saying
-        // there is no low side: for a symmetric format lower[d] ALIASES upper[d].
-        if (m.lower.has_value())
-        {
-            accumulateFaceCoefficients<true>(
+            const auto G = g.const_array(mfi);
+            const auto U = upper.array(mfi);
+            const auto L = lowSideView(m.lower, d, mfi);
+            // BLOCKAMR_LAMBDA is [=]: every name the body reads must be a local, never a
+            // member, which would capture `this` and deref a host pointer on the device.
+            blockamr::parallelFor(
                 m.exec,
-                g,
-                upper,
-                &(*m.lower)[d],
-                ex,
-                ey,
-                ez,
-                periodicLo,
-                periodicHi,
-                domLo,
-                domHi,
-                invDx2
+                mfi.validbox(),
+                BLOCKAMR_LAMBDA(int i, int j, int k) {
+                    // Face f separates cell f-1 from cell f: upper[d](f) is f-1's coefficient
+                    // towards f, lower[d](f) is f's towards f-1. One face value, both roles.
+                    const int f = (ax.ex != 0) ? i : ((ax.ey != 0) ? j : k);
+                    const bool atLo = !ax.periodicLo && f == ax.domLo;
+                    const bool atHi = !ax.periodicHi && f == ax.domHi + 1;
+                    const amrex::Real gLo = atLo ? G(i, j, k) : G(i - ax.ex, j - ax.ey, k - ax.ez);
+                    const amrex::Real gHi = atHi ? G(i - ax.ex, j - ax.ey, k - ax.ez) : G(i, j, k);
+                    const amrex::Real coef = -0.5 * (gLo + gHi) * ax.invDx2;
+                    U(i, j, k) += coef;
+                    if (asym)
+                    {
+                        L(i, j, k) += coef;
+                    }
+                }
             );
         }
-        else
-        {
-            accumulateFaceCoefficients<false>(
-                m.exec, g, upper, nullptr, ex, ey, ez, periodicLo, periodicHi, domLo, domHi, invDx2
-            );
-        }
-
-        // A homogeneous BC is complete once the face coefficients are written; only the
-        // inhomogeneous datum is folded here, since no la:: consumer receives one.
-        if (bcData_ == nullptr)
-        {
-            continue;
-        }
-
-        // Over the boundary CELLS, not faces: a face kernel would have two threads adding
-        // to one cell on a domain one cell thick. Low and high are separate launches.
-        for (int s = 2 * d; s <= 2 * d + 1; ++s)
-        {
-            const int kind = bc[static_cast<std::size_t>(s)];
-            if (kind == 0)
-            {
-                continue;
-            }
-            const bool low = (s % 2) == 0;
-            // core/bc.hpp's inhom fill: scale 2 for dirichlet (g is u ON the face), dx for
-            // neumann (g is du/dn outward; a low side's two flips cancel).
-            const amrex::Real scale = (kind == 1) ? 2.0 : dx[d];
-            const int cell = low ? domLo : domHi;
-            // From the boundary cell to the ghost cell holding its datum.
-            const int step = low ? -1 : 1;
-            const int ox = ex * step;
-            const int oy = ey * step;
-            const int oz = ez * step;
-            amrex::Box slab = dom;
-            slab.setSmall(d, cell);
-            slab.setBig(d, cell);
-
-            foldBoundaryDatum(m.exec, g, sys.rhs(), *bcData_, slab, ox, oy, oz, scale, invDx2);
-        }
+        foldBoundaryData(sys, g, bcData_, ax);
     }
     amrex::Gpu::streamSynchronize();
 }

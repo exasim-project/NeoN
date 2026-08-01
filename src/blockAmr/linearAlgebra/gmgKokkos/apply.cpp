@@ -22,17 +22,9 @@ class KokkosGmgApplyImpl final : public KokkosGmgApply
 public:
 
     KokkosGmgApplyImpl(
-        const amrex::Geometry& geom,
-        const amrex::MultiFab& alpha,
-        const amrex::MultiFab& ux,
-        const amrex::MultiFab& lx,
-        const amrex::MultiFab& uy,
-        const amrex::MultiFab& ly,
-        const amrex::MultiFab& uz,
-        const amrex::MultiFab& lz,
-        const KokkosGmgOpts& opts
+        const amrex::Geometry& geom, const CallerCoeffs& c, const KokkosGmgOpts& opts
     )
-        : v_(geom, alpha, ux, lx, uy, ly, uz, lz, opts), nCycles_(opts.cycles)
+        : v_(geom, c, opts), nCycles_(opts.cycles)
     {}
 
     void apply(const double* r, double* z) override { v_.applyFlat(r, z, nCycles_); }
@@ -51,23 +43,22 @@ private:
 
 std::unique_ptr<KokkosGmgApply> makeKokkosGmgApply(
     const amrex::Geometry& geom,
-    const amrex::MultiFab& alpha,
-    const amrex::MultiFab& ux,
-    const amrex::MultiFab& lx,
-    const amrex::MultiFab& uy,
-    const amrex::MultiFab& ly,
-    const amrex::MultiFab& uz,
-    const amrex::MultiFab& lz,
+    const ConstCellFieldLevel& alpha,
+    const ConstFaceFieldLevel& upper,
+    const ConstFaceFieldLevel& lower,
     const KokkosGmgOpts& opts
 )
 {
     // No bc/geometry check here: la::parseBc already refuses a mismatch and is the only path in.
     // The setup arguments are named once, so each (field, coefficient) pair stays one line; the
     // tag arguments carry the two types, as buildGmgHierarchy's makeGmg does for the shipped one.
+    const CallerCoeffs coeffs {
+        &*alpha, &upper[0], &lower[0], &upper[1], &lower[1], &upper[2], &lower[2]
+    };
     auto make = [&](auto field, auto coeff) -> std::unique_ptr<KokkosGmgApply>
     {
         return std::make_unique<KokkosGmgApplyImpl<decltype(field), decltype(coeff)>>(
-            geom, alpha, ux, lx, uy, ly, uz, lz, opts
+            geom, coeffs, opts
         );
     };
 

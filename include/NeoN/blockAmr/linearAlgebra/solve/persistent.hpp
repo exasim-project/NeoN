@@ -16,6 +16,7 @@
 #include "NeoN/blockAmr/linearAlgebra/krylov/executor.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/krylovSolver.hpp"
 #include "NeoN/blockAmr/linearAlgebra/krylov/result.hpp"
+#include "NeoN/blockAmr/linearAlgebra/precond.hpp" // FaceCoeffLevel
 #include "NeoN/blockAmr/linearAlgebra/solverConfig.hpp"
 
 namespace blockamr::la
@@ -28,18 +29,12 @@ class FaceCoeffSolver
 {
 public:
 
-    // Non-const because the operator takes mutable field handles; nothing here writes them.
+    /* `level` carries MUTABLE field handles (the operator's staleness rules need them) plus
+     * the ba/dm/geom they were allocated over -- the caller's fields, which must outlive this
+     * solver. Nothing here writes them.
+     */
     FaceCoeffSolver(
-        const NeoN::Executor& executor,
-        amrex::Geometry geom,
-        amrex::MultiFab* alpha,
-        amrex::MultiFab* ux,
-        amrex::MultiFab* lx,
-        amrex::MultiFab* uy,
-        amrex::MultiFab* ly,
-        amrex::MultiFab* uz,
-        amrex::MultiFab* lz,
-        const SolverConfig& config
+        const NeoN::Executor& executor, const FaceCoeffLevel& level, const SolverConfig& config
     );
 
     SolveResult solve(amrex::MultiFab& rhs, amrex::MultiFab& sol);

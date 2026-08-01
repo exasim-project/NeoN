@@ -18,6 +18,17 @@
 namespace blockamr::la
 {
 
+/* @brief The row/column DIMENSION of `matrix` as a LinOp: its global cell count.
+ *
+ * Use this wherever only the size is wanted. Building a LinOp just to read
+ * get_size()[0] is not the same thing: toLinOp() below stages pinned copies of every
+ * coefficient field. INVARIANT: every rank gets the same answer, because it counts the
+ * whole BoxArray rather than this rank's share.
+ *
+ * Example: la::KrylovSolver(exec, la::globalRows(system.matrix()), system.localRows())
+ */
+gko::size_type globalRows(const MFFaceCoeffs& matrix);
+
 /* @brief The matrix-free operator over `matrix`'s coefficients.
  *
  * Built fresh per call, not cached: the operator stages PINNED COPIES of the coefficient

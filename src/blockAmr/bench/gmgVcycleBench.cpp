@@ -46,52 +46,21 @@ struct AmrexGmgBackend
 
     static void beforeAmrexRead() {}
 
-    // Not a variadic forward: the production kernel takes one FaceCoeffs<double>, so the flat
-    // argument list of vcycle.hpp's shared call site is repacked here.
+    // Not a variadic forward: the shipped kernel takes a trailing onDevice the twins do not.
     static void gsColor(
         la::GmgFab<double>& sol,
         const la::GmgFab<double>& rhs,
-        const la::GmgFab<double>& ux,
-        const la::GmgFab<double>& lx,
-        const la::GmgFab<double>& uy,
-        const la::GmgFab<double>& ly,
-        const la::GmgFab<double>& uz,
-        const la::GmgFab<double>& lz,
-        const la::GmgFab<double>& alpha,
-        int parity,
-        double omega
+        const la::FaceCoeffs<double>& fc,
+        la::GsSweep sweep
     )
     {
-        la::gmgGsColor<double>(
-            sol,
-            rhs,
-            la::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
-            parity,
-            omega,
-            /*onDevice=*/true
-        );
+        la::gmgGsColor<double>(sol, rhs, fc, sweep, /*onDevice=*/true);
     }
 
-    static void residRestrict(
-        const la::GmgFab<double>& sol,
-        const la::GmgFab<double>& rhs,
-        la::GmgFab<double>& crhs,
-        const la::GmgFab<double>& ux,
-        const la::GmgFab<double>& lx,
-        const la::GmgFab<double>& uy,
-        const la::GmgFab<double>& ly,
-        const la::GmgFab<double>& uz,
-        const la::GmgFab<double>& lz,
-        const la::GmgFab<double>& alpha
-    )
+    template<class... A>
+    static void residRestrict(A&&... a)
     {
-        la::gmgResidRestrict<double>(
-            sol,
-            rhs,
-            crhs,
-            la::FaceCoeffs<double> {&alpha, &ux, &lx, &uy, &ly, &uz, &lz},
-            /*onDevice=*/true
-        );
+        la::gmgResidRestrict<double>(std::forward<A>(a)..., /*onDevice=*/true);
     }
 
     template<class... A>
@@ -178,13 +147,7 @@ GmgResult run(const GmgArgs& args, int iters, int batches)
 {
     Vcycle<Backend, T, TC> v(
         *args.geom,
-        *args.alpha,
-        *args.ux,
-        *args.lx,
-        *args.uy,
-        *args.ly,
-        *args.uz,
-        *args.lz,
+        CallerCoeffs {args.alpha, args.ux, args.lx, args.uy, args.ly, args.uz, args.lz},
         args.opts
     );
 

@@ -207,16 +207,22 @@ void bindPersistent(nb::module_& m, const char* name)
                const std::string& norm,
                amrex::MultiFab* bc_data)
             {
+                // Non-owning handles: Python owns these fields (the keep_alive calls below tie
+                // them to the solver). This is the one place the seven loose fields are named,
+                // so the ux/uy/uz order is written exactly once.
+                const FaceCoeffLevel level {
+                    blockamr::CellFieldLevel {blockamr::nonOwning(alpha)},
+                    blockamr::FaceFieldLevel {
+                        {blockamr::nonOwning(ux), blockamr::nonOwning(uy), blockamr::nonOwning(uz)}
+                    },
+                    blockamr::FaceFieldLevel {
+                        {blockamr::nonOwning(lx), blockamr::nonOwning(ly), blockamr::nonOwning(lz)}
+                    },
+                    blockamr::MeshLevel {alpha.boxArray(), alpha.DistributionMap(), geom}
+                };
                 new (self)
                     S(executor.value_or(NeoN::createDefaultExecutor()),
-                      geom,
-                      &alpha,
-                      &ux,
-                      &lx,
-                      &uy,
-                      &ly,
-                      &uz,
-                      &lz,
+                      level,
                       parseSolverConfig(
                           solver,
                           max_iter,
@@ -390,16 +396,17 @@ public:
     )
         : KrylovSolver(makeExecutor(matrix.exec), nGlobal, matrix.localRows())
     {
+        // build() takes the knob cluster as a SolverConfig; this probe binding is handed the
+        // four knobs loose, and everything else keeps solverConfig.hpp's default.
+        SolverConfig config;
+        config.solver = solver;
+        config.maxIter = maxIter;
+        config.rtol = rtol;
+        config.atol = atol;
+        config.projectNullspace = projectNullspace;
         // const_pointer_cast: build() takes a mutable LinOp (Ginkgo's solver factories store
         // a non-const system matrix) and nothing here writes through it.
-        build(
-            std::const_pointer_cast<gko::LinOp>(toLinOp(matrix)),
-            solver,
-            maxIter,
-            rtol,
-            atol,
-            projectNullspace
-        );
+        build(std::const_pointer_cast<gko::LinOp>(toLinOp(matrix)), solver, config);
     }
 };
 
@@ -532,7 +539,22 @@ void registerLinearAlgebra(nb::module_& m)
            double atol,
            double sign,
            std::optional<NeoN::Executor> executor)
-        { return toDict(solveMlmgSystem(lp, sol, rhs, max_iter, rtol, atol, sign, executor)); },
+        {
+            // The Python surface is unchanged: the eight arguments are repacked here, and
+            // `solver` stays at its OneshotSpec default because this entry point is always Cg.
+            return toDict(solveMlmgSystem(
+                lp,
+                sol,
+                rhs,
+                OneshotSpec {
+                    .maxIter = max_iter,
+                    .rtol = rtol,
+                    .atol = atol,
+                    .sign = sign,
+                    .executor = executor
+                }
+            ));
+        },
         nb::arg("lp"),
         nb::arg("sol"),
         nb::arg("rhs"),
@@ -584,8 +606,9 @@ void registerLinearAlgebra(nb::module_& m)
                 sol[lev] = &nb::cast<MultiFab&>(sol_py[static_cast<std::size_t>(lev)]);
                 rhs[lev] = &nb::cast<MultiFab const&>(rhs_py[static_cast<std::size_t>(lev)]);
             }
-            return toDict(solveComposite(lp, sol, rhs, max_iter, rtol, atol, sign, executor, solver)
-            );
+            return toDict(solveComposite(
+                lp, sol, rhs, OneshotSpec {solver, max_iter, rtol, atol, sign, executor}
+            ));
         },
         nb::arg("lp"),
         nb::arg("sol"),
@@ -628,8 +651,22 @@ void registerLinearAlgebra(nb::module_& m)
            int max_iter,
            double rtol)
         {
+            // Non-owning handles onto the caller's fields, in the ux/uy/uz order the bundle
+            // fixes; the layout is `sol`'s, as it was when this took ba/dm off it directly.
+            const FaceCoeffLevel level {
+                blockamr::CellFieldLevel {blockamr::nonOwning(alpha)},
+                blockamr::FaceFieldLevel {
+                    {blockamr::nonOwning(ux), blockamr::nonOwning(uy), blockamr::nonOwning(uz)}
+                },
+                blockamr::FaceFieldLevel {
+                    {blockamr::nonOwning(lx), blockamr::nonOwning(ly), blockamr::nonOwning(lz)}
+                },
+                blockamr::MeshLevel {sol.boxArray(), sol.DistributionMap(), geom}
+            };
+            // atol/sign/executor stay at their OneshotSpec defaults: this surface has no such
+            // argument, and atol = 0.0 is the absolute stop this solve never added.
             return toDict(solveFaceCoeffs(
-                alpha, ux, lx, uy, ly, uz, lz, sol, rhs, geom, solver, max_iter, rtol
+                level, sol, rhs, OneshotSpec {.solver = solver, .maxIter = max_iter, .rtol = rtol}
             ));
         },
         nb::arg("alpha"),
