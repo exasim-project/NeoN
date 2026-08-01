@@ -53,6 +53,11 @@ nanobind_add_module(
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
+# Ensure the POST_BUILD stubgen step can dlopen all transitive deps (libNeoN.so, libumpire.so,
+# libcamp.so, libginkgo*, kokkos, ...) from the build tree. All shared libs are routed into
+# ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} (= ${CMAKE_BINARY_DIR}/lib), so a single RPATH entry suffices.
+set_target_properties(_neon PROPERTIES BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
+
 # Generate Python type stubs (.pyi) after building the module
 add_custom_command(
   TARGET _neon
