@@ -64,7 +64,11 @@ def test_ginkgo_poisson_matches_mlmg(blockamr_session):
         rhs.copy_from(mfi, arr)
 
     # Reference: MLMG solve
-    sol_ref = blockamr.MultiFab(ba, dm, 1, 1)  # initial guess = 0
+    # MultiFab does not zero-initialize -- it hands back arena memory, which a
+    # cold process happens to give as zeros but a long session does not. Both
+    # solvers take sol as the INITIAL GUESS, so it has to be set explicitly.
+    sol_ref = blockamr.MultiFab(ba, dm, 1, 1)
+    sol_ref.set_val(0.0)  # initial guess = 0
     mlmg = blockamr.MLMG(lp)
     mlmg.set_verbose(0)
     mlmg.set_max_iter(200)
@@ -72,7 +76,8 @@ def test_ginkgo_poisson_matches_mlmg(blockamr_session):
     mlmg.solve(sol_ref, rhs, 1e-10, 1e-12)
 
     # Matrix-free Ginkgo CG solve (in place into sol_gko)
-    sol_gko = blockamr.MultiFab(ba, dm, 1, 1)  # initial guess = 0
+    sol_gko = blockamr.MultiFab(ba, dm, 1, 1)
+    sol_gko.set_val(0.0)  # initial guess = 0
     try:
         stats = blockamr.ginkgo_solve(lp, sol_gko, rhs, max_iter=2000, rtol=1e-10)
     except RuntimeError as exc:
