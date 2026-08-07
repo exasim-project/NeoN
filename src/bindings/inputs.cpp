@@ -183,6 +183,13 @@ void registerInputs(nb::module_& m)
             "Insert a TokenList value (e.g. a discretisation scheme)"
         )
         .def(
+            "get_token_list",
+            [](NeoN::Dictionary& self, const std::string& key) -> NeoN::TokenList
+            { return self.get<NeoN::TokenList>(key); },
+            "key"_a,
+            "Get TokenList value for key (e.g. a discretisation scheme)"
+        )
+        .def(
             "__repr__",
             [](const NeoN::Dictionary& self)
             { return "<Dictionary size=" + std::to_string(self.keys().size()) + ">"; }
