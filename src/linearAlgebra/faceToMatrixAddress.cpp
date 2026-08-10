@@ -657,4 +657,11 @@ readOrCreateSparsityBundle<
     CooSparsityPattern<localIdx>,
     CooSparsityPattern<localIdx>>(const UnstructuredMesh&);
 
+// ELL system sparsity + COO boundary sparsity: used by every ELL solver via
+// createEmptyLinearSystem<ValueType, ..., ELLMatrix>, matching the CSR+COO instantiation above.
+template SharedSparsityBundle<EllSparsityPattern<localIdx>, CooSparsityPattern<localIdx>>
+readOrCreateSparsityBundle<
+    EllSparsityPattern<localIdx>,
+    CooSparsityPattern<localIdx>>(const UnstructuredMesh&);
+
 }
