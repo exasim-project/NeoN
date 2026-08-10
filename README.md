@@ -25,6 +25,7 @@ Its modular architecture enables performance-portable execution and solver backe
   - GPUs from NVIDIA, AMD, and Intel
 - Portability across Linux, macOS, and Windows
 - Performance-portable parallel and memory abstractions
+- Unified GPU execution model for NVIDIA, AMD, and Intel GPUs
 
 > [!IMPORTANT]
 > The NeoN project needs you!
