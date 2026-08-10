@@ -13,6 +13,7 @@ namespace NeoN::bindings
 void registerExecutors(nanobind::module_& m);
 void registerScalar(nanobind::module_& m);
 void registerVec3(nanobind::module_& m);
+void registerTensor(nanobind::module_& m);
 void registerVectors(nanobind::module_& m);
 void registerContainerFreeFunctions(nanobind::module_& m);
 void registerBoundaryMesh(nanobind::module_& m);
