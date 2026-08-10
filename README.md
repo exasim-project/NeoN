@@ -16,6 +16,16 @@ NeoN is an open-source, high-performance CFD library for modern heterogeneous co
 
 Its modular architecture enables performance-portable execution and solver backends, currently using Kokkos and Ginkgo while remaining flexible to adopt alternative technologies as the framework evolves.
 
+## Key Features
+
+- Execution on
+  - serial CPU
+  - multithreaded CPU
+  - MPI-based distributed systems
+  - GPUs from NVIDIA, AMD, and Intel
+- Portability across Linux, macOS, and Windows
+- Performance-portable parallel and memory abstractions
+
 > [!IMPORTANT]
 > The NeoN project needs you!
 > If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
