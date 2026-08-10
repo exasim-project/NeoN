@@ -31,6 +31,7 @@ set(NeoN_PYTHON_BINDING_SRCS
     executors.cpp
     scalar.cpp
     vec3.cpp
+    tensor.cpp
     vectors.cpp
     containerFreeFunctions.cpp
     boundaryMesh.cpp

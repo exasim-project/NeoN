@@ -17,6 +17,7 @@ NB_MODULE(_neon, m)
     NeoN::bindings::registerExecutors(m);
     NeoN::bindings::registerScalar(m);
     NeoN::bindings::registerVec3(m);
+    NeoN::bindings::registerTensor(m);
     NeoN::bindings::registerVectors(m);
     NeoN::bindings::registerContainerFreeFunctions(m);
     NeoN::bindings::registerBoundaryMesh(m);
