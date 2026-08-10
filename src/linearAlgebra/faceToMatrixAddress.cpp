@@ -65,9 +65,9 @@ FaceToMatrixView FaceToMatrixAddress::view(View<const localIdx> rowOffsView) con
 
 EllFaceToMatrixView FaceToMatrixAddress::view(localIdx stride) const
 {
-    return EllFaceToMatrixView(
+    return EllFaceToMatrixView {
         ownerOffset_.view(), neighbourOffset_.view(), diagOffset_.view(), stride
-    );
+    };
 }
 
 const NeoN::Array<uint8_t>& FaceToMatrixAddress::ownerOffset() const { return ownerOffset_; }
