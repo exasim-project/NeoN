@@ -345,6 +345,52 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
 - zeroGradient
 - calculated</p>
 </section>
+<section id="slip-symmetry-boundary-conditions">
+<h2>Slip / Symmetry boundary conditions<a class="headerlink" href="#slip-symmetry-boundary-conditions" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">slip</span></code> and <code class="docutils literal notranslate"><span class="pre">symmetry</span></code> share a single implementation. They differ only in their
+registered name and in where they may be applied (<code class="docutils literal notranslate"><span class="pre">slip</span></code> on a wall/regular patch,
+<code class="docutils literal notranslate"><span class="pre">symmetry</span></code> on a symmetry plane). Per face the operator is:</p>
+<ul class="simple">
+<li><p><strong>scalar field</strong> =&gt; zero-gradient (there is no normal component, so the mode below is
+irrelevant).</p></li>
+<li><p><strong>vector field</strong> =&gt; the boundary value is the <em>tangential projection</em> of the cell value
+(the wall-normal component is removed), plus a <strong>normal-damping</strong> term
+<span class="math notranslate nohighlight">\(-\Delta\,(\mathbf{v}\cdot\mathbf{n})\,\mathbf{n}\)</span> that drives the normal component
+of the cell value towards zero.</p></li>
+</ul>
+<p>The velocity vector field is assembled as a single shared scalar matrix and solved with a
+Vec3 (multi-RHS) solve, so the same matrix diagonal is used for all three components. The
+normal-damping coefficient <span class="math notranslate nohighlight">\(\gamma\,|S|\,\Delta\,|n_c|\)</span> is <strong>direction dependent</strong>
+(it carries a per-component <span class="math notranslate nohighlight">\(|n_c|\)</span> factor) and therefore cannot be held by the shared
+scalar diagonal. NeoN offers two ways to realise it, selected per patch by the <code class="docutils literal notranslate"><span class="pre">implicit</span></code>
+key:</p>
+<dl class="simple">
+<dt>Deferred (<code class="docutils literal notranslate"><span class="pre">implicit</span> <span class="pre">no</span></code>)</dt><dd><p>The damping is written into <code class="docutils literal notranslate"><span class="pre">refGrad</span></code> as
+<span class="math notranslate nohighlight">\(-\Delta\,(\mathbf{v}\cdot\mathbf{n})\,\mathbf{n}\)</span> and enters the per-component
+<strong>RHS</strong> through the existing fixed-gradient assembly. This keeps the shared scalar matrix
+and the fast multi-RHS solve intact. Because the term uses the previous iteration’s
+velocity, the normal coupling <strong>lags by one outer iteration</strong>; on a developed field this
+can be too weak to hold the normal component and lets it diverge in the momentum solve.</p>
+</dd>
+<dt>Implicit (<code class="docutils literal notranslate"><span class="pre">implicit</span> <span class="pre">yes</span></code>, the default)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">refGrad</span></code> is left zero; instead the <code class="docutils literal notranslate"><span class="pre">BoundaryAttributes::transformImplicit</span></code> flag tells
+the Laplacian assembly to accumulate the per-component diagonal correction
+<span class="math notranslate nohighlight">\(\gamma\,|S|\,\Delta\,|n_c|\)</span> into the linear system’s <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> store. Since this
+correction differs per column, the solver drops the multi-RHS solve and runs the three
+components <strong>segregated</strong>, temporarily subtracting each column’s correction from the shared
+diagonal in place (no matrix copy). The constraint is applied <em>inside</em> the solve, so it does
+not lag — at the cost of three solves instead of one multi-RHS solve.</p>
+</dd>
+</dl>
+<p>The default is <strong>implicit</strong>: the deferred variant was observed to let the wall-normal velocity
+run away at slip/symmetry boundaries on developed external-aerodynamics cases. Set
+<code class="docutils literal notranslate"><span class="pre">implicit</span> <span class="pre">no</span></code> on a patch to opt back into the deferred, multi-RHS-friendly treatment.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A future <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> specialisation (e.g. a transported Reynolds-stress field) must use the
+full reflective transform <span class="math notranslate nohighlight">\((T + H\,T\,H)/2\)</span> with <span class="math notranslate nohighlight">\(H = I - 2\,\mathbf{n}\otimes\mathbf{n}\)</span>,
+<strong>not</strong> the per-component projection used for vectors.</p>
+</div>
+</section>
 </section>
 
         </article>
@@ -406,6 +452,7 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
 <li><a class="reference internal" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred14VolumeBoundaryE"><code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred::VolumeBoundary</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4I0EN4NeoN12finiteVolume11cellCentred15SurfaceBoundaryE"><code class="docutils literal notranslate"><span class="pre">NeoN::finiteVolume::cellCentred::SurfaceBoundary</span></code></a></li>
 <li><a class="reference internal" href="#boundary-conditions-for-volumevector-s">Boundary Conditions for VolumeVector’s</a></li>
+<li><a class="reference internal" href="#slip-symmetry-boundary-conditions">Slip / Symmetry boundary conditions</a></li>
 </ul>
 </li>
 </ul>
@@ -421,5 +468,6 @@ To apply boundary conditions for both Surface and Volume Vectors, a virtual base
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

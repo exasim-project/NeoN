@@ -53,7 +53,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00049}00049\ \ \ \ \ \textcolor{comment}{//\ subtract\ the\ explicit\ source\ term\ from\ the\ rhs}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00050}00050\ \ \ \ \ \textcolor{keyword}{auto}\ expTmp\ =\ optExp.explicitOperation(solution.mesh().nCells());}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00051}00051\ \ \ \ \ \textcolor{keyword}{auto}\ [vol,\ expSource,\ rhs]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.mesh().cellVolumes(),\ expTmp,\ ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19}{rhs}}());}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00053}00053\ \ \ \ \ \ \ \ \ solution.exec(),}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \{0,\ rhs.size()\},}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{\ rhs[i]\ -\/=\ expSource[i]\ *\ vol[i];\ \}}
@@ -266,7 +266,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00270}00270\ \ \ \ \ \textcolor{comment}{//\ the\ unrelaxed\ fixed\ point.\ Off-\/diagonal\ sum\ +\ diagonal\ algebra\ are\ in\ MatrixValueType;}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00271}00271\ \ \ \ \ \textcolor{comment}{//\ the\ source-\/correction\ cross\ term\ (dRelaxed\ -\/\ dAug)*field\ is\ MatrixValueType\ *\ RHSValueType}}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00272}00272\ \ \ \ \ \textcolor{comment}{//\ (scalar\ *\ Vec3\ in\ the\ segregated\ momentum\ form).}}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00273}00273\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00273}00273\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00274}00274\ \ \ \ \ \ \ \ \ ls.\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}(),}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00275}00275\ \ \ \ \ \ \ \ \ \{0,\ nCells\},}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00276}00276\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli)\ \{}
@@ -340,7 +340,7 @@
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00344}00344\ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(solution.size()\ ==\ previous.\mbox{\hyperlink{classNeoN_1_1Vector_a2ab8411bc0c72d42ce04c21f8a8a3438}{size}}(),\ \textcolor{stringliteral}{"{}applyFieldRelaxation:\ field/prev\ size\ mismatch"{}});}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00345}00345\ }
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00346}00346\ \ \ \ \ \textcolor{keyword}{auto}\ [current,\ prev]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(solution.internalVector(),\ previous);}
-\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00347}00347\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00347}00347\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallelFor}}(}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00348}00348\ \ \ \ \ \ \ \ \ solution.exec(),}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00349}00349\ \ \ \ \ \ \ \ \ \{0,\ solution.size()\},}
 \DoxyCodeLine{\Hypertarget{dsl_2solver_8hpp_source_l00350}00350\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ celli)\ \{}

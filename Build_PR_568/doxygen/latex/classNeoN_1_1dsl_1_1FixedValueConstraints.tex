@@ -44,7 +44,9 @@ virtual void \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_af663e80cdab
 class Neo\+N\+::dsl\+::\+Fixed\+Value\+Constraints$<$ Value\+Type, Index\+Type $>$}
 Post-\/assembly functor that pins a set of cells to prescribed values. 
 
-For every constrained cell c\+: \doxylink{classA}{A}\mbox{[}c, j\mbox{]} = 0 for j != c (zero row off-\/diagonals) \doxylink{classA}{A}\mbox{[}j, c\mbox{]} = 0 for j != c (zero column in neighbour rows, rhs\mbox{[}j\mbox{]} absorbs the dropped term) rhs\mbox{[}c\mbox{]} = \doxylink{classA}{A}\mbox{[}c,c\mbox{]} \texorpdfstring{$\ast$}{*} value\mbox{[}c\mbox{]}
+This now performs Open\+FOAM\textquotesingle{}s FULL decouple (fv\+Matrix\+::set\+Values\+From\+List), not just a row wipe. For every constrained cell c\+: \doxylink{classA}{A}\mbox{[}c, j\mbox{]} = 0 for all j != c (zero the off-\/diagonals of ROW c) \doxylink{classA}{A}\mbox{[}j, c\mbox{]} = 0 for all j != c (zero the COLUMN c in every neighbour row j) rhs\mbox{[}j\mbox{]} -\/= \doxylink{classA}{A}\mbox{[}j, c\mbox{]}\texorpdfstring{$\ast$}{*}value\mbox{[}c\mbox{]} (relocate that coupling into the neighbour SOURCE) rhs\mbox{[}c\mbox{]} = \doxylink{classA}{A}\mbox{[}c, c\mbox{]} \texorpdfstring{$\ast$}{*} value\mbox{[}c\mbox{]} so the row reduces to \doxylink{classA}{A}\mbox{[}c,c\mbox{]}\texorpdfstring{$\ast$}{*}x\+\_\+c = \doxylink{classA}{A}\mbox{[}c,c\mbox{]}\texorpdfstring{$\ast$}{*}value\mbox{[}c\mbox{]} =\texorpdfstring{$>$}{>} x\+\_\+c = value\mbox{[}c\mbox{]} (independent of the relaxed/\+BC-\/augmented diagonal), and — crucially — the Sp\+MV / residual no longer carries the huge in-\/matrix \doxylink{classA}{A}\mbox{[}j,c\mbox{]}\texorpdfstring{$\ast$}{*}value\+\_\+c term (value\+\_\+c is the viscous-\/sublayer wall omega, up to 1e12). Leaving that coefficient in the matrix (the previous row-\/only wipe) made A\texorpdfstring{$\ast$}{*}x at neighbour cells a difference of \texorpdfstring{$\sim$}{\string~}1e18 magnitudes, which underflowed/\+NaN\textquotesingle{}d the L1 residual norm under FOAM\+\_\+\+SIGFPE — Open\+FOAM avoids it precisely by moving the term to the source. Mirrors upstream exactly.
+
+Proc-\/boundary caveat\+: a pinned cell\textquotesingle{}s coupling to an off-\/rank ghost lives in off\+Diagonal\+Matrix, not the local CSR, so it is not decoupled here (the local CSR column cut is the dominant term).
 
 Pinning via both the row and column cut avoids large cancellation errors when pinned values are orders of magnitude larger than neighbouring unknowns. Off-\/rank coupling in off\+Diagonal\+Matrix is also zeroed for pinned rows.
 
@@ -52,7 +54,7 @@ Restricted to scalar Value\+Type\+: the segregated vector-\/solve path dispatche
 
 mask\mbox{[}cell\mbox{]} != 0 marks a constrained cell; value\mbox{[}cell\mbox{]} holds its target. Both views are sized n\+Cells and must outlive the functor. 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00200}{200}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00211}{211}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -66,7 +68,7 @@ Definition at line \mbox{\hyperlink{expression_8hpp_source_l00200}{200}} of file
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00210}{210}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00221}{221}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 
@@ -88,7 +90,7 @@ Reimplemented from \mbox{\hyperlink{structNeoN_1_1dsl_1_1PostAssemblyBase_a755d2
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00222}{222}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00233}{233}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_afa0544b86f8d7b8648f6ecb3bc48b92d}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_afa0544b86f8d7b8648f6ecb3bc48b92d} 
 \index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!applyImpl@{applyImpl}}
@@ -100,7 +102,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00235}{235}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00246}{246}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d}\label{classNeoN_1_1dsl_1_1FixedValueConstraints_a756ecb34596254c9b253def7ef6c8d2d} 
 \index{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$@{NeoN::dsl::FixedValueConstraints$<$ ValueType, IndexType $>$}!operator()@{operator()}}
@@ -111,7 +113,7 @@ void \mbox{\hyperlink{classNeoN_1_1dsl_1_1FixedValueConstraints}{Neo\+N\+::dsl\+
 
 
 
-Definition at line \mbox{\hyperlink{expression_8hpp_source_l00214}{214}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
+Definition at line \mbox{\hyperlink{expression_8hpp_source_l00225}{225}} of file \mbox{\hyperlink{expression_8hpp_source}{expression.\+hpp}}.
 
 
 

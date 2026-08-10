@@ -132,6 +132,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1MeshIteratorContext.html">MeshIteratorContext</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds and exposes the active <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html" title="Abstract base class defining the interface for mesh iteration strategies.">MeshIterationStrategy</a>.  <a href="classNeoN_1_1la_1_1MeshIteratorContext.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SharedSparsityBundle.html">SharedSparsityBundle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1Solver.html">Solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1la_1_1SolverFactory.html">SolverFactory</a></td></tr>
@@ -167,6 +169,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa9fd5d1e4b81ca099097468430a2d32c" id="r_aa9fd5d1e4b81ca099097468430a2d32c"><td class="memTemplParams" colspan="2">template&lt;typename SparsityType &gt; </td></tr>
 <tr class="memitem:aa9fd5d1e4b81ca099097468430a2d32c"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; const SparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aa9fd5d1e4b81ca099097468430a2d32c">createOffDiagonalSparsityPattern</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, const <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html">FaceToMatrixAddress</a> &amp;faceToMatrixAddress)</td></tr>
 <tr class="separator:aa9fd5d1e4b81ca099097468430a2d32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0bfae85278da29d56cdb8e32ed1a54" id="r_add0bfae85278da29d56cdb8e32ed1a54"><td class="memTemplParams" colspan="2">template&lt;typename SystemSparsityType , typename BoundarySparsityType &gt; </td></tr>
+<tr class="memitem:add0bfae85278da29d56cdb8e32ed1a54"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structNeoN_1_1la_1_1SharedSparsityBundle.html">SharedSparsityBundle</a>&lt; SystemSparsityType, BoundarySparsityType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#add0bfae85278da29d56cdb8e32ed1a54">readOrCreateSparsityBundle</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh)</td></tr>
+<tr class="separator:add0bfae85278da29d56cdb8e32ed1a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaae043565c645c4e3a2736f57d50edd5" id="r_aaae043565c645c4e3a2736f57d50edd5"><td class="memTemplParams" colspan="2">template&lt;typename ValueType , typename RHSValueType  = ValueType, typename SystemMatrixType  = CSRMatrix&lt;ValueType, localIdx&gt;, typename BoundaryMatrixType  = COOMatrix&lt;ValueType, localIdx&gt;&gt; </td></tr>
 <tr class="memitem:aaae043565c645c4e3a2736f57d50edd5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">LinearSystem</a>&lt; ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1la.html#aaae043565c645c4e3a2736f57d50edd5">createEmptyLinearSystem</a> (const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;mesh, std::shared_ptr&lt; <a class="el" href="classNeoN_1_1la_1_1MeshIterationStrategy.html">MeshIterationStrategy</a> &gt; strategy=std::make_shared&lt; <a class="el" href="classNeoN_1_1la_1_1FaceBasedIterator.html">FaceBasedIterator</a> &gt;())</td></tr>
 <tr class="separator:aaae043565c645c4e3a2736f57d50edd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -400,7 +405,7 @@ template&lt;typename ValueType , typename RHSValueType  = ValueType, typename Sy
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00324">324</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00358">358</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>
@@ -559,6 +564,26 @@ template&lt;unsigned int I&gt; </div>
 
 </div>
 </div>
+<a id="add0bfae85278da29d56cdb8e32ed1a54" name="add0bfae85278da29d56cdb8e32ed1a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0bfae85278da29d56cdb8e32ed1a54">&#9670;&#160;</a></span>readOrCreateSparsityBundle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SystemSparsityType , typename BoundarySparsityType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNeoN_1_1la_1_1SharedSparsityBundle.html">SharedSparsityBundle</a>&lt; SystemSparsityType, BoundarySparsityType &gt; NeoN::la::readOrCreateSparsityBundle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classNeoN_1_1UnstructuredMesh.html">UnstructuredMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a5f88d32474b696771e3791dcc1a7e8a8" name="a5f88d32474b696771e3791dcc1a7e8a8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f88d32474b696771e3791dcc1a7e8a8">&#9670;&#160;</a></span>removeBoundaryContributions()</h2>
 
@@ -591,7 +616,7 @@ requires requires(const BoundaryMatrixType&amp; bm) { bm.sparsity()-&gt;rowIdxs(
 <dd>
 BoundaryMatrixType must expose per-entry row indices through rowIdxs() (currently COO). Works with any SystemMatrixType whose sparsity has a matching <a class="el" href="classNeoN_1_1la_1_1FaceToMatrixAddress.html#a0ac27cbf7827fbedf373276ea4e073ea" title="Get a view representation of the matrix&#39;s data.">FaceToMatrixAddress::view()</a> overload (CSR, COO, ELL) &ndash; uses Matrix/Vector views directly rather than <a class="el" href="classNeoN_1_1la_1_1LinearSystem.html#a667483815f80a7188bfff859372bd9b9">LinearSystem::view()</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00419">419</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="linearSystem_8hpp_source.html#l00459">459</a> of file <a class="el" href="linearSystem_8hpp_source.html">linearSystem.hpp</a>.</p>
 
 </div>
 </div>

@@ -302,6 +302,61 @@ The CI architecture for NeoN is illustrated below.</p>
 Developers interact only with GitHub — all LRZ GitLab pipelines are triggered automatically.</p>
 </div>
 </section>
+<section id="python-wheel-ci-cd">
+<h2>Python Wheel CI/CD<a class="headerlink" href="#python-wheel-ci-cd" title="Link to this heading">¶</a></h2>
+<p>In addition to the build-and-test workflows, NeoN provides a dedicated GitHub Actions workflow for
+building and distributing Python wheels. This workflow is defined in
+<code class="docutils literal notranslate"><span class="pre">.github/workflows/python_wheels.yaml</span></code> and is responsible for release packaging rather than for
+ordinary pull-request testing.</p>
+<p>Release builds are managed by GitHub Actions and <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code>. The workflow creates Python
+wheels inside controlled CI environments and uploads or publishes the resulting artifacts.</p>
+<p>The workflow supports both stable and development versions. For a tag such as <code class="docutils literal notranslate"><span class="pre">v0.1.2</span></code>, the
+package version is derived from the tag and treated as a stable release. For manually triggered
+builds, the workflow generates a development version with a <code class="docutils literal notranslate"><span class="pre">.dev</span></code> suffix so that test artifacts
+do not conflict with stable releases.</p>
+<p>CPU wheels are built for Linux x86-64, Linux ARM64, Windows AMD64, macOS Apple Silicon, and macOS
+Intel. The matrix covers CPython 3.9 through 3.13. MPI and optional dependencies such as PETSc,
+ADIOS2, and SUNDIALS are disabled for these wheels, and CUDA/HIP support is disabled. This keeps the
+default PyPI package installable without requiring those external HPC libraries.</p>
+<p>After each CPU wheel is built and repaired, <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code> installs it into an isolated test
+environment. The current installed-wheel check verifies that the package imports, its distribution
+and module versions agree, its backend feature indicators are valid, and serial execution support is
+present. The complete Python binding test suite is not currently executed against every repaired
+wheel.</p>
+<p>CUDA wheels are handled separately. The Linux wheel job installs the CUDA toolkit inside the
+<code class="docutils literal notranslate"><span class="pre">manylinux</span></code> container before running <code class="docutils literal notranslate"><span class="pre">cibuildwheel</span></code>. CUDA wheels are built with Kokkos CUDA
+support enabled and receive a local version suffix such as <code class="docutils literal notranslate"><span class="pre">+cuda128</span></code>. The NVIDIA driver library
+<code class="docutils literal notranslate"><span class="pre">libcuda.so.1</span></code> is explicitly excluded from wheel repair, because it is provided by the user’s
+installed NVIDIA driver and must not be bundled into the wheel.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GitHub-hosted runners provide CPU machines only. They can compile CUDA wheels if the CUDA toolkit
+is installed in the build container, but they cannot run or import the CUDA extension as a full
+runtime test because no NVIDIA driver or GPU is available. CUDA wheels must therefore be validated
+on a machine with a compatible NVIDIA driver and GPU.</p>
+</div>
+<p>Publishing is separated by wheel type:</p>
+<ul class="simple">
+<li><p><strong>CPU wheels</strong> are published to PyPI through PyPI Trusted Publishing. This uses GitHub’s OpenID
+Connect identity instead of storing a long-lived PyPI API token.</p></li>
+<li><p><strong>CUDA wheels</strong> are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
+This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package.</p></li>
+</ul>
+<p>To rehearse the publish flow before a real release, dispatch the workflow manually with
+<code class="docutils literal notranslate"><span class="pre">build_wheels</span></code>, <code class="docutils literal notranslate"><span class="pre">build_cpu</span></code> and <code class="docutils literal notranslate"><span class="pre">publish_repository=testpypi</span></code>. This builds a unique <code class="docutils literal notranslate"><span class="pre">.dev</span></code>
+version and uploads it to TestPyPI, so Trusted Publishing configuration and package metadata can be
+validated without touching the production index. TestPyPI needs its own trusted-publisher entry and a
+GitHub <code class="docutils literal notranslate"><span class="pre">testpypi</span></code> environment; <code class="docutils literal notranslate"><span class="pre">publish_repository=pypi</span></code> targets the production index instead.</p>
+<p>The workflow also includes recovery paths for already-built artifacts. If a build succeeds but a
+publish or release-upload step fails, existing wheel artifacts can be reused by providing the
+original GitHub Actions run ID. This avoids rebuilding expensive CPU or CUDA wheels only to repeat an
+upload step.</p>
+<p>At the time of writing, the CUDA wheel path is intentionally narrow while it is being validated: it
+builds the CUDA 12.8 variant for CPython 3.12 on Linux x86-64. Runtime wheel testing is skipped in
+that build job because the GitHub-hosted runner has no GPU. The same structure can be extended to
+additional Python versions, CUDA versions, and GPU architectures after the packaged wheel is
+validated on production hardware.</p>
+</section>
 <section id="continuous-integration-on-lrz-gitlab">
 <h2>Continuous Integration on LRZ GitLab<a class="headerlink" href="#continuous-integration-on-lrz-gitlab" title="Link to this heading">¶</a></h2>
 <p>The LRZ GitLab CI handles GPU-related operations.</p>
@@ -437,6 +492,7 @@ When triggering the NeoFOAM pipeline, the following rules apply to determine whi
             <ul>
 <li><a class="reference internal" href="#">Continuous Integration</a><ul>
 <li><a class="reference internal" href="#continuous-integration-on-github">Continuous Integration on GitHub</a></li>
+<li><a class="reference internal" href="#python-wheel-ci-cd">Python Wheel CI/CD</a></li>
 <li><a class="reference internal" href="#continuous-integration-on-lrz-gitlab">Continuous Integration on LRZ GitLab</a></li>
 <li><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
 <li><a class="reference internal" href="#integration-tests">Integration Tests</a></li>

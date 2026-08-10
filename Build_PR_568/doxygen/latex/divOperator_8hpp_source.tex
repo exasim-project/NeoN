@@ -185,80 +185,79 @@
 \DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00181}00181\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ \ \ \ \ (segregated\ vector-\/solve\ form).\ Only\ present\ when\ FieldValueType\ !=\ scalar;}}
 \DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00182}00182\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ \ \ \ \ for\ scalar\ fields\ the\ same-\/type\ overload\ above\ already\ covers\ this\ signature.}}
 \DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00183}00183\ \textcolor{comment}{\ \ \ \ \ */}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00184}00184\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ F\ =\ FieldValueType>}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}(!std::is\_same\_v<F,\ scalar>)}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00186}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_aad891ff7da0a0b35348341bd3829a961}{00186}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_aad891ff7da0a0b35348341bd3829a961}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ FieldValueType>}}\&\ ls)\ \textcolor{keyword}{const}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00187}00187\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(scalarMtxStrategy\_,\ \textcolor{stringliteral}{"{}Scalar-\/matrix\ DivOperatorStrategy\ not\ initialized"{}});}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00189}00189\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00190}00190\ \ \ \ \ \ \ \ \ scalarMtxStrategy\_-\/>div(ls,\ faceFlux\_,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),\ operatorScaling);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00191}00191\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00192}00192\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{comment}{//\ Format-\/generic\ counterpart\ of\ the\ segregated\ overload\ above\ -\/-\/\ the\ non-\/template\ overload}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{comment}{//\ still\ wins\ for\ the\ CSR\ default,\ so\ existing\ DSL\ callers\ are\ unaffected;\ ELL\ callers\ deduce}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00195}00195\ \ \ \ \ \textcolor{comment}{//\ SystemMatrixType\ from\ the\ ls\ argument.\ GaussGreenDiv<FieldValueType,\ scalar>'s\ ELL\ div()}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00196}00196\ \ \ \ \ \textcolor{comment}{//\ override\ already\ exists\ (added\ generically\ to\ the\ class\ template,\ not\ per-\/instantiation)}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00197}00197\ \ \ \ \ \textcolor{comment}{//\ and\ computeDivIntImp/computeDivBoundImpl/computeDivProcBoundImpl\ are\ already\ explicitly}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00198}00198\ \ \ \ \ \textcolor{comment}{//\ instantiated\ for\ the\ \{FieldValueType,\ scalar,\ ELLMatrix<scalar,localIdx>\}\ combination,\ so}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00199}00199\ \ \ \ \ \textcolor{comment}{//\ this\ is\ purely\ new\ DSL-\/entry-\/point\ plumbing,\ not\ new\ kernel\ work.}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00200}00200\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SystemMatrixType>}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00201}00201\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}(!std::is\_same\_v<FieldValueType,\ scalar>)}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00202}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_aa5552d63a753241e0514e41646e02a5c}{00202}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_aa5552d63a753241e0514e41646e02a5c}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ FieldValueType,\ SystemMatrixType>}}\&\ ls)\ \textcolor{keyword}{const}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00203}00203\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(scalarMtxStrategy\_,\ \textcolor{stringliteral}{"{}Scalar-\/matrix\ DivOperatorStrategy\ not\ initialized"{}});}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00206}00206\ \ \ \ \ \ \ \ \ scalarMtxStrategy\_-\/>div(ls,\ faceFlux\_,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),\ operatorScaling);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00207}00207\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00208}00208\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00209}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a118229ad6baec91c56e00f81edbdddf0}{00209}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a118229ad6baec91c56e00f81edbdddf0}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00210}00210\ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}();}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00212}00212\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}\ tokens;}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00213}00213\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::Dictionary>(input))}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00214}00214\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<NeoN::Dictionary>(input);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ schemeName\ =\ \textcolor{stringliteral}{"{}div("{}}\ +\ faceFlux\_.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{},"{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{})"{}};}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ tokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}divSchemes"{}}).\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(schemeName);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00218}00218\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00219}00219\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00220}00220\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ tokens\ =\ std::get<NeoN::TokenList>(input);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ sameTypeStrategy\_\ =}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a76f5923094126e31c31104e6a9bcbdf6}{DivOperatorFactory<FieldValueType,\ FieldValueType>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ mesh,\ tokens);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (!std::is\_same\_v<FieldValueType,\ scalar>)}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ tokens.\mbox{\hyperlink{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7}{reset}}();}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ scalarMtxStrategy\_\ =}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a76f5923094126e31c31104e6a9bcbdf6}{DivOperatorFactory<FieldValueType,\ scalar>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ mesh,\ tokens);}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00230}00230\ \ \ \ \ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00231}00231\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00232}00232\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00233}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a0e0472c0ceadd34cb89a5f84895f5e5c}{00233}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a0e0472c0ceadd34cb89a5f84895f5e5c}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DivOperator"{}};\ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00234}00234\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00235}00235\ \ \ \ \ \textcolor{comment}{//\ TODO\ make\ this\ private\ and\ let\ only\ friends\ use\ it}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00236}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_ae57f1d66185f782fe35eaccd4728b75f}{00236}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_ae57f1d66185f782fe35eaccd4728b75f}{getConfig}}()\textcolor{keyword}{\ const}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00237}00237\ \textcolor{keyword}{\ \ \ \ }\{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ ret\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}();}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ coeff\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}field"{}},\ \mbox{\hyperlink{structNeoN_1_1detail_1_1RefHolder}{detail::RefHolder<VolumeField<FieldValueType>}}>\ \{ret\}\},}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}coeff"{}},\ \mbox{\hyperlink{structNeoN_1_1detail_1_1RefHolder}{detail::RefHolder<dsl::Coeff>}}\ \{coeff\}\},}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}flux"{}},\ \mbox{\hyperlink{structNeoN_1_1detail_1_1RefHolder}{detail::RefHolder<SurfaceField<NeoN::scalar>}}>\ \{faceFlux\_\}\}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00244}00244\ \ \ \ \ \ \ \ \ \};}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00245}00245\ \ \ \ \ \}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00246}00246\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00247}00247\ \textcolor{keyword}{private}:}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00248}00248\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00249}00249\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<NeoN::scalar>}}\&\ faceFlux\_;}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00250}00250\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00251}00251\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ FieldValueType>>\ sameTypeStrategy\_;}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00252}00252\ \ \ \ \ \textcolor{comment}{//\ Only\ initialized\ when\ FieldValueType\ !=\ scalar;\ used\ to\ assemble\ into\ a}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00253}00253\ \ \ \ \ \textcolor{comment}{//\ LinearSystem<scalar,\ FieldValueType>\ for\ segregated\ vector\ solves.}}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00254}00254\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ scalar>>\ scalarMtxStrategy\_;}
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00255}00255\ \};}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00184}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a6100ec6a06f5868b399bca330972de18}{00184}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a6100ec6a06f5868b399bca330972de18}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ FieldValueType>}}\&\ ls)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}(!std::is\_same\_v<FieldValueType,\ scalar>)}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00186}00186\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(scalarMtxStrategy\_,\ \textcolor{stringliteral}{"{}Scalar-\/matrix\ DivOperatorStrategy\ not\ initialized"{}});}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00189}00189\ \ \ \ \ \ \ \ \ scalarMtxStrategy\_-\/>div(ls,\ faceFlux\_,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),\ operatorScaling);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00190}00190\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00192}00192\ \ \ \ \ \textcolor{comment}{//\ Format-\/generic\ counterpart\ of\ the\ segregated\ overload\ above\ -\/-\/\ the\ non-\/template\ overload}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00193}00193\ \ \ \ \ \textcolor{comment}{//\ still\ wins\ for\ the\ CSR\ default,\ so\ existing\ DSL\ callers\ are\ unaffected;\ ELL\ callers\ deduce}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00194}00194\ \ \ \ \ \textcolor{comment}{//\ SystemMatrixType\ from\ the\ ls\ argument.\ GaussGreenDiv<FieldValueType,\ scalar>'s\ ELL\ div()}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00195}00195\ \ \ \ \ \textcolor{comment}{//\ override\ already\ exists\ (added\ generically\ to\ the\ class\ template,\ not\ per-\/instantiation)}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00196}00196\ \ \ \ \ \textcolor{comment}{//\ and\ computeDivIntImp/computeDivBoundImpl/computeDivProcBoundImpl\ are\ already\ explicitly}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00197}00197\ \ \ \ \ \textcolor{comment}{//\ instantiated\ for\ the\ \{FieldValueType,\ scalar,\ ELLMatrix<scalar,localIdx>\}\ combination,\ so}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00198}00198\ \ \ \ \ \textcolor{comment}{//\ this\ is\ purely\ new\ DSL-\/entry-\/point\ plumbing,\ not\ new\ kernel\ work.}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00199}00199\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ SystemMatrixType>}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00200}00200\ \ \ \ \ \ \ \ \ \textcolor{keyword}{requires}(!std::is\_same\_v<FieldValueType,\ scalar>)}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00201}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_aa5552d63a753241e0514e41646e02a5c}{00201}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_aa5552d63a753241e0514e41646e02a5c}{implicitOperation}}(\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la::LinearSystem<scalar,\ FieldValueType,\ SystemMatrixType>}}\&\ ls)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00202}00202\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00203}00203\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_aecc669a189db22f652ffb9788f01a99b}{NF\_ASSERT}}(scalarMtxStrategy\_,\ \textcolor{stringliteral}{"{}Scalar-\/matrix\ DivOperatorStrategy\ not\ initialized"{}});}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00204}00204\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ operatorScaling\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00205}00205\ \ \ \ \ \ \ \ \ scalarMtxStrategy\_-\/>div(ls,\ faceFlux\_,\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}(),\ operatorScaling);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00206}00206\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00207}00207\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00208}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a118229ad6baec91c56e00f81edbdddf0}{00208}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a118229ad6baec91c56e00f81edbdddf0}{read}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00209}00209\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00210}00210\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}();}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00211}00211\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}\ tokens;}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00212}00212\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::Dictionary>(input))}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00213}00213\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dict\ =\ std::get<NeoN::Dictionary>(input);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ schemeName\ =\ \textcolor{stringliteral}{"{}div("{}}\ +\ faceFlux\_.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{},"{}}\ +\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}().\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_adccbbd2c1b3d558ca69c4db20e2f9392}{name}}\ +\ \textcolor{stringliteral}{"{})"{}};}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ tokens\ =\ dict.subDict(\textcolor{stringliteral}{"{}divSchemes"{}}).\mbox{\hyperlink{classNeoN_1_1TokenList_a3aaccdfa99b1390e7feba098408a7eb2}{get}}<\mbox{\hyperlink{classNeoN_1_1TokenList}{NeoN::TokenList}}>(schemeName);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00217}00217\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00218}00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00219}00219\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ tokens\ =\ std::get<NeoN::TokenList>(input);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00221}00221\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00222}00222\ \ \ \ \ \ \ \ \ sameTypeStrategy\_\ =}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a76f5923094126e31c31104e6a9bcbdf6}{DivOperatorFactory<FieldValueType,\ FieldValueType>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ mesh,\ tokens);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00224}00224\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (!std::is\_same\_v<FieldValueType,\ scalar>)}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00225}00225\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ tokens.\mbox{\hyperlink{classNeoN_1_1TokenList_a6a47f86719698d40405cf62a2debc0f7}{reset}}();}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ scalarMtxStrategy\_\ =}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperatorFactory_a76f5923094126e31c31104e6a9bcbdf6}{DivOperatorFactory<FieldValueType,\ scalar>::create}}(this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_ae8f6101280ecd33a02a378e51fc596ff}{exec}}(),\ mesh,\ tokens);}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00229}00229\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00230}00230\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00231}00231\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00232}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a0e0472c0ceadd34cb89a5f84895f5e5c}{00232}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_a0e0472c0ceadd34cb89a5f84895f5e5c}{getName}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DivOperator"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00234}00234\ \ \ \ \ \textcolor{comment}{//\ TODO\ make\ this\ private\ and\ let\ only\ friends\ use\ it}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00235}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_ae57f1d66185f782fe35eaccd4728b75f}{00235}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DivOperator_ae57f1d66185f782fe35eaccd4728b75f}{getConfig}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00236}00236\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00237}00237\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ ret\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a96bb88b69c5edfc0b903346b2b7280a9}{getVector}}();}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ coeff\ =\ this-\/>\mbox{\hyperlink{classNeoN_1_1dsl_1_1OperatorMixin_a6a72de1ab73257c3d1ae94ab0fdcfa6e}{getCoefficient}}();}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}field"{}},\ \mbox{\hyperlink{structNeoN_1_1detail_1_1RefHolder}{detail::RefHolder<VolumeField<FieldValueType>}}>\ \{ret\}\},}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}coeff"{}},\ \mbox{\hyperlink{structNeoN_1_1detail_1_1RefHolder}{detail::RefHolder<dsl::Coeff>}}\ \{coeff\}\},}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}flux"{}},\ \mbox{\hyperlink{structNeoN_1_1detail_1_1RefHolder}{detail::RefHolder<SurfaceField<NeoN::scalar>}}>\ \{faceFlux\_\}\}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00243}00243\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00244}00244\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00245}00245\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00246}00246\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00247}00247\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00248}00248\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<NeoN::scalar>}}\&\ faceFlux\_;}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00249}00249\ }
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00250}00250\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ FieldValueType>>\ sameTypeStrategy\_;}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00251}00251\ \ \ \ \ \textcolor{comment}{//\ Only\ initialized\ when\ FieldValueType\ !=\ scalar;\ used\ to\ assemble\ into\ a}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00252}00252\ \ \ \ \ \textcolor{comment}{//\ LinearSystem<scalar,\ FieldValueType>\ for\ segregated\ vector\ solves.}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00253}00253\ \ \ \ \ std::unique\_ptr<DivOperatorFactory<FieldValueType,\ scalar>>\ scalarMtxStrategy\_;}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00254}00254\ \};}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00255}00255\ }
 \DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00256}00256\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00257}00257\ }
-\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00258}00258\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{divOperator_8hpp_source_l00257}00257\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}
