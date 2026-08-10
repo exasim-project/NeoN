@@ -107,58 +107,133 @@ void declare_dsl_components(nb::module_& m, const std::string& suffix)
     using SpatialOp = dsl::SpatialOperator<ValueType>;
     using TemporalOp = dsl::TemporalOperator<ValueType>;
 
+    // keep_alive on every combination below: an operator holds ``const InType&``
+    // to its field and an Expression stores operators *by value*, so a result
+    // that outlives its operands' Python handles would reference freed memory.
+    // Chaining these makes an assembled Expression keep the whole tree alive.
     nb::class_<SpatialOp>(m, ("SpatialOperator" + suffix).c_str())
         .def("get_name", &SpatialOp::getName)
-        .def(scalar() * nb::self)
-        .def(nb::self + nb::self) // spatial + spatial -> expression
-        .def(nb::self - nb::self) // spatial - spatial -> expression
-        // spatial + temporal -> expression
+        .def(
+            "__rmul__",
+            [](const SpatialOp& self, scalar coeff) { return coeff * self; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>()
+        )
+        .def(
+            "__add__",
+            [](SpatialOp& self, const SpatialOp& rhs) { return self + rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
+        .def(
+            "__sub__",
+            [](SpatialOp& self, const SpatialOp& rhs) { return self - rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
         .def(
             "__add__",
             [](SpatialOp& self, const TemporalOp& rhs) { return self + rhs; },
-            nb::is_operator()
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         )
-        // spatial - temporal -> expression
         .def(
             "__sub__",
             [](SpatialOp& self, const TemporalOp& rhs) { return self - rhs; },
-            nb::is_operator()
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         );
 
     nb::class_<TemporalOp>(m, ("TemporalOperator" + suffix).c_str())
         .def("get_name", &TemporalOp::getName)
-        .def(scalar() * nb::self)
-        .def(nb::self + nb::self) // temporal + temporal -> expression
-        .def(nb::self - nb::self) // temporal - temporal -> expression
-        // temporal + spatial -> expression
+        .def(
+            "__rmul__",
+            [](const TemporalOp& self, scalar coeff) { return coeff * self; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>()
+        )
+        .def(
+            "__add__",
+            [](TemporalOp& self, const TemporalOp& rhs) { return self + rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
+        .def(
+            "__sub__",
+            [](TemporalOp& self, const TemporalOp& rhs) { return self - rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
         .def(
             "__add__",
             [](TemporalOp& self, const SpatialOp& rhs) { return self + rhs; },
-            nb::is_operator()
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         )
-        // temporal - spatial -> expression
         .def(
             "__sub__",
             [](TemporalOp& self, const SpatialOp& rhs) { return self - rhs; },
-            nb::is_operator()
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         );
 
     nb::class_<Expr>(m, ("Expression" + suffix).c_str())
         .def(nb::init<const Executor&>())
-        .def(scalar() * nb::self)
-        .def(nb::self + nb::self)
-        .def(nb::self - nb::self)
         .def(
-            "__add__", [](Expr lhs, const SpatialOp& rhs) { return lhs + rhs; }, nb::is_operator()
+            "__rmul__",
+            [](const Expr& self, scalar coeff) { return coeff * self; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>()
         )
         .def(
-            "__sub__", [](Expr lhs, const SpatialOp& rhs) { return lhs - rhs; }, nb::is_operator()
+            "__add__",
+            [](Expr lhs, const Expr& rhs) { return lhs + rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         )
         .def(
-            "__add__", [](Expr lhs, const TemporalOp& rhs) { return lhs + rhs; }, nb::is_operator()
+            "__sub__",
+            [](Expr lhs, const Expr& rhs) { return lhs - rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         )
         .def(
-            "__sub__", [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; }, nb::is_operator()
+            "__add__",
+            [](Expr lhs, const SpatialOp& rhs) { return lhs + rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
+        .def(
+            "__sub__",
+            [](Expr lhs, const SpatialOp& rhs) { return lhs - rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
+        .def(
+            "__add__",
+            [](Expr lhs, const TemporalOp& rhs) { return lhs + rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
+        )
+        .def(
+            "__sub__",
+            [](Expr lhs, const TemporalOp& rhs) { return lhs - rhs; },
+            nb::is_operator(),
+            nb::keep_alive<0, 1>(),
+            nb::keep_alive<0, 2>()
         )
         .def("size", &Expr::size)
         // Resolve each operator's discretisation scheme from a schemes Dictionary
@@ -187,41 +262,48 @@ void registerDSL(nb::module_& m)
 
     // Implicit factories. ddt is overloaded (single-field and density-weighted), so bind
     // via lambdas that resolve the overload by arity rather than taking &ddt<T> directly.
-    imp_m.def("ddt", [](ScalarVolField& phi) { return dsl::imp::ddt<scalar>(phi); });
-    imp_m.def("ddt", [](VectorVolField& phi) { return dsl::imp::ddt<Vec3>(phi); });
+    imp_m.def("ddt", [](ScalarVolField& phi) { return dsl::imp::ddt<scalar>(phi); }, nb::keep_alive<0, 1>());
+    imp_m.def("ddt", [](VectorVolField& phi) { return dsl::imp::ddt<Vec3>(phi); }, nb::keep_alive<0, 1>());
     // Density-weighted ddt(rho, U) overload (two field args).
     imp_m.def(
         "ddt",
-        [](ScalarVolField& rho, VectorVolField& phi) { return dsl::imp::ddt<Vec3>(rho, phi); }
+        [](ScalarVolField& rho, VectorVolField& phi) { return dsl::imp::ddt<Vec3>(rho, phi); },
+        nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>()
     );
-    imp_m.def("div", &dsl::imp::div<scalar>);
-    imp_m.def("div", &dsl::imp::div<Vec3>);
-    imp_m.def("laplacian", &dsl::imp::laplacian<scalar>);
-    imp_m.def("laplacian", &dsl::imp::laplacian<Vec3>);
-    imp_m.def("source", &dsl::imp::source<scalar>);
-    imp_m.def("source", &dsl::imp::source<Vec3>);
-    imp_m.def("susp", &dsl::imp::susp<scalar>);
-    imp_m.def("susp", &dsl::imp::susp<Vec3>);
+    imp_m.def("div", &dsl::imp::div<scalar>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("div", &dsl::imp::div<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("laplacian", &dsl::imp::laplacian<scalar>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("laplacian", &dsl::imp::laplacian<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("source", &dsl::imp::source<scalar>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("source", &dsl::imp::source<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("susp", &dsl::imp::susp<scalar>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    imp_m.def("susp", &dsl::imp::susp<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
 
     // Explicit factories
-    exp_m.def("ddt", &dsl::exp::ddt<scalar>);
-    exp_m.def("ddt", &dsl::exp::ddt<Vec3>);
+    exp_m.def("ddt", &dsl::exp::ddt<scalar>, nb::keep_alive<0, 1>());
+    exp_m.def("ddt", &dsl::exp::ddt<Vec3>, nb::keep_alive<0, 1>());
     exp_m.def(
         "div",
         [](const ScalarSurfField& flux, const ScalarVolField& phi)
-        { return dsl::exp::div(flux, phi); }
+        { return dsl::exp::div(flux, phi); },
+        nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>()
     );
-    exp_m.def("div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); });
-    exp_m.def("laplacian", &dsl::exp::laplacian<scalar>);
-    exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>);
-    exp_m.def("grad", &dsl::exp::grad);
-    exp_m.def("source", [](ScalarVolField& coeff) { return dsl::exp::source<scalar>(coeff); });
+    exp_m.def("div", [](const ScalarSurfField& flux) { return dsl::exp::div(flux); }, nb::keep_alive<0, 1>());
+    exp_m.def("laplacian", &dsl::exp::laplacian<scalar>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    exp_m.def("laplacian", &dsl::exp::laplacian<Vec3>, nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>());
+    exp_m.def("grad", &dsl::exp::grad, nb::keep_alive<0, 1>());
+    exp_m.def(
+        "source", [](ScalarVolField& coeff) { return dsl::exp::source<scalar>(coeff); }, nb::keep_alive<0, 1>()
+    );
     // Vec3 explicit Su source — wraps a reconstructed cell body force as an rhs operator.
-    exp_m.def("source", [](VectorVolField& coeff) { return dsl::exp::source<Vec3>(coeff); });
+    exp_m.def(
+        "source", [](VectorVolField& coeff) { return dsl::exp::source<Vec3>(coeff); }, nb::keep_alive<0, 1>()
+    );
     exp_m.def(
         "source",
         [](const ScalarVolField& coeff, const ScalarVolField& phi)
-        { return dsl::exp::source<scalar>(coeff, phi); }
+        { return dsl::exp::source<scalar>(coeff, phi); },
+        nb::keep_alive<0, 1>(), nb::keep_alive<0, 2>()
     );
 
     // solve

@@ -705,6 +705,15 @@ void registerVolumeField(nb::module_& m)
         "Rotate old-time Vec3 volume field (φ^n → φ^{n-1}) — field must be registered in "
         "VectorCollection"
     );
+
+    m.def(
+        "cross",
+        [](const fvcc::VolumeField<NeoN::Vec3>& a, const fvcc::VolumeField<NeoN::Vec3>& b)
+        { return fvcc::cross(a, b); },
+        "field1"_a,
+        "field2"_a,
+        "Element-wise cross product of two Vec3 volume fields, internal and boundary alike"
+    );
 }
 
 } // namespace NeoN::bindings

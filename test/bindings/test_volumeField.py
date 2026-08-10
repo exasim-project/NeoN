@@ -116,3 +116,33 @@ def test_scalar_field_operators_evaluate_boundaries(executor):
     target.assign(a * b)
     assert np.allclose(_values(target), 15.0)
     assert np.allclose(boundary(target), 1500.0)
+
+
+def test_vec3_field_cross(executor):
+    """Element-wise cross product, the frame-acceleration term's building block.
+
+    A Kokkos kernel, so the assertions hold on every executor. Only the internal
+    values are checked because ``VectorVolumeField`` exposes no boundary
+    accessor to Python; ``cross`` covers the boundary the same way.
+    """
+    np = pytest.importorskip("numpy")
+    name, exec = executor
+    mesh = neon.create_1d_uniform_mesh(exec, 4)
+
+    omega = neon.VectorVolumeField(exec, "omega", mesh)
+    velocity = neon.VectorVolumeField(exec, "U", mesh)
+    neon.fill(omega.internal_vector(), neon.Vec3(0.0, 0.0, 5.0))
+    neon.fill(velocity.internal_vector(), neon.Vec3(1.0, 2.0, 3.0))
+
+    # (0,0,5) x (1,2,3) = (-10, 5, 0)
+    result = np.asarray(neon.cross(omega, velocity).internal_vector().copy_to_host())
+    assert result.shape == (mesh.n_cells(), 3)
+    np.testing.assert_allclose(result, np.tile([-10.0, 5.0, 0.0], (mesh.n_cells(), 1)))
+
+    # anticommutative, and the operands are left untouched
+    flipped = np.asarray(neon.cross(velocity, omega).internal_vector().copy_to_host())
+    np.testing.assert_allclose(flipped, -result)
+    np.testing.assert_allclose(
+        np.asarray(omega.internal_vector().copy_to_host()),
+        np.tile([0.0, 0.0, 5.0], (mesh.n_cells(), 1)),
+    )

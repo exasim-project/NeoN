@@ -9,6 +9,7 @@
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp"
 #include "NeoN/core/database/fieldDatabase.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 #include <vector>
 
@@ -139,4 +140,42 @@ private:
     // correctBoundaryConditions() call.
     bool boundaryConditionsSet_ {false};
 };
+
+// Deliberately not called ``detail``: an inner ``detail`` here would shadow
+// ``NeoN::detail`` for every unqualified lookup inside this namespace, which
+// breaks divOperator/laplacianOperator's ``detail::RefHolder``.
+namespace volumeFieldDetail
+{
+
+/** @brief in-place element-wise cross product, target = target ^ other */
+inline void
+crossInto(const Executor& exec, Vector<Vec3>& target, const Vector<Vec3>& other)
+{
+    auto out = target.view();
+    auto rhs = other.view();
+    parallelFor(
+        exec,
+        {0, out.size()},
+        KOKKOS_LAMBDA(const localIdx i) { out[i] = out[i] ^ rhs[i]; },
+        "vec3FieldCross"
+    );
+}
+
+} // namespace volumeFieldDetail
+
+/**
+ * @brief Element-wise cross product of two Vec3 volume fields.
+ *
+ * Applied to the internal vector and to the boundary values alike, so the result
+ * is usable wherever the operands were — matching the scalar SurfaceField
+ * operators. Right-handed: ``cross(a, b)[i] == a[i] ^ b[i]``.
+ */
+inline VolumeField<Vec3> cross(const VolumeField<Vec3>& lhs, const VolumeField<Vec3>& rhs)
+{
+    VolumeField<Vec3> result(lhs);
+    volumeFieldDetail::crossInto(result.exec(), result.internalVector(), rhs.internalVector());
+    volumeFieldDetail::crossInto(result.exec(), result.boundaryData().value(), rhs.boundaryData().value());
+    return result;
+}
+
 } // namespace NeoN

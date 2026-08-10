@@ -168,6 +168,22 @@ scalar operator&(const Vec3& lhs, Vec3 rhs)
     return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
 }
 
+/** @brief cross (vector) product, right-handed: lhs ^ rhs */
+KOKKOS_INLINE_FUNCTION
+Vec3 operator^(const Vec3& lhs, Vec3 rhs)
+{
+    return {
+        lhs[1] * rhs[2] - lhs[2] * rhs[1],
+        lhs[2] * rhs[0] - lhs[0] * rhs[2],
+        lhs[0] * rhs[1] - lhs[1] * rhs[0]
+    };
+}
+
+/** @brief cross (vector) product, spelled out for call sites that read better
+ * as a named function than as ``^`` */
+KOKKOS_INLINE_FUNCTION
+Vec3 cross(const Vec3& lhs, const Vec3& rhs) { return lhs ^ rhs; }
+
 
 KOKKOS_INLINE_FUNCTION
 Vec3 operator/(const Vec3& lhs, scalar rhs) { return {lhs[0] / rhs, lhs[1] / rhs, lhs[2] / rhs}; }
