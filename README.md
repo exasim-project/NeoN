@@ -12,6 +12,25 @@
 
 # NeoN
 
+NeoN is an open-source, high-performance C++ CFD library for modern heterogeneous computing systems. It currently provides data structures, parallel algorithms, and numerical infrastructure for the finite volume method.
+
+By combining finite-volume abstractions with modern C++ and performance-portable backends, NeoN enables developers to build maintainable, scalable, and high-performance fluid-flow solvers without writing architecture-specific code for each hardware platform.
+
+Its modular architecture enables performance-portable execution and solver backends, currently using [Kokkos](https://github.com/kokkos/kokkos) and [Ginkgo](https://github.com/ginkgo-project/ginkgo) while remaining flexible to adopt alternative technologies as the framework evolves.
+
+## Key Features
+
+- Execution on
+  - serial CPU
+  - multithreaded CPU
+  - MPI-based distributed systems
+  - GPUs from NVIDIA, AMD, and Intel
+- Portability across Linux, macOS, and Windows
+- Performance-portable parallel and memory abstractions
+- Unified GPU execution model for NVIDIA, AMD, and Intel GPUs
+
+---
+
 > [!IMPORTANT]
 > The NeoN project needs you!
 > If you're interested in contributing to NeoN please open a PR! If you have any questions on where to start please contact us here or on [gitter](https://matrix.to/#/#NeoN:gitter.im).
