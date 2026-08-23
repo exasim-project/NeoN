@@ -5,6 +5,7 @@
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
@@ -36,6 +37,36 @@ public:
     ~SourceTerm();
 
     void explicitOperation(Vector<ValueType>& source) const;
+
+    // Format-generic Sp assembly, defined here (not sourceTerm.cpp) so callers can
+    // instantiate it for any SystemMatrixType, e.g. ELLMatrix. Overloads (not replaces) the
+    // non-template implicitOperation() below -- for the CSR default, that exact non-template
+    // match wins over this template per normal overload resolution, so DSL callers are
+    // unaffected; ELL (or any other format) callers deduce SystemMatrixType here directly.
+    template<typename SystemMatrixType>
+    void implicitOperation(la::LinearSystem<ValueType, ValueType, SystemMatrixType>& ls) const
+    {
+        if (!spCoeff_)
+        {
+            NF_ERROR_EXIT("Not implemented");
+        }
+        // Sp implicit: diagonal += scaling * spCoeff * volume
+        const auto operatorScaling = this->getCoefficient();
+        const auto vol = spCoeff_->mesh().cellVolumes().view();
+        const auto [coeff] = views(spCoeff_->internalVector());
+        auto values = ls.matrix().values().view();
+        const auto ma = ls.matrix().faceToMatrixView();
+
+        NeoN::parallelFor(
+            ls.exec(),
+            {0, coeff.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                values[ma.diagIdx(celli)] +=
+                    operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
+            },
+            "Sp::implicitOperation"
+        );
+    }
 
     void implicitOperation(la::LinearSystem<ValueType>& ls) const;
 

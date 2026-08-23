@@ -75,6 +75,18 @@ public:
         const dsl::Coeff operatorScaling
     ) = 0;
 
+    // Default-throwing, not pure virtual, so LaplacianOperatorFactory strategies other than
+    // GaussGreenLaplacian don't need changes -- mirrors DivOperatorFactory::div(ELL...).
+    virtual void laplacian(
+        la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+        const SurfaceField<scalar>& gamma,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff operatorScaling
+    )
+    {
+        NF_THROW("laplacian(ELL matrix) not implemented for this LaplacianOperator strategy");
+    }
+
     // Pure virtual function for cloning
     virtual std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>>
     clone() const = 0;
@@ -163,12 +175,39 @@ public:
         sameTypeStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
     }
 
+    // Format-generic overload, mirroring DivOperator::implicitOperation<SystemMatrixType> -- the
+    // non-template overload above still wins for the CSR default, so existing DSL callers are
+    // unaffected; ELL callers deduce SystemMatrixType from the ls argument.
+    template<typename SystemMatrixType>
+    void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType, SystemMatrixType>& ls
+    ) const
+    {
+        NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        sameTypeStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
+    }
+
     /* @brief Implicit assembly into a scalar-matrix / FieldValueType-rhs linear system
      *        (segregated vector-solve form). Only present when FieldValueType != scalar.
      */
-    template<typename F = FieldValueType>
-        requires(!std::is_same_v<F, scalar>)
     void implicitOperation(la::LinearSystem<scalar, FieldValueType>& ls) const
+        requires(!std::is_same_v<FieldValueType, scalar>)
+    {
+        NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix LaplacianOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        scalarMtxStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
+    }
+
+    // Format-generic counterpart of the segregated overload above -- the non-template overload
+    // still wins for the CSR default, so existing DSL callers are unaffected; ELL callers deduce
+    // SystemMatrixType from the ls argument. GaussGreenLaplacian<FieldValueType, scalar>'s ELL
+    // laplacian() override already exists (added generically to the class template, not
+    // per-instantiation) and computeLaplacianIntImpl is already explicitly instantiated for the
+    // {FieldValueType, scalar, ELLMatrix<scalar,localIdx>} combination, so this is purely new
+    // DSL-entry-point plumbing, not new kernel work.
+    template<typename SystemMatrixType>
+        requires(!std::is_same_v<FieldValueType, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, FieldValueType, SystemMatrixType>& ls) const
     {
         NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

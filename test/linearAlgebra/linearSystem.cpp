@@ -115,6 +115,191 @@ TEMPLATE_TEST_CASE("LinearSystem", "[template]", NeoN::scalar)
         REQUIRE(linearSystem.getMeshIterator()->name() == "CellBased");
     }
 
+    // Regression: each boundary face must land on its own owner cell, not another one --
+    // CooSparsityPattern::view() briefly exposed row-range data here instead.
+    SECTION("removeBoundaryContributions applies each correction to its own owner cell " + execName)
+    {
+        auto nCells = 4;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar>(mesh);
+
+        REQUIRE(ls.boundaryMatrix().values().size() == 2);
+        Vector<scalar> boundaryValues(exec, {10.0, 20.0});
+        ls.boundaryMatrix().values() = boundaryValues;
+
+        auto bRowIdxsHost = ls.boundaryMatrix().sparsity()->rowIdxs().copyToHost();
+        auto owner0 = bRowIdxsHost.view()[0];
+        auto owner1 = bRowIdxsHost.view()[1];
+        REQUIRE(owner0 != owner1); // sanity: the two boundary faces belong to different cells
+
+        auto lsNoBnd = NeoN::la::removeBoundaryContributions(ls);
+        auto diagHost = lsNoBnd.matrix().diag().copyToHost();
+        auto diagView = diagHost.view();
+
+        for (localIdx i = 0; i < nCells; ++i)
+        {
+            scalar expected = 0.0;
+            if (i == owner0) expected += 10.0;
+            if (i == owner1) expected += 20.0;
+            REQUIRE(diagView[i] == expected);
+        }
+    }
+
+    // Assembles a 1D Laplacian stencil (diag = face count per cell, off-diag = -1 per face)
+    // through createEmptyLinearSystem + faceToMatrixView(), checking every logical (row,col).
+    SECTION("createEmptyLinearSystem<ELLMatrix> assembles via faceToMatrixView " + execName)
+    {
+        using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+        auto nCells = 4;
+        auto nFaces = 3;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+
+        REQUIRE(ls.matrix().values().size() == ls.matrix().sparsity()->storageSize());
+        REQUIRE(ls.matrix().nNonZeros() == nCells + 2 * nFaces);
+
+        auto ma = ls.matrix().faceToMatrixView();
+        auto matrixV = ls.matrix().values().view();
+        parallelFor(
+            exec,
+            {0, nFaces},
+            NEON_LAMBDA(const localIdx facei) {
+                const localIdx own = facei;
+                const localIdx nei = facei + 1;
+                matrixV[ma.upperIdx(own, facei)] = -1.0;
+                matrixV[ma.lowerIdx(nei, facei)] = -1.0;
+                Kokkos::atomic_add(&matrixV[ma.diagIdx(own)], 1.0);
+                Kokkos::atomic_add(&matrixV[ma.diagIdx(nei)], 1.0);
+            },
+            "assembleLaplacianStyleELL"
+        );
+
+        REQUIRE_THAT(ls.matrix().diag(), Equals(I({1.0, 2.0, 2.0, 1.0})));
+
+        auto matView = ls.matrix().view();
+        Vector<scalar> checkOffDiag(exec, 6);
+        auto checkOffDiagV = checkOffDiag.view();
+        parallelFor(
+            exec,
+            {0, 1},
+            NEON_LAMBDA(const localIdx) {
+                checkOffDiagV[0] = matView.entry(0, 1);
+                checkOffDiagV[1] = matView.entry(1, 0);
+                checkOffDiagV[2] = matView.entry(1, 2);
+                checkOffDiagV[3] = matView.entry(2, 1);
+                checkOffDiagV[4] = matView.entry(2, 3);
+                checkOffDiagV[5] = matView.entry(3, 2);
+            }
+        );
+        REQUIRE_THAT(checkOffDiag, Equals(I({-1.0, -1.0, -1.0, -1.0, -1.0, -1.0})));
+
+        // padded colIdx layout {0,0,1,2, 1,1,2,3, INV,2,3,INV}: slot 2 of rows 0 and 3 (flat
+        // offsets 8 and 11) is padding -- assembly never touched it, so it stays zero-filled.
+        auto valuesHost = ls.matrix().values().copyToHost();
+        auto valuesHostV = valuesHost.view();
+        REQUIRE(valuesHostV[8] == 0.0);
+        REQUIRE(valuesHostV[11] == 0.0);
+    }
+
+    SECTION("ELL system copyToExecutor preserves faceToMatrixView " + execName)
+    {
+        using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+        auto nCells = 4;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+
+        auto hostMatrix = ls.matrix().copyToExecutor(NeoN::SerialExecutor());
+        REQUIRE(hostMatrix.faceToMatrixAddress() != nullptr);
+
+        auto ma = hostMatrix.faceToMatrixView();
+        auto matrixV = hostMatrix.values().view();
+        parallelFor(
+            NeoN::SerialExecutor(),
+            {0, 1},
+            NEON_LAMBDA(const localIdx) { matrixV[ma.diagIdx(0)] = 42.0; }
+        );
+        REQUIRE(hostMatrix.values().view()[ma.diagIdx(0)] == 42.0);
+    }
+
+    // ELL counterpart to "removeBoundaryContributions applies each correction to its own
+    // owner cell" above -- same check, ELL system matrix instead of CSR.
+    SECTION("removeBoundaryContributions works with an ELL system matrix " + execName)
+    {
+        using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+        auto nCells = 4;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+
+        REQUIRE(ls.boundaryMatrix().values().size() == 2);
+        Vector<scalar> boundaryValues(exec, {10.0, 20.0});
+        ls.boundaryMatrix().values() = boundaryValues;
+
+        auto bRowIdxsHost = ls.boundaryMatrix().sparsity()->rowIdxs().copyToHost();
+        auto owner0 = bRowIdxsHost.view()[0];
+        auto owner1 = bRowIdxsHost.view()[1];
+        REQUIRE(owner0 != owner1);
+
+        auto lsNoBnd = NeoN::la::removeBoundaryContributions(ls);
+        auto diagHost = lsNoBnd.matrix().diag().copyToHost();
+        auto diagView = diagHost.view();
+
+        for (localIdx i = 0; i < nCells; ++i)
+        {
+            scalar expected = 0.0;
+            if (i == owner0) expected += 10.0;
+            if (i == owner1) expected += 20.0;
+            REQUIRE(diagView[i] == expected);
+        }
+    }
+
+    // LinearSystemView used to hardcode one MatrixViewType for both matrices, which only ever
+    // got exercised with CSR/COO (same ViewType either way). ELL system + COO boundary forces
+    // the two view types to actually differ, proving the split works for both the mutable and
+    // const view() overloads.
+    SECTION("view() carries independent ELL system / COO boundary view types " + execName)
+    {
+        using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+        auto nCells = 4;
+        auto mesh = create1DUniformMesh(exec, nCells);
+        auto ls = NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix>(mesh);
+
+        auto lsView = ls.view();
+        parallelFor(
+            exec,
+            {0, 1},
+            NEON_LAMBDA(const localIdx) {
+                lsView.matrix.entry(0, 0) = 4.0;
+                lsView.boundaryMatrix.values[0] = 10.0;
+                lsView.rhs[0] = 20.0;
+            }
+        );
+
+        auto diagHost = ls.matrix().diag().copyToHost();
+        auto bValuesHost = ls.boundaryMatrix().values().copyToHost();
+        auto rhsHost = ls.rhs().copyToHost();
+        REQUIRE(diagHost.view()[0] == 4.0);
+        REQUIRE(bValuesHost.view()[0] == 10.0);
+        REQUIRE(rhsHost.view()[0] == 20.0);
+
+        const auto& constLs = ls;
+        auto constLsView = constLs.view();
+        REQUIRE(constLsView.matrix.values.size() == ls.matrix().values().size());
+        REQUIRE(constLsView.boundaryMatrix.values.size() == ls.boundaryMatrix().values().size());
+
+        // Read through the const view itself (not a host copy) to catch return-type
+        // mismatches -- go via copyToHost() rather than indexing constLsView directly since
+        // exec() may be a GPU executor.
+        auto hostLs = ls.copyToHost();
+        const auto& constHostLs = hostLs;
+        auto constHostLsView = constHostLs.view();
+        REQUIRE(constHostLsView.matrix.entry(0, 0) == 4.0);
+        REQUIRE(constHostLsView.boundaryMatrix.values[0] == 10.0);
+        REQUIRE(constHostLsView.rhs[0] == 20.0);
+    }
 
     SECTION("view read/write " + execName)
     {

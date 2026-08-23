@@ -63,17 +63,36 @@ la::SolverStats iterativeSolveImpl(
     return solver.solve(ls, solution.internalVector());
 }
 
-template<typename VectorType, typename IndexType>
+template<
+    typename VectorType,
+    typename IndexType,
+    typename SystemMatrixType = la::CSRMatrix<typename VectorType::ElementType, localIdx>>
 la::SolverStats iterativeSolveImpl(
     Expression<typename VectorType::ElementType>& exp,
     VectorType& solution,
     scalar t,
     scalar dt,
+    const Dictionary& fvSchemes,
     const Dictionary& fvSolution,
     std::vector<const PostAssemblyBase<typename VectorType::ElementType, IndexType>*> ps = {}
 )
 {
-    auto ls = exp.assemble(solution.mesh(), t, dt, ps);
+    // Fuse first, same as the other iterativeSolveImpl overload above -- without this, e.g. a
+    // div+laplacian expression assembled through this (SystemMatrixType-explicit) path never
+    // collapses into GaussGreenDivLaplacian, silently losing the fusion this optimizer exists
+    // for. optExp holds new operator objects (the fused ones), so it needs its own read() --
+    // exp's own read() (already done by solve() below, for the explicit-integration branch)
+    // doesn't carry over to them.
+    auto optExp = optimize(exp);
+    optExp.read(fvSchemes);
+
+    // Derived from SystemMatrixType, not VectorType::ElementType: for a segregated form (e.g.
+    // ELLMatrix<scalar,...> with a Vec3 solution) the matrix's own value type is scalar, not
+    // the field's -- using ElementType directly would assemble<Vec3, ELLMatrix<scalar,...>>,
+    // a mismatched AssemblyType/SystemMatrixType pair. Same result as before for the CSR-default
+    // case, since CSRMatrix<ElementType,...>::MatrixValueType == ElementType.
+    using AssemblyType = typename SystemMatrixType::MatrixValueType;
+    auto ls = optExp.template assemble<AssemblyType, SystemMatrixType>(solution.mesh(), t, dt, ps);
 
     auto solver = la::Solver(solution.exec(), fvSolution);
     fence(solution.exec());
@@ -91,7 +110,10 @@ la::SolverStats iterativeSolveImpl(
  * @param fvSolution - Dictionary containing linear solver properties
  * @param p - A chainable functor that performs manipulations on the assembled system
  */
-template<typename VectorType, typename IndexType>
+template<
+    typename VectorType,
+    typename IndexType,
+    typename SystemMatrixType = la::CSRMatrix<typename VectorType::ElementType, localIdx>>
 std::optional<la::SolverStats> solve(
     Expression<typename VectorType::ElementType, IndexType>& exp,
     VectorType& solution,
@@ -106,20 +128,24 @@ std::optional<la::SolverStats> solve(
     {
         NF_ERROR_EXIT("No temporal or implicit terms to solve.");
     }
-    exp.read(fvSchemes);
     auto integrator = timeIntegration::TimeIntegration<VectorType>(
         fvSchemes.subDict("timeIntegration"), fvSolution
     );
 
     if (exp.temporalOperators().size() > 0 && integrator.explicitIntegration())
     {
-        // integrate equations in time
+        // integrate equations in time -- read() belongs here now, not above unconditionally:
+        // the implicit branch below reads its own optimize()d copy instead (see
+        // iterativeSolveImpl), so reading exp itself here would be redundant, dead work.
+        exp.read(fvSchemes);
         integrator.solve(exp, solution, t, dt);
         return std::nullopt; // no linear solve was performed, so no stats to return
     }
     else
     {
-        return detail::iterativeSolveImpl(exp, solution, t, dt, fvSolution, p);
+        return detail::iterativeSolveImpl<VectorType, IndexType, SystemMatrixType>(
+            exp, solution, t, dt, fvSchemes, fvSolution, p
+        );
     }
 }
 
@@ -171,7 +197,7 @@ KOKKOS_INLINE_FUNCTION Vec3 componentMax(const Vec3& lhs, const Vec3& rhs)
 
 /* @brief Apply equation (matrix) under-relaxation to an assembled LinearSystem.
  *
- * NeoN bakes boundary contributions permanently into the CSR diagonal at assembly time,
+ * NeoN bakes boundary contributions permanently into the system-matrix diagonal at assembly time,
  * so the augmented diagonal `D_aug = matrix.values[diagIdx(cell)]` already contains the
  * boundary diagonal. This kernel relaxes the augmented diagonal DIRECTLY. Per cell:
  *
@@ -225,8 +251,8 @@ void applyMatrixRelaxation(
     auto lsView = ls.view();
     auto& matrix = lsView.matrix;
     auto& rhs = lsView.rhs;
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-    const auto [rowOffs, colIdxs] = views(ls.matrix().rowOffs(), ls.matrix().colIdxs());
+    const auto ma = ls.matrix().faceToMatrixView();
+    const auto sparsity = ls.matrix().sparsity()->view();
     const auto field = solution.internalVector().view();
 
     const localIdx nCells = field.size();
@@ -248,11 +274,19 @@ void applyMatrixRelaxation(
         ls.exec(),
         {0, nCells},
         NEON_LAMBDA(const localIdx celli) {
-            // Off-diagonal magnitude sum — cell-based CSR row gather, NO atomics (perf lever).
+            // Off-diagonal magnitude sum — cell-based row gather via the common
+            // SparsityView/EllSparsityView rowSize()/linearIndex() interface, NO atomics (perf
+            // lever).
             auto sumOff = zero<MatrixValueType>();
-            for (localIdx idx = rowOffs[celli]; idx < rowOffs[celli + 1]; ++idx)
+            const auto rowSize = sparsity.rowSize(celli);
+            for (localIdx slot = 0; slot < rowSize; ++slot)
             {
-                if (colIdxs[idx] != celli)
+                const auto idx = sparsity.linearIndex(celli, slot);
+                const auto col = sparsity.colIdxs[idx];
+                // ELL padding, trailing within the row -- CSR's rowSize() never includes
+                // padding, so this never triggers for CSR.
+                if (col == decltype(sparsity)::invalidIndex()) break;
+                if (col != celli)
                 {
                     sumOff = sumOff + componentMag(matrix.values[idx]);
                 }

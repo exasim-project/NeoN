@@ -46,9 +46,39 @@ concept HasImplicitOperatorScalarMtx = requires(T const t) {
     } -> std::same_as<void>;
 };
 
+/* @brief Concept satisfied when T can assemble into a native ELL-backed LinearSystem
+ *        (scalar matrix, scalar rhs). Matches SourceTerm::implicitOperation<SystemMatrixType>'s
+ *        existing template shape directly -- SourceTerm needs no changes to satisfy this.
+ */
+template<typename T>
+concept HasImplicitOperatorELL = requires(T const t) {
+    {
+        t.implicitOperation(
+            std::declval<la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>&>()
+        )
+    } -> std::same_as<void>;
+};
+
+/* @brief Concept satisfied when T can assemble into a native ELL-backed LinearSystem in the
+ *        segregated vector-solve form (scalar matrix, T::VectorValueType rhs). Only meaningful
+ *        when VectorValueType != scalar -- for scalar T this collides with HasImplicitOperatorELL
+ *        (same declval type), which is why the dispatch below only ever calls this branch when
+ *        ValueType != scalar (mirrors HasImplicitOperatorScalarMtx's CSR counterpart).
+ */
+template<typename T>
+concept HasImplicitOperatorScalarMtxELL = requires(T const t) {
+    {
+        t.implicitOperation(std::declval<la::LinearSystem<
+                                scalar,
+                                typename T::VectorValueType,
+                                la::ELLMatrix<scalar, localIdx>>&>())
+    } -> std::same_as<void>;
+};
+
 template<typename T>
 concept IsSpatialOperator =
-    HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>;
+    HasExplicitOperator<T> || HasImplicitOperator<T> || HasImplicitOperatorScalarMtx<T>
+    || HasImplicitOperatorELL<T> || HasImplicitOperatorScalarMtxELL<T>;
 
 /* @class SpatialOperator
  * @brief A class to represent an operator in NeoNs dsl
@@ -91,11 +121,33 @@ public:
      *        (segregated vector-solve form). Disabled when ValueType == scalar to
      *        avoid colliding with the same-type overload above.
      */
-    template<typename U = ValueType>
-        requires(!std::is_same_v<U, scalar>)
     void implicitOperation(la::LinearSystem<scalar, ValueType>& ls) const
+        requires(!std::is_same_v<ValueType, scalar>)
     {
         model_->implicitOperationScalarMtx(ls);
+    }
+
+    /* @brief Implicit assembly into a native ELL-backed (scalar matrix, scalar rhs) linear
+     *        system. A fixed, concrete parameter type distinct from both overloads above
+     *        (different SystemMatrixType), so this coexists without ambiguity regardless of
+     *        ValueType -- only operators that actually support ELL (see HasImplicitOperatorELL)
+     *        do anything here; others throw via implicitOperationELL's default below.
+     */
+    void implicitOperation(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls
+    ) const
+    {
+        model_->implicitOperationELL(ls);
+    }
+
+    /* @brief Implicit assembly into a native ELL-backed LinearSystem in the segregated
+     *        vector-solve form (scalar matrix, ValueType rhs). Disabled when ValueType == scalar
+     *        to avoid colliding with the same-type ELL overload above (identical declval type).
+     */
+    void implicitOperation(la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls
+    ) const
+        requires(!std::is_same_v<ValueType, scalar>)
+    {
+        model_->implicitOperationScalarMtxELL(ls);
     }
 
     /* returns the fundamental type of an operator, ie explicit, implicit */
@@ -134,6 +186,23 @@ private:
          *        Concrete operators that don't support this form leave it as a no-op.
          */
         virtual void implicitOperationScalarMtx(la::LinearSystem<scalar, ValueType>& ls) const = 0;
+
+        /* @brief Implicit assembly into a native ELL-backed (scalar matrix, scalar rhs)
+         *        linear system. Concrete operators that don't support ELL yet throw
+         *        (see OperatorModel's implementation), same as implicitOperationScalarMtx.
+         */
+        virtual void
+        implicitOperationELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls
+        ) const = 0;
+
+        /* @brief Implicit assembly into a native ELL-backed LinearSystem, segregated
+         *        vector-solve form (scalar matrix, ValueType rhs). Concrete operators that
+         *        don't support this yet throw, same as implicitOperationELL /
+         *        implicitOperationScalarMtx.
+         */
+        virtual void implicitOperationScalarMtxELL(
+            la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls
+        ) const = 0;
 
         /* @brief Given an input this function reads required coeffs */
         virtual void read(const Input& input) = 0;
@@ -201,6 +270,37 @@ private:
                 NF_ERROR_EXIT(
                     "Operator '" << getName()
                                  << "' does not support scalar-matrix (segregated) assembly."
+                );
+            }
+        }
+
+        virtual void
+        implicitOperationELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, localIdx>>& ls
+        ) const override
+        {
+            if constexpr (HasImplicitOperatorELL<ConcreteOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls);
+            }
+            else
+            {
+                NF_ERROR_EXIT("Operator '" << getName() << "' does not support ELL assembly.");
+            }
+        }
+
+        virtual void implicitOperationScalarMtxELL(
+            la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, localIdx>>& ls
+        ) const override
+        {
+            if constexpr (HasImplicitOperatorScalarMtxELL<ConcreteOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls);
+            }
+            else
+            {
+                NF_ERROR_EXIT(
+                    "Operator '" << getName()
+                                 << "' does not support scalar-matrix (segregated) ELL assembly."
                 );
             }
         }

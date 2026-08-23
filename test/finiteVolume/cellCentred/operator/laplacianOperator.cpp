@@ -343,4 +343,424 @@ TEST_CASE("laplacianOperator implicit transform diagCmpt")
     }
 }
 
+// computeLaplacianIntImpl is the only piece of Laplacian assembly touching upperIdx()/lowerIdx()
+// as well as diagIdx() -- called here directly on CSR and ELL systems, bypassing the still-CSR-
+// only virtual GaussGreenLaplacian::laplacian(), to prove the assembly kernel itself is
+// format-generic for a full (not diagonal-only) finite-volume stencil.
+TEMPLATE_TEST_CASE(
+    "computeLaplacianIntImpl matches for CSR and ELL", "[template]", NeoN::scalar, NeoN::Vec3
+)
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<TestType, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<TestType, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    // 4x4 mesh: corner cells have 2 internal-face neighbours, edge cells 3, interior cells 4 --
+    // gives ELL three distinct row widths (real padding, multiple diagonal slot positions),
+    // unlike the uniform 1D mesh used elsewhere in this branch.
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 2.0);
+    fill(gamma.boundaryData().value(), 2.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);
+    fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    // FaceNormalGradientFactory only expects its own scheme token -- the 3-token
+    // {"Gauss","linear","uncorrected"} form elsewhere in this file is consumed one token at a
+    // time as it passes through GaussGreenLaplacian's own factory dispatch and
+    // SurfaceInterpolation before reaching here; constructing FaceNormalGradient directly needs
+    // just the remaining "uncorrected" token.
+    Input faceNormalGradientInput = TokenList({std::string("uncorrected")});
+    fvcc::FaceNormalGradient<TestType> faceNormalGradient(exec, mesh, faceNormalGradientInput);
+
+    SECTION("logical entries, diag and padding match " + execName)
+    {
+        auto csrLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, CSRMatrix>(mesh);
+        auto ellLs = NeoN::la::createEmptyLinearSystem<TestType, TestType, ELLMatrix>(mesh);
+
+        fvcc::computeLaplacianIntImpl(csrLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+        fvcc::computeLaplacianIntImpl(ellLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+
+        REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+
+        // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+        // different physical layouts (CSR compact vs ELL padded column-major).
+        auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+        auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+        auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+        auto csrMatView = csrLsHost.matrix().view();
+        auto ellMatView = ellLsHost.matrix().view();
+
+        std::vector<TestType> csrEntries;
+        std::vector<TestType> ellEntries;
+        for (localIdx row = 0; row < nCells; ++row)
+        {
+            for (localIdx col = 0; col < nCells; ++col)
+            {
+                if (csrSparsityView.findEntry(row, col)
+                    != decltype(csrSparsityView)::invalidIndex())
+                {
+                    csrEntries.push_back(csrMatView.entry(row, col));
+                    ellEntries.push_back(ellMatView.entry(row, col));
+                }
+            }
+        }
+        REQUIRE(csrEntries.size() == ellEntries.size());
+        REQUIRE_THAT(
+            Vector<TestType>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10})
+        );
+
+        // Every ELL slot whose column index is the padding sentinel must stay untouched.
+        auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+        auto ellValuesHostV = ellLsHost.matrix().values().view();
+        for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+        {
+            if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+            {
+                REQUIRE(ellValuesHostV[i] == zero<TestType>());
+            }
+        }
+    }
+}
+
+// Segregated vector-solve form (scalar matrix, Vec3 rhs), matching the ELL instantiation added
+// alongside GaussGreenLaplacian<Vec3, scalar>'s CSR support. computeLaplacianIntImpl only ever
+// reads phi.mesh()/phi.exec() -- never phi's values -- so this performs the identical scalar
+// arithmetic as the scalar/scalar case above; the point of this test is proving the
+// {Vec3, scalar, ELLMatrix} instantiation actually links and runs, not a new numerical path.
+TEST_CASE("computeLaplacianIntImpl matches for CSR and ELL, segregated vector-solve form")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    fill(gamma.internalVector(), 2.0);
+    fill(gamma.boundaryData().value(), 2.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Input faceNormalGradientInput = TokenList({std::string("uncorrected")});
+    fvcc::FaceNormalGradient<Vec3> faceNormalGradient(exec, mesh, faceNormalGradientInput);
+
+    SECTION("diag matches " + execName)
+    {
+        auto csrLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, CSRMatrix>(mesh);
+        auto ellLs = NeoN::la::createEmptyLinearSystem<scalar, Vec3, ELLMatrix>(mesh);
+
+        fvcc::computeLaplacianIntImpl(csrLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+        fvcc::computeLaplacianIntImpl(ellLs, gamma, phi, dsl::Coeff {1.0}, faceNormalGradient);
+
+        REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    }
+}
+
+// Full vertical slice: dsl::imp::laplacian (the production entry point) assembles into an ELL
+// system via Expression::assemble<AssemblyType, SystemMatrixType>(), through LaplacianOperator ->
+// LaplacianOperatorFactory -> GaussGreenLaplacian::laplacian(ELL...) -- not by calling
+// computeLaplacianIntImpl directly, unlike the TEMPLATE_TEST_CASEs above. Real boundary faces are
+// in play here (computeLaplacianBoundImpl is templated on SystemMatrixType too), so
+// boundaryMatrix/boundaryRhs are compared as well.
+TEST_CASE("Expression assembles laplacian into ELL via LaplacianOperator, matches CSR")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto gammaV = gamma.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            gammaV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+        }
+    );
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Dictionary lapSchemes;
+    lapSchemes.insert(
+        "laplacian(gamma,phi)",
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")})
+    );
+    Dictionary fvSchemes;
+    fvSchemes.insert("laplacianSchemes", lapSchemes);
+
+    dsl::Expression<scalar> expr(dsl::imp::laplacian(gamma, phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+    REQUIRE_THAT(
+        csrLs.boundaryMatrix().values(), Equals(ellLs.boundaryMatrix().values(), Approx {1e-10})
+    );
+    REQUIRE_THAT(csrLs.boundaryRhs(), Equals(ellLs.boundaryRhs(), Approx {1e-10}));
+
+    // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+    // different physical layouts (CSR compact vs ELL padded column-major).
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == zero<scalar>());
+        }
+    }
+}
+
+// Segregated vector-solve form (scalar matrix, Vec3 rhs) through the full DSL -- unlike
+// "computeLaplacianIntImpl matches for CSR and ELL, segregated vector-solve form" above (which
+// calls the kernel directly), this goes through dsl::imp::laplacian -> Expression<Vec3> ->
+// SpatialOperator's segregated-ELL dispatch (HasImplicitOperatorScalarMtxELL /
+// implicitOperationScalarMtxELL) -> LaplacianOperator's segregated implicitOperation<
+// SystemMatrixType> entry point. The underlying kernel and GaussGreenLaplacian<Vec3, scalar>'s
+// ELL override already existed (proven by the kernel-level test above); this proves the DSL can
+// actually reach them.
+TEST_CASE("Expression assembles laplacian into ELL via LaplacianOperator, matches CSR, segregated")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    auto mesh = create2DUniformMesh(exec, 4, 4);
+    auto nCells = mesh.nCells();
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto gammaV = gamma.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            gammaV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+        }
+    );
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<Vec3>>(mesh);
+    fvcc::VolumeField<Vec3> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    Dictionary lapSchemes;
+    lapSchemes.insert(
+        "laplacian(gamma,phi)",
+        TokenList({std::string("Gauss"), std::string("linear"), std::string("uncorrected")})
+    );
+    Dictionary fvSchemes;
+    fvSchemes.insert("laplacianSchemes", lapSchemes);
+
+    dsl::Expression<Vec3> expr(dsl::imp::laplacian(gamma, phi));
+    expr.read(fvSchemes);
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+    REQUIRE_THAT(
+        csrLs.boundaryMatrix().values(), Equals(ellLs.boundaryMatrix().values(), Approx {1e-10})
+    );
+    REQUIRE_THAT(csrLs.boundaryRhs(), Equals(ellLs.boundaryRhs(), Approx {1e-10}));
+
+    // Compare every logical (row,col) entry -- not the flat values() arrays, which have
+    // different physical layouts (CSR compact vs ELL padded column-major).
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+
+    // Every ELL slot whose column index is the padding sentinel must stay untouched.
+    auto colIdxHostV = ellLsHost.matrix().sparsity()->colIdxs().view();
+    auto ellValuesHostV = ellLsHost.matrix().values().view();
+    for (localIdx i = 0; i < colIdxHostV.size(); ++i)
+    {
+        if (colIdxHostV[i] == decltype(ellLsHost.matrix().sparsity()->view())::invalidIndex())
+        {
+            REQUIRE(ellValuesHostV[i] == zero<scalar>());
+        }
+    }
+}
+
+// Corrected-scheme coverage for the ELL vertical slice above, on a genuinely non-orthogonal mesh
+// (the sheared-cube technique from basicGeometryScheme.cpp: C.y += s*C.x introduces
+// non-orthogonality on x-normal faces while leaving nonOrthDeltaCoeffs at 1/h). The shear must
+// happen before anything queries GeometryScheme::readOrCreate(mesh) -- LaplacianOperator
+// construction below does -- since that caches the scheme on first access. Compares the
+// corrected scheme's rhs against the uncorrected scheme's rhs on the same sheared mesh to prove
+// the deferred correction actually changed the assembled system (computeLaplacianNonOrthCorrImpl
+// only ever touches rhs, never the matrix, so a rhs difference is exactly the signal), then
+// checks CSR and ELL agree on the corrected result.
+TEST_CASE("Expression assembles laplacian into ELL via LaplacianOperator, matches CSR, corrected, "
+          "non-orthogonal mesh")
+{
+    using CSRMatrix = NeoN::la::CSRMatrix<scalar, localIdx>;
+    using ELLMatrix = NeoN::la::ELLMatrix<scalar, localIdx>;
+
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx n = 4;
+    auto mesh = create3DUniformMesh(exec, n, n, n);
+    const scalar s = 0.5;
+    {
+        auto ccH = mesh.cellCenters().copyToHost();
+        auto v = ccH.view();
+        for (localIdx i = 0; i < ccH.size(); ++i)
+        {
+            const Vec3 p = v[i];
+            v[i] = Vec3 {p[0], p[1] + s * p[0], p[2]};
+        }
+        mesh.cellCenters() = ccH.copyToExecutor(exec);
+    }
+    auto nCells = mesh.nCells();
+
+    auto surfaceBCs = fvcc::createCalculatedBCs<fvcc::SurfaceBoundary<scalar>>(mesh);
+    fvcc::SurfaceField<scalar> gamma(exec, "gamma", mesh, surfaceBCs);
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto gammaV = gamma.internalVector().view();
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            gammaV[facei] = 1.0 + 0.1 * static_cast<scalar>(facei);
+        }
+    );
+    fill(gamma.boundaryData().value(), 1.0);
+
+    auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<scalar>>(mesh);
+    fvcc::VolumeField<scalar> phi(exec, "phi", mesh, volumeBCs);
+    Catch::randomizeVector(phi);
+    phi.correctBoundaryConditions();
+
+    auto buildFvSchemes = [](const std::string& snGradScheme)
+    {
+        Dictionary lapSchemes;
+        lapSchemes.insert(
+            "laplacian(gamma,phi)",
+            TokenList({std::string("Gauss"), std::string("linear"), snGradScheme})
+        );
+        Dictionary fvSchemes;
+        fvSchemes.insert("laplacianSchemes", lapSchemes);
+        return fvSchemes;
+    };
+
+    dsl::Expression<scalar> exprUncorrected(dsl::imp::laplacian(gamma, phi));
+    exprUncorrected.read(buildFvSchemes("uncorrected"));
+    auto uncorrectedLs = exprUncorrected.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+
+    dsl::Expression<scalar> expr(dsl::imp::laplacian(gamma, phi));
+    expr.read(buildFvSchemes("corrected"));
+
+    auto csrLs = expr.assemble<scalar, CSRMatrix>(mesh, 0.0, 0.0);
+    auto ellLs = expr.assemble<scalar, ELLMatrix>(mesh, 0.0, 0.0);
+
+    auto corrRhsHost = csrLs.rhs().copyToHost();
+    auto uncorrRhsHost = uncorrectedLs.rhs().copyToHost();
+    auto corrRhsV = corrRhsHost.view();
+    auto uncorrRhsV = uncorrRhsHost.view();
+    scalar maxDiff = 0.0;
+    for (localIdx i = 0; i < corrRhsV.size(); ++i)
+    {
+        const scalar diff = mag(corrRhsV[i] - uncorrRhsV[i]);
+        if (diff > maxDiff) maxDiff = diff;
+    }
+    REQUIRE(maxDiff > 1e-6);
+
+    REQUIRE_THAT(csrLs.matrix().diag(), Equals(ellLs.matrix().diag(), Approx {1e-10}));
+    REQUIRE_THAT(csrLs.rhs(), Equals(ellLs.rhs(), Approx {1e-10}));
+
+    auto csrLsHost = csrLs.copyToExecutor(SerialExecutor());
+    auto ellLsHost = ellLs.copyToExecutor(SerialExecutor());
+    auto csrSparsityView = csrLsHost.matrix().sparsity()->view();
+    auto csrMatView = csrLsHost.matrix().view();
+    auto ellMatView = ellLsHost.matrix().view();
+
+    std::vector<scalar> csrEntries;
+    std::vector<scalar> ellEntries;
+    for (localIdx row = 0; row < nCells; ++row)
+    {
+        for (localIdx col = 0; col < nCells; ++col)
+        {
+            if (csrSparsityView.findEntry(row, col) != decltype(csrSparsityView)::invalidIndex())
+            {
+                csrEntries.push_back(csrMatView.entry(row, col));
+                ellEntries.push_back(ellMatView.entry(row, col));
+            }
+        }
+    }
+    REQUIRE(csrEntries.size() == ellEntries.size());
+    REQUIRE_THAT(Vector<scalar>(SerialExecutor(), ellEntries), Equals(csrEntries, Approx {1e-10}));
+}
+
 } // namespace NeoN

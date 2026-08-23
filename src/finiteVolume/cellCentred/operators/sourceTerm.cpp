@@ -66,26 +66,9 @@ void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 template<typename ValueType>
 void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    if (!spCoeff_)
-    {
-        NF_ERROR_EXIT("Not implemented");
-    }
-    // Sp implicit: diagonal += scaling * spCoeff * volume
-    const auto operatorScaling = this->getCoefficient();
-    const auto vol = spCoeff_->mesh().cellVolumes().view();
-    const auto [coeff] = views(spCoeff_->internalVector());
-    auto values = ls.matrix().values().view();
-    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-
-    NeoN::parallelFor(
-        ls.exec(),
-        {0, coeff.size()},
-        NEON_LAMBDA(const localIdx celli) {
-            values[ma.diagIdx(celli)] +=
-                operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
-        },
-        "Sp::implicitOperation"
-    );
+    // Explicit template argument, not implicitOperation(ls) -- that would resolve back to this
+    // exact non-template overload (exact match beats template deduction) and recurse forever.
+    implicitOperation<la::CSRMatrix<ValueType, localIdx>>(ls);
 }
 
 

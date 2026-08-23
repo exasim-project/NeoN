@@ -20,8 +20,33 @@ using NeoN::la::CsrSparsityPattern;
 using NeoN::la::CooSparsityPattern;
 using NeoN::la::CSRMatrix;
 using NeoN::la::COOMatrix;
+using NeoN::la::ELLMatrix;
+using NeoN::la::EllSparsityPattern;
+using NeoN::la::EllSparsityView;
 using NeoN::la::Solver;
 using NeoN::la::Dimensions;
+
+template<typename LinearSystemType>
+void assembleDiagDominant1D(LinearSystemType& ls)
+{
+    const auto nFaces = ls.matrix().nRows() - 1;
+    auto ma = ls.matrix().faceToMatrixView();
+    auto matrixV = ls.matrix().values().view();
+    parallelFor(
+        ls.exec(),
+        {0, nFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const localIdx own = facei;
+            const localIdx nei = facei + 1;
+            matrixV[ma.upperIdx(own, facei)] = -1.0;
+            matrixV[ma.lowerIdx(nei, facei)] = -1.0;
+            Kokkos::atomic_add(&matrixV[ma.diagIdx(own)], 2.0);
+            Kokkos::atomic_add(&matrixV[ma.diagIdx(nei)], 2.0);
+        },
+        "assembleDiagDominant"
+    );
+    fill(ls.rhs(), 1.0);
+}
 
 TEST_CASE("Dictionary Parsing - Ginkgo")
 {
@@ -163,6 +188,178 @@ TEST_CASE("MatrixConversion - Ginkgo")
     {
         auto cooMatrix = COOMatrix<scalar, localIdx>(values, colIdx, rowIdx, {4, 4});
         auto gkoCooMtx = NeoN::la::ginkgo::createGkoMtx(cooMatrix);
+    }
+
+    // Same logical 4x4 matrix as the CSR/COO sections above (row0:{0:1,1:2},
+    // row1:{0:3,1:4,2:5}, row2:{1:6,2:7,3:8}, row3:{2:9,3:10}), stored ELL-style: widest
+    // rows (1 and 2) need 3 slots, stride = nRows = 4, column-major with padding trailing.
+    SECTION("ELLMatrix " + execName)
+    {
+        const auto INV = EllSparsityView<localIdx>::invalidIndex();
+        auto ellValues =
+            Vector<scalar>(exec, {1.0, 3.0, 6.0, 9.0, 2.0, 4.0, 7.0, 10.0, 0.0, 5.0, 8.0, 0.0});
+        auto ellColIdx = Vector<localIdx>(exec, {0, 0, 1, 2, 1, 1, 2, 3, INV, 2, 3, INV});
+        auto ellSp = std::make_shared<const EllSparsityPattern<localIdx>>(
+            std::move(ellColIdx), Dimensions {4, 4}, 3, 4, 10
+        );
+        auto ellMatrix = ELLMatrix<scalar, localIdx>(ellValues, ellSp);
+
+        auto gkoEllMtx = NeoN::la::ginkgo::createGkoMtx(ellMatrix);
+        auto gkoEll =
+            std::dynamic_pointer_cast<const gko::matrix::Ell<scalar, localIdx>>(gkoEllMtx);
+        REQUIRE(gkoEll != nullptr);
+
+        // Zero-copy: Ginkgo's arrays must alias NeoN's own memory, not a copy of it.
+        REQUIRE(gkoEll->get_const_values() == ellMatrix.values().view().data());
+        REQUIRE(gkoEll->get_const_col_idxs() == ellMatrix.sparsity()->colIdxs().view().data());
+        REQUIRE(
+            gkoEll->get_num_stored_elements_per_row()
+            == static_cast<gko::size_type>(ellMatrix.sparsity()->numStoredElementsPerRow())
+        );
+        REQUIRE(
+            gkoEll->get_stride() == static_cast<gko::size_type>(ellMatrix.sparsity()->stride())
+        );
+
+        // Correctness: apply() against the same logical matrix as the CSR section above
+        // must give the same result.
+        auto csrMatrix = CSRMatrix<scalar, localIdx>(values, colIdx, rowPtr, {4, 4});
+        auto gkoCsrMtx = NeoN::la::ginkgo::createGkoMtx(csrMatrix);
+
+        auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+        Vector<scalar> xVec(exec, {1.0, 1.0, 1.0, 1.0});
+        Vector<scalar> yCsr(exec, 4, 0.0);
+        Vector<scalar> yEll(exec, 4, 0.0);
+
+        auto xDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, xVec.view().data(), 4);
+        auto yCsrDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, yCsr.view().data(), 4);
+        auto yEllDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, yEll.view().data(), 4);
+
+        gkoCsrMtx->apply(xDense, yCsrDense);
+        gkoEllMtx->apply(xDense, yEllDense);
+
+        REQUIRE_THAT(yEll, Equals(yCsr, Approx {1e-10}));
+    }
+}
+
+// End-to-end: a native NeoN ELL system, wrapped zero-copy by Ginkgo, solves to the same
+// solution and residual as the equivalent CSR system. Constructs GinkgoSolver directly and
+// calls solveImpl<SystemMatrixType> on it -- the "Solve through SolverFactory/Solver" case
+// below proves the same thing is reachable through the abstract interface production code
+// actually uses.
+TEST_CASE("Solve - Ginkgo ELL vs CSR")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto csrLs =
+        NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>(mesh);
+    auto ellLs =
+        NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>(mesh);
+
+    // Diagonally dominant 1D stencil: each face adds 2.0 to each endpoint's diagonal and a
+    // single -1.0 off-diagonal, so diag always dominates the row's off-diagonal sum.
+    assembleDiagDominant1D(csrLs);
+    assembleDiagDominant1D(ellLs);
+
+    Dictionary solverDict {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-12}}}}}
+    };
+    NeoN::la::ginkgo::GinkgoSolver ginkgoSolver(exec, solverDict);
+
+    Vector<scalar> xCsr(exec, nCells, 0.0);
+    Vector<scalar> xEll(exec, nCells, 0.0);
+    auto csrStats = ginkgoSolver.solveImpl<CSRMatrix<scalar, localIdx>>(csrLs, xCsr);
+    auto ellStats = ginkgoSolver.solveImpl<ELLMatrix<scalar, localIdx>>(ellLs, xEll);
+
+    // Both must report an actual, non-trivial solve -- catches e.g. a solver that returns
+    // immediately without iterating but still leaves some (wrong) value in x.
+    REQUIRE(csrStats.entries.size() == 1);
+    REQUIRE(ellStats.entries.size() == 1);
+    REQUIRE(csrStats.entries[0].numIter > 0);
+    REQUIRE(ellStats.entries[0].numIter > 0);
+
+    REQUIRE_THAT(xEll, Equals(xCsr, Approx {1e-8}));
+
+    // True residual ||b - Ax|| for each -- computeResidual() itself is CSR-only (reads
+    // sparsity.rowOffs directly, which EllSparsityView doesn't have), so this reuses the
+    // already-proven generic createGkoMtx()/apply() path instead of extending that helper.
+    auto gkoExec = NeoN::la::ginkgo::getGkoExecutor(exec);
+    auto residualNorm = [&](auto& ls, auto& x)
+    {
+        auto gkoMtx = NeoN::la::ginkgo::createGkoMtx(ls.matrix());
+        Vector<scalar> ax(exec, nCells, 0.0);
+        auto xDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, x.view().data(), nCells);
+        auto axDense = NeoN::la::ginkgo::gkoVecView<scalar>(gkoExec, ax.view().data(), nCells);
+        gkoMtx->apply(xDense, axDense);
+
+        auto rhsHost = ls.rhs().copyToHost();
+        auto rhsHostV = rhsHost.view();
+        auto axHost = ax.copyToHost();
+        auto axHostV = axHost.view();
+        scalar residNormSq = 0.0;
+        for (localIdx i = 0; i < nCells; ++i)
+        {
+            const scalar r = rhsHostV[i] - axHostV[i];
+            residNormSq += r * r;
+        }
+        return std::sqrt(residNormSq);
+    };
+
+    REQUIRE(residualNorm(csrLs, xCsr) < 1e-6);
+    REQUIRE(residualNorm(ellLs, xEll) < 1e-6);
+}
+
+// Proves ELL solving is reachable through the abstract interface production code actually
+// holds (la::Solver, constructed by value -- e.g. dsl/solver.hpp -- wrapping a
+// SolverFactory), not just by calling GinkgoSolver::solveImpl() directly like the test above.
+TEST_CASE("Solve through SolverFactory/Solver - Ginkgo ELL vs CSR")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+    const localIdx nCells = 10;
+    auto mesh = create1DUniformMesh(exec, nCells);
+
+    auto csrLs =
+        NeoN::la::createEmptyLinearSystem<scalar, scalar, CSRMatrix<scalar, localIdx>>(mesh);
+    auto ellLs =
+        NeoN::la::createEmptyLinearSystem<scalar, scalar, ELLMatrix<scalar, localIdx>>(mesh);
+
+    assembleDiagDominant1D(csrLs);
+    assembleDiagDominant1D(ellLs);
+
+    Dictionary solverDict {
+        {{"solver", std::string {"Ginkgo"}},
+         {"type", "solver::Cg"},
+         {"criteria", Dictionary {{{"iteration", 200}, {"relative_residual_norm", 1e-12}}}}}
+    };
+
+    Vector<scalar> xCsr(exec, nCells, 0.0);
+    Vector<scalar> xEll(exec, nCells, 0.0);
+
+    SECTION("Through SolverFactory::create() " + execName)
+    {
+        auto solverFactory = NeoN::la::SolverFactory::create(exec, solverDict);
+        auto ellStats = solverFactory->solve(ellLs, xEll);
+        solverFactory->solve(csrLs, xCsr);
+
+        REQUIRE_FALSE(ellStats.entries.empty());
+        REQUIRE(ellStats.entries.front().numIter > 0);
+        REQUIRE_THAT(xEll, Equals(xCsr, Approx {1e-8}));
+    }
+
+    SECTION("Through la::Solver (what production DSL code actually holds) " + execName)
+    {
+        auto solver = Solver(exec, solverDict);
+        auto ellStats = solver.solve(ellLs, xEll);
+        solver.solve(csrLs, xCsr);
+
+        REQUIRE_FALSE(ellStats.entries.empty());
+        REQUIRE(ellStats.entries.front().numIter > 0);
+        REQUIRE_THAT(xEll, Equals(xCsr, Approx {1e-8}));
     }
 }
 

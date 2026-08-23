@@ -45,6 +45,32 @@ struct PostAssemblyBase
                                    VectorType,
                                    la::CSRMatrix<scalar, IndexType>,
                                    la::COOMatrix<scalar, IndexType>>&) const {};
+
+    /** @brief Apply to the ELL same-type form. Default throws rather than silently doing nothing
+     *         -- Expression::assemble dispatches every functor in ps through this unconditionally
+     *         once AssemblyType == ValueType == scalar, so a functor that hasn't implemented ELL
+     *         support (e.g. FixedValueConstraints, still CSR-only) must fail loudly instead of
+     *         quietly not applying its constraint. Functors that support ELL override this.
+     *         Fixed to VectorType=scalar, matching the scalar-only ELL scope established for
+     *         SpatialOperator/TemporalOperator's own ELL dispatch (HasImplicitOperatorELL): for
+     *         VectorType != scalar this signature can never be reached, since Expression::assemble
+     *         only ever calls it when AssemblyType == ValueType == scalar. */
+    virtual void applyELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, IndexType>>&) const
+    {
+        NF_THROW("ELL post-assembly is not implemented for this functor");
+    }
+
+    /** @brief Apply to the segregated scalar-matrix / VectorType-rhs ELL form. Same
+     *         default-throwing rationale as applyELL above -- Expression::assemble dispatches
+     *         every functor through this unconditionally once AssemblyType == scalar and
+     *         VectorType != scalar with an ELL SystemMatrixType. Functors that support the
+     *         segregated ELL form override this. */
+    virtual void
+    applyScalarMatrixELL(la::LinearSystem<scalar, VectorType, la::ELLMatrix<scalar, IndexType>>&)
+        const
+    {
+        NF_THROW("Segregated ELL post-assembly is not implemented for this functor");
+    }
 };
 
 /**
@@ -72,30 +98,7 @@ public:
     void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
     ) const override
     {
-#ifdef NF_WITH_MPI_SUPPORT
-        // For distributed systems, only the rank owning refCell applies the constraint.
-        // For non-distributed systems (each rank holds a full copy), every rank applies it.
-        if (!ls.commPattern().sendCounts.empty())
-        {
-            mpi::Environment mpiEnv;
-            if (mpiEnv.isInitialized() && mpiEnv.rank() != 0) return;
-        }
-#endif
-        auto lsView = ls.view();
-        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
-        auto refVal = refValue_;
-        auto refCell = refCell_;
-        parallelFor(
-            ls.exec(),
-            {refCell, refCell + 1},
-            NEON_LAMBDA(const localIdx celli) {
-                auto dIdx = ma.diagIdx(celli);
-                auto diagVal = lsView.matrix.values[dIdx];
-                lsView.rhs[celli] += diagVal * refVal;
-                lsView.matrix.values[dIdx] += diagVal;
-            },
-            "SetReference"
-        );
+        applyImpl(ls);
     }
 
     /** @brief Segregated scalar-matrix / ValueType-rhs form. The scalar diagonal scales the
@@ -107,6 +110,40 @@ public:
                            la::CSRMatrix<scalar, IndexType>,
                            la::COOMatrix<scalar, IndexType>>& ls) const override
     {
+        applyImpl(ls);
+    }
+
+    /** @brief ELL same-type form. Only meaningful for ValueType == scalar (the scope
+     *         Expression::assemble ever calls this in); a no-op otherwise, discarded at compile
+     *         time so this still compiles for e.g. SetReference<Vec3>. */
+    void applyELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, IndexType>>& ls
+    ) const override
+    {
+        if constexpr (std::is_same_v<ValueType, scalar>)
+        {
+            applyImpl(ls);
+        }
+    }
+
+    /** @brief Segregated scalar-matrix / ValueType-rhs ELL form. applyImpl is already generic
+     *         over SystemMatrixType, so this is purely new dispatch plumbing, same as
+     *         DivOperator/LaplacianOperator's own segregated-ELL entry points. */
+    void
+    applyScalarMatrixELL(la::LinearSystem<scalar, ValueType, la::ELLMatrix<scalar, IndexType>>& ls
+    ) const override
+    {
+        applyImpl(ls);
+    }
+
+    // Shared by operator()/applyScalarMatrix/applyELL/applyScalarMatrixELL above, matching the same
+    // format-generic-orchestrator pattern used for GaussGreenDiv/GaussGreenLaplacian/
+    // GaussGreenDivLaplacian's own CSR/ELL entry points. Public (not private): nvcc rejects an
+    // extended __host__ __device__ lambda (the parallelFor below) whose enclosing function has
+    // private or protected access within its class -- not an access-control choice, a compiler
+    // requirement. Not intended for use outside this class.
+    template<typename AssemblyType, typename SystemMatrixType>
+    void applyImpl(la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls) const
+    {
 #ifdef NF_WITH_MPI_SUPPORT
         // For distributed systems, only the rank owning refCell applies the constraint.
         // For non-distributed systems (each rank holds a full copy), every rank applies it.
@@ -117,7 +154,7 @@ public:
         }
 #endif
         auto lsView = ls.view();
-        const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+        const auto ma = ls.matrix().faceToMatrixView();
         auto refVal = refValue_;
         auto refCell = refCell_;
         parallelFor(
@@ -188,9 +225,28 @@ public:
     void operator()(la::LinearSystem<ValueType, ValueType, la::CSRMatrix<ValueType, IndexType>>& ls
     ) const override
     {
+        applyImpl(ls);
+    }
+
+    /** @brief ELL same-type form. Always well-typed (unlike SetReference's): the class-level
+     *         static_assert above already restricts ValueType to scalar unconditionally. */
+    void applyELL(la::LinearSystem<scalar, scalar, la::ELLMatrix<scalar, IndexType>>& ls
+    ) const override
+    {
+        applyImpl(ls);
+    }
+
+    // Shared by operator()/applyELL above. Unlike SetReference (single diagonal slot),
+    // this walks every stored entry in a row, so it goes through SparsityView/EllSparsityView's
+    // common rowSize()/linearIndex() rather than a single faceToMatrixView()-style address.
+    // Public (not private): nvcc rejects an extended __host__ __device__ lambda (the parallelFor
+    // below) whose enclosing function has private or protected access within its class -- not an
+    // access-control choice, a compiler requirement. Not intended for use outside this class.
+    template<typename SystemMatrixType>
+    void applyImpl(la::LinearSystem<ValueType, ValueType, SystemMatrixType>& ls) const
+    {
         auto lsView = ls.view();
-        const auto rowOffs = ls.matrix().sparsity()->rowOffs().view();
-        const auto colIdxs = ls.matrix().sparsity()->colIdxs().view();
+        const auto sparsity = ls.matrix().sparsity()->view();
         auto matrixValues = lsView.matrix.values;
         auto rhs = lsView.rhs;
         auto mask = mask_;
@@ -205,9 +261,14 @@ public:
             NEON_LAMBDA(const localIdx row) {
                 const bool rowPinned = mask[row] != scalar(0);
                 ValueType diagVal = zero<ValueType>();
-                for (auto o = rowOffs[row]; o < rowOffs[row + 1]; ++o)
+                const auto rowSize = sparsity.rowSize(row);
+                for (localIdx slot = 0; slot < rowSize; ++slot)
                 {
-                    const auto col = colIdxs[o];
+                    const auto o = sparsity.linearIndex(row, slot);
+                    const auto col = sparsity.colIdxs[o];
+                    // ELL padding, trailing within the row -- CSR's rowSize() never includes
+                    // padding, so this never triggers for CSR.
+                    if (col == decltype(sparsity)::invalidIndex()) break;
                     if (col == row)
                     {
                         diagVal = matrixValues[o];
@@ -346,8 +407,11 @@ public:
     }
 
     /** @brief compute matrix coefficients based on all spatial operators */
-    template<typename AssemblyType = ValueType>
-    void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType>& ls) const
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
+    void assembleSpatialOperator(la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls
+    ) const
     {
         for (auto& op : spatialOperators_)
         {
@@ -361,9 +425,11 @@ public:
     /** @brief compute matrix coefficients based on all temporal operators
      * assemble directly into linear system
      */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assembleTemporalOperator(
-        la::LinearSystem<AssemblyType, ValueType>& ls, scalar t, scalar dt
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls, scalar t, scalar dt
     ) const
     {
         for (auto& op : temporalOperators_)
@@ -376,9 +442,12 @@ public:
     }
 
     /*@brief subtract explicit source terms from the linear system rhs, scaled by cell volumes */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assembleExplicitSource(
-        la::LinearSystem<AssemblyType, ValueType>& ls, const UnstructuredMesh& mesh
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls,
+        const UnstructuredMesh& mesh
     ) const
     {
         auto expTmp = explicitOperation(static_cast<localIdx>(mesh.nCells()));
@@ -395,16 +464,18 @@ public:
      * @param ps post-assembly functors applied to the system after assembly
      * @return the assembled linear system
      */
-    template<typename AssemblyType = ValueType>
-    la::LinearSystem<AssemblyType, ValueType> assemble(
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
+    la::LinearSystem<AssemblyType, ValueType, SystemMatrixType> assemble(
         const UnstructuredMesh& mesh,
         scalar t,
         scalar dt,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        auto ls = la::createEmptyLinearSystem<AssemblyType, ValueType>(mesh);
-        assemble<AssemblyType>(t, dt, ls, mesh, ps);
+        auto ls = la::createEmptyLinearSystem<AssemblyType, ValueType, SystemMatrixType>(mesh);
+        assemble<AssemblyType, SystemMatrixType>(t, dt, ls, mesh, ps);
         return ls;
     }
 
@@ -412,16 +483,18 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<AssemblyType, ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls,
         const UnstructuredMesh& mesh,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assemble<AssemblyType>(t, dt, ls, ps);
+        assemble<AssemblyType, SystemMatrixType>(t, dt, ls, ps);
         assembleExplicitSource(ls, mesh);
     }
 
@@ -429,32 +502,77 @@ public:
      *
      * @param ps post-assembly functors applied to the system after assembly
      */
-    template<typename AssemblyType = ValueType>
+    template<
+        typename AssemblyType = ValueType,
+        typename SystemMatrixType = la::CSRMatrix<AssemblyType, localIdx>>
     void assemble(
         scalar t,
         scalar dt,
-        la::LinearSystem<AssemblyType, ValueType>& ls,
+        la::LinearSystem<AssemblyType, ValueType, SystemMatrixType>& ls,
         std::vector<const PostAssemblyBase<ValueType, IndexType>*> ps = {}
     ) const
     {
-        assembleSpatialOperator(ls);         // add spatial operator
-        assembleTemporalOperator(ls, t, dt); // add temporal operators
+        assembleSpatialOperator(ls);         // add spatial operator -- format-generic; throws
+                                             // for operators that don't support this
+                                             // SystemMatrixType yet
+        assembleTemporalOperator(ls, t, dt); // add temporal operators -- format-generic, same as
+                                             // above (see HasTemporalImplicitOperatorELL)
 
-        // Post-assembly functors apply on the same-type form via operator(); the segregated
-        // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
-        if constexpr (std::is_same_v<AssemblyType, ValueType>)
+        if constexpr (std::is_same_v<SystemMatrixType, la::CSRMatrix<AssemblyType, localIdx>>)
         {
-            for (const auto* p : ps)
+            // Post-assembly functors apply on the same-type form via operator(); the segregated
+            // scalar-matrix / ValueType-rhs form dispatches to applyScalarMatrix instead.
+            if constexpr (std::is_same_v<AssemblyType, ValueType>)
             {
-                (*p)(ls);
+                for (const auto* p : ps)
+                {
+                    (*p)(ls);
+                }
+            }
+            else if constexpr (std::is_same_v<AssemblyType, scalar>)
+            {
+                for (const auto* p : ps)
+                {
+                    p->applyScalarMatrix(ls);
+                }
             }
         }
-        else if constexpr (std::is_same_v<AssemblyType, scalar>)
+        else if constexpr (std::is_same_v<SystemMatrixType, la::ELLMatrix<AssemblyType, localIdx>>)
         {
-            for (const auto* p : ps)
+            // Same same-type/segregated split as the CSR branch above: applyELL for the
+            // AssemblyType == ValueType == scalar form, applyScalarMatrixELL for the segregated
+            // (scalar matrix, ValueType rhs) form.
+            if constexpr (std::is_same_v<AssemblyType, ValueType> && std::is_same_v<AssemblyType, scalar>)
             {
-                p->applyScalarMatrix(ls);
+                for (const auto* p : ps)
+                {
+                    p->applyELL(ls);
+                }
             }
+            else if constexpr (std::is_same_v<AssemblyType, scalar>)
+            {
+                for (const auto* p : ps)
+                {
+                    p->applyScalarMatrixELL(ls);
+                }
+            }
+            else
+            {
+                // Vec3 same-type ELL (AssemblyType == ValueType == Vec3): not a combination
+                // PostAssemblyBase has a route for -- assert nothing was silently dropped.
+                NF_ASSERT(
+                    ps.empty(),
+                    "Post-assembly functors are not supported for Vec3 same-type ELL yet"
+                );
+            }
+        }
+        else
+        {
+            // PostAssemblyBase has no route for any other SystemMatrixType yet -- assert nothing
+            // was silently dropped instead of failing to compile.
+            NF_ASSERT(
+                ps.empty(), "Post-assembly functors are not supported for this SystemMatrixType yet"
+            );
         }
     }
 

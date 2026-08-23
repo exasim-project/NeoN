@@ -58,6 +58,17 @@ public:
         const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling) const = 0;
 
+    // Default-throwing, not pure virtual, so DivOperatorFactory strategies other than
+    // GaussGreenDiv don't need changes -- mirrors SolverFactory::solve(ELL...).
+    virtual void
+    div(la::LinearSystem<AssemblyType, FieldValueType, la::ELLMatrix<AssemblyType, localIdx>>& ls,
+        const SurfaceField<scalar>& faceFlux,
+        const VolumeField<FieldValueType>& phi,
+        const dsl::Coeff operatorScaling) const
+    {
+        NF_THROW("div(ELL matrix) not implemented for this DivOperator strategy");
+    }
+
     virtual void
     div(Vector<FieldValueType>& divPhi,
         const SurfaceField<scalar>& faceFlux,
@@ -154,13 +165,40 @@ public:
         sameTypeStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
     }
 
+    // Format-generic overload, mirroring SourceTerm::implicitOperation<SystemMatrixType> -- the
+    // non-template overload above still wins for the CSR default, so existing DSL callers are
+    // unaffected; ELL callers deduce SystemMatrixType from the ls argument.
+    template<typename SystemMatrixType>
+    void implicitOperation(la::LinearSystem<FieldValueType, FieldValueType, SystemMatrixType>& ls
+    ) const
+    {
+        NF_ASSERT(sameTypeStrategy_, "DivOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        sameTypeStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
+    }
+
     /* @brief Implicit assembly into a scalar-matrix / FieldValueType-rhs linear system
      *        (segregated vector-solve form). Only present when FieldValueType != scalar;
      *        for scalar fields the same-type overload above already covers this signature.
      */
-    template<typename F = FieldValueType>
-        requires(!std::is_same_v<F, scalar>)
     void implicitOperation(la::LinearSystem<scalar, FieldValueType>& ls) const
+        requires(!std::is_same_v<FieldValueType, scalar>)
+    {
+        NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix DivOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        scalarMtxStrategy_->div(ls, faceFlux_, this->getVector(), operatorScaling);
+    }
+
+    // Format-generic counterpart of the segregated overload above -- the non-template overload
+    // still wins for the CSR default, so existing DSL callers are unaffected; ELL callers deduce
+    // SystemMatrixType from the ls argument. GaussGreenDiv<FieldValueType, scalar>'s ELL div()
+    // override already exists (added generically to the class template, not per-instantiation)
+    // and computeDivIntImp/computeDivBoundImpl/computeDivProcBoundImpl are already explicitly
+    // instantiated for the {FieldValueType, scalar, ELLMatrix<scalar,localIdx>} combination, so
+    // this is purely new DSL-entry-point plumbing, not new kernel work.
+    template<typename SystemMatrixType>
+        requires(!std::is_same_v<FieldValueType, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, FieldValueType, SystemMatrixType>& ls) const
     {
         NF_ASSERT(scalarMtxStrategy_, "Scalar-matrix DivOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();

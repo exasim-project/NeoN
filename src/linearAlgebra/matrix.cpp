@@ -15,20 +15,19 @@ Vector<ValueType> Matrix<ValueType, SparsityType>::diag() const
 {
     auto diag = Vector<ValueType>(values_.exec(), nRows());
     fill(diag, zero<ValueType>());
-    auto [diagV, rowOffsV, colIdxV, matrixV] =
-        views(diag, sparsityPattern_->rowOffs(), sparsityPattern_->colIdxs(), values_);
+    auto [diagV, matrixV] = views(diag, values_);
+    const auto sparsityV = sparsityPattern_->view();
 
+    // Lenient: a missing diagonal keeps the zero fill() above instead of aborting.
+    // Traversal lives in *SparsityView::findEntry(), not here.
     parallelFor(
         values_.exec(),
         {0, nRows()},
         NEON_LAMBDA(const localIdx rowi) {
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            const auto offset = sparsityV.findEntry(rowi, rowi);
+            if (offset != decltype(sparsityV)::invalidIndex())
             {
-                if (rowi == colIdxV[i])
-                {
-                    diagV[rowi] = matrixV[i];
-                    break;
-                }
+                diagV[rowi] = matrixV[offset];
             }
         },
         "copyDiag"
@@ -45,14 +44,30 @@ Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(
     {
         return *this;
     }
-    return {
-        values_.copyToExecutor(dstExec),
-        std::make_shared<const SparsityType>(this->sparsityPattern_->copyToExecutor(dstExec)),
-        (faceToMatrixAddress_) ? std::make_shared<const FaceToMatrixAddress>(
-            this->faceToMatrixAddress_->copyToExecutor(dstExec)
-        )
-                               : nullptr
-    };
+    auto copiedValues = values_.copyToExecutor(dstExec);
+    auto copiedSparsity =
+        std::make_shared<const SparsityType>(sparsityPattern_->copyToExecutor(dstExec));
+
+    if constexpr (requires(const FaceToMatrixAddress& address, const SparsityType& sp) {
+                      address.view(sp.view());
+                  })
+    {
+        if (faceToMatrixAddress_)
+        {
+            return {
+                copiedValues,
+                copiedSparsity,
+                std::make_shared<const FaceToMatrixAddress>(
+                    faceToMatrixAddress_->copyToExecutor(dstExec)
+                )
+            };
+        }
+    }
+    // faceToMatrixAddress_ can only be set via the constrained 3-arg constructor above, so
+    // it's null here whenever that constraint isn't met. Assert it so a future change can't
+    // silently drop it.
+    NF_ASSERT(!faceToMatrixAddress_, "Face address requires a supported sparsity format");
+    return {copiedValues, copiedSparsity};
 }
 
 
@@ -160,8 +175,9 @@ void negLUx(
     );
 }
 
+template<typename SparsityType>
 void scaledInvDiagNegLUx(
-    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Matrix<Vec3, SparsityType>& mtx,
     const Vector<Vec3>& a,
     const Vector<Vec3>& b,
     const Vector<scalar>& vol,
@@ -170,27 +186,32 @@ void scaledInvDiagNegLUx(
 )
 {
     NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == b.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == vol.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == rAU.size(), "Dimension mismatch");
     NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, bV] =
-        views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a, b);
-    auto outV = out.view();
+    const auto [matrixV, sparsity] = mtx.view();
+    auto [rAUV, volV, aV, bV, outV] = views(rAU, vol, a, b, out);
 
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
         NEON_LAMBDA(const localIdx rowi) {
             outV[rowi] = zero<Vec3>();
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            const auto rowSize = sparsity.rowSize(rowi);
+            for (localIdx slot = 0; slot < rowSize; ++slot)
             {
-                auto colI = colIdxV[i];
-                if (rowi == colI)
+                const auto idx = sparsity.linearIndex(rowi, slot);
+                const auto col = sparsity.colIdxs[idx];
+                if (col == decltype(sparsity)::invalidIndex()) break; // ELL padding
+                if (rowi == col)
                 {
-                    rAUV[rowi] = volV[rowi] / matrixV[i][0];
+                    rAUV[rowi] = volV[rowi] / matrixV[idx][0];
                 }
                 else
                 {
-                    outV[rowi] -= matrixV[i] * aV[colI];
+                    outV[rowi] -= matrixV[idx] * aV[col];
                 }
             }
 
@@ -200,8 +221,9 @@ void scaledInvDiagNegLUx(
     );
 }
 
+template<typename SparsityType>
 void scaledInvDiagNegLUx(
-    const CSRMatrix<scalar, localIdx>& mtx,
+    const Matrix<scalar, SparsityType>& mtx,
     const Vector<Vec3>& a,
     const Vector<Vec3>& b,
     const Vector<scalar>& vol,
@@ -210,29 +232,34 @@ void scaledInvDiagNegLUx(
 )
 {
     NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == b.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == vol.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == rAU.size(), "Dimension mismatch");
     NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    const auto [rowOffsV, colIdxV, matrixV, rAUV, volV, aV, bV] =
-        views(mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), rAU, vol, a, b);
-    auto outV = out.view();
+    const auto [matrixV, sparsity] = mtx.view();
+    auto [rAUV, volV, aV, bV, outV] = views(rAU, vol, a, b, out);
 
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
         NEON_LAMBDA(const localIdx rowi) {
             outV[rowi] = zero<Vec3>();
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            const auto rowSize = sparsity.rowSize(rowi);
+            for (localIdx slot = 0; slot < rowSize; ++slot)
             {
-                auto colI = colIdxV[i];
-                if (rowi == colI)
+                const auto idx = sparsity.linearIndex(rowi, slot);
+                const auto col = sparsity.colIdxs[idx];
+                if (col == decltype(sparsity)::invalidIndex()) break; // ELL padding
+                if (rowi == col)
                 {
                     // scalar diagonal coefficient scales all components equally
-                    rAUV[rowi] = volV[rowi] / matrixV[i];
+                    rAUV[rowi] = volV[rowi] / matrixV[idx];
                 }
                 else
                 {
                     // scalar * Vec3 broadcasts the off-diagonal coefficient to each component
-                    outV[rowi] -= matrixV[i] * aV[colI];
+                    outV[rowi] -= matrixV[idx] * aV[col];
                 }
             }
 
@@ -243,31 +270,38 @@ void scaledInvDiagNegLUx(
 }
 
 
-Vector<scalar> scaledInverseDiag(const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a)
+template<typename SparsityType>
+Vector<scalar> scaledInverseDiag(const Matrix<Vec3, SparsityType>& mtx, const Vector<scalar>& a)
 {
     auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
     scaledInverseDiag(mtx, a, diag);
     return diag;
 }
 
+template<typename SparsityType>
 void scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx, const Vector<scalar>& a, Vector<scalar>& out
+    const Matrix<Vec3, SparsityType>& mtx, const Vector<scalar>& a, Vector<scalar>& out
 )
 {
     NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
-        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
+    const auto [matrixV, sparsity] = mtx.view();
+    auto [outV, aV] = views(out, a);
 
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
         NEON_LAMBDA(const localIdx rowi) {
-            for (auto i = rowOffsV[rowi]; i < rowOffsV[rowi + 1]; i++)
+            const auto rowSize = sparsity.rowSize(rowi);
+            for (localIdx slot = 0; slot < rowSize; ++slot)
             {
-                if (rowi == colIdxV[i])
+                const auto idx = sparsity.linearIndex(rowi, slot);
+                const auto col = sparsity.colIdxs[idx];
+                if (col == decltype(sparsity)::invalidIndex()) break; // ELL padding
+                if (rowi == col)
                 {
-                    outV[rowi] = aV[rowi] * inv(matrixV[i][0]);
+                    outV[rowi] = aV[rowi] * inv(matrixV[idx][0]);
                     break;
                 }
             }
@@ -275,8 +309,9 @@ void scaledInverseDiag(
     );
 }
 
+template<typename SparsityType>
 Vector<scalar> scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
+    const Matrix<Vec3, SparsityType>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
 )
 {
     auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
@@ -284,31 +319,31 @@ Vector<scalar> scaledInverseDiag(
     return diag;
 }
 
+template<typename SparsityType>
 void scaledInverseDiag(
-    const CSRMatrix<Vec3, localIdx>& mtx,
+    const Matrix<Vec3, SparsityType>& mtx,
     const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 )
 {
     NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
-        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
-
-    const auto diaOffsV = mi.diagOffset().view();
+    const auto matrixV = mtx.values().view();
+    const auto ma = mi.view(mtx.sparsity()->view());
+    auto [outV, aV] = views(out, a);
 
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
-        NEON_LAMBDA(const localIdx rowi) {
-            outV[rowi] = aV[rowi] / matrixV[rowOffsV[rowi] + diaOffsV[rowi]][0];
-        }
+        NEON_LAMBDA(const localIdx rowi) { outV[rowi] = aV[rowi] / matrixV[ma.diagIdx(rowi)][0]; }
     );
 }
 
+template<typename SparsityType>
 Vector<scalar> scaledInverseDiag(
-    const CSRMatrix<scalar, localIdx>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
+    const Matrix<scalar, SparsityType>& mtx, const FaceToMatrixAddress& mi, const Vector<scalar>& a
 )
 {
     auto diag = Vector<scalar>(mtx.exec(), mtx.nRows());
@@ -316,26 +351,27 @@ Vector<scalar> scaledInverseDiag(
     return diag;
 }
 
+template<typename SparsityType>
 void scaledInverseDiag(
-    const CSRMatrix<scalar, localIdx>& mtx,
+    const Matrix<scalar, SparsityType>& mtx,
     const FaceToMatrixAddress& mi,
     const Vector<scalar>& a,
     Vector<scalar>& out
 )
 {
     NF_ASSERT(mtx.nRows() == a.size(), "Dimension mismatch");
+    NF_ASSERT(mtx.nRows() == out.size(), "Dimension mismatch");
 
-    auto [outV, rowOffsV, colIdxV, matrixV, aV] =
-        views(out, mtx.sparsity()->rowOffs(), mtx.sparsity()->colIdxs(), mtx.values(), a);
-
-    const auto diaOffsV = mi.diagOffset().view();
+    const auto matrixV = mtx.values().view();
+    const auto ma = mi.view(mtx.sparsity()->view());
+    auto [outV, aV] = views(out, a);
 
     parallelFor(
         mtx.exec(),
         {0, mtx.nRows()},
         NEON_LAMBDA(const localIdx rowi) {
             // scalar diagonal coefficient: no per-component selection needed
-            outV[rowi] = aV[rowi] / matrixV[rowOffsV[rowi] + diaOffsV[rowi]];
+            outV[rowi] = aV[rowi] / matrixV[ma.diagIdx(rowi)];
         }
     );
 }
@@ -348,5 +384,33 @@ void scaledInverseDiag(
 
 NN_DECLARE_MATRIX(scalar, localIdx);
 NN_DECLARE_MATRIX(Vec3, localIdx);
+
+// ELL instantiated standalone, not via NN_DECLARE_MATRIX: upper() is CSR-shaped and has
+// no ELL overload.
+template class Matrix<scalar, la::EllSparsityPattern<localIdx>>;
+template class Matrix<Vec3, la::EllSparsityPattern<localIdx>>;
+
+// Momentum-predictor utilities (scaledInverseDiag / scaledInvDiagNegLUx), format-generic over
+// SparsityType -- CSR and ELL both instantiated, unlike upper()/NN_DECLARE_MATRIX above.
+#define NN_DECLARE_MOMENTUM_UTILS(SPARSITYTYPE)                                                                                                              \
+    template Vector<scalar>                                                                                                                                  \
+    scaledInverseDiag(const Matrix<Vec3, SPARSITYTYPE>&, const Vector<scalar>&);                                                                             \
+    template void                                                                                                                                            \
+    scaledInverseDiag(const Matrix<Vec3, SPARSITYTYPE>&, const Vector<scalar>&, Vector<scalar>&);                                                            \
+    template Vector<scalar>                                                                                                                                  \
+    scaledInverseDiag(const Matrix<Vec3, SPARSITYTYPE>&, const FaceToMatrixAddress&, const Vector<scalar>&);                                                 \
+    template void                                                                                                                                            \
+    scaledInverseDiag(const Matrix<Vec3, SPARSITYTYPE>&, const FaceToMatrixAddress&, const Vector<scalar>&, Vector<scalar>&);                                \
+    template Vector<scalar>                                                                                                                                  \
+    scaledInverseDiag(const Matrix<scalar, SPARSITYTYPE>&, const FaceToMatrixAddress&, const Vector<scalar>&);                                               \
+    template void                                                                                                                                            \
+    scaledInverseDiag(const Matrix<scalar, SPARSITYTYPE>&, const FaceToMatrixAddress&, const Vector<scalar>&, Vector<scalar>&);                              \
+    template void                                                                                                                                            \
+    scaledInvDiagNegLUx(const Matrix<Vec3, SPARSITYTYPE>&, const Vector<Vec3>&, const Vector<Vec3>&, const Vector<scalar>&, Vector<scalar>&, Vector<Vec3>&); \
+    template void                                                                                                                                            \
+    scaledInvDiagNegLUx(const Matrix<scalar, SPARSITYTYPE>&, const Vector<Vec3>&, const Vector<Vec3>&, const Vector<scalar>&, Vector<scalar>&, Vector<Vec3>&)
+
+NN_DECLARE_MOMENTUM_UTILS(la::CsrSparsityPattern<localIdx>);
+NN_DECLARE_MOMENTUM_UTILS(la::EllSparsityPattern<localIdx>);
 
 }

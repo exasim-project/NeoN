@@ -8,6 +8,7 @@
 #include "NeoN/core/copyTo.hpp"
 #include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
 #include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/sparsityView.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 
 namespace NeoN::la
@@ -66,6 +67,45 @@ struct FaceToMatrixView
 
     // row offsets borrowed from the owning Matrix's sparsity pattern
     View<const localIdx> rowOffs;
+};
+
+/** @brief ELL counterpart to FaceToMatrixView -- same ownerOffset/neighbourOffset/diagOffset
+ * data, ELL's stride formula instead of CSR's rowOffs one.
+ */
+struct EllFaceToMatrixView
+{
+    /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
+     *  diagIdx(celli) = celli + stride * diagOffset[celli]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
+    {
+        return celli + stride * diagOffset[celli];
+    }
+
+    /* @brief Returns the flat values-array index of the upper-triangular entry A[own, nei].
+     *  upperIdx(own, f) = own + stride * ownerOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
+    {
+        return own + stride * ownerOffset[faceIdx];
+    }
+
+    /* @brief Returns the flat values-array index of the lower-triangular entry A[nei, own].
+     *  lowerIdx(nei, f) = nei + stride * neighbourOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
+    {
+        return nei + stride * neighbourOffset[faceIdx];
+    }
+
+    View<const uint8_t> ownerOffset;
+
+    View<const uint8_t> neighbourOffset;
+
+    View<const uint8_t> diagOffset;
+
+    // stride borrowed from the owning Matrix's ELL sparsity pattern
+    localIdx stride;
 };
 
 /* @class FaceToMatrixAddress
@@ -128,6 +168,32 @@ public:
      * @return FaceToMatrixView for easy access to matrix elements.
      */
     [[nodiscard]] FaceToMatrixView view(View<const localIdx> rowOffsView) const;
+
+    /**
+     * @brief Get an ELL view representation of the matrix's data.
+     * @return EllFaceToMatrixView for easy access to ELL-stored matrix elements.
+     */
+    [[nodiscard]] EllFaceToMatrixView view(localIdx stride) const;
+
+    /**
+     * @brief Get a view representation of the matrix's data, format picked by overload
+     * resolution on the sparsity view's own type, e.g. matrix.sparsity()->view().
+     * @return FaceToMatrixView for easy access to matrix elements.
+     */
+    [[nodiscard]] FaceToMatrixView view(const SparsityView<localIdx>& sparsity) const
+    {
+        return view(sparsity.rowOffs);
+    }
+
+    /**
+     * @brief Get an ELL view representation of the matrix's data, format picked by overload
+     * resolution on the sparsity view's own type.
+     * @return EllFaceToMatrixView for easy access to ELL-stored matrix elements.
+     */
+    [[nodiscard]] EllFaceToMatrixView view(const EllSparsityView<localIdx>& sparsity) const
+    {
+        return view(sparsity.stride);
+    }
 
     /*@brief getter for ownerOffset */
     const Array<uint8_t>& ownerOffset() const;
