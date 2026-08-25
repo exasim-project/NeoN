@@ -1,0 +1,243 @@
+\doxysection{NeoN\+::Dual\texorpdfstring{$<$}{<} Value\+Type, NDeriv \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1Dual}{}\label{classNeoN_1_1Dual}\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+
+
+Forward-\/mode automatic differentiation primitive.  
+
+
+
+
+{\ttfamily \#include $<$dual.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1Dual_ae293c24422db27c1b89c8ab539a751e3}{Primal\+Type}} = Value\+Type
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual_a5c6609fd82528ae4751e691329af541f}{Dual}} ()
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual_a651c59a9a917f26ad3643058947be4a7}{Dual}} (Value\+Type v)
+\begin{DoxyCompactList}\small\item\em Passive constructor\+: a constant has zero derivative. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual_a8a9725d57710d77b6cae48cb7ed764f6}{Dual}} (Value\+Type v, int slot)
+\begin{DoxyCompactList}\small\item\em Active constructor\+: seeds slot with unit derivative. \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{classNeoN_1_1Dual_a8bfa2d31427838846a50d857059c0108}{value}} () const
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Dual_a71e7ed45a2ec8b7254bf82bc133f3a02}{value}} ()
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{classNeoN_1_1Dual_a0ebe51fa01a78e6077c4858d6d7f9dae}{deriv}} (int i) const
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Dual_a72ec0bef7edbcc4a2b54db2734c5f41d}{deriv}} (int i)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual_a2e1104f00546597cc17b1756188c1522}{operator+=}} (const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \&r)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual_a4ffe6c9478255500b8c76da7950dc113}{operator-\/=}} (const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \&r)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual_a457f327e16163a6c21f0937798e42546}{operator\texorpdfstring{$\ast$}{*}=}} (const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \&r)
+\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual_a30221d52fcf791a2b132e517b3ce7221}{operator/=}} (const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \&r)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr int \mbox{\hyperlink{classNeoN_1_1Dual_a3e674a13c919f19029ee37792915b757}{n\+Deriv}} = NDeriv
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, int NDeriv$>$\newline
+class Neo\+N\+::\+Dual$<$ Value\+Type, NDeriv $>$}
+Forward-\/mode automatic differentiation primitive. 
+
+Carries a primal value together with a compile-\/time fixed number of directional derivatives. Because NDeriv is a template parameter the type has no dynamic state\+: it is trivially copyable, contains no pointers and requires no allocation. This is what makes it usable inside Kokkos device kernels, unlike tape-\/based AD types which must append to a runtime-\/growing trace.
+
+Memory layout is Array-\/of-\/\+Struct. For NDeriv \texorpdfstring{$<$}{<}= \texorpdfstring{$\sim$}{\string~}4 this is generally the faster choice on device since the derivatives of a cell are consumed together with its value. For larger NDeriv a Struct-\/of-\/\+Array layout with a hidden derivative dimension (cf. Sacado\textquotesingle{}s Kokkos \doxylink{classNeoN_1_1View}{View} support) should be measured before committing -\/ see doc/ad.\+md.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & underlying arithmetic type, typically \doxylink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar} \\
+\hline
+{\em NDeriv} & number of design variables carried simultaneously \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00036}{36}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1Dual_ae293c24422db27c1b89c8ab539a751e3}\label{classNeoN_1_1Dual_ae293c24422db27c1b89c8ab539a751e3} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!PrimalType@{PrimalType}}
+\index{PrimalType@{PrimalType}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{PrimalType}{PrimalType}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::\+Primal\+Type =  Value\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00040}{40}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classNeoN_1_1Dual_a5c6609fd82528ae4751e691329af541f}\label{classNeoN_1_1Dual_a5c6609fd82528ae4751e691329af541f} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!Dual@{Dual}}
+\index{Dual@{Dual}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{Dual()}{Dual()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::\+Dual (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00044}{44}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a651c59a9a917f26ad3643058947be4a7}\label{classNeoN_1_1Dual_a651c59a9a917f26ad3643058947be4a7} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!Dual@{Dual}}
+\index{Dual@{Dual}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{Dual()}{Dual()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::\+Dual (\begin{DoxyParamCaption}\item[{Value\+Type}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Passive constructor\+: a constant has zero derivative. 
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a8a9725d57710d77b6cae48cb7ed764f6}\label{classNeoN_1_1Dual_a8a9725d57710d77b6cae48cb7ed764f6} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!Dual@{Dual}}
+\index{Dual@{Dual}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{Dual()}{Dual()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::\+Dual (\begin{DoxyParamCaption}\item[{Value\+Type}]{v,  }\item[{int}]{slot }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Active constructor\+: seeds slot with unit derivative. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & primal value \\
+\hline
+{\em slot} & index of the design variable this value {\itshape is} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00062}{62}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1Dual_a72ec0bef7edbcc4a2b54db2734c5f41d}\label{classNeoN_1_1Dual_a72ec0bef7edbcc4a2b54db2734c5f41d} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!deriv@{deriv}}
+\index{deriv@{deriv}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{deriv()}{deriv()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::deriv (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a0ebe51fa01a78e6077c4858d6d7f9dae}\label{classNeoN_1_1Dual_a0ebe51fa01a78e6077c4858d6d7f9dae} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!deriv@{deriv}}
+\index{deriv@{deriv}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{deriv()}{deriv()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::deriv (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a457f327e16163a6c21f0937798e42546}\label{classNeoN_1_1Dual_a457f327e16163a6c21f0937798e42546} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}}
+\index{operator\texorpdfstring{$\ast$}{*}=@{operator\texorpdfstring{$\ast$}{*}=}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$\ast$}{*}=()}{operator*=()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::operator\texorpdfstring{$\ast$}{*}= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}}$<$ Value\+Type, NDeriv $>$ \&}]{r }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a2e1104f00546597cc17b1756188c1522}\label{classNeoN_1_1Dual_a2e1104f00546597cc17b1756188c1522} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{operator+=()}{operator+=()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}}$<$ Value\+Type, NDeriv $>$ \&}]{r }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a4ffe6c9478255500b8c76da7950dc113}\label{classNeoN_1_1Dual_a4ffe6c9478255500b8c76da7950dc113} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/=()}{operator-=()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::operator-\/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}}$<$ Value\+Type, NDeriv $>$ \&}]{r }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a30221d52fcf791a2b132e517b3ce7221}\label{classNeoN_1_1Dual_a30221d52fcf791a2b132e517b3ce7221} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{operator/=()}{operator/=()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}} \& \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::operator/= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}}$<$ Value\+Type, NDeriv $>$ \&}]{r }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00097}{97}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a71e7ed45a2ec8b7254bf82bc133f3a02}\label{classNeoN_1_1Dual_a71e7ed45a2ec8b7254bf82bc133f3a02} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!value@{value}}
+\index{value@{value}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \& \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1Dual_a8bfa2d31427838846a50d857059c0108}\label{classNeoN_1_1Dual_a8bfa2d31427838846a50d857059c0108} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!value@{value}}
+\index{value@{value}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Value\+Type \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00068}{68}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classNeoN_1_1Dual_a3e674a13c919f19029ee37792915b757}\label{classNeoN_1_1Dual_a3e674a13c919f19029ee37792915b757} 
+\index{NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}!nDeriv@{nDeriv}}
+\index{nDeriv@{nDeriv}!NeoN::Dual$<$ ValueType, NDeriv $>$@{NeoN::Dual$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{nDeriv}{nDeriv}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+constexpr int \mbox{\hyperlink{classNeoN_1_1Dual}{Neo\+N\+::\+Dual}}$<$ Value\+Type, NDeriv $>$\+::n\+Deriv = NDeriv\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}}
+
+
+
+Definition at line \mbox{\hyperlink{dual_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{dual_8hpp_source}{dual.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/core/primitives/\mbox{\hyperlink{dual_8hpp}{dual.\+hpp}}\end{DoxyCompactItemize}
