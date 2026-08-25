@@ -46,7 +46,7 @@ var searchData=
   ['sparsityview_43',['SparsityView',['../structNeoN_1_1la_1_1SparsityView.html#a5c7e4102a1a1ffaab85ec36e6fec4075',1,'NeoN::la::SparsityView']]],
   ['spatialoperator_44',['spatialoperator',['../classNeoN_1_1dsl_1_1SpatialOperator.html#ac0d411e093c1ccd5a40c630b45638a72',1,'NeoN::dsl::SpatialOperator::SpatialOperator(T cls)'],['../classNeoN_1_1dsl_1_1SpatialOperator.html#aaedf167aa2b3590b3ff87c0493e8dbc5',1,'NeoN::dsl::SpatialOperator::SpatialOperator(const SpatialOperator &amp;eqnOperator)'],['../classNeoN_1_1dsl_1_1SpatialOperator.html#a51ea515de3795dc003f4ec09fe6fe562',1,'NeoN::dsl::SpatialOperator::SpatialOperator(SpatialOperator &amp;&amp;eqnOperator)']]],
   ['spatialoperators_45',['spatialoperators',['../classNeoN_1_1dsl_1_1Expression.html#ae0858624a15c595fd931a3c272ec8146',1,'NeoN::dsl::Expression::spatialOperators() const'],['../classNeoN_1_1dsl_1_1Expression.html#a24d45a85bfdacc088988ceccca263529',1,'NeoN::dsl::Expression::spatialOperators()']]],
-  ['sqrt_46',['sqrt',['../namespaceNeoN.html#ab39b8c3f0e1256e47187289e5c31f539',1,'NeoN']]],
+  ['sqrt_46',['sqrt',['../namespaceNeoN.html#a8dcf5195d548e8fcc38525c2d2f8181b',1,'NeoN']]],
   ['ssize_47',['ssize',['../classNeoN_1_1Array.html#a5734c9aa61db833dd685290a46dc9277',1,'NeoN::Array::ssize()'],['../classNeoN_1_1Vector.html#a719edbafd35de9fdf99fd174fc8fd61e',1,'NeoN::Vector::ssize()']]],
   ['steadystate_48',['SteadyState',['../classNeoN_1_1timeIntegration_1_1SteadyState.html#a03be522ab8c5ca9d0a341c136ab1e909',1,'NeoN::timeIntegration::SteadyState']]],
   ['stencildb_49',['stencilDB',['../classNeoN_1_1UnstructuredMesh.html#a0d941c6f9fd1001bb00c8fde7a47876e',1,'NeoN::UnstructuredMesh']]],
