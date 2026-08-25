@@ -209,7 +209,7 @@ scalar mag(const Tensor& t)
     {
         s += t.data()[k] * t.data()[k];
     }
-    return sqrt(s);
+    return Kokkos::sqrt(s);
 }
 
 /** @brief Frobenius norm squared */
