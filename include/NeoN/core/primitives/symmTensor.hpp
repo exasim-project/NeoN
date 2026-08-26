@@ -206,7 +206,7 @@ KOKKOS_INLINE_FUNCTION
 scalar mag(const SymmTensor& s)
 {
     // off-diagonal entries appear twice
-    return sqrt(
+    return Kokkos::sqrt(
         s(0, 0) * s(0, 0) + s(1, 1) * s(1, 1) + s(2, 2) * s(2, 2)
         + scalar(2) * (s(0, 1) * s(0, 1) + s(0, 2) * s(0, 2) + s(1, 2) * s(1, 2))
     );
