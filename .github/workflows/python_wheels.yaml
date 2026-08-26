@@ -1,0 +1,459 @@
+name: Python wheels
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      publish_existing_run_id:
+        description: "Publish wheel artifacts from this existing run id instead of building"
+        required: false
+        default: ""
+        type: string
+      artifact_pattern:
+        description: "Artifact name pattern to publish when using publish_existing_run_id"
+        required: false
+        default: "cpu-wheels-*"
+        type: string
+      build_wheels:
+        description: "Build wheels instead of publishing existing artifacts"
+        required: false
+        default: false
+        type: boolean
+      build_cpu:
+        description: "Build Linux CPU wheels"
+        required: false
+        default: false
+        type: boolean
+      build_gpu:
+        description: "Build Linux CUDA wheel variants"
+        required: false
+        default: false
+        type: boolean
+      publish_existing_gpu_run_id:
+        description: "Attach GPU wheel artifacts from this existing run id to a GitHub Release"
+        required: false
+        default: ""
+        type: string
+      gpu_artifact_pattern:
+        description: "GPU artifact name pattern to attach when using publish_existing_gpu_run_id"
+        required: false
+        default: "gpu-wheels-*"
+        type: string
+      release_tag:
+        description: "GitHub Release tag for uploaded GPU wheels, for example v0.1.1"
+        required: false
+        default: ""
+        type: string
+      publish_repository:
+        description: "Publish freshly built CPU wheels to this index (use testpypi to rehearse a release)"
+        required: false
+        default: "none"
+        type: choice
+        options:
+          - none
+          - testpypi
+          - pypi
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  version:
+    name: Resolve package version
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'workflow_dispatch' || inputs.build_wheels)
+    outputs:
+      channel: ${{ steps.version.outputs.channel }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve stable or nightly version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            channel="stable"
+          else
+            serial="$(date -u +%Y%m%d%H%M)${GITHUB_RUN_NUMBER}"
+            version="$(python scripts/set_package_version.py --nightly "${serial}")"
+            channel="nightly"
+          fi
+
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
+
+  build-cpu-wheels:
+    name: CPU ${{ matrix.python }} ${{ matrix.os }}
+    needs: version
+    runs-on: ${{ matrix.os }}
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'workflow_dispatch' || (inputs.build_wheels && inputs.build_cpu))
+    strategy:
+      fail-fast: false
+      matrix:
+        # One job per (platform x Python version) so each wheel builds in
+        # parallel with its own status and log. archs is attached per os below.
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-14, macos-15-intel]
+        python: ["cp39", "cp310", "cp311", "cp312", "cp313"]
+        include:
+          - os: ubuntu-latest
+            archs: x86_64
+          - os: ubuntu-24.04-arm
+            archs: aarch64
+          - os: windows-latest
+            archs: AMD64
+          - os: macos-14
+            archs: arm64
+          - os: macos-15-intel
+            archs: x86_64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up build host Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Stamp package version
+        run: python scripts/set_package_version.py "${{ needs.version.outputs.version }}"
+
+      - name: Install cibuildwheel
+        run: python -m pip install "cibuildwheel>=3,<4"
+
+      # scikit-build-core uses the Ninja generator, which needs cl.exe on PATH.
+      # cibuildwheel does not activate MSVC, so set up the dev environment here.
+      - name: Set up MSVC developer environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build CPU wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_ARCHS: ${{ matrix.archs }}
+          # Build only this job's Python version (overrides the pyproject build list).
+          CIBW_BUILD: ${{ matrix.python }}-*
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
+            LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:${LD_LIBRARY_PATH:-}"
+            auditwheel repair -w {dest_dir} {wheel}
+          # delocate must find the build-tree dylibs (libNeoN, libkokkos*, libginkgo*)
+          # that _neon.so references via @rpath. The build persists in _skbuild.
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            DYLD_LIBRARY_PATH="$GITHUB_WORKSPACE/_skbuild/lib:$GITHUB_WORKSPACE/_skbuild/_deps/ginkgo-build/lib:${DYLD_LIBRARY_PATH:-}"
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
+          # _neon.pyd depends on NeoN/Kokkos/umpire DLLs in _skbuild/bin; delvewheel
+          # vendors them into the wheel. cibuildwheel runs repair from the repo root.
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            delvewheel repair --add-path _skbuild/bin -w {dest_dir} {wheel}
+          # The production preset uses Ninja, but scikit-build-core does not read the
+          # preset and injects a Visual Studio "-A x64" platform that Ninja rejects.
+          # Declaring the generator here keeps scikit-build-core from adding it.
+          CIBW_ENVIRONMENT_WINDOWS: CMAKE_GENERATOR=Ninja
+          CIBW_CONFIG_SETTINGS: >
+            cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+            cmake.define.NeoN_BUILD_TESTS=OFF
+            cmake.define.NeoN_WITH_MPI=OFF
+            cmake.define.NeoN_WITH_PETSC=OFF
+            cmake.define.NeoN_WITH_ADIOS2=OFF
+            cmake.define.NeoN_WITH_SUNDIALS=OFF
+            cmake.define.Kokkos_ENABLE_SERIAL=ON
+            cmake.define.Kokkos_ENABLE_CUDA=OFF
+            cmake.define.Kokkos_ENABLE_HIP=OFF
+          # Windows overrides (this replaces, not merges, the settings above): Ginkgo
+          # 2.0 uses std::result_of, removed in C++20, which MSVC rejects. NeoN does
+          # not support Ginkgo on Windows (see build_on_windows.yaml), so disable it.
+          CIBW_CONFIG_SETTINGS_WINDOWS: >
+            cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+            cmake.define.NeoN_BUILD_TESTS=OFF
+            cmake.define.NeoN_WITH_MPI=OFF
+            cmake.define.NeoN_WITH_PETSC=OFF
+            cmake.define.NeoN_WITH_ADIOS2=OFF
+            cmake.define.NeoN_WITH_SUNDIALS=OFF
+            cmake.define.NeoN_WITH_GINKGO=OFF
+            cmake.define.Kokkos_ENABLE_SERIAL=ON
+            cmake.define.Kokkos_ENABLE_CUDA=OFF
+            cmake.define.Kokkos_ENABLE_HIP=OFF
+
+      - name: Upload CPU wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-wheels-${{ matrix.os }}-${{ matrix.archs }}-${{ matrix.python }}
+          path: wheelhouse/*.whl
+
+  build-gpu-wheels:
+    name: ${{ matrix.label }} wheels
+    needs: version
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.build_wheels && inputs.build_gpu))
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: CUDA 12.8
+            suffix: cuda128
+            before_all: bash ci/install_cuda.sh 12.8
+            config_settings: >
+              cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON
+              cmake.define.NeoN_BUILD_TESTS=OFF
+              cmake.define.NeoN_WITH_MPI=OFF
+              cmake.define.NeoN_WITH_PETSC=OFF
+              cmake.define.NeoN_WITH_ADIOS2=OFF
+              cmake.define.NeoN_WITH_SUNDIALS=OFF
+              cmake.define.NeoN_WITH_UMPIRE=OFF
+              cmake.define.NeoN_INSTALL_CMAKE_PACKAGE=OFF
+              cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+              cmake.define.CMAKE_CUDA_HOST_COMPILER=/usr/local/bin/g++
+              cmake.define.CMAKE_CUDA_ARCHITECTURES=80
+              cmake.define.CMAKE_CUDA_STANDARD=20
+              cmake.define.CMAKE_CUDA_STANDARD_REQUIRED=ON
+              cmake.define.CMAKE_CUDA_EXTENSIONS=OFF
+              cmake.define.Kokkos_ENABLE_SERIAL=ON
+              cmake.define.Kokkos_ENABLE_CUDA=ON
+              cmake.define.Kokkos_ENABLE_HIP=OFF
+              cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON
+              cmake.define.Kokkos_ARCH_AMPERE80=ON
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up build host Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Stamp GPU package version
+        run: python scripts/set_package_version.py "${{ needs.version.outputs.version }}+${{ matrix.suffix }}"
+
+      - name: Install cibuildwheel
+        run: python -m pip install "cibuildwheel>=3,<4"
+
+      - name: Build GPU wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp312-manylinux_x86_64"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_34
+          CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
+            LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
+            auditwheel -v repair --plat manylinux_2_34_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
+          CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
+          CIBW_ENVIRONMENT_LINUX: >
+            PATH=/usr/local/cuda/bin:$PATH
+            LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+            CUDACXX=/usr/local/cuda/bin/nvcc
+            CUDAHOSTCXX=/usr/local/bin/g++
+            CUDAToolkit_ROOT=/usr/local/cuda
+            CMAKE_BUILD_PARALLEL_LEVEL=2
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_TEST_SKIP: "*"
+
+      - name: Upload GPU build failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-build-logs-${{ matrix.suffix }}
+          path: |
+            _skbuild/**/CMake*.log
+            _skbuild/**/CMakeConfigureLog.yaml
+            _skbuild/**/*.log
+          if-no-files-found: ignore
+
+      - name: Upload unrepaired GPU wheel artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unrepaired-gpu-wheels-${{ matrix.suffix }}
+          path: /tmp/cibuildwheel/built_wheel/*.whl
+          if-no-files-found: ignore
+
+      - name: Upload GPU wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-wheels-${{ matrix.suffix }}
+          path: wheelhouse/*.whl
+
+  publish-cpu-pypi:
+    name: Publish CPU wheels to PyPI
+    needs: build-cpu-wheels
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish_repository != 'none'))
+    environment:
+      name: ${{ inputs.publish_repository == 'testpypi' && 'testpypi' || 'pypi' }}
+      url: ${{ inputs.publish_repository == 'testpypi' && 'https://test.pypi.org/project/neon_pde/' || 'https://pypi.org/project/neon_pde/' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download CPU wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: cpu-wheels-*
+          path: wheelhouse
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
+          repository-url: ${{ inputs.publish_repository == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+
+  publish-existing-cpu-pypi:
+    name: Publish existing CPU wheel artifacts to PyPI
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      github.event_name == 'workflow_dispatch' && inputs.publish_existing_run_id != ''
+    environment:
+      name: pypi
+      url: https://pypi.org/project/neon_pde/
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - name: Validate selected run id
+        shell: bash
+        run: |
+          if [[ ! "${{ inputs.publish_existing_run_id }}" =~ ^[0-9]+$ ]]; then
+            echo "publish_existing_run_id must contain only the numeric run id."
+            echo "Example: 26596572728"
+            exit 1
+          fi
+
+      - name: Download wheel artifacts from selected run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          rm -rf wheelhouse
+          mkdir -p wheelhouse
+          gh run download "${{ inputs.publish_existing_run_id }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "${{ inputs.artifact_pattern }}" \
+            --dir wheelhouse
+
+          find wheelhouse -mindepth 2 -type f -name "*.whl" -exec mv -t wheelhouse {} +
+          find wheelhouse -type d -empty -delete
+
+          if ! find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -quit | grep -q .; then
+            echo "No wheel files were downloaded."
+            echo "Run id: ${{ inputs.publish_existing_run_id }}"
+            echo "Artifact pattern: ${{ inputs.artifact_pattern }}"
+            echo "Use an exact artifact name if the pattern does not match, for example:"
+            echo "cpu-wheels-ubuntu-latest-x86_64"
+            exit 1
+          fi
+
+      - name: List wheels selected for publishing
+        run: find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -exec ls -lh {} \;
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
+
+  publish-existing-gpu-github-release:
+    name: Attach existing GPU wheel artifacts to GitHub Release
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      github.event_name == 'workflow_dispatch' && inputs.publish_existing_gpu_run_id != ''
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Validate selected run id and release tag
+        shell: bash
+        run: |
+          if [[ ! "${{ inputs.publish_existing_gpu_run_id }}" =~ ^[0-9]+$ ]]; then
+            echo "publish_existing_gpu_run_id must contain only the numeric run id."
+            exit 1
+          fi
+
+          if [[ -z "${{ inputs.release_tag }}" ]]; then
+            echo "release_tag is required when publishing GPU wheels to a GitHub Release."
+            echo "Example: v0.1.1"
+            exit 1
+          fi
+
+      - name: Download GPU wheel artifacts from selected run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          rm -rf wheelhouse
+          mkdir -p wheelhouse
+          gh run download "${{ inputs.publish_existing_gpu_run_id }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "${{ inputs.gpu_artifact_pattern }}" \
+            --dir wheelhouse
+
+          find wheelhouse -mindepth 2 -type f -name "*.whl" -exec mv -t wheelhouse {} +
+          find wheelhouse -type d -empty -delete
+
+          if ! find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -quit | grep -q .; then
+            echo "No GPU wheel files were downloaded."
+            echo "Run id: ${{ inputs.publish_existing_gpu_run_id }}"
+            echo "Artifact pattern: ${{ inputs.gpu_artifact_pattern }}"
+            echo "Use an exact artifact name if the pattern does not match, for example:"
+            echo "gpu-wheels-cuda128"
+            exit 1
+          fi
+
+      - name: List GPU wheels selected for release upload
+        run: find wheelhouse -maxdepth 1 -type f -name "*.whl" -print -exec ls -lh {} \;
+
+      - name: Upload GPU wheels to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: wheelhouse/*.whl
+
+  publish-gpu-github-release:
+    name: Attach GPU wheels to GitHub Release
+    needs: build-gpu-wheels
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download GPU wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: gpu-wheels-*
+          path: wheelhouse
+          merge-multiple: true
+
+      - name: Upload GPU wheels to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wheelhouse/*.whl

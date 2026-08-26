@@ -461,9 +461,11 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     // An OpenFOAM div scheme may carry a leading `bounded` prefix (the boundedness term
     // Sp(fvc::div(phi), psi)); strip it before the mandatory `Gauss` keyword and record it so
     // implicitOperation emits the same bounding diagonal term as the un-fused BoundedDiv wrapper.
-    if (divTokens.size() > 0 && divTokens.get<std::string>(0) == "bounded")
+    // Always re-derived (not just set on match) so a second read() with a different scheme can't
+    // leave a stale true from an earlier call.
+    bounded_ = divTokens.size() > 0 && divTokens.get<std::string>(0) == "bounded";
+    if (bounded_)
     {
-        bounded_ = true;
         divTokens.remove(0);
     }
     divTokens.remove(0);

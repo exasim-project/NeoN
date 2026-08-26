@@ -28,6 +28,69 @@ GitHub CI is responsible for managing the overall NeoN CI workflow.
    The GitHub CI acts as the *control layer* for all NeoN CI operations.
    Developers interact only with GitHub — all LRZ GitLab pipelines are triggered automatically.
 
+--------------------
+Python Wheel CI/CD
+--------------------
+In addition to the build-and-test workflows, NeoN provides a dedicated GitHub Actions workflow for
+building and distributing Python wheels. This workflow is defined in
+``.github/workflows/python_wheels.yaml`` and is responsible for release packaging rather than for
+ordinary pull-request testing.
+
+Release builds are managed by GitHub Actions and ``cibuildwheel``. The workflow creates Python
+wheels inside controlled CI environments and uploads or publishes the resulting artifacts.
+
+The workflow supports both stable and development versions. For a tag such as ``v0.1.2``, the
+package version is derived from the tag and treated as a stable release. For manually triggered
+builds, the workflow generates a development version with a ``.dev`` suffix so that test artifacts
+do not conflict with stable releases.
+
+CPU wheels are built for Linux x86-64, Linux ARM64, Windows AMD64, macOS Apple Silicon, and macOS
+Intel. The matrix covers CPython 3.9 through 3.13. MPI and optional dependencies such as PETSc,
+ADIOS2, and SUNDIALS are disabled for these wheels, and CUDA/HIP support is disabled. This keeps the
+default PyPI package installable without requiring those external HPC libraries.
+
+After each CPU wheel is built and repaired, ``cibuildwheel`` installs it into an isolated test
+environment. The current installed-wheel check verifies that the package imports, its distribution
+and module versions agree, its backend feature indicators are valid, and serial execution support is
+present. The complete Python binding test suite is not currently executed against every repaired
+wheel.
+
+CUDA wheels are handled separately. The Linux wheel job installs the CUDA toolkit inside the
+``manylinux`` container before running ``cibuildwheel``. CUDA wheels are built with Kokkos CUDA
+support enabled and receive a local version suffix such as ``+cuda128``. The NVIDIA driver library
+``libcuda.so.1`` is explicitly excluded from wheel repair, because it is provided by the user's
+installed NVIDIA driver and must not be bundled into the wheel.
+
+.. note::
+   GitHub-hosted runners provide CPU machines only. They can compile CUDA wheels if the CUDA toolkit
+   is installed in the build container, but they cannot run or import the CUDA extension as a full
+   runtime test because no NVIDIA driver or GPU is available. CUDA wheels must therefore be validated
+   on a machine with a compatible NVIDIA driver and GPU.
+
+Publishing is separated by wheel type:
+
+* **CPU wheels** are published to PyPI through PyPI Trusted Publishing. This uses GitHub's OpenID
+  Connect identity instead of storing a long-lived PyPI API token.
+* **CUDA wheels** are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
+  This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package.
+
+To rehearse the publish flow before a real release, dispatch the workflow manually with
+``build_wheels``, ``build_cpu`` and ``publish_repository=testpypi``. This builds a unique ``.dev``
+version and uploads it to TestPyPI, so Trusted Publishing configuration and package metadata can be
+validated without touching the production index. TestPyPI needs its own trusted-publisher entry and a
+GitHub ``testpypi`` environment; ``publish_repository=pypi`` targets the production index instead.
+
+The workflow also includes recovery paths for already-built artifacts. If a build succeeds but a
+publish or release-upload step fails, existing wheel artifacts can be reused by providing the
+original GitHub Actions run ID. This avoids rebuilding expensive CPU or CUDA wheels only to repeat an
+upload step.
+
+At the time of writing, the CUDA wheel path is intentionally narrow while it is being validated: it
+builds the CUDA 12.8 variant for CPython 3.12 on Linux x86-64. Runtime wheel testing is skipped in
+that build job because the GitHub-hosted runner has no GPU. The same structure can be extended to
+additional Python versions, CUDA versions, and GPU architectures after the packaged wheel is
+validated on production hardware.
+
 -------------------------------
 Continuous Integration on LRZ GitLab
 -------------------------------

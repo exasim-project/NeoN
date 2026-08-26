@@ -26,40 +26,50 @@ else()
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bindings/neon)
 endif()
 
-nanobind_add_module(
-  _neon
-  NOMINSIZE
-  neon.cpp
-  executors.cpp
-  scalar.cpp
-  vec3.cpp
-  vectors.cpp
-  containerFreeFunctions.cpp
-  boundaryMesh.cpp
-  unstructuredMesh.cpp
-  surfaceField.cpp
-  volumeField.cpp
-  surfaceInterpolation.cpp
-  inputs.cpp
-  coNum.cpp
-  initialization.cpp
-  linearAlgebra.cpp
-  dsl.cpp
-  database/document.cpp
-  database/collection.cpp
-  database/database.cpp)
+set(NeoN_PYTHON_BINDING_SRCS
+    neon.cpp
+    executors.cpp
+    scalar.cpp
+    vec3.cpp
+    vectors.cpp
+    containerFreeFunctions.cpp
+    boundaryMesh.cpp
+    unstructuredMesh.cpp
+    surfaceField.cpp
+    volumeField.cpp
+    surfaceInterpolation.cpp
+    inputs.cpp
+    coNum.cpp
+    initialization.cpp
+    linearAlgebra.cpp
+    dsl.cpp
+    database/document.cpp
+    database/collection.cpp
+    database/database.cpp)
+
+if(NeoN_ENABLE_CUDA AND Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE)
+  # CUDA-enabled Kokkos headers require translation units that include them to use CUDA mode. Only
+  # in cmake-language mode; traditional mode compiles these as C++ via nvcc_wrapper.
+  set_source_files_properties(${NeoN_PYTHON_BINDING_SRCS} PROPERTIES LANGUAGE CUDA)
+endif()
+
+nanobind_add_module(_neon NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 
 # Link against the NeoN library to access executor classes
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
-# Generate Python type stubs (.pyi) after building the module
-add_custom_command(
-  TARGET _neon
-  POST_BUILD
-  COMMAND ${Python_EXECUTABLE} -m nanobind.stubgen -m _neon -O ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -i
-          ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -D
-  COMMENT "Generating type hints (_neon.pyi) for neon..."
-  VERBATIM)
+if(NOT NeoN_ENABLE_CUDA AND NOT WIN32)
+  # Stub generation imports _neon. Skipped for CUDA (may build without an NVIDIA driver present) and
+  # on Windows (the extension's dependent DLLs are not on the loader search path at build time, so
+  # the import fails).
+  add_custom_command(
+    TARGET _neon
+    POST_BUILD
+    COMMAND ${Python_EXECUTABLE} -m nanobind.stubgen -m _neon -O ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+            -i ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -D
+    COMMENT "Generating type hints (_neon.pyi) for neon..."
+    VERBATIM)
+endif()
 
 # Generate __init__.py file
 file(
@@ -77,7 +87,7 @@ Note: Type stubs (_neon.pyi) are automatically generated during the build proces
 using nanobind-stubgen. This enables IDE autocomplete and type checking.
 \"\"\"
 
-__version__ = \"0.1.0\"
+__version__ = \"${NeoN_PACKAGE_VERSION}\"
 
 # Import the C++ extension module
 try:

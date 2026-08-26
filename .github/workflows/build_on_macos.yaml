@@ -24,8 +24,9 @@ concurrency:
 jobs:
   build:
     if: >
-      github.event_name != 'pull_request' ||
-      !contains(github.event.pull_request.labels.*.name, 'skip-build')
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
     name: Build and test NeoN on MacOS
     strategy:
       fail-fast: false

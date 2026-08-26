@@ -79,20 +79,18 @@ public:
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s() const;
 
     // Vector from the owner cell centre to the face centre (Cf - C_own), one per internal face.
-    // Computed lazily on first access (or via ensureFaceDeltas()); only schemes that need a
-    // cell-to-face offset (e.g. linearUpwind's gradient correction) ever trigger the allocation,
-    // so a run that never selects such a scheme pays nothing.
+    // Eagerly computed and cached by update() while the mesh centres are still alive; schemes that
+    // need a cell-to-face offset (e.g. linearUpwind's gradient correction) read it from here.
     const SurfaceField<Vec3>& faceDeltaOwner() const;
 
     // Vector from the neighbour cell centre to the face centre (Cf - C_nei), one per internal face.
     const SurfaceField<Vec3>& faceDeltaNeighbour() const;
 
-    // Opt-in trigger for the faceDelta* fields. Computes them (from the still-live mesh centres)
-    // and then releases the source geometry. Consumers that need faceDelta* (linearUpwind) call
-    // this in their constructor — while the mesh centres are guaranteed alive — because reset()
-    // frees those centres on the first read of any cached geometry field. Idempotent; const so it
-    // is reachable through the shared (read-only) GeometryScheme handle. No-op cost after the first
-    // call is a single bool check.
+    // Safety-net trigger for the faceDelta* fields: builds them from the still-live mesh centres if
+    // update() has not already (it normally has, since update() computes them eagerly), then
+    // releases the source geometry via reset(). Errors out if the centres were already freed.
+    // Idempotent; const so it is reachable through the shared (read-only) GeometryScheme handle.
+    // No-op cost once the deltas exist is a single bool check.
     void ensureFaceDeltas() const;
 
     void update();
@@ -121,10 +119,10 @@ private:
     SurfaceField<scalar> nonOrthDeltaCoeffs_;
     SurfaceField<Vec3> nonOrthCorrectionVec3s_;
 
-    // Lazily allocated and filled: empty until a consumer opts in via ensureFaceDeltas() (or first
-    // reads them). A run that never selects linearUpwind leaves these nullopt, saving
-    // 2 * nInternalFaces * sizeof(Vec3) of device memory (~2.6 GB on an 18M-cell mesh). mutable so
-    // the const accessors / ensureFaceDeltas() can populate them through the shared handle.
+    // Populated (from the mesh centres) eagerly by update(); ensureFaceDeltas() is a fallback that
+    // fills them if update() somehow hasn't. std::optional so they can be released with reset(),
+    // and mutable so the const accessors / ensureFaceDeltas() can populate them through the shared
+    // handle. Each holds nInternalFaces * sizeof(Vec3) of device memory.
     mutable std::optional<SurfaceField<Vec3>> faceDeltaOwner_;
     mutable std::optional<SurfaceField<Vec3>> faceDeltaNeighbour_;
     mutable bool faceDeltasComputed_ = false;

@@ -39,15 +39,15 @@ void applyBoundedDiagInternal(
         NEON_LAMBDA(const localIdx facei) {
             const auto ownRow = ownV[facei];
             const auto neiRow = neiV[facei];
-            const auto phi_f = fluxV[facei];
+            const auto phiF = fluxV[facei];
 
             // diag[O] -= φ_f * scaling[O]
             Kokkos::atomic_sub(
-                &values[ma.diagIdx(ownRow)], phi_f * scaling[ownRow] * one<AssemblyType>()
+                &values[ma.diagIdx(ownRow)], phiF * scaling[ownRow] * one<AssemblyType>()
             );
             // diag[N] += φ_f * scaling[N]  (φ_f is -outflow for N)
             Kokkos::atomic_add(
-                &values[ma.diagIdx(neiRow)], phi_f * scaling[neiRow] * one<AssemblyType>()
+                &values[ma.diagIdx(neiRow)], phiF * scaling[neiRow] * one<AssemblyType>()
             );
         },
         "BoundedDiv::applyBoundedDiagInternal"
@@ -77,9 +77,9 @@ void applyBoundedDiagBoundary(
         {0, nBoundaryFaces},
         NEON_LAMBDA(const localIdx bfi) {
             const auto ownRow = ownV[bfi];
-            const auto phi_f = bFluxV[bfi];
+            const auto phiF = bFluxV[bfi];
             Kokkos::atomic_sub(
-                &values[ma.diagIdx(ownRow)], phi_f * scaling[ownRow] * one<AssemblyType>()
+                &values[ma.diagIdx(ownRow)], phiF * scaling[ownRow] * one<AssemblyType>()
             );
         },
         "BoundedDiv::applyBoundedDiagBoundary"
@@ -116,8 +116,8 @@ void applyBoundedDiagProcBoundary(
             const auto bcfacei = nBoundaryFaces + procFacei;
             const auto cell = ownV[bcfacei];
             const auto isOwnerFace = isOwnerV[bcfacei] > 0.0;
-            const auto phi_f = bFluxV[bcfacei];
-            const auto outflow = isOwnerFace ? phi_f : -phi_f;
+            const auto phiF = bFluxV[bcfacei];
+            const auto outflow = isOwnerFace ? phiF : -phiF;
             Kokkos::atomic_sub(
                 &values[ma.diagIdx(cell)], outflow * scaling[cell] * one<AssemblyType>()
             );
@@ -126,11 +126,9 @@ void applyBoundedDiagProcBoundary(
     );
 }
 
-// result[i] -= surfaceIntegrate(F)[i] * V[i] * ψ[i] * scaling[i]
-//            = (Σ_f φ_f over cell i) * ψ[i] * scaling[i]
-// for the explicit form. Same face-by-face accumulation as the implicit
-// helpers above — only the per-cell multiplier changes (ψ instead of the
-// matrix diagonal slot).
+// Applies the bounded-convection correction to the explicit divergence. Same face-by-face
+// accumulation as the implicit helpers above — only the per-cell multiplier changes (ψ instead
+// of the matrix diagonal slot).
 template<typename FieldValueType>
 void applyBoundedExplicit(
     Vector<FieldValueType>& result,
@@ -159,9 +157,9 @@ void applyBoundedExplicit(
             exec,
             {0, mesh.nInternalFaces()},
             NEON_LAMBDA(const localIdx facei) {
-                const auto phi_f = fluxV[facei];
-                Kokkos::atomic_add(&sumPhiV[ownV[facei]], phi_f);
-                Kokkos::atomic_sub(&sumPhiV[neiV[facei]], phi_f);
+                const auto phiF = fluxV[facei];
+                Kokkos::atomic_add(&sumPhiV[ownV[facei]], phiF);
+                Kokkos::atomic_sub(&sumPhiV[neiV[facei]], phiF);
             },
             "BoundedDiv::accumulateSumPhiInternal"
         );
@@ -194,23 +192,24 @@ void applyBoundedExplicit(
                 const auto bcfacei = nBnd + procFacei;
                 const auto cell = ownV[bcfacei];
                 const auto isOwnerFace = isOwnerV[bcfacei] > 0.0;
-                const auto phi_f = bFluxV[bcfacei];
-                Kokkos::atomic_add(&sumPhiV[cell], isOwnerFace ? phi_f : -phi_f);
+                const auto phiF = bFluxV[bcfacei];
+                Kokkos::atomic_add(&sumPhiV[cell], isOwnerFace ? phiF : -phiF);
             },
             "BoundedDiv::accumulateSumPhiProc"
         );
     }
 
-    // result[i] -= sumPhi[i] / V[i] * V[i] * ψ[i] * scaling[i]
-    //           = sumPhi[i] * ψ[i] * scaling[i]
+    // result[i] -= fvc::surfaceIntegrate(F)[i] * ψ[i] * scaling[i]
+    //           = (sumPhi[i] / V[i]) * ψ[i] * scaling[i]
+    // result is a per-unit-volume quantity (matching GaussGreenDiv::explicitOperation), so the
+    // surfaceIntegrate normalization must stay -- unlike the implicit Sp diagonal, where the V
+    // cancels against the matrix's own volume integration.
     parallelFor(
         exec,
         {0, result.size()},
         NEON_LAMBDA(const localIdx celli) {
-            // suppress "unused" on cellVolumes — kept around in case future
-            // changes need an explicit V-divided coefficient.
-            (void)cellVolumesV;
-            resultV[celli] -= sumPhiV[celli] * phiInternalV[celli] * scaling[celli];
+            resultV[celli] -=
+                sumPhiV[celli] / cellVolumesV[celli] * phiInternalV[celli] * scaling[celli];
         },
         "BoundedDiv::subtractBoundedCorrection"
     );

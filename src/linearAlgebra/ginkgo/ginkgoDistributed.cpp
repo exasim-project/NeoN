@@ -895,17 +895,16 @@ void solveComponentDist(
 // component's diagonal correction to the shared rank-local diagonal in place and reusing
 // solve_impl_dist (which honours the l1ScaledResidual criterion). The correction is rank-local, so
 // only the local diagonal entries are touched.
-// NOTE: explicit template parameters (not abbreviated `auto` params): nvcc rejects the extended
-// __device__ NEON_LAMBDA parallelFor bodies below when they sit inside an abbreviated function
-// template. Mirrors solveImplicitTransformComponent in ginkgo.cpp.
+// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
+// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
 template<
     unsigned int I,
     typename SystemType,
     typename ExecType,
     typename FactoryType,
     typename ValuesType,
-    typename MatrixAddressingType,
-    typename DiagCType>
+    typename MatAddrType,
+    typename DiagType>
 void solveImplicitTransformComponentDist(
     const SystemType& sys,
     Vector<Vec3>& x,
@@ -917,17 +916,15 @@ void solveImplicitTransformComponentDist(
     SolverStats& stats,
     const L1ResidualControl* l1Control,
     ValuesType values,
-    const MatrixAddressingType& ma,
-    DiagCType diagC,
+    const MatAddrType& ma,
+    DiagType diagC,
     localIdx nrows
 )
 {
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
         "applyImplicitTransformDiagDist"
     );
     gkoExec->synchronize();
@@ -941,9 +938,7 @@ void solveImplicitTransformComponentDist(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
         "restoreImplicitTransformDiagDist"
     );
     gkoExec->synchronize();
@@ -980,7 +975,10 @@ SolverStats GinkgoSolver::solveDist(
         gkoMtx,
         solverStructureKey(sys)
     );
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     return {solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, lease.solver(), l1Control)};
 }
 
@@ -989,7 +987,10 @@ SolverStats GinkgoSolver::solveDist(
 ) const
 {
     auto stats = SolverStats {};
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     solveComponentDist<0>(
         sys,
         x,
@@ -1035,7 +1036,10 @@ SolverStats GinkgoSolver::solveDist(
     auto comm = gko::experimental::mpi::communicator(
         commPattern.env.comm(), !commPattern.env.gpuAwareMpi()
     );
-    const L1ResidualControl* l1Control = l1Control_ ? &l1Control_.value() : nullptr;
+    // When the configFile names the L1 criterion it is already built into the solver
+    // (l1InConfig_); suppress the post-hoc attach so it is not applied twice.
+    const L1ResidualControl* l1Control =
+        (l1Control_ && !l1InConfig_) ? &l1Control_.value() : nullptr;
     // Wired to the distributed-matrix cache. Safe for all three sub-paths below: the wrapper is a
     // non-owning VIEW over the rank-local value buffer, so it always reflects the live values -- it
     // cannot carry stale data. The implicit-transform branch shifts the diagonal in place per

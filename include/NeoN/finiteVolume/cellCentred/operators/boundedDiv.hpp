@@ -15,22 +15,15 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-// Mirrors OpenFOAM's Foam::fv::boundedConvectionScheme
-// (src/finiteVolume/finiteVolume/convectionSchemes/boundedConvectionScheme/
-//  boundedConvectionScheme.C):
-//
-//   fvmDiv(F, ψ) = base.fvmDiv(F, ψ) - fvm::Sp(fvc::surfaceIntegrate(F), ψ)
-//   fvcDiv(F, ψ) = base.fvcDiv(F, ψ) - fvc::surfaceIntegrate(F) * ψ
-//
-// The correction vanishes when ∇·F = 0 (continuity satisfied), and otherwise
-// adds an Sp-style implicit source proportional to the local continuity error.
-// On positive scalars (k, ω, …) this enforces an M-matrix-like sign pattern so
-// numerical noise in the face flux can't drive ψ negative cell-to-cell.
-//
-// Reads as `bounded <innerScheme...>`, e.g. `bounded Gauss upwind`. The
-// constructor consumes nothing extra of its own — the leading "bounded" was
-// already consumed by DivOperatorFactory::create() — and forwards the
-// remaining tokens to a recursive create() to build the inner scheme.
+/* @brief Bounded convection div scheme wrapper.
+ *
+ * Mirrors OpenFOAM's Foam::fv::boundedConvectionScheme: wraps an inner div
+ * scheme and adds an Sp-style correction proportional to the local
+ * continuity error, -fvc::surfaceIntegrate(faceFlux) * psi (explicit) or
+ * -fvm::Sp(fvc::surfaceIntegrate(faceFlux), psi) (implicit).
+ *
+ * Reads as `bounded <innerScheme...>`, e.g. `bounded Gauss upwind`.
+ */
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 class BoundedDiv :
     public DivOperatorFactory<FieldValueType, AssemblyType>::template Register<
@@ -82,8 +75,7 @@ public:
 
 private:
 
-    // Used by clone(): wraps an already-built inner factory without
-    // re-parsing tokens. Public-via-friend so clone() can reach it.
+    /* @brief Wraps an already-built inner div scheme, used by clone(). */
     BoundedDiv(
         const Executor& exec,
         const UnstructuredMesh& mesh,
@@ -93,12 +85,11 @@ private:
     std::unique_ptr<DivOperatorFactory<FieldValueType, AssemblyType>> inner_;
 };
 
-// Applies the bounded-convection Sp diagonal correction
-//   A[i,i] -= (Σ_f φ_f over cell i) * scaling[i]
-// over internal, physical-boundary and processor-boundary faces to an already-assembled linear
-// system. Factored out of BoundedDiv::div so the fused GaussGreenDivLaplacian can emit the SAME
-// bounding term when its div scheme carries a leading `bounded` (a single definition also keeps the
-// device kernel names unique across TUs).
+/* @brief Applies the bounded-convection Sp diagonal correction,
+ * A[i,i] -= (sum of faceFlux over cell i) * scaling[i], over internal,
+ * physical-boundary and processor-boundary faces to an already-assembled
+ * linear system.
+ */
 template<typename FieldValueType, typename AssemblyType = FieldValueType>
 void applyBoundedDivDiagonal(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,

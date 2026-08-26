@@ -578,20 +578,18 @@ SolverStats GinkgoSolver::solve(
 // Solve one component of a scalar-matrix / Vec3-rhs system under an implicit transform BC
 // (slip/symmetry). The component's diagonal correction is temporarily subtracted from the shared
 // scalar diagonal (in place, no matrix copy), the column is solved by reusing solve_impl — so the
-// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The diag edits
-// use atomics because a corner cell may receive contributions from several boundary faces.
-// NOTE: explicit template parameters (not abbreviated `auto` params). nvcc
-// rejects extended __device__ lambdas (the NEON_LAMBDA parallelFor bodies
-// below) when they live inside an abbreviated function template — unlike
-// solveComponent above, which has no device lambda and can keep `auto` params.
+// l1ScaledResidual criterion is honoured for free — and the diagonal is restored. The loop is over
+// cells and each iteration writes its own (distinct) diagonal entry, so plain writes suffice.
+// NOTE: named template parameters (not abbreviated `auto` params): nvcc forbids defining an
+// extended __device__ lambda (NEON_LAMBDA below) inside a function with `auto` parameters.
 template<
     unsigned int I,
     typename SystemType,
     typename ExecType,
     typename FactoryType,
     typename ValuesType,
-    typename MatrixAddressingType,
-    typename DiagCType>
+    typename MatAddrType,
+    typename DiagType>
 void solveImplicitTransformComponent(
     const SystemType& sys,
     Vector<Vec3>& x,
@@ -602,17 +600,15 @@ void solveImplicitTransformComponent(
     SolverStats& stats,
     const L1ResidualControl* l1Control,
     ValuesType values,
-    const MatrixAddressingType& ma,
-    DiagCType diagC,
+    const MatAddrType& ma,
+    DiagType diagC,
     localIdx nrows
 )
 {
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_sub(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] -= diagC[cell][I]; },
         "applyImplicitTransformDiag"
     );
     gkoExec->synchronize();
@@ -627,9 +623,7 @@ void solveImplicitTransformComponent(
     parallelFor(
         exec,
         {0, nrows},
-        NEON_LAMBDA(const localIdx cell) {
-            Kokkos::atomic_add(&values[ma.diagIdx(cell)], diagC[cell][I]);
-        },
+        NEON_LAMBDA(const localIdx cell) { values[ma.diagIdx(cell)] += diagC[cell][I]; },
         "restoreImplicitTransformDiag"
     );
     gkoExec->synchronize();

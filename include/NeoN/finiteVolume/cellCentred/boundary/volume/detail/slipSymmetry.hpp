@@ -48,8 +48,8 @@ enum class NormalDamping
  * Implicit mode routes it through the per-component diagCmpt store, which the solver applies
  * column-by-column, constraining the wall-normal velocity in the solve. The Deferred alternative
  * only writes the damping into refGrad (RHS) and lags it one outer iteration, which is too weak to
- * hold the normal component on a developed field and lets it diverge in the momentum solve
- * (observed on occDrivAer: U_normal runs away at the ground/freestream slip-symmetry boundaries).
+ * hold the normal component on a developed field and lets the wall-normal velocity diverge in the
+ * momentum solve at slip/symmetry boundaries.
  * Set "implicit no" on a patch to opt back into the Deferred treatment. A boolean read from a
  * dictionary arrives as a word/string, so accept bool, int, and the common truthy spellings.
  */

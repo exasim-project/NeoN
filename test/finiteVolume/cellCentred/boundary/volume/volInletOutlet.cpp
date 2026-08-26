@@ -34,9 +34,10 @@ TEST_CASE("inletOutlet_volume")
         auto boundary =
             fvcc::VolumeBoundaryFactory<NeoN::scalar>::create("inletOutlet", mesh, dict, 0);
 
-        // fixesValue=true: GaussGreenGrad uses value() for snGrad, giving the correct
-        // Dirichlet gradient on inflow faces and zero gradient on outflow faces.
-        REQUIRE(boundary->attributes().fixesValue == true);
+        // fixesValue=false: on mixed-flow patches a global Dirichlet flag would over-constrain
+        // SIMPLE (see the rationale on InletOutlet's ctor). The per-face refValue/valueFraction
+        // still drive the operators via the mixed-BC kernels.
+        REQUIRE(boundary->attributes().fixesValue == false);
 
         // === inflow (phi < 0): Dirichlet inletValue ============================
         {
