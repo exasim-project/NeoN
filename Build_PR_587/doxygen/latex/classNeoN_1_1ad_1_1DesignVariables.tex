@@ -1,0 +1,240 @@
+\doxysection{NeoN\+::ad\+::Design\+Variables\texorpdfstring{$<$}{<} Value\+Type, NDeriv \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classNeoN_1_1ad_1_1DesignVariables}{}\label{classNeoN_1_1ad_1_1DesignVariables}\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+
+
+Registry mapping named design variables onto derivative slots.  
+
+
+
+
+{\ttfamily \#include $<$design\+Variables.\+hpp$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} = \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}}$<$ Value\+Type, NDeriv $>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a38571f9adb2787823da04be24582e4b2}{declare}} (const std\+::string \&\mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_afcc3c1f7fcaf31c1a9a9f53496917334}{name}}, Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a930a500d786374aa8fcc4d42efb524f9}{value}}, Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a727514d87bfabafaf472367d22c6e2de}{scale}}=Value\+Type(0))
+\begin{DoxyCompactList}\small\item\em Declare a scalar design variable. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} $>$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a8d3e75b9276c16479b1e81d893007f70}{declare\+Array}} (const std\+::string \&\mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_afcc3c1f7fcaf31c1a9a9f53496917334}{name}}, const std\+::vector$<$ Value\+Type $>$ \&values)
+\begin{DoxyCompactList}\small\item\em Declare a small array of design variables sharing a base name. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_ab93511338450a58dfa1bc7dd95f43d1f}{size}} () const
+\begin{DoxyCompactList}\small\item\em Number of declared design variables, i.\+e. n\+\_\+alpha. \end{DoxyCompactList}\item 
+const std\+::string \& \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_afcc3c1f7fcaf31c1a9a9f53496917334}{name}} (int slot) const
+\item 
+Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a930a500d786374aa8fcc4d42efb524f9}{value}} (int slot) const
+\item 
+Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a727514d87bfabafaf472367d22c6e2de}{scale}} (int slot) const
+\item 
+Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a8d5f11c517a9717088be803fed89b9ed}{gradient}} (const \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \&functional, int slot) const
+\begin{DoxyCompactList}\small\item\em Extract the raw sensitivity d\+J/dalpha\+\_\+i from an evaluated functional. \end{DoxyCompactList}\item 
+std\+::vector$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a85f07157e7ceff786c9fe949d6472aab}{scaled\+Gradient}} (const \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \&functional) const
+\begin{DoxyCompactList}\small\item\em Extract the scaled gradient vector for an optimiser. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a0887e62b12d1d14d90bdc0ea5b62eca2}{passive\+Variables}} (const \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \&functional) const
+\begin{DoxyCompactList}\small\item\em Report design variables with exactly zero sensitivity. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static constexpr int \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_a7629475e08befb10ead818e9bdd3888f}{capacity}} = NDeriv
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Value\+Type, int NDeriv$>$\newline
+class Neo\+N\+::ad\+::\+Design\+Variables$<$ Value\+Type, NDeriv $>$}
+Registry mapping named design variables onto derivative slots. 
+
+The registry mediates between two views of the same data\+:
+\begin{DoxyItemize}
+\item the user, who wants named, typed handles ({\ttfamily nu}, {\ttfamily source\+Strength});
+\item the optimiser, which wants a flat, scaled vector of length n\+Alpha.
+\end{DoxyItemize}
+
+Declaration returns an {\itshape active} \doxylink{classNeoN_1_1Dual}{Dual} seeded in its own slot. From that point the value is usable anywhere the underlying arithmetic type is usable, so no AD-\/specific syntax appears in the equation the user writes.
+
+Scope of this MWE\+: scalar and small-\/array design variables (model coefficients, operating conditions). Boundary-\/ and volume-\/field design variables need n\+\_\+alpha to exceed what forward mode can carry and are therefore deferred to the adjoint work; the declaration API is sketched at the bottom of this header so the intended shape is on record.
+
+Mesh coordinates are explicitly {\itshape out} of scope\+: geometric quantities remain plain \doxylink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar} so that any attempt to differentiate through mesh metrics is a compile error rather than a silently wrong sensitivity.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Value\+Type} & underlying arithmetic type, typically \doxylink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{Neo\+N\+::scalar} \\
+\hline
+{\em NDeriv} & compile-\/time capacity, i.\+e. max number of design variables \\
+\hline
+\end{DoxyTemplParams}
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+
+
+\doxysubsection{Member Typedef Documentation}
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}\label{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!DualType@{DualType}}
+\index{DualType@{DualType}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{DualType}{DualType}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+using \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::\+Dual\+Type =  \mbox{\hyperlink{classNeoN_1_1Dual}{Dual}}$<$Value\+Type, NDeriv$>$}
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a38571f9adb2787823da04be24582e4b2}\label{classNeoN_1_1ad_1_1DesignVariables_a38571f9adb2787823da04be24582e4b2} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!declare@{declare}}
+\index{declare@{declare}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{declare()}{declare()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+\mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::declare (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{Value\+Type}]{value,  }\item[{Value\+Type}]{scale = {\ttfamily ValueType(0)} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Declare a scalar design variable. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & identifier, used for reporting and dictionary lookup \\
+\hline
+{\em value} & initial value \\
+\hline
+{\em scale} & optional characteristic magnitude used to normalise the flat gradient handed to the optimiser. Defaults to \texorpdfstring{$\vert$}{|}value\texorpdfstring{$\vert$}{|}, falling back to 1 for a zero initial value. Without this a gradient vector mixing nu \texorpdfstring{$\sim$}{\string~} 1e-\/5 with Cs \texorpdfstring{$\sim$}{\string~} 0.\+2 is badly conditioned. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a8d3e75b9276c16479b1e81d893007f70}\label{classNeoN_1_1ad_1_1DesignVariables_a8d3e75b9276c16479b1e81d893007f70} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!declareArray@{declareArray}}
+\index{declareArray@{declareArray}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{declareArray()}{declareArray()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+std\+::vector$<$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} $>$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::declare\+Array (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{const std\+::vector$<$ Value\+Type $>$ \&}]{values }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Declare a small array of design variables sharing a base name. 
+
+Used for parameterisations\+: the returned coefficients are combined by ordinary expressions (e.\+g. a Bezier profile), so the chain rule through the parameterisation is handled by the same machinery as the PDE, with no parameterisation-\/specific AD code. 
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00094}{94}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a8d5f11c517a9717088be803fed89b9ed}\label{classNeoN_1_1ad_1_1DesignVariables_a8d5f11c517a9717088be803fed89b9ed} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!gradient@{gradient}}
+\index{gradient@{gradient}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{gradient()}{gradient()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::gradient (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \&}]{functional,  }\item[{int}]{slot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Extract the raw sensitivity d\+J/dalpha\+\_\+i from an evaluated functional. 
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_afcc3c1f7fcaf31c1a9a9f53496917334}\label{classNeoN_1_1ad_1_1DesignVariables_afcc3c1f7fcaf31c1a9a9f53496917334} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!name@{name}}
+\index{name@{name}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+const std\+::string \& \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::name (\begin{DoxyParamCaption}\item[{int}]{slot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00108}{108}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a0887e62b12d1d14d90bdc0ea5b62eca2}\label{classNeoN_1_1ad_1_1DesignVariables_a0887e62b12d1d14d90bdc0ea5b62eca2} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!passiveVariables@{passiveVariables}}
+\index{passiveVariables@{passiveVariables}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{passiveVariables()}{passiveVariables()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::passive\+Variables (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \&}]{functional }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Report design variables with exactly zero sensitivity. 
+
+\doxylink{classA}{A} declared variable with no path to the functional yields an identically zero gradient. This is almost always a user error -\/ a coefficient copied into a passive Value\+Type somewhere along the chain, or a typo in the case setup -\/ and returning zeros silently is the worst possible outcome, since the optimiser will simply never move that variable. Callers should treat a non-\/empty result as a warning. 
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a727514d87bfabafaf472367d22c6e2de}\label{classNeoN_1_1ad_1_1DesignVariables_a727514d87bfabafaf472367d22c6e2de} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!scale@{scale}}
+\index{scale@{scale}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{scale()}{scale()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::scale (\begin{DoxyParamCaption}\item[{int}]{slot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00112}{112}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a85f07157e7ceff786c9fe949d6472aab}\label{classNeoN_1_1ad_1_1DesignVariables_a85f07157e7ceff786c9fe949d6472aab} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!scaledGradient@{scaledGradient}}
+\index{scaledGradient@{scaledGradient}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{scaledGradient()}{scaledGradient()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+std\+::vector$<$ Value\+Type $>$ \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::scaled\+Gradient (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables_aded0f7297e96d22b2c12bc7b7808416d}{Dual\+Type}} \&}]{functional }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Extract the scaled gradient vector for an optimiser. 
+
+Returns d\+J/d(alpha\+\_\+i / s\+\_\+i) = s\+\_\+i \texorpdfstring{$\ast$}{*} d\+J/dalpha\+\_\+i, so the vector the optimiser sees is O(1) regardless of the physical units of each variable. 
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00129}{129}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_ab93511338450a58dfa1bc7dd95f43d1f}\label{classNeoN_1_1ad_1_1DesignVariables_ab93511338450a58dfa1bc7dd95f43d1f} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!size@{size}}
+\index{size@{size}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+int \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Number of declared design variables, i.\+e. n\+\_\+alpha. 
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00106}{106}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a930a500d786374aa8fcc4d42efb524f9}\label{classNeoN_1_1ad_1_1DesignVariables_a930a500d786374aa8fcc4d42efb524f9} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!value@{value}}
+\index{value@{value}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+Value\+Type \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::value (\begin{DoxyParamCaption}\item[{int}]{slot }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00110}{110}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classNeoN_1_1ad_1_1DesignVariables_a7629475e08befb10ead818e9bdd3888f}\label{classNeoN_1_1ad_1_1DesignVariables_a7629475e08befb10ead818e9bdd3888f} 
+\index{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}!capacity@{capacity}}
+\index{capacity@{capacity}!NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$@{NeoN::ad::DesignVariables$<$ ValueType, NDeriv $>$}}
+\doxysubsubsection{\texorpdfstring{capacity}{capacity}}
+{\footnotesize\ttfamily template$<$typename Value\+Type , int NDeriv$>$ \\
+constexpr int \mbox{\hyperlink{classNeoN_1_1ad_1_1DesignVariables}{Neo\+N\+::ad\+::\+Design\+Variables}}$<$ Value\+Type, NDeriv $>$\+::capacity = NDeriv\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [constexpr]}}
+
+
+
+Definition at line \mbox{\hyperlink{designVariables_8hpp_source_l00049}{49}} of file \mbox{\hyperlink{designVariables_8hpp_source}{design\+Variables.\+hpp}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/runner/work/\+Neo\+N/\+Neo\+N/include/\+Neo\+N/ad/\mbox{\hyperlink{designVariables_8hpp}{design\+Variables.\+hpp}}\end{DoxyCompactItemize}
