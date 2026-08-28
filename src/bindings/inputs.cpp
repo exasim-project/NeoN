@@ -175,14 +175,6 @@ void registerInputs(nb::module_& m)
             "Insert bool value"
         )
         .def(
-            "insert_dict",
-            [](NeoN::Dictionary& self, const std::string& key, const NeoN::Dictionary& value)
-            { self.insert(key, std::any(value)); },
-            "key"_a,
-            "value"_a,
-            "Insert a sub-dictionary value (e.g. divSchemes)"
-        )
-        .def(
             "insert_token_list",
             [](NeoN::Dictionary& self, const std::string& key, const NeoN::TokenList& value)
             { self.insert(key, std::any(value)); },
