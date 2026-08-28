@@ -65,6 +65,12 @@ option(NeoN_BUILD_TESTS "Build the unit tests" OFF)
 option(NeoN_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(NeoN_BUILD_DOC "Build documentation" OFF)
 option(NeoN_BUILD_PYTHON_BINDINGS "Build python bindings" OFF)
+# Link _neon against a shared libnanobind instead of the default static one. Only needed when the
+# bindings must exchange nanobind types with another extension module built against the same
+# libnanobind (e.g. pybFoam, so create_adapter_run_time accepts a Foam::Time). Off by default: a
+# shared runtime has to be installed alongside _neon, and wheel repair tools (auditwheel, delocate,
+# delvewheel) vendor it under a mangled SONAME, which defeats the sharing it exists for.
+option(NeoN_NANOBIND_SHARED "Link the python bindings against a shared libnanobind" OFF)
 option(NeoN_INSTALL_CMAKE_PACKAGE "Install CMake package config files and exported targets" ON)
 
 # Third party dependencies
