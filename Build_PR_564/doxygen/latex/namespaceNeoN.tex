@@ -1,5 +1,10 @@
 \doxysection{NeoN Namespace Reference}
 \hypertarget{namespaceNeoN}{}\label{namespaceNeoN}\index{NeoN@{NeoN}}
+
+
+Integer types used throughout \doxylink{namespaceNeoN}{NeoN}.  
+
+
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
@@ -150,6 +155,12 @@ enum class \mbox{\hyperlink{namespaceNeoN_aaf720d2edacc93afc0a2b5a5ae6e8db5}{Mem
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
+bool \mbox{\hyperlink{namespaceNeoN_a7b5d79e36fa511f5ebd02b7e79b89779}{has\+Serial\+Backend}} () noexcept
+\item 
+bool \mbox{\hyperlink{namespaceNeoN_a27661fe7623027e2ac6ba7f38b61952a}{has\+Cpu\+Backend}} () noexcept
+\item 
+bool \mbox{\hyperlink{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4}{has\+Gpu\+Backend}} () noexcept
+\item 
 {\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , typename Inner $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a6ac6b06f3fb6b3ff13e6d51c5ccc030b}{map}} (Cont\+Type$<$ Value\+Type $>$ \&cont, const Inner inner, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
 \begin{DoxyCompactList}\small\item\em Map a field using a specific executor. \end{DoxyCompactList}\item 
 {\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aef3e2dce49fdf45c689e6718112c258c}{fill}} (Cont\+Type$<$ Value\+Type $>$ \&cont, const std\+::type\+\_\+identity\+\_\+t$<$ Value\+Type $>$ value, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range=\{0, 0\})
@@ -204,29 +215,29 @@ void \mbox{\hyperlink{namespaceNeoN_a2e4d907637bdc31918dfb7a91f9857fa}{finalize}
 \item 
 {\footnotesize template$<$typename Executor\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1d03ed0359a20ca2685179a9ed723478}{fence\+If\+Logger}} (const Executor\+Type \&exec)
 \item 
-{\footnotesize template$<$typename Executor\+Type , parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}{parallel\+For}} (const Executor\+Type \&, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
+{\footnotesize template$<$typename Executor\+Type , parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{parallel\+For}} (const Executor\+Type \&, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}})
 \item 
-{\footnotesize template$<$parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a44f27717687a4b73cc58ec9918530f05}{parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
+{\footnotesize template$<$parallel\+For\+Kernel Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_ac7e76507c601efd317fa489b439c93b6}{parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a4b98be76aa832e80150da000f7d3d35e}{parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&, Cont\+Type$<$ Value\+Type $>$ \&container, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a9614bc3d7163bb284d4a08dd13f76955}{parallel\+For}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&, Cont\+Type$<$ Value\+Type $>$ \&container, const Kernel \&kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 
-{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_a998b4b2db7ab2fb275c20a76cf323a49}{parallel\+For}} (Cont\+Type$<$ Value\+Type $>$ \&cont, Kernel kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
+{\footnotesize template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ }\\void \mbox{\hyperlink{namespaceNeoN_ab7ef3fc284f9b842000901118eb445c3}{parallel\+For}} (Cont\+Type$<$ Value\+Type $>$ \&cont, const Kernel \&kernel, std\+::string \mbox{\hyperlink{namespaceNeoN_aa67294511d0c7da987259a7b1a3ba59d}{name}}="{}parallel\+For"{})
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a9d445616a96928bbb015212516721784}{parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, T \&value)
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}{parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel, T \&value)
 \item 
-{\footnotesize template$<$typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a7be1049e5e1b173afb267a3c66c7d132}{parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, T \&value)
+{\footnotesize template$<$typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aa4eed5f6413813ad09bbee5861c1aa4a}{parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel, T \&value)
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Value\+Type , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a425ab45b88f0d024ce81d53a540fd1f0}{parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, Kernel kernel, T \&value)
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Value\+Type , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a1b708daddda357ab5c100c4046469d67}{parallel\+Reduce}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, const Kernel \&kernel, T \&value)
 \item 
-{\footnotesize template$<$typename Value\+Type , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a88707492aa026bae5c6bac61496d1b6d}{parallel\+Reduce}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, Kernel kernel, T \&value)
+{\footnotesize template$<$typename Value\+Type , typename Kernel , typename T $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a0deca45ae3b960498808552b7748489a}{parallel\+Reduce}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&field, const Kernel \&kernel, T \&value)
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ade792a6b242e4bbe2d8882be6928a75a}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel)
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel)
 \item 
-{\footnotesize template$<$typename Kernel $>$ }\\void \mbox{\hyperlink{namespaceNeoN_af3f4fc3e259ff1c54f7dc82f0e2c766e}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel)
+{\footnotesize template$<$typename Kernel $>$ }\\void \mbox{\hyperlink{namespaceNeoN_af62d86530b6207166514c6670aa3dca3}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel)
 \item 
-{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename Return\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a80b8166e26177cccf8a7e906631c3cea}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, Return\+Type \&return\+Value)
+{\footnotesize template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename Return\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_aa42b68031c74cf1c93d2239830375158}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel, Return\+Type \&return\+Value)
 \item 
-{\footnotesize template$<$typename Kernel , typename Return\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_ae066b98b683f3a7bd61c9a45a9de942f}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, Kernel kernel, Return\+Type \&return\+Value)
+{\footnotesize template$<$typename Kernel , typename Return\+Type $>$ }\\void \mbox{\hyperlink{namespaceNeoN_a836c44d1716fced145932bf7e8f898d2}{parallel\+Scan}} (const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&exec, std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$ range, const Kernel \&kernel, Return\+Type \&return\+Value)
 \item 
 template$<$$>$ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{namespaceNeoN_a699a3202658d2a9175e5d3e30e1837b0}{one$<$ local\+Idx $>$}} ()
 \item 
@@ -353,6 +364,21 @@ constexpr \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scal
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+Integer types used throughout \doxylink{namespaceNeoN}{NeoN}. 
+
+The following type aliases distinguish between different kinds of integer values\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily label} identifies mesh entities (e.\+g. cell number and face number)
+\item {\ttfamily local\+Idx} indexes data that is local to a process or execution space, such as arrays, views, and local graph structures.
+\item {\ttfamily global\+Idx} identifies globally unique entities in distributed-\/memory computations.
+\item {\ttfamily size\+\_\+t} represents sizes and counts (e.\+g. container sizes, iteration counts, and memory sizes) and should not be used to identify mesh entities.
+\end{DoxyItemize}
+
+The widths of {\ttfamily label}, {\ttfamily local\+Idx}, and {\ttfamily global\+Idx} depend on the compile-\/time configuration ({\ttfamily Neo\+N\+\_\+\+DP\+\_\+\+LABEL} and {\ttfamily Neo\+N\+\_\+\+US\+\_\+\+IDX}). 
+
 \doxysubsection{Typedef Documentation}
 \Hypertarget{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6}\label{namespaceNeoN_ad21f9c627e11e11f4e33dd1717971ce6} 
 \index{NeoN@{NeoN}!DefaultAllocator@{DefaultAllocator}}
@@ -406,7 +432,7 @@ Definition at line \mbox{\hyperlink{executor_8hpp_source_l00020}{20}} of file \m
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}\label{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea} 
 \index{NeoN@{NeoN}!Input@{Input}}
@@ -426,7 +452,7 @@ Definition at line \mbox{\hyperlink{input_8hpp_source_l00015}{15}} of file \mbox
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00044}{44}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d}\label{namespaceNeoN_a6389e1f6465846887d6bc01ec8ea818d} 
 \index{NeoN@{NeoN}!labelVector@{labelVector}}
@@ -446,7 +472,7 @@ Definition at line \mbox{\hyperlink{vectorTypeDefs_8hpp_source_l00015}{15}} of f
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00032}{32}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a345d64e8263d03609fc24b88fed965be}\label{namespaceNeoN_a345d64e8263d03609fc24b88fed965be} 
 \index{NeoN@{NeoN}!localIdxVector@{localIdxVector}}
@@ -466,7 +492,7 @@ Definition at line \mbox{\hyperlink{vectorTypeDefs_8hpp_source_l00016}{16}} of f
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00039}{39}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00057}{57}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}\label{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97} 
 \index{NeoN@{NeoN}!scalar@{scalar}}
@@ -496,7 +522,7 @@ Definition at line \mbox{\hyperlink{vectorTypeDefs_8hpp_source_l00017}{17}} of f
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00038}{38}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00056}{56}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7}\label{namespaceNeoN_a7184bc8b77652609bed6594f06b728e7} 
 \index{NeoN@{NeoN}!vectorVector@{vectorVector}}
@@ -761,6 +787,18 @@ The resulting scalar vector
 
 Definition at line \mbox{\hyperlink{executor_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
+\Hypertarget{namespaceNeoN_a27661fe7623027e2ac6ba7f38b61952a}\label{namespaceNeoN_a27661fe7623027e2ac6ba7f38b61952a} 
+\index{NeoN@{NeoN}!hasCpuBackend@{hasCpuBackend}}
+\index{hasCpuBackend@{hasCpuBackend}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{hasCpuBackend()}{hasCpuBackend()}}
+{\footnotesize\ttfamily bool Neo\+N\+::has\+Cpu\+Backend (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4}\label{namespaceNeoN_ab20832c5733e69df50d84b27fc9702a4} 
+\index{NeoN@{NeoN}!hasGpuBackend@{hasGpuBackend}}
+\index{hasGpuBackend@{hasGpuBackend}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{hasGpuBackend()}{hasGpuBackend()}}
+{\footnotesize\ttfamily bool Neo\+N\+::has\+Gpu\+Backend (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
 \Hypertarget{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b}\label{namespaceNeoN_a1515bc3e21ebafd40f42151ea50ed85b} 
 \index{NeoN@{NeoN}!hasId@{hasId}}
 \index{hasId@{hasId}!NeoN@{NeoN}}
@@ -781,6 +819,12 @@ This function checks if the given \doxylink{classNeoN_1_1Dictionary}{Dictionary}
 \begin{DoxyReturn}{Returns}
 true if the \doxylink{classNeoN_1_1Dictionary}{Dictionary} has an "{}id"{} key, false otherwise. 
 \end{DoxyReturn}
+\Hypertarget{namespaceNeoN_a7b5d79e36fa511f5ebd02b7e79b89779}\label{namespaceNeoN_a7b5d79e36fa511f5ebd02b7e79b89779} 
+\index{NeoN@{NeoN}!hasSerialBackend@{hasSerialBackend}}
+\index{hasSerialBackend@{hasSerialBackend}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{hasSerialBackend()}{hasSerialBackend()}}
+{\footnotesize\ttfamily bool Neo\+N\+::has\+Serial\+Backend (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
 \Hypertarget{namespaceNeoN_aa8bb18687be355a802575d548fd7f292}\label{namespaceNeoN_aa8bb18687be355a802575d548fd7f292} 
 \index{NeoN@{NeoN}!initialize@{initialize}}
 \index{initialize@{initialize}!NeoN@{NeoN}}
@@ -1047,7 +1091,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a40785cd3c37
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00061}{61}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a1592e9faca78ef0d226965d8e42d4868}\label{namespaceNeoN_a1592e9faca78ef0d226965d8e42d4868} 
 \index{NeoN@{NeoN}!one$<$ scalar $>$@{one$<$ scalar $>$}}
@@ -1317,137 +1361,137 @@ True if the executors are equal, false otherwise.
 
 Definition at line \mbox{\hyperlink{executor_8hpp_source_l00089}{89}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a4b98be76aa832e80150da000f7d3d35e}\label{namespaceNeoN_a4b98be76aa832e80150da000f7d3d35e} 
+\Hypertarget{namespaceNeoN_a9614bc3d7163bb284d4a08dd13f76955}\label{namespaceNeoN_a9614bc3d7163bb284d4a08dd13f76955} 
 \index{NeoN@{NeoN}!parallelFor@{parallelFor}}
 \index{parallelFor@{parallelFor}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelFor()}{parallelFor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ \\
-void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{,  }\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{container,  }\item[{Kernel}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{,  }\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{container,  }\item[{const Kernel \&}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00113}{113}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00117}{117}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363}\label{namespaceNeoN_a126d8c73d03797fa02ed0ba390452363} 
+\Hypertarget{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}\label{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441} 
 \index{NeoN@{NeoN}!parallelFor@{parallelFor}}
 \index{parallelFor@{parallelFor}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelFor()}{parallelFor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
 {\footnotesize\ttfamily template$<$typename Executor\+Type , parallel\+For\+Kernel Kernel$>$ \\
-void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{const Executor\+Type \&}]{,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel,  }\item[{std\+::string}]{name }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{const Executor\+Type \&}]{,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel,  }\item[{std\+::string}]{name }\end{DoxyParamCaption})}
 
 
 
 Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00062}{62}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a44f27717687a4b73cc58ec9918530f05}\label{namespaceNeoN_a44f27717687a4b73cc58ec9918530f05} 
+\Hypertarget{namespaceNeoN_ac7e76507c601efd317fa489b439c93b6}\label{namespaceNeoN_ac7e76507c601efd317fa489b439c93b6} 
 \index{NeoN@{NeoN}!parallelFor@{parallelFor}}
 \index{parallelFor@{parallelFor}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelFor()}{parallelFor()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
 {\footnotesize\ttfamily template$<$parallel\+For\+Kernel Kernel$>$ \\
-void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00089}{89}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00093}{93}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a998b4b2db7ab2fb275c20a76cf323a49}\label{namespaceNeoN_a998b4b2db7ab2fb275c20a76cf323a49} 
+\Hypertarget{namespaceNeoN_ab7ef3fc284f9b842000901118eb445c3}\label{namespaceNeoN_ab7ef3fc284f9b842000901118eb445c3} 
 \index{NeoN@{NeoN}!parallelFor@{parallelFor}}
 \index{parallelFor@{parallelFor}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelFor()}{parallelFor()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily template$<$template$<$ typename $>$ class Cont\+Type, typename Value\+Type , parallel\+For\+Container\+Kernel$<$ Value\+Type $>$ Kernel$>$ \\
-void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{cont,  }\item[{Kernel}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+For (\begin{DoxyParamCaption}\item[{Cont\+Type$<$ Value\+Type $>$ \&}]{cont,  }\item[{const Kernel \&}]{kernel,  }\item[{std\+::string}]{name = {\ttfamily "{}parallelFor"{}} }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00141}{141}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00148}{148}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a9d445616a96928bbb015212516721784}\label{namespaceNeoN_a9d445616a96928bbb015212516721784} 
+\Hypertarget{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54}\label{namespaceNeoN_afa4a0f1d250cd97a39351a5b4910bd54} 
 \index{NeoN@{NeoN}!parallelReduce@{parallelReduce}}
 \index{parallelReduce@{parallelReduce}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelReduce()}{parallelReduce()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename T $>$ \\
-void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00147}{147}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00154}{154}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a425ab45b88f0d024ce81d53a540fd1f0}\label{namespaceNeoN_a425ab45b88f0d024ce81d53a540fd1f0} 
+\Hypertarget{namespaceNeoN_a1b708daddda357ab5c100c4046469d67}\label{namespaceNeoN_a1b708daddda357ab5c100c4046469d67} 
 \index{NeoN@{NeoN}!parallelReduce@{parallelReduce}}
 \index{parallelReduce@{parallelReduce}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelReduce()}{parallelReduce()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
 {\footnotesize\ttfamily template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Value\+Type , typename Kernel , typename T $>$ \\
-void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{field,  }\item[{Kernel}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{field,  }\item[{const Kernel \&}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00188}{188}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00195}{195}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a7be1049e5e1b173afb267a3c66c7d132}\label{namespaceNeoN_a7be1049e5e1b173afb267a3c66c7d132} 
+\Hypertarget{namespaceNeoN_aa4eed5f6413813ad09bbee5861c1aa4a}\label{namespaceNeoN_aa4eed5f6413813ad09bbee5861c1aa4a} 
 \index{NeoN@{NeoN}!parallelReduce@{parallelReduce}}
 \index{parallelReduce@{parallelReduce}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelReduce()}{parallelReduce()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
 {\footnotesize\ttfamily template$<$typename Kernel , typename T $>$ \\
-void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00179}{179}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00186}{186}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a88707492aa026bae5c6bac61496d1b6d}\label{namespaceNeoN_a88707492aa026bae5c6bac61496d1b6d} 
+\Hypertarget{namespaceNeoN_a0deca45ae3b960498808552b7748489a}\label{namespaceNeoN_a0deca45ae3b960498808552b7748489a} 
 \index{NeoN@{NeoN}!parallelReduce@{parallelReduce}}
 \index{parallelReduce@{parallelReduce}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelReduce()}{parallelReduce()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily template$<$typename Value\+Type , typename Kernel , typename T $>$ \\
-void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{field,  }\item[{Kernel}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Reduce (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&}]{field,  }\item[{const Kernel \&}]{kernel,  }\item[{T \&}]{value }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00217}{217}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00224}{224}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ade792a6b242e4bbe2d8882be6928a75a}\label{namespaceNeoN_ade792a6b242e4bbe2d8882be6928a75a} 
+\Hypertarget{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5}\label{namespaceNeoN_a78818f3ce0265ece3b65a24421ba50a5} 
 \index{NeoN@{NeoN}!parallelScan@{parallelScan}}
 \index{parallelScan@{parallelScan}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelScan()}{parallelScan()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
 {\footnotesize\ttfamily template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel $>$ \\
-void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00223}{223}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00230}{230}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_a80b8166e26177cccf8a7e906631c3cea}\label{namespaceNeoN_a80b8166e26177cccf8a7e906631c3cea} 
+\Hypertarget{namespaceNeoN_aa42b68031c74cf1c93d2239830375158}\label{namespaceNeoN_aa42b68031c74cf1c93d2239830375158} 
 \index{NeoN@{NeoN}!parallelScan@{parallelScan}}
 \index{parallelScan@{parallelScan}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelScan()}{parallelScan()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
 {\footnotesize\ttfamily template$<$typename \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} , typename Kernel , typename Return\+Type $>$ \\
-void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel,  }\item[{Return\+Type \&}]{return\+Value }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel,  }\item[{Return\+Type \&}]{return\+Value }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00239}{239}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00248}{248}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_af3f4fc3e259ff1c54f7dc82f0e2c766e}\label{namespaceNeoN_af3f4fc3e259ff1c54f7dc82f0e2c766e} 
+\Hypertarget{namespaceNeoN_af62d86530b6207166514c6670aa3dca3}\label{namespaceNeoN_af62d86530b6207166514c6670aa3dca3} 
 \index{NeoN@{NeoN}!parallelScan@{parallelScan}}
 \index{parallelScan@{parallelScan}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelScan()}{parallelScan()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
 {\footnotesize\ttfamily template$<$typename Kernel $>$ \\
-void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00233}{233}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00240}{240}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
-\Hypertarget{namespaceNeoN_ae066b98b683f3a7bd61c9a45a9de942f}\label{namespaceNeoN_ae066b98b683f3a7bd61c9a45a9de942f} 
+\Hypertarget{namespaceNeoN_a836c44d1716fced145932bf7e8f898d2}\label{namespaceNeoN_a836c44d1716fced145932bf7e8f898d2} 
 \index{NeoN@{NeoN}!parallelScan@{parallelScan}}
 \index{parallelScan@{parallelScan}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{parallelScan()}{parallelScan()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily template$<$typename Kernel , typename Return\+Type $>$ \\
-void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{Kernel}]{kernel,  }\item[{Return\+Type \&}]{return\+Value }\end{DoxyParamCaption})}
+void Neo\+N\+::parallel\+Scan (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Neo\+N\+::\+Executor}} \&}]{exec,  }\item[{std\+::pair$<$ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} $>$}]{range,  }\item[{const Kernel \&}]{kernel,  }\item[{Return\+Type \&}]{return\+Value }\end{DoxyParamCaption})}
 
 
 
-Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00254}{254}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
+Definition at line \mbox{\hyperlink{parallelAlgorithms_8hpp_source_l00263}{263}} of file \mbox{\hyperlink{parallelAlgorithms_8hpp_source}{parallel\+Algorithms.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce}\label{namespaceNeoN_ae925f6aa90689fd77bdefea5cc28a5ce} 
 \index{NeoN@{NeoN}!read@{read}}
@@ -1490,7 +1534,7 @@ The offsets are computed by a prefix sum of the input values. So, with given inp
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00029}{29}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
+Definition at line \mbox{\hyperlink{segmentedVector_8hpp_source_l00064}{64}} of file \mbox{\hyperlink{segmentedVector_8hpp_source}{segmented\+Vector.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ad0362f6a606cb6fe7b96d0d6a77cc5f2}\label{namespaceNeoN_ad0362f6a606cb6fe7b96d0d6a77cc5f2} 
 \index{NeoN@{NeoN}!setComponent@{setComponent}}
@@ -1668,7 +1712,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a40785cd3c37
 
 
 
-Definition at line \mbox{\hyperlink{label_8hpp_source_l00049}{49}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
+Definition at line \mbox{\hyperlink{label_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{label_8hpp_source}{label.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_aa4eeb8f2fe783ee706a28d1eb29df79e}\label{namespaceNeoN_aa4eeb8f2fe783ee706a28d1eb29df79e} 
 \index{NeoN@{NeoN}!zero$<$ scalar $>$@{zero$<$ scalar $>$}}

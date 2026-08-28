@@ -6,6 +6,8 @@
     <innerclass refid="structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes" prot="public">NeoN::finiteVolume::cellCentred::BoundaryAttributes</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext" prot="public">NeoN::finiteVolume::cellCentred::BoundaryContext</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryPatchMixin" prot="public">NeoN::finiteVolume::cellCentred::BoundaryPatchMixin</innerclass>
+    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundedDiv" prot="public">NeoN::finiteVolume::cellCentred::BoundedDiv</innerclass>
+    <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellLimitedGrad" prot="public">NeoN::finiteVolume::cellCentred::CellLimitedGrad</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CellToFaceStencil" prot="public">NeoN::finiteVolume::cellCentred::CellToFaceStencil</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Corrected" prot="public">NeoN::finiteVolume::cellCentred::Corrected</innerclass>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1CreateFromExistingVector" prot="public">NeoN::finiteVolume::cellCentred::CreateFromExistingVector</innerclass>
@@ -61,8 +63,8 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a9ede786e1e3175585aacb6d383a09aaf" prot="public">
-          <name>Steady</name>
+        <enumvalue id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8a936336a4a2b22a66aca8458db0cf9a85" prot="public">
+          <name>SteadyState</name>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
@@ -907,6 +909,45 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" line="41" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/upwind.hpp" declline="41" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a874efa37685f89531c6d737b118fddf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename FieldValueType</type>
+          </param>
+          <param>
+            <type>typename AssemblyType</type>
+            <defval>FieldValueType</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void NeoN::finiteVolume::cellCentred::applyBoundedDivDiagonal</definition>
+        <argsstring>(la::LinearSystem&lt; AssemblyType, FieldValueType &gt; &amp;ls, const SurfaceField&lt; scalar &gt; &amp;faceFlux, const UnstructuredMesh &amp;mesh, const dsl::Coeff scaling)</argsstring>
+        <name>applyBoundedDivDiagonal</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::applyBoundedDivDiagonal</qualifiedname>
+        <param>
+          <type><ref refid="classNeoN_1_1la_1_1LinearSystem" kindref="compound">la::LinearSystem</ref>&lt; AssemblyType, FieldValueType &gt; &amp;</type>
+          <declname>ls</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref>&lt; <ref refid="namespaceNeoN_1a93c8d00d3aa9fc6f9271c4c0b4f0da97" kindref="member">scalar</ref> &gt; &amp;</type>
+          <declname>faceFlux</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref> &amp;</type>
+          <declname>mesh</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1dsl_1_1Coeff" kindref="compound">dsl::Coeff</ref></type>
+          <declname>scaling</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp" line="94" column="6" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp" declline="94" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ae2be2580a8248d415eadc502ceebcf95" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab2724f0e93a4ccda728971a7922e4d92" kindref="member">SurfScalarField</ref></type>
         <definition>SurfScalarField NeoN::finiteVolume::cellCentred::ddtFluxCorr</definition>
@@ -1114,7 +1155,7 @@
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/reconstruct.hpp" line="26" column="13" declfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/reconstruct.hpp" declline="26" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a904819718fb1984e4aab2c272c26cae7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1af02168defd7e04fdafb8ac0477e8ec1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>typename ValueType</type>
@@ -1122,7 +1163,7 @@
         </templateparamlist>
         <type>void</type>
         <definition>void NeoN::finiteVolume::cellCentred::surfaceIntegrate</definition>
-        <argsstring>(const Executor &amp;exec, localIdx nInternalFaces, View&lt; const int &gt; neighbors, View&lt; const int &gt; owners, View&lt; const int &gt; faceOwners, View&lt; const ValueType &gt; flux, View&lt; const ValueType &gt; bFlux, View&lt; const scalar &gt; v, View&lt; ValueType &gt; res, const dsl::Coeff operatorScaling)</argsstring>
+        <argsstring>(const Executor &amp;exec, localIdx nInternalFaces, View&lt; const label &gt; internalFaceNeighbors, View&lt; const label &gt; internalFaceOwners, View&lt; const label &gt; boundaryFaceOwners, View&lt; const ValueType &gt; flux, View&lt; const ValueType &gt; bFlux, View&lt; const scalar &gt; v, View&lt; ValueType &gt; res, const dsl::Coeff operatorScaling)</argsstring>
         <name>surfaceIntegrate</name>
         <qualifiedname>NeoN::finiteVolume::cellCentred::surfaceIntegrate</qualifiedname>
         <param>
@@ -1134,16 +1175,16 @@
           <declname>nInternalFaces</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const int &gt;</type>
-          <declname>neighbors</declname>
+          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt;</type>
+          <declname>internalFaceNeighbors</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const int &gt;</type>
-          <declname>owners</declname>
+          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt;</type>
+          <declname>internalFaceOwners</declname>
         </param>
         <param>
-          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const int &gt;</type>
-          <declname>faceOwners</declname>
+          <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const <ref refid="namespaceNeoN_1afa6c1c30776d4f6ed4691b0f9d1ea416" kindref="member">label</ref> &gt;</type>
+          <declname>boundaryFaceOwners</declname>
         </param>
         <param>
           <type><ref refid="classNeoN_1_1View" kindref="compound">View</ref>&lt; const ValueType &gt;</type>
