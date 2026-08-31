@@ -84,9 +84,10 @@ endif()
 target_link_libraries(_neon PRIVATE NeoN::NeoN)
 
 # Ensure the POST_BUILD stubgen step can dlopen all transitive deps (libNeoN.so, libumpire.so,
-# libcamp.so, libginkgo*, kokkos, ...) from the build tree. All shared libs are routed into
-# ${CMAKE_BINARY_DIR}/lib, so a single RPATH entry suffices.
-set_target_properties(_neon PROPERTIES BUILD_RPATH "${CMAKE_BINARY_DIR}/lib")
+# libcamp.so, libginkgo*, kokkos, ...) from the build tree. They all land in libNeoN's output
+# directory (the top-level CMAKE_LIBRARY_OUTPUT_DIRECTORY, which this file overrides locally for
+# _neon only), so a single RPATH entry pointing at it suffices.
+set_target_properties(_neon PROPERTIES BUILD_RPATH "$<TARGET_FILE_DIR:NeoN::NeoN>")
 
 if(NOT NeoN_ENABLE_CUDA AND NOT WIN32)
   # Stub generation imports _neon. Skipped for CUDA (may build without an NVIDIA driver present) and
