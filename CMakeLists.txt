@@ -330,24 +330,10 @@ if(NeoN_INSTALL_CMAKE_PACKAGE)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/NeoNConfig.cmake"
           DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/NeoN)
 
-  # install internal ginkgo version (including enabled backend libs so they ship alongside
-  # libNeoN.so — required for dlopen at runtime when Ginkgo is built via CPM rather than found
-  # system-wide)
-  if(ginkgo_POPULATED)
-    set(_ginkgo_install_tgts ginkgo)
-    foreach(_ginkgo_backend ginkgo_omp ginkgo_cuda ginkgo_reference ginkgo_hip ginkgo_dpcpp
-                            ginkgo_device)
-      if(TARGET ${_ginkgo_backend})
-        list(APPEND _ginkgo_install_tgts ${_ginkgo_backend})
-      endif()
-    endforeach()
-    install(
-      TARGETS ${_ginkgo_install_tgts}
-      EXPORT GinkgoTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT GinkgoTargets NAMESPACE Ginkgo::)
-  endif()
+  # Ginkgo installs its own targets (including every enabled backend lib) and its own
+  # lib/cmake/Ginkgo/GinkgoTargets.cmake when fetched via CPM, so it must NOT be re-exported here: a
+  # second export of the same target to the same path is a hard "exported multiple times" error in
+  # install(EXPORT NeoNTargets). Same reasoning as umpire and cpptrace below.
 
   # install internal kokkos version — when Kokkos is built as a shared library
   # (BUILD_SHARED_LIBS=ON, as the python-bindings preset uses), libNeoN.so and any consumer dlopens
@@ -368,28 +354,15 @@ if(NeoN_INSTALL_CMAKE_PACKAGE)
     endif()
   endif()
 
-  if(nlohmann_json_POPULATED)
-    install(
-      TARGETS nlohmann_json
-      EXPORT nlohmannTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT nlohmannTargets NAMESPACE nlohmann_json::)
-  endif()
+  # nlohmann_json likewise installs itself into share/cmake/nlohmann_json when fetched via CPM.
 
   # umpire installs its own targets when fetched via CPM
 
-  # install internal cpptrace version
-  if(cpptrace_POPULATED)
-    install(
-      TARGETS cpptrace
-      EXPORT CpptraceTargets
-      INCLUDES
-      DESTINATION include)
-    install(EXPORT CpptraceTargets NAMESPACE cpptrace::)
-  endif()
+  # cpptrace installs its own targets when fetched via CPM. It cannot be added to a NeoN-owned
+  # export set anyway: the importable name cpptrace::cpptrace is an ALIAS, and the underlying target
+  # is called cpptrace-lib.
 
-  # install internal spdlog version TODO why does spdlog_POPULATED not work?
+  # install internal spdlog version
   if(spdlog_ADDED)
     install(
       TARGETS spdlog_header_only
