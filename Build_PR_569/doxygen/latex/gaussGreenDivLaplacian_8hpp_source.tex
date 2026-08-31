@@ -55,13 +55,19 @@
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00051}00051\ }
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00052}00052\ \ \ \ \ std::shared\_ptr<SurfaceInterpolation<ValueType>>\ divSurfaceInterpolation\_;}
 \DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00053}00053\ \ \ \ \ std::shared\_ptr<FaceNormalGradient<ValueType>>\ faceNormalGradient\_;}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00054}00054\ \};}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00055}00055\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00056}00056\ \textcolor{comment}{//\ Required\ on\ MSVC:\ without\ extern\ template,\ each\ TU\ (DLL\ and\ EXE)\ gets\ its\ own}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00057}00057\ \textcolor{comment}{//\ instantiation,\ causing\ duplicate-\/symbol\ linker\ errors\ and\ bloating\ compile\ times.}}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00058}00058\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian}{GaussGreenDivLaplacian<scalar>}};}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00059}00059\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian}{GaussGreenDivLaplacian<Vec3>}};}
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00060}00060\ }
-\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00061}00061\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00055}00055\ \ \ \ \ \textcolor{comment}{//\ True\ when\ the\ div\ scheme\ carried\ a\ leading\ \`{}bounded`\ prefix.\ The\ fused\ kernel\ then\ also\ emits}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{comment}{//\ the\ bounded-\/convection\ Sp\ diagonal\ term\ (applyBoundedDivDiagonal),\ matching\ the\ un-\/fused}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00057}00057\ \ \ \ \ \textcolor{comment}{//\ BoundedDiv\ path\ -\/-\/\ without\ it\ the\ momentum\ matrix\ loses\ its\ boundedness\ stabilisation\ and\ the}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ solve\ diverges.}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keywordtype}{bool}\ bounded\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00060}00060\ \};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00062}00062\ \textcolor{comment}{//\ Required\ on\ MSVC:\ without\ extern\ template,\ each\ TU\ (DLL\ and\ EXE)\ gets\ its\ own}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00063}00063\ \textcolor{comment}{//\ instantiation,\ causing\ duplicate-\/symbol\ linker\ errors\ and\ bloating\ compile\ times.}}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00064}00064\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian}{GaussGreenDivLaplacian<scalar>}};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00065}00065\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenDivLaplacian}{GaussGreenDivLaplacian<Vec3>}};}
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{gaussGreenDivLaplacian_8hpp_source_l00067}00067\ \}\ \textcolor{comment}{//\ namespace\ NeoN}}
 
 \end{DoxyCode}

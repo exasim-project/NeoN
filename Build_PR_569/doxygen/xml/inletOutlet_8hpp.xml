@@ -666,15 +666,15 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
       <node id="18">
@@ -682,6 +682,14 @@
         <link refid="upwind_8hpp"/>
         <childnode refid="17" relation="include">
         </childnode>
+      </node>
+      <node id="22">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/boundedDiv.hpp</label>
+        <link refid="boundedDiv_8hpp"/>
+      </node>
+      <node id="26">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp</label>
+        <link refid="cellLimitedGrad_8hpp"/>
       </node>
       <node id="4">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/ddtFluxCorr.hpp</label>
@@ -694,9 +702,11 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -705,7 +715,7 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDdtDivLaplacian.hpp</label>
         <link refid="gaussGreenDdtDivLaplacian_8hpp"/>
       </node>
-      <node id="22">
+      <node id="23">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp</label>
         <link refid="gaussGreenDiv_8hpp"/>
       </node>
@@ -715,7 +725,7 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="24">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp</label>
         <link refid="gaussGreenGrad_8hpp"/>
         <childnode refid="6" relation="include">
@@ -727,12 +737,14 @@
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp</label>
         <link refid="gaussGreenLaplacian_8hpp"/>
       </node>
-      <node id="24">
+      <node id="25">
         <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp</label>
         <link refid="gradOperator_8hpp"/>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
       <node id="13">
@@ -802,7 +814,7 @@
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh.<ref refid="classNeoN_1_1UnstructuredMesh_1ae46f5b369b8f80fee5d36ef8b18fd301" kindref="member">boundaryMesh</ref>().<ref refid="classNeoN_1_1BoundaryMesh_1abee97709eb5b6dc8013626b811bf62a5" kindref="member">faceOwners</ref>()</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>);</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1a126d8c73d03797fa02ed0ba390452363" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1aa1fcf079c91daa08b6f3295b97788441" kindref="member">NeoN::parallelFor</ref>(</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector.<ref refid="classNeoN_1_1Field_1abd0575e5cec90d4f66844df33f5dfd90" kindref="member">exec</ref>(),</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>range,</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="parallelAlgorithms_8hpp_1a9498b53fd8bbd2ab12440cef550e6533" kindref="member">NEON_LAMBDA</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>i)<sp/>{</highlight></codeline>
@@ -846,75 +858,70 @@
 <codeline lineno="93" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ab4d847e8aa3c0f5d1b27aa3e0aad90ca" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet" kindref="compound">InletOutletType</ref><sp/>=<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet" kindref="compound">InletOutlet&lt;ValueType&gt;</ref>;</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>assignable<sp/>=<sp/>true:<sp/>the<sp/>boundary<sp/>value<sp/>is<sp/>recomputed<sp/>every<sp/>correctBoundaryCondition<sp/>call,<sp/>so</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>any<sp/>downstream<sp/>overwrite<sp/>is<sp/>reversible.<sp/>assignable<sp/>=<sp/>false<sp/>would<sp/>trip<sp/>NeoFOAM&apos;s<sp/>constrainHbyA</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>into<sp/>pinning<sp/>HbyA&apos;s<sp/>boundary<sp/>to<sp/>U&apos;s<sp/>at<sp/>every<sp/>outflow<sp/>patch,<sp/>over-constraining<sp/>SIMPLE.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>fixesValue<sp/>=<sp/>true:<sp/>GaussGreenGrad<sp/>reads<sp/>snGrad<sp/>from<sp/>value()<sp/>rather<sp/>than<sp/>refGrad.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>value()<sp/>is<sp/>already<sp/>set<sp/>to<sp/>the<sp/>correct<sp/>per-face<sp/>evaluated<sp/>value<sp/>(inletValue<sp/>on<sp/>inflow,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>internal[owner]<sp/>on<sp/>outflow),<sp/>so<sp/>the<sp/>computed<sp/>snGrad<sp/>is<sp/>correct<sp/>for<sp/>both<sp/>cases:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/>inflow:<sp/><sp/>snGrad<sp/>=<sp/>(inletValue<sp/>-<sp/>internal)<sp/>*<sp/>deltaCoeffs<sp/><sp/>(Dirichlet<sp/>gradient)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/>outflow:<sp/>snGrad<sp/>=<sp/>(internal<sp/><sp/><sp/>-<sp/>internal)<sp/>*<sp/>deltaCoeffs<sp/>=<sp/>0<sp/><sp/>(zero-gradient)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="104" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ae8f68f9076952d0c676ffd46ed986675" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ae8f68f9076952d0c676ffd46ed986675" kindref="member">InletOutlet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID)</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(mesh,<sp/>dict,<sp/>patchID,<sp/>{.assignable<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/>.fixesValue<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">}),<sp/>mesh_(mesh),</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inletValue_(dict.get&lt;ValueType&gt;(</highlight><highlight class="stringliteral">&quot;inletValue&quot;</highlight><highlight class="normal">)),</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>phiName_(dict.contains(</highlight><highlight class="stringliteral">&quot;phi&quot;</highlight><highlight class="normal">)<sp/>?<sp/>dict.get&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;phi&quot;</highlight><highlight class="normal">)<sp/>:<sp/>std::string(</highlight><highlight class="stringliteral">&quot;phi&quot;</highlight><highlight class="normal">))</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>context<sp/>=&gt;<sp/>no<sp/>flux<sp/>available:<sp/>behave<sp/>as<sp/>zero-gradient<sp/>(all<sp/>faces<sp/>treated<sp/>as<sp/>outflow).</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="111" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ae0c1ed49ed36d3cf578eb4f4a4c071de" kindref="member">detail::setInletOutletValue</ref>(</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector,<sp/>mesh_,<sp/>this-&gt;range(),<sp/>inletValue_,<sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;const NeoN::scalar&gt;</ref><sp/>{},<sp/>false</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"></highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Context-aware:<sp/>read<sp/>the<sp/>face<sp/>flux<sp/>phi<sp/>and<sp/>switch<sp/>inflow/outflow<sp/>per<sp/>face.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="120" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ad58a28e673bda87cfb3499ddf6243f1d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ad58a28e673bda87cfb3499ddf6243f1d" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext" kindref="compound">BoundaryContext</ref>&amp;<sp/>ctx)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ctx.hasSurfaceScalar(phiName_))</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>phi<sp/>=<sp/>ctx.surfaceScalarField(phiName_);</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ae0c1ed49ed36d3cf578eb4f4a4c071de" kindref="member">detail::setInletOutletValue</ref>(</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector,</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh_,</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;range(),</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inletValue_,</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>phi.boundaryData().value().view(),</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" kindref="member">correctBoundaryCondition</ref>(domainVector);</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight></codeline>
-<codeline lineno="140" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;inletOutlet&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight></codeline>
-<codeline lineno="142" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a434731117bfef9c474222248b73298ac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a434731117bfef9c474222248b73298ac" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" kindref="member">name</ref>();<sp/>}</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight></codeline>
-<codeline lineno="144" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aed1d34758231d533b17fb1f6222f4b21" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aed1d34758231d533b17fb1f6222f4b21" kindref="member">doc</ref>()</highlight></codeline>
-<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Inlet/outlet:<sp/>fixed<sp/>inletValue<sp/>on<sp/>inflow<sp/>faces,<sp/>zero-gradient<sp/>on<sp/>outflow<sp/>faces<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;(switched<sp/>per<sp/>face<sp/>by<sp/>the<sp/>sign<sp/>of<sp/>the<sp/>face<sp/>flux<sp/>phi).&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"></highlight></codeline>
-<codeline lineno="150" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a56a51244699633e1a2118e64071b452d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a56a51244699633e1a2118e64071b452d" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>any<sp/>downstream<sp/>overwrite<sp/>is<sp/>reversible.<sp/>fixesValue<sp/>=<sp/>false:<sp/>the<sp/>per-face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>refValue/valueFraction<sp/>drive<sp/>the<sp/>operators<sp/>via<sp/>the<sp/>mixed-BC<sp/>kernels;<sp/>a<sp/>global<sp/>Dirichlet<sp/>flag</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>would<sp/>over-constrain<sp/>mixed-flow<sp/>patches.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ae8f68f9076952d0c676ffd46ed986675" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ae8f68f9076952d0c676ffd46ed986675" kindref="member">InletOutlet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1Dictionary" kindref="compound">Dictionary</ref>&amp;<sp/>dict,<sp/><ref refid="namespaceNeoN_1a40785cd3c378b425dd30ae7f4d7dcabc" kindref="member">localIdx</ref><sp/>patchID)</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(mesh,<sp/>dict,<sp/>patchID,<sp/>{.assignable<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/>.fixesValue<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">}),<sp/>mesh_(mesh),</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inletValue_(dict.get&lt;ValueType&gt;(</highlight><highlight class="stringliteral">&quot;inletValue&quot;</highlight><highlight class="normal">)),</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>phiName_(dict.contains(</highlight><highlight class="stringliteral">&quot;phi&quot;</highlight><highlight class="normal">)<sp/>?<sp/>dict.get&lt;std::string&gt;(</highlight><highlight class="stringliteral">&quot;phi&quot;</highlight><highlight class="normal">)<sp/>:<sp/>std::string(</highlight><highlight class="stringliteral">&quot;phi&quot;</highlight><highlight class="normal">))</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>context<sp/>=&gt;<sp/>no<sp/>flux<sp/>available:<sp/>behave<sp/>as<sp/>zero-gradient<sp/>(all<sp/>faces<sp/>treated<sp/>as<sp/>outflow).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ae0c1ed49ed36d3cf578eb4f4a4c071de" kindref="member">detail::setInletOutletValue</ref>(</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector,<sp/>mesh_,<sp/>this-&gt;range(),<sp/>inletValue_,<sp/><ref refid="classNeoN_1_1View" kindref="compound">View&lt;const NeoN::scalar&gt;</ref><sp/>{},<sp/>false</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Context-aware:<sp/>read<sp/>the<sp/>face<sp/>flux<sp/>phi<sp/>and<sp/>switch<sp/>inflow/outflow<sp/>per<sp/>face.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ad58a28e673bda87cfb3499ddf6243f1d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1ad58a28e673bda87cfb3499ddf6243f1d" kindref="member">correctBoundaryCondition</ref>(<ref refid="classNeoN_1_1Field" kindref="compound">Field&lt;ValueType&gt;</ref>&amp;<sp/>domainVector,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext" kindref="compound">BoundaryContext</ref>&amp;<sp/>ctx)<sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ctx.hasSurfaceScalar(phiName_))</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>phi<sp/>=<sp/>ctx.surfaceScalarField(phiName_);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_1ae0c1ed49ed36d3cf578eb4f4a4c071de" kindref="member">detail::setInletOutletValue</ref>(</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>domainVector,</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mesh_,</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;range(),</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>inletValue_,</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>phi.boundaryData().value().view(),</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1acd79c4559355544a84ca404f6586cb96" kindref="member">correctBoundaryCondition</ref>(domainVector);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" kindref="member">name</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;inletOutlet&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a434731117bfef9c474222248b73298ac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a434731117bfef9c474222248b73298ac" kindref="member">getName</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a84de7cf422d4f2e3e30e4f21f8777172" kindref="member">name</ref>();<sp/>}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aed1d34758231d533b17fb1f6222f4b21" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1aed1d34758231d533b17fb1f6222f4b21" kindref="member">doc</ref>()</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;Inlet/outlet:<sp/>fixed<sp/>inletValue<sp/>on<sp/>inflow<sp/>faces,<sp/>zero-gradient<sp/>on<sp/>outflow<sp/>faces<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;(switched<sp/>per<sp/>face<sp/>by<sp/>the<sp/>sign<sp/>of<sp/>the<sp/>face<sp/>flux<sp/>phi).&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a56a51244699633e1a2118e64071b452d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1a56a51244699633e1a2118e64071b452d" kindref="member">schema</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1af97c19f4fd68b39691c8518b5e7efb61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;VolumeBoundaryFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1af97c19f4fd68b39691c8518b5e7efb61" kindref="member">clone</ref>()<sp/>const<sp/>final</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;InletOutlet&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="151"><highlight class="normal"></highlight></codeline>
-<codeline lineno="152" refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1af97c19f4fd68b39691c8518b5e7efb61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;VolumeBoundaryFactory&lt;ValueType&gt;&gt;<sp/><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1InletOutlet_1af97c19f4fd68b39691c8518b5e7efb61" kindref="member">clone</ref>()<sp/>const<sp/>final</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;InletOutlet&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"></highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh_;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType<sp/>inletValue_;</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>phiName_;</highlight></codeline>
+<codeline lineno="157"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="158"><highlight class="normal"></highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classNeoN_1_1UnstructuredMesh" kindref="compound">UnstructuredMesh</ref>&amp;<sp/>mesh_;</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>ValueType<sp/>inletValue_;</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>phiName_;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::finiteVolume::cellCentred::volumeBoundary</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>NeoN::finiteVolume::cellCentred::volumeBoundary</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/inletOutlet.hpp"/>
   </compounddef>

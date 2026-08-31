@@ -59,6 +59,10 @@ bool \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a832ecda24e344d7e34c79029d
 \item 
 void \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a0de166fc56197b36ad0fc9ab59c59ddf}{keep\+Face\+Flux\+Correction}} (bool keep)
 \item 
+const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_ad60149f52ba110a7d12d3872a63122a5}{diag\+Cmpt}} () const
+\begin{DoxyCompactList}\small\item\em Per-\/component diagonal correction for implicit transform BCs (slip/symmetry). nullptr when no implicit transform patch is present (the fast multi-\/\+RHS path). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a6dd2794e3853a8508ab2c038bc793980}{ensure\+Diag\+Cmpt}} ()
+\begin{DoxyCompactList}\small\item\em Lazily allocate (zero-\/initialised, one RHSValue\+Type per cell) and return the per-\/component diagonal-\/correction store, so the Laplacian assembly can accumulate the implicit transform-\/\+BC contribution into it. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a089b0c9827285096b29db2fdc8aa2106}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}{exec}}) const override
 \item 
 void \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem_a4d8399bc213eb88da8a0d3fb927b5738}{reset}} ()
@@ -177,7 +181,7 @@ Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00158}{158}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00159}{159}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a5bc14099bca511e2ab90a5152b4fe15e}\label{classNeoN_1_1la_1_1LinearSystem_a5bc14099bca511e2ab90a5152b4fe15e} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryMatrix@{boundaryMatrix}}
@@ -188,7 +192,7 @@ const Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00160}{160}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00161}{161}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968}\label{classNeoN_1_1la_1_1LinearSystem_a3fa12df5ce6c1325185a299a51b54968} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryRhs@{boundaryRhs}}
@@ -199,7 +203,7 @@ Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00160}{160}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_adc4b8a52b00ab52af61370ec938dbb0f}\label{classNeoN_1_1la_1_1LinearSystem_adc4b8a52b00ab52af61370ec938dbb0f} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!boundaryRhs@{boundaryRhs}}
@@ -210,7 +214,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \m
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00168}{168}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00169}{169}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a089b0c9827285096b29db2fdc8aa2106}\label{classNeoN_1_1la_1_1LinearSystem_a089b0c9827285096b29db2fdc8aa2106} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!copyToExecutor@{copyToExecutor}}
@@ -225,7 +229,37 @@ Implements \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_ad54623a2d9533dc70f4d609
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00196}{196}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00218}{218}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_ad60149f52ba110a7d12d3872a63122a5}\label{classNeoN_1_1la_1_1LinearSystem_ad60149f52ba110a7d12d3872a63122a5} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!diagCmpt@{diagCmpt}}
+\index{diagCmpt@{diagCmpt}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{diagCmpt()}{diagCmpt()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::diag\+Cmpt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Per-\/component diagonal correction for implicit transform BCs (slip/symmetry). nullptr when no implicit transform patch is present (the fast multi-\/\+RHS path). 
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00198}{198}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+
+\Hypertarget{classNeoN_1_1la_1_1LinearSystem_a6dd2794e3853a8508ab2c038bc793980}\label{classNeoN_1_1la_1_1LinearSystem_a6dd2794e3853a8508ab2c038bc793980} 
+\index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!ensureDiagCmpt@{ensureDiagCmpt}}
+\index{ensureDiagCmpt@{ensureDiagCmpt}!NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}}
+\doxysubsubsection{\texorpdfstring{ensureDiagCmpt()}{ensureDiagCmpt()}}
+{\footnotesize\ttfamily template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type  = Matrix\+Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Matrix\+Value\+Type, local\+Idx$>$$>$ \\
+\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$\+::ensure\+Diag\+Cmpt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Lazily allocate (zero-\/initialised, one RHSValue\+Type per cell) and return the per-\/component diagonal-\/correction store, so the Laplacian assembly can accumulate the implicit transform-\/\+BC contribution into it. 
+
+
+
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00206}{206}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e}\label{classNeoN_1_1la_1_1LinearSystem_abdfd64b78fd8b121e6de388edbb4ea4e} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!exec@{exec}}
@@ -236,7 +270,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00269}{269}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00296}{296}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a3379780aabce301181d5305b94fb16d9}\label{classNeoN_1_1la_1_1LinearSystem_a3379780aabce301181d5305b94fb16d9} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!faceFluxCorrection@{faceFluxCorrection}}
@@ -247,7 +281,7 @@ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSV
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00178}{178}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a51d7f0b6b4debdeb5d13b8873ad46316}\label{classNeoN_1_1la_1_1LinearSystem_a51d7f0b6b4debdeb5d13b8873ad46316} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!faceFluxCorrection@{faceFluxCorrection}}
@@ -258,7 +292,7 @@ const std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00182}{182}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00183}{183}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_aac856e2d50f6163ed84e1babaefc6443}\label{classNeoN_1_1la_1_1LinearSystem_aac856e2d50f6163ed84e1babaefc6443} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!faceToMatrixAddress@{faceToMatrixAddress}}
@@ -269,7 +303,7 @@ std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrix
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00242}{242}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00269}{269}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a02a1bd9dde40bb89fb654230821aae98}\label{classNeoN_1_1la_1_1LinearSystem_a02a1bd9dde40bb89fb654230821aae98} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!getMeshIterator@{getMeshIterator}}
@@ -280,7 +314,7 @@ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIteratorContex
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00260}{260}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00287}{287}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a832ecda24e344d7e34c79029d0d4827e}\label{classNeoN_1_1la_1_1LinearSystem_a832ecda24e344d7e34c79029d0d4827e} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!keepFaceFluxCorrection@{keepFaceFluxCorrection}}
@@ -291,7 +325,7 @@ bool \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00191}{191}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00192}{192}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a0de166fc56197b36ad0fc9ab59c59ddf}\label{classNeoN_1_1la_1_1LinearSystem_a0de166fc56197b36ad0fc9ab59c59ddf} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!keepFaceFluxCorrection@{keepFaceFluxCorrection}}
@@ -302,7 +336,7 @@ void \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00193}{193}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00194}{194}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e}\label{classNeoN_1_1la_1_1LinearSystem_af17ce97a29487ed54ffe34839ed1562e} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!matrix@{matrix}}
@@ -313,7 +347,7 @@ System\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00150}{150}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00151}{151}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_ac184efa6edca75df5623988c734ca8b5}\label{classNeoN_1_1la_1_1LinearSystem_ac184efa6edca75df5623988c734ca8b5} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!matrix@{matrix}}
@@ -324,7 +358,7 @@ const System\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00152}{152}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00153}{153}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a01710eb20e2537aeb891089f67bad3ad}\label{classNeoN_1_1la_1_1LinearSystem_a01710eb20e2537aeb891089f67bad3ad} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!offDiagonalMatrix@{offDiagonalMatrix}}
@@ -335,7 +369,7 @@ Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00154}{154}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00155}{155}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_aa0555c492316c329f19787ed7e949b77}\label{classNeoN_1_1la_1_1LinearSystem_aa0555c492316c329f19787ed7e949b77} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!offDiagonalMatrix@{offDiagonalMatrix}}
@@ -346,7 +380,7 @@ const Boundary\+Matrix\+Type \& \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00156}{156}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00157}{157}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a4d8399bc213eb88da8a0d3fb927b5738}\label{classNeoN_1_1la_1_1LinearSystem_a4d8399bc213eb88da8a0d3fb927b5738} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!reset@{reset}}
@@ -357,7 +391,7 @@ void \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00211}{211}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00237}{237}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19}\label{classNeoN_1_1la_1_1LinearSystem_a0e2eea387da236713807b3c627469e19} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!rhs@{rhs}}
@@ -368,7 +402,7 @@ Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00211}{211}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_ae846cfe347571377ce8a157a77ec133d}\label{classNeoN_1_1la_1_1LinearSystem_ae846cfe347571377ce8a157a77ec133d} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!rhs@{rhs}}
@@ -379,7 +413,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ RHSValue\+Type $>$ \& \m
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00164}{164}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00165}{165}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_ac8284ece46e70228942e013556ee440d}\label{classNeoN_1_1la_1_1LinearSystem_ac8284ece46e70228942e013556ee440d} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
@@ -390,7 +424,7 @@ Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00164}{164}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00237}{237}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00264}{264}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_ab2dac7658c5cf9c1107f62d2c6e21936}\label{classNeoN_1_1la_1_1LinearSystem_ab2dac7658c5cf9c1107f62d2c6e21936} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
@@ -408,7 +442,7 @@ Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00237}{237}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00255}{255}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
+Definition at line \mbox{\hyperlink{linearSystem_8hpp_source_l00282}{282}} of file \mbox{\hyperlink{linearSystem_8hpp_source}{linear\+System.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1LinearSystem_a94a2a737094ff7c809e02786210901e1}\label{classNeoN_1_1la_1_1LinearSystem_a94a2a737094ff7c809e02786210901e1} 
 \index{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$@{NeoN::la::LinearSystem$<$ MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType $>$}!view@{view}}
