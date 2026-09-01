@@ -1,0 +1,311 @@
+name: Conda packages
+
+# Builds the neon-pde conda package with rattler-build and publishes it to a prefix.dev
+# channel, so that `pixi add neon-pde -c https://prefix.dev/<channel>` resolves a release.
+#
+# Requires two repository settings:
+#   vars.PREFIX_DEV_CHANNEL   the prefix.dev channel name, e.g. exasim-project
+#   secrets.PREFIX_DEV_API_KEY  an API key with write access to that channel
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      build_cpu:
+        description: "Build the CPU conda packages"
+        required: false
+        default: true
+        type: boolean
+      build_cuda:
+        description: "Build the Linux CUDA conda package"
+        required: false
+        default: false
+        type: boolean
+      build_rocm:
+        description: "Build the Linux ROCm conda package (experimental, no Ginkgo backend)"
+        required: false
+        default: false
+        type: boolean
+      publish:
+        description: "Publish the built packages to prefix.dev"
+        required: false
+        default: false
+        type: boolean
+      channel:
+        description: "Override the prefix.dev channel to publish to"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  RATTLER_BUILD_VERSION: "0.75.0"
+
+jobs:
+  version:
+    name: Resolve package version
+    runs-on: ubuntu-latest
+    if: github.repository == 'exasim-project/NeoN'
+    outputs:
+      channel: ${{ steps.version.outputs.channel }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Same stable/nightly scheme as python_wheels.yaml so a conda package and a wheel built
+      # from the same commit carry the same version.
+      - name: Resolve stable or nightly version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            channel="stable"
+          else
+            serial="$(date -u +%Y%m%d%H%M)${GITHUB_RUN_NUMBER}"
+            version="$(python scripts/set_package_version.py --nightly "${serial}")"
+            channel="nightly"
+          fi
+
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
+
+  build-cpu:
+    name: CPU ${{ matrix.python }} ${{ matrix.target-platform }}
+    needs: version
+    runs-on: ${{ matrix.os }}
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'workflow_dispatch' || inputs.build_cpu)
+    strategy:
+      fail-fast: false
+      matrix:
+        # One job per (platform x python version), mirroring the wheel matrix.
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-14, macos-15-intel]
+        # No 3.9: conda-forge has no nanobind for it, which the stub generation step needs.
+        # Python 3.9 users get the PyPI wheel.
+        python: ["3.10", "3.11", "3.12", "3.13"]
+        # target-platform is attached per os rather than being a matrix dimension of its own.
+        include:
+          - os: ubuntu-latest
+            target-platform: linux-64
+          - os: ubuntu-24.04-arm
+            target-platform: linux-aarch64
+          - os: macos-14
+            target-platform: osx-arm64
+          - os: macos-15-intel
+            target-platform: osx-64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Stamp package version
+        run: python3 scripts/set_package_version.py "${{ needs.version.outputs.version }}"
+
+      - name: Install rattler-build
+        run: |
+          ci/install_rattler_build.sh "${RATTLER_BUILD_VERSION}" "${HOME}/.local/bin"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      # The conda clang toolchain needs an SDK to compile against; GitHub runners ship one with
+      # Xcode rather than as a conda package.
+      - name: Point the conda toolchain at the macOS SDK
+        if: runner.os == 'macOS'
+        run: echo "CONDA_BUILD_SYSROOT=$(xcrun --show-sdk-path)" >> "${GITHUB_ENV}"
+
+      - name: Build conda package
+        env:
+          NEON_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          ci/build_conda_packages.sh \
+            --python "${{ matrix.python }}" \
+            --gpu cpu \
+            --target-platform "${{ matrix.target-platform }}" \
+            --output-dir output
+
+      - name: Upload conda package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-cpu-${{ matrix.target-platform }}-py${{ matrix.python }}
+          path: output/**/*.conda
+
+  build-cuda:
+    name: CUDA ${{ matrix.cuda-version }} linux-64
+    needs: version
+    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.build_cuda))
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Matches the published CUDA wheel: CUDA 12.8, CPython 3.12, NVIDIA Ampere (sm_80).
+          - cuda-version: "12.8"
+            python: "3.12"
+            cuda-architectures: "80"
+            kokkos-arch: AMPERE80
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # nvcc, cuDNN-free CUDA libraries and Kokkos all come from conda-forge, so unlike the CUDA
+      # wheel job this needs no system CUDA toolkit. Free the runner disk the build will need.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          df -h /
+
+      - name: Stamp package version
+        run: python3 scripts/set_package_version.py "${{ needs.version.outputs.version }}"
+
+      - name: Install rattler-build
+        run: |
+          ci/install_rattler_build.sh "${RATTLER_BUILD_VERSION}" "${HOME}/.local/bin"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Build CUDA conda package
+        env:
+          NEON_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          ci/build_conda_packages.sh \
+            --python "${{ matrix.python }}" \
+            --gpu cuda \
+            --target-platform linux-64 \
+            --cuda-version "${{ matrix.cuda-version }}" \
+            --cuda-architectures "${{ matrix.cuda-architectures }}" \
+            --kokkos-arch "${{ matrix.kokkos-arch }}" \
+            --output-dir output
+
+      - name: Upload CUDA conda package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-cuda-linux-64-py${{ matrix.python }}
+          path: output/**/*.conda
+
+  build-rocm:
+    name: ROCm ${{ matrix.rocm-version }} linux-64
+    needs: version
+    runs-on: ubuntu-latest
+    # Manual dispatch only. conda-forge ships hip-devel and hipcc but none of the ROCm math
+    # libraries (rocBLAS, rocSPARSE, rocThrust, rocPRIM) that Ginkgo's HIP backend needs, so this
+    # package is Kokkos HIP without a Ginkgo solver backend and is not part of a tagged release.
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      github.event_name == 'workflow_dispatch' && inputs.build_rocm
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rocm-version: "6.3"
+            python: "3.12"
+            hip-architectures: gfx90a
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          df -h /
+
+      - name: Stamp package version
+        run: python3 scripts/set_package_version.py "${{ needs.version.outputs.version }}"
+
+      - name: Install rattler-build
+        run: |
+          ci/install_rattler_build.sh "${RATTLER_BUILD_VERSION}" "${HOME}/.local/bin"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Build ROCm conda package
+        env:
+          NEON_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          ci/build_conda_packages.sh \
+            --python "${{ matrix.python }}" \
+            --gpu rocm \
+            --target-platform linux-64 \
+            --rocm-version "${{ matrix.rocm-version }}" \
+            --hip-architectures "${{ matrix.hip-architectures }}" \
+            --output-dir output
+
+      - name: Upload ROCm conda package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-rocm-linux-64-py${{ matrix.python }}
+          path: output/**/*.conda
+
+  publish:
+    name: Publish to prefix.dev
+    needs: [build-cpu, build-cuda, build-rocm]
+    # Publish whatever built. A skipped GPU job must not block a tagged CPU release, but a
+    # failed one must, so this checks for failure rather than for success.
+    if: >
+      always() &&
+      github.repository == 'exasim-project/NeoN' &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled') &&
+      (startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish))
+    runs-on: ubuntu-latest
+    environment:
+      name: prefix-dev
+      url: https://prefix.dev/channels/${{ inputs.channel || vars.PREFIX_DEV_CHANNEL }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install rattler-build
+        run: |
+          ci/install_rattler_build.sh "${RATTLER_BUILD_VERSION}" "${HOME}/.local/bin"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Download conda package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: conda-*
+          path: packages
+          merge-multiple: true
+
+      - name: List packages selected for publishing
+        run: find packages -type f -name "*.conda" -print -exec ls -lh {} \;
+
+      - name: Publish to prefix.dev
+        env:
+          PREFIX_API_KEY: ${{ secrets.PREFIX_DEV_API_KEY }}
+          PREFIX_CHANNEL: ${{ inputs.channel || vars.PREFIX_DEV_CHANNEL }}
+        run: |
+          if [[ -z "${PREFIX_CHANNEL}" ]]; then
+            echo "No prefix.dev channel configured."
+            echo "Set the PREFIX_DEV_CHANNEL repository variable or pass the channel input."
+            exit 1
+          fi
+
+          mapfile -t packages < <(find packages -type f -name "*.conda" | sort)
+          if [[ ${#packages[@]} -eq 0 ]]; then
+            echo "No .conda packages were downloaded, nothing to publish."
+            exit 1
+          fi
+
+          rattler-build upload prefix --channel "${PREFIX_CHANNEL}" --skip-existing "${packages[@]}"
