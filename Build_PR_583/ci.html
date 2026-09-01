@@ -358,6 +358,45 @@ that build job because the GitHub-hosted runner has no GPU. The same structure c
 additional Python versions, CUDA versions, and GPU architectures after the packaged wheel is
 validated on production hardware.</p>
 </section>
+<section id="conda-package-ci-cd">
+<h2>Conda package CI/CD<a class="headerlink" href="#conda-package-ci-cd" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">.github/workflows/conda_packages.yaml</span></code> builds the <code class="docutils literal notranslate"><span class="pre">neon-pde</span></code> conda package with
+<code class="docutils literal notranslate"><span class="pre">rattler-build</span></code> and publishes it to a <a class="reference external" href="https://prefix.dev">prefix.dev</a> channel, so that NeoN can
+be consumed from a <a class="reference external" href="https://pixi.sh">pixi</a> environment. It runs on the same triggers as the wheel
+workflow (<code class="docutils literal notranslate"><span class="pre">v*.*.*</span></code> tags and manual dispatch) and resolves its version with the same
+<code class="docutils literal notranslate"><span class="pre">scripts/set_package_version.py</span></code> logic, so a wheel and a conda package built from one commit report
+the same <code class="docutils literal notranslate"><span class="pre">neon.__version__</span></code>.</p>
+<p>The recipe lives in <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>. <code class="docutils literal notranslate"><span class="pre">ci/build_conda_packages.sh</span></code> is the single entry point
+used by both CI and local builds: it exports <code class="docutils literal notranslate"><span class="pre">NEON_VERSION</span></code>, writes the per-build variant
+configuration (python version, GPU flavour, C runtime floor) and calls <code class="docutils literal notranslate"><span class="pre">rattler-build</span></code>.
+<code class="docutils literal notranslate"><span class="pre">ci/install_rattler_build.sh</span></code> installs a pinned, checksum-verified rattler-build release.</p>
+<p>CPU packages are built for CPython 3.10-3.13 on <code class="docutils literal notranslate"><span class="pre">linux-64</span></code>, <code class="docutils literal notranslate"><span class="pre">linux-aarch64</span></code>, <code class="docutils literal notranslate"><span class="pre">osx-64</span></code> and
+<code class="docutils literal notranslate"><span class="pre">osx-arm64</span></code>. There is no <code class="docutils literal notranslate"><span class="pre">win-64</span></code> conda package, because NeoN disables Ginkgo on Windows and the
+wheel is the supported Windows path. Python 3.9 is also wheel-only: conda-forge builds <code class="docutils literal notranslate"><span class="pre">nanobind</span></code>,
+which the <code class="docutils literal notranslate"><span class="pre">nanobind.stubgen</span></code> POST_BUILD step needs, only for Python 3.10 and newer. The GPU flavour is encoded in the build string
+(<code class="docutils literal notranslate"><span class="pre">cpu_py312_*</span></code>, <code class="docutils literal notranslate"><span class="pre">cuda_py312_*</span></code>, <code class="docutils literal notranslate"><span class="pre">rocm_py312_*</span></code>) so all flavours can coexist in one channel.</p>
+<p>Unlike the wheels, the conda package is installed by CMake rather than by <code class="docutils literal notranslate"><span class="pre">pip</span></code>: the C++ runtime
+and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib</span></code>, headers and
+CMake package files to <code class="docutils literal notranslate"><span class="pre">$PREFIX/include</span></code> and <code class="docutils literal notranslate"><span class="pre">$PREFIX/lib/cmake/NeoN</span></code>, and only the python
+package is moved into <code class="docutils literal notranslate"><span class="pre">site-packages</span></code>. Relocation is handled by rattler-build’s rpath rewrite
+instead of by <code class="docutils literal notranslate"><span class="pre">auditwheel</span></code>/<code class="docutils literal notranslate"><span class="pre">delocate</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The build clones Kokkos, Ginkgo and Umpire from GitHub through CPM, so it needs network access
+during the build. That is acceptable for our own channel but would not pass conda-forge’s offline
+build policy.</p>
+</div>
+<p>Publishing requires two repository settings: a <code class="docutils literal notranslate"><span class="pre">PREFIX_DEV_CHANNEL</span></code> variable naming the target
+channel and a <code class="docutils literal notranslate"><span class="pre">PREFIX_DEV_API_KEY</span></code> secret holding an API key with write access to it. The publish
+job runs in the <code class="docutils literal notranslate"><span class="pre">prefix-dev</span></code> GitHub environment and uploads with <code class="docutils literal notranslate"><span class="pre">--skip-existing</span></code>, so re-running
+it after a partial failure does not fail on packages that already landed.</p>
+<p>The CUDA package mirrors the CUDA wheel: CUDA 12.8, CPython 3.12, Linux x86-64, NVIDIA Ampere
+(<code class="docutils literal notranslate"><span class="pre">sm_80</span></code>). It depends on the <code class="docutils literal notranslate"><span class="pre">__cuda</span></code> virtual package so it cannot resolve on a machine without a
+suitable driver, and like the CUDA wheel it is not runtime-tested in CI. The ROCm package is
+manual-dispatch only and experimental: conda-forge ships <code class="docutils literal notranslate"><span class="pre">hip-devel</span></code> and <code class="docutils literal notranslate"><span class="pre">hipcc</span></code> but none of the
+ROCm math libraries (rocBLAS, rocSPARSE, rocThrust, rocPRIM) that Ginkgo’s HIP backend needs, so that
+flavour is Kokkos HIP without a Ginkgo solver backend.</p>
+</section>
 <section id="continuous-integration-on-lrz-gitlab">
 <h2>Continuous Integration on LRZ GitLab<a class="headerlink" href="#continuous-integration-on-lrz-gitlab" title="Link to this heading">¶</a></h2>
 <p>The LRZ GitLab CI handles GPU-related operations.</p>
@@ -494,6 +533,7 @@ When triggering the NeoFOAM pipeline, the following rules apply to determine whi
 <li><a class="reference internal" href="#">Continuous Integration</a><ul>
 <li><a class="reference internal" href="#continuous-integration-on-github">Continuous Integration on GitHub</a></li>
 <li><a class="reference internal" href="#python-wheel-ci-cd">Python Wheel CI/CD</a></li>
+<li><a class="reference internal" href="#conda-package-ci-cd">Conda package CI/CD</a></li>
 <li><a class="reference internal" href="#continuous-integration-on-lrz-gitlab">Continuous Integration on LRZ GitLab</a></li>
 <li><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
 <li><a class="reference internal" href="#integration-tests">Integration Tests</a></li>

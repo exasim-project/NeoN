@@ -339,6 +339,16 @@ NeoN specific build flags are prefixed by <code class="docutils literal notransl
 <p>To install or build the Python bindings (the <code class="docutils literal notranslate"><span class="pre">neon_pde</span></code> package), including
 the CUDA variant, see <a class="reference internal" href="python_bindings.html"><span class="doc">Python bindings (neon_pde)</span></a>.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Releases are also published as conda packages to <a class="reference external" href="https://prefix.dev">prefix.dev</a>, which is the
+quickest way to get a prebuilt NeoN (C++ runtime, headers and CMake package files included) into
+a <a class="reference external" href="https://pixi.sh">pixi</a> environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>add<span class="w"> </span>neon-pde<span class="w"> </span>-c<span class="w"> </span>https://prefix.dev/exasim-project<span class="w"> </span>-c<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="python_bindings.html"><span class="doc">Python bindings (neon_pde)</span></a> for the available platforms and GPU flavours.</p>
+</div>
 <section id="building-for-gpus">
 <h2>Building for GPUs<a class="headerlink" href="#building-for-gpus" title="Link to this heading">¶</a></h2>
 <p>NeoN will automatically enable <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_CUDA</span></code> or <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_HIP</span></code> if either of this is available on

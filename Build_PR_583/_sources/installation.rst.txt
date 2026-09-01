@@ -51,6 +51,18 @@ NeoN specific build flags are prefixed by ``NeoN_``.
    To install or build the Python bindings (the ``neon_pde`` package), including
    the CUDA variant, see :doc:`python_bindings`.
 
+.. note::
+
+   Releases are also published as conda packages to `prefix.dev <https://prefix.dev>`_, which is the
+   quickest way to get a prebuilt NeoN (C++ runtime, headers and CMake package files included) into
+   a `pixi <https://pixi.sh>`_ environment:
+
+   .. code-block:: bash
+
+      pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+
+   See :doc:`python_bindings` for the available platforms and GPU flavours.
+
 Building for GPUs
 ^^^^^^^^^^^^^^^^^^
 NeoN will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
