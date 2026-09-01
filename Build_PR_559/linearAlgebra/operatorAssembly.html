@@ -694,6 +694,86 @@ assembly where <code class="docutils literal notranslate"><span class="pre">flux
 </div>
 </section>
 </section>
+<section id="vector-fields-shared-scalar-matrix-vs-per-component-diagonal">
+<h2>Vector fields: shared scalar matrix vs. per-component diagonal<a class="headerlink" href="#vector-fields-shared-scalar-matrix-vs-per-component-diagonal" title="Link to this heading">¶</a></h2>
+<p>A vector field (<code class="docutils literal notranslate"><span class="pre">Vec3</span></code>) is <strong>not</strong> assembled as three independent scalar
+systems, nor as a block matrix. Instead NeoN builds a <strong>single scalar sparsity
+pattern and matrix</strong> whose entries are shared by all three components, and solves</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[A\,\mathbf{x} = \mathbf{b}, \qquad
+\mathbf{x}, \mathbf{b} \in \mathbb{R}^{N \times 3}\]</div>
+</div>
+<p>as one <strong>multi-RHS</strong> solve: the same scalar operator <span class="math notranslate nohighlight">\(A\)</span> is applied to the
+<span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, and <span class="math notranslate nohighlight">\(z\)</span> columns simultaneously (Ginkgo treats the
+right-hand side as an <span class="math notranslate nohighlight">\(N \times 3\)</span> dense block). This is the common case —
+the diffusion/convection operators of the momentum equation are identical for each
+component, so one matrix and one Krylov solve serve all three. It halves memory
+versus three matrix copies and amortises the preconditioner setup across components.</p>
+<p>The assumption this relies on is that <strong>the operator is the same for every
+component</strong>. That holds as long as every diagonal and off-diagonal entry is a
+scalar that does not depend on the component index. A term whose coefficient is
+<strong>direction dependent</strong> — i.e. differs between the <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, and
+<span class="math notranslate nohighlight">\(z\)</span> rows of the same cell — breaks it, because a single shared scalar
+diagonal cannot store three different values.</p>
+<dl>
+<dt>The escape hatch: <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">LinearSystem</span></code> carries an <em>optional</em> secondary store,
+<code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> (a <code class="docutils literal notranslate"><span class="pre">Vector&lt;RHSValueType&gt;</span></code>, i.e. one <code class="docutils literal notranslate"><span class="pre">Vec3</span></code> per cell,
+allocated lazily via <code class="docutils literal notranslate"><span class="pre">ensureDiagCmpt()</span></code>). It holds a <strong>per-component
+correction to the diagonal only</strong>. An operator that needs a
+direction-dependent diagonal accumulates the three component weights there
+instead of into the shared scalar matrix.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> is populated the multi-RHS solve is no longer valid, so the
+solver backend (see <code class="docutils literal notranslate"><span class="pre">src/linearAlgebra/ginkgo/ginkgo.cpp</span></code>) falls back to
+<strong>three segregated scalar solves</strong> — one per component. For column
+<span class="math notranslate nohighlight">\(c\)</span> it temporarily subtracts <code class="docutils literal notranslate"><span class="pre">diagCmpt[·][c]</span></code> from the shared scalar
+diagonal <em>in place</em> (no matrix copy), runs the scalar solve, then restores the
+diagonal. The off-diagonals — still identical across components — are reused
+untouched.</p>
+</dd>
+</dl>
+<p>This is the mechanism behind the <em>implicit</em> slip/symmetry normal damping
+(<span class="xref std std-ref">fvcc_BC</span>): the damping coefficient
+<span class="math notranslate nohighlight">\(\gamma\,|S|\,\Delta\,|n_c|\)</span> carries a per-component <span class="math notranslate nohighlight">\(|n_c|\)</span> factor, so
+it is routed through <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> rather than the shared diagonal. Any future
+operator with a genuinely anisotropic (per-component) diagonal contribution should
+use the same <code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> path; a per-component <em>off-diagonal</em> coupling, by
+contrast, would require a true block matrix and is not supported by this scheme.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id10">
+<table class="docutils align-default" id="id10">
+<caption><span class="caption-text">Trade-offs</span><a class="headerlink" href="#id10" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Shared scalar matrix (default)</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">diagCmpt</span></code> per-component diagonal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Solve</p></td>
+<td><p>one multi-RHS (<span class="math notranslate nohighlight">\(N \times 3\)</span>) solve</p></td>
+<td><p>three segregated scalar solves</p></td>
+</tr>
+<tr class="row-odd"><td><p>Matrix storage</p></td>
+<td><p>one scalar matrix</p></td>
+<td><p>one scalar matrix + one <code class="docutils literal notranslate"><span class="pre">Vec3</span></code>/cell</p></td>
+</tr>
+<tr class="row-even"><td><p>Requires</p></td>
+<td><p>component-independent operator</p></td>
+<td><p>direction-dependent <strong>diagonal</strong> only</p></td>
+</tr>
+<tr class="row-odd"><td><p>Not supported</p></td>
+<td><p>direction-dependent entries</p></td>
+<td><p>per-component <strong>off-diagonal</strong> coupling (needs block matrix)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 
         </article>
@@ -778,6 +858,7 @@ assembly where <code class="docutils literal notranslate"><span class="pre">flux
 <li><a class="reference internal" href="#id5">Physical boundary</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#vector-fields-shared-scalar-matrix-vs-per-component-diagonal">Vector fields: shared scalar matrix vs. per-component diagonal</a></li>
 </ul>
 </li>
 </ul>

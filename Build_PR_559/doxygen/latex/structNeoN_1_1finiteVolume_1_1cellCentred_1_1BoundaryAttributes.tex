@@ -10,6 +10,8 @@
 bool \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_aa84cebf42ab87cda70be20aef7454c0c}{assignable}}
 \begin{DoxyCompactList}\small\item\em whether values can be assigned to the boundary patch \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_a6ca8948d47e0dfa00ff58b533d830b2c}{fixes\+Value}}
+\item 
+bool \mbox{\hyperlink{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_a4bf159e09061a91db355e9bfbcc87cab}{transform\+Implicit}} = false
 \end{DoxyCompactItemize}
 
 
@@ -44,6 +46,16 @@ Definition at line \mbox{\hyperlink{volumeBoundaryFactory_8hpp_source_l00027}{27
 whether the bc enforces a fixed field value (Dirichlet), not a gradient/\+Neumann condition NOTE this is somewhat redundant to value\+Fraction of boundary\+Data 
 
 Definition at line \mbox{\hyperlink{volumeBoundaryFactory_8hpp_source_l00028}{28}} of file \mbox{\hyperlink{volumeBoundaryFactory_8hpp_source}{volume\+Boundary\+Factory.\+hpp}}.
+
+\Hypertarget{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_a4bf159e09061a91db355e9bfbcc87cab}\label{structNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryAttributes_a4bf159e09061a91db355e9bfbcc87cab} 
+\index{NeoN::finiteVolume::cellCentred::BoundaryAttributes@{NeoN::finiteVolume::cellCentred::BoundaryAttributes}!transformImplicit@{transformImplicit}}
+\index{transformImplicit@{transformImplicit}!NeoN::finiteVolume::cellCentred::BoundaryAttributes@{NeoN::finiteVolume::cellCentred::BoundaryAttributes}}
+\doxysubsubsection{\texorpdfstring{transformImplicit}{transformImplicit}}
+{\footnotesize\ttfamily bool Neo\+N\+::finite\+Volume\+::cell\+Centred\+::\+Boundary\+Attributes\+::transform\+Implicit = false}
+
+whether this is a direction-\/dependent (transform) BC — e.\+g. slip/symmetry in implicit mode — whose normal damping must be applied as a per-\/component diagonal correction at solve time rather than via the RHS. Defaults to false so all existing BCs are unaffected. 
+
+Definition at line \mbox{\hyperlink{volumeBoundaryFactory_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{volumeBoundaryFactory_8hpp_source}{volume\+Boundary\+Factory.\+hpp}}.
 
 
 
