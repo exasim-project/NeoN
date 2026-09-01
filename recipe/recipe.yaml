@@ -1,0 +1,130 @@
+# SPDX-FileCopyrightText: 2026 NeoN authors
+#
+# SPDX-License-Identifier: Unlicense
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+#
+# rattler-build recipe for the conda package published to https://prefix.dev.
+# Build it through ci/build_conda_packages.sh, which resolves NEON_VERSION and
+# writes the per-build variant file this recipe expects.
+
+context:
+  name: neon-pde
+  # project.version in pyproject.toml stays the single source of truth (CMake parses it too).
+  # rattler-build can only read that file with --experimental, so ci/build_conda_packages.sh
+  # exports it instead. Deliberately no default: an unset variable must fail the build rather
+  # than stamp a version that disagrees with neon.__version__.
+  version: ${{ env.get("NEON_VERSION") }}
+  gpu: ${{ gpu_variant }}
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - path: ../
+
+build:
+  number: 0
+  # The GPU flavour has to appear in the build string: the cpu, cuda and rocm packages share a
+  # name and version and would otherwise be indistinguishable builds of the same package.
+  string: ${{ gpu }}_py${{ python | version_to_buildstring }}_h${{ hash }}_${{ build_number }}
+  skip:
+    # No Windows conda package: NeoN disables Ginkgo there and the wheel build is the supported
+    # Windows path. GPU flavours only make sense on Linux.
+    - win
+    - gpu != "cpu" and not linux
+  script:
+    file: build.sh
+    env:
+      NEON_GPU_VARIANT: ${{ gpu }}
+      NEON_CUDA_ARCHITECTURES: ${{ cuda_architectures | default("80") }}
+      NEON_KOKKOS_ARCH: ${{ kokkos_arch | default("AMPERE80") }}
+      NEON_HIP_ARCHITECTURES: ${{ hip_architectures | default("gfx90a") }}
+  variant:
+    # Without this the cpu, cuda and rocm builds of one python version hash identically.
+    use_keys:
+      - gpu_variant
+  dynamic_linking:
+    # NeoN vendors Kokkos, Ginkgo, Umpire, fmt and cpptrace through CPM and installs them beside
+    # libNeoN in $PREFIX/lib, which is exactly where the default rpath rewrite points.
+    rpaths:
+      - lib/
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ compiler('cxx') }}
+    - ${{ stdlib('c') }}
+    - if: gpu == "cuda"
+      then: ${{ compiler('cuda') }}
+    - cmake >=3.22
+    - ninja
+    # CPM and FetchContent clone Kokkos, Ginkgo and Umpire from GitHub during the build, so this
+    # recipe needs network access. That is fine for our own channel but would fail conda-forge's
+    # offline build policy.
+    - git
+    - if: gpu == "rocm"
+      then: hipcc ${{ rocm_version }}.*
+  host:
+    - python
+    # nanobind_add_module fetches its own C++ nanobind through CPM; this is the python-side
+    # package that provides the nanobind.stubgen module run as a POST_BUILD step. conda-forge
+    # only builds it for python >=3.10, which sets the floor for the conda packages (the wheels
+    # still cover 3.9).
+    - nanobind >=2.9
+    - if: gpu == "cuda"
+      then:
+        - cuda-version ==${{ cuda_version }}
+        - cuda-cudart-dev
+        - cuda-cccl
+        - libcublas-dev
+        - libcusparse-dev
+        - libcusolver-dev
+        - libcurand-dev
+    - if: gpu == "rocm"
+      then:
+        - hip-devel ${{ rocm_version }}.*
+        - hip-runtime-amd ${{ rocm_version }}.*
+  run:
+    - python
+    - numpy >=1.19
+    - if: gpu == "cuda"
+      then:
+        # __cuda is the virtual package for the host NVIDIA driver. Requiring it keeps the CUDA
+        # build from resolving on machines that cannot load libcuda.so.1.
+        - __cuda
+    - if: gpu == "rocm"
+      then: hip-runtime-amd ${{ rocm_version }}.*
+
+tests:
+  # GPU packages are not importable on the CI runners, which have no driver, so only the CPU
+  # flavour is smoke-tested here. GPU builds must be validated on a machine with a device.
+  - if: gpu == "cpu"
+    then:
+      script:
+        - python check_conda_package.py
+      files:
+        recipe:
+          - check_conda_package.py
+      requirements:
+        run:
+          - python
+
+about:
+  homepage: https://github.com/exasim-project/NeoN
+  repository: https://github.com/exasim-project/NeoN
+  documentation: https://exasim-project.com/NeoN
+  license: MIT
+  license_file:
+    - LICENSES/MIT.txt
+  summary: Python bindings for the NeoN CFD framework
+  description: |
+    NeoN provides portable, GPU-capable CFD primitives (Kokkos-backed containers,
+    cell-centred finite-volume operators, a PDE DSL and Ginkgo linear solvers).
+    This package ships the `neon` python module together with the NeoN C++ runtime.
+
+extra:
+  recipe-maintainers:
+    - greole
+    - exasim-project
