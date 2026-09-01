@@ -45,18 +45,48 @@ STAGING_MARKERS = (
     "/private/var/folders/",
 )
 
-LOADER_TOKENS = ("$ORIGIN", "${ORIGIN}", "@loader_path", "@executable_path", "@rpath")
+# Loader-relative tokens, per binary format. These are not interchangeable: ld.so
+# expands neither @loader_path nor @rpath, and dyld does not expand $ORIGIN, so a
+# token borrowed from the other format is a dead RPATH entry rather than a
+# relocatable one -- which is exactly the defect this check exists to catch.
+ELF_RPATH_TOKENS = ("$ORIGIN", "${ORIGIN}")
+MACHO_RPATH_TOKENS = ("@loader_path", "@executable_path")
+# @rpath is resolved against the LC_RPATH list, so it is meaningful in an install
+# name or a load command but never as an LC_RPATH entry itself.
+MACHO_NAME_TOKENS = MACHO_RPATH_TOKENS + ("@rpath",)
+ALL_LOADER_TOKENS = ELF_RPATH_TOKENS + MACHO_NAME_TOKENS
+
+ELF, MACHO = "ELF", "Mach-O"
 
 BINARY_SUFFIXES = (".so", ".dylib", ".pyd")
 
 
-def is_loader_relative(path: str) -> bool:
-    return path.startswith(LOADER_TOKENS)
+def rpath_tokens(fmt: str) -> tuple[str, ...]:
+    """The loader-relative RPATH tokens the given format's loader can expand."""
+    return ELF_RPATH_TOKENS if fmt == ELF else MACHO_RPATH_TOKENS
+
+
+def is_loader_relative(path: str, fmt: str) -> bool:
+    """True if this format's loader expands path relative to the loading binary."""
+    return path.startswith(rpath_tokens(fmt))
+
+
+def has_loader_token(path: str) -> bool:
+    """True for any loader-relative token, whichever format it belongs to."""
+    return path.startswith(ALL_LOADER_TOKENS)
+
+
+def wrong_format_token(path: str, fmt: str) -> str | None:
+    """Return the token in path that this format's loader cannot expand, if any."""
+    if is_loader_relative(path, fmt):
+        return None
+    foreign = MACHO_NAME_TOKENS if fmt == ELF else ELF_RPATH_TOKENS
+    return next((token for token in foreign if path.startswith(token)), None)
 
 
 def is_staging(path: str) -> bool:
     """True for an absolute path that points into the build or staging tree."""
-    if is_loader_relative(path) or not path.startswith("/"):
+    if has_loader_token(path) or not path.startswith("/"):
         return False
     return any(marker in path for marker in STAGING_MARKERS)
 
@@ -178,16 +208,16 @@ def parse_macho(data: bytes) -> tuple[list[str], list[str]]:
     return rpaths, names
 
 
-def inspect(path: Path) -> tuple[list[str], list[str]] | None:
-    """Return (rpaths, dependency names) or None if the file is not ELF/Mach-O."""
+def inspect(path: Path) -> tuple[str, list[str], list[str]] | None:
+    """Return (format, rpaths, dependency names), or None if not ELF/Mach-O."""
     data = path.read_bytes()
     if len(data) < 8:
         return None
     if data[:4] == b"\x7fELF":
-        return parse_elf(data)
+        return (ELF, *parse_elf(data))
     (magic,) = struct.unpack_from(">I", data, 0)
     if magic in (MH_MAGIC, MH_MAGIC_64, FAT_MAGIC, FAT_MAGIC_64, 0xCEFAEDFE, 0xCFFAEDFE):
-        return parse_macho(data)
+        return (MACHO, *parse_macho(data))
     return None
 
 
@@ -198,7 +228,7 @@ def check_tree(root: Path) -> list[str]:
     """Check every ELF/Mach-O library under root; return a list of problems."""
     problems: list[str] = []
     inspected: list[Path] = []
-    umpire_rpaths: list[str] = []
+    umpire: tuple[str, list[str]] | None = None
 
     for path in sorted(root.rglob("*")):
         if not path.is_file() or not looks_binary(path):
@@ -206,16 +236,23 @@ def check_tree(root: Path) -> list[str]:
         parsed = inspect(path)
         if parsed is None:
             continue
-        rpaths, names = parsed
+        fmt, rpaths, names = parsed
         inspected.append(path)
         rel = path.relative_to(root)
 
         if path.name.startswith("libumpire"):
-            umpire_rpaths = rpaths
+            umpire = (fmt, rpaths)
 
         for entry in rpaths:
             if is_staging(entry):
                 problems.append(f"{rel}: RPATH entry points into the staging tree: {entry}")
+                continue
+            foreign = wrong_format_token(entry, fmt)
+            if foreign is not None:
+                problems.append(
+                    f"{rel}: RPATH entry uses {foreign}, which the {fmt} loader "
+                    f"does not expand: {entry}"
+                )
         for name in names:
             if is_staging(name):
                 problems.append(f"{rel}: dependency recorded by absolute staging path: {name}")
@@ -227,9 +264,15 @@ def check_tree(root: Path) -> list[str]:
         problems.append("the _neon extension module was not found in the wheel")
 
     # Regression guard: umpire's dependency on camp is the case that motivated
-    # this check, and BLT's own RPATH is absolute.
-    if umpire_rpaths and not any(is_loader_relative(e) for e in umpire_rpaths):
-        problems.append(f"libumpire has no loader-relative RPATH entry: {umpire_rpaths}")
+    # this check, and BLT's own RPATH is absolute. The token must be one this
+    # binary's own loader expands -- $ORIGIN on a dylib is as useless as no RPATH.
+    if umpire is not None:
+        fmt, umpire_rpaths = umpire
+        if umpire_rpaths and not any(is_loader_relative(e, fmt) for e in umpire_rpaths):
+            problems.append(
+                f"libumpire has no {fmt} loader-relative RPATH entry "
+                f"(expected one of {rpath_tokens(fmt)}): {umpire_rpaths}"
+            )
 
     print(f"checked {len(inspected)} shared libraries in {root.name}")
     return problems
