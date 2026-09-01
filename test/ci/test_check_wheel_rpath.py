@@ -95,6 +95,45 @@ def test_is_staging(path: str, expected: bool) -> None:
     assert cwr.is_staging(path) is expected
 
 
+@pytest.mark.parametrize(
+    "path, fmt, expected",
+    [
+        ("$ORIGIN/../lib", cwr.ELF, True),
+        ("${ORIGIN}/../lib", cwr.ELF, True),
+        ("@loader_path/../lib", cwr.ELF, False),
+        ("@rpath", cwr.ELF, False),
+        ("@loader_path/../lib", cwr.MACHO, True),
+        ("@executable_path", cwr.MACHO, True),
+        ("$ORIGIN/../lib", cwr.MACHO, False),
+        # @rpath is resolved via LC_RPATH, so it is not itself a usable RPATH entry.
+        ("@rpath", cwr.MACHO, False),
+        ("/usr/local/lib", cwr.ELF, False),
+    ],
+)
+def test_is_loader_relative_is_format_specific(path: str, fmt: str, expected: bool) -> None:
+    assert cwr.is_loader_relative(path, fmt) is expected
+
+
+@pytest.mark.parametrize(
+    "path, fmt, expected",
+    [
+        ("@loader_path/../lib", cwr.ELF, "@loader_path"),
+        ("$ORIGIN/../lib", cwr.MACHO, "$ORIGIN"),
+        ("$ORIGIN/../lib", cwr.ELF, None),
+        ("@loader_path", cwr.MACHO, None),
+        ("/usr/local/cuda/lib64", cwr.ELF, None),
+    ],
+)
+def test_wrong_format_token(path: str, fmt: str, expected: str | None) -> None:
+    assert cwr.wrong_format_token(path, fmt) == expected
+
+
+def test_staging_detection_ignores_token_format(tmp_path: Path) -> None:
+    """A foreign token is still not an absolute staging path."""
+    assert cwr.is_staging("@loader_path/../lib") is False
+    assert cwr.is_staging("$ORIGIN/../lib") is False
+
+
 def test_empty_tree_is_not_a_pass(tmp_path: Path) -> None:
     """A glob matching nothing must be reported, not silently accepted."""
     problems = cwr.check_tree(tmp_path)
@@ -102,7 +141,7 @@ def test_empty_tree_is_not_a_pass(tmp_path: Path) -> None:
 
 
 def test_missing_extension_module_is_reported(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr(cwr, "inspect", lambda path: ([], []))
+    monkeypatch.setattr(cwr, "inspect", lambda path: (cwr.ELF, [], []))
     (tmp_path / "lib").mkdir()
     (tmp_path / "lib" / f"libNeoN{EXT}").write_bytes(b"\x7fELF" + b"\0" * 64)
     problems = cwr.check_tree(tmp_path)
@@ -151,6 +190,25 @@ def test_legacy_dt_rpath_is_read(tmp_path: Path) -> None:
     library = build_library(
         tmp_path / "build", "umpire", ["/tmp/tmp0k2j/wheel/platlib/lib"], new_dtags=False
     )
-    rpaths, _ = cwr.inspect(library)
+    fmt, rpaths, _ = cwr.inspect(library)
+    assert fmt == cwr.ELF
     assert rpaths == ["/tmp/tmp0k2j/wheel/platlib/lib"]
     assert cwr.main(["check", str(make_wheel(tmp_path, [library]))]) == 1
+
+
+@needs_cc
+@pytest.mark.skipif(not IS_MACOS, reason="dyld is what cannot expand $ORIGIN")
+def test_elf_token_on_macho_is_rejected(tmp_path: Path) -> None:
+    """The regression this PR fixes: $ORIGIN baked into a dylib is a dead RPATH."""
+    libraries = [
+        build_library(tmp_path / "build", "umpire", ["$ORIGIN", "$ORIGIN/../lib"], "@rpath/libumpire.dylib")
+    ]
+    assert cwr.main(["check", str(make_wheel(tmp_path, libraries))]) == 1
+
+
+@needs_cc
+@pytest.mark.skipif(IS_MACOS, reason="ld.so is what cannot expand @loader_path")
+def test_macho_token_on_elf_is_rejected(tmp_path: Path) -> None:
+    """The mirror image: @loader_path baked into an ELF library."""
+    libraries = [build_library(tmp_path / "build", "umpire", ["@loader_path", "@loader_path/../lib"])]
+    assert cwr.main(["check", str(make_wheel(tmp_path, libraries))]) == 1
