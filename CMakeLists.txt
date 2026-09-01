@@ -31,10 +31,14 @@ project(
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
+# Use relocatable RPATHs so installed binaries/libraries find their siblings regardless of the
+# prefix passed to `cmake --install --prefix`, which is not known at configure time.
 if(APPLE)
   set(CMAKE_MACOSX_RPATH 1)
+  set(CMAKE_INSTALL_RPATH "@loader_path/../lib;@loader_path")
+else()
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN")
 endif()
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Add the cmake folder so the find_package command finds custom packages
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
