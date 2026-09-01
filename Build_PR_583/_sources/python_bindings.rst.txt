@@ -37,68 +37,34 @@ CPU wheels are built with the serial and OpenMP (CPU) Kokkos back ends. MPI and
 the optional HPC dependencies (PETSc, ADIOS2, SUNDIALS) are disabled so the
 package installs without external HPC libraries.
 
-GPU wheels from GitHub Releases
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+CUDA wheels from GitHub Releases
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-GPU wheels are **not** published to PyPI. They are large and carry a local
-version identifier, which PyPI rejects, so they are attached to the matching
+GPU wheels are **not** published to PyPI. They are large and depend on the
+system NVIDIA driver, so they are attached to the matching
 `GitHub Release <https://github.com/exasim-project/NeoN/releases>`_ instead.
+CUDA wheels carry a local version suffix such as ``+cuda128``.
 
-Four variants are built. Each CUDA and ROCm *major* needs its own wheel, because
-minor-version compatibility does not span majors and the vendor libraries are
-linked against the host's sonames, which carry the major version:
+The current CUDA wheel targets:
 
-.. list-table::
-   :header-rows: 1
+* CUDA 12.8
+* CPython 3.12
+* Linux x86-64 (``manylinux_2_34``)
+* NVIDIA Ampere, compute capability ``sm_80``
 
-   * - Variant
-     - Suffix
-     - Works with
-     - Compiled for
-   * - CUDA 12.8
-     - ``+cuda128``
-     - any CUDA 12.x, driver R525+
-     - ``sm_80`` cubin + PTX
-   * - CUDA 13.1
-     - ``+cuda131``
-     - any CUDA 13.x, driver R580+
-     - ``sm_80`` cubin + PTX
-   * - ROCm 6.4
-     - ``+rocm64``
-     - any ROCm 6.x
-     - ``gfx90a``
-   * - ROCm 7.0
-     - ``+rocm70``
-     - any ROCm 7.x
-     - ``gfx90a``
-
-All four are CPython 3.12 on Linux x86-64 (``manylinux_2_34``, glibc ≥ 2.34).
-Download from the release page, or install directly by URL:
+Download the wheel from the release page and install it, or install it directly
+by URL:
 
 .. code-block:: bash
 
    pip install https://github.com/exasim-project/NeoN/releases/download/v0.1.0/neon_pde-0.1.0+cuda128-cp312-cp312-manylinux_2_34_x86_64.whl
 
-.. note::
-   Kokkos rejects multiple GPU architectures in a single build (``kokkos_arch``
-   errors with *"Multiple GPU architectures given!"*), so one wheel cannot carry
-   both ``sm_80`` and ``sm_90`` cubins the way a pure-Ginkgo build can. The CUDA
-   wheels compile ``sm_80`` and embed PTX, so Hopper (``sm_90``) and newer cards
-   run them by JIT-compiling at first kernel launch — correct, but with a
-   one-off compile cost. Build from source to target ``sm_90`` natively.
+The CUDA wheel requires a host NVIDIA driver that provides ``libcuda.so.1``.
+That library is intentionally *not* bundled into the wheel, since it must match
+the installed driver. A local CUDA toolkit is **not** required at runtime.
 
-The vendor runtime libraries are excluded from the wheels rather than bundled.
-For CUDA that is ``libcuda.so.1`` (it must match the installed driver) plus the
-math libraries Ginkgo links — cuBLAS, cuSPARSE, cuRAND, cuFFT — which together
-push the wheel to the edge of GitHub's 2 GiB release asset limit. ``libcudart``
-stays in the wheel: it is small, and keeping it matched to the build avoids a
-runtime version mismatch. For ROCm the entire userspace stack is excluded
-(rocBLAS alone ships multi-hundred-MB Tensile kernel archives). A CUDA wheel
-therefore needs a matching host CUDA toolkit and driver; a ROCm wheel needs a
-matching host ROCm, typically loaded with ``module load rocm``.
-
-Because GitHub-hosted runners have no GPU, GPU wheels are not runtime-tested in
-CI and must be validated on a machine with a compatible driver and GPU.
+Because GitHub-hosted runners have no GPU, CUDA wheels are not runtime-tested in
+CI and must be validated on a machine with a compatible NVIDIA driver and GPU.
 
 Building from source
 ^^^^^^^^^^^^^^^^^^^^^
@@ -123,21 +89,6 @@ CUDA-enabled package matching the released wheels:
      --config-settings=cmake.define.Kokkos_ARCH_AMPERE80=ON \
      --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=80 \
      --config-settings=cmake.define.CMAKE_CUDA_STANDARD=20
-
-Swap ``Kokkos_ARCH_AMPERE80``/``CMAKE_CUDA_ARCHITECTURES`` for
-``Kokkos_ARCH_HOPPER90``/``90`` to target ``sm_90`` natively. The ROCm
-equivalent builds the whole project with ROCm's ``clang++``, the same way
-``ci/lrz-gitlab/build-and-test.sh`` does:
-
-.. code-block:: bash
-
-   pip install . \
-     --config-settings=cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON \
-     --config-settings=cmake.define.CMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++ \
-     --config-settings=cmake.define.CMAKE_PREFIX_PATH=/opt/rocm \
-     --config-settings=cmake.define.Kokkos_ENABLE_HIP=ON \
-     --config-settings=cmake.define.Kokkos_ARCH_AMD_GFX90A=ON \
-     --config-settings=cmake.define.CMAKE_HIP_ARCHITECTURES=gfx90a
 
 For local development, an editable install rebuilds on import:
 

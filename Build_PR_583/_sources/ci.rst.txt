@@ -55,49 +55,24 @@ and module versions agree, its backend feature indicators are valid, and serial 
 present. The complete Python binding test suite is not currently executed against every repaired
 wheel.
 
-GPU wheels are handled separately, as a four-entry matrix: CUDA 12.8 (``+cuda128``), CUDA 13.1
-(``+cuda131``), ROCm 6.4 (``+rocm64``) and ROCm 7.0 (``+rocm70``). Each entry installs its toolkit
-into the ``manylinux`` container via ``CIBW_BEFORE_ALL_LINUX``, which calls
-``ci/install_cuda.sh <major.minor>`` or ``ci/install_rocm.sh <major.minor>``, and then builds with
-the matching Kokkos backend enabled. One wheel per vendor *major* is required: minor-version
-compatibility does not span majors, and because the vendor libraries are excluded from the wheel it
-links against host sonames that carry the major version.
-
-Wheel repair excludes the vendor runtime libraries rather than bundling them. For CUDA that is
-``libcuda.so.1``, which comes from the user's driver and must never be vendored, plus the math
-libraries Ginkgo links — cuBLAS, cuBLASLt, cuSPARSE, cuRAND, cuFFT, nvJitLink — which together put
-the wheel within a few MiB of GitHub's 2 GiB release asset limit. ``libcudart`` stays in the wheel:
-it is small, and keeping it matched to the build avoids a runtime version mismatch. For ROCm the
-whole userspace stack is excluded, since rocBLAS alone ships multi-hundred-MB Tensile kernel
-archives. Both therefore require the matching vendor stack on the host at import time.
+CUDA wheels are handled separately. The Linux wheel job installs the CUDA toolkit inside the
+``manylinux`` container before running ``cibuildwheel``. CUDA wheels are built with Kokkos CUDA
+support enabled and receive a local version suffix such as ``+cuda128``. The NVIDIA driver library
+``libcuda.so.1`` is explicitly excluded from wheel repair, because it is provided by the user's
+installed NVIDIA driver and must not be bundled into the wheel.
 
 .. note::
-   Kokkos rejects multiple GPU architectures in a single build, so the CUDA wheels compile only
-   ``sm_80``. The bare ``CMAKE_CUDA_ARCHITECTURES=80`` makes nvcc embed PTX alongside the cubin, so
-   ``sm_90`` cards JIT it at first launch. Covering Hopper natively would mean a second wheel per
-   CUDA major.
-
-.. note::
-   The ROCm builds compile the whole project with ROCm's ``clang++``, and pass
-   ``--gcc-toolchain=/opt/manylinux-gcc``. That flag is required: ROCm's bundled clang only probes
-   the standard prefixes for a GCC installation, while ``manylinux`` keeps its GCC in a
-   ``gcc-toolset`` prefix, so the compiler check otherwise fails with ``'cmath' file not found``.
-   ``ci/install_rocm.sh`` creates that symlink pointing at whichever toolset the image provides.
-
-.. note::
-   GitHub-hosted runners provide CPU machines only. They can compile GPU wheels if the vendor
-   toolkit is installed in the build container, but they cannot run or import the GPU extension as a
-   full runtime test because no driver or GPU is available. GPU wheels must therefore be validated
-   on a machine with a compatible driver and GPU.
+   GitHub-hosted runners provide CPU machines only. They can compile CUDA wheels if the CUDA toolkit
+   is installed in the build container, but they cannot run or import the CUDA extension as a full
+   runtime test because no NVIDIA driver or GPU is available. CUDA wheels must therefore be validated
+   on a machine with a compatible NVIDIA driver and GPU.
 
 Publishing is separated by wheel type:
 
 * **CPU wheels** are published to PyPI through PyPI Trusted Publishing. This uses GitHub's OpenID
   Connect identity instead of storing a long-lived PyPI API token.
-* **GPU wheels** are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
-  This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package,
-  and is also required because their local version identifiers (``+cuda128`` and friends) are
-  rejected by PyPI.
+* **CUDA wheels** are uploaded as GitHub Actions artifacts and can be attached to GitHub Releases.
+  This keeps GPU-specific, large, driver-dependent wheels separate from the default PyPI package.
 
 To rehearse the publish flow before a real release, dispatch the workflow manually with
 ``build_wheels``, ``build_cpu`` and ``publish_repository=testpypi``. This builds a unique ``.dev``
@@ -107,14 +82,14 @@ GitHub ``testpypi`` environment; ``publish_repository=pypi`` targets the product
 
 The workflow also includes recovery paths for already-built artifacts. If a build succeeds but a
 publish or release-upload step fails, existing wheel artifacts can be reused by providing the
-original GitHub Actions run ID. This avoids rebuilding expensive CPU or GPU wheels only to repeat an
+original GitHub Actions run ID. This avoids rebuilding expensive CPU or CUDA wheels only to repeat an
 upload step.
 
-At the time of writing, the GPU wheel path is intentionally narrow while it is being validated: it
-builds each variant for CPython 3.12 on Linux x86-64 only. Runtime wheel testing is skipped in those
-build jobs because the GitHub-hosted runner has no GPU. The same structure extends to additional
-Python versions, toolkit versions, and GPU architectures — a new architecture means a new matrix
-entry rather than an extra flag, since Kokkos permits only one GPU architecture per build.
+At the time of writing, the CUDA wheel path is intentionally narrow while it is being validated: it
+builds the CUDA 12.8 variant for CPython 3.12 on Linux x86-64. Runtime wheel testing is skipped in
+that build job because the GitHub-hosted runner has no GPU. The same structure can be extended to
+additional Python versions, CUDA versions, and GPU architectures after the packaged wheel is
+validated on production hardware.
 
 -------------------------------
 Continuous Integration on LRZ GitLab
