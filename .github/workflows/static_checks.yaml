@@ -147,6 +147,23 @@ jobs:
     #      git add .
     #      git commit -m 'fix format'
     #      git push origin "${{ github.BRANCH_NAME }}"
+  ci-script-tests:
+    name: CI script tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{env.BRANCH_NAME}}
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: pip install pytest
+    # These exercise ci/check_wheel_rpath.py, the wheel relocatability gate. They
+    # need no build: the fixtures are shared libraries compiled on the fly, which
+    # also covers the ELF side that the macOS developer machines cannot reach.
+    - name: Run CI script tests
+      run: python -m pytest test/ci -vv
   changelog:
     if: ${{!contains(github.event.pull_request.labels.*.name, 'skip-changelog')}}
     name: Changelog check

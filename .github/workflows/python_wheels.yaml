@@ -150,12 +150,18 @@ jobs:
           CIBW_ARCHS: ${{ matrix.archs }}
           # Build only this job's Python version (overrides the pyproject build list).
           CIBW_BUILD: ${{ matrix.python }}-*
+          # auditwheel and delocate rewrite RPATHs and install names, so the wheel they
+          # produce looks relocatable even when the build did not make it so. The check
+          # runs first, on the unrepaired {wheel}, and is the only thing guarding against
+          # a dependency being recorded by its wheel-staging path.
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
+            python /project/ci/check_wheel_rpath.py {wheel} &&
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:${LD_LIBRARY_PATH:-}"
             auditwheel repair -w {dest_dir} {wheel}
           # delocate must find the build-tree dylibs (libNeoN, libkokkos*, libginkgo*)
           # that _neon.so references via @rpath. The build persists in _skbuild.
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            python "$GITHUB_WORKSPACE/ci/check_wheel_rpath.py" {wheel} &&
             DYLD_LIBRARY_PATH="$GITHUB_WORKSPACE/_skbuild/lib:$GITHUB_WORKSPACE/_skbuild/_deps/ginkgo-build/lib:${DYLD_LIBRARY_PATH:-}"
             delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
           # _neon.pyd depends on NeoN/Kokkos/umpire DLLs in _skbuild/bin; delvewheel
@@ -257,7 +263,10 @@ jobs:
           CIBW_BUILD: "cp312-manylinux_x86_64"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_34
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
+          # The GPU wheels skip the import smoke test below, so the pre-repair check is
+          # the only relocatability coverage they get.
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
+            python /project/ci/check_wheel_rpath.py {wheel} &&
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
             auditwheel -v repair --plat manylinux_2_34_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
           CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
