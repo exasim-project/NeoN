@@ -92,6 +92,19 @@ The package requires Python 3.9–3.13 and NumPy.
 
     pip install neon_pde
 
+**Conda / pixi (from prefix.dev).** The same releases are published as conda
+packages named `neon-pde` to a [prefix.dev](https://prefix.dev) channel, which
+also installs the NeoN C++ runtime, headers and CMake package files into the
+environment:
+
+    pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+
+    # CUDA 12.8, CPython 3.12, NVIDIA Ampere (sm_80), linux-64
+    pixi add "neon-pde=*=cuda_py312*" -c https://prefix.dev/exasim-project -c conda-forge
+
+Conda packages cover CPython 3.10–3.13 on `linux-64`, `linux-aarch64`, `osx-64`
+and `osx-arm64`; Windows and Python 3.9 are wheel-only.
+
 **CUDA (from GitHub Releases).** GPU wheels are *not* published to PyPI because
 they are large and depend on the NVIDIA driver. They are attached to the
 corresponding [GitHub Release](https://github.com/exasim-project/NeoN/releases)
@@ -153,6 +166,22 @@ version and are published to PyPI only for stable `v*.*.*` tags.
 CUDA wheels are currently limited to CUDA 12.8 on Linux x86-64 with CPython
 3.12. They use a local version suffix such as `0.1.0+cuda128`, are uploaded as
 workflow artifacts, and are attached to the GitHub Release for stable tags.
+
+### Conda packages
+
+Conda packages are built from `recipe/recipe.yaml` with
+[rattler-build](https://rattler.build) by
+`.github/workflows/conda_packages.yaml`, on the same triggers and with the same
+version scheme as the wheels, and are published to prefix.dev. Build one locally
+with:
+
+    ci/install_rattler_build.sh                       # optional, pinned release
+    ci/build_conda_packages.sh --python 3.12 --gpu cpu
+
+The GPU flavour is part of the build string (`cpu_py312_*`, `cuda_py312_*`,
+`rocm_py312_*`), so all flavours coexist in one channel. The ROCm flavour is
+experimental and manual-dispatch only: conda-forge has no rocBLAS/rocSPARSE/
+rocThrust/rocPRIM, so it ships Kokkos HIP without the Ginkgo solver backend.
 GitHub-hosted runners do not provide a GPU, so the CUDA wheel build does not run
 runtime tests against the resulting wheel.
 

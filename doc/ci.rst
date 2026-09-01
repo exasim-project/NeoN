@@ -92,6 +92,51 @@ additional Python versions, CUDA versions, and GPU architectures after the packa
 validated on production hardware.
 
 -------------------------------
+Conda package CI/CD
+-------------------------------
+``.github/workflows/conda_packages.yaml`` builds the ``neon-pde`` conda package with
+``rattler-build`` and publishes it to a `prefix.dev <https://prefix.dev>`_ channel, so that NeoN can
+be consumed from a `pixi <https://pixi.sh>`_ environment. It runs on the same triggers as the wheel
+workflow (``v*.*.*`` tags and manual dispatch) and resolves its version with the same
+``scripts/set_package_version.py`` logic, so a wheel and a conda package built from one commit report
+the same ``neon.__version__``.
+
+The recipe lives in ``recipe/recipe.yaml``. ``ci/build_conda_packages.sh`` is the single entry point
+used by both CI and local builds: it exports ``NEON_VERSION``, writes the per-build variant
+configuration (python version, GPU flavour, C runtime floor) and calls ``rattler-build``.
+``ci/install_rattler_build.sh`` installs a pinned, checksum-verified rattler-build release.
+
+CPU packages are built for CPython 3.10-3.13 on ``linux-64``, ``linux-aarch64``, ``osx-64`` and
+``osx-arm64``. There is no ``win-64`` conda package, because NeoN disables Ginkgo on Windows and the
+wheel is the supported Windows path. Python 3.9 is also wheel-only: conda-forge builds ``nanobind``,
+which the ``nanobind.stubgen`` POST_BUILD step needs, only for Python 3.10 and newer. The GPU flavour is encoded in the build string
+(``cpu_py312_*``, ``cuda_py312_*``, ``rocm_py312_*``) so all flavours can coexist in one channel.
+
+Unlike the wheels, the conda package is installed by CMake rather than by ``pip``: the C++ runtime
+and its bundled Kokkos, Ginkgo, Umpire and cpptrace libraries go to ``$PREFIX/lib``, headers and
+CMake package files to ``$PREFIX/include`` and ``$PREFIX/lib/cmake/NeoN``, and only the python
+package is moved into ``site-packages``. Relocation is handled by rattler-build's rpath rewrite
+instead of by ``auditwheel``/``delocate``.
+
+.. note::
+
+   The build clones Kokkos, Ginkgo and Umpire from GitHub through CPM, so it needs network access
+   during the build. That is acceptable for our own channel but would not pass conda-forge's offline
+   build policy.
+
+Publishing requires two repository settings: a ``PREFIX_DEV_CHANNEL`` variable naming the target
+channel and a ``PREFIX_DEV_API_KEY`` secret holding an API key with write access to it. The publish
+job runs in the ``prefix-dev`` GitHub environment and uploads with ``--skip-existing``, so re-running
+it after a partial failure does not fail on packages that already landed.
+
+The CUDA package mirrors the CUDA wheel: CUDA 12.8, CPython 3.12, Linux x86-64, NVIDIA Ampere
+(``sm_80``). It depends on the ``__cuda`` virtual package so it cannot resolve on a machine without a
+suitable driver, and like the CUDA wheel it is not runtime-tested in CI. The ROCm package is
+manual-dispatch only and experimental: conda-forge ships ``hip-devel`` and ``hipcc`` but none of the
+ROCm math libraries (rocBLAS, rocSPARSE, rocThrust, rocPRIM) that Ginkgo's HIP backend needs, so that
+flavour is Kokkos HIP without a Ginkgo solver backend.
+
+-------------------------------
 Continuous Integration on LRZ GitLab
 -------------------------------
 The LRZ GitLab CI handles GPU-related operations.
