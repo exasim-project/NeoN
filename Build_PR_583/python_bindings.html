@@ -284,8 +284,9 @@ fields and DSL to Python. The distribution is named <code class="docutils litera
 the import package is <code class="docutils literal notranslate"><span class="pre">neon</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">neon</span>
 <span class="n">neon</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-<span class="n">exec</span> <span class="o">=</span> <span class="n">neon</span><span class="o">.</span><span class="n">CPUExecutor</span><span class="p">()</span>
-<span class="n">v</span> <span class="o">=</span> <span class="n">neon</span><span class="o">.</span><span class="n">ScalarVector</span><span class="p">(</span><span class="n">exec</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">executor</span> <span class="o">=</span> <span class="n">neon</span><span class="o">.</span><span class="n">CPUExecutor</span><span class="p">()</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">neon</span><span class="o">.</span><span class="n">ScalarVector</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">v</span><span class="p">,</span> <span class="n">executor</span>          <span class="c1"># Kokkos aborts if allocations outlive finalize</span>
 <span class="n">neon</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -382,7 +383,17 @@ CI and must be validated on a machine with a compatible NVIDIA driver and GPU.</
 <a class="reference external" href="https://scikit-build-core.readthedocs.io">scikit-build-core</a>, so it needs a
 C++20 compiler and CMake ≥ 3.22 (see <a class="reference internal" href="installation.html"><span class="doc">Installation</span></a>). From the repository
 root:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="w">                </span><span class="c1"># CPU build using the production preset</span>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Both GPU backends must be disabled explicitly for a CPU build. When neither
+<code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_CUDA</span></code> nor <code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_HIP</span></code> is set, <code class="docutils literal notranslate"><span class="pre">AutoEnableDevice.cmake</span></code>
+probes for a CUDA or HIP compiler and turns the corresponding backend on, so a
+plain <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> produces a GPU build on any machine that happens to have
+<code class="docutils literal notranslate"><span class="pre">nvcc</span></code> or <code class="docutils literal notranslate"><span class="pre">hipcc</span></code> on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.Kokkos_ENABLE_CUDA<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.Kokkos_ENABLE_HIP<span class="o">=</span>OFF
 </pre></div>
 </div>
 <p>Build options are forwarded to CMake with <code class="docutils literal notranslate"><span class="pre">--config-settings</span></code>. To build a
@@ -390,11 +401,17 @@ CUDA-enabled package matching the released wheels:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.NeoN_BUILD_PYTHON_BINDINGS<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.Kokkos_ENABLE_CUDA<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.Kokkos_ARCH_AMPERE80<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.CMAKE_CUDA_ARCHITECTURES<span class="o">=</span><span class="m">80</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--config-settings<span class="o">=</span>cmake.define.CMAKE_CUDA_STANDARD<span class="o">=</span><span class="m">20</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON</span></code> is required, not optional: NeoN only
+marks its translation units as CUDA sources under that setting. Without it the build
+takes the traditional Kokkos path, which expects <code class="docutils literal notranslate"><span class="pre">nvcc_wrapper</span></code> as the C++ compiler
+— something a plain <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> does not select. The released CUDA wheels set it
+too (see <code class="docutils literal notranslate"><span class="pre">.github/workflows/python_wheels.yaml</span></code>).</p>
 <p>For local development, an editable install rebuilds on import:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
 </pre></div>

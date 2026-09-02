@@ -9,8 +9,9 @@ the import package is ``neon``:
 
    import neon
    neon.initialize()
-   exec = neon.CPUExecutor()
-   v = neon.ScalarVector(exec, 10, 1.0)
+   executor = neon.CPUExecutor()
+   v = neon.ScalarVector(executor, 10, 1.0)
+   del v, executor          # Kokkos aborts if allocations outlive finalize
    neon.finalize()
 
 The package supports CPython 3.9–3.13 and depends on NumPy.
@@ -123,9 +124,19 @@ Building the bindings compiles the NeoN C++ library through
 C++20 compiler and CMake ≥ 3.22 (see :doc:`installation`). From the repository
 root:
 
+.. important::
+
+   Both GPU backends must be disabled explicitly for a CPU build. When neither
+   ``Kokkos_ENABLE_CUDA`` nor ``Kokkos_ENABLE_HIP`` is set, ``AutoEnableDevice.cmake``
+   probes for a CUDA or HIP compiler and turns the corresponding backend on, so a
+   plain ``pip install .`` produces a GPU build on any machine that happens to have
+   ``nvcc`` or ``hipcc`` on ``PATH``.
+
 .. code-block:: bash
 
-   pip install .                # CPU build using the production preset
+   pip install . \
+     --config-settings=cmake.define.Kokkos_ENABLE_CUDA=OFF \
+     --config-settings=cmake.define.Kokkos_ENABLE_HIP=OFF
 
 Build options are forwarded to CMake with ``--config-settings``. To build a
 CUDA-enabled package matching the released wheels:
@@ -135,9 +146,16 @@ CUDA-enabled package matching the released wheels:
    pip install . \
      --config-settings=cmake.define.NeoN_BUILD_PYTHON_BINDINGS=ON \
      --config-settings=cmake.define.Kokkos_ENABLE_CUDA=ON \
+     --config-settings=cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON \
      --config-settings=cmake.define.Kokkos_ARCH_AMPERE80=ON \
      --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=80 \
      --config-settings=cmake.define.CMAKE_CUDA_STANDARD=20
+
+``Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON`` is required, not optional: NeoN only
+marks its translation units as CUDA sources under that setting. Without it the build
+takes the traditional Kokkos path, which expects ``nvcc_wrapper`` as the C++ compiler
+— something a plain ``pip install`` does not select. The released CUDA wheels set it
+too (see ``.github/workflows/python_wheels.yaml``).
 
 For local development, an editable install rebuilds on import:
 
