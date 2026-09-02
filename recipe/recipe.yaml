@@ -91,9 +91,13 @@ requirements:
     - numpy >=1.19
     - if: gpu == "cuda"
       then:
-        # __cuda is the virtual package for the host NVIDIA driver. Requiring it keeps the CUDA
-        # build from resolving on machines that cannot load libcuda.so.1.
-        - __cuda
+        # __cuda is the virtual package for the host NVIDIA driver. Requiring it at all keeps the
+        # package from resolving on machines that cannot load libcuda.so.1, which cuda-version's
+        # `constrains: __cuda >=12` cannot do on its own: constrains are vacuously satisfied when
+        # the virtual package is absent. The major-version floor is stated explicitly rather than
+        # left to that transitive constraint. CUDA minor version compatibility means a 12.0 driver
+        # runs a 12.8 build, so the floor is the major version, not ${{ cuda_version }}.
+        - __cuda >=${{ (cuda_version | split(".")) [0] }}
     - if: gpu == "rocm"
       then: hip-runtime-amd ${{ rocm_version }}.*
 
