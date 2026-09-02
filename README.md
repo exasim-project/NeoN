@@ -120,10 +120,15 @@ intentionally not bundled). It does not require a local CUDA toolkit at runtime.
 **From source.** Building the bindings uses `scikit-build-core` and compiles the
 C++ library, so a C++20 compiler and CMake ≥ 3.22 are required:
 
-    pip install .                       # CPU build (production preset)
+    # CPU build. Both GPU backends must be disabled explicitly: with neither set,
+    # AutoEnableDevice.cmake probes for nvcc/hipcc and enables that backend.
+    pip install . --config-settings=cmake.define.Kokkos_ENABLE_CUDA=OFF \
+                  --config-settings=cmake.define.Kokkos_ENABLE_HIP=OFF
 
     # CUDA build (matching the released wheels)
     pip install . --config-settings=cmake.define.Kokkos_ENABLE_CUDA=ON \
+                  --config-settings=cmake.define.Kokkos_ENABLE_COMPILE_AS_CMAKE_LANGUAGE=ON \
+                  --config-settings=cmake.define.Kokkos_ARCH_AMPERE80=ON \
                   --config-settings=cmake.define.CMAKE_CUDA_ARCHITECTURES=80 \
                   --config-settings=cmake.define.CMAKE_CUDA_STANDARD=20
 

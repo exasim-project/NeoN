@@ -56,15 +56,21 @@ case "${gpu_variant}" in
     *) echo "--gpu must be one of cpu, cuda, rocm (got ${gpu_variant})" >&2; exit 1 ;;
 esac
 
+if [[ ! "${python_version}" =~ ^([0-9]+)\.([0-9]+) ]]; then
+    echo "--python expects a <major>.<minor> version, got '${python_version}'" >&2
+    exit 1
+fi
+
 # conda-forge only builds nanobind (needed for the nanobind.stubgen POST_BUILD step) for
-# python >=3.10. Python 3.9 is covered by the PyPI wheels instead.
-case "${python_version}" in
-    3.9 | 3.9.* | 2.*)
-        echo "python ${python_version} is not supported by the conda packages: conda-forge has" >&2
-        echo "no nanobind for it. Use the PyPI wheel for python 3.9." >&2
-        exit 1
-        ;;
-esac
+# python >=3.10, so that is the floor for the conda packages. Compare numerically rather than
+# listing versions: anything below the floor has to be rejected here, or it fails much later
+# inside rattler-build with an opaque dependency resolution error. Python 3.9 and older are
+# covered by the PyPI wheels instead.
+if (( BASH_REMATCH[1] < 3 || (BASH_REMATCH[1] == 3 && BASH_REMATCH[2] < 10) )); then
+    echo "python ${python_version} is not supported by the conda packages: conda-forge has no" >&2
+    echo "nanobind below python 3.10. Use the PyPI wheel for python 3.9 and older." >&2
+    exit 1
+fi
 
 if [[ -z "${target_platform}" ]]; then
     case "$(uname -s)/$(uname -m)" in
