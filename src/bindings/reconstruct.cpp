@@ -24,7 +24,7 @@ void registerReconstruct(nb::module_& m)
         "reconstruct",
         &fvcc::reconstruct,
         "ssf"_a,
-        "Reconstruct a cell vector field from a surface scalar flux (fvc::reconstruct)."
+        "Reconstruct a cell vector field from a surface scalar flux."
     );
 }
 

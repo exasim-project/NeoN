@@ -24,7 +24,7 @@ public:
     using VectorValueType = ValueType;
 
     // Sp: source += scaling * coefficients * field  (implicit or explicit).
-    // With suSp = true this is instead OpenFOAM's SuSp (sign-aware split): the
+    // With suSp = true this is instead the sign-aware SuSp split: the
     // positive part of the coefficient is treated implicitly (added to the
     // diagonal) and the negative part explicitly (added to the rhs using the
     // current field), so a coefficient of either sign keeps the matrix diagonally
@@ -57,7 +57,7 @@ private:
     // Non-null for Sp mode. Null for Su mode (field_ from mixin IS the coefficient).
     const VolumeField<scalar>* spCoeff_;
 
-    // When true (and spCoeff_ non-null) the implicit assembly is OpenFOAM SuSp.
+    // When true (and spCoeff_ non-null) the implicit assembly uses the SuSp sign split.
     bool suSp_;
 };
 

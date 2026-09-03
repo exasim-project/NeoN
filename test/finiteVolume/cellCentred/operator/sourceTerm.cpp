@@ -102,6 +102,50 @@ TEMPLATE_TEST_CASE("SourceTerm", "[template]", NeoN::scalar, NeoN::Vec3)
         // phi = 10, so rhs = 3 * vol * 10 = 30 * vol
         REQUIRE(rhs[0] - 30 * volView[0] * one<TestType>() == TestType(0.0));
     }
+
+    SECTION("SuSp splits the raw coefficient, not the scaled one" + execName)
+    {
+        // The expression scaling must act on the already-split term, i.e. the assembled
+        // contribution has to be linear in it. If the split were taken on
+        // scaling*coeff instead, a negative scaling would move a positive coefficient
+        // from the diagonal onto the rhs rather than negating the diagonal entry.
+        fvcc::SourceTerm<TestType> sTerm(Operator::Type::Implicit, coeff, phi, /*suSp=*/true);
+        sTerm.getCoefficient() = dsl::Coeff(-1.0);
+
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+        sTerm.implicitOperation(ls);
+        auto [lsHost, vol] = copyToHosts(ls, mesh.cellVolumes());
+        const auto& volView = vol.view();
+        const auto& values = lsHost.matrix().values().view();
+        const auto& rhs = lsHost.rhs().view();
+
+        // coeff = +2 is entirely implicit, so -1 * SuSp negates the diagonal entry and
+        // leaves the rhs alone.
+        REQUIRE(values[0] + 2 * volView[0] * one<TestType>() == TestType(0.0));
+        REQUIRE(rhs[0] == zero<TestType>());
+    }
+
+    SECTION("SuSp cancels against itself under expression subtraction" + execName)
+    {
+        // susp(c, phi) - susp(c, phi) must assemble nothing at all. This is the property
+        // the raw-coefficient split buys, and it holds for either sign of c.
+        const auto c = GENERATE(NeoN::scalar {2.0}, NeoN::scalar {-3.0});
+        fill(coeff.internalVector(), c);
+
+        auto eqn = dsl::imp::susp<TestType>(coeff, phi) - dsl::imp::susp<TestType>(coeff, phi);
+
+        auto ls = NeoN::la::createEmptyLinearSystem<TestType>(mesh);
+        eqn.assembleSpatialOperator(ls);
+        auto lsHost = ls.copyToHost();
+        const auto& values = lsHost.matrix().values().view();
+        const auto& rhs = lsHost.rhs().view();
+
+        for (auto ii = 0; ii < values.size(); ++ii)
+        {
+            REQUIRE(values[ii] == zero<TestType>());
+        }
+        REQUIRE(rhs[0] == zero<TestType>());
+    }
 }
 
 TEMPLATE_TEST_CASE("SourceTerm Su constructor", "[template]", NeoN::scalar, NeoN::Vec3)

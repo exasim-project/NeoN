@@ -77,7 +77,7 @@ def test_scalar_field_elementwise_operators(executor):
 
 
 def test_scalar_field_operators_evaluate_boundaries(executor):
-    """Field maths mirrors OpenFOAM GeometricField arithmetic: boundary values too.
+    """Field maths evaluates boundary values too, not just the internal field.
 
     A closure's ``nut = Cmu k^2/epsilon`` boundary values feed the momentum wall
     fluxes (dev2 stress, nuEff laplacian) — internal-only maths would leave them

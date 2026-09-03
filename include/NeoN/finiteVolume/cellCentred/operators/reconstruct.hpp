@@ -14,7 +14,7 @@ namespace NeoN::finiteVolume::cellCentred
 
 /* @brief explicit reconstruction of a cell vector field from a surface scalar flux.
  *
- * Mirrors OpenFOAM's fvc::reconstruct(ssf):
+ * Computes the least-squares cell vector whose face projections reproduce the flux:
  *   reconstruct(ssf)_C = inv( Σ_f Sf⊗Sf / |Sf| ) & Σ_f (Sf / |Sf|) · ssf_f
  * with surfaceSum semantics — each internal face contributes to both its owner and
  * neighbour cell, each boundary face contributes to its owner cell. The per-cell

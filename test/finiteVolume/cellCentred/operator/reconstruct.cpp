@@ -30,12 +30,12 @@ TEST_CASE("reconstruct")
         // U = (3, 0, 0); the mesh is x-normal, so phi_f = U . Sf = 3 * Sf_x on every face.
         const scalar ux = 3.0;
         auto [phiI, phiB] = views(phi.internalVector(), phi.boundaryData().value());
-        const auto Sf = mesh.faceNormals().view();
+        const auto sf = mesh.faceNormals().view();
         const auto bSf = mesh.boundaryMesh().faceNormals().view();
         parallelFor(
             exec,
             {0, mesh.nInternalFaces()},
-            NEON_LAMBDA(const localIdx f) { phiI[f] = ux * Sf[f][0]; }
+            NEON_LAMBDA(const localIdx f) { phiI[f] = ux * sf[f][0]; }
         );
         parallelFor(
             exec,
@@ -97,13 +97,13 @@ TEST_CASE("reconstruct")
 
         const Vec3 u {1.0, -2.0, 0.5};
         auto [phiI, phiB] = views(phi.internalVector(), phi.boundaryData().value());
-        const auto Sf = mesh.faceNormals().view();
+        const auto sf = mesh.faceNormals().view();
         const auto bSf = mesh.boundaryMesh().faceNormals().view();
         parallelFor(
             exec,
             {0, mesh.nInternalFaces()},
             NEON_LAMBDA(const localIdx f) {
-                phiI[f] = u[0] * Sf[f][0] + u[1] * Sf[f][1] + u[2] * Sf[f][2];
+                phiI[f] = u[0] * sf[f][0] + u[1] * sf[f][1] + u[2] * sf[f][2];
             }
         );
         parallelFor(

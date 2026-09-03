@@ -69,9 +69,9 @@ void requireCompatible(const ScalarVol& a, const ScalarVol& b, const char* op)
 // binding lambdas): NEON_LAMBDA expands to an extended __device__ lambda under
 // CUDA, which nvcc forbids from being defined inside another lambda. Each field
 // operator applies its kernel to the internal AND the boundary vector — NeoN
-// volume-field maths mirrors OpenFOAM GeometricField arithmetic, which evaluates
-// boundary values too (a closure's nut/nuEff boundary values feed the momentum
-// wall fluxes; internal-only maths leaves them stale at their on-disk values).
+// volume-field maths evaluates boundary values too (a closure's nut/nuEff boundary
+// values feed the momentum wall fluxes; internal-only maths leaves them stale at
+// their on-disk values).
 using ScalarVec = NeoN::Vector<NeoN::scalar>;
 
 void mulVecVec(const NeoN::Executor& exec, ScalarVec& r, const ScalarVec& b, std::string label)
