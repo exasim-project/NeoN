@@ -44,8 +44,8 @@ source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
 }
 
 // SuSp: sign-aware implicit source — max(coeff, 0) on the diagonal, min(coeff, 0)
-// explicitly to the rhs (OpenFOAM fvm::SuSp). Keeps the matrix diagonally dominant
-// for a coefficient of either sign (e.g. the kOmegaSST cross-diffusion term).
+// explicitly to the rhs. Keeps the matrix diagonally dominant for a coefficient of
+// either sign (e.g. the kOmegaSST cross-diffusion term).
 template<typename ValueType>
 SpatialOperator<ValueType> susp(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
 {

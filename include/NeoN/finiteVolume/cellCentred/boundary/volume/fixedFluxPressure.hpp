@@ -54,8 +54,8 @@ void applyFixedFluxPressure(
 
 /* @brief Fixed-flux pressure wall boundary condition.
  *
- * Mirrors OpenFOAM's fixedFluxPressureFvPatchScalarField: the per-face gradient (refGrad)
- * is set EXTERNALLY (by NeoFOAM::constrainPressure) so that the pressure projection cancels
+ * The per-face gradient (refGrad) is set EXTERNALLY (by NeoFOAM::constrainPressure) so
+ * that the pressure projection cancels
  * the prescribed boundary face flux; correctBoundaryCondition only recomputes the boundary
  * value from the current refGrad, and never clobbers it with a stored uniform. refGrad is
  * zero-initialised by the boundary-data allocation, so the BC behaves as zeroGradient until

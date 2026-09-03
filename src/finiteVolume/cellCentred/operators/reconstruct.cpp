@@ -19,7 +19,7 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
     const auto nBnd = mesh.nBoundaryFaces();
     const auto nProc = mesh.nProcBoundaryFaces();
 
-    const auto Sf = mesh.faceNormals().view();  // Vec3 area vectors
+    const auto sf = mesh.faceNormals().view();  // Vec3 area vectors
     const auto magSf = mesh.faceAreas().view(); // |Sf|
     const auto own = mesh.faceOwners().view();
     const auto nei = mesh.faceNeighbors().view();
@@ -30,12 +30,12 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
     const auto ssfB = ssf.boundaryData().value().view();
 
     // Per-cell symmetric 3x3 accumulators (6 comps) + rhs Vec3.
-    NeoN::Vector<NeoN::scalar> Gxx(exec, nCells, 0.0), Gxy(exec, nCells, 0.0),
-        Gxz(exec, nCells, 0.0), Gyy(exec, nCells, 0.0), Gyz(exec, nCells, 0.0),
-        Gzz(exec, nCells, 0.0);
+    NeoN::Vector<NeoN::scalar> gxxVec(exec, nCells, 0.0), gxyVec(exec, nCells, 0.0),
+        gxzVec(exec, nCells, 0.0), gyyVec(exec, nCells, 0.0), gyzVec(exec, nCells, 0.0),
+        gzzVec(exec, nCells, 0.0);
     NeoN::Vector<NeoN::Vec3> b(exec, nCells, NeoN::Vec3 {0.0, 0.0, 0.0});
-    auto gxx = Gxx.view(), gxy = Gxy.view(), gxz = Gxz.view(), gyy = Gyy.view(), gyz = Gyz.view(),
-         gzz = Gzz.view();
+    auto gxx = gxxVec.view(), gxy = gxyVec.view(), gxz = gxzVec.view(), gyy = gyyVec.view(),
+         gyz = gyzVec.view(), gzz = gzzVec.view();
     auto bv = b.view();
 
     auto scatter =
@@ -57,8 +57,8 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
         exec,
         {0, nInt},
         NEON_LAMBDA(const NeoN::localIdx f) {
-            scatter(own[f], Sf[f], magSf[f], ssfI[f]); // surfaceSum: +owner
-            scatter(nei[f], Sf[f], magSf[f], ssfI[f]); // surfaceSum: +neighbour
+            scatter(own[f], sf[f], magSf[f], ssfI[f]); // surfaceSum: +owner
+            scatter(nei[f], sf[f], magSf[f], ssfI[f]); // surfaceSum: +neighbour
         },
         "reconstruct::scatterInternal"
     );
@@ -112,12 +112,12 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
             const NeoN::Vec3 rhs = bv[c];
 
             // Regularise empty (zero-area) directions so the in-plane block still inverts on 2D
-            // meshes. OpenFOAM keeps the empty front/back faces in the surfaceSum, giving a
-            // full-rank tensor; NeoN drops them, leaving a zero diagonal in the empty direction
-            // (e.g. gzz==0 on a planar z-normal mesh). Setting that decoupled diagonal to the
-            // trace makes det!=0 while leaving the in-plane 2x2 result (and the ~0
-            // empty-direction result) unchanged. This mirrors OpenFOAM's inv(symmTensorField),
-            // which likewise only strips coordinate-aligned null components.
+            // meshes. A planar mesh contributes no face area along its empty direction, leaving a
+            // zero diagonal there (e.g. gzz==0 on a z-normal mesh) and hence a singular tensor.
+            // Setting that decoupled diagonal to the trace makes det!=0 while leaving the in-plane
+            // 2x2 result (and the ~0 empty-direction result) unchanged. Only coordinate-aligned
+            // null components are stripped this way; an oblique one falls through to the ridge
+            // below.
             const NeoN::scalar reg = 1e-9 * tr;
             NeoN::scalar a = (a0 < reg) ? tr : a0;
             NeoN::scalar ff = (f0 < reg) ? tr : f0;
