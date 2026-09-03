@@ -1,0 +1,34 @@
+\doxysection{reconstruct.\+hpp}
+\hypertarget{reconstruct_8hpp_source}{}\label{reconstruct_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/reconstruct.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/operators/reconstruct.hpp}}
+\mbox{\hyperlink{reconstruct_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scalar_8hpp}{NeoN/core/primitives/scalar.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{vec3_8hpp}{NeoN/core/primitives/vec3.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00012}00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00015}00015\ \textcolor{comment}{/*\ @brief\ explicit\ reconstruction\ of\ a\ cell\ vector\ field\ from\ a\ surface\ scalar\ flux.}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00016}00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00017}00017\ \textcolor{comment}{\ *\ Mirrors\ OpenFOAM's\ fvc::reconstruct(ssf):}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00018}00018\ \textcolor{comment}{\ *\ \ \ reconstruct(ssf)\_C\ =\ inv(\ Σ\_f\ Sf⊗Sf\ /\ |Sf|\ )\ \&\ Σ\_f\ (Sf\ /\ |Sf|)\ ·\ ssf\_f}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00019}00019\ \textcolor{comment}{\ *\ with\ surfaceSum\ semantics\ —\ each\ internal\ face\ contributes\ to\ both\ its\ owner\ and}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ neighbour\ cell,\ each\ boundary\ face\ contributes\ to\ its\ owner\ cell.\ The\ per-\/cell}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ symmetric\ 3×3\ matrix\ is\ inverted\ analytically.}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00022}00022\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ @param\ ssf\ [in]\ -\/\ surface\ scalar\ flux\ to\ reconstruct}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00024}00024\ \textcolor{comment}{\ *\ @return\ the\ reconstructed\ cell-\/centred\ vector\ field\ (calculated\ BCs,\ corrected)}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00025}00025\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00026}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a8cefb24542c6975b722d2814028ebd41}{00026}}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<Vec3>}}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a8cefb24542c6975b722d2814028ebd41}{reconstruct}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ ssf);}
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{reconstruct_8hpp_source_l00028}00028\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+
+\end{DoxyCode}
