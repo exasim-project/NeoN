@@ -21,6 +21,7 @@
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenDiv.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenLaplacian.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp" // these are required for registration
+#include "NeoN/finiteVolume/cellCentred/interpolation/linearUpwind.hpp" // these are required for registration
 #include "NeoN/finiteVolume/cellCentred/faceNormalGradient/uncorrected.hpp" // these are required for registration
 
 // TODO(operator-registration workaround): drop this once the runtime-selection registry is shared
@@ -244,6 +245,14 @@ void registerDSL(nb::module_& m)
             schemes["laplacian<Vector>"] = fvcc::LaplacianOperatorFactory<Vec3>::entries();
             schemes["laplacian<Vector,scalar>"] =
                 fvcc::LaplacianOperatorFactory<Vec3, scalar>::entries();
+            // Surface-interpolation schemes register from their headers rather than through the
+            // explicit instantiations above, but they are listed here for the same reason: a
+            // failed lookup aborts the process (NF_ERROR_EXIT), so a Python test cannot probe for
+            // a missing scheme by catching an exception -- it has to read the table instead.
+            schemes["surfaceInterpolation<scalar>"] =
+                fvcc::SurfaceInterpolationFactory<scalar>::entries();
+            schemes["surfaceInterpolation<Vector>"] =
+                fvcc::SurfaceInterpolationFactory<Vec3>::entries();
             return schemes;
         }
     );

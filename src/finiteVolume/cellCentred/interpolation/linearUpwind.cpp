@@ -232,30 +232,28 @@ void computeLinearUpwind(
         // unlimited Gauss-Green gradient.
         if (cellLimitedGradient)
         {
-            // linearUpwindV deferred correction -- the dominant momentum-assembly cost
-            // (divlap.deferredCorr). Phase regions to attribute it: allocating + zeroing the Tensor
-            // gradient field, CONSTRUCTING the CellLimitedGrad operator (done every call --
-            // rebuilds its geometry/stencil), computing the cell-limited gradient, and applying the
-            // face correction.
+            // This deferred correction is the dominant momentum-assembly cost, so each phase
+            // carries a profiling region (a no-op unless a Kokkos profiling tool is attached):
+            // allocating + zeroing the Tensor gradient field, obtaining the operator, computing
+            // the cell-limited gradient, and applying the face correction.
             Kokkos::Profiling::pushRegion("luw.gradAlloc");
             auto calcBC = createCalculatedProcBCs<VolumeBoundary<Tensor>>(mesh);
             VolumeField<GradType> gradPhi(exec, "gradULimited", mesh, calcBC);
             fill(gradPhi.internalVector(), zero<GradType>());
             Kokkos::Profiling::popRegion();
 
-            // Reuse the mesh-cached operator instead of rebuilding it every assemble (the former
-            // luw.gradOpCtor hot spot). First call on a mesh builds + caches it; the rest are a DB
-            // lookup.
+            // Reuse the mesh-cached operator instead of rebuilding it every assemble. First call
+            // on a mesh builds + caches it; the rest are a DB lookup.
             Kokkos::Profiling::pushRegion("luw.gradOpCtor");
             auto limitedGrad = linearUpwindLimitedGrad(exec, mesh);
             Kokkos::Profiling::popRegion();
 
             {
-                Kokkos::Profiling::ScopedRegion region_("luw.gradCompute");
+                Kokkos::Profiling::ScopedRegion region("luw.gradCompute");
                 limitedGrad->gradTensor(src, gradPhi, dsl::Coeff {});
             }
             {
-                Kokkos::Profiling::ScopedRegion region_("luw.applyCorr");
+                Kokkos::Profiling::ScopedRegion region("luw.applyCorr");
                 applyLinearUpwind<ValueType, GradType>(
                     src, flux, faceDeltaOwner, faceDeltaNeighbour, gradPhi, dst, withSrcValue
                 );
