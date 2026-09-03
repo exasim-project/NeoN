@@ -81,6 +81,20 @@ void declare_surface_interpolation(nb::module_& m, const char* name)
             "dst"_a,
             "Interpolate into an existing surface field"
         )
+        // Flux-aware overload. Upwind-biased schemes (upwind, linearUpwind, linearUpwindV)
+        // need the face flux to pick the upwind cell and abort without it, so they are
+        // unreachable through the overloads above.
+        .def(
+            "interpolate_into",
+            [](const fvcc::SurfaceInterpolation<T>& self,
+               const fvcc::SurfaceField<NeoN::scalar>& flux,
+               const fvcc::VolumeField<T>& src,
+               fvcc::SurfaceField<T>& dst) { self.interpolate(flux, src, dst); },
+            "flux"_a,
+            "src"_a,
+            "dst"_a,
+            "Interpolate into an existing surface field using a face flux (upwind-biased schemes)"
+        )
         .def(
             "weight",
             [](const fvcc::SurfaceInterpolation<T>& interp, const fvcc::VolumeField<T>& src)

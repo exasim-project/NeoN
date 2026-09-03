@@ -514,12 +514,15 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     }
     divTokens.remove(0);
 
+    // Accept the cell-limited vector variant `linearUpwindV` alongside `linearUpwind`; both map to
+    // the linearUpwind interpolation (SurfaceInterpolation registers "linearUpwindV" for the
+    // CellLimited case).
     const auto divScheme = divTokens.get<std::string>(0);
-    if (divScheme != "upwind" && divScheme != "linearUpwind")
+    if (divScheme != "upwind" && divScheme != "linearUpwind" && divScheme != "linearUpwindV")
     {
         NF_ERROR_EXIT(
-            "GaussGreenDivLaplacian only supports 'Gauss upwind' or 'Gauss linearUpwind' for "
-            "divSchemes, got: Gauss "
+            "GaussGreenDivLaplacian only supports 'Gauss upwind', 'Gauss linearUpwind' or "
+            "'Gauss linearUpwindV' for divSchemes, got: Gauss "
             << divScheme
         );
     }
