@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "NeoN/core/demangle.hpp"
+#include "NeoN/core/visibility.hpp"
 
 namespace NeoN
 {
@@ -45,7 +46,7 @@ struct RefHolder
  * using the `subDict` function. The values are stored using `std::any`, which
  * allows storing values of any type.
  */
-class Dictionary
+class NEON_TYPE_VISIBLE Dictionary
 {
 public:
 

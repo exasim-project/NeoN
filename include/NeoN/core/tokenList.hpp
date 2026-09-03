@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "NeoN/core/visibility.hpp"
+
 #include <vector>
 #include <any>
 
@@ -25,7 +27,7 @@ void logOutRange(
  * The TokenList class provides functionality to store and manipulate a list of tokens.
  * It supports insertion, removal, and retrieval of tokens of any type using std::any.
  */
-class TokenList
+class NEON_TYPE_VISIBLE TokenList
 {
 public:
 
