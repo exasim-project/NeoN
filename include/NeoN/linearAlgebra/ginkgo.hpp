@@ -472,7 +472,7 @@ private:
     // solve and fed into the next generate(matrix, ws), amortizing the scratch allocation. Per
     // cache slot, null until seeded; stays empty for updatable (1b-cached) configs whose workspace
     // lives inside cachedSolver_. mutable because solve() is const. (Restored 2026-07-22: lost in a
-    // rebase, was the occDrivAre 0.79->2.6 s/step regression.)
+    // rebase, was the occDrivAer 0.79->2.6 s/step regression.)
     mutable std::array<std::unique_ptr<gko::solver::Workspace>, 3> cachedWorkspace_;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
