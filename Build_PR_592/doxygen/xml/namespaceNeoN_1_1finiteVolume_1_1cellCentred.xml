@@ -51,6 +51,7 @@
     <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1detail">NeoN::finiteVolume::cellCentred::detail</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1surfaceBoundary">NeoN::finiteVolume::cellCentred::surfaceBoundary</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary">NeoN::finiteVolume::cellCentred::volumeBoundary</innernamespace>
+    <innernamespace refid="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeFieldDetail">NeoN::finiteVolume::cellCentred::volumeFieldDetail</innernamespace>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a629e77bbe66a0a80dd0fbda8fe6821e8" prot="public" static="no" strong="yes">
         <type></type>
@@ -733,6 +734,30 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp" line="203" column="21" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp" bodystart="203" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1ab7355002d510558d89e4729ba75b7d80" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt;</type>
+        <definition>VolumeField&lt; Vec3 &gt; NeoN::finiteVolume::cellCentred::cross</definition>
+        <argsstring>(const VolumeField&lt; Vec3 &gt; &amp;lhs, const VolumeField&lt; Vec3 &gt; &amp;rhs)</argsstring>
+        <name>cross</name>
+        <qualifiedname>NeoN::finiteVolume::cellCentred::cross</qualifiedname>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField" kindref="compound">VolumeField</ref>&lt; <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Element-wise cross product of two <ref refid="classNeoN_1_1Vec3" kindref="compound">Vec3</ref> volume fields. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Applied to the internal vector and to the boundary values alike, so the result is usable wherever the operands were — matching the scalar <ref refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField" kindref="compound">SurfaceField</ref> operators. Right-handed: <computeroutput>cross(a, b)[i] == a[i] ^ b[i]</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/volumeField.hpp" line="172" column="20" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/fields/volumeField.hpp" bodystart="172" bodyend="180"/>
       </memberdef>
       <memberdef kind="function" id="namespaceNeoN_1_1finiteVolume_1_1cellCentred_1a5ee2b2f0634716198d36459918063de3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

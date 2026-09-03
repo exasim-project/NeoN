@@ -303,6 +303,10 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} 
 \begin{DoxyCompactList}\small\item\em compute component wise product \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_a16d1972249505eeb9d429169b5528a1e}{operator\&}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} rhs)
 \begin{DoxyCompactList}\small\item\em inner product \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_a9ef51405e6df7eb829109d73cd966790}{operator\texorpdfstring{$^\wedge$}{\string^}}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} rhs)
+\begin{DoxyCompactList}\small\item\em cross (vector) product, right-\/handed\+: lhs \texorpdfstring{$^\wedge$}{\string^} rhs \end{DoxyCompactList}\item 
+KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_ad9ac8d63e41eaa34080571aba6a6e1db}{cross}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&rhs)
+\begin{DoxyCompactList}\small\item\em cross (vector) product, spelled out for call sites that read better as a named function than as {\ttfamily \texorpdfstring{$^\wedge$}{\string^}} \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \mbox{\hyperlink{namespaceNeoN_aed585df60bb68f0c99e9dc3377883767}{operator/}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&lhs, \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} rhs)
 \item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}} \mbox{\hyperlink{namespaceNeoN_ab2e350b466c96eec7683040452e4e9dd}{mag}} (const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&vec)
@@ -645,7 +649,21 @@ Definition at line \mbox{\hyperlink{executor_8hpp_source_l00033}{33}} of file \m
 
 creates a mesh containing only a single cell @warn currently this is only a 2D mesh 
 
-a 2D mesh in 3D space with left, right, top, bottom boundary faces with the centre at (0.\+5, 0.\+5, 0.\+0) left, top, right, bottom faces and four boundaries one left, right, top, bottom \Hypertarget{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9}\label{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9} 
+a 2D mesh in 3D space with left, right, top, bottom boundary faces with the centre at (0.\+5, 0.\+5, 0.\+0) left, top, right, bottom faces and four boundaries one left, right, top, bottom \Hypertarget{namespaceNeoN_ad9ac8d63e41eaa34080571aba6a6e1db}\label{namespaceNeoN_ad9ac8d63e41eaa34080571aba6a6e1db} 
+\index{NeoN@{NeoN}!cross@{cross}}
+\index{cross@{cross}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{cross()}{cross()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::cross (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{lhs,  }\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{rhs }\end{DoxyParamCaption})}
+
+
+
+cross (vector) product, spelled out for call sites that read better as a named function than as {\ttfamily \texorpdfstring{$^\wedge$}{\string^}} 
+
+
+
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00185}{185}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9}\label{namespaceNeoN_a6ad7f4df2e8cf0dacc1c7262cc93f9e9} 
 \index{NeoN@{NeoN}!demangle@{demangle}}
 \index{demangle@{demangle}!NeoN@{NeoN}}
 \doxysubsubsection{\texorpdfstring{demangle()}{demangle()}}
@@ -884,7 +902,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} 
 
 
 
-Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00195}{195}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00211}{211}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_af36e4b5b8ea30fdc52a7f31cff8136d1}\label{namespaceNeoN_af36e4b5b8ea30fdc52a7f31cff8136d1} 
 \index{NeoN@{NeoN}!logBadAnyCast@{logBadAnyCast}}
@@ -955,7 +973,7 @@ Definition at line \mbox{\hyperlink{tensor_8hpp_source_l00205}{205}} of file \mb
 
 
 
-Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00193}{193}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_ae802d24c1917f744e65365def8de9889}\label{namespaceNeoN_ae802d24c1917f744e65365def8de9889} 
 \index{NeoN@{NeoN}!magSqr@{magSqr}}
@@ -1135,7 +1153,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} 
 
 
 
-Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00183}{183}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00199}{199}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4}\label{namespaceNeoN_acac5cd47c1ca0f8520e0938d101cb3b4} 
 \index{NeoN@{NeoN}!operator"!=@{operator"!=}}
@@ -1311,7 +1329,7 @@ The result of the subtraction.
 
 
 
-Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00173}{173}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00189}{189}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7}\label{namespaceNeoN_a217f8ac0be9056e594e2eb1bfd7caae7} 
 \index{NeoN@{NeoN}!operator$<$$<$@{operator$<$$<$}}
@@ -1360,6 +1378,20 @@ True if the executors are equal, false otherwise.
 
 
 Definition at line \mbox{\hyperlink{executor_8hpp_source_l00089}{89}} of file \mbox{\hyperlink{executor_8hpp_source}{executor.\+hpp}}.
+
+\Hypertarget{namespaceNeoN_a9ef51405e6df7eb829109d73cd966790}\label{namespaceNeoN_a9ef51405e6df7eb829109d73cd966790} 
+\index{NeoN@{NeoN}!operator\texorpdfstring{$^\wedge$}{\string^}@{operator\texorpdfstring{$^\wedge$}{\string^}}}
+\index{operator\texorpdfstring{$^\wedge$}{\string^}@{operator\texorpdfstring{$^\wedge$}{\string^}}!NeoN@{NeoN}}
+\doxysubsubsection{\texorpdfstring{operator\texorpdfstring{$^\wedge$}{\string^}()}{operator\string^()}}
+{\footnotesize\ttfamily KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} Neo\+N\+::operator\texorpdfstring{$^\wedge$}{\string^} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} \&}]{lhs,  }\item[{\mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}}]{rhs }\end{DoxyParamCaption})}
+
+
+
+cross (vector) product, right-\/handed\+: lhs \texorpdfstring{$^\wedge$}{\string^} rhs 
+
+
+
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00173}{173}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 \Hypertarget{namespaceNeoN_a9614bc3d7163bb284d4a08dd13f76955}\label{namespaceNeoN_a9614bc3d7163bb284d4a08dd13f76955} 
 \index{NeoN@{NeoN}!parallelFor@{parallelFor}}
@@ -1756,7 +1788,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}} 
 
 
 
-Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00189}{189}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
+Definition at line \mbox{\hyperlink{vec3_8hpp_source_l00205}{205}} of file \mbox{\hyperlink{vec3_8hpp_source}{vec3.\+hpp}}.
 
 
 
