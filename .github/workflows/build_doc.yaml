@@ -16,7 +16,8 @@ jobs:
     if: github.repository == 'exasim-project/NeoN'
     steps:
     - name: Requirements
-      run: sudo apt install doxygen python3-sphinx texlive-font-utils
+      run: sudo apt-get update
+        && sudo apt-get install -y doxygen python3-sphinx texlive-font-utils
         && pip3 install furo
         && pip3 install breathe
         && pip3 install sphinx-sitemap
