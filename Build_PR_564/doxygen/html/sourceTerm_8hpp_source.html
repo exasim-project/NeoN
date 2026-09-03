@@ -109,7 +109,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#a3349d9909175bdb6026813d166562def">   24</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SourceTerm.html#a3349d9909175bdb6026813d166562def">VectorValueType</a> = ValueType;</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="comment">// Sp: source += scaling * coefficients * field  (implicit or explicit).</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="comment">// With suSp = true this is instead OpenFOAM&#39;s SuSp (sign-aware split): the</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="comment">// With suSp = true this is instead the sign-aware SuSp split: the</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="comment">// positive part of the coefficient is treated implicitly (added to the</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="comment">// diagonal) and the negative part explicitly (added to the rhs using the</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// current field), so a coefficient of either sign keeps the matrix diagonally</span></div>
@@ -142,14 +142,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// Non-null for Sp mode. Null for Su mode (field_ from mixin IS the coefficient).</span></div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField&lt;scalar&gt;</a>* spCoeff_;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="comment">// When true (and spCoeff_ non-null) the implicit assembly is OpenFOAM SuSp.</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="comment">// When true (and spCoeff_ non-null) the implicit assembly uses the SuSp sign split.</span></div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span> suSp_;</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
 </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>} <span class="comment">// namespace NeoN::finiteVolume::cellCentred</span></div>
-<div class="ttc" id="aclassNeoN_1_1Dictionary_html"><div class="ttname"><a href="classNeoN_1_1Dictionary.html">NeoN::Dictionary</a></div><div class="ttdoc">A class representing a dictionary that stores key-value pairs.</div><div class="ttdef"><b>Definition</b> <a href="dictionary_8hpp_source.html#l00048">dictionary.hpp:49</a></div></div>
+<div class="ttc" id="aclassNeoN_1_1Dictionary_html"><div class="ttname"><a href="classNeoN_1_1Dictionary.html">NeoN::Dictionary</a></div><div class="ttdoc">A class representing a dictionary that stores key-value pairs.</div><div class="ttdef"><b>Definition</b> <a href="dictionary_8hpp_source.html#l00049">dictionary.hpp:50</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1Vector_html"><div class="ttname"><a href="classNeoN_1_1Vector.html">NeoN::Vector</a></div><div class="ttdoc">A class to contain the data and executors for a field and define some basic operations.</div><div class="ttdef"><b>Definition</b> <a href="vector_8hpp_source.html#l00026">vector.hpp:27</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1OperatorMixin_html"><div class="ttname"><a href="classNeoN_1_1dsl_1_1OperatorMixin.html">NeoN::dsl::OperatorMixin</a></div><div class="ttdef"><b>Definition</b> <a href="operator_8hpp_source.html#l00037">operator.hpp:38</a></div></div>
 <div class="ttc" id="aclassNeoN_1_1dsl_1_1Operator_html_ad72823c9a2d04641ab7c7181902f6dd3"><div class="ttname"><a href="classNeoN_1_1dsl_1_1Operator.html#ad72823c9a2d04641ab7c7181902f6dd3">NeoN::dsl::Operator::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> <a href="operator_8hpp_source.html#l00018">operator.hpp:19</a></div></div>
