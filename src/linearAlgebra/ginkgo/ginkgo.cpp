@@ -22,9 +22,39 @@ gko::config::pnode NeoN::la::ginkgo::parse(const Dictionary& dictIn)
         dict.remove("solver");
     }
 
+    // For solver::Ir the smoother/preconditioner is carried under the "preconditioner" key by the
+    // NeoFOAM fvSolution compatibility layer (to avoid colliding with the now-removed top-level
+    // "solver: Ginkgo" backend-dispatch key). Ginkgo's Ir names its inner factory "solver" and
+    // rejects "preconditioner" as an unknown key, so rename it here, after the backend key is gone.
+    // Only Ir needs this: Cg/Bicgstab/Multigrid accept a genuine "preconditioner" key.
+    if (dict.contains("type") && std::any_cast<std::string>(dict["type"]) == "solver::Ir"
+        && dict.contains("preconditioner") && !dict.contains("solver"))
+    {
+        Dictionary inner = dict.subDict("preconditioner");
+        dict.remove("preconditioner");
+        dict.insert("solver", inner);
+    }
+
     if (dict.contains("coupled"))
     {
         dict.remove("coupled");
+    }
+
+    if (dict.contains("localMatrixFormat"))
+    {
+        dict.remove("localMatrixFormat");
+    }
+
+    // 'cacheSolver' / 'preconditionerRebuildInterval' steer NeoN's solver/preconditioner reuse
+    // (read directly in the GinkgoSolver ctor); they are not Ginkgo config keys, so strip them
+    // before the config reaches gko::config::parse (which rejects unknown keys).
+    for (const auto& key :
+         {std::string("cacheSolver"), std::string("preconditionerRebuildInterval")})
+    {
+        if (dict.contains(key))
+        {
+            dict.remove(key);
+        }
     }
 
     // 'reportName' is a human-readable solver label (e.g. DICPCG) carried for
@@ -302,6 +332,9 @@ createGkoMtxImpl(std::shared_ptr<const gko::Executor> exec, const CSRMatrix<Vec3
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+    // Ensure all Kokkos unpack kernels have completed before Ginkgo reads
+    // the data via gkoCopyArray, which may use a different SYCL queue.
+    Kokkos::fence();
 
     auto nrows = static_cast<gko::size_type>(3 * mtx.nRows());
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
@@ -477,6 +510,7 @@ std::shared_ptr<const gko::matrix::Csr<scalar, IndexType>> createGkoMtxImpl(
     const auto rowsCopy = unpackRowOffs(mtx.rowOffs());
     const auto colsCopy = unpackColIdx(mtx.colIdxs(), rowsCopy, mtx.rowOffs());
     const auto valuesCopy = unpackMtxValues(mtx.values(), mtx.rowOffs(), rowsCopy);
+    Kokkos::fence();
 
     auto nrows = static_cast<gko::size_type>(computeNRows(sys));
     return gko::share(gko::matrix::Csr<scalar, IndexType>::create(
@@ -520,6 +554,9 @@ SolverStats GinkgoSolver::solve(
         const auto gkoMtx = createGkoMtx(sys.matrix());
         auto rhsCopy = unpackVecValues(sys.rhs());
         auto xCopy = unpackVecValues(x);
+        // Ensure all Kokkos unpack kernels have completed before Ginkgo reads
+        // rhsCopy/xCopy, which may use a different SYCL queue on Intel GPU.
+        Kokkos::fence();
 
         auto stats =
             solve_impl(gkoExec_, rhsCopy, xCopy, gkoMtx, factory_->generate(gkoMtx), l1Control);

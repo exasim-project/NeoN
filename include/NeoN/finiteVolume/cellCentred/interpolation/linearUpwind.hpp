@@ -68,7 +68,8 @@ void computeLinearUpwindInterpolation(
     const SurfaceField<scalar>& flux,
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
-    SurfaceField<ValueType>& dst
+    SurfaceField<ValueType>& dst,
+    const bool cellLimitedGradient = false
 );
 
 /* @brief computes only the gradient correction part of the linearUpwind face value,
@@ -85,14 +86,21 @@ void computeLinearUpwindCorrection(
     const SurfaceField<scalar>& flux,
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
-    SurfaceField<ValueType>& dst
+    SurfaceField<ValueType>& dst,
+    const bool cellLimitedGradient = false
 );
 
-template<typename ValueType>
+// @tparam CellLimited when true the gradient correction is built from the cell-limited (minmod,
+// k=1) gradient rather than the unlimited Gauss-Green gradient — this is the "linearUpwindV"
+// scheme, matching OpenFOAM's directionally-bounded vector reconstruction. Only meaningful for
+// Vec3 fields; the scalar specialisation ignores it.
+template<typename ValueType, bool CellLimited = false>
 class LinearUpwind :
-    public SurfaceInterpolationFactory<ValueType>::template Register<LinearUpwind<ValueType>>
+    public SurfaceInterpolationFactory<ValueType>::template Register<
+        LinearUpwind<ValueType, CellLimited>>
 {
-    using Base = SurfaceInterpolationFactory<ValueType>::template Register<LinearUpwind<ValueType>>;
+    using Base = SurfaceInterpolationFactory<ValueType>::template Register<
+        LinearUpwind<ValueType, CellLimited>>;
 
 public:
 
@@ -107,9 +115,13 @@ public:
         geometryScheme_->ensureFaceDeltas();
     };
 
-    static std::string name() { return "linearUpwind"; }
+    static std::string name() { return CellLimited ? "linearUpwindV" : "linearUpwind"; }
 
-    static std::string doc() { return "linearUpwind interpolation"; }
+    static std::string doc()
+    {
+        return CellLimited ? "linearUpwindV interpolation (cell-limited gradient correction)"
+                           : "linearUpwind interpolation";
+    }
 
     static std::string schema() { return "none"; }
 
@@ -128,7 +140,12 @@ public:
     ) const override
     {
         computeLinearUpwindInterpolation(
-            src, flux, geometryScheme_->faceDeltaOwner(), geometryScheme_->faceDeltaNeighbour(), dst
+            src,
+            flux,
+            geometryScheme_->faceDeltaOwner(),
+            geometryScheme_->faceDeltaNeighbour(),
+            dst,
+            CellLimited
         );
     }
 
@@ -162,8 +179,14 @@ public:
             faceFlux,
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
-            corr
+            corr,
+            CellLimited
         );
+    }
+
+    InlineWeightKernel inlineWeightKernel(const SurfaceField<scalar>& /*flux*/) const override
+    {
+        return UpwindInlineKernel {};
     }
 
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
@@ -202,5 +225,7 @@ namespace fvcc = finiteVolume::cellCentred;
 
 template class fvcc::LinearUpwind<scalar>;
 template class fvcc::LinearUpwind<Vec3>;
+// linearUpwindV: cell-limited gradient reconstruction, vector fields only.
+template class fvcc::LinearUpwind<Vec3, true>;
 
 }

@@ -507,6 +507,8 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
     );
     std::shared_ptr<gko::experimental::distributed::index_map<NeoN::label, gko::int64>> imapCache;
     std::shared_ptr<gko::matrix::Coo<NeoN::scalar, NeoN::localIdx>> nonLocalMtxCache;
+    std::shared_ptr<const gko::LinOp> distMtxCache;
+    const NeoN::scalar* localValPtrCache = nullptr;
     auto gkoMtx = NeoN::la::ginkgo::createGkoMtxDist(
         gkoExec,
         comm,
@@ -514,7 +516,10 @@ TEST_CASE("createGkoMtxDist - local CSR block holds zero-copy view of Matrix val
         lsDst.offDiagonalMatrix(),
         commPattern,
         imapCache,
-        nonLocalMtxCache
+        nonLocalMtxCache,
+        distMtxCache,
+        localValPtrCache,
+        std::string("Csr")
     );
 
     // The local CSR block must share memory with lsDst.matrix().values_

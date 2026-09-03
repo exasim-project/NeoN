@@ -89,6 +89,7 @@ TEST_CASE("symmetry_slip_volume")
 
             boundary->correctBoundaryCondition(field);
 
+            // default mode is deferred (multi-RHS friendly)
             REQUIRE(boundary->attributes().transformImplicit == false);
 
             auto [refValuesH, valuesH, refGradH, nHatH, deltaCoeffsH, faceCellsH, internalH] =

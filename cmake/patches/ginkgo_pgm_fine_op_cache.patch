@@ -1,0 +1,258 @@
+Subject: [PATCH] Pgm: cache & reuse the sorted distributed fine op in update_matrix_value
+#
+# Skip the per-step column sort of the fine matrix (fixed sparsity) by caching the
+# sorted fine op + its column-sort permutation and gathering new values into it each
+# update. ~222ms -> ~1.7ms; occDrivAer champion -25..29% s/step. Disable with
+# GINKGO_PGM_REUSE_FINE_OP=0. Apply AFTER ginkgo_local_stack.patch.
+#
+diff --git a/core/multigrid/pgm.cpp b/core/multigrid/pgm.cpp
+index 93408927a..911af95c5 100644
+--- a/core/multigrid/pgm.cpp
++++ b/core/multigrid/pgm.cpp
+@@ -4,7 +4,9 @@
+
+ #include "ginkgo/core/multigrid/pgm.hpp"
+
++#include <cstdlib>
+ #include <utility>
++#include <vector>
+
+ #include <ginkgo/core/base/array.hpp>
+ #include <ginkgo/core/base/exception_helpers.hpp>
+@@ -45,6 +47,70 @@ namespace pgm {
+ namespace {
+
+
++// Fine-op reuse cache (distributed update_matrix_value). By default the sorted
++// fine op and its column-sort permutation are cached and reused; set
++// GINKGO_PGM_REUSE_FINE_OP=0 (or "off"/"no") to fall back to a full per-step
++// convert.
++inline bool pgm_reuse_fine_op()
++{
++    const char* e = std::getenv("GINKGO_PGM_REUSE_FINE_OP");
++    if (e && (e[0] == '0' || e[0] == 'n' || e[0] == 'N' || e[0] == 'f' ||
++              e[0] == 'F')) {
++        return false;
++    }
++    return true;
++}
++
++// Gather n_dst values dst[k] = src[perm[k]] via Dense::row_gather (device op).
++template <typename ValueType, typename IndexType>
++inline void gather_permuted_values(std::shared_ptr<const Executor> exec,
++                               const ValueType* src, gko::size_type n_src,
++                               ValueType* dst, gko::size_type n_dst,
++                               const gko::array<IndexType>& perm)
++{
++    auto s = matrix::Dense<ValueType>::create_const(
++        exec, gko::dim<2>{n_src, 1},
++        gko::make_const_array_view(exec, n_src, src), 1);
++    auto d = matrix::Dense<ValueType>::create(
++        exec, gko::dim<2>{n_dst, 1}, gko::make_array_view(exec, n_dst, dst), 1);
++    s->row_gather(&perm, d);
++}
++
++// Read the ValueType index-payload from a converted block into an IndexType
++// permutation array on `exec` (values are exact integers 0..nnz-1).
++template <typename ValueType, typename IndexType>
++inline gko::array<IndexType> extract_sort_permutation(
++    std::shared_ptr<const Executor> exec, const ValueType* vals,
++    gko::size_type n)
++{
++    auto host = exec->get_master();
++    std::vector<ValueType> hv(n);
++    host->copy_from(exec, n, vals, hv.data());
++    gko::array<IndexType> perm(host, n);
++    for (gko::size_type i = 0; i < n; ++i)
++        perm.get_data()[i] = static_cast<IndexType>(
++            gko::real(hv[i]) + gko::remove_complex<ValueType>(0.5));
++    perm.set_executor(exec);
++    return perm;
++}
++
++// Fetch (values, nnz) from a non-local block that may be Csr or Coo.
++template <typename ValueType, typename IndexType>
++inline const ValueType* get_block_values(const gko::LinOp* blk,
++                                          gko::size_type& n)
++{
++    using csr_t = matrix::Csr<ValueType, IndexType>;
++    using coo_t = matrix::Coo<ValueType, IndexType>;
++    if (auto c = dynamic_cast<const csr_t*>(blk)) {
++        n = c->get_num_stored_elements();
++        return c->get_const_values();
++    }
++    auto o = dynamic_cast<const coo_t*>(blk);
++    n = o->get_num_stored_elements();
++    return o->get_const_values();
++}
++
++
+ GKO_REGISTER_OPERATION(match_edge, pgm::match_edge);
+ GKO_REGISTER_OPERATION(count_unagg, pgm::count_unagg);
+ GKO_REGISTER_OPERATION(renumber, pgm::renumber);
+@@ -360,6 +426,9 @@ void Pgm<ValueType, IndexType>::generate()
+ {
+     using csr_type = matrix::Csr<ValueType, IndexType>;
+ #if GINKGO_BUILD_MPI
++    // A (re)generated hierarchy invalidates the fine-op reuse cache.
++    fine_op_cache_valid_ = false;
++    fine_op_cache_ = nullptr;
+     if (std::dynamic_pointer_cast<
+             const experimental::distributed::DistributedBase>(system_matrix_)) {
+         auto convert_fine_op = [&](auto matrix) {
+@@ -523,35 +592,110 @@ void Pgm<ValueType, IndexType>::update_matrix_value(
+ #if GINKGO_BUILD_MPI
+     if (std::dynamic_pointer_cast<
+             const experimental::distributed::DistributedBase>(system_matrix_)) {
++        const bool reuse_fine_op = pgm::pgm_reuse_fine_op();
+         auto convert_fine_op = [&](auto matrix) {
+             using global_index_type = typename std::decay_t<
+                 decltype(*matrix)>::result_type::global_index_type;
++            using dist_mtx_t = experimental::distributed::Matrix<
++                ValueType, IndexType, global_index_type>;
+             auto exec = as<LinOp>(matrix)->get_executor();
+             auto comm = as<experimental::distributed::DistributedBase>(matrix)
+                             ->get_communicator();
+-            auto fine = share(
+-                experimental::distributed::
+-                    Matrix<ValueType, IndexType, global_index_type>::create(
+-                        exec, comm,
+-                        matrix::Csr<ValueType, IndexType>::create(exec),
+-                        matrix::Csr<ValueType, IndexType>::create(exec)));
++            auto fine = share(dist_mtx_t::create(
++                exec, comm, matrix::Csr<ValueType, IndexType>::create(exec),
++                matrix::Csr<ValueType, IndexType>::create(exec)));
+             matrix->convert_to(fine);
+             this->set_fine_op(fine);
+         };
+         auto setup_fine_op = [&](auto matrix) {
++            using global_index_type =
++                typename std::decay_t<decltype(*matrix)>::global_index_type;
++            using dmt = experimental::distributed::Matrix<ValueType, IndexType,
++                                                          global_index_type>;
+             // Only support csr matrix currently.
+             auto local_csr = std::dynamic_pointer_cast<const csr_type>(
+                 matrix->get_local_matrix());
+             auto non_local_csr = std::dynamic_pointer_cast<const csr_type>(
+                 matrix->get_non_local_matrix());
++
++            // Fast path: the sorted fine op is cached, so only gather the new
++            // values into it (dst[k] = src[perm[k]]) -- this skips the
++            // per-step column sort of the whole fine matrix.
++            if (reuse_fine_op && fine_op_cache_valid_ && fine_op_cache_) {
++                auto exec = as<LinOp>(matrix)->get_executor();
++                auto fine = std::static_pointer_cast<dmt>(fine_op_cache_);
++                auto src_l = as<csr_type>(matrix->get_local_matrix());
++                auto dst_l = const_cast<csr_type*>(
++                    as<csr_type>(fine->get_local_matrix()).get());
++                pgm::gather_permuted_values<ValueType, IndexType>(
++                    exec, src_l->get_const_values(),
++                    src_l->get_num_stored_elements(), dst_l->get_values(),
++                    dst_l->get_num_stored_elements(), fine_op_perm_local_);
++                gko::size_type nsrc = 0;
++                auto src_nl = pgm::get_block_values<ValueType, IndexType>(
++                    matrix->get_non_local_matrix().get(), nsrc);
++                auto dst_nl = const_cast<csr_type*>(
++                    as<csr_type>(fine->get_non_local_matrix()).get());
++                pgm::gather_permuted_values<ValueType, IndexType>(
++                    exec, src_nl, nsrc, dst_nl->get_values(),
++                    dst_nl->get_num_stored_elements(), fine_op_perm_non_local_);
++                this->set_fine_op(fine);
++                return;
++            }
++
+             // If system matrix is not csr or need sorting, generate the csr.
+             if (!parameters_.skip_sorting || !local_csr || !non_local_csr) {
+-                using global_index_type =
+-                    typename std::decay_t<decltype(*matrix)>::global_index_type;
+                 convert_fine_op(
+                     as<ConvertibleTo<experimental::distributed::Matrix<
+                         ValueType, IndexType, global_index_type>>>(matrix));
+             }
++
++            // Build the reuse cache once: keep the freshly sorted fine op and
++            // derive its (fixed) column-sort permutation. The permutation is
++            // recovered by pushing an index payload (0..nnz-1) through Ginkgo's
++            // own convert, so it stays consistent with the real sorted fine op
++            // -- no distributed structure is rebuilt by hand.
++            if (reuse_fine_op && !fine_op_cache_valid_) {
++                auto exec = as<LinOp>(matrix)->get_executor();
++                auto comm =
++                    as<experimental::distributed::DistributedBase>(matrix)
++                        ->get_communicator();
++                auto fill_seq = [&](ValueType* dst, gko::size_type n) {
++                    std::vector<ValueType> h(n);
++                    for (gko::size_type i = 0; i < n; ++i)
++                        h[i] = static_cast<ValueType>(i);
++                    exec->copy_from(exec->get_master(), n, h.data(), dst);
++                };
++                auto matrix_idx = gko::clone(matrix);
++                auto lcl = const_cast<csr_type*>(
++                    as<csr_type>(matrix_idx->get_local_matrix()).get());
++                fill_seq(lcl->get_values(), lcl->get_num_stored_elements());
++                auto nl_mut = const_cast<gko::LinOp*>(
++                    matrix_idx->get_non_local_matrix().get());
++                if (auto c = dynamic_cast<csr_type*>(nl_mut)) {
++                    fill_seq(c->get_values(), c->get_num_stored_elements());
++                } else if (auto o = dynamic_cast<
++                               matrix::Coo<ValueType, IndexType>*>(nl_mut)) {
++                    fill_seq(o->get_values(), o->get_num_stored_elements());
++                }
++                auto fine_idx = share(dmt::create(
++                    exec, comm, matrix::Csr<ValueType, IndexType>::create(exec),
++                    matrix::Csr<ValueType, IndexType>::create(exec)));
++                matrix_idx->convert_to(fine_idx);
++                auto flcl = as<csr_type>(fine_idx->get_local_matrix());
++                fine_op_perm_local_ =
++                    pgm::extract_sort_permutation<ValueType, IndexType>(
++                        exec, flcl->get_const_values(),
++                        flcl->get_num_stored_elements());
++                auto fnl = as<csr_type>(fine_idx->get_non_local_matrix());
++                fine_op_perm_non_local_ =
++                    pgm::extract_sort_permutation<ValueType, IndexType>(
++                        exec, fnl->get_const_values(),
++                        fnl->get_num_stored_elements());
++                fine_op_cache_ =
++                    std::const_pointer_cast<LinOp>(this->get_fine_op());
++                fine_op_cache_valid_ = true;
++            }
+         };
+
+         using fst_mtx_type =
+@@ -568,10 +712,11 @@ void Pgm<ValueType, IndexType>::update_matrix_value(
+                        system_matrix_)) {
+             setup_fine_op(obj);
+         } else {
+-            // handle other ValueTypes (e.g. a reduced-precision Pgm<float> fed the fp64 system
+-            // matrix for a mixed-precision preconditioner). Dispatch on system_matrix_, NOT the
+-            // null `obj` from the failed cast above -- mirrors generate() (line ~412). Passing the
+-            // null obj threw gko::NotSupported("run_impl ... decltype(nullptr)").
++            // handle other ValueTypes (e.g. a reduced-precision Pgm<float> fed
++            // the fp64 system matrix for a mixed-precision preconditioner).
++            // Dispatch on system_matrix_, NOT the null `obj` from the failed
++            // cast above -- mirrors generate(). Passing the null obj threw
++            // gko::NotSupported("run_impl ... decltype(nullptr)").
+             run<ConvertibleTo, fst_mtx_type, snd_mtx_type>(system_matrix_,
+                                                            convert_fine_op);
+         }
+diff --git a/include/ginkgo/core/multigrid/pgm.hpp b/include/ginkgo/core/multigrid/pgm.hpp
+index 8d5e70cce..883c39f20 100644
+--- a/include/ginkgo/core/multigrid/pgm.hpp
++++ b/include/ginkgo/core/multigrid/pgm.hpp
+@@ -231,6 +231,16 @@ private:
+ #if GINKGO_BUILD_MPI
+     std::shared_ptr<const matrix::SparsityCsr<ValueType, IndexType>>
+         mapping_non_local_;
++    // Reuse cache for the distributed fine op. update_matrix_value must
++    // otherwise re-sort the whole fine matrix (Coo/Csr -> sorted Csr) every
++    // call, even though the sparsity -- and hence the column-sort permutation
++    // -- is fixed across calls. We cache the sorted fine op together with that
++    // permutation for each block, so subsequent updates only gather the new
++    // values into it. Invalidated whenever the hierarchy is (re)generated.
++    std::shared_ptr<LinOp> fine_op_cache_{};
++    array<IndexType> fine_op_perm_local_{};
++    array<IndexType> fine_op_perm_non_local_{};
++    bool fine_op_cache_valid_{false};
+ #endif
+ };
+

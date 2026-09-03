@@ -6,11 +6,13 @@
 
 #if NF_WITH_GINKGO
 
+#include <array>
 #include <chrono>
 #include <optional>
 #include <string>
 
 #include <ginkgo/ginkgo.hpp>
+#include <ginkgo/core/solver/workspace.hpp> // gko::solver::Workspace (Strategy 3 reuse)
 #include <ginkgo/extensions/kokkos.hpp>
 #include <ginkgo/extensions/config/json_config.hpp>
 
@@ -20,6 +22,7 @@
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
+#include "NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" // MergedPgm mergeLevels-style coarsening
 
 
 namespace NeoN::la::ginkgo
@@ -44,7 +47,10 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
     const COOMatrix<scalar, IndexType>& bmtx,
     const CommunicationPattern& commPattern,
     std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>& imapCache,
-    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache
+    std::shared_ptr<gko::matrix::Coo<scalar, IndexType>>& nonLocalMtxCache,
+    std::shared_ptr<const gko::LinOp>& distMtxCache,
+    const scalar*& localValPtrCache,
+    const std::string& localMatrixFormat = "Csr"
 );
 #endif // NF_WITH_MPI_SUPPORT
 
@@ -185,6 +191,22 @@ L1ResidualResult solveWithL1StopDist(
  * boolean token arrives as a word). Tolerances and the iteration cap are read from the
  * "criteria" sub-dict (absolute_residual_norm / initial_residual_norm / iteration).
  */
+// A boolean switch read from an OpenFOAM dictionary is tokenized as a word and stored as a
+// std::string (or, for a numeric form, an int), not a bool -- reading it directly as bool throws
+// bad_any_cast. Accept any of the representations the dict parser may produce.
+inline bool readSwitch(const Dictionary& cfg, const std::string& key, bool defaultValue)
+{
+    if (!cfg.contains(key)) return defaultValue;
+    if (cfg.isType<bool>(key)) return cfg.get<bool>(key);
+    if (cfg.isType<int>(key)) return cfg.get<int>(key) != 0;
+    if (cfg.isType<std::string>(key))
+    {
+        const std::string v = cfg.get<std::string>(key);
+        return (v == "true" || v == "yes" || v == "on" || v == "1");
+    }
+    return defaultValue;
+}
+
 inline std::optional<L1ResidualControl> readL1ResidualControl(const Dictionary& cfg)
 {
     const std::string flag = "l1ScaledResidual";
@@ -284,8 +306,14 @@ class GinkgoSolver : public SolverFactory::template Register<GinkgoSolver>
 public:
 
     GinkgoSolver(Executor exec, const Dictionary& solverConfig)
-        : Base(exec), gkoExec_(getGkoExecutor(exec)), coupled_(solverConfig.get("coupled", false)),
-          l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig))
+        : Base(exec), gkoExec_(getGkoExecutor(exec)),
+          coupled_(readSwitch(solverConfig, "coupled", false)),
+          l1Control_(readL1ResidualControl(solverConfig)), config_(parse(solverConfig)),
+          localMatrixFormat_(solverConfig.get("localMatrixFormat", std::string("Csr"))),
+          cacheSolver_(readSwitch(solverConfig, "cacheSolver", false)),
+          preconditionerRebuildInterval_(
+              static_cast<localIdx>(solverConfig.get("preconditionerRebuildInterval", 0))
+          )
     {
         // Register NeoN's L1-scaled residual criterion in the Ginkgo config registry so a
         // configFile can name it (l1CriterionKey) in its "criteria" array. Only needed when
@@ -300,8 +328,64 @@ public:
             reg.emplace(std::string(l1CriterionKey), l1CritFactory_);
             l1InConfig_ = pnodeReferencesString(config_, l1CriterionKey);
         }
-        factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
-                       .on(gkoExec_);
+
+        // Register NeoN's MergedPgm coarseners (mergeLevels-style: merge k Pgm steps into one level
+        // via SpGEMM-composed prolongations). A configFile's `mg_level` can then name them, e.g.
+        // "mg_level": ["neon::pgmMerge2"]. Named-registry pattern, same as the L1 criterion above.
+        // pgmMerge1 = merge_levels 1 = plain Pgm (single coarsening step), but via the SAME
+        // MergedPgm code path as 2/3 -- so the cache (update_matrix_value) and distributed branches
+        // behave identically across the merge-levels sweep, unlike swapping in native gko
+        // multigrid::Pgm.
+        reg.emplace("neon::pgmMerge1", makeMergedPgmFactory<scalar>(gkoExec_, 1));
+        reg.emplace("neon::pgmMerge2", makeMergedPgmFactory<scalar>(gkoExec_, 2));
+        reg.emplace("neon::pgmMerge3", makeMergedPgmFactory<scalar>(gkoExec_, 3));
+        reg.emplace("neon::pgmMerge4", makeMergedPgmFactory<scalar>(gkoExec_, 4));
+
+        // Mixed-precision: parse the user's solver config in lower precision and wrap it in an
+        // outer fp64 Ir (Iterative Refinement) solver. The outer IR maintains the solution and
+        // residual in fp64; the inner correction solve runs in the reduced precision, which is
+        // faster on GPU. irIterations controls how many outer refinement steps are taken (1 is
+        // sufficient for most CFD use cases where per-step accuracy requirements are modest).
+        // Incompatible with l1ScaledResidual-in-config because l1 criterion is fp64-typed and
+        // cannot be embedded in the lower-precision inner factory.
+        const auto innerPrecision = solverConfig.get("innerPrecision", std::string(""));
+        if (!innerPrecision.empty())
+        {
+            if (l1InConfig_)
+                NF_ERROR_EXIT("innerPrecision cannot be combined with l1ScaledResidual in config");
+            const auto irIterations =
+                static_cast<gko::size_type>(solverConfig.get("irIterations", 1));
+            auto buildIR = [&](gko::config::type_descriptor innerTypeDesc)
+            {
+                auto innerFactory = gko::config::parse(config_, reg, innerTypeDesc).on(gkoExec_);
+                factory_ =
+                    gko::solver::Ir<scalar>::build()
+                        .with_solver(std::move(innerFactory))
+                        .with_criteria(gko::stop::Iteration::build().with_max_iters(irIterations))
+                        .on(gkoExec_);
+            };
+            if (innerPrecision == "float") buildIR(gko::config::make_type_descriptor<float>());
+#if GINKGO_ENABLE_BFLOAT16
+            else if (innerPrecision == "bfloat16")
+                buildIR(gko::config::make_type_descriptor<gko::bfloat16>());
+#endif
+            else
+            {
+                const char* validOptions = "\"float\""
+#if GINKGO_ENABLE_BFLOAT16
+                                           " or \"bfloat16\""
+#endif
+                    ;
+                NF_ERROR_EXIT(
+                    "Unknown innerPrecision '" << innerPrecision << "': use " << validOptions
+                );
+            }
+        }
+        else
+        {
+            factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
+                           .on(gkoExec_);
+        }
     }
 
     static std::string name() { return "Ginkgo"; }
@@ -354,6 +438,7 @@ private:
     std::optional<L1ResidualControl> l1Control_;
     gko::config::pnode config_;
     std::shared_ptr<const gko::LinOpFactory> factory_;
+    std::string localMatrixFormat_;
     // L1-scaled residual criterion registered into the config registry (l1Control_ set).
     std::shared_ptr<gko::stop::CriterionFactory> l1CritFactory_;
     // True when config_ names the L1 criterion, so it is built into factory_'s solver and
@@ -361,11 +446,47 @@ private:
     bool l1InConfig_ = false;
     // Report sink the in-config criterion writes its scaled L1 residual / iters into.
     mutable L1ResidualResult l1Report_;
+    // Solver reuse across timesteps (Strategy 1b, see
+    // docs/plans/ginkgo-solver-reuse-and-shared-allocator.md in NeoFOAM). When enabled the
+    // generated solver is cached and, on later solves with unchanged matrix structure, refreshed in
+    // place via gko::UpdateMatrixValue (the multigrid Pgm aggregation + smoother setup are reused)
+    // instead of regenerating the whole hierarchy. Indexed by cache slot: [0] for scalar /
+    // coupled-Vec3-rhs systems. Structure key = {nRows, localNnz, nonLocalNnz}; a mismatch drops
+    // the cache and regenerates. Wired for the scalar distributed (pressure) solveDist only; the
+    // segregated / implicit-transform Vec3 paths regenerate (cudafe++ gko::LinOp signature
+    // limitation). mutable because solve() is const.
+    //
+    // cacheSolver_: opt-in via the "cacheSolver" dict entry (default off -> regenerate every solve,
+    // i.e. the original behaviour). preconditionerRebuildInterval_: "preconditionerRebuildInterval"
+    // dict entry; when > 0 the cached solver is fully regenerated (preconditioner rebuilt from
+    // scratch) every Nth solve instead of updated in place, so Pgm aggregation drift is bounded;
+    // 0 updates in place indefinitely. cachedSolveCount_: solves served by the current cached
+    // solver per slot, reset on each (re)generate.
+    bool cacheSolver_;
+    localIdx preconditionerRebuildInterval_;
+    mutable std::array<std::shared_ptr<gko::LinOp>, 3> cachedSolver_;
+    mutable std::array<std::array<gko::size_type, 3>, 3> cachedSolverStructure_ {};
+    mutable std::array<localIdx, 3> cachedSolveCount_ {};
+    // Strategy 3 (workspace reuse for NON-updatable solvers, e.g. PBiCGStab/Cg + Jacobi/ILU): the
+    // solver is regenerated every solve, but its Krylov scratch Workspace is extracted after each
+    // solve and fed into the next generate(matrix, ws), amortizing the scratch allocation. Per
+    // cache slot, null until seeded; stays empty for updatable (1b-cached) configs whose workspace
+    // lives inside cachedSolver_. mutable because solve() is const. (Restored 2026-07-22: lost in a
+    // rebase, was the occDrivAre 0.79->2.6 s/step regression.)
+    mutable std::array<std::unique_ptr<gko::solver::Workspace>, 3> cachedWorkspace_;
 #ifdef NF_WITH_MPI_SUPPORT
     // Both caches are null until the first solve; after that topology is fixed.
     mutable std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>
         cachedImap_;
     mutable std::shared_ptr<gko::matrix::Coo<scalar, localIdx>> cachedNonLocalMtx_;
+    // Cached distributed-matrix wrapper for the scalar solve path, with the local CSR value-buffer
+    // pointer it was built for. On a steady-state solve (topology fixed, NeoN re-assembles the local
+    // block in place so its value pointer is unchanged), createGkoMtxDist returns cachedDistMtx_
+    // directly instead of re-wrapping the local CSR -- which would otherwise re-run Ginkgo's Csr
+    // load-balancing (srow) analysis every solve (~72 ms on the 16M-row local block). Restored
+    // 2026-07-23 (dropped in a rebase). null / nullptr until the first solve.
+    mutable std::shared_ptr<const gko::LinOp> cachedDistMtx_;
+    mutable const scalar* cachedLocalValPtr_ = nullptr;
 #endif
 };
 

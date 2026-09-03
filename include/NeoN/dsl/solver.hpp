@@ -56,7 +56,9 @@ la::SolverStats iterativeSolveImpl(
     );
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
+    // [fence-audit] removed redundant fence: the assemble kernels and the Ginkgo solve run on the
+    // same Kokkos stream (ginkgo.cpp createGkoExecutor threads it through), so the solve is already
+    // ordered after the assembly -- no device-wide sync needed here.
 
     // Do some sanity checks before trying to solve
     NF_ASSERT(ls.exec() == solution.exec(), "Executors are not the same");
@@ -76,7 +78,7 @@ la::SolverStats iterativeSolveImpl(
     auto ls = exp.assemble(solution.mesh(), t, dt, ps);
 
     auto solver = la::Solver(solution.exec(), fvSolution);
-    fence(solution.exec());
+    // [fence-audit] removed redundant fence (same Kokkos stream as the Ginkgo solve; see above).
     return solver.solve(ls, solution.internalVector());
 }
 }

@@ -15,14 +15,13 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename FieldValueType, typename AssemblyType>
+template<typename FieldValueType, typename AssemblyType, typename WeightKernel>
 static void computeDivLaplacianIntImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
     const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    WeightKernel weightKernel,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -47,7 +46,7 @@ static void computeDivLaplacianIntImpl(
             auto nei = neiV[facei];
 
             auto fluxDiv = phiV[facei];
-            const auto weight = (phiV[facei] >= 0) ? 1.0 : 0.0;
+            const auto weight = weightKernel.weight(facei, fluxDiv);
             auto fluxLap = deltaV[facei] * gammaV[facei] * magFaceAreaV[facei];
 
             auto coeffNeiA = coeffA[nei];
@@ -71,14 +70,13 @@ static void computeDivLaplacianIntImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType>
+template<typename FieldValueType, typename AssemblyType, typename WeightKernel>
 static void computeDivLaplacianIntCellBasedImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
     const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    WeightKernel weightKernel,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -123,9 +121,8 @@ static void computeDivLaplacianIntCellBasedImpl(
                 const auto faceIdx = cellFacesValues[startIdx + i];
                 const auto sign = faceSignV[startIdx + i];
 
-                // upwind weight: 1 if flux leaves owner (flux > 0), 0 otherwise
                 const auto flux = phiV[faceIdx];
-                const auto w = (flux >= 0) ? scalar(1) : scalar(0);
+                const auto w = weightKernel.weight(faceIdx, flux);
 
                 // Laplacian face coefficient: δ_f · γ_f · |S_f|
                 const auto fluxLap = deltaV[faceIdx] * gammaV[faceIdx] * magFaceAreaV[faceIdx];
@@ -157,14 +154,14 @@ static void computeDivLaplacianIntCellBasedImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType>
+template<typename FieldValueType, typename AssemblyType, typename WeightKernel>
 static void computeDivLaplacianBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const VolumeField<FieldValueType>& u,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
     const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    WeightKernel weightKernel,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -209,9 +206,9 @@ static void computeDivLaplacianBoundImpl(
             auto valFrac1 = valueFraction[bfi];
             auto valFrac2 = 1.0 - valFrac1;
 
-            const auto bweights = (fluxDiv >= 0) ? scalar(1) : scalar(0);
+            const auto bw = weightKernel.boundaryWeight(bfi, fluxDiv);
 
-            auto valueDiv = -bweights * coeffAOwn * fluxDiv * valFrac2;
+            auto valueDiv = -bw * coeffAOwn * fluxDiv * valFrac2;
             auto valueLap = bDeltaV[bfi] * coeffBOwn * fluxLap * valFrac1;
             auto valueA = (valueDiv + valueLap) * one<AssemblyType>();
 
@@ -234,14 +231,13 @@ static void computeDivLaplacianBoundImpl(
     );
 }
 
-template<typename FieldValueType, typename AssemblyType>
+template<typename FieldValueType, typename AssemblyType, typename WeightKernel>
 static void computeDivLaplacianProcBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
-    const VolumeField<FieldValueType>& /*U*/,
     const SurfaceField<scalar>& phi,
     const SurfaceField<scalar>& gamma,
-    const SurfaceInterpolation<FieldValueType>& /*divSurfInterp*/,
     const FaceNormalGradient<FieldValueType>& faceNormalGradient,
+    WeightKernel weightKernel,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB
 )
@@ -282,12 +278,12 @@ static void computeDivLaplacianProcBoundImpl(
             auto lapFlux = bGammaV[bcfacei] * bMagSf[bcfacei] * bDeltaCoeffs[bcfacei];
             auto lapValue = lapFlux * ownCoeffB * one<AssemblyType>();
 
-            // Div upwind contribution
+            // Div contribution
             auto isOwnerFace = isOwner[bcfacei] > 0.0;
             auto sign = isOwnerFace ? scalar(-1) : scalar(1);
             auto bFlux = bPhiV[bcfacei];
-            auto weight = isOwnerFace ? (bFlux >= 0 ? scalar(1) : scalar(0))
-                                      : (bFlux >= 0 ? scalar(0) : scalar(1));
+            auto bw = weightKernel.procBoundaryWeight(bcfacei, bFlux);
+            auto weight = isOwnerFace ? bw : (scalar(1) - bw);
             auto divDiag = sign * weight * bFlux * ownCoeffA * one<AssemblyType>();
             auto divOffDiag =
                 -sign * (scalar(1) - weight) * bFlux * ownCoeffA * one<AssemblyType>();
@@ -324,59 +320,39 @@ void GaussGreenDivLaplacian<ValueType>::explicitOperation(Vector<ValueType>& /*s
 template<typename ValueType>
 void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
-    {
-        if (!cellIter->getCellBasedData())
+    const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
+    std::visit(
+        [&](auto&& kernel)
         {
-            cellIter->setComputeCellBasedData(
-                this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            if (auto* cellIter =
+                    dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+            {
+                if (!cellIter->getCellBasedData())
+                {
+                    cellIter->setComputeCellBasedData(
+                        this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                    );
+                }
+                computeDivLaplacianIntCellBasedImpl(
+                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                );
+            }
+            else
+            {
+                computeDivLaplacianIntImpl(
+                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                );
+            }
+            computeDivLaplacianBoundImpl(
+                ls, this->getVector(), flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
             );
-        }
-        computeDivLaplacianIntCellBasedImpl(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
-    }
-    else
-    {
-        computeDivLaplacianIntImpl(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
-    }
+            computeDivLaplacianProcBoundImpl(
+                ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+            );
+        },
+        inlineKernel
+    );
     computeLaplacianNonOrthCorrImpl(ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_);
-    computeDivLaplacianBoundImpl(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
-    computeDivLaplacianProcBoundImpl(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
 
     // Deferred correction for a corrected div scheme (e.g. linearUpwind): the fused matrix uses
     // upwind div weights, the gradient correction is added explicitly to the rhs (internal + proc).
@@ -405,60 +381,40 @@ void GaussGreenDivLaplacian<ValueType>::implicitOperation(la::LinearSystem<scala
 ) const
     requires(!std::is_same_v<ValueType, scalar>)
 {
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
-    {
-        if (!cellIter->getCellBasedData())
+    const auto inlineKernel = divSurfaceInterpolation_->inlineWeightKernel(flux_);
+    std::visit(
+        [&](auto&& kernel)
         {
-            cellIter->setComputeCellBasedData(
-                this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+            if (auto* cellIter =
+                    dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+            {
+                if (!cellIter->getCellBasedData())
+                {
+                    cellIter->setComputeCellBasedData(
+                        this->getVector().mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                    );
+                }
+                computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
+                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                );
+            }
+            else
+            {
+                computeDivLaplacianIntImpl<ValueType, scalar>(
+                    ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+                );
+            }
+            computeDivLaplacianBoundImpl<ValueType, scalar>(
+                ls, this->getVector(), flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
             );
-        }
-        computeDivLaplacianIntCellBasedImpl<ValueType, scalar>(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
-    }
-    else
-    {
-        computeDivLaplacianIntImpl<ValueType, scalar>(
-            ls,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *divSurfaceInterpolation_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_
-        );
-    }
+            computeDivLaplacianProcBoundImpl<ValueType, scalar>(
+                ls, flux_, gamma_, *faceNormalGradient_, kernel, coeffA_, coeffB_
+            );
+        },
+        inlineKernel
+    );
     computeLaplacianNonOrthCorrImpl<ValueType, scalar>(
         ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
-    );
-    computeDivLaplacianBoundImpl<ValueType, scalar>(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
-    );
-    computeDivLaplacianProcBoundImpl<ValueType, scalar>(
-        ls,
-        this->getVector(),
-        flux_,
-        gamma_,
-        *divSurfaceInterpolation_,
-        *faceNormalGradient_,
-        coeffA_,
-        coeffB_
     );
 
     // Deferred correction for a corrected div scheme (e.g. linearUpwind), scalar-matrix / Vec3-rhs.
@@ -514,12 +470,16 @@ void GaussGreenDivLaplacian<ValueType>::read(const Input& input)
     }
     divTokens.remove(0);
 
+    // Accept the cell-limited vector variant `linearUpwindV` alongside `linearUpwind`; both map to
+    // the linearUpwind interpolation (SurfaceInterpolation registers "linearUpwindV" for the
+    // CellLimited case).
     const auto divScheme = divTokens.get<std::string>(0);
-    if (divScheme != "upwind" && divScheme != "linearUpwind")
+    if (divScheme != "upwind" && divScheme != "linearUpwind" && divScheme != "linearUpwindV")
     {
         NF_ERROR_EXIT(
-            "GaussGreenDivLaplacian only supports 'Gauss upwind' or 'Gauss linearUpwind' for "
-            "divSchemes, got: Gauss "
+            "GaussGreenDivLaplacian only supports 'Gauss upwind', 'Gauss linearUpwind' or "
+            "'Gauss linearUpwindV' (optionally with a leading 'bounded') for divSchemes, got: "
+            "Gauss "
             << divScheme
         );
     }

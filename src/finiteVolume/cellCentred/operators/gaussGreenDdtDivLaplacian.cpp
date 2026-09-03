@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <variant>
+
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
@@ -12,7 +14,7 @@
 namespace NeoN::finiteVolume::cellCentred
 {
 
-template<typename ValueType>
+template<typename ValueType, typename WeightKernel>
 static void computeDdtDivLapImplCell(
     la::LinearSystem<ValueType>& ls,
     scalar dt,
@@ -22,7 +24,8 @@ static void computeDdtDivLapImplCell(
     const FaceNormalGradient<ValueType>& faceNormalGradient,
     const dsl::Coeff coeffA,
     const dsl::Coeff coeffB,
-    std::shared_ptr<la::CellBasedIterator> iterator
+    std::shared_ptr<la::CellBasedIterator> iterator,
+    WeightKernel weightKernel
 )
 {
     const auto exec = ls.exec();
@@ -74,9 +77,14 @@ static void computeDdtDivLapImplCell(
                 const auto faceIdx = cellFacesValues[startIdx + i];
                 const auto sign = faceSignV[startIdx + i];
 
-                // upwind weight: 1 if flux leaves owner (flux > 0), 0 otherwise
+                // Div interpolation weight supplied by the configured scheme's device-callable
+                // inline kernel (upwind: 1 if flux leaves owner; linear: geometric weight),
+                // replacing the previously hard-coded upwind so this operator honours fvSchemes.
+                // NOTE: corrected schemes (e.g. linearUpwind) contribute only their upwind weight
+                // here; their explicit gradient correction is not (yet) added as a deferred RHS
+                // source, matching this operator's prior first-order div behaviour.
                 const auto flux = phiV[faceIdx];
-                const auto w = (flux >= 0) ? scalar(1) : scalar(0);
+                const auto w = weightKernel.weight(faceIdx, flux);
 
                 // Laplacian face coefficient: δ_f · γ_f · |S_f|
                 const auto fluxLap = deltaV[faceIdx] * gammaV[faceIdx] * magFaceAreaV[faceIdx];
@@ -119,16 +127,27 @@ void GaussGreenDdtDivLaplacian<ValueType>::implicitOperation(
 
     if (ls.getMeshIterator()->name() == "CellBased")
     {
-        computeDdtDivLapImplCell(
-            ls,
-            dt,
-            this->getVector(),
-            flux_,
-            gamma_,
-            *faceNormalGradient_,
-            coeffA_,
-            coeffB_,
-            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get())
+        auto iterator =
+            std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get());
+        // Dispatch on the configured div scheme's inline weight kernel on the host; the concrete
+        // kernel is captured by value into the device loop (no std::variant on the device).
+        std::visit(
+            [&](auto&& kernel)
+            {
+                computeDdtDivLapImplCell(
+                    ls,
+                    dt,
+                    this->getVector(),
+                    flux_,
+                    gamma_,
+                    *faceNormalGradient_,
+                    coeffA_,
+                    coeffB_,
+                    iterator,
+                    kernel
+                );
+            },
+            divSurfaceInterpolation_->inlineWeightKernel(flux_)
         );
         computeLaplacianNonOrthCorrImpl(
             ls, gamma_, this->getVector(), coeffB_, *faceNormalGradient_
