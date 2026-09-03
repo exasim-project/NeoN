@@ -31,8 +31,7 @@ TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
 // Density-weighted temporal operator ddt(rho, phi): diagonal uses rho, rhs uses
 // oldTime(rho), giving the conservative (rho_n*phi - rho_o*phi_o)/dt form.
 template<typename ValueType>
-TemporalOperator<ValueType>
-ddt(fvcc::VolumeField<scalar>& rho, fvcc::VolumeField<ValueType>& phi)
+TemporalOperator<ValueType> ddt(fvcc::VolumeField<scalar>& rho, fvcc::VolumeField<ValueType>& phi)
 {
     return fvcc::DdtOperator<ValueType>(dsl::Operator::Type::Implicit, rho, phi);
 }
@@ -48,8 +47,7 @@ source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
 // explicitly to the rhs (OpenFOAM fvm::SuSp). Keeps the matrix diagonally dominant
 // for a coefficient of either sign (e.g. the kOmegaSST cross-diffusion term).
 template<typename ValueType>
-SpatialOperator<ValueType>
-susp(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
+SpatialOperator<ValueType> susp(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
 {
     return SpatialOperator<ValueType>(
         fvcc::SourceTerm(dsl::Operator::Type::Implicit, coeff, phi, true)
