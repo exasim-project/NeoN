@@ -17,8 +17,8 @@ jobs:
         ref: ${{env.BRANCH_NAME}}
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install -y \
            pre-commit
         pip install identify --upgrade
         pre-commit install
@@ -53,8 +53,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install -y \
            ninja-build \
            iwyu \
            clang-19 \
@@ -104,8 +104,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install \
+        sudo apt-get update
+        sudo apt-get install -y \
            clang-tidy-19 \
            libomp-19-dev \
            libopenmpi-dev \
