@@ -5,6 +5,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
+#include <nanobind/stl/pair.h>
 #include <nanobind/stl/variant.h>
 #include <nanobind/operators.h>
 
@@ -14,6 +15,8 @@
 #include "NeoN/dsl/implicit.hpp"
 #include "NeoN/dsl/explicit.hpp"
 #include "NeoN/dsl/solver.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp"
 #include "bindings.hpp"
@@ -243,6 +246,47 @@ void registerDSL(nb::module_& m)
            scalar dt,
            const Dictionary& schemes,
            const Dictionary& solution) { return dsl::solve(exp, sol, t, dt, schemes, solution); }
+    );
+
+    // Test hook: assemble only the implicit SPATIAL operators of an expression into an empty
+    // linear system for `mesh` and hand back the host-side matrix values and rhs. There is no
+    // solver-independent way to observe assembly from Python otherwise, so binding tests for
+    // implicit factories (in particular the imp.susp sign split, where the same operator name
+    // and Python type covers both the Sp and the Su branch) would only be able to check that the
+    // overload resolves, not what it assembles.
+    m.def(
+        "assemble_spatial",
+        [](dsl::Expression<scalar>& expr, const UnstructuredMesh& mesh)
+        {
+            auto ls = la::createEmptyLinearSystem<scalar>(mesh);
+            expr.assembleSpatialOperator(ls);
+            auto lsHost = ls.copyToHost();
+            const auto values = lsHost.matrix().values().view();
+            const auto rhs = lsHost.rhs().view();
+            std::vector<scalar> v(values.begin(), values.end());
+            std::vector<scalar> r(rhs.begin(), rhs.end());
+            return std::make_pair(std::move(v), std::move(r));
+        },
+        "expr"_a,
+        "mesh"_a,
+        "Assemble the implicit spatial operators of a scalar expression; returns (values, rhs)"
+    );
+    m.def(
+        "assemble_spatial",
+        [](dsl::Expression<Vec3>& expr, const UnstructuredMesh& mesh)
+        {
+            auto ls = la::createEmptyLinearSystem<Vec3>(mesh);
+            expr.assembleSpatialOperator(ls);
+            auto lsHost = ls.copyToHost();
+            const auto values = lsHost.matrix().values().view();
+            const auto rhs = lsHost.rhs().view();
+            std::vector<Vec3> v(values.begin(), values.end());
+            std::vector<Vec3> r(rhs.begin(), rhs.end());
+            return std::make_pair(std::move(v), std::move(r));
+        },
+        "expr"_a,
+        "mesh"_a,
+        "Assemble the implicit spatial operators of a vector expression; returns (values, rhs)"
     );
 
     // Registered runtime-selection scheme names per operator factory, keyed by

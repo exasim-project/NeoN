@@ -116,3 +116,54 @@ def test_scalar_field_operators_evaluate_boundaries(executor):
     target.assign(a * b)
     assert np.allclose(_values(target), 15.0)
     assert np.allclose(boundary(target), 1500.0)
+
+
+def test_field_field_operators_reject_mismatched_meshes(executor):
+    """Field-field maths validates its operands instead of reading out of bounds.
+
+    The kernels iterate over the LEFT operand's size and index the right one directly, so a
+    mismatch used to be an out-of-bounds device read rather than a Python-level error.
+    """
+    name, exec = executor
+    mesh_a = neon.create_1d_uniform_mesh(exec, 4)
+    mesh_b = neon.create_1d_uniform_mesh(exec, 8)
+
+    a = _filled(exec, mesh_a, 2.0)
+    b = _filled(exec, mesh_b, 3.0)
+
+    for op in (
+        lambda: a * b,
+        lambda: a / b,
+        lambda: a + b,
+        lambda: a - b,
+        lambda: neon.field_max(a, b),
+        lambda: neon.field_min(a, b),
+        lambda: a.assign(b),
+    ):
+        with pytest.raises(ValueError):
+            op()
+
+    # Same size but a different mesh object is still rejected: element i is a different cell.
+    mesh_c = neon.create_1d_uniform_mesh(exec, 4)
+    c = _filled(exec, mesh_c, 3.0)
+    with pytest.raises(ValueError):
+        a * c
+
+
+def test_surface_field_operators_reject_mismatched_meshes(executor):
+    """The scalar SurfaceField binary operators validate their operands too."""
+    name, exec = executor
+    mesh_a = neon.create_1d_uniform_mesh(exec, 4)
+    mesh_b = neon.create_1d_uniform_mesh(exec, 8)
+
+    a = neon.ScalarSurfaceField(exec, "a", mesh_a)
+    b = neon.ScalarSurfaceField(exec, "b", mesh_b)
+    neon.fill(a.internal_vector(), 2.0)
+    neon.fill(b.internal_vector(), 3.0)
+
+    for op in (lambda: a + b, lambda: a - b, lambda: a * b, lambda: a.assign(b)):
+        with pytest.raises(ValueError):
+            op()
+
+    # The scalar overloads still broadcast.
+    assert isinstance(2.0 * a, neon.ScalarSurfaceField)

@@ -6,6 +6,8 @@
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
+#include <stdexcept>
+
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -37,6 +39,30 @@ ScalarVol seededLike(const ScalarVol& proto)
     result.internalVector() = proto.internalVector();
     result.boundaryData().value() = proto.boundaryData().value();
     return result;
+}
+
+// Guard every field-field operation. The kernels iterate over the LEFT operand's size and index
+// the right one directly, so mismatched operands would read out of bounds on the device instead
+// of raising in Python. Mesh identity is the real precondition (element i must mean the same cell
+// in both fields); executor and vector sizes are checked too so a mismatch reports the specific
+// cause. std::invalid_argument surfaces as a Python ValueError through nanobind.
+void requireCompatible(const ScalarVol& a, const ScalarVol& b, const char* op)
+{
+    if (&a.mesh() != &b.mesh())
+    {
+        throw std::invalid_argument(std::string(op) + ": operands must live on the same mesh");
+    }
+    if (a.exec() != b.exec())
+    {
+        throw std::invalid_argument(std::string(op) + ": operands must live on the same executor");
+    }
+    if (a.internalVector().size() != b.internalVector().size()
+        || a.boundaryData().value().size() != b.boundaryData().value().size())
+    {
+        throw std::invalid_argument(
+            std::string(op) + ": operands must have matching internal and boundary sizes"
+        );
+    }
 }
 
 // The elementwise kernels live in free functions on raw vectors (not inside the
@@ -237,6 +263,7 @@ void sqrtVec(const NeoN::Executor& exec, ScalarVec& r, std::string label)
 
 ScalarVol mulFieldField(const ScalarVol& a, const ScalarVol& b)
 {
+    requireCompatible(a, b, "field * field");
     ScalarVol r = seededLike(a);
     mulVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldMul");
     mulVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldMul::b");
@@ -253,6 +280,7 @@ ScalarVol mulFieldScalar(const ScalarVol& a, NeoN::scalar s)
 
 ScalarVol divFieldField(const ScalarVol& a, const ScalarVol& b)
 {
+    requireCompatible(a, b, "field / field");
     ScalarVol r = seededLike(a);
     divVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldDiv");
     divVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldDiv::b");
@@ -270,6 +298,7 @@ ScalarVol divFieldScalar(const ScalarVol& a, NeoN::scalar s)
 
 ScalarVol addFieldField(const ScalarVol& a, const ScalarVol& b)
 {
+    requireCompatible(a, b, "field + field");
     ScalarVol r = seededLike(a);
     addVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldAdd");
     addVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldAdd::b");
@@ -286,6 +315,7 @@ ScalarVol addFieldScalar(const ScalarVol& a, NeoN::scalar s)
 
 ScalarVol subFieldField(const ScalarVol& a, const ScalarVol& b)
 {
+    requireCompatible(a, b, "field - field");
     ScalarVol r = seededLike(a);
     subVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldSub");
     subVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldSub::b");
@@ -349,6 +379,7 @@ ScalarVol powFieldScalar(const ScalarVol& a, NeoN::scalar e)
 // Elementwise max(field, field) — e.g. Spalart-Allmaras Stilda = max(Omega + ..., Cs*Omega).
 ScalarVol maxFieldField(const ScalarVol& a, const ScalarVol& b)
 {
+    requireCompatible(a, b, "field_max(a, b)");
     ScalarVol r = seededLike(a);
     maxVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldMaxField");
     maxVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldMaxField::b");
@@ -367,6 +398,7 @@ ScalarVol minFieldScalar(const ScalarVol& a, NeoN::scalar high)
 // Elementwise min(field, field) — e.g. the kOmegaSST production limiter min(G, ...).
 ScalarVol minFieldField(const ScalarVol& a, const ScalarVol& b)
 {
+    requireCompatible(a, b, "field_min(a, b)");
     ScalarVol r = seededLike(a);
     minVecVec(r.exec(), r.internalVector(), b.internalVector(), "fieldMinField");
     minVecVec(r.exec(), r.boundaryData().value(), b.boundaryData().value(), "fieldMinField::b");
@@ -515,6 +547,7 @@ void registerVolumeField(nb::module_& m)
             "assign",
             [](fvcc::VolumeField<NeoN::scalar>& self, const fvcc::VolumeField<NeoN::scalar>& other)
             {
+                requireCompatible(self, other, "assign");
                 self.internalVector() = other.internalVector();
                 self.boundaryData().value() = other.boundaryData().value();
             },
@@ -522,8 +555,9 @@ void registerVolumeField(nb::module_& m)
             "Deep-copy internal + boundary values from another scalar field (mirrors C++ =)"
         )
         // Elementwise arithmetic — each returns a fresh scalar field so a
-        // turbulence closure can be written as readable field maths. The field
-        // operands must share the same mesh; the scalar overloads broadcast.
+        // turbulence closure can be written as readable field maths. Field-field
+        // operands must share mesh, executor and sizes (enforced by
+        // requireCompatible, raising ValueError); the scalar overloads broadcast.
         .def("__mul__", &mulFieldField, nb::is_operator())
         .def("__mul__", &mulFieldScalar, nb::is_operator())
         .def("__rmul__", &mulFieldScalar, nb::is_operator())

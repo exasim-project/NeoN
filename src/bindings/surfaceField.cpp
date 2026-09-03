@@ -6,6 +6,8 @@
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
+#include <stdexcept>
+
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/database/oldTimeCollection.hpp"
@@ -19,6 +21,33 @@ using namespace nb::literals;
 
 namespace NeoN::bindings
 {
+
+namespace
+{
+using ScalarSurf = NeoN::finiteVolume::cellCentred::SurfaceField<NeoN::scalar>;
+
+// Same precondition as the VolumeField binary operators: element i must mean the same face in
+// both operands. Without this the underlying Vector ops abort the interpreter on an assert
+// (or, for `assign`, silently resize the target) instead of raising in Python.
+void requireCompatible(const ScalarSurf& a, const ScalarSurf& b, const char* op)
+{
+    if (&a.mesh() != &b.mesh())
+    {
+        throw std::invalid_argument(std::string(op) + ": operands must live on the same mesh");
+    }
+    if (a.exec() != b.exec())
+    {
+        throw std::invalid_argument(std::string(op) + ": operands must live on the same executor");
+    }
+    if (a.internalVector().size() != b.internalVector().size()
+        || a.boundaryData().value().size() != b.boundaryData().value().size())
+    {
+        throw std::invalid_argument(
+            std::string(op) + ": operands must have matching internal and boundary sizes"
+        );
+    }
+}
+}
 
 void registerSurfaceField(nb::module_& m)
 {
@@ -141,6 +170,7 @@ void registerSurfaceField(nb::module_& m)
             [](fvcc::SurfaceField<NeoN::scalar>& self,
                const fvcc::SurfaceField<NeoN::scalar>& other)
             {
+                requireCompatible(self, other, "assign");
                 self.internalVector() = other.internalVector();
                 self.boundaryData().value() = other.boundaryData().value();
             },
@@ -150,21 +180,30 @@ void registerSurfaceField(nb::module_& m)
         .def(
             "__add__",
             [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
-            { return a + b; },
+            {
+                requireCompatible(a, b, "field + field");
+                return a + b;
+            },
             "other"_a,
             "Element-wise addition of two scalar surface fields"
         )
         .def(
             "__mul__",
             [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
-            { return a * b; },
+            {
+                requireCompatible(a, b, "field * field");
+                return a * b;
+            },
             "other"_a,
             "Element-wise multiplication of two scalar surface fields"
         )
         .def(
             "__sub__",
             [](const fvcc::SurfaceField<NeoN::scalar>& a, const fvcc::SurfaceField<NeoN::scalar>& b)
-            { return a - b; },
+            {
+                requireCompatible(a, b, "field - field");
+                return a - b;
+            },
             "other"_a,
             "Element-wise subtraction of two scalar surface fields"
         )

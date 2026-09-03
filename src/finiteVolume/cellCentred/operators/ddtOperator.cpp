@@ -79,8 +79,9 @@ void DdtOperator<ValueType>::bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar,
             ls.exec(),
             {0, oldVector.size()},
             NEON_LAMBDA(const localIdx celli) {
-                values[ma.diagIdx(celli)] += rhoNew[celli] * vol[celli] * a0a1 * one<ValueType>();
-                rhs[celli] += rhoOld[celli] * vol[celli] * a0a1 * oldVector[celli];
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0a1 * one<ValueType>();
+                rhs[celli] += rhoOld[celli] * commonCoef * a0a1 * oldVector[celli];
             },
             "ddtOperator::implicitOperation<BDF1,rho>"
         );
@@ -127,9 +128,10 @@ void DdtOperator<ValueType>::bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar,
             ls.exec(),
             {0, oldVector.size()},
             NEON_LAMBDA(const localIdx celli) {
-                values[ma.diagIdx(celli)] += rhoNew[celli] * vol[celli] * a0 * one<ValueType>();
-                rhs[celli] += rhoOld[celli] * vol[celli] * a1 * oldVector[celli]
-                            + rhoOldOld[celli] * vol[celli] * a2 * oldOldVector[celli];
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0 * one<ValueType>();
+                rhs[celli] += rhoOld[celli] * commonCoef * a1 * oldVector[celli]
+                            + rhoOldOld[celli] * commonCoef * a2 * oldOldVector[celli];
             },
             "ddtOperator::implicitOperation<BDF2,rho>"
         );
@@ -196,8 +198,9 @@ void DdtOperator<ValueType>::bdf1KernelScalarMtx(
             {0, oldVector.size()},
             NEON_LAMBDA(const localIdx celli) {
                 // density-weighted: rho_n on the (scalar) diagonal, rho_o on the rhs
-                values[ma.diagIdx(celli)] += rhoNew[celli] * vol[celli] * a0a1;
-                rhs[celli] += rhoOld[celli] * vol[celli] * a0a1 * oldVector[celli];
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0a1;
+                rhs[celli] += rhoOld[celli] * commonCoef * a0a1 * oldVector[celli];
             },
             "ddtOperator::implicitOperationScalarMtx<BDF1,rho>"
         );
@@ -247,9 +250,10 @@ void DdtOperator<ValueType>::bdf2KernelScalarMtx(
             ls.exec(),
             {0, oldVector.size()},
             NEON_LAMBDA(const localIdx celli) {
-                values[ma.diagIdx(celli)] += rhoNew[celli] * vol[celli] * a0;
-                rhs[celli] += rhoOld[celli] * vol[celli] * a1 * oldVector[celli]
-                            + rhoOldOld[celli] * vol[celli] * a2 * oldOldVector[celli];
+                const auto commonCoef = operatorScaling[celli] * vol[celli];
+                values[ma.diagIdx(celli)] += rhoNew[celli] * commonCoef * a0;
+                rhs[celli] += rhoOld[celli] * commonCoef * a1 * oldVector[celli]
+                            + rhoOldOld[celli] * commonCoef * a2 * oldOldVector[celli];
             },
             "ddtOperator::implicitOperationScalarMtx<BDF2,rho>"
         );

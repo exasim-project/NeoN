@@ -17,9 +17,10 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
     const auto nCells = mesh.nCells();
     const auto nInt = mesh.nInternalFaces();
     const auto nBnd = mesh.nBoundaryFaces();
+    const auto nProc = mesh.nProcBoundaryFaces();
 
-    const auto Sf = mesh.faceNormals().view();   // Vec3 area vectors
-    const auto magSf = mesh.faceAreas().view();  // |Sf|
+    const auto Sf = mesh.faceNormals().view();  // Vec3 area vectors
+    const auto magSf = mesh.faceAreas().view(); // |Sf|
     const auto own = mesh.faceOwners().view();
     const auto nei = mesh.faceNeighbors().view();
     const auto ssfI = ssf.internalVector().view();
@@ -33,13 +34,12 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
         Gxz(exec, nCells, 0.0), Gyy(exec, nCells, 0.0), Gyz(exec, nCells, 0.0),
         Gzz(exec, nCells, 0.0);
     NeoN::Vector<NeoN::Vec3> b(exec, nCells, NeoN::Vec3 {0.0, 0.0, 0.0});
-    auto gxx = Gxx.view(), gxy = Gxy.view(), gxz = Gxz.view(), gyy = Gyy.view(),
-         gyz = Gyz.view(), gzz = Gzz.view();
+    auto gxx = Gxx.view(), gxy = Gxy.view(), gxz = Gxz.view(), gyy = Gyy.view(), gyz = Gyz.view(),
+         gzz = Gzz.view();
     auto bv = b.view();
 
-    auto scatter = KOKKOS_LAMBDA(
-        const NeoN::localIdx c, const NeoN::Vec3& sf, NeoN::scalar mg, NeoN::scalar val
-    )
+    auto scatter =
+        NEON_LAMBDA(const NeoN::localIdx c, const NeoN::Vec3& sf, NeoN::scalar mg, NeoN::scalar val)
     {
         const NeoN::scalar im = 1.0 / mg;
         Kokkos::atomic_add(&gxx[c], sf[0] * sf[0] * im);
@@ -54,53 +54,99 @@ VolumeField<Vec3> reconstruct(const SurfaceField<scalar>& ssf)
     };
 
     NeoN::parallelFor(
-        exec, {0, nInt},
-        KOKKOS_LAMBDA(const NeoN::localIdx f) {
+        exec,
+        {0, nInt},
+        NEON_LAMBDA(const NeoN::localIdx f) {
             scatter(own[f], Sf[f], magSf[f], ssfI[f]); // surfaceSum: +owner
             scatter(nei[f], Sf[f], magSf[f], ssfI[f]); // surfaceSum: +neighbour
         },
         "reconstruct::scatterInternal"
     );
+    // Physical boundary faces: bSf points out of the owner cell and the stored face value is
+    // already the outward flux, so no sign correction is needed.
     NeoN::parallelFor(
-        exec, {0, nBnd},
-        KOKKOS_LAMBDA(const NeoN::localIdx bf) {
-            scatter(bOwn[bf], bSf[bf], bMag[bf], ssfB[bf]);
-        },
+        exec,
+        {0, nBnd},
+        NEON_LAMBDA(const NeoN::localIdx bf) { scatter(bOwn[bf], bSf[bf], bMag[bf], ssfB[bf]); },
         "reconstruct::scatterBoundary"
     );
+    if (nProc > 0)
+    {
+        // Processor (coupled) faces occupy the trailing boundary slots. Skipping them would
+        // make the reconstruction decomposition-dependent for cells on a partition interface.
+        // bSf points out of the LOCAL cell, but the stored flux keeps the global owner->neighbour
+        // sense, so flip it where the local cell is the neighbour of the cross-rank face.
+        // boundaryMesh().weights() carries that sign (same convention as BoundedDiv).
+        const auto isOwnerV = mesh.boundaryMesh().weights().view();
+        NeoN::parallelFor(
+            exec,
+            {0, nProc},
+            NEON_LAMBDA(const NeoN::localIdx procFacei) {
+                const auto bf = nBnd + procFacei;
+                const auto val = (isOwnerV[bf] > 0.0) ? ssfB[bf] : -ssfB[bf];
+                scatter(bOwn[bf], bSf[bf], bMag[bf], val);
+            },
+            "reconstruct::scatterProcBoundary"
+        );
+    }
 
+    // 'extrapolated' on physical patches + 'processor' on coupled patches: the trailing
+    // correctBoundaryConditions() then fills physical boundary values from the owner cell and
+    // exchanges the neighbour value across rank boundaries. A plain 'calculated' BC is a no-op
+    // and would leave the whole boundary field at zero.
     VolumeField<Vec3> res(
-        exec, "reconstruct(" + ssf.name + ")", mesh,
-        createCalculatedBCs<VolumeBoundary<NeoN::Vec3>>(mesh)
+        exec,
+        "reconstruct(" + ssf.name + ")",
+        mesh,
+        createExtrapolatedBCs<VolumeBoundary<NeoN::Vec3>>(mesh)
     );
     auto r = res.internalVector().view();
     NeoN::parallelFor(
-        exec, {0, nCells},
-        KOKKOS_LAMBDA(const NeoN::localIdx c) {
+        exec,
+        {0, nCells},
+        NEON_LAMBDA(const NeoN::localIdx c) {
             // invert symmetric [[a,d,e],[d,ff,g],[e,g,h]] & b
-            NeoN::scalar a = gxx[c], ff = gyy[c], h = gzz[c];
+            const NeoN::scalar a0 = gxx[c], f0 = gyy[c], h0 = gzz[c];
             const NeoN::scalar d = gxy[c], e = gxz[c], g = gyz[c];
-            // Regularise empty (zero-area) directions so the in-plane block still
-            // inverts on 2D meshes. OpenFOAM keeps the empty front/back faces in the
-            // surfaceSum, giving a full-rank tensor; NeoN drops them, leaving a zero
-            // diagonal in the empty direction (e.g. gzz==0 on a planar z-normal mesh).
-            // Setting that decoupled diagonal to the trace makes det!=0 while leaving
-            // the in-plane 2x2 result (and the ~0 empty-direction result) unchanged —
-            // matching fvc::reconstruct componentwise.
-            const NeoN::scalar tr = a + ff + h;
+            const NeoN::scalar tr = a0 + f0 + h0;
+            const NeoN::Vec3 rhs = bv[c];
+
+            // Regularise empty (zero-area) directions so the in-plane block still inverts on 2D
+            // meshes. OpenFOAM keeps the empty front/back faces in the surfaceSum, giving a
+            // full-rank tensor; NeoN drops them, leaving a zero diagonal in the empty direction
+            // (e.g. gzz==0 on a planar z-normal mesh). Setting that decoupled diagonal to the
+            // trace makes det!=0 while leaving the in-plane 2x2 result (and the ~0
+            // empty-direction result) unchanged. This mirrors OpenFOAM's inv(symmTensorField),
+            // which likewise only strips coordinate-aligned null components.
             const NeoN::scalar reg = 1e-9 * tr;
-            if (a < reg) a = tr;
-            if (ff < reg) ff = tr;
-            if (h < reg) h = tr;
+            NeoN::scalar a = (a0 < reg) ? tr : a0;
+            NeoN::scalar ff = (f0 < reg) ? tr : f0;
+            NeoN::scalar h = (h0 < reg) ? tr : h0;
+
+            NeoN::scalar det = a * (ff * h - g * g) + d * (e * g - d * h) + e * (d * g - e * ff);
+
+            // The axis-aligned strip above cannot see a null direction that is oblique to the
+            // coordinate axes (a rank-deficient mesh in a rotated plane keeps all three diagonals
+            // above reg while the tensor stays singular). Fall back to an isotropic ridge in that
+            // case: it is rotation invariant and perturbs the well-resolved directions by only
+            // O(1e-8) relative, while the (numerically ~zero) null component stays negligible.
+            // Without it det==0 and the whole cell would be forced to zero.
+            if (!(Kokkos::fabs(det) > 1e-12 * tr * tr * tr))
+            {
+                const NeoN::scalar ridge = 1e-8 * tr;
+                a = a0 + ridge;
+                ff = f0 + ridge;
+                h = h0 + ridge;
+                det = a * (ff * h - g * g) + d * (e * g - d * h) + e * (d * g - e * ff);
+            }
+
             const NeoN::scalar c00 = ff * h - g * g;
             const NeoN::scalar c01 = e * g - d * h;
             const NeoN::scalar c02 = d * g - e * ff;
-            const NeoN::scalar det = a * c00 + d * c01 + e * c02;
             const NeoN::scalar id = (Kokkos::fabs(det) > 1e-300) ? 1.0 / det : 0.0;
             const NeoN::scalar c11 = a * h - e * e;
             const NeoN::scalar c12 = e * d - a * g;
             const NeoN::scalar c22 = a * ff - d * d;
-            const NeoN::Vec3 rhs = bv[c];
             r[c][0] = id * (c00 * rhs[0] + c01 * rhs[1] + c02 * rhs[2]);
             r[c][1] = id * (c01 * rhs[0] + c11 * rhs[1] + c12 * rhs[2]);
             r[c][2] = id * (c02 * rhs[0] + c12 * rhs[1] + c22 * rhs[2]);
