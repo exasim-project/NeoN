@@ -4,6 +4,10 @@
 
 #pragma once
 
+// Guarded like ginkgo.hpp: the generated NeoN.hpp umbrella header includes every header
+// unconditionally, so this must be a no-op in a build configured without Ginkgo.
+#if NF_WITH_GINKGO
+
 #include <algorithm>
 #include <memory>
 #include <numeric>
@@ -363,3 +367,5 @@ inline std::shared_ptr<typename MergedPgm<ValueType, IndexType>::Factory> makeMe
 }
 
 } // namespace NeoN::la::ginkgo
+
+#endif // NF_WITH_GINKGO
