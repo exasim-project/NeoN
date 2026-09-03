@@ -134,6 +134,42 @@ TEMPLATE_TEST_CASE("laplacianOperator fixedValue", "[template]", scalar, Vec3)
                 }
             }
         }
+
+        SECTION("matrix-reuse rhs refresh reproduces the full-assemble rhs on " + execName)
+        {
+            // implicitOperationRhs (the matrix-reuse path) must rebuild exactly the rhs that a
+            // full implicitOperation produces, while leaving the assembled matrix untouched.
+            if constexpr (std::is_same_v<TestType, scalar>)
+            {
+                dsl::SpatialOperator lapOp = dsl::imp::laplacian(gamma, phi);
+                lapOp.read(input);
+
+                // full assemble: matrix + rhs
+                ls.reset();
+                lapOp.implicitOperation(ls);
+                auto rhsFull = Vector<scalar>(ls.rhs());
+                auto matFull = Vector<scalar>(ls.matrix().values());
+
+                // rhs-only refresh: zero only the rhs, then re-run just the rhs contribution
+                ls.resetRhs();
+                lapOp.implicitOperationRhs(ls);
+
+                auto rhsRefreshHost = ls.rhs().copyToHost();
+                auto rhsFullHost = rhsFull.copyToHost();
+                for (localIdx i = 0; i < rhsFullHost.size(); ++i)
+                {
+                    REQUIRE(rhsRefreshHost.view()[i] == Catch::Approx(rhsFullHost.view()[i]));
+                }
+
+                // the matrix must be untouched by the rhs refresh
+                auto matAfterHost = ls.matrix().values().copyToHost();
+                auto matFullHost = matFull.copyToHost();
+                for (localIdx i = 0; i < matFullHost.size(); ++i)
+                {
+                    REQUIRE(matAfterHost.view()[i] == Catch::Approx(matFullHost.view()[i]));
+                }
+            }
+        }
     }
 }
 

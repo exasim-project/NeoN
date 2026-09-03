@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/core/runtimeSelectionFactory.hpp"
@@ -74,6 +75,20 @@ public:
         const VolumeField<FieldValueType>& phi,
         const dsl::Coeff operatorScaling
     ) = 0;
+
+    /* @brief re-assemble only the field-dependent rhs contribution (boundary rhs + deferred
+     * non-orthogonal correction), leaving the matrix coefficients untouched. Strategies that
+     * support the matrix-reuse path override this; the default fails fast.
+     */
+    virtual void laplacianRhs(
+        la::LinearSystem<AssemblyType, FieldValueType>&,
+        const SurfaceField<scalar>&,
+        const VolumeField<FieldValueType>&,
+        const dsl::Coeff
+    )
+    {
+        NF_ERROR_EXIT("laplacianRhs (matrix-reuse rhs refresh) not implemented for this strategy");
+    }
 
     // Pure virtual function for cloning
     virtual std::unique_ptr<LaplacianOperatorFactory<FieldValueType, AssemblyType>>
@@ -161,6 +176,17 @@ public:
         NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
         sameTypeStrategy_->laplacian(ls, gamma_, this->field_, operatorScaling);
+    }
+
+    /* @brief re-assemble only the Laplacian's field-dependent rhs contribution (boundary rhs +
+     * deferred non-orthogonal correction), leaving the matrix untouched. Used by the matrix-reuse
+     * assembly path (e.g. the pressure Poisson matrix across non-orthogonal correctors).
+     */
+    void implicitOperationRhs(la::LinearSystem<FieldValueType, FieldValueType>& ls) const
+    {
+        NF_ASSERT(sameTypeStrategy_, "LaplacianOperatorStrategy not initialized");
+        const auto operatorScaling = this->getCoefficient();
+        sameTypeStrategy_->laplacianRhs(ls, gamma_, this->field_, operatorScaling);
     }
 
     /* @brief Implicit assembly into a scalar-matrix / FieldValueType-rhs linear system
