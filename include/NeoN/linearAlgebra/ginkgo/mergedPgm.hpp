@@ -37,15 +37,16 @@ namespace NeoN::la::ginkgo
  * levels drops (~depth/k).
  *
  * Two paths, selected at generate() time by the runtime type of the fine operator:
- *  - **local** (localized/Schwarz MG, each rank owns a plain Csr): compose the per-level RowGatherer
- *    injections into a single injection Csr; the last inner Pgm's coarse op is A_merged.
- *  - **distributed** (global MG, fine op is a gko::experimental::distributed::Matrix): the distributed
- *    Pgm prolong/restrict are block-diagonal across ranks (empty off-diagonal block; only the coarse
- *    op carries cross-rank coupling -- see Ginkgo pgm.cpp distributed_setup). So the composition is
- *    rank-local: compose each prolong's DIAG-block RowGatherer exactly as in the local path, then
- *    re-wrap the merged local injection as a block-diagonal distributed::Matrix. A_merged is the last
- *    inner Pgm's distributed coarse op (already carries the correct off-diagonal coupling + coarse
- *    index map), used directly.
+ *  - **local** (localized/Schwarz MG, each rank owns a plain Csr): compose the per-level
+ *    RowGatherer injections into a single injection Csr; the last inner Pgm's coarse op is
+ *    A_merged.
+ *  - **distributed** (global MG, fine op is a gko::experimental::distributed::Matrix): the
+ *    distributed Pgm prolong/restrict are block-diagonal across ranks (empty off-diagonal
+ *    block; only the coarse op carries cross-rank coupling -- see Ginkgo pgm.cpp
+ *    distributed_setup). So the composition is rank-local: compose each prolong's DIAG-block
+ *    RowGatherer exactly as in the local path, then re-wrap the merged local injection as a
+ *    block-diagonal distributed::Matrix. A_merged is the last inner Pgm's distributed coarse
+ *    op (already carries the correct off-diagonal coupling + coarse index map), used directly.
  */
 template<typename ValueType = gko::default_precision, typename IndexType = gko::int32>
 class MergedPgm :
@@ -93,9 +94,9 @@ public:
         // change. Rather than recompute A_merged = R A P by SpGEMM (cuSPARSE SpGEMM aborts with
         // CUSPARSE_STATUS_INSUFFICIENT_RESOURCES on these large injection operands), walk the
         // retained Pgm chain: each Pgm::update_matrix_value scatters the new fine values into its
-        // frozen coarse structure (no SpGEMM) and refreshes get_coarse_op() in place; that refreshed
-        // coarse feeds the next level's fine op. After the last level, get_coarse_op() is the
-        // refreshed A_merged. This keeps the cached-solver (update_matrix_value) reuse engaged.
+        // frozen coarse structure (no SpGEMM) and refreshes get_coarse_op() in place; that
+        // refreshed coarse feeds the next level's fine op. After the last level, get_coarse_op() is
+        // the refreshed A_merged. This keeps the cached-solver (update_matrix_value) reuse engaged.
         const bool isDist = is_distributed(new_matrix);
         // local path converts to Csr; distributed path feeds the distributed op through unchanged
         // (Pgm::update_matrix_value has its own distributed branch).
@@ -149,7 +150,7 @@ protected:
         }
     }
 
-    // ---- localized / Schwarz path: fine op is a plain Csr on this rank -----------------------------
+    // ---- localized / Schwarz path: fine op is a plain Csr on this rank ----
     void generateLocal()
     {
         auto exec = this->get_executor();
@@ -185,7 +186,7 @@ protected:
     }
 
 #ifdef NF_WITH_MPI_SUPPORT
-    // ---- global path: fine op is a distributed::Matrix ---------------------------------------------
+    // ---- global path: fine op is a distributed::Matrix ----
     void generateDistributed()
     {
         auto exec = this->get_executor();
@@ -199,14 +200,15 @@ protected:
 
         levels_.clear();
         std::shared_ptr<const gko::LinOp> coarse = system_matrix_; // stays distributed
-        std::vector<IndexType> mergedAgg;                          // LOCAL fine row -> LOCAL coarse idx
+        std::vector<IndexType> mergedAgg; // LOCAL fine row -> LOCAL coarse idx
         gko::size_type localCoarseRows = 0;
         for (unsigned i = 0; i < parameters_.merge_levels; ++i)
         {
             auto level = makePgm()->generate(coarse); // distributed Pgm level
             // Aggregation lives in the block-diagonal prolong's DIAG block (a RowGatherer).
             auto prolongDiag = gko::as<const dist_mtx>(level->get_prolong_op())->get_diag_matrix();
-            auto aggThis = agg_from_rowgatherer(prolongDiag.get()); // host, length = local fine rows
+            auto aggThis =
+                agg_from_rowgatherer(prolongDiag.get()); // host, length = local fine rows
             // local coarse rows == this level's coarse DIAG block rows
             localCoarseRows =
                 gko::as<const dist_mtx>(level->get_coarse_op())->get_diag_matrix()->get_size()[0];
@@ -240,7 +242,7 @@ private:
     {
 #ifdef NF_WITH_MPI_SUPPORT
         return std::dynamic_pointer_cast<const gko::experimental::distributed::DistributedBase>(op)
-               != nullptr;
+            != nullptr;
 #else
         static_cast<void>(op);
         return false;
@@ -258,8 +260,8 @@ private:
     }
 
     // mergedAgg[k] <- aggThis[mergedAgg[k]] (or aggThis directly on the first level). Identical for
-    // the local and distributed paths -- the distributed prolong is block-diagonal so its diag-block
-    // aggregation composes rank-locally, exactly like a local Csr aggregation.
+    // the local and distributed paths -- the distributed prolong is block-diagonal so its
+    // diag-block aggregation composes rank-locally, exactly like a local Csr aggregation.
     static void composeAgg(
         std::vector<IndexType>& mergedAgg,
         const gko::array<IndexType>& aggThis,
@@ -289,8 +291,8 @@ private:
         return std::move(out);
     }
 
-    // Pull a RowGatherer's per-row aggregate map (fine row i -> its aggregate) to the host. Length ==
-    // the gatherer's row count; values in [0, coarseRows). One entry per row.
+    // Pull a RowGatherer's per-row aggregate map (fine row i -> its aggregate) to the host. Length
+    // == the gatherer's row count; values in [0, coarseRows). One entry per row.
     gko::array<IndexType> agg_from_rowgatherer(const gko::LinOp* rgOp) const
     {
         auto exec = this->get_executor();

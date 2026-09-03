@@ -129,15 +129,15 @@ std::shared_ptr<const gko::LinOp> createGkoMtxDist(
 
     const auto nNonLocalNnz = static_cast<gko::size_type>(bmtx.values().size());
 
-    // Fast path (steady state): reuse the cached distributed-matrix wrapper when the local CSR value
-    // buffer is unchanged (NeoN re-assembles in place). The local block is a non-owning Csr view that
-    // already reflects the re-assembled values, and the index_map / partition are fixed, so the whole
-    // wrapper is reused -- only the off-diagonal values are refreshed into the cached Coo. This skips
-    // the per-solve Csr::create_const, whose default (load_balance) strategy recomputes the srow
-    // load-balancing array by scanning the ~O(nnz) sparsity every solve (~72 ms on the 16M-row local
-    // block). The pointer guard rebuilds (below) if the value buffer was reallocated. [Restored
-    // 2026-07-23: this distributed-matrix cache was dropped in a rebase; its loss was the dominant
-    // remaining per-solve host cost -- see cachedDistMtx_ in ginkgo.hpp.]
+    // Fast path (steady state): reuse the cached distributed-matrix wrapper when the local CSR
+    // value buffer is unchanged (NeoN re-assembles in place). The local block is a non-owning Csr
+    // view that already reflects the re-assembled values, and the index_map / partition are fixed,
+    // so the whole wrapper is reused -- only the off-diagonal values are refreshed into the cached
+    // Coo. This skips the per-solve Csr::create_const, whose default (load_balance) strategy
+    // recomputes the srow load-balancing array by scanning the ~O(nnz) sparsity every solve (~72 ms
+    // on the 16M-row local block). The pointer guard rebuilds (below) if the value buffer was
+    // reallocated. [Restored 2026-07-23: this distributed-matrix cache was dropped in a rebase; its
+    // loss was the dominant remaining per-solve host cost -- see cachedDistMtx_ in ginkgo.hpp.]
     if (distMtxCache && nonLocalMtxCache && imapCache && localValPtrCache == mtx.values().data())
     {
         const auto bValV = bmtx.values().view();
@@ -1044,9 +1044,10 @@ SolverStats GinkgoSolver::solveDist(
     // non-owning VIEW over the rank-local value buffer, so it always reflects the live values -- it
     // cannot carry stale data. The implicit-transform branch shifts the diagonal in place per
     // component but RESTORES it immediately after each component solve (apply/restore pair below),
-    // and the buffer is re-assembled in place each step, so the cached wrapper's value pointer stays
-    // valid; the pointer guard in createGkoMtxDist rebuilds if it ever changes. The fused-slip
-    // branch applies its shift through FusedDiagShiftMatrix (operator-level, no buffer mutation).
+    // and the buffer is re-assembled in place each step, so the cached wrapper's value pointer
+    // stays valid; the pointer guard in createGkoMtxDist rebuilds if it ever changes. The
+    // fused-slip branch applies its shift through FusedDiagShiftMatrix (operator-level, no buffer
+    // mutation).
     auto gkoMtx = createGkoMtxDist(
         gkoExec_,
         comm,
@@ -1189,10 +1190,8 @@ SolverStats GinkgoSolver::solveDist(
     return solve_impl_dist(gkoExec_, comm, sys.rhs(), x, gkoMtx, lease.solver(), l1Control);
 }
 
-template std::
-    shared_ptr<const gko::LinOp>
-    createGkoMtxDist<
-        localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&, const std::string&);
+template std::shared_ptr<const gko::LinOp> createGkoMtxDist<
+    localIdx>(std::shared_ptr<const gko::Executor>, const gko::experimental::mpi::communicator&, const CSRMatrix<scalar, localIdx>&, const COOMatrix<scalar, localIdx>&, const CommunicationPattern&, std::shared_ptr<gko::experimental::distributed::index_map<label, gko::int64>>&, std::shared_ptr<gko::matrix::Coo<scalar, localIdx>>&, std::shared_ptr<const gko::LinOp>&, const scalar*&, const std::string&);
 
 }
 
