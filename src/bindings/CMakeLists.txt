@@ -64,6 +64,13 @@ endif()
 
 nanobind_add_module(_neon ${NeoN_NANOBIND_LINKAGE} NOMINSIZE ${NeoN_PYTHON_BINDING_SRCS})
 
+# nanobind builds the module -fvisibility=hidden, which hides the typeinfo it emits for the types
+# crossing into libNeoN. This is the reason NEON_TYPE_VISIBLE exists (core/visibility.hpp); applying
+# it here covers every such type instead of one at a time -- RefHolder<VolumeField<...>> is one that
+# was still missing, and it made oldTime()/ddt() throw "bad any cast" with requested == actual.
+# nanobind's own symbols stay hidden: NB_NAMESPACE carries visibility("hidden").
+set_target_properties(_neon PROPERTIES CXX_VISIBILITY_PRESET default)
+
 if(NeoN_NANOBIND_SHARED AND NOT WIN32)
   # nanobind neither installs its shared library nor sets an RPATH, so the installed _neon would
   # keep a DT_NEEDED that resolves nowhere. Install libnanobind next to _neon and look for it there.
