@@ -1,10 +1,8 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
-
-#include <Kokkos_Core.hpp>
 
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
@@ -43,7 +41,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+            { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -67,7 +65,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& concreteExec)
-            { ptr = concreteExec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+            { ptr = concreteExec.template alloc<ValueType>(static_cast<size_t>(size)); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -87,7 +85,7 @@ public:
         void* ptr = nullptr;
         std::visit(
             [&ptr, size](const auto& execu)
-            { ptr = execu.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+            { ptr = execu.template alloc<ValueType>(static_cast<size_t>(size)); },
             exec_
         );
         data_ = static_cast<ValueType*>(ptr);
@@ -230,7 +228,7 @@ public:
         {
             std::visit(
                 [this, &ptr, size](const auto& exec)
-                { ptr = exec.realloc(this->data_, static_cast<size_t>(size) * sizeof(ValueType)); },
+                { ptr = exec.template realloc<ValueType>(this->data_, static_cast<size_t>(size)); },
                 exec_
             );
         }
@@ -238,7 +236,7 @@ public:
         {
             std::visit(
                 [&ptr, size](const auto& exec)
-                { ptr = exec.alloc(static_cast<size_t>(size) * sizeof(ValueType)); },
+                { ptr = exec.template alloc<ValueType>(static_cast<size_t>(size)); },
                 exec_
             );
         }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -77,8 +77,7 @@ public:
     }
 
 
-    virtual SolverStats
-    solve(const LinearSystem<scalar, localIdx>& sys, Vector<scalar>& x) const final
+    virtual SolverStats solve(const LinearSystem<scalar>& sys, Vector<scalar>& x) const final
     {
 
         Mat Amat;

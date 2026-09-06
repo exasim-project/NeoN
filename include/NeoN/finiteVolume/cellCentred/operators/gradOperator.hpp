@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -7,6 +7,8 @@
 #include "NeoN/fields/field.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/error.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/spatialOperator.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
@@ -22,7 +24,7 @@ template<typename ValueType>
 class GradOperatorFactory :
     public RuntimeSelectionFactory<
         GradOperatorFactory<ValueType>,
-        Parameters<const Executor&, const UnstructuredMesh&>>
+        Parameters<const Executor&, const UnstructuredMesh&, const Input&>>
 {
 
 public:
@@ -34,13 +36,13 @@ public:
                             ? std::get<Dictionary>(inputs).get<std::string>("GradOperator")
                             : std::get<TokenList>(inputs).next<std::string>();
         GradOperatorFactory<ValueType>::keyExistsOrError(key);
-        return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh);
+        return GradOperatorFactory<ValueType>::table().at(key)(exec, uMesh, inputs);
     }
 
     static std::string name() { return "GradOperatorFactory"; }
 
     GradOperatorFactory(const Executor& exec, const UnstructuredMesh& mesh)
-        : exec_(exec), mesh_(mesh), sparsityPattern_(la::SparsityPattern::readOrCreate(mesh)) {};
+        : exec_(exec), mesh_(mesh) {};
 
     virtual ~GradOperatorFactory() = default; // Virtual destructor
 
@@ -53,7 +55,7 @@ public:
     virtual void grad(
         const VolumeField<scalar>& phi,
         const dsl::Coeff operatorScaling,
-        la::LinearSystem<ValueType, localIdx>& ls
+        la::LinearSystem<ValueType>& ls
     ) const = 0;
 
     /* @brief compute explicit gradient operator
@@ -75,10 +77,21 @@ public:
     virtual VolumeField<ValueType>
     grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling) const = 0;
 
-    [[deprecated("This function will be removed")]] const la::SparsityPattern&
-    getSparsityPattern() const
+    /* @brief compute the tensor gradient of a vector field into @p gradU
+     *
+     * Result convention: gradU(i, j) = d U_i / d x_j (row i is the gradient of
+     * the i-th velocity component). Schemes that do not support a tensor gradient
+     * leave this as the aborting default.
+     *
+     * @param u [in] - vector field to differentiate
+     * @param gradU [in,out] - resulting tensor field
+     * @param operatorScaling [in] - scales the operator by a coefficient
+     */
+    virtual void gradTensor(
+        const VolumeField<Vec3>& u, VolumeField<Tensor>& gradU, const dsl::Coeff operatorScaling
+    ) const
     {
-        return sparsityPattern_;
+        NF_ERROR_EXIT("gradTensor is not implemented for this gradient scheme");
     }
 
     // Pure virtual function for cloning
@@ -89,8 +102,6 @@ protected:
     const Executor exec_;
 
     const UnstructuredMesh& mesh_;
-
-    const la::SparsityPattern& sparsityPattern_;
 };
 
 template<typename ValueType>
@@ -144,15 +155,8 @@ public:
         source += tmpsource;
     }
 
-    [[deprecated("This function will be removed")]] la::LinearSystem<ValueType, localIdx>
-    createEmptyLinearSystem() const
-    {
-        NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
-        return gradOperatorStrategy_->createEmptyLinearSystem();
-    }
-
     /* @brief forwards to implicit gradOperatorStrategy_->grad() with arguments */
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
+    void implicitOperation(la::LinearSystem<ValueType>& ls) const
     {
         NF_ASSERT(gradOperatorStrategy_, "GradOperatorStrategy not initialized");
         const auto operatorScaling = this->getCoefficient();
@@ -188,6 +192,14 @@ public:
     }
 
     std::string getName() const { return "GradOperator"; }
+
+    Dictionary getConfig() const
+    {
+        // Expose the operand like DivOperator does, so scheme-default expansion
+        // (which needs "grad(<field>)" keys) can learn the field's name.
+        const auto& ret = this->getVector();
+        return {{"field", NeoN::detail::RefHolder<VolumeField<scalar>> {ret}}};
+    }
 
 private:
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -26,5 +26,5 @@ int main(int argc, char* argv[])
 
     int result = session.run();
 
-    return result;
+    std::_Exit(result); // Note: Fix for bench_allocator failure
 }

@@ -1,16 +1,13 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
-#include <Kokkos_Core.hpp>
-
 #include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
-#include "NeoN/core/vector/vectorFreeFunctions.hpp"
 #include "NeoN/core/view.hpp"
 
 #include <vector>
@@ -148,6 +145,18 @@ public:
     void operator=(const Vector<ValueType>& rhs);
 
     /**
+     * @brief Move-assignment operator — transfers ownership of the data buffer.
+     *
+     * Swaps the data pointer and size from rhs in O(1) without launching any GPU
+     * kernel.  The old buffer owned by *this is freed first (after a fence if on GPU).
+     * After the move, rhs is left in an empty (size=0, data=nullptr) state.
+     * The executor is unchanged — exec_ is const and cannot be moved.
+     *
+     * @warning Invalidates any existing View objects that point into *this.
+     */
+    Vector<ValueType>& operator=(Vector<ValueType>&& rhs) noexcept;
+
+    /**
      * @brief Arithmetic add operator, addition of a second field.
      * @param rhs The field to add with this field.
      * @returns The result of the addition.
@@ -221,6 +230,30 @@ public:
      * @return Pointer to the first cell data in the field.
      */
     [[nodiscard]] const ValueType* data() const { return data_; }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] ValueType* begin() { return data_; }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] const ValueType* begin() const { return data_; }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] ValueType* end() { return data_ + size(); }
+
+    /**
+     * @brief Direct access to the underlying field data
+     * @return Pointer to the first cell data in the field.
+     */
+    [[nodiscard]] const ValueType* end() const { return data_ + size(); }
 
     /**
      * @brief Gets the executor associated with the field.

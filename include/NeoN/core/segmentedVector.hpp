@@ -1,16 +1,52 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
 #include "NeoN/core/view.hpp"
+#include "NeoN/core/copyTo.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/primitives/label.hpp"
 #include "NeoN/core/vector/vector.hpp"
 
 namespace NeoN
 {
+
+namespace detail
+{
+
+/* @brief Prefix-sum kernel of segmentsFromIntervals.
+ *
+ * A named functor rather than a NEON_LAMBDA: under nvcc a NEON_LAMBDA is an
+ * extended lambda whose host-side callable is registered per translation unit,
+ * and for an enclosing *function template* the registration belongs to a comdat
+ * group the linker may drop while keeping the body. The surviving copy then
+ * calls a null pointer — every segmentsFromIntervals<localIdx> call inside
+ * libNeoN segfaults (e.g. CellToFaceStencil::computeInternalStencil, the
+ * stencil CellLimitedGrad builds). A functor carries no such registration.
+ */
+template<typename IndexType>
+struct IntervalOffsetScan
+{
+    using value_type = IndexType;
+
+    View<const IndexType> intervals;
+    View<IndexType> offsets;
+
+    KOKKOS_INLINE_FUNCTION
+    void operator()(const localIdx i, IndexType& update, const bool final) const
+    {
+        update += intervals[i];
+        if (final)
+        {
+            // offsets is a view, thus [] takes unsigned idx
+            offsets[i] = update;
+        }
+    }
+};
+
+} // namespace detail
 
 /**
  * @brief Compute segment offsets from an input field corresponding to lengths by computing a prefix
@@ -38,14 +74,7 @@ IndexType segmentsFromIntervals(const Vector<IndexType>& intervals, Vector<Index
     NeoN::parallelScan(
         intervals.exec(),
         {0, offsView.size()},
-        KOKKOS_LAMBDA(const localIdx i, IndexType& update, const bool final) {
-            update += inView[i];
-            if (final)
-            {
-                // offView is a view, thus [] takes unsigned idx
-                offsView[i] = update;
-            }
-        },
+        detail::IntervalOffsetScan<IndexType> {inView, offsView},
         finalValue
     );
     return finalValue;
@@ -127,7 +156,7 @@ public:
  * @ingroup Vectors
  */
 template<typename ValueType, typename IndexType>
-class SegmentedVector
+class SegmentedVector : public SupportsCopyTo<SegmentedVector<ValueType, IndexType>>
 {
 public:
 
@@ -186,14 +215,11 @@ public:
      */
     localIdx numSegments() const { return segments_.size() - 1; }
 
-    /**
-     * @brief Returns a copy of the segmentedVector on the host
-     * @return copy of the segmentedVector on the host
-     */
-    SegmentedVector<ValueType, IndexType> copyToHost() const
+    [[nodiscard]] SegmentedVector<ValueType, IndexType> copyToExecutor(Executor exec) const override
     {
-        SegmentedVector<ValueType, IndexType> result(values_.copyToHost(), segments_.copyToHost());
-        return result;
+        return SegmentedVector<ValueType, IndexType>(
+            values_.copyToExecutor(exec), segments_.copyToExecutor(exec)
+        );
     }
 
 

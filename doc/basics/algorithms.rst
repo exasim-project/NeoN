@@ -36,7 +36,7 @@ The following code block shows the implementation of a parallelFor for fields
             Kokkos::parallel_for(
                 "parallelFor",
                 Kokkos::RangePolicy<runOn>(0, field.size()),
-                KOKKOS_LAMBDA(const localIdx i) { view[i] = kernel(i); }
+                NEON_LAMBDA(const localIdx i) { view[i] = kernel(i); }
             );
         }
     }
@@ -45,7 +45,7 @@ The following code block shows the implementation of a parallelFor for fields
 based on the Executor type a kernel function is either run directly within a for loop or dispatched to ``Kokkos::parallel_for`` for all non ``SerialExecutors``.
 The executor type determines the ``Kokkos::RangePolicy<runOn>`` and thus dispatches to GPUs if a ``GPUExecutor`` was used.
 Additionally, we name the kernel as ``"parallelFor"`` to improve visibility in profiling tools like nsys.
-Finally, a ``KOKKOS_LAMBDA`` is dispatched assigning the result of the given kernel function to the view of the field.
+Finally, a ``NEON_LAMBDA`` is dispatched assigning the result of the given kernel function to the view of the field.
 Here the view holds data pointers to the device data and defines the begin and end pointer of the data.
 Several overloads of the ``parallelFor`` functions exists to simplify running parallelFor on fields and views with and without an explicitly defined data range.
 

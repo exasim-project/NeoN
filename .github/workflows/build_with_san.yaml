@@ -18,12 +18,15 @@ env:
 
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: >
+    ${{ github.workflow }}-
+    ${{ github.event_name }}-
+    ${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   build:
-    if: ${{contains(github.event.pull_request.labels.*.name, 'full-ci')}}
+    if: ${{ github.repository == 'exasim-project/NeoN' && contains(github.event.pull_request.labels.*.name, 'full-ci') }}
     name: Build NeoN with sanitizer
     strategy:
       fail-fast: false
@@ -55,8 +58,8 @@ jobs:
 
      - name: Install dependencies
        run: |
-         sudo apt update
-         sudo apt install \
+         sudo apt-get update
+         sudo apt-get install -y \
            ninja-build \
            python3 \
            python3-dev \

@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/core/primitives/vec3.hpp"
+
 
 namespace NeoN
 {

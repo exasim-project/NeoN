@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -18,10 +18,11 @@ template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
     localIdx nInternalFaces,
-    View<const int> neighbour,
-    View<const int> owner,
-    View<const int> faceCells,
+    View<const label> internalFaceNeighbors,
+    View<const label> internalFaceOwners,
+    View<const label> boundaryFaceOwners,
     View<const ValueType> flux,
+    View<const ValueType> bFlux,
     View<const scalar> v,
     View<ValueType> res,
     const dsl::Coeff operatorScaling
@@ -57,10 +58,11 @@ public:
         surfaceIntegrate<ValueType>(
             exec,
             nInternalFaces,
-            mesh.faceNeighbour().view(),
-            mesh.faceOwner().view(),
-            mesh.boundaryMesh().faceCells().view(),
+            mesh.faceNeighbors().view(),
+            mesh.faceOwners().view(),
+            mesh.boundaryMesh().faceOwners().view(),
             this->flux_.internalVector().view(),
+            this->flux_.boundaryData().value().view(),
             mesh.cellVolumes().view(),
             tmpsource.view(),
             operatorScaling
@@ -77,6 +79,8 @@ public:
     dsl::Operator::Type getType() const { return type_; }
 
     std::string getName() const { return "SurfaceIntegrate"; }
+
+    Dictionary getConfig() const { return {}; }
 
 private:
 

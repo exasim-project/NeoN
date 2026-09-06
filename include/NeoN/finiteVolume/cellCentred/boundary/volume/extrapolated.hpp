@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -29,21 +29,21 @@ void extrapolateValue(
 {
     const auto iVector = domainVector.internalVector().view();
 
-    auto [refGradient, value, valueFraction, refValue, faceCells] = views(
+    auto [refGradient, value, valueFraction, refValue, boundaryFaceOwners] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),
         domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceCells()
+        mesh.boundaryMesh().faceOwners()
     );
 
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             // operator / is not defined for all ValueTypes
-            ValueType internalCellValue = iVector[faceCells[i]];
+            ValueType internalCellValue = iVector[boundaryFaceOwners[i]];
             value[i] = internalCellValue;
             valueFraction[i] = 1.0;          // only use refValue
             refValue[i] = internalCellValue; // not used
@@ -62,10 +62,12 @@ class Extrapolated :
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using ExtrapolatedType = Extrapolated<ValueType>;
 
     Extrapolated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh)
+        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false}), mesh_(mesh)
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final
@@ -74,6 +76,8 @@ public:
     }
 
     static std::string name() { return "extrapolated"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "TBD"; }
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -29,6 +29,8 @@ public:
 
     Coeff(scalar value);
 
+    Coeff(const Coeff& coeff);
+
     Coeff(scalar coeff, const Vector<scalar>& field);
 
     Coeff(const Vector<scalar>& field);
@@ -38,7 +40,7 @@ public:
 
     bool hasView();
 
-    View<const scalar> view();
+    View<const scalar> view() const;
 
     Coeff& operator*=(scalar rhs);
 

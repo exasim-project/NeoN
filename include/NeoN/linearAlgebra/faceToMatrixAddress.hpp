@@ -1,0 +1,228 @@
+// SPDX-FileCopyrightText: 2026 NeoN authors
+//
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "NeoN/core/array.hpp"
+#include "NeoN/core/copyTo.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
+
+namespace NeoN::la
+{
+
+struct FaceToMatrixView
+{
+    FaceToMatrixView(
+        View<const uint8_t> ownerOffsetView,
+        View<const uint8_t> neighbourOffsetView,
+        View<const uint8_t> diagOffsetView,
+        View<const localIdx> rowOffsView
+    )
+        : ownerOffset(ownerOffsetView), neighbourOffset(neighbourOffsetView),
+          diagOffset(diagOffsetView), rowOffs(rowOffsView) {};
+
+    // TODO check performance
+    /* @brief Returns the flat values-array index of the diagonal entry for cell celli.
+     *  diagIdx(celli) = rowOffs[celli] + diagOffset[celli]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx diagIdx(localIdx celli) const
+    {
+        return rowOffs[celli] + diagOffset[celli];
+    }
+
+    /* @brief Returns the flat values-array index of the upper-triangular entry A[own, nei].
+     *
+     *  By construction own < nei for every internal face, so the column index nei is greater
+     *  than the row index own — this entry lies in the upper triangle.
+     *
+     *  upperIdx(own, f) = rowOffs[own] + ownerOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx upperIdx(localIdx own, localIdx faceIdx) const
+    {
+        return rowOffs[own] + ownerOffset[faceIdx];
+    }
+
+    /* @brief Returns the flat values-array index of the lower-triangular entry A[nei, own].
+     *
+     *  By construction nei > own for every internal face, so the column index own is less
+     *  than the row index nei — this entry lies in the lower triangle.
+     *
+     *  lowerIdx(nei, f) = rowOffs[nei] + neighbourOffset[f]
+     */
+    KOKKOS_INLINE_FUNCTION localIdx lowerIdx(localIdx nei, localIdx faceIdx) const
+    {
+        return rowOffs[nei] + neighbourOffset[faceIdx];
+    }
+
+    // corresponding views
+    View<const uint8_t> ownerOffset;
+
+    View<const uint8_t> neighbourOffset;
+
+    View<const uint8_t> diagOffset;
+
+    // row offsets borrowed from the owning Matrix's sparsity pattern
+    View<const localIdx> rowOffs;
+};
+
+/* @class FaceToMatrixAddress
+ * @brief Stores the mapping between mesh faces and matrix row offsets.
+ *
+ * Based on a given computational mesh this class stores a mapping for a consistent iteration
+ * procedure for matrices which share the same sparsity pattern.
+ *
+ * This class implements the finite volume 3/5/7 pt stencil specific generation
+ * of face-to-matrix offset mappings. The sparsity pattern itself is owned by
+ * the Matrix, not by this class; this class only borrows a view of the row offsets.
+ *
+ */
+class FaceToMatrixAddress : public NeoN::SupportsCopyTo<FaceToMatrixAddress>
+{
+    void validate() const;
+
+    // clang-format off
+    // NOTE The following data members store a simple mapping from face ids to offsets within
+    // the corresponding row of the CSR values array.
+    //
+    // For an internal face f with owner P and neighbour N (P < N by construction):
+    //   ownerOffset[f]      = offset within row P for column N  → A[P, N]  (upper triangular)
+    //   neighbourOffset[f]  = offset within row N for column P  → A[N, P]  (lower triangular)
+    //
+    // Example row layout for a cell with two lower entries and one upper entry:
+    //   Row P: [ A[P,j0]  A[P,j1] | A[P,P] | A[P,N] ]
+    //           lower (j<P)         diag      upper (N>P)
+    //   ownerOffset[f]     = 3   (position of A[P,N] within row P)
+    //   neighbourOffset[f] = 0   (position of A[N,P] within row N)
+    // clang-format on
+    Array<uint8_t>
+        ownerOffset_; //! offset within the owner's row for the upper-triangular entry A[own, nei]
+
+    Array<uint8_t> neighbourOffset_; //! offset within the neighbour's row for the lower-triangular
+                                     //! entry A[nei, own]
+
+    Array<uint8_t> diagOffset_; //! mapping from celli to diagonal element offset
+
+public:
+
+    /* @brief constructor
+     *
+     * @param ownerOffset     face-to-upper-offset mapping for the owner row
+     * @param neighbourOffset face-to-lower-offset mapping for the neighbour row
+     * @param diagOffset      cell-to-diagonal-offset mapping
+     */
+    FaceToMatrixAddress(
+        Array<uint8_t> ownerOffset, Array<uint8_t> neighbourOffset, Array<uint8_t> diagOffset
+    );
+
+    /* @brief copy constructor */
+    FaceToMatrixAddress(const FaceToMatrixAddress& mi);
+
+
+    FaceToMatrixAddress copyToExecutor(Executor dstExec) const;
+
+    /**
+     * @brief Get a view representation of the matrix's data.
+     * @return FaceToMatrixView for easy access to matrix elements.
+     */
+    [[nodiscard]] FaceToMatrixView view(View<const localIdx> rowOffsView) const;
+
+    /*@brief getter for ownerOffset */
+    const Array<uint8_t>& ownerOffset() const;
+
+    /*@brief getter for neighbourOffset */
+    const Array<uint8_t>& neighbourOffset() const;
+
+    /*@brief getter for diagOffset */
+    const Array<uint8_t>& diagOffset() const;
+
+    /*@brief getter for ownerOffset */
+    Array<uint8_t>& ownerOffset();
+
+    /*@brief getter for neighbourOffset */
+    Array<uint8_t>& neighbourOffset();
+
+    /*@brief getter for diagOffset */
+    Array<uint8_t>& diagOffset();
+};
+
+/* @brief Creates the sparsity pattern and corresponding FaceToMatrixAddress from a mesh.
+ *
+ * The two are returned together because FaceToMatrixAddress borrows the row-offsets
+ * view from the sparsity pattern. The boundary sparsity is created separately
+ * via createBoundarySparsityPattern.
+ *
+ * @tparam SparsityType - The full sparsity pattern type to create, e.g.
+ *         CsrSparsityPattern<localIdx> or CooSparsityPattern<localIdx>
+ */
+template<typename SparsityType>
+std::pair<std::shared_ptr<const SparsityType>, std::shared_ptr<const FaceToMatrixAddress>>
+createSparsityPatternFaceToMatrixAddress(const UnstructuredMesh& mesh);
+
+/* @brief Creates the boundary sparsity pattern from a mesh and an existing
+ * FaceToMatrixAddress (which provides the diagonal offsets needed to compute it).
+ *
+ * @tparam SparsityType - The full sparsity pattern type to create, e.g.
+ *         CooSparsityPattern<localIdx> or CsrSparsityPattern<localIdx>
+ */
+template<typename SparsityType>
+std::shared_ptr<const SparsityType> createBoundarySparsityPattern(
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
+);
+
+template<typename SparsityType>
+std::shared_ptr<const SparsityType> createOffDiagonalSparsityPattern(
+    const UnstructuredMesh& mesh, const FaceToMatrixAddress& faceToMatrixAddress
+);
+
+/* @brief Immutable, topology-only bundle shared across every LinearSystem built on a mesh.
+ *
+ * The CSR system sparsity (colIdxs/rowOffs), its FaceToMatrixAddress (diag/owner/neighbour
+ * offsets), and the boundary COO sparsity depend ONLY on mesh topology — they are byte-identical
+ * for every equation (U, p, nuTilda, ...) on the same mesh. Only the per-system value/RHS vectors
+ * legitimately differ. Caching this bundle once per mesh removes the per-equation duplication of
+ * these identical arrays.
+ *
+ * All three members are stored as shared_ptr<const ...> so the cached objects stay immutable and
+ * are safe to share between systems; consumers write only their own per-system value/RHS vectors.
+ *
+ * @tparam SystemSparsityType   - the system sparsity type, e.g. CsrSparsityPattern<localIdx>
+ * @tparam BoundarySparsityType - the boundary sparsity type, e.g. CooSparsityPattern<localIdx>
+ */
+template<typename SystemSparsityType, typename BoundarySparsityType>
+struct SharedSparsityBundle
+{
+    std::shared_ptr<const SystemSparsityType> systemSparsity;
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress;
+    std::shared_ptr<const BoundarySparsityType> boundarySparsity;
+
+    // Explicit constructor: CUDA-12.4 nvcc rejects parenthesized aggregate init, so give the
+    // bundle a real constructor for portability (brace-init would otherwise suffice).
+    SharedSparsityBundle(
+        std::shared_ptr<const SystemSparsityType> systemSparsity,
+        std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress,
+        std::shared_ptr<const BoundarySparsityType> boundarySparsity
+    )
+        : systemSparsity(std::move(systemSparsity)),
+          faceToMatrixAddress(std::move(faceToMatrixAddress)),
+          boundarySparsity(std::move(boundarySparsity))
+    {}
+};
+
+/* @brief Returns the SHARED, immutable topology bundle for a mesh, caching it in
+ * mesh.stencilDB(). Mirrors the GeometryScheme::readOrCreate precedent exactly
+ * (contains/insert/get of a std::shared_ptr keyed by a type-specific string).
+ *
+ * The cache key encodes both sparsity types so the CSR system pattern and the COO boundary pattern
+ * (and the index type) never collide. Returns a cheap copy of the bundle (three shared_ptrs).
+ *
+ * @note mesh.stencilDB() is mutable and not thread-safe; this matches the GeometryScheme cache and
+ *       is acceptable for CPU-serial v1. No locking is added here.
+ */
+template<typename SystemSparsityType, typename BoundarySparsityType>
+[[nodiscard]] SharedSparsityBundle<SystemSparsityType, BoundarySparsityType>
+readOrCreateSparsityBundle(const UnstructuredMesh& mesh);
+
+}

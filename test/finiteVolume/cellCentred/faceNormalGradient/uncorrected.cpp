@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
     fvcc::VolumeField<TestType> phi(exec, "phi", mesh, volumeBCs);
     NeoN::parallelFor(
         phi.internalVector(),
-        KOKKOS_LAMBDA(const NeoN::localIdx i) { return scalar(i + 1) * one<TestType>(); }
+        NEON_LAMBDA(const NeoN::localIdx i) { return scalar(i + 1) * one<TestType>(); }
     );
     phi.boundaryData().value() =
         NeoN::Vector<TestType>(exec, {0.5 * one<TestType>(), 10.5 * one<TestType>()});
@@ -48,6 +48,7 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
         fvcc::FaceNormalGradient<TestType> uncorrected(exec, mesh, input);
         uncorrected.faceNormalGrad(phi, phif);
 
+        // internal faces
         auto phifHost = phif.internalVector().copyToHost();
         auto sPhif = phifHost.view();
         for (NeoN::localIdx i = 0; i < nCells - 1; i++)
@@ -57,14 +58,13 @@ TEMPLATE_TEST_CASE("uncorrected", "[template]", NeoN::scalar, NeoN::Vec3)
                 NeoN::mag(sPhif[i] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8)
             );
         }
-        // left boundary is  -10.0
-        REQUIRE(
-            NeoN::mag(sPhif[nCells - 1] + 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8)
-        );
-        // right boundary is 10.0
-        REQUIRE(
-            NeoN::mag(sPhif[nCells] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8)
-        );
+        // boundary faces are now in boundaryData().value()
+        auto phifBHost = phif.boundaryData().value().copyToHost();
+        auto sPhifB = phifBHost.view();
+        // left boundary (bfi=0): gradient is -10.0
+        REQUIRE(NeoN::mag(sPhifB[0] + 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8));
+        // right boundary (bfi=1): gradient is 10.0
+        REQUIRE(NeoN::mag(sPhifB[1] - 10.0 * one<TestType>()) == Catch::Approx(0.0).margin(1e-8));
     }
 }
 }

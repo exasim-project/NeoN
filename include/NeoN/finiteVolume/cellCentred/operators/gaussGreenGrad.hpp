@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
 #include "NeoN/core/executor/executor.hpp"
+#include "NeoN/core/primitives/tensor.hpp"
 #include "NeoN/mesh/unstructured/unstructuredMesh.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gradOperator.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
@@ -28,6 +29,14 @@ public:
 
     GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mesh);
 
+    /* @brief Factory-registered constructor.
+     *
+     * The factory threads the scheme Input through to every registered grad
+     * operator. Gauss-Green uses linear face interpolation unconditionally, so
+     * any trailing interpolation tokens (e.g. "linear") are accepted and ignored.
+     */
+    GaussGreenGrad(const Executor& exec, const UnstructuredMesh& mesh, const Input& inputs);
+
     // fvcc::VolumeField<Vec3> grad(const fvcc::VolumeField<scalar>& phi);
 
     /* @brief compute implicit gradient operator contribution
@@ -37,26 +46,26 @@ public:
      * @param ls [in,out] - assemble gradient operator into the given linear system
      */
     virtual void
-    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3, localIdx>&)
-        const override
+    grad(const VolumeField<scalar>&, const dsl::Coeff, la::LinearSystem<Vec3>&) const override
     {
         NF_ERROR_EXIT("Not implemented");
     };
 
     virtual void grad(
         const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling, Vector<Vec3>& gradPhi
-    ) const;
+    ) const override;
 
     /* @brief compute grad
      *
      * @param phi [in] - field for which the gradient is computed
-     * @param operatorScaling [in] - scales operator by a coefficient
      * @param gradPhi [in,out] - resulting gradient field
+     * @param operatorScaling [in] - scales operator by a coefficient
      */
-    virtual void grad(const VolumeField<scalar>&, const dsl::Coeff, VolumeField<Vec3>&) const
-    {
-        NF_ERROR_EXIT("Not implemented");
-    };
+    virtual void grad(
+        const VolumeField<scalar>& phi,
+        VolumeField<Vec3>& gradPhi,
+        const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const;
 
     /* @brief compute explicit gradient operator and return result
      *
@@ -64,17 +73,29 @@ public:
      * @param operatorScaling [in] - scales operator by a coefficient
      * @return gradPhi - resulting gradient field
      */
-    VolumeField<Vec3>
-    grad(const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
+    VolumeField<Vec3> grad(
+        const VolumeField<scalar>& phi, const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const override;
 
-    virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const
+    void gradTensor(
+        const VolumeField<Vec3>& u,
+        VolumeField<Tensor>& gradU,
+        const dsl::Coeff operatorScaling = dsl::Coeff {}
+    ) const override;
+
+    VolumeField<Tensor>
+    gradTensor(const VolumeField<Vec3>& u, const dsl::Coeff operatorScaling = dsl::Coeff {}) const;
+
+    virtual std::unique_ptr<GradOperatorFactory<Vec3>> clone() const override
     {
         NF_ERROR_EXIT("Not implemented");
+        return nullptr;
     };
 
 private:
 
     SurfaceInterpolation<scalar> surfaceInterpolation_;
+    SurfaceInterpolation<Vec3> surfaceInterpolationVec_;
 };
 
 } // namespace NeoN

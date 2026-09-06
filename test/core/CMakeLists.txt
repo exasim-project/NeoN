@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+# SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: Unlicense
 
-if(NeoN_ENABLE_MPI_SUPPORT)
+if(NeoN_WITH_MPI)
   add_subdirectory(mpi)
 endif()
 
@@ -20,7 +20,7 @@ neon_unit_test(segmentedVector)
 
 add_executable(runTimeSelectionFactory "runTimeSelectionFactory.cpp")
 target_link_libraries(runTimeSelectionFactory PRIVATE Catch2::Catch2WithMain cpptrace::cpptrace
-                                                      NeoN::NeoN_public_api)
+                                                      NeoN::NeoN)
 if(WIN32)
   set_target_properties(
     runTimeSelectionFactory

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -7,7 +7,7 @@
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/primitives/vec3.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
 
 
 namespace NeoN::la
@@ -91,7 +91,7 @@ Vector<scalar> unpackMtxValues(
 );
 
 
-/* @brief given a linear system consisting of A, b and x the operator computes the residual vector
+/** @brief given a linear system consisting of A, b and x the operator computes the residual vector
  * Ax-b
  *
  * @param[in] mtx, the corresponding matrix
@@ -99,11 +99,17 @@ Vector<scalar> unpackMtxValues(
  * @param[in] x, initial guess vector x
  * @param[out]
  */
+template<typename MatrixType, typename ValueType = scalar>
 void computeResidual(
-    const CSRMatrix<scalar, localIdx>& mtx,
-    const Vector<scalar>& b,
-    const Vector<scalar>& x,
-    Vector<scalar>& res
+    const MatrixType& mtx,
+    const Vector<ValueType>& b,
+    const Vector<ValueType>& x,
+    Vector<ValueType>& res
 );
+
+/**@brief given a set off row idx this function converts to rowOffsets
+ */
+template<typename IndexType>
+[[nodiscard]] Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows);
 
 }

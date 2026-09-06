@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -48,27 +48,24 @@ public:
     KOKKOS_INLINE_FUNCTION
     View(std::span<ValueType> in) : View(in.begin(), in.end()) {}
 
+    // KOKKOS_INLINE_FUNCTION (i.e. __host__ __device__) so element access is valid inside device
+    // kernels, consistent with the other accessors below. NOTE: this forwards to
+    // std::span::operator[], itself a bare constexpr __host__ function, so on CUDA correctness
+    // still relies on --expt-relaxed-constexpr (enabled via Kokkos_ENABLE_CUDA_CONSTEXPR=ON in
+    // cmake/AutoEnableDevice.cmake). Without that flag nvcc miscompiles the device write silently
+    // (warning 20013); the build promotes that warning to an error to prevent shipping it.
+    KOKKOS_INLINE_FUNCTION
     constexpr ValueType& operator[](localIdx index) const
     {
 #ifdef NF_DEBUG
-        if (index < 0 || this->size() <= index)
+        if (index < 0 || index >= this->size())
         {
-            // TODO: currently this is failing on our AWS workflow, once we have clang>16 there
-            // this should work again.
-            // const std::string msg {"Index is out of range. Index: "} + to_string(index);
             if (abortOnFail)
             {
-                failureIndex = index;
-                Kokkos::abort("Index is out of range");
+                Kokkos::abort("Index is out of range.");
             }
             else
             {
-                // NOTE: throwing from a device function does not work
-                // throw std::invalid_argument("Index is out of range");
-                if (failureIndex == 0)
-                {
-                    failureIndex = index;
-                }
                 return std::span<ValueType>::operator[](static_cast<size_t>(index));
             }
         }

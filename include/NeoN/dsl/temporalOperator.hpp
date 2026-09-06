@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -7,12 +7,15 @@
 #include <memory>
 #include <concepts>
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/primitives/scalar.hpp"
 #include "NeoN/core/vector/vector.hpp"
-#include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/core/input.hpp"
+#include "NeoN/linearAlgebra/linearSystem.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
 #include "NeoN/dsl/coeff.hpp"
 #include "NeoN/dsl/operator.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/ddtOperator.hpp"
 
 namespace NeoN::dsl
 {
@@ -32,15 +35,31 @@ template<typename T>
 concept HasTemporalImplicitOperator = requires(T t) {
     {
         t.implicitOperation(
-            std::declval<la::LinearSystem<typename T::VectorValueType, localIdx>&>(),
+            std::declval<la::LinearSystem<typename T::VectorValueType>&>(),
             std::declval<NeoN::scalar>(),
             std::declval<NeoN::scalar>()
         )
     } -> std::same_as<void>; // Adjust return type and arguments as needed
 };
 
+/* @brief Concept satisfied when T can assemble its temporal contribution into a
+ *        LinearSystem whose matrix coefficients are scalar while the RHS holds T's
+ *        field value type (segregated vector-solve form).
+ */
 template<typename T>
-concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>;
+concept HasTemporalImplicitOperatorScalarMtx = requires(T t) {
+    {
+        t.implicitOperation(
+            std::declval<la::LinearSystem<scalar, typename T::VectorValueType>&>(),
+            std::declval<NeoN::scalar>(),
+            std::declval<NeoN::scalar>()
+        )
+    } -> std::same_as<void>;
+};
+
+template<typename T>
+concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImplicitOperator<T>
+                           || HasTemporalImplicitOperatorScalarMtx<T>;
 
 /* @class TemporalOperator
  * @brief A class to represent a TemporalOperator in NeoNs DSL
@@ -49,7 +68,7 @@ concept HasTemporalOperator = HasTemporalExplicitOperator<T> || HasTemporalImpli
  * see https://www.youtube.com/watch?v=4eeESJQk-mw
  *
  * Motivation for using type erasure is that concrete implementation
- * of TemporalOperator e.g Divergence, Laplacian, etc can be stored in a vector of
+ * of TemporalOperator e.g ddt, d2dt2, etc can be stored in a vector of
  * TemporalOperator
  *
  * @ingroup dsl
@@ -69,14 +88,31 @@ public:
 
     TemporalOperator(TemporalOperator&& eqnOperator) : model_ {std::move(eqnOperator.model_)} {}
 
+    TemporalOperator& operator=(const TemporalOperator& eqnOperator)
+    {
+        model_ = eqnOperator.model_->clone();
+        return *this;
+    }
+
     void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const
     {
         model_->explicitOperation(source, t, dt);
     }
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) const
+    void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const
     {
         model_->implicitOperation(ls, t, dt);
+    }
+
+    /* @brief Implicit temporal assembly into a scalar-matrix / ValueType-rhs linear system
+     *        (segregated vector-solve form). Disabled when ValueType == scalar to avoid
+     *        colliding with the same-type overload above.
+     */
+    template<typename U = ValueType>
+        requires(!std::is_same_v<U, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const
+    {
+        model_->implicitOperationScalarMtx(ls, t, dt);
     }
 
     /* returns the fundamental type of an operator, ie explicit, implicit */
@@ -94,6 +130,8 @@ public:
     /* @brief Get the executor */
     const Executor& exec() const { return model_->exec(); }
 
+    /* @brief Get the ddtScheme */
+    NeoN::finiteVolume::cellCentred::DdtScheme ddtScheme() const { return model_->ddtScheme(); }
 
 private:
 
@@ -106,8 +144,15 @@ private:
 
         virtual void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) = 0;
 
-        virtual void
-        implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) = 0;
+        virtual void implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) = 0;
+
+        /* @brief Temporal assembly into LinearSystem<scalar, ValueType> for the
+         *        scalar-matrix / ValueType-rhs (segregated vector-solve) form.
+         *        Concrete operators that don't support this form leave it as a no-op.
+         */
+        virtual void implicitOperationScalarMtx(
+            la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
+        ) = 0;
 
         /* @brief Given an input this function reads required properties */
         virtual void read(const Input& input) = 0;
@@ -126,6 +171,12 @@ private:
 
         /* @brief Get the executor */
         virtual const Executor& exec() const = 0;
+
+        /* @brief Get the ddtScheme */
+        virtual NeoN::finiteVolume::cellCentred::DdtScheme ddtScheme() const
+        {
+            return NeoN::finiteVolume::cellCentred::DdtScheme::None;
+        }
 
         // The Prototype Design Pattern
         virtual std::unique_ptr<TemporalOperatorConcept> clone() const = 0;
@@ -152,11 +203,33 @@ private:
         }
 
         virtual void
-        implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar t, scalar dt) override
+        implicitOperation(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) override
         {
             if constexpr (HasTemporalImplicitOperator<ConcreteTemporalOperatorType>)
             {
                 concreteOp_.implicitOperation(ls, t, dt);
+            }
+        }
+
+        virtual void implicitOperationScalarMtx(
+            la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt
+        ) override
+        {
+            if constexpr (HasTemporalImplicitOperatorScalarMtx<ConcreteTemporalOperatorType>)
+            {
+                concreteOp_.implicitOperation(ls, t, dt);
+            }
+            else
+            {
+                // Reached only for an implicit temporal operator that lacks the scalar-matrix
+                // (segregated vector-solve) overload. Silently skipping it would drop its
+                // contribution (e.g. an implicit ddt term) and yield a wrong system, so fail
+                // fast instead.
+                NF_ERROR_EXIT(
+                    "Temporal operator '" << getName()
+                                          << "' does not support scalar-matrix (segregated) "
+                                             "assembly."
+                );
             }
         }
 
@@ -175,6 +248,18 @@ private:
         /* @brief get the associated coefficient for this term */
         virtual Coeff getCoefficient() const override { return concreteOp_.getCoefficient(); }
 
+        /* @brief return the ddtScheme read by the ddtOperator */
+        NeoN::finiteVolume::cellCentred::DdtScheme ddtScheme() const override
+        {
+            if constexpr (requires { concreteOp_.scheme(); })
+            {
+                return concreteOp_.scheme();
+            }
+            else
+            {
+                return NeoN::finiteVolume::cellCentred::DdtScheme::None;
+            }
+        }
         // The Prototype Design Pattern
         std::unique_ptr<TemporalOperatorConcept> clone() const override
         {

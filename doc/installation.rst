@@ -46,6 +46,23 @@ To browse the full list of build options it is recommended to use a build tool l
 By opening the the project with cmake-gui you can easily set these flags and configure the build.
 NeoN specific build flags are prefixed by ``NeoN_``.
 
+.. note::
+
+   To install or build the Python bindings (the ``neon_pde`` package), including
+   the CUDA variant, see :doc:`python_bindings`.
+
+.. note::
+
+   Releases are also published as conda packages to `prefix.dev <https://prefix.dev>`_, which is the
+   quickest way to get a prebuilt NeoN (C++ runtime, headers and CMake package files included) into
+   a `pixi <https://pixi.sh>`_ environment:
+
+   .. code-block:: bash
+
+      pixi add neon-pde -c https://prefix.dev/exasim-project -c conda-forge
+
+   See :doc:`python_bindings` for the available platforms and GPU flavours.
+
 Building for GPUs
 ^^^^^^^^^^^^^^^^^^
 NeoN will automatically enable ``Kokkos_ENABLE_CUDA`` or ``Kokkos_ENABLE_HIP`` if either of this is available on
@@ -74,6 +91,18 @@ Then you can enable HIP during the configure step with the following flags.
    -DCMAKE_CXX_COMPILER=hipcc
    -DCMAKE_HIP_ARCHITECTURES=<GPU_ARCH>
    -DKokkos_ARCH_AMD_<GPU_ARCH>=ON  # e.g., -DKokkos_ARCH_AMD_GFX90A=ON
+
+In the case of Intel PVC GPUs, the following flags ensure sycl support.
+
+.. code-block:: bash
+
+   -DCMAKE_CXX_COMPILER=icpx
+   -DCMAKE_CXX_FLAGS=-fsycl
+   -DCMAKE_BUILD_TYPE=release
+   -DKokkos_ENABLE_SYCL=ON
+   -DKokkos_ARCH_INTEL_PVC=ON
+
+Please note that current support for NeoN on Intel GPUs is experimental.
 
 After configuring for GPU support, you can continue to build NeoN.
 

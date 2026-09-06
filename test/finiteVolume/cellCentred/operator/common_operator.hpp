@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -24,7 +24,7 @@ auto setup_operator_test(const UnstructuredMesh& mesh)
     parallelFor(
         exec,
         {mesh.nCells() - 1, mesh.nCells()},
-        KOKKOS_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
+        NEON_LAMBDA(const localIdx i) { boundFaceFlux[i] = -1.0; }
     );
 
     auto volumeBCs = fvcc::createCalculatedBCs<fvcc::VolumeBoundary<TestType>>(mesh);

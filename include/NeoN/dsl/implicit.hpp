@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -28,11 +28,30 @@ TemporalOperator<ValueType> ddt(fvcc::VolumeField<ValueType>& phi)
     return fvcc::DdtOperator(dsl::Operator::Type::Implicit, phi);
 }
 
+// Density-weighted temporal operator ddt(rho, phi): diagonal uses rho, rhs uses
+// oldTime(rho), giving the conservative (rho_n*phi - rho_o*phi_o)/dt form.
+template<typename ValueType>
+TemporalOperator<ValueType> ddt(fvcc::VolumeField<scalar>& rho, fvcc::VolumeField<ValueType>& phi)
+{
+    return fvcc::DdtOperator<ValueType>(dsl::Operator::Type::Implicit, rho, phi);
+}
+
 template<typename ValueType>
 SpatialOperator<ValueType>
 source(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
 {
     return SpatialOperator<ValueType>(fvcc::SourceTerm(dsl::Operator::Type::Implicit, coeff, phi));
+}
+
+// SuSp: sign-aware implicit source — max(coeff, 0) on the diagonal, min(coeff, 0)
+// explicitly to the rhs. Keeps the matrix diagonally dominant for a coefficient of
+// either sign (e.g. the kOmegaSST cross-diffusion term).
+template<typename ValueType>
+SpatialOperator<ValueType> susp(fvcc::VolumeField<scalar>& coeff, fvcc::VolumeField<ValueType>& phi)
+{
+    return SpatialOperator<ValueType>(
+        fvcc::SourceTerm(dsl::Operator::Type::Implicit, coeff, phi, true)
+    );
 }
 
 template<typename ValueType>

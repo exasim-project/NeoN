@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -7,9 +7,6 @@
 #include "catch2_common.hpp"
 
 #include "NeoN/NeoN.hpp"
-
-template<typename T>
-using I = std::initializer_list<T>;
 
 TEST_CASE("volumeVector")
 {

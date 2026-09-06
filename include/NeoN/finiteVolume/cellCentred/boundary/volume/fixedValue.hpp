@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -34,7 +34,7 @@ void setFixedValue(
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             refValue[i] = fixedValue;
             value[i] = fixedValue;
             valueFraction[i] = 1.0;      // only used refValue
@@ -53,8 +53,10 @@ class FixedValue : public VolumeBoundaryFactory<ValueType>::template Register<Fi
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     FixedValue(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = false}),
+        : Base(mesh, dict, patchID, {.assignable = false, .fixesValue = true}),
           fixedValue_(dict.get<ValueType>("fixedValue"))
     {}
 
@@ -64,6 +66,8 @@ public:
     }
 
     static std::string name() { return "fixedValue"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "Set a fixed value on the boundary"; }
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -250,7 +250,7 @@ TEST_CASE("Vector Operations")
         REQUIRE(equal(a, 20.0));
 
         auto sB = b.view();
-        a.apply(KOKKOS_LAMBDA(const NeoN::localIdx i) { return 2 * sB[i]; });
+        a.apply(NEON_LAMBDA(const NeoN::localIdx i) { return 2 * sB[i]; });
         REQUIRE(equal(a, 20.0));
     }
 }
@@ -271,7 +271,7 @@ TEST_CASE("getViews")
     REQUIRE(hostC.view()[0] == 3.0);
 
     NeoN::parallelFor(
-        a, KOKKOS_LAMBDA(const NeoN::localIdx i) { return viewB[i] + viewC[i]; }
+        a, NEON_LAMBDA(const NeoN::localIdx i) { return viewB[i] + viewC[i]; }
     );
 
     auto hostD = a.copyToHost();
@@ -280,4 +280,21 @@ TEST_CASE("getViews")
     {
         REQUIRE(value == 5.0);
     }
+}
+
+TEMPLATE_TEST_CASE("take", "[template]", NeoN::scalar, NeoN::Vec3)
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+
+
+    auto one = NeoN::one<TestType>();
+    NeoN::Vector<TestType> a(
+        exec, {1.0 * one, 2.0 * one, 3.0 * one, 4.0 * one, 5.0 * one, 6.0 * one}
+    );
+
+    NeoN::Vector<TestType> aExp(exec, {2.0 * one, 3.0 * one, 4.0 * one});
+
+    auto takeRes = take(a, {1, 4});
+
+    REQUIRE_THAT(takeRes, Equals(aExp, Approx {1e-12}));
 }

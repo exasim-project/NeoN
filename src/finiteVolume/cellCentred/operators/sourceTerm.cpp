@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -14,46 +14,108 @@ SourceTerm<ValueType>::~SourceTerm()
 
 template<typename ValueType>
 SourceTerm<ValueType>::SourceTerm(
-    dsl::Operator::Type termType, VolumeField<scalar>& coefficients, VolumeField<ValueType>& field
+    dsl::Operator::Type termType,
+    const VolumeField<scalar>& coefficients,
+    const VolumeField<ValueType>& field,
+    bool suSp
 )
     : dsl::OperatorMixin<VolumeField<ValueType>>(field.exec(), dsl::Coeff {1.0}, field, termType),
-      coefficients_(coefficients),
-      sparsityPattern_(la::SparsityPattern::readOrCreate(field.mesh())) {};
+      spCoeff_(&coefficients), suSp_(suSp) {};
+
+template<typename ValueType>
+SourceTerm<ValueType>::SourceTerm(
+    dsl::Operator::Type termType, VolumeField<ValueType>& coefficients
+)
+    : dsl::OperatorMixin<VolumeField<ValueType>>(
+        coefficients.exec(), dsl::Coeff {1.0}, coefficients, termType
+    ),
+      spCoeff_(nullptr), suSp_(false) {};
 
 template<typename ValueType>
 void SourceTerm<ValueType>::explicitOperation(Vector<ValueType>& source) const
 {
     auto operatorScaling = this->getCoefficient();
-    auto [sourceView, fieldView, coeff] =
-        views(source, this->field_.internalVector(), coefficients_.internalVector());
-    NeoN::parallelFor(
-        source.exec(),
-        source.range(),
-        KOKKOS_LAMBDA(const localIdx celli) {
-            sourceView[celli] += operatorScaling[celli] * coeff[celli] * fieldView[celli];
-        },
-        "sourceTerm::explicitOperation"
-    );
+    if (spCoeff_)
+    {
+        // Sp: source += scaling * spCoeff * field
+        auto [sourceView, fieldView, coeff] =
+            views(source, this->field_.internalVector(), spCoeff_->internalVector());
+        NeoN::parallelFor(
+            source.exec(),
+            source.range(),
+            NEON_LAMBDA(const localIdx celli) {
+                sourceView[celli] += operatorScaling[celli] * coeff[celli] * fieldView[celli];
+            },
+            "Sp::explicitOperation"
+        );
+    }
+    else
+    {
+        // Su: source += scaling * coeff  (field_ IS the coefficient for Su)
+        auto [sourceView, coeff] = views(source, this->field_.internalVector());
+        NeoN::parallelFor(
+            source.exec(),
+            source.range(),
+            NEON_LAMBDA(const localIdx celli) {
+                sourceView[celli] += operatorScaling[celli] * coeff[celli];
+            },
+            "Su::explicitOperation"
+        );
+    }
 }
 
 template<typename ValueType>
-void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const
+void SourceTerm<ValueType>::implicitOperation(la::LinearSystem<ValueType>& ls) const
 {
+    if (!spCoeff_)
+    {
+        NF_ERROR_EXIT("Not implemented");
+    }
     const auto operatorScaling = this->getCoefficient();
-    const auto vol = coefficients_.mesh().cellVolumes().view();
-    const auto [diagOffs, coeff] =
-        views(getSparsityPattern().diagOffset(), coefficients_.internalVector());
-    auto [matrix, rhs] = ls.view();
+    const auto vol = spCoeff_->mesh().cellVolumes().view();
+    const auto [coeff] = views(spCoeff_->internalVector());
+    auto values = ls.matrix().values().view();
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
+    if (suSp_)
+    {
+        // SuSp: the positive part of the coefficient goes implicitly on the diagonal, the
+        // negative part explicitly to the rhs using the current field:
+        //   diag += V*max(c,0);  source -= V*min(c,0)*field
+        //
+        // The split is taken on the RAW coefficient and the expression scaling is applied
+        // to the result, so the assembled contribution stays linear in that scaling — the
+        // same property every other operator has. Splitting the already-scaled product
+        // instead would make a negative scaling swap the implicit and explicit branches
+        // rather than negate the split term, so `susp(c, phi) - susp(c, phi)` would not
+        // cancel (expression subtraction sets the scaling to -1, see dsl/expression.hpp).
+        auto rhs = ls.rhs().view();
+        const auto [fieldView] = views(this->field_.internalVector());
+        NeoN::parallelFor(
+            ls.exec(),
+            {0, coeff.size()},
+            NEON_LAMBDA(const localIdx celli) {
+                const scalar c = coeff[celli];
+                const scalar cPos = c > scalar(0) ? c : scalar(0);
+                const scalar cNeg = c < scalar(0) ? c : scalar(0);
+                const scalar scaling = operatorScaling[celli];
+                values[ma.diagIdx(celli)] += scaling * cPos * vol[celli] * one<ValueType>();
+                rhs[celli] += -scaling * cNeg * vol[celli] * fieldView[celli];
+            },
+            "SuSp::implicitOperation"
+        );
+        return;
+    }
+
+    // Sp implicit: diagonal += scaling * spCoeff * volume
     NeoN::parallelFor(
         ls.exec(),
         {0, coeff.size()},
-        KOKKOS_LAMBDA(const localIdx celli) {
-            localIdx idx = matrix.rowOffs[celli] + diagOffs[celli];
-            matrix.values[idx] +=
+        NEON_LAMBDA(const localIdx celli) {
+            values[ma.diagIdx(celli)] +=
                 operatorScaling[celli] * coeff[celli] * vol[celli] * one<ValueType>();
         },
-        "sourceTerm::implicitOperation"
+        "Sp::implicitOperation"
     );
 }
 

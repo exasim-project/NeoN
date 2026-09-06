@@ -2,86 +2,126 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-# Available GPUs and corresponding Docker images
-.use-nvidia-gpu:
-  tags: ["nvidia-h100-gpus"]
-  image: chihtaw/cuda-openfoam-ginkgo:12.8.1-v2412-arch_90
+# ============================================================
+#  GPU-specific images and runner configuration
+# ============================================================
+.gpu-nvidia:
+  tags: ["nvidia-gpus"]
+  image: chihtaw/cuda-openfoam-ginkgo:12.8.1-v2412-arch_89
+  variables:
+    GPU_VENDOR: nvidia
 
-.use-amd-gpu:
+.gpu-amd:
   tags: ["amd-gpus"]
   image: chihtaw/rocm-openfoam-ginkgo:6.4.1-v2412-arch_gfx90a
+  variables:
+    GPU_VENDOR: amd
 
-.use-intel-gpu:
+.gpu-intel:
   tags: ["intel-gpus"]
-  image: dheerajraghunathan/oneapi-ubuntu:2024.2-22.04-arch_pvc
+  image: dheerajraghunathan/oneapi-openfoam-ginkgo:2025.3-v2412-arch_pvc
+  variables:
+    GPU_VENDOR: intel
 
-# Common configuration for all build and test jobs
-.build-and-test-neon-common:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "false"
-      when: always
-    # Skip in all other cases
-    - when: never
-
-# Special configuration for build and test jobs on Intel GPUs
-.build-and-test-neon-intel:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "false" && $SKIP_INTEL == "false"
-      when: always
-    # Skip in all other cases
-    - when: never
-
-# Common configuration for all benchmark jobs
-.benchmark-neon-common:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"
-      when: always
-    # Skip in all other cases
-    - when: never
-
+# ============================================================
+#  Benchmarking setup
+# ============================================================
+.setup-for-benchmarking:
   variables:
     RESULTS_DIR: "benchmark-results"
     RUN_IDENTIFIER: "${CI_PIPELINE_ID}"
     REPO_NAME: "NeoFOAM-BenchmarkData"
     TARGET_REPO: "github.com/exasim-project/${REPO_NAME}.git"
-    TARGET_BRANCH: "ci-benchmarks"
 
   before_script:
     - pip3 install --user --break-system-packages xmltodict
 
-# build and test jobs for NeoN
-build-and-test-neon-nvidia:
-  extends:
-    - .build-and-test-neon-common
-    - .use-nvidia-gpu
-  script:
-    - ./ci/lrz-gitlab/build-and-test.sh nvidia
+# ============================================================
+#  Rule blocks
+# ============================================================
+# testing
+.rules-neon-testing:
+  rules:
+    - if: '$GPU_VENDOR == "nvidia" && $SKIP_NVIDIA != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"'
+      when: always
 
-build-and-test-neon-amd:
-  extends:
-    - .build-and-test-neon-common
-    - .use-amd-gpu
-  script:
-    - ./ci/lrz-gitlab/build-and-test.sh amd
+    - if: '$GPU_VENDOR == "amd" && $SKIP_AMD != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"'
+      when: always
 
-build-and-test-neon-intel:
-  extends:
-    - .build-and-test-neon-intel
-    - .use-intel-gpu
-  script:
-    - ./ci/lrz-gitlab/build-and-test.sh intel
+    - if: '$GPU_VENDOR == "intel" && $SKIP_INTEL != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK != "true"'
+      when: always
+    - when: never
 
-# benchmark jobs for NeoN
+# benchmarking
+.rules-neon-benchmarking:
+  rules:
+    - if: '$GPU_VENDOR == "nvidia" && $SKIP_NVIDIA != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"'
+      when: always
+
+    - if: '$GPU_VENDOR == "amd" && $SKIP_AMD != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"'
+      when: always
+
+    - if: '$GPU_VENDOR == "intel" && $SKIP_INTEL != "true" &&
+           $CI_PIPELINE_SOURCE == "trigger" && $BENCHMARK == "true"'
+      when: always
+    - when: never
+
+# ============================================================
+#  Job templates
+# ============================================================
+.build-and-test:
+  script:
+    - ./ci/lrz-gitlab/build-and-test.sh
+
+.benchmark:
+  extends:
+    - .setup-for-benchmarking
+  script:
+    - ./ci/lrz-gitlab/benchmark.sh
+
+# ============================================================
+#  NeoN - testing jobs
+# ============================================================
+build-test-neon-nvidia:
+  extends:
+    - .gpu-nvidia
+    - .rules-neon-testing
+    - .build-and-test
+
+build-test-neon-amd:
+  extends:
+    - .gpu-amd
+    - .rules-neon-testing
+    - .build-and-test
+
+build-test-neon-intel:
+  extends:
+    - .gpu-intel
+    - .rules-neon-testing
+    - .build-and-test
+
+# ============================================================
+#  NeoN - benchmarking jobs
+# ============================================================
 benchmark-neon-nvidia:
   extends:
-    - .benchmark-neon-common
-    - .use-nvidia-gpu
-  script:
-    - ./ci/lrz-gitlab/benchmark.sh nvidia
+    - .gpu-nvidia
+    - .rules-neon-benchmarking
+    - .benchmark
 
 benchmark-neon-amd:
   extends:
-    - .benchmark-neon-common
-    - .use-amd-gpu
-  script:
-    - ./ci/lrz-gitlab/benchmark.sh amd
+    - .gpu-amd
+    - .rules-neon-benchmarking
+    - .benchmark
+
+benchmark-neon-intel:
+  extends:
+    - .gpu-intel
+    - .rules-neon-benchmarking
+    - .benchmark

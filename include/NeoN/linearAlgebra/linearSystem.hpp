@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -6,10 +6,20 @@
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/dictionary.hpp"
-#include "NeoN/linearAlgebra/CSRMatrix.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
+#include "NeoN/core/copyTo.hpp"
+#include "NeoN/linearAlgebra/matrix.hpp"
+#include "NeoN/linearAlgebra/cooSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/csrSparsityPattern.hpp"
+#include "NeoN/linearAlgebra/meshIterationStrategies.hpp"
+#include "NeoN/linearAlgebra/faceToMatrixAddress.hpp"
+#ifdef NF_WITH_MPI_SUPPORT
+#include "NeoN/distributed/communicationPattern.hpp"
+#endif
 
 #include <string>
+#include <algorithm>
+#include <numeric>
+#include <vector>
 
 namespace NeoN::la
 {
@@ -18,30 +28,29 @@ namespace NeoN::la
  * @struct LinearSystemView
  * @brief A view linear into a linear system's data.
  *
- * @tparam ValueType The value type of the linear system.
- * @tparam IndexType The index type of the linear system.
+ * @tparam RHSValueType The value type of the rhs/solution vectors.
+ * @tparam MatrixViewType The type representing the matrix view
  */
-template<typename ValueType, typename IndexType>
+template<typename RHSValueType, typename MatrixViewType>
 struct LinearSystemView
 {
     LinearSystemView() = default;
     ~LinearSystemView() = default;
 
-    LinearSystemView(CSRMatrixView<ValueType, IndexType> matrixView, View<ValueType> rhsView)
-        : matrix(matrixView), rhs(rhsView) {};
+    LinearSystemView(
+        MatrixViewType matrixView,
+        View<RHSValueType> rhsView,
+        MatrixViewType boundaryMatrixView,
+        View<RHSValueType> boundaryRhsView
+    )
+        : matrix(matrixView), rhs(rhsView), boundaryMatrix(boundaryMatrixView),
+          boundaryRhs(boundaryRhsView) {};
 
-    CSRMatrixView<ValueType, IndexType> matrix;
-    View<ValueType> rhs;
-};
+    MatrixViewType matrix;
+    View<RHSValueType> rhs;
 
-// TODO move to fvcc
-template<typename ValueType, typename IndexType>
-struct BoundaryCoefficients
-{
-    Vector<ValueType> matrixValues;
-    Vector<IndexType> matrixIdxs;
-    Vector<ValueType> rhsValues;
-    Vector<IndexType> rhsIdxs;
+    MatrixViewType boundaryMatrix;
+    View<RHSValueType> boundaryRhs;
 };
 
 /**
@@ -51,142 +60,418 @@ struct BoundaryCoefficients
  * The LinearSystem class provides functionality to store and manipulate a linear system of
  * equations. It supports the storage of the coefficient matrix and the right-hand side vector, as
  * well as the solution vector.
+ *
+ * @tparam MatrixValueType The value type of the system and boundary matrix coefficients.
+ * @tparam RHSValueType The value type of the right-hand side and boundary rhs vectors. Defaults to
+ * MatrixValueType, but may differ (e.g. scalar matrix with Vec3 rhs for segregated vector solves).
+ * @tparam SystemMatrixType The sparse matrix type used for the system matrix (default:
+ * CSRMatrix<MatrixValueType, localIdx>).
+ * @tparam BoundaryMatrixType The sparse matrix type used for boundary and off-diagonal matrices
+ * (default: COOMatrix<MatrixValueType, localIdx>).
  */
-template<typename ValueType, typename IndexType>
-class LinearSystem
+template<
+    typename MatrixValueType,
+    typename RHSValueType = MatrixValueType,
+    typename SystemMatrixType = CSRMatrix<MatrixValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<MatrixValueType, localIdx>>
+class LinearSystem :
+    public NeoN::SupportsCopyTo<
+        LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>>
 {
+
+    void validate()
+    {
+        NF_ASSERT(matrix_.exec() == rhs_.exec(), "Executors are not the same");
+        NF_ASSERT(matrix_.nRows() == rhs_.size(), "Matrix and RHS size mismatch");
+        NF_ASSERT(
+            meshIteratorContext_ != nullptr,
+            "Mesh iterator context must be set before validating the linear system"
+        );
+        NF_ASSERT(
+            meshIteratorContext_->get() != nullptr,
+            "Mesh iterator strategy must be set before validating the linear system"
+        );
+        // NF_ASSERT(
+        //     boundaryMatrix_.nRows() == boundaryRhs_.size(), "BMatrix.nRows() !=
+        //     boundaryRHS.size()"
+        // );
+    }
+
+
 public:
 
+    using LinearSystemIndexType = typename SystemMatrixType::MatrixSparsityType::SparsityIndexType;
+
     LinearSystem(
-        const CSRMatrix<ValueType, IndexType>& matrix,
-        const Vector<ValueType>& rhs,
-        const Dictionary& aux = {}
+        const SystemMatrixType& matrix,
+        const Vector<RHSValueType>& rhs,
+        const BoundaryMatrixType& offDiagonalMatrix,
+        const BoundaryMatrixType& boundaryMatrix,
+        const Vector<RHSValueType>& boundaryRhs,
+        std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
     )
-        : matrix_(matrix), rhs_(rhs), auxiliaryCoefficients_(aux)
+        : matrix_(matrix), rhs_(rhs), boundaryMatrix_(boundaryMatrix),
+          offDiagonalMatrix_(offDiagonalMatrix), boundaryRhs_(boundaryRhs),
+          meshIteratorContext_(std::make_shared<MeshIteratorContext>())
     {
-        NF_ASSERT(matrix.exec() == rhs.exec(), "Executors are not the same");
-        NF_ASSERT(matrix.nRows() == rhs.size(), "Matrix and RHS size mismatch");
-    };
+        meshIteratorContext_->setStrategy(strategy);
+        validate();
+    }
+
+    LinearSystem(
+        const SystemMatrixType& matrix,
+        const Vector<RHSValueType>& rhs,
+        const BoundaryMatrixType& boundaryMatrix,
+        const Vector<RHSValueType>& boundaryRhs,
+        std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
+    )
+        : LinearSystem(
+            matrix, rhs, emptyMatrix(matrix.exec()), boundaryMatrix, boundaryRhs, strategy
+        )
+    {}
 
     LinearSystem(const LinearSystem& ls)
-        : matrix_(ls.matrix_), rhs_(ls.rhs_), auxiliaryCoefficients_(ls.auxiliaryCoefficients_) {};
-
-    LinearSystem(const Executor exec) : matrix_(exec), rhs_(exec, 0), auxiliaryCoefficients_() {}
+        : matrix_(ls.matrix_), rhs_(ls.rhs_), boundaryMatrix_(ls.boundaryMatrix_),
+          offDiagonalMatrix_(ls.offDiagonalMatrix_), boundaryRhs_(ls.boundaryRhs_),
+          // TODO move to a different location since this seems to be unrelated to linearSystem
+          faceFluxCorrection_(ls.faceFluxCorrection_),
+          keepFaceFluxCorrection_(ls.keepFaceFluxCorrection_),
+          diagCmpt_(ls.diagCmpt_ ? std::make_shared<Vector<RHSValueType>>(*ls.diagCmpt_) : nullptr),
+          meshIteratorContext_(ls.meshIteratorContext_)
+#ifdef NF_WITH_MPI_SUPPORT
+          ,
+          commPattern_(ls.commPattern_)
+#endif
+    {
+        validate();
+    }
 
     ~LinearSystem() = default;
 
-    [[nodiscard]] CSRMatrix<ValueType, IndexType>& matrix() { return matrix_; }
+    [[nodiscard]] SystemMatrixType& matrix() { return matrix_; }
 
-    [[nodiscard]] Vector<ValueType>& rhs() { return rhs_; }
+    [[nodiscard]] const SystemMatrixType& matrix() const { return matrix_; }
 
-    [[nodiscard]] const CSRMatrix<ValueType, IndexType>& matrix() const { return matrix_; }
+    [[nodiscard]] BoundaryMatrixType& offDiagonalMatrix() { return offDiagonalMatrix_; }
 
-    [[nodiscard]] const Vector<ValueType>& rhs() const { return rhs_; }
+    [[nodiscard]] const BoundaryMatrixType& offDiagonalMatrix() const { return offDiagonalMatrix_; }
 
-    [[nodiscard]] LinearSystem copyToHost() const
+    [[nodiscard]] BoundaryMatrixType& boundaryMatrix() { return boundaryMatrix_; }
+
+    [[nodiscard]] const BoundaryMatrixType& boundaryMatrix() const { return boundaryMatrix_; }
+
+    [[nodiscard]] Vector<RHSValueType>& rhs() { return rhs_; }
+
+    [[nodiscard]] const Vector<RHSValueType>& rhs() const { return rhs_; }
+
+    [[nodiscard]] Vector<RHSValueType>& boundaryRhs() { return boundaryRhs_; }
+
+    [[nodiscard]] const Vector<RHSValueType>& boundaryRhs() const { return boundaryRhs_; }
+
+    // Optional per-internal-face deferred flux correction — the OpenFOAM
+    // fvMatrix::faceFluxCorrectionPtr_ analogue. Populated by a corrected/limitedCorrected
+    // Laplacian assembly with the SAME per-face correction it deferred to the RHS, so the flux
+    // reconstruction phi = phiHbyA - pEqn.flux() (NeoFOAM updateFaceVelocity) can add it back and
+    // close div(phi) on non-orthogonal meshes. Null when no corrected Laplacian contributed
+    // (orthogonal / uncorrected schemes); never cleared by reset() since each corrected assembly
+    // overwrites every internal-face entry.
+    [[nodiscard]] std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection()
     {
-        return LinearSystem(matrix_.copyToHost(), rhs_.copyToHost());
+        return faceFluxCorrection_;
+    }
+
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& faceFluxCorrection() const
+    {
+        return faceFluxCorrection_;
+    }
+
+    // Whether Laplacian assembly should populate faceFluxCorrection() for this system. Off by
+    // default; only the consumer that reconstructs the flux (the scalar pressure equation, via
+    // NeoFOAM updateFaceVelocity) opts in, so momentum / turbulence systems — which never
+    // reconstruct flux — allocate nothing for the correction.
+    [[nodiscard]] bool keepFaceFluxCorrection() const { return keepFaceFluxCorrection_; }
+
+    void keepFaceFluxCorrection(bool keep) { keepFaceFluxCorrection_ = keep; }
+
+    /// @brief Per-component diagonal correction for implicit transform BCs (slip/symmetry).
+    ///        nullptr when no implicit transform patch is present (the fast multi-RHS path).
+    [[nodiscard]] const std::shared_ptr<Vector<RHSValueType>>& diagCmpt() const
+    {
+        return diagCmpt_;
+    }
+
+    /// @brief Lazily allocate (zero-initialised, one RHSValueType per cell) and return the
+    ///        per-component diagonal-correction store, so the Laplacian assembly can accumulate
+    ///        the implicit transform-BC contribution into it.
+    [[nodiscard]] Vector<RHSValueType>& ensureDiagCmpt()
+    {
+        if (!diagCmpt_)
+        {
+            diagCmpt_ =
+                std::make_shared<Vector<RHSValueType>>(exec(), rhs_.size(), zero<RHSValueType>());
+        }
+        return *diagCmpt_;
+    }
+
+
+    [[nodiscard]] LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
+    copyToExecutor(Executor exec) const override
+    {
+        LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
+            matrix_.copyToExecutor(exec),
+            rhs_.copyToExecutor(exec),
+            offDiagonalMatrix_.copyToExecutor(exec),
+            boundaryMatrix_.copyToExecutor(exec),
+            boundaryRhs_.copyToExecutor(exec)
+        };
+        if (diagCmpt_)
+        {
+            ls.diagCmpt_ = std::make_shared<Vector<RHSValueType>>(diagCmpt_->copyToExecutor(exec));
+        }
+#ifdef NF_WITH_MPI_SUPPORT
+        ls.commPattern_ = commPattern_;
+#endif
+        return ls;
     }
 
     void reset()
     {
-        fill(matrix_.values(), zero<ValueType>());
-        fill(rhs_, zero<ValueType>());
+        fill(matrix_.values(), zero<MatrixValueType>());
+        fill(rhs_, zero<RHSValueType>());
+        fill(boundaryMatrix_.values(), zero<MatrixValueType>());
+        fill(boundaryRhs_, zero<RHSValueType>());
+        fill(offDiagonalMatrix_.values(), zero<MatrixValueType>());
+        if (diagCmpt_) fill(*diagCmpt_, zero<RHSValueType>());
     }
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() && = delete;
+    [[nodiscard]] LinearSystemView<
+        RHSValueType,
+        MatrixView<
+            MatrixValueType,
+            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
+    view() && = delete;
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() const&& = delete;
+    [[nodiscard]] LinearSystemView<
+        RHSValueType,
+        MatrixView<
+            MatrixValueType,
+            SparsityView<typename SystemMatrixType::MatrixSparsityType::SparsityIndexType>>>
+    view() const&& = delete;
 
-    [[nodiscard]] LinearSystemView<ValueType, IndexType> view() &
+    [[nodiscard]] LinearSystemView<
+        RHSValueType,
+        MatrixView<MatrixValueType, SparsityView<LinearSystemIndexType>>>
+    view() &
     {
-        return LinearSystemView<ValueType, IndexType>(matrix_.view(), rhs_.view());
+        return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
     }
 
-    [[nodiscard]] LinearSystemView<const ValueType, const IndexType> view() const&
+    std::shared_ptr<const FaceToMatrixAddress> faceToMatrixAddress() const
     {
-        return LinearSystemView<const ValueType, const IndexType>(matrix_.view(), rhs_.view());
+        return matrix_.faceToMatrixAddress();
+    }
+
+#ifdef NF_WITH_MPI_SUPPORT
+    [[nodiscard]] const CommunicationPattern& commPattern() const { return commPattern_; }
+    [[nodiscard]] CommunicationPattern& commPattern() { return commPattern_; }
+#endif
+
+    [[nodiscard]] LinearSystemView<
+        const RHSValueType,
+        const MatrixView<MatrixValueType, SparsityView<const LinearSystemIndexType>>>
+    view() const&
+    {
+        return {matrix_.view(), rhs_.view(), boundaryMatrix_.view(), boundaryRhs_.view()};
+    }
+
+    std::shared_ptr<MeshIteratorContext> getMeshIterator()
+    {
+        if (meshIteratorContext_ == nullptr)
+        {
+            NF_ERROR_EXIT(" meshIteratorContext_ == nullptr");
+        }
+        return meshIteratorContext_;
     }
 
     const Executor& exec() const { return matrix_.exec(); }
 
-    // TODO move to fvcc
-    [[nodiscard]] const Dictionary& auxiliaryCoefficients() const { return auxiliaryCoefficients_; }
-
-    [[nodiscard]] Dictionary& auxiliaryCoefficients() { return auxiliaryCoefficients_; }
-
 private:
 
-    CSRMatrix<ValueType, IndexType> matrix_;
-    Vector<ValueType> rhs_;
+    static BoundaryMatrixType emptyMatrix(const Executor& exec)
+    {
+        using IndexType = typename BoundaryMatrixType::MatrixSparsityType::SparsityIndexType;
+        auto sp = std::make_shared<const typename BoundaryMatrixType::MatrixSparsityType>(
+            Vector<IndexType>(exec, 0), Vector<IndexType>(exec, 0), Dimensions {0, 0}
+        );
+        return BoundaryMatrixType(Vector<MatrixValueType>(exec, 0, zero<MatrixValueType>()), sp);
+    }
+
+    // internal values
+    SystemMatrixType matrix_;
+
+    Vector<RHSValueType> rhs_;
+
+    // boundary values
+    BoundaryMatrixType boundaryMatrix_;
+
+    // store values on boundaries that are non local
+    // eg on processor boundaries
+    BoundaryMatrixType offDiagonalMatrix_;
+
+    Vector<RHSValueType> boundaryRhs_;
+
+    // see faceFluxCorrection(). shared_ptr so the
+    // (existing) member-wise copy ctor and the default-constructed empty state stay cheap.
+    std::shared_ptr<Vector<RHSValueType>> faceFluxCorrection_ = nullptr;
+
+    // Opt-in toggle for faceFluxCorrection_ storage; see keepFaceFluxCorrection().
+    bool keepFaceFluxCorrection_ = false;
+
     Dictionary auxiliaryCoefficients_;
+
+    // Optional per-component diagonal correction for direction-dependent (transform) boundary
+    // conditions in implicit mode (slip/symmetry). One RHSValueType (e.g. Vec3) per cell; component
+    // c holds the diagonal contribution γ|S|·Δ·|n_c| applied for solve-component c on cells
+    // adjacent to an implicit transform patch. Lazily allocated by ensureDiagCmpt(); stays nullptr
+    // (and the shared scalar matrix / multi-RHS fast path is used) whenever no such patch exists.
+    std::shared_ptr<Vector<RHSValueType>> diagCmpt_ = nullptr;
+
+    std::shared_ptr<MeshIteratorContext> meshIteratorContext_ = nullptr;
+
+#ifdef NF_WITH_MPI_SUPPORT
+    CommunicationPattern commPattern_;
+#endif
 };
 
-
-template<typename ValueTypeIn, typename IndexTypeIn, typename ValueTypeOut, typename IndexTypeOut>
-LinearSystem<ValueTypeOut, IndexTypeOut>
-convertLinearSystem(const LinearSystem<ValueTypeIn, IndexTypeIn>& ls)
-{
-    auto exec = ls.exec();
-    Vector<ValueTypeOut> convertedRhs(exec, ls.rhs().data(), ls.rhs().size());
-    return {
-        convert<ValueTypeIn, IndexTypeIn, ValueTypeOut, IndexTypeOut>(exec, ls.view.matrix),
-        convertedRhs,
-        ls.sparsityPattern()
-    };
-}
-
-/*@brief helper function that creates a zero initialised linear system based on given sparsity
- * pattern
+/*@brief helper function that creates a zero initialised linear system based on a given mesh
  */
-template<typename ValueType, typename IndexType>
-LinearSystem<ValueType, IndexType>
-createEmptyLinearSystem(const UnstructuredMesh& mesh, const SparsityPattern& sparsity)
+template<
+    typename ValueType,
+    typename RHSValueType = ValueType,
+    typename SystemMatrixType = CSRMatrix<ValueType, localIdx>,
+    typename BoundaryMatrixType = COOMatrix<ValueType, localIdx>>
+LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> createEmptyLinearSystem(
+    const UnstructuredMesh& mesh,
+    std::shared_ptr<MeshIterationStrategy> strategy = std::make_shared<FaceBasedIterator>()
+)
 {
-    const auto& exec = mesh.exec();
-    localIdx rows {sparsity.rows()};
-    localIdx nnzs {sparsity.nnz()};
+    // Consume the per-mesh cached, immutable topology bundle (CSR system sparsity +
+    // FaceToMatrixAddress + boundary sparsity). These arrays depend only on mesh topology, so they
+    // are shared by every LinearSystem built on this mesh; only the per-system value/RHS vectors
+    // below are allocated fresh.
+    auto bundle = readOrCreateSparsityBundle<
+        typename SystemMatrixType::MatrixSparsityType,
+        typename BoundaryMatrixType::MatrixSparsityType>(mesh);
+    const auto& sp = bundle.systemSparsity;
+    const auto& mi = bundle.faceToMatrixAddress;
+    const auto& bSp = bundle.boundarySparsity;
+    const auto exec = sp->exec();
+    const auto nCells = static_cast<localIdx>(mesh.nCells());
+    const auto nProcFaces = static_cast<localIdx>(mesh.nProcBoundaryFaces());
+    using IndexType = typename BoundaryMatrixType::MatrixSparsityType::SparsityIndexType;
 
-    localIdx nBoundaryFaces {mesh.boundaryMesh().faceCells().size()};
+    // Off-diagonal / proc-face sparsity stays per-system (comm-pattern-derived); not shared in v1.
+    Vector<IndexType> offDiagColIdxs(exec, nProcFaces, 0);
+    Vector<IndexType> offDiagRowIdxs(exec, nProcFaces, 0);
 
-    const auto [diagOffset, rowOffs, faceCells] =
-        views(sparsity.diagOffset(), sparsity.rowOffs(), mesh.boundaryMesh().faceCells());
+#ifdef NF_WITH_MPI_SUPPORT
+    auto commPattern = computeCommunicationPattern(mesh);
+    if (nProcFaces > 0)
+    {
+        const localIdx nBoundaryFaces = static_cast<localIdx>(mesh.nBoundaryFaces());
+        const auto faceOwnersH = mesh.boundaryMesh().faceOwners().copyToHost();
+        const auto faceOwnersV = faceOwnersH.view();
+        Vector<IndexType> rowH(SerialExecutor {}, nProcFaces, 0);
+        Vector<IndexType> colH(SerialExecutor {}, nProcFaces, 0);
+        auto rowHV = rowH.view();
+        auto colHV = colH.view();
+        for (localIdx i = 0; i < nProcFaces; ++i)
+        {
+            // Store the local row index directly. The global offset used to be added here and
+            // subtracted again on the Ginkgo side; keeping the rows local avoids that round-trip.
+            // The column index stays global (it identifies a remote cell) and is consumed by
+            // Ginkgo's distributed index_map.
+            rowHV[i] = faceOwnersV[nBoundaryFaces + i];
+            colHV[i] = static_cast<IndexType>(commPattern.recvIdx[static_cast<std::size_t>(i)]);
+        }
+        // offDiagRowSortPerm[j] = proc-face index whose row/col belongs at sorted position j.
+        // Already computed (and stored) in BoundaryMesh; reuse it here to avoid re-sorting.
+        const auto& offDiagRowSortPerm = mesh.boundaryMesh().getRowSortPerm();
+        {
+            std::vector<IndexType> sortedRow(static_cast<std::size_t>(nProcFaces));
+            std::vector<IndexType> sortedCol(static_cast<std::size_t>(nProcFaces));
+            for (localIdx j = 0; j < nProcFaces; ++j)
+            {
+                auto src = offDiagRowSortPerm[static_cast<std::size_t>(j)];
+                sortedRow[static_cast<std::size_t>(j)] = rowHV[src];
+                sortedCol[static_cast<std::size_t>(j)] = colHV[src];
+            }
+            offDiagRowIdxs = Vector<IndexType>(exec, std::move(sortedRow));
+            offDiagColIdxs = Vector<IndexType>(exec, std::move(sortedCol));
+        }
+        commPattern.offDiagRowSortPerm = std::move(offDiagRowSortPerm);
+    }
+#endif
 
-    BoundaryCoefficients<ValueType, IndexType> bcCoeffs {
-        Vector<ValueType>(exec, nBoundaryFaces),
-        Vector<IndexType>(exec, nBoundaryFaces),
-        Vector<ValueType>(exec, nBoundaryFaces),
-        Vector<IndexType>(exec, nBoundaryFaces)
-    };
-
-    auto [mValue, mColIdx, rhsValue, rhsIdx] =
-        views(bcCoeffs.matrixValues, bcCoeffs.matrixIdxs, bcCoeffs.rhsValues, bcCoeffs.rhsIdxs);
-
-    parallelFor(
-        exec,
-        {0, nBoundaryFaces},
-        KOKKOS_LAMBDA(const localIdx bfacei) {
-            localIdx celli = faceCells[bfacei];
-
-            mValue[bfacei] = zero<ValueType>();
-            mColIdx[bfacei] = celli + diagOffset[celli];
-            rhsValue[bfacei] = zero<ValueType>();
-            rhsIdx[bfacei] = celli;
-        },
-        "createEmptyLinearSystem"
+    auto offDiagSp = std::make_shared<const typename BoundaryMatrixType::MatrixSparsityType>(
+        std::move(offDiagColIdxs), std::move(offDiagRowIdxs), Dimensions {nCells, nCells}
     );
 
-    Dictionary aux;
-    aux.insert("boundaryCoefficients", bcCoeffs);
-
-    return {
-        CSRMatrix<ValueType, IndexType> {
-            Vector<ValueType>(exec, nnzs, zero<ValueType>()), sparsity.colIdxs(), sparsity.rowOffs()
-        },
-        Vector<ValueType> {exec, rows, zero<ValueType>()},
-        aux
+    LinearSystem<ValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType> ls {
+        SystemMatrixType(Vector<ValueType>(sp->exec(), sp->nnz(), zero<ValueType>()), sp, mi),
+        Vector<RHSValueType>(sp->exec(), sp->rows(), zero<RHSValueType>()),
+        BoundaryMatrixType(Vector<ValueType>(exec, nProcFaces, zero<ValueType>()), offDiagSp),
+        BoundaryMatrixType(Vector<ValueType>(bSp->exec(), bSp->nnz(), zero<ValueType>()), bSp),
+        Vector<RHSValueType>(bSp->exec(), bSp->nnz(), zero<RHSValueType>()),
+        strategy
     };
+
+#ifdef NF_WITH_MPI_SUPPORT
+    ls.commPattern() = std::move(commPattern);
+#endif
+
+    return ls;
 }
 
+/** @brief for testing purposes, this function reverses boundary contributions previously applied to
+ * the matrix diagonal and RHS for some operators (e.g., div).
+ *
+ * @note templated on the full LinearSystem parameter set so it also accepts the segregated
+ * vector-solve form (scalar matrix, Vec3 rhs): the scalar boundary diagonal is reversed on the
+ * scalar matrix while the rhs reversal uses the field (RHS) value type. **/
+template<
+    typename MatrixValueType,
+    typename RHSValueType,
+    typename SystemMatrixType,
+    typename BoundaryMatrixType>
+inline la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>
+removeBoundaryContributions(
+    const la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>&
+        lsIn
+)
+{
+    auto ls =
+        la::LinearSystem<MatrixValueType, RHSValueType, SystemMatrixType, BoundaryMatrixType>(lsIn);
+    auto lsView = ls.view();
+    auto& matrix = lsView.matrix;
+    auto& rhs = lsView.rhs;
+    auto& bMatrix = lsView.boundaryMatrix;
+    auto& bRhs = lsView.boundaryRhs;
+
+    const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+
+    parallelFor(
+        ls.exec(),
+        {0, bMatrix.values.size()},
+        NEON_LAMBDA(const localIdx facei) {
+            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+            Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
+            Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
+        },
+        "removeBoundaryContributions"
+    );
+
+    return ls;
+}
 
 } // namespace NeoN::la

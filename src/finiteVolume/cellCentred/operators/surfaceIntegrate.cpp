@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -12,33 +12,34 @@ template<typename ValueType>
 void surfaceIntegrate(
     const Executor& exec,
     localIdx nInternalFaces,
-    View<const int> neighbour,
-    View<const int> owner,
-    View<const int> faceCells,
+    View<const label> internalFaceNeighbors,
+    View<const label> internalFaceOwners,
+    View<const label> boundaryFaceOwners,
     View<const ValueType> flux,
+    View<const ValueType> bFlux,
     View<const scalar> v,
     View<ValueType> res,
     const dsl::Coeff operatorScaling
 )
 {
     auto nCells = v.size();
-    const auto nBoundaryFaces = faceCells.size();
+    const auto nBoundaryFaces = boundaryFaceOwners.size();
     parallelFor(
         exec,
         {0, nInternalFaces},
-        KOKKOS_LAMBDA(const localIdx i) {
-            Kokkos::atomic_add(&res[static_cast<size_t>(owner[i])], flux[i]);
-            Kokkos::atomic_sub(&res[static_cast<size_t>(neighbour[i])], flux[i]);
+        NEON_LAMBDA(const localIdx i) {
+            Kokkos::atomic_add(&res[internalFaceOwners[i]], flux[i]);
+            Kokkos::atomic_sub(&res[internalFaceNeighbors[i]], flux[i]);
         },
         "surfaceIntegrateInternalFaces"
     );
 
     parallelFor(
         exec,
-        {nInternalFaces, nInternalFaces + nBoundaryFaces},
-        KOKKOS_LAMBDA(const localIdx i) {
-            auto own = faceCells[i - nInternalFaces];
-            Kokkos::atomic_add(&res[own], flux[i]);
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            auto own = boundaryFaceOwners[bfi];
+            Kokkos::atomic_add(&res[own], bFlux[bfi]);
         },
         "surfaceIntegrateBoundaryFaces"
     );
@@ -46,7 +47,7 @@ void surfaceIntegrate(
     parallelFor(
         exec,
         {0, nCells},
-        KOKKOS_LAMBDA(const localIdx celli) { res[celli] *= operatorScaling[celli] / v[celli]; },
+        NEON_LAMBDA(const localIdx celli) { res[celli] *= operatorScaling[celli] / v[celli]; },
         "surfaceIntegrateInternalCells"
     );
 }
@@ -55,9 +56,10 @@ void surfaceIntegrate(
     template void surfaceIntegrate<TYPENAME>(                                                      \
         const Executor&,                                                                           \
         localIdx,                                                                                  \
-        View<const int>,                                                                           \
-        View<const int>,                                                                           \
-        View<const int>,                                                                           \
+        View<const label>,                                                                         \
+        View<const label>,                                                                         \
+        View<const label>,                                                                         \
+        View<const TYPENAME>,                                                                      \
         View<const TYPENAME>,                                                                      \
         View<const scalar>,                                                                        \
         View<TYPENAME>,                                                                            \

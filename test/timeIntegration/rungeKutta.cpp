@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -22,7 +22,6 @@ using Executor = NeoN::Executor;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
 using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
-using Ddt = NeoN::dsl::temporal::Ddt<VolumeField>;
 
 // only for msvc
 template class NeoN::timeIntegration::RungeKutta<VolumeField>;
@@ -45,11 +44,13 @@ public:
         NeoN::parallelFor(
             source.exec(),
             source.range(),
-            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
+            NEON_LAMBDA(const localIdx i) { sourceView[i] -= fieldData[i] * fieldData[i]; }
         );
     }
 
     std::string getName() const { return "YSquared"; }
+
+    NeoN::Dictionary getConfig() const { return {}; }
 };
 
 TEST_CASE("TimeIntegration - Runge Kutta")
@@ -60,10 +61,10 @@ TEST_CASE("TimeIntegration - Runge Kutta")
     // Set up dictionary.
     NeoN::Database db;
     NeoN::Dictionary fvSchemes;
-    NeoN::Dictionary ddtSchemes;
-    ddtSchemes.insert("type", std::string("Runge-Kutta"));
-    ddtSchemes.insert("Runge-Kutta-Method", std::string("Forward-Euler"));
-    fvSchemes.insert("ddtSchemes", ddtSchemes);
+    NeoN::Dictionary timeIntegrationDict;
+    timeIntegrationDict.insert("type", std::string("Runge-Kutta"));
+    timeIntegrationDict.insert("Runge-Kutta-Method", std::string("Forward-Euler"));
+    fvSchemes.insert("timeIntegration", timeIntegrationDict);
     NeoN::Dictionary fvSolution;
 
     // Set up fields.
@@ -93,9 +94,17 @@ TEST_CASE("TimeIntegration - Runge Kutta")
             vfOld.internalVector() = initialValue;
 
             // Set expression
-            TemporalOperator ddtOp = NeoN::dsl::imp::ddt(vfOld);
+            TemporalOperator ddtOp = NeoN::dsl::exp::ddt(vfOld);
 
-            auto divOp = YSquared(vfOld);
+            // Build ODE:
+            //   dU/dt + U^2 = 0
+            //   dU/dt = -U^2
+            //
+            // IMPORTANT:
+            // - ddt(vf): time derivative of the evolving state
+            // - YSquared(vf): RHS evaluated at current RK stage
+            //
+            auto divOp = YSquared(vf);
             auto eqn = ddtOp + divOp;
 
             // solve.
@@ -105,6 +114,9 @@ TEST_CASE("TimeIntegration - Runge Kutta")
                 time += dt;
             }
 
+            // Analytical solution:
+            //   dU/dt = -U^2
+            //   U(t) = 1 / (U0^{-1} + t)
             // check error.
             NeoN::scalar analytical = 1.0 / (initialValue - maxTime);
             auto vfHost = vf.internalVector().copyToHost();

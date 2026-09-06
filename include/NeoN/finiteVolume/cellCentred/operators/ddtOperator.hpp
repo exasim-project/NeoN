@@ -1,19 +1,28 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
+
+#include <type_traits>
 
 #include "NeoN/core/vector/vector.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
 {
+
+enum class DdtScheme
+{
+    None,
+    SteadyState,
+    BDF1,
+    BDF2
+};
 
 template<typename ValueType>
 class DdtOperator : public dsl::OperatorMixin<VolumeField<ValueType>>
@@ -25,22 +34,52 @@ public:
 
     DdtOperator(dsl::Operator::Type termType, VolumeField<ValueType>& field);
 
+    /* @brief Density-weighted temporal operator ddt(rho, field): the diagonal uses the
+     *        current density rho and the rhs uses oldTime(rho), giving the conservative
+     *        (rho_n*field - rho_o*field_o)/dt form (as opposed to the single-coefficient
+     *        rho_n/dt*(field - field_o)). rho must carry an old-time collection.
+     */
+    DdtOperator(
+        dsl::Operator::Type termType, VolumeField<scalar>& rho, VolumeField<ValueType>& field
+    );
+
     ~DdtOperator();
 
-    void explicitOperation(Vector<ValueType>& source, scalar, scalar dt) const;
+    void explicitOperation(Vector<ValueType>& source, scalar t, scalar dt) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls, scalar, scalar dt) const;
+    void implicitOperation(la::LinearSystem<ValueType>& ls, scalar, scalar dt) const;
 
-    void read(const Input&) {}
+    void bdf1Kernel(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+    void bdf2Kernel(la::LinearSystem<ValueType>& ls, scalar t, scalar dt) const;
+
+    /* @brief Implicit temporal assembly into a scalar-matrix / ValueType-rhs linear system
+     *        (segregated vector-solve form). Only present when ValueType != scalar; for scalar
+     *        fields the same-type overload above already covers LinearSystem<scalar, scalar>.
+     *        The scalar diagonal entry scales every rhs component equally.
+     */
+    template<typename F = ValueType>
+        requires(!std::is_same_v<F, scalar>)
+    void implicitOperation(la::LinearSystem<scalar, ValueType>& ls, scalar, scalar dt) const;
+
+    void bdf1KernelScalarMtx(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const;
+
+    void bdf2KernelScalarMtx(la::LinearSystem<scalar, ValueType>& ls, scalar t, scalar dt) const;
+
+    DdtScheme scheme() const noexcept { return scheme_; }
+
+    void read(const Input&);
 
     std::string getName() const { return "DdtOperator"; }
 
 private:
 
     // NOTE ddtOperator does not have a FactoryClass
-    const la::SparsityPattern& sparsityPattern_;
+
+    DdtScheme scheme_ {DdtScheme::BDF1};
+
+    // Non-null → density-weighted form ddt(rho, field). Null → stock single-coefficient form.
+    VolumeField<scalar>* rho_ {nullptr};
 };
 
 

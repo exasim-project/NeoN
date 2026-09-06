@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -27,7 +27,7 @@ public:
         NF_ERROR_EXIT("Not implemented");
     }
 
-    void implicitOperation(la::LinearSystem<scalar, localIdx>&, scalar, scalar) const
+    void implicitOperation(la::LinearSystem<scalar>&, scalar, scalar) const
     {
         NF_ERROR_EXIT("Not implemented");
     }

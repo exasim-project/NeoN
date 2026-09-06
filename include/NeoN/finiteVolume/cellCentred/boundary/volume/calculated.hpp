@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -19,15 +19,19 @@ class Calculated : public VolumeBoundaryFactory<ValueType>::template Register<Ca
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using CalculatedType = Calculated<ValueType>;
 
     Calculated(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true})
+        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false})
     {}
 
     virtual void correctBoundaryCondition([[maybe_unused]] Field<ValueType>& domainVector) final {}
 
     static std::string name() { return "calculated"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "TBD"; }
 

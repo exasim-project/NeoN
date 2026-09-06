@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -16,11 +16,15 @@ Coeff::Coeff(scalar coeff, const Vector<scalar>& field)
     : coeff_(coeff), view_(field.view()), hasView_(true)
 {}
 
+Coeff::Coeff(const Coeff& coeff)
+    : coeff_(coeff.coeff_), view_(coeff.view_), hasView_(coeff.hasView_)
+{}
+
 Coeff::Coeff(const Vector<scalar>& field) : coeff_(1.0), view_(field.view()), hasView_(true) {}
 
 bool Coeff::hasView() { return hasView_; }
 
-View<const scalar> Coeff::view() { return view_; }
+View<const scalar> Coeff::view() const { return view_; }
 
 Coeff& Coeff::operator*=(scalar rhs)
 {
@@ -58,7 +62,7 @@ void toVector(Coeff& coeff, Vector<scalar>& rhs)
         parallelFor(
             rhs.exec(),
             rhs.range(),
-            KOKKOS_LAMBDA(const localIdx i) { rhsView[i] *= coeff[i]; },
+            NEON_LAMBDA(const localIdx i) { rhsView[i] *= coeff[i]; },
             "coeffToVector"
         );
     }

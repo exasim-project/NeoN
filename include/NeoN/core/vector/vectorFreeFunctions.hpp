@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
 #include "NeoN/core/primitives/scalar.hpp"
+#include "NeoN/core/primitives/vec3.hpp"
 
 #include <type_traits>
 
@@ -47,5 +48,25 @@ void mul(Vector<ValueType>& vect, const std::type_identity_t<ValueType>& value)
 template<typename ValueType>
 void mul(Vector<ValueType>& vect1, const Vector<std::type_identity_t<ValueType>>& vect2)
     requires requires(ValueType a, ValueType b) { a* b; };
+
+/**
+ * @brief Given a Vector of Vec3 this function extracts a single component
+ * @returns The resulting scalar vector
+ */
+template<unsigned int I>
+[[nodiscard]] Vector<scalar> getComponent(const Vector<Vec3>& in);
+
+/**
+ * @brief Given a Vector of Vec3 this function sets a single component
+ * @returns The resulting scalar vector
+ */
+template<unsigned int I>
+void setComponent(const Vector<scalar>& in, Vector<Vec3>& out);
+
+/** @brief Given a Vector and an index range [first, first+length] a subvector is created
+ * @returns The resulting subset vector
+ */
+template<typename ValueType>
+Vector<ValueType> take(const Vector<ValueType>& in, std::pair<localIdx, localIdx> range);
 
 } // namespace NeoN

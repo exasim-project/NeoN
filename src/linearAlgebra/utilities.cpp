@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
+#include "NeoN/core/macros.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
@@ -26,7 +27,7 @@ Vector<localIdx> unpackColIdx(
     NeoN::parallelFor(
         exec,
         {0, unpackedRowOffs.size() - 1},
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             const auto j {rowV[i]};        // new row start
             const auto l {oldRowV[i / 3]}; // original row start
             const auto length {rowV[i + 1] - rowV[i]};
@@ -55,7 +56,7 @@ Vector<scalar> unpackVecValues(const Vector<Vec3>& in)
     NeoN::parallelFor(
         exec,
         {0, in.size()},
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             localIdx j = 3 * i;
             outV[j + 0] = inV[i][0];
             outV[j + 1] = inV[i][1];
@@ -81,7 +82,7 @@ Vector<scalar> unpackMtxValues(
     NeoN::parallelFor(
         exec,
         {0, rowOffs.size() - 1},
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             const auto length {rowV[i + 1] - rowV[i]};
             for (auto k = 0; k < length; k++)
             {
@@ -100,42 +101,28 @@ Vector<localIdx> unpackRowOffs(const Vector<localIdx>& in)
 {
     const auto exec = in.exec();
     const auto inV = in.view();
-    // for a 3x3 matrix with 7 nnz 4
-    // 0, 2, 5, 7  -> size = 4
-    auto length = Vector<localIdx> {exec, 3 * (in.size() - 1)};
-    fill(length, 0);
-    auto lengthV = length.view();
-
-    // compute the length of each row and stretch it out
-    // [0, 2, 5, 7] -> [2, 2, 2, ..., 2,2,2 ]
-    NeoN::parallelFor(
-        exec,
-        {0, in.size() - 1},
-        KOKKOS_LAMBDA(const localIdx i) {
-            localIdx j = 3 * i;
-            const auto val = inV[i + 1] - inV[i];
-            lengthV[j + 0] = val;
-            lengthV[j + 1] = val;
-            lengthV[j + 2] = val;
-        },
-        "computeUnpackedRowOffs"
-    );
-
-    auto ret = Vector<localIdx> {exec, 3 * (in.size() - 1) + 1};
-    fill(ret, 0);
+    // for a 3x3 matrix with 7 nnz, input is [0, 2, 5, 7] (4 entries = nRows+1)
+    const localIdx nOldRows = static_cast<localIdx>(in.size() - 1);
+    auto ret = Vector<localIdx>(exec, 3 * nOldRows + 1);
     auto retV = ret.view();
 
-    // [2, 2, 2] -> [0, 2, 4, 6, 8]
-    NeoN::parallelScan(
+    // Closed-form expansion: for original row i with offset off and length len,
+    // the 3 expanded rows start at: 3*off, 3*off+len, 3*off+2*len.
+    // The sentinel (last element) is 3*inV[nOldRows].
+    // Example: [0,2,5,7] -> [0,2,4, 6,9,12, 15,17,19, 21]
+    NeoN::parallelFor(
         exec,
-        {1, length.size() + 1},
-        KOKKOS_LAMBDA(const NeoN::localIdx i, NeoN::localIdx& update, const bool final) {
-            update += lengthV[i - 1];
-            if (final)
+        {0, nOldRows + 1},
+        NEON_LAMBDA(const localIdx i) {
+            retV[3 * i] = 3 * inV[i];
+            if (i < nOldRows)
             {
-                retV[i] = update;
+                const localIdx len = inV[i + 1] - inV[i];
+                retV[3 * i + 1] = 3 * inV[i] + len;
+                retV[3 * i + 2] = 3 * inV[i] + 2 * len;
             }
-        }
+        },
+        "computeUnpackedRowOffs"
     );
     return ret;
 }
@@ -150,7 +137,7 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
     NeoN::parallelFor(
         exec,
         {0, out.size()},
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             localIdx j = 3 * i;
             outV[i][0] = inV[j + 0];
             outV[i][1] = inV[j + 1];
@@ -160,31 +147,83 @@ void packVecValues(const Vector<scalar>& in, Vector<Vec3>& out)
     );
 }
 
+template<typename MatrixType, typename ValueType>
 void computeResidual(
-    const CSRMatrix<scalar, localIdx>& mtx,
-    const Vector<scalar>& bV,
-    const Vector<scalar>& xV,
-    Vector<scalar>& resV
+    const MatrixType& mtx,
+    const Vector<ValueType>& bV,
+    const Vector<ValueType>& xV,
+    Vector<ValueType>& resV
 )
 {
     auto [res, b, x] = views(resV, bV, xV);
-    const auto [coeffs, colIdxs, rowOffs] = mtx.view();
+    const auto [coeffs, sparsity] = mtx.view();
 
     NeoN::parallelFor(
         resV.exec(),
         {0, resV.size()},
-        KOKKOS_LAMBDA(const localIdx rowi) {
-            auto rowStart = rowOffs[rowi];
-            auto rowEnd = rowOffs[rowi + 1];
-            scalar sum = 0.0;
+        NEON_LAMBDA(const localIdx rowi) {
+            auto rowStart = sparsity.rowOffs[rowi];
+            auto rowEnd = sparsity.rowOffs[rowi + 1];
+            // ValueType sum: scalar coeffs * Vec3 x broadcasts to each component for
+            // the segregated vector-solve form (scalar matrix, Vec3 rhs)
+            ValueType sum = zero<ValueType>();
             for (localIdx coli = rowStart; coli < rowEnd; coli++)
             {
-                sum += coeffs[coli] * x[colIdxs[coli]];
+                sum += coeffs[coli] * x[sparsity.colIdxs[coli]];
             }
             res[rowi] = sum - b[rowi];
         },
         "computeResidual"
     );
 }
+
+template void computeResidual<
+    CSRMatrix<scalar, localIdx>,
+    scalar>(const CSRMatrix<scalar, localIdx>&, const Vector<scalar>&, const Vector<scalar>&, Vector<scalar>&);
+
+template void computeResidual<
+    CSRMatrix<scalar, localIdx>,
+    Vec3>(const CSRMatrix<scalar, localIdx>&, const Vector<Vec3>&, const Vector<Vec3>&, Vector<Vec3>&);
+
+template<typename IndexType>
+Vector<IndexType> rowsToRowOffs(const Vector<IndexType>& rows)
+{
+    auto rowsHost = rows.copyToHost();
+    const auto rowsV = rowsHost.view();
+    const auto nnz = rowsV.size();
+
+    if (nnz == 0)
+    {
+        return Vector<IndexType>(SerialExecutor {}, 1, IndexType(0)).copyToExecutor(rows.exec());
+    }
+
+    // TODO can this be realized without copying to host?
+    IndexType maxRow = 0;
+    for (localIdx i = 0; i < nnz; i++)
+    {
+        if (rowsV[i] > maxRow) maxRow = rowsV[i];
+    }
+
+    const IndexType nRows = maxRow + 1;
+    Vector<IndexType> rowOffs(SerialExecutor {}, nRows + 1, IndexType(0));
+    auto rowOffsV = rowOffs.view();
+
+    for (localIdx i = 0; i < nnz; i++)
+    {
+        rowOffsV[rowsV[i] + 1]++;
+    }
+
+    for (IndexType r = 0; r < nRows; r++)
+    {
+        rowOffsV[r + 1] += rowOffsV[r];
+    }
+
+    return rowOffs.copyToExecutor(rows.exec());
+}
+
+#define NN_INSTANTIATE_ROWS_TO_ROW_OFFS(TYPENAME)                                                  \
+    template Vector<TYPENAME> rowsToRowOffs<TYPENAME>(const Vector<TYPENAME>&)
+
+NN_FOR_ALL_INTEGER_TYPES(NN_INSTANTIATE_ROWS_TO_ROW_OFFS);
 
 }

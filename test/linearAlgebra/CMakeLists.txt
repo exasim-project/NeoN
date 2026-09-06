@@ -1,10 +1,14 @@
-# SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+# SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 #
 # SPDX-License-Identifier: Unlicense
 
-neon_unit_test(CSRMatrix)
+neon_unit_test(matrix)
+neon_unit_test(matrixIterator)
 neon_unit_test(linearSystem)
-neon_unit_test(sparsityPattern)
+neon_unit_test(cooSparsityPattern)
+neon_unit_test(csrSparsityPattern)
+neon_unit_test(faceToMatrixAddress)
+neon_unit_test(sharedSparsity)
 neon_unit_test(utilities)
 
 # the following tests currently require Ginkgo

@@ -1,10 +1,8 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #pragma once
-
-#include <Kokkos_Core.hpp>
 
 #include <iostream>
 

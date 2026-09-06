@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -9,7 +9,6 @@
 #include "NeoN/core/input.hpp"
 #include "NeoN/dsl/operator.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
-#include "NeoN/linearAlgebra/sparsityPattern.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/volumeField.hpp"
 
 namespace NeoN::finiteVolume::cellCentred
@@ -24,29 +23,43 @@ public:
 
     using VectorValueType = ValueType;
 
+    // Sp: source += scaling * coefficients * field  (implicit or explicit).
+    // With suSp = true this is instead the sign-aware SuSp split: the
+    // positive part of the coefficient is treated implicitly (added to the
+    // diagonal) and the negative part explicitly (added to the rhs using the
+    // current field), so a coefficient of either sign keeps the matrix diagonally
+    // dominant. Used by the kOmegaSST cross-diffusion / dilatation terms.
     SourceTerm(
         dsl::Operator::Type termType,
-        VolumeField<scalar>& coefficients,
-        VolumeField<ValueType>& field
+        const VolumeField<scalar>& coefficients,
+        const VolumeField<ValueType>& field,
+        bool suSp = false
     );
+
+    // Su: source += scaling * coefficients  (explicit only)
+    SourceTerm(dsl::Operator::Type termType, VolumeField<ValueType>& coefficients);
 
     ~SourceTerm();
 
     void explicitOperation(Vector<ValueType>& source) const;
 
-    void implicitOperation(la::LinearSystem<ValueType, localIdx>& ls) const;
+    void implicitOperation(la::LinearSystem<ValueType>& ls) const;
 
     void read(const Input&) {}
 
     std::string getName() const { return "sourceTerm"; }
 
-    const la::SparsityPattern& getSparsityPattern() const { return sparsityPattern_; }
+
+    Dictionary getConfig() const { return {}; }
 
 private:
 
-    const VolumeField<scalar>& coefficients_;
-    const la::SparsityPattern& sparsityPattern_;
+    // Non-null for Sp mode. Null for Su mode (field_ from mixin IS the coefficient).
+    const VolumeField<scalar>* spCoeff_;
+
+    // When true (and spCoeff_ non-null) the implicit assembly uses the SuSp sign split.
+    bool suSp_;
 };
 
 
-} // namespace NeoN
+} // namespace NeoN::finiteVolume::cellCentred

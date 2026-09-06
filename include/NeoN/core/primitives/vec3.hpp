@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -153,11 +153,41 @@ Vec3 operator*(const scalar& sclr, Vec3 rhs)
     return rhs;
 }
 
+// TODO replace by compProd, innerProd, outerProd
+/**@brief compute component wise product */
+KOKKOS_INLINE_FUNCTION
+Vec3 operator*(const Vec3& lhs, Vec3 rhs)
+{
+    return {lhs[0] * rhs[0], lhs[1] * rhs[1], lhs[2] * rhs[2]};
+}
+
+/** @brief inner product */
 KOKKOS_INLINE_FUNCTION
 scalar operator&(const Vec3& lhs, Vec3 rhs)
 {
     return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
 }
+
+/** @brief cross (vector) product, right-handed: lhs ^ rhs */
+KOKKOS_INLINE_FUNCTION
+Vec3 operator^(const Vec3& lhs, Vec3 rhs)
+{
+    return {
+        lhs[1] * rhs[2] - lhs[2] * rhs[1],
+        lhs[2] * rhs[0] - lhs[0] * rhs[2],
+        lhs[0] * rhs[1] - lhs[1] * rhs[0]
+    };
+}
+
+/** @brief cross (vector) product, spelled out for call sites that read better
+ * as a named function than as ``^`` */
+KOKKOS_INLINE_FUNCTION
+Vec3 cross(const Vec3& lhs, const Vec3& rhs) { return lhs ^ rhs; }
+
+
+KOKKOS_INLINE_FUNCTION
+Vec3 operator/(const Vec3& lhs, scalar rhs) { return {lhs[0] / rhs, lhs[1] / rhs, lhs[2] / rhs}; }
+
 
 KOKKOS_INLINE_FUNCTION
 scalar mag(const Vec3& vec) { return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]); }
@@ -176,5 +206,12 @@ KOKKOS_INLINE_FUNCTION Vec3 zero<Vec3>()
 {
     return Vec3(0.0, 0.0, 0.0);
 }
+
+template<>
+KOKKOS_INLINE_FUNCTION Vec3 inv<Vec3>(Vec3 in)
+{
+    return Vec3(1.0 / in[0], 1.0 / in[1], 1.0 / in[2]);
+}
+
 
 } // namespace NeoN

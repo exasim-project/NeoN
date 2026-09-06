@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -30,23 +30,22 @@ void setGradientValue(
 {
     const auto iVector = domainVector.internalVector().view();
 
-    auto [refGradient, value, valueFraction, refValue, faceCells, deltaCoeffs] = views(
+    auto [refGradient, value, valueFraction, refValue, boundaryFaceOwners, deltaCoeffs] = views(
         domainVector.boundaryData().refGrad(),
         domainVector.boundaryData().value(),
         domainVector.boundaryData().valueFraction(),
         domainVector.boundaryData().refValue(),
-        mesh.boundaryMesh().faceCells(),
+        mesh.boundaryMesh().faceOwners(),
         mesh.boundaryMesh().deltaCoeffs()
     );
-
 
     NeoN::parallelFor(
         domainVector.exec(),
         range,
-        KOKKOS_LAMBDA(const localIdx i) {
+        NEON_LAMBDA(const localIdx i) {
             refGradient[i] = fixedGradient;
             // operator / is not defined for all ValueTypes
-            value[i] = iVector[faceCells[i]] + fixedGradient * (1 / deltaCoeffs[i]);
+            value[i] = iVector[boundaryFaceOwners[i]] + fixedGradient * (1 / deltaCoeffs[i]);
             valueFraction[i] = 0.0;          // only use refGrad
             refValue[i] = zero<ValueType>(); // not used
         },
@@ -63,10 +62,12 @@ class FixedGradient :
 
 public:
 
+    using Base::correctBoundaryCondition;
+
     using FixedGradientType = FixedGradient<ValueType>;
 
     FixedGradient(const UnstructuredMesh& mesh, const Dictionary& dict, localIdx patchID)
-        : Base(mesh, dict, patchID, {.assignable = true}), mesh_(mesh),
+        : Base(mesh, dict, patchID, {.assignable = true, .fixesValue = false}), mesh_(mesh),
           fixedGradient_(dict.get<ValueType>("fixedGradient"))
     {}
 
@@ -76,6 +77,8 @@ public:
     }
 
     static std::string name() { return "fixedGradient"; }
+
+    std::string getName() const override { return name(); }
 
     static std::string doc() { return "Set a fixed gradient on the boundary."; }
 

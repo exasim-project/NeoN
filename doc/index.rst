@@ -24,12 +24,14 @@ Table of Contents
 
    self
    installation
+   python_bindings
    contributing
    basics/index
    dsl/index
    timeIntegration/index
    finiteVolume/cellCentred/index
    datastructures/index
+   linearAlgebra/index
    mpi_architecture
    ci
 

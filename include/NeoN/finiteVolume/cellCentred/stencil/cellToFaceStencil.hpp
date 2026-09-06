@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 NeoN authors
+// SPDX-FileCopyrightText: 2025 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -17,7 +17,11 @@ public:
 
     CellToFaceStencil(const UnstructuredMesh& mesh);
 
-    SegmentedVector<localIdx, localIdx> computeStencil() const;
+    /** @brief computes the internal mesh stencil
+     *
+     * Ie for each cell the faceIdxs of the internal faceIdxs are stored in order
+     */
+    SegmentedVector<localIdx, localIdx> computeInternalStencil() const;
 
 private:
 

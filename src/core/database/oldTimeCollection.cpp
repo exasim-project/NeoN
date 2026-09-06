@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -144,5 +144,43 @@ const OldTimeCollection& OldTimeCollection::instance(const VectorCollection& fie
     return instance(fieldCollection.db(), name);
 }
 
+template<typename VectorType>
+void rotateOldTimes(VectorType& field)
+{
+    VectorCollection& fieldCollection = VectorCollection::instance(field);
+    OldTimeCollection::instance(fieldCollection);
+
+    const int level = oldTimeLevel(field);
+
+    // Get or create phi^n (oldTime)
+    VectorType& oldVector = oldTime(field);
+
+    if (level == 1)
+    {
+        oldTime(oldVector);
+    }
+    if (level >= 2)
+    {
+        VectorType& oldOldVector = oldTime(oldVector);
+        oldOldVector.internalVector() = oldVector.internalVector();
+        oldOldVector.boundaryData() = oldVector.boundaryData();
+    }
+
+    // Rotate current -> old
+    oldVector.internalVector() = field.internalVector();
+    oldVector.boundaryData() = field.boundaryData();
+}
+
+template void
+NeoN::finiteVolume::cellCentred::rotateOldTimes<NeoN::finiteVolume::cellCentred::VolumeField<
+    NeoN::scalar>>(NeoN::finiteVolume::cellCentred::VolumeField<NeoN::scalar>&);
+
+template void
+NeoN::finiteVolume::cellCentred::rotateOldTimes<NeoN::finiteVolume::cellCentred::VolumeField<
+    NeoN::Vec3>>(NeoN::finiteVolume::cellCentred::VolumeField<NeoN::Vec3>&);
+
+template void
+NeoN::finiteVolume::cellCentred::rotateOldTimes<NeoN::finiteVolume::cellCentred::SurfaceField<
+    NeoN::scalar>>(NeoN::finiteVolume::cellCentred::SurfaceField<NeoN::scalar>&);
 
 } // namespace NeoN::finiteVolume::cellCentred

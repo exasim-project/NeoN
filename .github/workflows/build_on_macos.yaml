@@ -15,13 +15,19 @@ env:
   OMPI_MCA_rmaps_base_oversubscribe: 1
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: >
+    ${{ github.workflow }}-
+    ${{ github.event_name }}-
+    ${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   build:
-    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
-    name: Build NeoN on MacOs
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
+    name: Build and test NeoN on MacOS
     strategy:
       fail-fast: false
       matrix:
@@ -44,7 +50,7 @@ jobs:
      - name: Install dependencies
        run: |
          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-         brew install ninja cmake libomp
+         brew install ninja cmake libomp open-mpi
 
      - name: Get versions
        run: |

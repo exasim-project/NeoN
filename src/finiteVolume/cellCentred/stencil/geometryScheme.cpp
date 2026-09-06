@@ -1,27 +1,60 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #include "NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/stencil/basicGeometryScheme.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 #include <memory>
 
 namespace NeoN::finiteVolume::cellCentred
 {
 
-GeometrySchemeFactory::GeometrySchemeFactory([[maybe_unused]] const UnstructuredMesh& mesh) {}
+GeometrySchemeFactory::GeometrySchemeFactory() {}
+
+// Cache the per-internal-face vector from each adjacent cell centre to the face centre
+// (Cf - C_own and Cf - C_nei). These are derived from the mesh cell/face centres;
+// ensureFaceDeltas() calls this while those centres are still alive, then releases them via
+// reset().
+namespace
+{
+void computeFaceDeltaVectors(
+    const Executor& exec,
+    const UnstructuredMesh& mesh,
+    SurfaceField<Vec3>& faceDeltaOwner,
+    SurfaceField<Vec3>& faceDeltaNeighbour
+)
+{
+    const auto nInternalFaces = mesh.nInternalFaces();
+    auto dOwn = faceDeltaOwner.internalVector().view();
+    auto dNei = faceDeltaNeighbour.internalVector().view();
+    const auto [faceCenters, cellCenters, owners, neighbors] =
+        views(mesh.faceCenters(), mesh.cellCenters(), mesh.faceOwners(), mesh.faceNeighbors());
+
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx facei) {
+            const Vec3 cf = faceCenters[facei];
+            dOwn[facei] = cf - cellCenters[owners[facei]];
+            dNei[facei] = cf - cellCenters[neighbors[facei]];
+        },
+        "computeFaceDeltaVectors"
+    );
+}
+}
 
 
 const std::shared_ptr<GeometryScheme> GeometryScheme::readOrCreate(const UnstructuredMesh& mesh)
 {
-    StencilDataBase& stencilDb = mesh.stencilDB();
-    if (!stencilDb.contains("GeometryScheme"))
+    auto& db = mesh.stencilDB();
+    if (!db.contains("GeometryScheme"))
     {
-        stencilDb.insert(std::string("GeometryScheme"), std::make_shared<GeometryScheme>(mesh));
+        db.insert(std::string("GeometryScheme"), std::make_shared<GeometryScheme>(mesh));
     }
-    return stencilDb.get<std::shared_ptr<GeometryScheme>>("GeometryScheme");
+    return db.get<std::shared_ptr<GeometryScheme>>("GeometryScheme");
 }
 
 
@@ -29,13 +62,11 @@ GeometryScheme::GeometryScheme(
     const Executor& exec,
     std::unique_ptr<GeometrySchemeFactory> kernel,
     const SurfaceField<scalar>& weights,
-    const SurfaceField<scalar>& deltaCoeffs,
     const SurfaceField<scalar>& nonOrthDeltaCoeffs,
     const SurfaceField<Vec3>& nonOrthCorrectionVec3s
 )
     : exec_(exec), mesh_(weights.mesh()), kernel_(std::move(kernel)), weights_(weights),
-      deltaCoeffs_(deltaCoeffs), nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs),
-      nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
+      nonOrthDeltaCoeffs_(nonOrthDeltaCoeffs), nonOrthCorrectionVec3s_(nonOrthCorrectionVec3s)
 {
     if (kernel_ == nullptr)
     {
@@ -50,9 +81,6 @@ GeometryScheme::GeometryScheme(
 )
     : exec_(exec), mesh_(mesh), kernel_(std::move(kernel)),
       weights_(mesh.exec(), "weights", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)),
-      deltaCoeffs_(
-          mesh.exec(), "deltaCoeffs", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
-      ),
       nonOrthDeltaCoeffs_(
           mesh.exec(),
           "nonOrthDeltaCoeffs",
@@ -77,9 +105,6 @@ GeometryScheme::GeometryScheme(const UnstructuredMesh& mesh)
     : exec_(mesh.exec()), mesh_(mesh),
       kernel_(std::make_unique<BasicGeometryScheme>(mesh)), // TODO add selection mechanism
       weights_(mesh.exec(), "weights", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)),
-      deltaCoeffs_(
-          mesh.exec(), "deltaCoeffs", mesh, createCalculatedBCs<SurfaceBoundary<scalar>>(mesh)
-      ),
       nonOrthDeltaCoeffs_(
           mesh.exec(),
           "nonOrthDeltaCoeffs",
@@ -104,30 +129,112 @@ std::string GeometryScheme::name() const { return std::string("GeometryScheme");
 
 void GeometryScheme::update()
 {
-    std::visit(
-        [&](const auto& exec)
-        {
-            kernel_->updateWeights(exec, weights_);
-            kernel_->updateDeltaCoeffs(exec, deltaCoeffs_);
-            kernel_->updateNonOrthDeltaCoeffs(exec, nonOrthDeltaCoeffs_);
-            // kernel_->updateNonOrthCorrectionVec3s(exec, nonOrthCorrectionVec3s_);
-        },
-        exec_
-    );
+    if (mesh_.faceCenters().size() > 0)
+    {
+        std::visit(
+            [&](const auto& exec)
+            {
+                kernel_->updateWeights(exec, weights_);
+                kernel_->updateNonOrthDeltaCoeffs(exec, nonOrthDeltaCoeffs_);
+                kernel_->updateNonOrthCorrectionVec3s(
+                    exec, nonOrthDeltaCoeffs_, nonOrthCorrectionVec3s_
+                );
+            },
+            exec_
+        );
+        // Eagerly compute and cache the face-to-cell delta vectors (Cf - C_own, Cf - C_nei) while
+        // the mesh centres are guaranteed alive. The lazy ensureFaceDeltas() path used to defer
+        // this, but it failed when a consumer (linearUpwind, cellLimited) was constructed after the
+        // first read of another cached geometry field — that read triggers reset(), which frees the
+        // centres. Computing them here removes that construction-order dependency; the centres are
+        // still NOT freed here (reset() stays deferred) so the eager build below can read them.
+        faceDeltaOwner_.emplace(
+            exec_, "faceDeltaOwner", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        faceDeltaNeighbour_.emplace(
+            exec_, "faceDeltaNeighbour", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        computeFaceDeltaVectors(exec_, mesh_, *faceDeltaOwner_, *faceDeltaNeighbour_);
+        faceDeltasComputed_ = true;
+    }
 }
 
-const SurfaceField<scalar>& GeometryScheme::weights() const { return weights_; }
+void GeometryScheme::ensureFaceDeltas() const
+{
+    if (!faceDeltasComputed_)
+    {
+        if (mesh_.faceCenters().size() == 0)
+        {
+            NF_ERROR_EXIT(
+                "GeometryScheme: face-to-cell delta vectors requested after the source mesh "
+                "geometry was released. A scheme that needs them (e.g. linearUpwind) must be "
+                "constructed before the first read of a cached geometry field."
+            );
+        }
+        faceDeltaOwner_.emplace(
+            exec_, "faceDeltaOwner", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        faceDeltaNeighbour_.emplace(
+            exec_, "faceDeltaNeighbour", mesh_, createCalculatedBCs<SurfaceBoundary<Vec3>>(mesh_)
+        );
+        computeFaceDeltaVectors(exec_, mesh_, *faceDeltaOwner_, *faceDeltaNeighbour_);
+        faceDeltasComputed_ = true;
+    }
+    // The faceDelta* fields now hold everything derived from the mesh centres, so release them.
+    reset();
+}
 
-const SurfaceField<scalar>& GeometryScheme::deltaCoeffs() const { return deltaCoeffs_; }
+void GeometryScheme::reset() const
+{
+    // Free the per-point/cell/face geometry on the device once the geometry scheme has consumed
+    // it. weights / nonOrthDeltaCoeffs / corrVec (and, if opted in, faceDelta*) are now cached in
+    // this object, so the points/cellCentres/faceCentres arrays are no longer needed for
+    // subsequent computations and freeing them saves device memory on large meshes (revisit for
+    // moving/rotating meshes, which would repopulate all three). Deferred and one-shot: it runs on
+    // the first read of any cached geometry field (the accessors below) or from ensureFaceDeltas(),
+    // whichever comes first, so a late faceDelta* opt-in can still read the centres. points() is
+    // read only during construction/partitioning, never after this point. The const_cast is safe
+    // while the underlying mesh object is non-const, which holds for all current construction
+    // paths.
+    if (sourceGeometryReleased_)
+    {
+        return;
+    }
+    const_cast<UnstructuredMesh&>(mesh_).points().resize(0);
+    const_cast<UnstructuredMesh&>(mesh_).faceCenters().resize(0);
+    const_cast<UnstructuredMesh&>(mesh_).cellCenters().resize(0);
+    sourceGeometryReleased_ = true;
+}
+
+
+const SurfaceField<scalar>& GeometryScheme::weights() const
+{
+    reset();
+    return weights_;
+}
 
 const SurfaceField<scalar>& GeometryScheme::nonOrthDeltaCoeffs() const
 {
+    reset();
     return nonOrthDeltaCoeffs_;
 }
 
 const SurfaceField<Vec3>& GeometryScheme::nonOrthCorrectionVec3s() const
 {
+    reset();
     return nonOrthCorrectionVec3s_;
+}
+
+const SurfaceField<Vec3>& GeometryScheme::faceDeltaOwner() const
+{
+    ensureFaceDeltas();
+    return *faceDeltaOwner_;
+}
+
+const SurfaceField<Vec3>& GeometryScheme::faceDeltaNeighbour() const
+{
+    ensureFaceDeltas();
+    return *faceDeltaNeighbour_;
 }
 
 } // namespace NeoN

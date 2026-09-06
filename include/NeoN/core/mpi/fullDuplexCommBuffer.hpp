@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -43,7 +43,7 @@ public:
      * @param receiveSize The number of nodes, per rank, that this rank receives from.
      */
     FullDuplexCommBuffer(
-        MPIEnvironment mpiEnviron,
+        Environment mpiEnviron,
         std::vector<std::size_t> sendSize,
         std::vector<std::size_t> receiveSize
     )

@@ -15,12 +15,18 @@ env:
   OMPI_MCA_rmaps_base_oversubscribe: 1
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: >
+    ${{ github.workflow }}-
+    ${{ github.event_name }}-
+    ${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   build:
-    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
     name: Build NeoFOAM
     strategy:
       fail-fast: false

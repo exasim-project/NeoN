@@ -1,10 +1,14 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
 #define CATCH_CONFIG_RUNNER // Define this before including catch.hpp to create
                             // a custom main
 #include "catch2_common.hpp"
+#include <catch2/matchers/catch_matchers_all.hpp>
+#include <catch2/catch_approx.hpp>
+
+#include <random>
 
 #include "NeoN/NeoN.hpp"
 
@@ -19,6 +23,7 @@ using localIdx = NeoN::localIdx;
 using VolumeField = fvcc::VolumeField<NeoN::scalar>;
 using OperatorMixin = NeoN::dsl::OperatorMixin<VolumeField>;
 using BoundaryData = NeoN::BoundaryData<NeoN::scalar>;
+
 
 /* helper struct to create a vector in the database
  */
@@ -52,137 +57,89 @@ struct CreateVector
     }
 };
 
-
-/* A dummy implementation of a SpatialOperator
- * following the SpatialOperator interface */
 template<typename ValueType>
-class Dummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
+struct CreateVolumeVector
 {
+    std::string name;
+    const NeoN::UnstructuredMesh& mesh;
 
-public:
+    // initial value for the internal field
+    ValueType value {}; // e.g. 0.0 for scalars, Vec3{0,0,0} for vectors
 
-    using VectorValueType = ValueType;
+    std::int64_t timeIndex = 0;
+    std::int64_t iterationIndex = 0;
+    std::int64_t subCycleIndex = 0;
 
-    Dummy(fvcc::VolumeField<ValueType>& field)
-        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit
-        )
-    {}
-
-    Dummy(fvcc::VolumeField<ValueType>& field, Operator::Type type)
-        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, type
-        )
-    {}
-
-    void explicitOperation(NeoN::Vector<ValueType>& source) const
+    NeoN::Document operator()(NeoN::Database& db) const
     {
-        auto sourceView = source.view();
-        auto fieldView = this->field_.internalVector().view();
-        auto coeff = this->getCoefficient();
-        NeoN::parallelFor(
-            source.exec(),
-            source.range(),
-            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] += coeff[i] * fieldView[i]; }
+        using VF = NeoN::finiteVolume::cellCentred::VolumeField<ValueType>;
+        using VB = NeoN::finiteVolume::cellCentred::VolumeBoundary<ValueType>;
+
+        std::vector<VB> bcs; // empty is fine for the test
+
+        // Domain storage (Field<T>) with proper sizes/offsets
+        NeoN::Field<ValueType> domainField(
+            mesh.exec(),
+            NeoN::Vector<ValueType>(mesh.exec(), mesh.nCells(), value),
+            mesh.boundaryMesh().offset()
+        );
+
+        VF vf(mesh.exec(), name, mesh, domainField, bcs, db, /*dbKey*/ "", /*collection*/ "");
+        NeoN::fill(vf.internalVector(), value);
+
+        return NeoN::Document(
+            {{"name", vf.name},
+             {"timeIndex", timeIndex},
+             {"iterationIndex", iterationIndex},
+             {"subCycleIndex", subCycleIndex},
+             {"field", vf}},
+            NeoN::finiteVolume::cellCentred::validateVectorDoc
         );
     }
-
-    void implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls) const
-    {
-        auto values = ls.matrix().values().view();
-        auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalVector().view();
-        auto coeff = this->getCoefficient();
-
-        // update diag
-        NeoN::parallelFor(
-            this->exec(),
-            {0, values.size()},
-            KOKKOS_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
-        );
-
-        // update rhs
-        NeoN::parallelFor(
-            this->exec(),
-            ls.rhs().range(),
-            KOKKOS_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
-        );
-    }
-
-    std::string getName() const { return "Dummy"; }
 };
 
-/* A dummy implementation of a SpatialOperator
- * following the SpatialOperator interface */
 template<typename ValueType>
-class TemporalDummy : public NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>
+struct CreateSurfaceVector
 {
+    std::string name;
+    const NeoN::UnstructuredMesh& mesh;
+    const std::vector<NeoN::finiteVolume::cellCentred::SurfaceBoundary<ValueType>>* bcs = nullptr;
 
-public:
+    ValueType value {}; // initial face value
 
-    using VectorValueType = ValueType;
+    std::int64_t timeIndex = 0;
+    std::int64_t iterationIndex = 0;
+    std::int64_t subCycleIndex = 0;
 
-    TemporalDummy(fvcc::VolumeField<ValueType>& field)
-        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, Operator::Type::Explicit
-        )
-    {}
-
-    TemporalDummy(fvcc::VolumeField<ValueType>& field, Operator::Type type)
-        : NeoN::dsl::OperatorMixin<fvcc::VolumeField<ValueType>>(
-            field.exec(), dsl::Coeff(1.0), field, type
-        )
-    {}
-
-    void explicitOperation(NeoN::Vector<ValueType>& source, NeoN::scalar, NeoN::scalar)
+    NeoN::Document operator()(NeoN::Database& db) const
     {
-        auto sourceView = source.view();
-        auto fieldView = this->field_.internalVector().view();
-        auto coeff = this->getCoefficient();
-        NeoN::parallelFor(
-            source.exec(),
-            source.range(),
-            KOKKOS_LAMBDA(const localIdx i) { sourceView[i] += coeff[i] * fieldView[i]; }
+        using SF = NeoN::finiteVolume::cellCentred::SurfaceField<ValueType>;
+
+        // Face storage: internalVector holds only internal faces
+        NeoN::Field<ValueType> domainField(
+            mesh.exec(), mesh.nInternalFaces(), mesh.boundaryMesh().offset()
+        );
+        NeoN::fill(domainField.internalVector(), value);
+        NeoN::fill(domainField.boundaryData().refValue(), value);
+        NeoN::fill(domainField.boundaryData().value(), value);
+
+        // Safe default if caller didn’t pass BCs
+        std::vector<NeoN::finiteVolume::cellCentred::SurfaceBoundary<ValueType>> local_bcs;
+        const auto& use_bcs = (bcs) ? *bcs : local_bcs;
+
+        SF sf(mesh.exec(), name, mesh, domainField, use_bcs, db, /*dbKey*/ "", /*collection*/ "");
+
+        return NeoN::Document(
+            {{"name", sf.name},
+             {"timeIndex", timeIndex},
+             {"iterationIndex", iterationIndex},
+             {"subCycleIndex", subCycleIndex},
+             {"field", sf}},
+            NeoN::finiteVolume::cellCentred::validateVectorDoc
         );
     }
-
-    void
-    implicitOperation(la::LinearSystem<ValueType, NeoN::localIdx>& ls, NeoN::scalar, NeoN::scalar)
-    {
-        auto values = ls.matrix().values().view();
-        auto rhs = ls.rhs().view();
-        auto fieldView = this->field_.internalVector().view();
-        auto coeff = this->getCoefficient();
-
-        // update diag
-        NeoN::parallelFor(
-            this->exec(),
-            {0, values.size()},
-            KOKKOS_LAMBDA(const localIdx i) { values[i] += coeff[i] * fieldView[i]; }
-        );
-
-        // update rhs
-        NeoN::parallelFor(
-            this->exec(),
-            ls.rhs().range(),
-            KOKKOS_LAMBDA(const localIdx i) { rhs[i] += coeff[i] * fieldView[i]; }
-        );
-    }
-
-    la::LinearSystem<ValueType, NeoN::localIdx> createEmptyLinearSystem() const
-    {
-        NeoN::Vector<ValueType> values(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::Vector<NeoN::localIdx> colIdx(this->exec(), 1, 0.0);
-        NeoN::Vector<NeoN::localIdx> rowOffs(this->exec(), {0, 1});
-        NeoN::la::CSRMatrix<ValueType, NeoN::localIdx> csrMatrix(values, colIdx, rowOffs);
-
-        NeoN::Vector<ValueType> rhs(this->exec(), 1, NeoN::zero<ValueType>());
-        NeoN::la::LinearSystem<ValueType, NeoN::localIdx> linearSystem(csrMatrix, rhs);
-        return linearSystem;
-    }
-
-    std::string getName() const { return "TemporalDummy"; }
 };
+
 
 template<typename ValueType>
 ValueType getVector(const NeoN::Vector<ValueType>& source)
@@ -192,14 +149,14 @@ ValueType getVector(const NeoN::Vector<ValueType>& source)
 }
 
 template<typename ValueType>
-ValueType getDiag(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+ValueType getDiag(const la::LinearSystem<ValueType>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.matrix().values().view()[0];
 }
 
 template<typename ValueType>
-ValueType getRhs(const la::LinearSystem<ValueType, NeoN::localIdx>& ls)
+ValueType getRhs(const la::LinearSystem<ValueType>& ls)
 {
     auto hostLs = ls.copyToHost();
     return hostLs.rhs().view()[0];

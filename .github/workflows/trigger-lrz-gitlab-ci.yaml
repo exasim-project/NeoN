@@ -1,4 +1,4 @@
-name: NeoN + NeoFOAM LRZ GitLab CI
+name: LRZ GitLab CI
 
 on:
   push:
@@ -10,20 +10,28 @@ on:
   workflow_dispatch:      # Allows manual trigger
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: >
+    ${{ github.workflow }}-
+    ${{ github.event_name }}-
+    ${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   build-and-test-neon:
-    name: Trigger NeoN + NeoFOAM CI on GPU
+    name: Build and test NeoN & NeoFOAM on GPU
     runs-on: ubuntu-latest
     timeout-minutes: 1440 # 24 hours
 
     outputs:
       branch: ${{ steps.branch.outputs.branch }}
-      skip-intel: ${{ steps.skip-intel.outputs.skip-intel }}
+      skip-nvidia: ${{ steps.skip-labels.outputs.skip-nvidia }}
+      skip-amd: ${{ steps.skip-labels.outputs.skip-amd }}
+      skip-intel: ${{ steps.skip-labels.outputs.skip-intel }}
 
-    if: "!contains(toJson(github.event.pull_request.labels.*.name), 'Skip-build')"
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      (github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.labels.*.name, 'skip-build'))
 
     env:
       LRZ_GROUP: greole
@@ -53,14 +61,31 @@ jobs:
           echo "Determined NeoN branch: $BRANCH"
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Determine Skip-Intel label
-        id: skip-intel
+      - name: Determine skip labels
+        id: skip-labels
         run: |
-          if [[ "${{ contains(toJson(github.event.pull_request.labels.*.name), 'Skip-Intel') }}" == "true" ]]; then
-            echo "skip-intel=true" >> $GITHUB_OUTPUT
-          else
-            echo "skip-intel=false" >> $GITHUB_OUTPUT
+          # default values
+          echo "skip-nvidia=false" >> $GITHUB_OUTPUT
+          echo "skip-amd=false" >> $GITHUB_OUTPUT
+          echo "skip-intel=false" >> $GITHUB_OUTPUT
+
+          # Only check labels if this is a PR
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            labels=$(jq -r '.pull_request.labels[].name // empty' "$GITHUB_EVENT_PATH")
+            for label in $labels; do
+              case "$label" in
+                skip-nvidia) echo "skip-nvidia=true" >> $GITHUB_OUTPUT ;;
+                skip-amd)    echo "skip-amd=true" >> $GITHUB_OUTPUT ;;
+                skip-intel)  echo "skip-intel=true" >> $GITHUB_OUTPUT ;;
+              esac
+            done
           fi
+
+      - name: Debug skip outputs
+        run: |
+          echo "skip-nvidia=${{ steps.skip-labels.outputs.skip-nvidia }}"
+          echo "skip-amd=${{ steps.skip-labels.outputs.skip-amd }}"
+          echo "skip-intel=${{ steps.skip-labels.outputs.skip-intel }}"
 
       - name: Push commit to NeoN LRZ GitLab
         run: |
@@ -89,7 +114,9 @@ jobs:
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
             "variables[BENCHMARK]=false" \
-            "variables[SKIP_INTEL]=${{ steps.skip-intel.outputs.skip-intel }}"
+            "variables[SKIP_NVIDIA]=${{ steps.skip-labels.outputs.skip-nvidia }}" \
+            "variables[SKIP_AMD]=${{ steps.skip-labels.outputs.skip-amd }}" \
+            "variables[SKIP_INTEL]=${{ steps.skip-labels.outputs.skip-intel }}"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline
         run: |
@@ -116,7 +143,9 @@ jobs:
             "variables[NEON_BRANCH]=${{ steps.branch.outputs.branch }}" \
             "variables[TRIGGER_SOURCE]=${{ github.event.repository.name }}" \
             "variables[BENCHMARK]=false" \
-            "variables[SKIP_INTEL]=${{ steps.skip-intel.outputs.skip-intel }}"
+            "variables[SKIP_NVIDIA]=${{ steps.skip-labels.outputs.skip-nvidia }}" \
+            "variables[SKIP_AMD]=${{ steps.skip-labels.outputs.skip-amd }}" \
+            "variables[SKIP_INTEL]=${{ steps.skip-labels.outputs.skip-intel }}"
 
       - name: Wait for NeoFOAM LRZ GitLab CI pipeline
         run: |
@@ -131,13 +160,18 @@ jobs:
     timeout-minutes: 1440
     needs: [build-and-test-neon]
 
-    if: contains(toJson(github.event.pull_request.labels), 'benchmark')
+    if: >
+      github.repository == 'exasim-project/NeoN' &&
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'benchmark')
 
     env:
       LRZ_GROUP: greole
       LRZ_HOST: gitlab-ce.lrz.de
       REPO_NAME: ${{ github.event.repository.name }}
       BRANCH: ${{ needs.build-and-test-neon.outputs.branch }}
+      SKIP_NVIDIA: ${{ needs.build-and-test-neon.outputs.skip-nvidia }}
+      SKIP_AMD: ${{ needs.build-and-test-neon.outputs.skip-amd }}
       SKIP_INTEL: ${{ needs.build-and-test-neon.outputs.skip-intel }}
       NEON_PROJECT_TOKEN: ${{ secrets.LRZ_GITLAB_PROJECT_TOKEN }}
       NEON_TRIGGER_TOKEN: ${{ secrets.LRZ_GITLAB_TRIGGER_TOKEN }}
@@ -162,6 +196,9 @@ jobs:
             "${NEON_PROJECT_TOKEN}" \
             "${NEON_TRIGGER_TOKEN}" \
             "variables[BENCHMARK]=true" \
+            "variables[PR_NUMBER]=${{ github.event.pull_request.number || 'no-pr' }}" \
+            "variables[SKIP_NVIDIA]=${SKIP_NVIDIA}" \
+            "variables[SKIP_AMD]=${SKIP_AMD}" \
             "variables[SKIP_INTEL]=${SKIP_INTEL}"
 
       - name: Wait for NeoN LRZ GitLab CI pipeline for benchmarking

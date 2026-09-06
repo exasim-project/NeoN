@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2023 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -61,7 +61,7 @@ void map(ContType<ValueType>& cont, const Inner inner, std::pair<localIdx, local
     parallelFor(
         cont.exec(),
         {start, end},
-        KOKKOS_LAMBDA(const localIdx i) { contView[i] = inner(i); },
+        NEON_LAMBDA(const localIdx i) { contView[i] = inner(i); },
         "mapField"
     );
 }
@@ -89,7 +89,7 @@ void fill(
     }
     auto viewA = cont.view();
     parallelFor(
-        cont.exec(), {start, end}, KOKKOS_LAMBDA(const localIdx i) { viewA[i] = value; }, "fill"
+        cont.exec(), {start, end}, NEON_LAMBDA(const localIdx i) { viewA[i] = value; }, "fill"
     );
 }
 
@@ -117,7 +117,7 @@ void setContainer(
     parallelFor(
         cont.exec(),
         {start, end},
-        KOKKOS_LAMBDA(const localIdx i) { contView[i] = view[i]; },
+        NEON_LAMBDA(const localIdx i) { contView[i] = view[i]; },
         "setContainer"
     );
 }

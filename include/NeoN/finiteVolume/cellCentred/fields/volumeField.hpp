@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 - 2025 NeoN authors
+// SPDX-FileCopyrightText: 2024 - 2026 NeoN authors
 //
 // SPDX-License-Identifier: MIT
 
@@ -7,6 +7,9 @@
 #include "NeoN/core/database/database.hpp"
 #include "NeoN/finiteVolume/cellCentred/fields/domain.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp"
+#include "NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp"
+#include "NeoN/core/database/fieldDatabase.hpp"
+#include "NeoN/core/parallelAlgorithms.hpp"
 
 #include <vector>
 
@@ -24,7 +27,7 @@ namespace NeoN::finiteVolume::cellCentred
  * @tparam ValueType The value type of the field.
  */
 template<typename ValueType>
-class VolumeField : public DomainMixin<ValueType>
+class VolumeField : public DomainMixin<ValueType>, public FieldDatabaseMixin
 {
 
 public:
@@ -120,64 +123,60 @@ public:
      */
     void correctBoundaryConditions();
 
-    /**
-     * @brief Returns true if the field has a database, false otherwise.
-     *
-     * @return true if the field has a database, false otherwise.
-     */
-    bool hasDatabase() const { return db_.has_value(); }
-
-    /**
-     * @brief Retrieves the database.
-     *
-     * @return Database& A reference to the database.
-     */
-    Database& db()
-    {
-        if (!db_.has_value())
-        {
-            throw std::runtime_error {
-                "Database not set: make sure the field is registered in the database"
-            };
-        }
-        return *db_.value();
-    }
-
-    /**
-     * @brief Retrieves the database.
-     *
-     * @return const Database& A const reference to the database.
-     */
-    const Database& db() const
-    {
-        if (!db_.has_value())
-        {
-            throw std::runtime_error(
-                "Database not set: make sure the field is registered in the database"
-            );
-        }
-        return *db_.value();
-    }
-
-    /**
-     * @brief Returns true if the field is registered in the database, false otherwise.
-     *
-     * @return true if the field is registered in the database, false otherwise.
-     */
-    bool registered() const { return key != "" && fieldCollectionName != "" && db_.has_value(); }
+    void correctBoundaryConditions(const BoundaryContext& ctx);
 
     std::vector<VolumeBoundary<ValueType>> boundaryConditions() const
     {
         return boundaryConditions_;
     }
 
-    std::string key;                 // The key of the field in the database
-    std::string fieldCollectionName; // The name of the field collection in the database
-
 private:
 
     std::vector<VolumeBoundary<ValueType>> boundaryConditions_; // The vector of boundary conditions
     std::optional<Database*> db_; // The optional pointer to the database
+
+    // Whether the one-time boundary set() pass has run for this field instance. Reset to false
+    // for copies (default member init below) so a copied field re-runs set() on its first
+    // correctBoundaryConditions() call.
+    bool boundaryConditionsSet_ {false};
 };
+
+// Deliberately not called ``detail``: an inner ``detail`` here would shadow
+// ``NeoN::detail`` for every unqualified lookup inside this namespace, which
+// breaks divOperator/laplacianOperator's ``detail::RefHolder``.
+namespace volumeFieldDetail
+{
+
+/** @brief in-place element-wise cross product, target = target ^ other */
+inline void crossInto(const Executor& exec, Vector<Vec3>& target, const Vector<Vec3>& other)
+{
+    auto out = target.view();
+    auto rhs = other.view();
+    parallelFor(
+        exec,
+        {0, out.size()},
+        KOKKOS_LAMBDA(const localIdx i) { out[i] = out[i] ^ rhs[i]; },
+        "vec3FieldCross"
+    );
+}
+
+} // namespace volumeFieldDetail
+
+/**
+ * @brief Element-wise cross product of two Vec3 volume fields.
+ *
+ * Applied to the internal vector and to the boundary values alike, so the result
+ * is usable wherever the operands were — matching the scalar SurfaceField
+ * operators. Right-handed: ``cross(a, b)[i] == a[i] ^ b[i]``.
+ */
+inline VolumeField<Vec3> cross(const VolumeField<Vec3>& lhs, const VolumeField<Vec3>& rhs)
+{
+    VolumeField<Vec3> result(lhs);
+    volumeFieldDetail::crossInto(result.exec(), result.internalVector(), rhs.internalVector());
+    volumeFieldDetail::crossInto(
+        result.exec(), result.boundaryData().value(), rhs.boundaryData().value()
+    );
+    return result;
+}
 
 } // namespace NeoN
