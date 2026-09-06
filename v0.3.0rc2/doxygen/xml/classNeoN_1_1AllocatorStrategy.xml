@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classNeoN_1_1AllocatorStrategy" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>NeoN::AllocatorStrategy</compoundname>
+    <derivedcompoundref refid="classNeoN_1_1KokkosAllocator" prot="public" virt="non-virtual">NeoN::KokkosAllocator</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1UmpireAllocator" prot="public" virt="non-virtual">NeoN::UmpireAllocator</derivedcompoundref>
+    <derivedcompoundref refid="classNeoN_1_1UmpirePoolAllocator" prot="public" virt="non-virtual">NeoN::UmpirePoolAllocator</derivedcompoundref>
+    <includes refid="allocator_8hpp" local="no">allocator.hpp</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classNeoN_1_1AllocatorStrategy_1a3905c8c5f49fca35e0dcce51ba78e634" prot="protected" static="no" mutable="no">
+        <type><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kindref="member">MemorySpace</ref></type>
+        <definition>MemorySpace NeoN::AllocatorStrategy::memSpace_</definition>
+        <argsstring></argsstring>
+        <name>memSpace_</name>
+        <qualifiedname>NeoN::AllocatorStrategy::memSpace_</qualifiedname>
+        <initializer>= <ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5a2b55387dd066c5bac646ac61543d152d" kindref="member">MemorySpace::CPU</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="29" column="17" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a352505b0c16b94ff5e70e6bae2c0d588" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref></type>
+        <definition>void NeoN::AllocatorStrategy::setMemSpace</definition>
+        <argsstring>(MemorySpace memSpace)</argsstring>
+        <name>setMemSpace</name>
+        <qualifiedname>NeoN::AllocatorStrategy::setMemSpace</qualifiedname>
+        <param>
+          <type><ref refid="namespaceNeoN_1aaf720d2edacc93afc0a2b5a5ae6e8db5" kindref="member">MemorySpace</ref></type>
+          <declname>memSpace</declname>
+        </param>
+        <briefdescription>
+<para>set tag controlling where allocation happens </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="34" column="10" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="34" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void *</type>
+        <definition>virtual void * NeoN::AllocatorStrategy::alloc</definition>
+        <argsstring>(size_t size)=0</argsstring>
+        <name>alloc</name>
+        <qualifiedname>NeoN::AllocatorStrategy::alloc</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1KokkosAllocator_1a44b4ef0b180ddf076c485887f45f361a">alloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1a06db2d22c51dd1573d37eb44ea0285ba">alloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpirePoolAllocator_1abf8f730115fe03ebccc11fe32268f822">alloc</reimplementedby>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>allocate a block of size bytes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="37" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a7fd6091797b5f980d130c26dce8a7c3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref> *</type>
+        <definition>virtual void * NeoN::AllocatorStrategy::realloc</definition>
+        <argsstring>(void *ptr, size_t size)=0</argsstring>
+        <name>realloc</name>
+        <qualifiedname>NeoN::AllocatorStrategy::realloc</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1KokkosAllocator_1a7bddde13756196d60f3b193b8436a57e">realloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1aeb70f22157d079457e43419895e1a728">realloc</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpirePoolAllocator_1aa4b57ea2d673af3080020c1938194c5b">realloc</reimplementedby>
+        <param>
+          <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref> *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceNeoN_1a5ea7bf3a45fbcf9c6ee454474ab13c06" kindref="member">size_t</ref></type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+<para>reallocate a block of size bytes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="40" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1a9e790e5347a62749bca6056c97f74d88" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref></type>
+        <definition>virtual void NeoN::AllocatorStrategy::free</definition>
+        <argsstring>(void *ptr)=0</argsstring>
+        <name>free</name>
+        <qualifiedname>NeoN::AllocatorStrategy::free</qualifiedname>
+        <reimplementedby refid="classNeoN_1_1KokkosAllocator_1a62969693d55354b513d8ae629c79a8db">free</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpireAllocator_1a6d23931dc799c3a05a272878101c3039">free</reimplementedby>
+        <reimplementedby refid="classNeoN_1_1UmpirePoolAllocator_1a9a2063c06aaeedf7a2f66f1d3d560e3c">free</reimplementedby>
+        <param>
+          <type><ref refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" kindref="member">void</ref> *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+<para>free a block of size bytes </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="43" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeoN_1_1AllocatorStrategy_1ad5d883bae20050e38db1e462f1b64db2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual NeoN::AllocatorStrategy::~AllocatorStrategy</definition>
+        <argsstring>()</argsstring>
+        <name>~AllocatorStrategy</name>
+        <qualifiedname>NeoN::AllocatorStrategy::~AllocatorStrategy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="45" column="13" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="45" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>NeoN::AllocatorStrategy</label>
+        <link refid="classNeoN_1_1AllocatorStrategy"/>
+      </node>
+      <node id="2">
+        <label>NeoN::KokkosAllocator</label>
+        <link refid="classNeoN_1_1KokkosAllocator"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>NeoN::UmpireAllocator</label>
+        <link refid="classNeoN_1_1UmpireAllocator"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>NeoN::UmpirePoolAllocator</label>
+        <link refid="classNeoN_1_1UmpirePoolAllocator"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" line="23" column="1" bodyfile="/home/runner/work/NeoN/NeoN/include/NeoN/core/memory/allocator.hpp" bodystart="24" bodyend="46"/>
+    <listofallmembers>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a23a27cf665cc2fb65246238c3e765e2f" prot="public" virt="pure-virtual"><scope>NeoN::AllocatorStrategy</scope><name>alloc</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a9e790e5347a62749bca6056c97f74d88" prot="public" virt="pure-virtual"><scope>NeoN::AllocatorStrategy</scope><name>free</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a3905c8c5f49fca35e0dcce51ba78e634" prot="protected" virt="non-virtual"><scope>NeoN::AllocatorStrategy</scope><name>memSpace_</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a7fd6091797b5f980d130c26dce8a7c3c" prot="public" virt="pure-virtual"><scope>NeoN::AllocatorStrategy</scope><name>realloc</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1a352505b0c16b94ff5e70e6bae2c0d588" prot="public" virt="non-virtual"><scope>NeoN::AllocatorStrategy</scope><name>setMemSpace</name></member>
+      <member refid="classNeoN_1_1AllocatorStrategy_1ad5d883bae20050e38db1e462f1b64db2" prot="public" virt="virtual"><scope>NeoN::AllocatorStrategy</scope><name>~AllocatorStrategy</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
