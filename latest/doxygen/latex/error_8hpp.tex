@@ -15,13 +15,17 @@ class \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+N\+::\+Neo\+NException}}
 \begin{DoxyCompactItemize}
 \item 
 namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
+\begin{DoxyCompactList}\small\item\em Integer types used throughout \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging}{Neo\+N\+::\+Logging}}
+\item 
+namespace \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail}{Neo\+N\+::\+Logging\+::detail}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
 \#define \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)~    "{}Error\+: "{} $<$$<$ message $<$$<$ "{}\textbackslash{}n\+File\+: "{} $<$$<$ \+\_\+\+\_\+\+FILE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n\+Line\+: "{} $<$$<$ \+\_\+\+\_\+\+LINE\+\_\+\+\_\+ $<$$<$ "{}\textbackslash{}n"{}
-\begin{DoxyCompactList}\small\item\em Macro for generating an error message without debug information. \end{DoxyCompactList}\item 
-\#define \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\+\_\+\+ERROR\+\_\+\+EXIT}}(message)
+\begin{DoxyCompactList}\small\item\em Builds an error message fragment with the message, file, and line. The stack trace is emitted separately by log\+Fatal()/terminate(). \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\+\_\+\+ERROR\+\_\+\+EXIT}}(message)~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())
 \begin{DoxyCompactList}\small\item\em Macro for printing an error message and aborting the program. \end{DoxyCompactList}\item 
 \#define \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\+\_\+\+THROW}}(message)~    throw \mbox{\hyperlink{classNeoN_1_1NeoNException}{Neo\+N\+::\+Neo\+NException}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(std\+::string(message))).str())
 \begin{DoxyCompactList}\small\item\em Macro for throwing a Neo\+NException with the specified error message. \end{DoxyCompactList}\item 
@@ -41,6 +45,11 @@ namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \begin{DoxyCompactList}\small\item\em Macro for asserting that two values are equal and throwing a Neo\+NException if they are not. \end{DoxyCompactList}\item 
 \#define \mbox{\hyperlink{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW}}(a,  b)~    \mbox{\hyperlink{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}{NF\+\_\+\+DEBUG\+\_\+\+ASSERT\+\_\+\+THROW}}(a == b, "{}Expected "{} $<$$<$ b $<$$<$ "{}, got "{} $<$$<$ a)
 \begin{DoxyCompactList}\small\item\em Macro for asserting that two values are equal and throwing a Neo\+NException if they are not (only in debug mode). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}} (const std\+::string \&message)
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Macro Definition Documentation}
@@ -56,7 +65,10 @@ namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
 \DoxyCodeLine{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \ \ \ \ if\ (!(condition))\ [[unlikely]]\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ NF\_ERROR\_EXIT(\textcolor{stringliteral}{"{}Assertion\ \`{}"{}}\ \#condition\ \textcolor{stringliteral}{"{}\`{}\ failed.\(\backslash\)n\ \ \ \ \ \ \ "{}}\ <<\ message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ NF\_ERROR\_EXIT(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Assertion\ \`{}"{}}\ \#condition\ \textcolor{stringliteral}{"{}\ in\ "{}}\ <<\ \_\_FILE\_\_\ <<\ \textcolor{stringliteral}{"{}:"{}}\ <<\ \_\_LINE\_\_\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}\`{}\ failed.\(\backslash\)n\ \ \ \ \ \ \ "{}}\ <<\ message\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ );\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
 \DoxyCodeLine{\ \ \ \ while\ (\textcolor{keyword}{false})}
@@ -77,7 +89,7 @@ This macro checks the specified condition and, if it evaluates to false, prints 
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00144}{144}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_a40409dec4da3178309a1b0f662496159}\label{error_8hpp_a40409dec4da3178309a1b0f662496159} 
 \index{error.hpp@{error.hpp}!NF\_ASSERT\_EQUAL@{NF\_ASSERT\_EQUAL}}
@@ -100,7 +112,7 @@ This macro checks that the two specified values are equal and, if they are not, 
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00241}{241}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00218}{218}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d}\label{error_8hpp_ac8d1c67acd41932bbf7b7da3e3d1508d} 
 \index{error.hpp@{error.hpp}!NF\_ASSERT\_EQUAL\_THROW@{NF\_ASSERT\_EQUAL\_THROW}}
@@ -123,7 +135,7 @@ This macro checks that the two specified values are equal and, if they are not, 
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00268}{268}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00245}{245}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32}\label{error_8hpp_a5c27fa1694ed5197f9ea77dd62368d32} 
 \index{error.hpp@{error.hpp}!NF\_ASSERT\_THROW@{NF\_ASSERT\_THROW}}
@@ -158,7 +170,7 @@ This macro checks the specified condition and, if it evaluates to false, constru
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00167}{167}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00144}{144}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_af1af39ea56903b56ed322432441511b5}\label{error_8hpp_af1af39ea56903b56ed322432441511b5} 
 \index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT@{NF\_DEBUG\_ASSERT}}
@@ -181,7 +193,7 @@ This macro does nothing in release mode.
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00213}{213}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00190}{190}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0}\label{error_8hpp_a0cc299c0d63efd3a404c1f33f6ead1b0} 
 \index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_EQUAL@{NF\_DEBUG\_ASSERT\_EQUAL}}
@@ -204,7 +216,7 @@ This macro is equivalent to NF\+\_\+\+ASSERT\+\_\+\+EQUAL in debug mode.
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00253}{253}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00230}{230}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1}\label{error_8hpp_a5de41c8310ae3406f3e2d1627f3dd0a1} 
 \index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_EQUAL\_THROW@{NF\_DEBUG\_ASSERT\_EQUAL\_THROW}}
@@ -227,7 +239,7 @@ This macro is equivalent to NF\+\_\+\+ASSERT\+\_\+\+EQUAL\+\_\+\+THROW in debug 
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00280}{280}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00257}{257}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe}\label{error_8hpp_afe5d21cd87f0a611361b98328a4c0dbe} 
 \index{error.hpp@{error.hpp}!NF\_DEBUG\_ASSERT\_THROW@{NF\_DEBUG\_ASSERT\_THROW}}
@@ -250,24 +262,14 @@ This macro does nothing in release mode.
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00226}{226}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00203}{203}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}\label{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49} 
 \index{error.hpp@{error.hpp}!NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}}
 \index{NF\_ERROR\_EXIT@{NF\_ERROR\_EXIT}!error.hpp@{error.hpp}}
 \doxysubsubsection{\texorpdfstring{NF\_ERROR\_EXIT}{NF\_ERROR\_EXIT}}
-{\footnotesize\ttfamily \#define NF\+\_\+\+ERROR\+\_\+\+EXIT(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \#define NF\+\_\+\+ERROR\+\_\+\+EXIT(\begin{DoxyParamCaption}\item[{}]{message }\end{DoxyParamCaption})~    \mbox{\hyperlink{namespaceNeoN_1_1Logging_1_1detail_ae21753e01f652e0f034771427422e817}{Neo\+N\+::\+Logging\+::detail\+::log\+Fatal}}((std\+::stringstream() $<$$<$ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\+\_\+\+ERROR\+\_\+\+MESSAGE}}(message)).str())}
 
-{\bfseries Value\+:}
-\begin{DoxyCode}{0}
-\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{do}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ \ \ \ \ std::cerr\ <<\ \mbox{\hyperlink{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}{NF\_ERROR\_MESSAGE}}(message);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
-\DoxyCodeLine{\ \ \ \ while\ (\textcolor{keyword}{false})}
-
-\end{DoxyCode}
 
 
 Macro for printing an error message and aborting the program. 
@@ -281,7 +283,7 @@ This macro prints the specified error message to the standard error stream, incl
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00110}{110}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692}\label{error_8hpp_ab49651cd484e1f86f3b7f8b880fac692} 
 \index{error.hpp@{error.hpp}!NF\_ERROR\_MESSAGE@{NF\_ERROR\_MESSAGE}}
@@ -291,21 +293,16 @@ Definition at line \mbox{\hyperlink{error_8hpp_source_l00110}{110}} of file \mbo
 
 
 
-Macro for generating an error message without debug information. 
-
-This macro generates an error message with the specified message, current file name, and current line number.
+Builds an error message fragment with the message, file, and line. The stack trace is emitted separately by log\+Fatal()/terminate(). 
 
 
 \begin{DoxyParams}{Parameters}
 {\em message} & The error message to be included in the generated message. \\
 \hline
 \end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-std\+::string The generated error message. 
-\end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 
 \Hypertarget{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}\label{error_8hpp_a01fd2dadf84a907b46bb93644bde393f} 
 \index{error.hpp@{error.hpp}!NF\_THROW@{NF\_THROW}}
@@ -326,5 +323,5 @@ This macro constructs a std\+::stringstream to concatenate the specified error m
 \end{DoxyParams}
 
 
-Definition at line \mbox{\hyperlink{error_8hpp_source_l00129}{129}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
+Definition at line \mbox{\hyperlink{error_8hpp_source_l00103}{103}} of file \mbox{\hyperlink{error_8hpp_source}{error.\+hpp}}.
 

@@ -27,8 +27,8 @@ Example
     NeoN::Executor = NeoN::GPUExecutor{};
 
     NeoN::Vector<NeoN::scalar> field(exec, 2);
-    NeoN::map(field, KOKKOS_LAMBDA(const std::size_t i) { return 1.0; });
-    NeoN::map(field, KOKKOS_LAMBDA(const std::size_t i) { return 2.0; }, {1, 2}); // apply a function to a subfield
+    NeoN::map(field, NEON_LAMBDA(const std::size_t i) { return 1.0; });
+    NeoN::map(field, NEON_LAMBDA(const std::size_t i) { return 2.0; }, {1, 2}); // apply a function to a subfield
     // copy to host
     auto hostVector = field.copyToHost();
     for (auto i = 0; i < field.size(); ++i)

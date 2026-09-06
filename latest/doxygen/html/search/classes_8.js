@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['neonexception_0',['NeoNException',['../classNeoN_1_1NeoNException.html',1,'NeoN']]]
+  ['kokkosallocactor_0',['KokkosAllocactor',['../classKokkosAllocactor.html',1,'']]],
+  ['kokkosallocator_1',['KokkosAllocator',['../classNeoN_1_1KokkosAllocator.html',1,'NeoN']]]
 ];

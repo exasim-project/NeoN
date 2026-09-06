@@ -70,7 +70,7 @@ To fit the specification of the Expression (storage in a vector), the Operator n
 
         // Operator also supports the use of a lambda as scaling function to reduce the number of temporaries generated
         auto lambdaScaledTerm =
-            (KOKKOS_LAMBDA(const NeoN::size_t i) { return sF[i] + sF[i] + sF[i]  + sF[i]; }) * customTerm;
+            (NEON_LAMBDA(const NeoN::size_t i) { return sF[i] + sF[i] + sF[i]  + sF[i]; }) * customTerm;
 
 To add a user-defined `Operator`, a new derived class must be created, inheriting from `OperatorMixin`,
  and provide the definitions of the below virtual functions that are required for the `Operator` interface:

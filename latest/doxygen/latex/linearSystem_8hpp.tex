@@ -2,29 +2,34 @@
 \hypertarget{linearSystem_8hpp}{}\label{linearSystem_8hpp}\index{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/linearAlgebra/linearSystem.hpp}}
 {\ttfamily \#include "{}Neo\+N/core/vector/vector.\+hpp"{}}\newline
 {\ttfamily \#include "{}Neo\+N/core/dictionary.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/linear\+Algebra/\+CSRMatrix.\+hpp"{}}\newline
-{\ttfamily \#include "{}Neo\+N/linear\+Algebra/sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/core/copy\+To.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/matrix.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/coo\+Sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/csr\+Sparsity\+Pattern.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/mesh\+Iteration\+Strategies.\+hpp"{}}\newline
+{\ttfamily \#include "{}Neo\+N/linear\+Algebra/face\+To\+Matrix\+Address.\+hpp"{}}\newline
 {\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$numeric$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
 \doxysubsubsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Neo\+N\+::la\+::\+Linear\+System\+View$<$ Value\+Type, Index\+Type $>$}}
-\begin{DoxyCompactList}\small\item\em A view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
-struct \mbox{\hyperlink{structNeoN_1_1la_1_1BoundaryCoefficients}{Neo\+N\+::la\+::\+Boundary\+Coefficients$<$ Value\+Type, Index\+Type $>$}}
-\item 
-class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System$<$ Value\+Type, Index\+Type $>$}}
-\begin{DoxyCompactList}\small\item\em A class representing a linear system of equations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+struct \mbox{\hyperlink{structNeoN_1_1la_1_1LinearSystemView}{Neo\+N\+::la\+::\+Linear\+System\+View$<$ RHSValue\+Type, Matrix\+View\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} view linear into a linear system\textquotesingle{}s data. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Neo\+N\+::la\+::\+Linear\+System$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classA}{A} class representing a linear system of equations. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
 namespace \mbox{\hyperlink{namespaceNeoN}{NeoN}}
-\item 
+\begin{DoxyCompactList}\small\item\em Integer types used throughout \doxylink{namespaceNeoN}{NeoN}. \end{DoxyCompactList}\item 
 namespace \mbox{\hyperlink{namespaceNeoN_1_1la}{Neo\+N\+::la}}
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\footnotesize template$<$typename Value\+Type\+In , typename Index\+Type\+In , typename Value\+Type\+Out , typename Index\+Type\+Out $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type\+Out, Index\+Type\+Out $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_a56b0fbaebb30bd6efeb9a1fc5b6ab1bd}{Neo\+N\+::la\+::convert\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type\+In, Index\+Type\+In $>$ \&ls)
+{\footnotesize template$<$typename Value\+Type , typename RHSValue\+Type  = Value\+Type, typename System\+Matrix\+Type  = CSRMatrix$<$\+Value\+Type, local\+Idx$>$, typename Boundary\+Matrix\+Type  = COOMatrix$<$\+Value\+Type, local\+Idx$>$$>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aaae043565c645c4e3a2736f57d50edd5}{Neo\+N\+::la\+::create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1MeshIterationStrategy}{Mesh\+Iteration\+Strategy}} $>$ strategy=std\+::make\+\_\+shared$<$ \mbox{\hyperlink{classNeoN_1_1la_1_1FaceBasedIterator}{Face\+Based\+Iterator}} $>$())
 \item 
-{\footnotesize template$<$typename Value\+Type , typename Index\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{Linear\+System}}$<$ Value\+Type, Index\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_acb4e19af63d86d37db2eb4ec340f6c95}{Neo\+N\+::la\+::create\+Empty\+Linear\+System}} (const \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{Unstructured\+Mesh}} \&mesh, const \mbox{\hyperlink{classNeoN_1_1la_1_1SparsityPattern}{Sparsity\+Pattern}} \&sparsity)
-\end{DoxyCompactItemize}
+{\footnotesize template$<$typename Matrix\+Value\+Type , typename RHSValue\+Type , typename System\+Matrix\+Type , typename Boundary\+Matrix\+Type $>$ }\\\mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \mbox{\hyperlink{namespaceNeoN_1_1la_aa6dd3553a28cafb95c58985e40e6cb7c}{Neo\+N\+::la\+::remove\+Boundary\+Contributions}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1LinearSystem}{la\+::\+Linear\+System}}$<$ Matrix\+Value\+Type, RHSValue\+Type, System\+Matrix\+Type, Boundary\+Matrix\+Type $>$ \&ls\+In)
+\begin{DoxyCompactList}\small\item\em for testing purposes, this function reverses boundary contributions previously applied to the matrix diagonal and RHS for some operators (e.\+g., div). \end{DoxyCompactList}\end{DoxyCompactItemize}

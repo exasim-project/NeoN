@@ -84,21 +84,22 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="field_8hpp_source.html">NeoN/fields/field.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="executor_8hpp_source.html">NeoN/core/executor/executor.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="unstructuredMesh_8hpp_source.html">NeoN/mesh/unstructured/unstructuredMesh.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sparsityPattern_8hpp_source.html">NeoN/linearAlgebra/sparsityPattern.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="laplacianOperator_8hpp_source.html">NeoN/finiteVolume/cellCentred/operators/laplacianOperator.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="surfaceInterpolation_8hpp_source.html">NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="faceNormalGradient_8hpp_source.html">NeoN/finiteVolume/cellCentred/faceNormalGradient/faceNormalGradient.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="meshIterationStrategies_8hpp_source.html">NeoN/linearAlgebra/meshIterationStrategies.hpp</a>&quot;</code><br />
 </div>
 <p><a href="gaussGreenLaplacian_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian.html">NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; ValueType &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1GaussGreenLaplacian.html">NeoN::finiteVolume::cellCentred::GaussGreenLaplacian&lt; FieldValueType, AssemblyType &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceNeoN" id="r_namespaceNeoN"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN.html">NeoN</a></td></tr>
+<tr class="memdesc:namespaceNeoN"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer types used throughout <a class="el" href="namespaceNeoN.html" title="Integer types used throughout NeoN.">NeoN</a>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceNeoN_1_1finiteVolume" id="r_namespaceNeoN_1_1finiteVolume"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume.html">NeoN::finiteVolume</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,12 +108,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1827d771a724a1436e1ece864c4fc8a7" id="r_a1827d771a724a1436e1ece864c4fc8a7"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a1827d771a724a1436e1ece864c4fc8a7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a1827d771a724a1436e1ece864c4fc8a7">NeoN::finiteVolume::cellCentred::computeLaplacianExp</a> (const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;, <a class="el" href="classNeoN_1_1Vector.html">Vector</a>&lt; ValueType &gt; &amp;, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a>)</td></tr>
-<tr class="separator:a1827d771a724a1436e1ece864c4fc8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08f3abb7596691a8ef82f2e887b8fb04" id="r_a08f3abb7596691a8ef82f2e887b8fb04"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
-<tr class="memitem:a08f3abb7596691a8ef82f2e887b8fb04"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a08f3abb7596691a8ef82f2e887b8fb04">NeoN::finiteVolume::cellCentred::computeLaplacianImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; ValueType, <a class="el" href="namespaceNeoN.html#a40785cd3c378b425dd30ae7f4d7dcabc">localIdx</a> &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; ValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> operatorScaling, const <a class="el" href="classNeoN_1_1la_1_1SparsityPattern.html">la::SparsityPattern</a> &amp;sparsityPattern, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; ValueType &gt; &amp;faceNormalGradient)</td></tr>
-<tr class="separator:a08f3abb7596691a8ef82f2e887b8fb04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ab8cccbcf567aaed5e41b65ad937f66" id="r_a1ab8cccbcf567aaed5e41b65ad937f66"><td class="memTemplParams" colspan="2">template&lt;typename FieldValueType , typename AssemblyType  = FieldValueType&gt; </td></tr>
+<tr class="memitem:a1ab8cccbcf567aaed5e41b65ad937f66"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a1ab8cccbcf567aaed5e41b65ad937f66">NeoN::finiteVolume::cellCentred::computeLaplacianNonOrthCorrImpl</a> (<a class="el" href="classNeoN_1_1la_1_1LinearSystem.html">la::LinearSystem</a>&lt; AssemblyType, FieldValueType &gt; &amp;ls, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField.html">SurfaceField</a>&lt; <a class="el" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> &gt; &amp;gamma, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField</a>&lt; FieldValueType &gt; &amp;phi, const <a class="el" href="classNeoN_1_1dsl_1_1Coeff.html">dsl::Coeff</a> coeff, const <a class="el" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1FaceNormalGradient.html">FaceNormalGradient</a>&lt; FieldValueType &gt; &amp;faceNormalGradient)</td></tr>
+<tr class="separator:a1ab8cccbcf567aaed5e41b65ad937f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

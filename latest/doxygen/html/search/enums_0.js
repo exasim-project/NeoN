@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['level_0',['Level',['../namespaceNeoN_1_1Logging.html#a8cfeee86930e70637e61a759b7361214',1,'NeoN::Logging']]]
+  ['ddtscheme_0',['DdtScheme',['../namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a629e77bbe66a0a80dd0fbda8fe6821e8',1,'NeoN::finiteVolume::cellCentred']]]
 ];
