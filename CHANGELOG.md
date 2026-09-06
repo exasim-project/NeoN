@@ -1,4 +1,4 @@
-# Version 0.3.0 (unreleased)
+# Version 0.3.0 (2026/09/06)
 ## Features
 - Add `slip` and `inletOutlet` volume boundary conditions [#565](https://github.com/exasim-project/NeoN/pull/565)
 - Add corrected and limited-corrected face-normal gradient schemes [#514](https://github.com/exasim-project/NeoN/pull/514)
