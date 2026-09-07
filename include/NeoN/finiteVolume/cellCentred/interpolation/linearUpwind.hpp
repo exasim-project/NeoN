@@ -184,6 +184,8 @@ public:
         );
     }
 
+    InlineWeightKernel inlineWeightKernel() const override { return UpwindInlineKernel {}; }
+
     std::unique_ptr<SurfaceInterpolationFactory<ValueType>> clone() const override
     {
         return std::make_unique<LinearUpwind>(*this);

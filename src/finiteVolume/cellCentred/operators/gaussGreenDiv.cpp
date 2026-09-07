@@ -87,6 +87,32 @@ void computeDiv(
     );
 }
 
+template<typename WeightKernel, typename ValueType>
+void computeDivExpFusedInternal(
+    const Executor& exec,
+    localIdx nInternalFaces,
+    const WeightKernel& kernel,
+    View<const scalar> fluxV,
+    View<const localIdx> ownV,
+    View<const localIdx> neiV,
+    View<const ValueType> phiV,
+    View<ValueType> resV
+)
+{
+    parallelFor(
+        exec,
+        {0, nInternalFaces},
+        NEON_LAMBDA(const localIdx i) {
+            const auto w = kernel.weight(i, fluxV[i]);
+            const ValueType phiF = w * phiV[ownV[i]] + (scalar(1) - w) * phiV[neiV[i]];
+            const ValueType flux = fluxV[i] * phiF;
+            Kokkos::atomic_add(&resV[ownV[i]], flux);
+            Kokkos::atomic_sub(&resV[neiV[i]], flux);
+        },
+        "sumFluxesInternal"
+    );
+}
+
 template<typename ValueType>
 void computeDivExp(
     const SurfaceField<scalar>& faceFlux,
@@ -98,41 +124,77 @@ void computeDivExp(
 {
     const UnstructuredMesh& mesh = phi.mesh();
     const auto exec = phi.exec();
-    SurfaceField<ValueType> phif(
-        exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+    const auto nInternalFaces = mesh.nInternalFaces();
+    const auto nBoundaryFaces = mesh.nBoundaryFaces();
+
+    // Corrected schemes (e.g. linearUpwind) compute interpolate() = weight*phi + correction in one
+    // pass; fall back to allocating phif so correction() is included in the face value.
+    if (surfInterp.corrected())
+    {
+        SurfaceField<ValueType> phif(
+            exec, "phif", mesh, createCalculatedBCs<SurfaceBoundary<ValueType>>(mesh)
+        );
+        surfInterp.interpolate(faceFlux, phi, phif);
+        phif.boundaryData().value() = phi.boundaryData().value();
+        computeDiv<ValueType>(
+            exec,
+            nInternalFaces,
+            nBoundaryFaces,
+            mesh.faceNeighbors().view(),
+            mesh.faceOwners().view(),
+            mesh.boundaryMesh().faceOwners().view(),
+            faceFlux.internalVector().view(),
+            faceFlux.boundaryData().value().view(),
+            phif.internalVector().view(),
+            phif.boundaryData().value().view(),
+            mesh.cellVolumes().view(),
+            divPhi.view(),
+            operatorScaling
+        );
+        return;
+    }
+
+    // Non-corrected schemes: fuse face-value computation into the divergence kernels,
+    // eliminating the temporary phif SurfaceField allocation.
+    const auto [fluxV, ownV, neiV] =
+        views(faceFlux.internalVector(), mesh.faceOwners(), mesh.faceNeighbors());
+    const auto [bFluxV, bFaceOwnersV] =
+        views(faceFlux.boundaryData().value(), mesh.boundaryMesh().faceOwners());
+    const auto phiV = phi.internalVector().view();
+    const auto bPhiV = phi.boundaryData().value().view();
+    const auto volV = mesh.cellVolumes().view();
+    auto resV = divPhi.view();
+
+    std::visit(
+        [&](auto&& kernel) {
+            computeDivExpFusedInternal(exec, nInternalFaces, kernel, fluxV, ownV, neiV, phiV, resV);
+        },
+        surfInterp.inlineWeightKernel()
     );
-    // TODO: remove or implement
-    // fill(phif.internalVector(), NeoN::zero<ValueType>::value);
-    surfInterp.interpolate(faceFlux, phi, phif);
 
-    // TODO: currently we just copy the boundary values over
-    phif.boundaryData().value() = phi.boundaryData().value();
-
-    auto nInternalFaces = mesh.nInternalFaces();
-    auto nBoundaryFaces = mesh.nBoundaryFaces();
-    computeDiv<ValueType>(
+    parallelFor(
         exec,
-        nInternalFaces,
-        nBoundaryFaces,
-        mesh.faceNeighbors().view(),
-        mesh.faceOwners().view(),
-        mesh.boundaryMesh().faceOwners().view(),
-        faceFlux.internalVector().view(),
-        faceFlux.boundaryData().value().view(),
-        phif.internalVector().view(),
-        phif.boundaryData().value().view(),
-        mesh.cellVolumes().view(),
-        divPhi.view(),
-        operatorScaling
+        {0, nBoundaryFaces},
+        NEON_LAMBDA(const localIdx bfi) {
+            Kokkos::atomic_add(&resV[bFaceOwnersV[bfi]], bFluxV[bfi] * bPhiV[bfi]);
+        },
+        "sumFluxesBoundary"
+    );
+
+    parallelFor(
+        exec,
+        {0, static_cast<localIdx>(volV.size())},
+        NEON_LAMBDA(const localIdx celli) { resV[celli] *= operatorScaling[celli] / volV[celli]; },
+        "normalizeFluxes"
     );
 }
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType, typename WeightKernel>
 void computeDivProcBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
-    const SurfaceField<scalar>& weights,
+    WeightKernel weightKernel,
     const dsl::Coeff coeff
 )
 {
@@ -147,7 +209,6 @@ void computeDivProcBoundImpl(
         views(mesh.boundaryMesh().faceOwners(), mesh.boundaryMesh().weights());
 
     const auto bFluxV = faceFlux.boundaryData().value().view();
-    const auto bWeightsV = weights.boundaryData().value().view();
     auto bValues = ls.offDiagonalMatrix().values().view();
     // boundaryMatrix records the diagonal contribution so removeBoundaryContributions can reverse
     // it (proc slots live at [nBoundaryFaces, nBoundaryFaces + nProcBoundaryFaces)).
@@ -175,7 +236,8 @@ void computeDivProcBoundImpl(
             auto isOwnerFace = isOwner[bcfacei] > 0.0;
             auto sign = isOwnerFace ? scalar(-1) : scalar(1);
 
-            auto weight = isOwnerFace ? bWeightsV[bcfacei] : (scalar(1) - bWeightsV[bcfacei]);
+            auto bw = weightKernel.procBoundaryWeight(bcfacei, bFluxV[bcfacei]);
+            auto weight = isOwnerFace ? bw : (scalar(1) - bw);
             auto fluxContrib = sign * weight * bFluxV[bcfacei] * ownCoeff * one<AssemblyType>();
 
             Kokkos::atomic_sub(&values[ma.diagIdx(cell)], fluxContrib);
@@ -189,12 +251,12 @@ void computeDivProcBoundImpl(
 }
 
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType, typename WeightKernel>
 void computeDivBoundImpl(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
-    const SurfaceField<scalar>& weights,
+    WeightKernel weightKernel,
     const dsl::Coeff operatorScaling
 )
 {
@@ -208,9 +270,8 @@ void computeDivBoundImpl(
 
     auto values = ls.matrix().values().view();
 
-    auto [bFaceFluxV, bweights, refGradient, valueFraction, refValue] = views(
+    auto [bFaceFluxV, refGradient, valueFraction, refValue] = views(
         faceFlux.boundaryData().value(),
-        weights.boundaryData().value(),
         phi.boundaryData().refGrad(),
         phi.boundaryData().valueFraction(),
         phi.boundaryData().refValue()
@@ -232,8 +293,8 @@ void computeDivBoundImpl(
             auto refValFrac = valueFraction[bfi];
             auto refGradFrac = 1.0 - refValFrac;
 
-            auto flux =
-                bFaceFluxV[bfi] * -bweights[bfi] * ownCoeff * refGradFrac * one<AssemblyType>();
+            auto bw = weightKernel.boundaryWeight(bfi, bFaceFluxV[bfi]);
+            auto flux = bFaceFluxV[bfi] * -bw * ownCoeff * refGradFrac * one<AssemblyType>();
 
             // since upper triangular value is "outside" of system matrix
             // it is stored separately in bMatrix
@@ -245,11 +306,10 @@ void computeDivBoundImpl(
             //   φ_f = refValFrac * refValue               (Dirichlet part)
             //       + refGradFrac * (φ_C + refGradient/δ)  (Neumann part)
             // The implicit valFrac2 * φ_C term is handled via fluxContrib above.
-            // bweights converts the Dirichlet face value to a cell-to-face flux contribution;
+            // bw converts the Dirichlet face value to a cell-to-face flux contribution;
             // the Neumann gradient correction (refGradient/δ) enters directly as a known increment.
-            auto valueRhs =
-                (bweights[bfi] * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
-                + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
+            auto valueRhs = (bw * bFaceFluxV[bfi] * ownCoeff * (refValFrac * refValue[bfi]))
+                          + refGradFrac * refGradient[bfi] * (1 / deltaCoeffs[bfi]);
             Kokkos::atomic_sub(&rhs[ownRow], valueRhs);
             bRhs[bfi] += valueRhs;
         },
@@ -258,12 +318,12 @@ void computeDivBoundImpl(
 }
 
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType, typename WeightKernel>
 void computeDivIntImp(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
-    const SurfaceField<scalar>& weights,
+    WeightKernel weightKernel,
     const dsl::Coeff coeff
 )
 {
@@ -273,9 +333,8 @@ void computeDivIntImp(
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
 
-    const auto [fluxV, weightsV, ownV, neiV, surfFaceCells] = views(
+    const auto [fluxV, ownV, neiV, surfFaceCells] = views(
         faceFlux.internalVector(),
-        weights.internalVector(),
         mesh.faceOwners(),
         mesh.faceNeighbors(),
         mesh.boundaryMesh().faceOwners()
@@ -301,8 +360,9 @@ void computeDivIntImp(
             // Decompose face flux via linear interpolation:
             //   ownFluxContrib = w * F_f     — part attributed to the owner cell value
             //   neiFluxContrib = (1-w) * F_f — part attributed to the neighbor cell value
-            auto ownFluxContrib = -fluxV[facei] * weightsV[facei] * one<AssemblyType>();
-            auto neiFluxContrib = +fluxV[facei] * (1.0 - weightsV[facei]) * one<AssemblyType>();
+            const auto w = weightKernel.weight(facei, fluxV[facei]);
+            auto ownFluxContrib = -fluxV[facei] * w * one<AssemblyType>();
+            auto neiFluxContrib = +fluxV[facei] * (1.0 - w) * one<AssemblyType>();
 
             // triangular coefficients - neighbor -> lower, owner -> upper
             values[ma.lowerIdx(neiRow, facei)] += ownFluxContrib * neiCoeff;
@@ -316,12 +376,12 @@ void computeDivIntImp(
     );
 };
 
-template<typename FieldValueType, typename AssemblyType = FieldValueType>
+template<typename FieldValueType, typename AssemblyType = FieldValueType, typename WeightKernel>
 void computeDivIntCellBasedImp(
     la::LinearSystem<AssemblyType, FieldValueType>& ls,
     const SurfaceField<scalar>& faceFlux,
     const VolumeField<FieldValueType>& phi,
-    const SurfaceField<scalar>& weights,
+    WeightKernel weightKernel,
     const dsl::Coeff coeff
 )
 {
@@ -330,7 +390,7 @@ void computeDivIntCellBasedImp(
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
     auto iterator = std::dynamic_pointer_cast<la::CellBasedIterator>(ls.getMeshIterator()->get());
 
-    const auto [fluxV, weightsV] = views(faceFlux.internalVector(), weights.internalVector());
+    const auto fluxV = faceFlux.internalVector().view();
 
     auto cellBasedData = iterator->getCellBasedData();
     NF_ASSERT(
@@ -358,7 +418,7 @@ void computeDivIntCellBasedImp(
                 const auto faceIdx = cellFacesValues[startIdx + i];
                 const auto sign = faceSignV[startIdx + i];
                 const auto flux = fluxV[faceIdx];
-                const auto w = weightsV[faceIdx];
+                const auto w = weightKernel.weight(faceIdx, flux);
 
                 AssemblyType offDiag;
                 AssemblyType diagContrib;
@@ -510,24 +570,30 @@ void GaussGreenDiv<FieldValueType, AssemblyType>::div(
     const dsl::Coeff operatorScaling
 ) const
 {
-    // TODO boundary weights should be separate so that we can start internal assembly
-    const auto weights = surfaceInterpolation_.weight(faceFlux, phi);
-    if (auto* cellIter = dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
-    {
-        if (!cellIter->getCellBasedData())
+    const auto inlineKernel = surfaceInterpolation_.inlineWeightKernel();
+    std::visit(
+        [&](auto&& kernel)
         {
-            cellIter->setComputeCellBasedData(
-                phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
-            );
-        }
-        computeDivIntCellBasedImp(ls, faceFlux, phi, weights, operatorScaling);
-    }
-    else
-    {
-        computeDivIntImp(ls, faceFlux, phi, weights, operatorScaling);
-    }
-    computeDivBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
-    computeDivProcBoundImpl(ls, faceFlux, phi, weights, operatorScaling);
+            if (auto* cellIter =
+                    dynamic_cast<la::CellBasedIterator*>(ls.getMeshIterator()->get().get()))
+            {
+                if (!cellIter->getCellBasedData())
+                {
+                    cellIter->setComputeCellBasedData(
+                        phi.mesh(), ls.matrix().sparsity(), ls.faceToMatrixAddress()
+                    );
+                }
+                computeDivIntCellBasedImp(ls, faceFlux, phi, kernel, operatorScaling);
+            }
+            else
+            {
+                computeDivIntImp(ls, faceFlux, phi, kernel, operatorScaling);
+            }
+            computeDivBoundImpl(ls, faceFlux, phi, kernel, operatorScaling);
+            computeDivProcBoundImpl(ls, faceFlux, phi, kernel, operatorScaling);
+        },
+        inlineKernel
+    );
 
     // Deferred correction for corrected schemes (e.g. linearUpwind): the implicit matrix uses the
     // upwind weights above, the gradient correction is added explicitly to the rhs.
