@@ -108,14 +108,15 @@ and `osx-arm64`; Windows and Python 3.9 are wheel-only.
 **CUDA (from GitHub Releases).** GPU wheels are *not* published to PyPI because
 they are large and depend on the NVIDIA driver. They are attached to the
 corresponding [GitHub Release](https://github.com/exasim-project/NeoN/releases)
-and carry a local version suffix such as `+cuda128`. Download the wheel matching
-your Python version, or install it directly by URL:
+and carry a local version suffix such as `+cuda128`. A release carries a single
+GPU wheel, built for CPython 3.12 on Linux x86-64; install it directly by URL:
 
     # CUDA 12.8, CPython 3.12, Linux x86-64, NVIDIA Ampere (sm_80)
-    pip install https://github.com/exasim-project/NeoN/releases/download/v0.1.0/neon_pde-0.1.0+cuda128-cp312-cp312-manylinux_2_34_x86_64.whl
+    pip install https://github.com/exasim-project/NeoN/releases/download/v0.3.0rc2/neon_pde-0.3.0rc2+cuda128-cp312-cp312-manylinux_2_35_x86_64.whl
 
 The CUDA wheel needs a host NVIDIA driver providing `libcuda.so.1` (it is
-intentionally not bundled). It does not require a local CUDA toolkit at runtime.
+intentionally not bundled). It does not require a local CUDA toolkit at runtime,
+but it does require glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+).
 
 **From source.** Building the bindings uses `scikit-build-core` and compiles the
 C++ library, so a C++20 compiler and CMake ≥ 3.22 are required:
