@@ -265,10 +265,17 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: ${{ matrix.before_all }}
           # The GPU wheels skip the import smoke test below, so the pre-repair check is
           # the only relocatability coverage they get.
+          #
+          # Repaired to manylinux_2_35 rather than to the 2_34 of the build image: AlmaLinux 9
+          # backports _dl_find_object into its glibc 2.34 but keeps the upstream GLIBC_2.35
+          # symbol version, so cpptrace's HAS_DL_FIND_OBJECT probe succeeds in the container and
+          # libcpptrace ends up needing GLIBC_2.35. auditwheel derives the 2_34 policy from
+          # upstream glibc, which has no 2.35, so a 2_34 repair is rejected. 2_35 is the lowest
+          # policy the wheel actually satisfies.
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             python /project/ci/check_wheel_rpath.py {wheel} &&
             LD_LIBRARY_PATH="/project/_skbuild/lib:/project/_skbuild/_deps/ginkgo-build/lib:/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
-            auditwheel -v repair --plat manylinux_2_34_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
+            auditwheel -v repair --plat manylinux_2_35_x86_64 --exclude libcuda.so.1 -w {dest_dir} {wheel}
           CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_ENVIRONMENT_LINUX: >
             PATH=/usr/local/cuda/bin:$PATH
