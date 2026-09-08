@@ -18,17 +18,23 @@ namespace NeoN::finiteVolume::cellCentred
  * cell's admissible delta range [minDelta, maxDelta]. A negligible extrapolation
  * imposes no constraint and returns 1. With maxDelta >= 0 and minDelta <= 0 the
  * result is always within [0, 1].
+ *
+ * The divisor is clamped away from zero rather than merely guarded by the branch:
+ * the compiler if-converts both branches into unconditional divisions selected by
+ * an fcsel, so a zero extrapolation would evaluate 0/0 and raise FE_INVALID when
+ * floating-point traps are enabled, even though the quotient is discarded. The
+ * clamp is a no-op whenever a branch is genuinely taken.
  */
 NEON_INLINE_FUNCTION
 scalar cellLimiterRatio(const scalar extrapolate, const scalar maxDelta, const scalar minDelta)
 {
     if (extrapolate > ROOTVSMALL)
     {
-        return Kokkos::min(maxDelta / extrapolate, scalar(1));
+        return Kokkos::min(maxDelta / Kokkos::max(extrapolate, ROOTVSMALL), scalar(1));
     }
     if (extrapolate < -ROOTVSMALL)
     {
-        return Kokkos::min(minDelta / extrapolate, scalar(1));
+        return Kokkos::min(minDelta / Kokkos::min(extrapolate, -ROOTVSMALL), scalar(1));
     }
     return scalar(1);
 }
