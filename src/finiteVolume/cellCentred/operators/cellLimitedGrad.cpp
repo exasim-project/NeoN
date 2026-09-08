@@ -30,7 +30,7 @@ scalar cellLimiterRatio(const scalar extrapolate, const scalar maxDelta, const s
 {
     if (extrapolate > ROOTVSMALL)
     {
-        return Kokkos::min(maxDelta / Kokkos::max(extrapolate, ROOTVSMALL), scalar(1));
+        return Kokkos::min(maxDelta / Kokkos::max(extrapolate, scalar(ROOTVSMALL)), scalar(1));
     }
     if (extrapolate < -ROOTVSMALL)
     {
