@@ -22,9 +22,9 @@
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00018}00018\ \textcolor{comment}{/*\ @brief\ blended\ central/upwind\ weights\ of\ the\ limitedLinear\ scheme.}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00019}00019\ \textcolor{comment}{\ *}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ w\_f\ =\ limiter\ *\ w\_CD\ +\ (1\ -\/\ limiter)\ *\ w\_upwind,\ with\ the\ limiter\ built\ from\ the\ TVD\ ratio\ r\ of}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ the\ upwind-\/cell\ gradient\ to\ the\ face\ gradient:\ limiter\ =\ max(min(twoByk\ *\ r,\ 1),\ 0).\ This}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ reproduces\ OpenFOAM's\ limitedLinearLimiter,\ where\ twoByk\ =\ 2/k:\ k\ =\ 1\ limits\ most\ strongly}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ (fully\ bounded),\ smaller\ k\ relaxes\ the\ blend\ towards\ central\ differencing.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ the\ upwind-\/cell\ gradient\ to\ the\ face\ gradient:\ limiter\ =\ max(min(twoByk\ *\ r,\ 1),\ 0),\ where}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ twoByk\ =\ 2/k:\ k\ =\ 1\ limits\ most\ strongly\ (fully\ bounded),\ smaller\ k\ relaxes\ the\ blend\ towards}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ central\ differencing.}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00024}00024\ \textcolor{comment}{\ */}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a525f8d2713b964a094fcfdaea56c173e}{00025}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a525f8d2713b964a094fcfdaea56c173e}{computeLimitedLinearWeights}}(}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ src,}
@@ -38,9 +38,9 @@
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00034}00034\ }
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00035}00035\ \textcolor{comment}{/*\ @brief\ limitedLinear\ surface\ interpolation.}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00036}00036\ \textcolor{comment}{\ *}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00037}00037\ \textcolor{comment}{\ *\ Registered\ for\ scalar\ fields\ only.\ OpenFOAM\ limits\ a\ vector\ field\ on\ magSqr(phi)\ (its}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00038}00038\ \textcolor{comment}{\ *\ limitFuncs::magSqr\ default),\ which\ needs\ a\ derived\ scalar\ field\ and\ its\ gradient;\ that\ variant}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00039}00039\ \textcolor{comment}{\ *\ is\ not\ implemented\ here,\ so\ a\ Vec3\ field\ must\ use\ another\ scheme.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00037}00037\ \textcolor{comment}{\ *\ Registered\ for\ scalar\ fields\ only.\ Limiting\ a\ vector\ field\ is\ conventionally\ done\ on}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00038}00038\ \textcolor{comment}{\ *\ magSqr(phi),\ which\ needs\ a\ derived\ scalar\ field\ and\ its\ gradient;\ that\ variant\ is\ not}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00039}00039\ \textcolor{comment}{\ *\ implemented\ here,\ so\ a\ Vec3\ field\ must\ use\ another\ scheme.}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00040}00040\ \textcolor{comment}{\ */}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00041}00041\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear}{00042}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear}{LimitedLinear}}\ :}
@@ -120,9 +120,9 @@
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00116}00116\ \textcolor{keyword}{private}:}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00117}00117\ }
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ Scheme\ spec\ "{}limitedLinear\ <k>"{}:\ the\ factory\ consumed\ the\ name,\ so\ only\ k\ remains.\ k\ is}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ written\ as\ an\ integer\ (e.g.\ 1)\ or\ a\ fractional\ value\ (e.g.\ 0.2).\ It\ is\ mandatory,\ matching}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{comment}{//\ the\ OpenFOAM\ syntax\ -\/-\/\ a\ missing\ or\ non-\/numeric\ coefficient\ is\ a\ spec\ error\ and\ is\ rejected}}
-\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{comment}{//\ rather\ than\ silently\ replaced\ by\ a\ default\ that\ would\ change\ the\ scheme's\ behaviour.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ written\ as\ an\ integer\ (e.g.\ 1)\ or\ a\ fractional\ value\ (e.g.\ 0.2).\ It\ is\ mandatory:\ a\ missing}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{comment}{//\ or\ non-\/numeric\ coefficient\ is\ a\ spec\ error\ and\ is\ rejected\ rather\ than\ silently\ replaced\ by\ a}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{comment}{//\ default\ that\ would\ change\ the\ scheme's\ behaviour.}}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ readTwoByk(\mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00123}00123\ \ \ \ \ \{}
 \DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ k\ =\ 0;}

@@ -102,9 +102,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">/* @brief blended central/upwind weights of the limitedLinear scheme.</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> * w_f = limiter * w_CD + (1 - limiter) * w_upwind, with the limiter built from the TVD ratio r of</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> * the upwind-cell gradient to the face gradient: limiter = max(min(twoByk * r, 1), 0). This</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> * reproduces OpenFOAM&#39;s limitedLinearLimiter, where twoByk = 2/k: k = 1 limits most strongly</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> * (fully bounded), smaller k relaxes the blend towards central differencing.</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> * the upwind-cell gradient to the face gradient: limiter = max(min(twoByk * r, 1), 0), where</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> * twoByk = 2/k: k = 1 limits most strongly (fully bounded), smaller k relaxes the blend towards</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> * central differencing.</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a525f8d2713b964a094fcfdaea56c173e">   25</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceNeoN_1_1finiteVolume_1_1cellCentred.html#a525f8d2713b964a094fcfdaea56c173e">computeLimitedLinearWeights</a>(</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <a class="code hl_class" href="classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField.html">VolumeField&lt;scalar&gt;</a>&amp; src,</div>
@@ -118,9 +118,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">/* @brief limitedLinear surface interpolation.</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> * Registered for scalar fields only. OpenFOAM limits a vector field on magSqr(phi) (its</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"> * limitFuncs::magSqr default), which needs a derived scalar field and its gradient; that variant</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment"> * is not implemented here, so a Vec3 field must use another scheme.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> * Registered for scalar fields only. Limiting a vector field is conventionally done on</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"> * magSqr(phi), which needs a derived scalar field and its gradient; that variant is not</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment"> * implemented here, so a Vec3 field must use another scheme.</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ValueType&gt;</div>
 <div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
@@ -213,9 +213,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="comment">// Scheme spec &quot;limitedLinear &lt;k&gt;&quot;: the factory consumed the name, so only k remains. k is</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="comment">// written as an integer (e.g. 1) or a fractional value (e.g. 0.2). It is mandatory, matching</span></div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="comment">// the OpenFOAM syntax -- a missing or non-numeric coefficient is a spec error and is rejected</span></div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="comment">// rather than silently replaced by a default that would change the scheme&#39;s behaviour.</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="comment">// written as an integer (e.g. 1) or a fractional value (e.g. 0.2). It is mandatory: a missing</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="comment">// or non-numeric coefficient is a spec error and is rejected rather than silently replaced by a</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="comment">// default that would change the scheme&#39;s behaviour.</span></div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> readTwoByk(<a class="code hl_typedef" href="namespaceNeoN.html#a0f89cac0ba212d1026c9fedc65742cea">Input</a>&amp; input)</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    {</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <a class="code hl_typedef" href="namespaceNeoN.html#a93c8d00d3aa9fc6f9271c4c0b4f0da97">scalar</a> k = 0;</div>
