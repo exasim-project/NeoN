@@ -37,9 +37,9 @@ EXPECTED_SCHEMES = {
     "laplacian<Vector>": {"Gauss"},
     "laplacian<Vector,scalar>": {"Gauss"},
     # Surface-interpolation schemes register from their headers, so they are not part of the
-    # explicit-instantiation workaround above -- but they share the table with it, and
-    # linearUpwindV is vector-only by design, so pin both sets here too.
-    "surfaceInterpolation<scalar>": {"linear", "upwind", "linearUpwind"},
+    # explicit-instantiation workaround above -- but they share the table with it, and the sets
+    # differ by design (linearUpwindV is vector-only, limitedLinear is scalar-only), so pin both.
+    "surfaceInterpolation<scalar>": {"linear", "upwind", "linearUpwind", "limitedLinear"},
     "surfaceInterpolation<Vector>": {"linear", "upwind", "linearUpwind", "linearUpwindV"},
 }
 
