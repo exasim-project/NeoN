@@ -101,14 +101,19 @@ public:
                                            : std::vector<ValueType> {}
           )
     {
-        if (!dict.contains("fixedValue") && !dict.contains("fixedValues"))
+        const bool hasUniform = dict.contains("fixedValue");
+        const bool hasPerFace = dict.contains("fixedValues");
+        if (!hasUniform && !hasPerFace)
         {
             NF_THROW(
                 "fixedValue boundary condition on patch " + std::to_string(patchID)
                 + " requires either a uniform 'fixedValue' or a per-face 'fixedValues' entry"
             );
         }
-        if (fixedValues_.size() != 0 && fixedValues_.size() != this->patchSize())
+        // Validate on the key being present, not on the list being non-empty: an empty
+        // 'fixedValues' on a non-empty patch is malformed per-face data, and testing the
+        // size alone would let it through to the uniform fallback and silently apply zero.
+        if (hasPerFace && fixedValues_.size() != this->patchSize())
         {
             NF_THROW(
                 "'fixedValues' holds " + std::to_string(fixedValues_.size()) + " values but patch "
