@@ -252,6 +252,12 @@ if(${NeoN_WITH_GINKGO})
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # The patch set and its ordering live in ApplyGinkgoPatches.cmake, which is also what makes a
+    # reconfigure of an existing build tree work: FetchContent re-runs PATCH_COMMAND against
+    # already-patched sources, which a plain `git apply` cannot survive.
+    set(GINKGO_PATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches)
+    set(GINKGO_PATCH ${CMAKE_COMMAND} -DGINKGO_PATCH_DIR=${GINKGO_PATCH_DIR} -P
+                     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyGinkgoPatches.cmake)
     cpmaddpackage(
       NAME
       Ginkgo
@@ -261,6 +267,8 @@ if(${NeoN_WITH_GINKGO})
       ginkgo-project/ginkgo
       GIT_TAG
       ${NeoN_GINKGO_TAG}
+      PATCH_COMMAND
+      ${GINKGO_PATCH}
       SYSTEM
       YES
       OPTIONS

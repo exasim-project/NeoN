@@ -1,0 +1,733 @@
+# SPDX-License-Identifier: Unlicense
+# SPDX-FileCopyrightText: 2026 NeoN authors
+Subject: [PATCH] ginkgo local stack: distributed update_matrix_value + PMIS regenerate
+#
+# Local patches carried on top of ginkgo-project/ginkgo @ ba5e66073 (branch
+# reuse_pgm_update_rebase) that the champion build depends on and that were
+# previously only living uncommitted in the CPM _deps tree:
+#   - include/.../multigrid/pmis.hpp        : Pmis 2-arg (Factory*, components)
+#                                             regenerate ctor (REQUIRED to compile)
+#   - common/unified/multigrid/pmis_kernels : matching kernel fix
+#   - core/solver/multigrid.cpp             : scale-correction / update_matrix_value
+#   - core/distributed/preconditioner/schwarz.{cpp,hpp} : Schwarz update_matrix_value
+#   - core/distributed/matrix.cpp           : distributed non-local reuse
+#   - core/multigrid/pgm.cpp                : mixed-precision fallback obj->system_matrix_
+#
+# Apply BEFORE ginkgo_pgm_fine_op_cache.patch (which layers on top).
+#
+diff --git a/common/unified/multigrid/pmis_kernels.cpp b/common/unified/multigrid/pmis_kernels.cpp
+index 6f464b731..551acfc22 100644
+--- a/common/unified/multigrid/pmis_kernels.cpp
++++ b/common/unified/multigrid/pmis_kernels.cpp
+@@ -152,7 +152,7 @@ void initialize_weight_and_status(
+                       auto status) {
+             using type = device_type<remove_complex<ValueType>>;
+             auto w = static_cast<type>(row_ptrs[row + 1] - row_ptrs[row]);
+-            status[row] = (w == 0 ? 0 : -1);
++            status[row] = (w == zero(w) ? 0 : -1);
+             weight[row] = static_cast<type>(random[row]) + w;
+         },
+         num, trans_strong_dep->get_const_row_ptrs(), random.get_const_data(),
+@@ -308,7 +308,7 @@ void direct_interpolation_fill(
+                     diag = val;
+                     continue;
+                 }
+-                if (real(val) >= 0) {
++                if (real(val) >= zero(real(val))) {
+                     pos += val;
+                     if (coarse_map[col] != coarse_map[col + 1] &&
+                         abs(val) >= strength_threshold * max_abs) {
+@@ -337,13 +337,13 @@ void direct_interpolation_fill(
+                 if (col == row || abs(val) < strength_threshold * max_abs) {
+                     continue;
+                 }
+-                if (real(val) >= 0 && enable_pos &&
++                if (real(val) >= zero(real(val)) && enable_pos &&
+                     coarse_map[col] != coarse_map[col + 1]) {
+                     prolong_col_idxs[p_idx] = coarse_map[col];
+                     prolong_values[p_idx] = -pos * val / diag;
+                     p_idx++;
+                 }
+-                if (real(val) < 0 && enable_neg &&
++                if (real(val) < zero(real(val)) && enable_neg &&
+                     coarse_map[col] != coarse_map[col + 1]) {
+                     prolong_col_idxs[p_idx] = coarse_map[col];
+                     prolong_values[p_idx] = -neg * val / diag;
+diff --git a/core/distributed/matrix.cpp b/core/distributed/matrix.cpp
+index 5dd5813cc..89b46c60d 100644
+--- a/core/distributed/matrix.cpp
++++ b/core/distributed/matrix.cpp
+@@ -7,6 +7,7 @@
+ #include <utility>
+
+ #include <ginkgo/core/base/array.hpp>
++#include <ginkgo/core/base/matrix_data.hpp>
+ #include <ginkgo/core/base/precision_dispatch.hpp>
+ #include <ginkgo/core/distributed/assembly.hpp>
+ #include <ginkgo/core/distributed/neighborhood_communicator.hpp>
+@@ -199,6 +200,53 @@ Matrix<ValueType, LocalIndexType, GlobalIndexType>::create(
+ }
+
+
++namespace {
++
++
++// Copy one local block (diag or off-diag) into a target block that may differ from the source
++// in BOTH precision and storage format. A single Ginkgo copy_from cannot do a combined
++// cross-precision + cross-format conversion (e.g. a Coo<double> off-diagonal, as assembled by an
++// application, into the default Csr<float> off-diagonal of a reduced-precision copy created by
++// Pgm/Multigrid): copy_from resolves to as<ConvertibleTo<Csr<float>>>(Coo<double>), which throws
++// NotSupported. So convert the PRECISION first while preserving the source format (device-side),
++// then copy_from into the target -- a same-precision format change, which IS supported. Csr/Coo
++// (the formats distributed::Matrix actually uses) take the device path; anything else routes
++// through format- and precision-agnostic matrix_data.
++template <typename SourceValueType, typename TargetValueType, typename IndexType>
++void convert_local_block(const LinOp* source, LinOp* target)
++{
++    auto exec = source->get_executor();
++    if (auto coo =
++            dynamic_cast<const gko::matrix::Coo<SourceValueType, IndexType>*>(
++                source)) {
++        auto lower = gko::matrix::Coo<TargetValueType, IndexType>::create(exec);
++        coo->convert_to(lower.get());
++        target->copy_from(lower.get());
++    } else if (auto csr = dynamic_cast<
++                   const gko::matrix::Csr<SourceValueType, IndexType>*>(
++                   source)) {
++        auto lower = gko::matrix::Csr<TargetValueType, IndexType>::create(exec);
++        csr->convert_to(lower.get());
++        target->copy_from(lower.get());
++    } else {
++        matrix_data<SourceValueType, IndexType> src_data;
++        as<const WritableToMatrixData<SourceValueType, IndexType>>(source)
++            ->write(src_data);
++        matrix_data<TargetValueType, IndexType> dst_data{src_data.size};
++        dst_data.nonzeros.reserve(src_data.nonzeros.size());
++        for (const auto& e : src_data.nonzeros) {
++            dst_data.nonzeros.emplace_back(
++                e.row, e.column, static_cast<TargetValueType>(e.value));
++        }
++        as<ReadableFromMatrixData<TargetValueType, IndexType>>(target)->read(
++            dst_data);
++    }
++}
++
++
++}  // namespace
++
++
+ template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
+ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::convert_to(
+     Matrix<next_precision<value_type>, local_index_type, global_index_type>*
+@@ -207,7 +255,9 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::convert_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->copy_from(this->diag_mtx_);
+-    result->off_diag_mtx_->copy_from(this->off_diag_mtx_);
++    convert_local_block<value_type, next_precision<value_type>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->copy_from(this->row_gatherer_);
+     result->imap_ = this->imap_;
+     result->set_size(this->get_size());
+@@ -222,7 +272,11 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::move_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->move_from(this->diag_mtx_);
+-    result->off_diag_mtx_->move_from(this->off_diag_mtx_);
++    // off-diag may differ in format from the target; a cross-precision move is unsupported, so
++    // convert (copying values is a valid move_to result).
++    convert_local_block<value_type, next_precision<value_type>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->move_from(this->row_gatherer_);
+     result->imap_ = std::move(this->imap_);
+     result->set_size(this->get_size());
+@@ -239,7 +293,9 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::convert_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->copy_from(this->diag_mtx_.get());
+-    result->off_diag_mtx_->copy_from(this->off_diag_mtx_.get());
++    convert_local_block<value_type, next_precision<value_type, 2>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->copy_from(this->row_gatherer_);
+     result->imap_ = this->imap_;
+     result->set_size(this->get_size());
+@@ -254,7 +310,9 @@ void Matrix<ValueType, LocalIndexType, GlobalIndexType>::move_to(
+     GKO_ASSERT(this->get_communicator().size() ==
+                result->get_communicator().size());
+     result->diag_mtx_->move_from(this->diag_mtx_.get());
+-    result->off_diag_mtx_->move_from(this->off_diag_mtx_.get());
++    convert_local_block<value_type, next_precision<value_type, 2>,
++                        local_index_type>(this->off_diag_mtx_.get(),
++                                          result->off_diag_mtx_.get());
+     result->row_gatherer_->move_from(this->row_gatherer_);
+     result->imap_ = std::move(this->imap_);
+     result->set_size(this->get_size());
+diff --git a/core/distributed/preconditioner/schwarz.cpp b/core/distributed/preconditioner/schwarz.cpp
+index 556ea5260..90e886326 100644
+--- a/core/distributed/preconditioner/schwarz.cpp
++++ b/core/distributed/preconditioner/schwarz.cpp
+@@ -15,6 +15,7 @@
+ #include <ginkgo/core/config/config.hpp>
+ #include <ginkgo/core/config/registry.hpp>
+ #include <ginkgo/core/distributed/matrix.hpp>
++#include <ginkgo/core/matrix/coo.hpp>
+ #include <ginkgo/core/matrix/csr.hpp>
+ #include <ginkgo/core/matrix/dense.hpp>
+ #include <ginkgo/core/matrix/identity.hpp>
+@@ -219,44 +220,9 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
+             "Requires both coarse solver and coarse level to be set.");
+     }
+
+-    auto dist_mat =
+-        as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(system_matrix);
+-    auto diag_matrix = dist_mat->get_diag_matrix();
+-
+-    if (parameters_.l1_smoother) {
+-        auto exec = this->get_executor();
+-
+-        using Csr = matrix::Csr<ValueType, LocalIndexType>;
+-        auto diag_matrix_copy = share(Csr::create(exec));
+-        as<ConvertibleTo<Csr>>(diag_matrix)->convert_to(diag_matrix_copy);
+-
+-        auto off_diag_matrix = copy_and_convert_to<Csr>(
+-            exec, as<Matrix<ValueType, LocalIndexType, GlobalIndexType>>(
+-                      system_matrix)
+-                      ->get_off_diag_matrix());
+-
+-        array<ValueType> l1_diag_arr{exec, diag_matrix->get_size()[0]};
+-
+-        exec->run(
+-            make_row_wise_absolute_sum(off_diag_matrix.get(), l1_diag_arr));
+-
+-        // compute diag_matrix_copy <- diag(l1) + diag_matrix_copy
+-        auto l1_diag = matrix::Diagonal<ValueType>::create(
+-            exec, diag_matrix->get_size()[0], std::move(l1_diag_arr));
+-        auto l1_diag_csr = Csr::create(exec);
+-        l1_diag->move_to(l1_diag_csr);
+-        auto id = matrix::Identity<ValueType>::create(
+-            exec, diag_matrix->get_size()[0]);
+-        auto one = initialize<matrix::Dense<ValueType>>(
+-            {::gko::one<ValueType>()}, exec);
+-        l1_diag_csr->apply(one, id, one, diag_matrix_copy);
+-
+-        this->set_solver(gko::share(this->generate_inner(
+-            parameters_.local_solver.get(), diag_matrix_copy, "local_solver")));
+-    } else {
+-        this->set_solver(gko::share(this->generate_inner(
+-            parameters_.local_solver.get(), diag_matrix, "local_solver")));
+-    }
++    this->set_solver(gko::share(this->generate_inner(
++        parameters_.local_solver.get(), this->extract_local_matrix(system_matrix),
++        "local_solver")));
+
+     gko::remove_complex<ValueType> cweight =
+         gko::detail::real_impl(parameters_.coarse_weight);
+@@ -295,6 +261,96 @@ void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::generate(
+ }
+
+
++template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
++std::shared_ptr<const LinOp>
++Schwarz<ValueType, LocalIndexType, GlobalIndexType>::extract_local_matrix(
++    std::shared_ptr<const LinOp> system_matrix) const
++{
++    using Mtx = Matrix<ValueType, LocalIndexType, GlobalIndexType>;
++    // Reduced-precision preconditioner support. The distributed system matrix is
++    // assembled once in fp64, but the Schwarz preconditioner (and the local solver
++    // hierarchy it wraps) may be requested in a lower precision via the config
++    // node's "value_type" -- absent => double, the default. When this Schwarz is a
++    // float preconditioner fed the fp64 distributed::Matrix, convert the matrix down
++    // to float here so the whole local solve runs in float. The dynamic_cast fast
++    // path keeps the same-precision (default double) case allocation-free; this is
++    // the single choke point shared by generate() and update_matrix_value(), so the
++    // cached-refresh path is converted identically.
++    std::shared_ptr<const Mtx> dist_mat;
++    if constexpr (std::is_same<ValueType, float>::value) {
++        dist_mat = std::dynamic_pointer_cast<const Mtx>(system_matrix);
++        if (!dist_mat) {
++            using HighMtx = Matrix<double, LocalIndexType, GlobalIndexType>;
++            auto high_mat = as<HighMtx>(system_matrix);
++            // Match the source block formats (Csr diagonal + Coo off-diagonal, as
++            // assembled by NeoN's createGkoMtxDist) so convert_to() performs a
++            // precision-only conversion of each block. A default-format target
++            // would force an unsupported cross-format + cross-precision
++            // Coo<double> -> Csr<float> copy inside Matrix::convert_to().
++            auto converted = Mtx::create(
++                this->get_executor(), high_mat->get_communicator(),
++                gko::with_matrix_type<matrix::Csr>(),
++                gko::with_matrix_type<matrix::Coo>());
++            high_mat->convert_to(converted.get());
++            dist_mat = gko::share(std::move(converted));
++        }
++    } else {
++        dist_mat = as<Mtx>(system_matrix);
++    }
++    std::shared_ptr<const LinOp> diag_matrix = dist_mat->get_diag_matrix();
++
++    if (!parameters_.l1_smoother) {
++        return diag_matrix;
++    }
++
++    auto exec = this->get_executor();
++
++    using Csr = matrix::Csr<ValueType, LocalIndexType>;
++    auto diag_matrix_copy = share(Csr::create(exec));
++    as<ConvertibleTo<Csr>>(diag_matrix)->convert_to(diag_matrix_copy);
++
++    auto off_diag_matrix =
++        copy_and_convert_to<Csr>(exec, dist_mat->get_off_diag_matrix());
++
++    array<ValueType> l1_diag_arr{exec, diag_matrix->get_size()[0]};
++
++    exec->run(make_row_wise_absolute_sum(off_diag_matrix.get(), l1_diag_arr));
++
++    // compute diag_matrix_copy <- diag(l1) + diag_matrix_copy
++    auto l1_diag = matrix::Diagonal<ValueType>::create(
++        exec, diag_matrix->get_size()[0], std::move(l1_diag_arr));
++    auto l1_diag_csr = Csr::create(exec);
++    l1_diag->move_to(l1_diag_csr);
++    auto id = matrix::Identity<ValueType>::create(exec,
++                                                  diag_matrix->get_size()[0]);
++    auto one =
++        initialize<matrix::Dense<ValueType>>({::gko::one<ValueType>()}, exec);
++    l1_diag_csr->apply(one, id, one, diag_matrix_copy);
++
++    return diag_matrix_copy;
++}
++
++
++template <typename ValueType, typename LocalIndexType, typename GlobalIndexType>
++void Schwarz<ValueType, LocalIndexType, GlobalIndexType>::update_matrix_value(
++    std::shared_ptr<const LinOp> new_system_matrix)
++{
++    this->system_matrix_ = new_system_matrix;
++
++    // A coarse correction cannot be refreshed in place here, so rebuild everything when one is
++    // configured. The common configFile case (Schwarz wrapping a local Multigrid, no coarse
++    // level) takes the fast path below.
++    auto updatable = std::dynamic_pointer_cast<UpdateMatrixValue>(
++        std::const_pointer_cast<LinOp>(local_solver_));
++    if (updatable && !parameters_.coarse_level && !parameters_.coarse_solver) {
++        updatable->update_matrix_value(
++            this->extract_local_matrix(new_system_matrix));
++    } else {
++        this->generate(new_system_matrix);
++    }
++}
++
++
+ #define GKO_DECLARE_SCHWARZ(ValueType, LocalIndexType, GlobalIndexType) \
+     class Schwarz<ValueType, LocalIndexType, GlobalIndexType>
+ GKO_INSTANTIATE_FOR_EACH_VALUE_AND_LOCAL_GLOBAL_INDEX_TYPE(GKO_DECLARE_SCHWARZ);
+diff --git a/core/multigrid/pgm.cpp b/core/multigrid/pgm.cpp
+index ddffec5d9..93408927a 100644
+--- a/core/multigrid/pgm.cpp
++++ b/core/multigrid/pgm.cpp
+@@ -568,8 +568,11 @@ void Pgm<ValueType, IndexType>::update_matrix_value(
+                        system_matrix_)) {
+             setup_fine_op(obj);
+         } else {
+-            // handle other ValueTypes.
+-            run<ConvertibleTo, fst_mtx_type, snd_mtx_type>(obj,
++            // handle other ValueTypes (e.g. a reduced-precision Pgm<float> fed the fp64 system
++            // matrix for a mixed-precision preconditioner). Dispatch on system_matrix_, NOT the
++            // null `obj` from the failed cast above -- mirrors generate() (line ~412). Passing the
++            // null obj threw gko::NotSupported("run_impl ... decltype(nullptr)").
++            run<ConvertibleTo, fst_mtx_type, snd_mtx_type>(system_matrix_,
+                                                            convert_fine_op);
+         }
+
+diff --git a/core/solver/multigrid.cpp b/core/solver/multigrid.cpp
+index b23eb81e1..506717115 100644
+--- a/core/solver/multigrid.cpp
++++ b/core/solver/multigrid.cpp
+@@ -5,6 +5,8 @@
+ #include "ginkgo/core/solver/multigrid.hpp"
+
+ #include <complex>
++#include <cstdlib>
++#include <limits>
+ #include <string>
+
+ #include <ginkgo/core/base/exception.hpp>
+@@ -32,6 +34,7 @@
+ #include "core/components/fill_array_kernels.hpp"
+ #include "core/config/config_helper.hpp"
+ #include "core/distributed/helpers.hpp"
++#include "core/mpi/mpi_op.hpp"   // [NeoN] gko::experimental::mpi::sum for the fused Rayleigh reduction
+ #include "core/solver/ir_kernels.hpp"
+ #include "core/solver/multigrid_kernels.hpp"
+ #include "core/solver/solver_base.hpp"
+@@ -390,7 +393,7 @@ void MultigridState::allocate_memory(int level, multigrid::cycle cycle,
+     storage.reset(exec);
+     const bool scale_correction =
+         multigrid->get_parameters().scale_correction;
+-    storage.set_size(scale_correction ? 10 : 6, 0);
++    storage.set_size(scale_correction ? 13 : 6, 0);
+
+     // Slot 0: r (current level dimensions)
+     storage.template create_or_get_op<vec>(
+@@ -457,6 +460,33 @@ void MultigridState::allocate_memory(int level, multigrid::cycle cycle,
+         storage.template create_or_get_op<vec>(
+             9, [&] { return vec::create(exec, dim<2>{1, nrhs}); },
+             typeid(vec), dim<2>{1, nrhs}, nrhs);
++
++        // Slot 10: [NeoN faithful-port] CONTIGUOUS (1 x 2) pair holding {num, denom} so both
++        // Rayleigh dots can be reduced in ONE all_reduce, as OpenFOAM does
++        // (GAMGSolverScale.C: FixedList<solveScalar,2> + a single mesh().reduce()).
++        storage.template create_or_get_op<vec>(
++            10, [&] { return vec::create(exec, dim<2>{1, 2}); },
++            typeid(vec), dim<2>{1, 2}, 2);
++
++        // Slots 11/12: [NeoN alloc-hoist] persistent scalars for the scale blocks. Ginkgo's executor
++        // allocates via CudaAllocator = RAW cudaMalloc (cuda/base/memory.cpp:58), OUTSIDE the Umpire
++        // pool, and cudaMalloc/cudaFree SYNCHRONIZE. Creating these per correction point (as the dzc
++        // patch's `eps` and the relaxation scalar previously did) puts ~37 synchronizing malloc/free
++        // pairs per pressure solve on the critical path -- the same anti-pattern as the assemble
++        // allocator churn. The workspace already pre-allocates one/neg_one (slots 3/4) for this exact
++        // reason. Slot 11 (eps) is a CONSTANT -> filled once, here. Slot 12 (relax) is filled per use
++        // (a 1-element fill kernel: async, no allocation, no sync).
++        storage.template create_or_get_op<vec>(
++            11,
++            [&] {
++                auto e = vec::create(exec, dim<2>{1, nrhs});
++                e->fill(value_type{std::numeric_limits<gko::remove_complex<value_type>>::min()});
++                return e;
++            },
++            typeid(vec), dim<2>{1, nrhs}, nrhs);
++        storage.template create_or_get_op<vec>(
++            12, [&] { return vec::create(exec, dim<2>{1, 1}); },
++            typeid(vec), dim<2>{1, 1}, 1);
+     }
+ }
+
+@@ -486,7 +516,7 @@ void MultigridState::allocate_memory(
+     storage.reset(exec);
+     const bool scale_correction =
+         multigrid->get_parameters().scale_correction;
+-    storage.set_size(scale_correction ? 10 : 6, 0);
++    storage.set_size(scale_correction ? 13 : 6, 0);
+
+     // Slot 0: r (current level, distributed)
+     storage.template create_or_get_op<vec>(
+@@ -562,6 +592,28 @@ void MultigridState::allocate_memory(
+         storage.template create_or_get_op<dense_vec>(
+             9, [&] { return dense_vec::create(exec, dim<2>{1, nrhs}); },
+             typeid(dense_vec), dim<2>{1, nrhs}, nrhs);
++
++        // Slot 10: [NeoN faithful-port] CONTIGUOUS (1 x 2) pair holding {num, denom} so both
++        // Rayleigh dots reduce in ONE all_reduce -- OpenFOAM's GAMGSolverScale.C uses
++        // FixedList<solveScalar,2> + a single mesh().reduce(); Ginkgo's port issues two separate
++        // compute_dot calls, each with its own Allreduce (a global barrier that cannot overlap).
++        storage.template create_or_get_op<dense_vec>(
++            10, [&] { return dense_vec::create(exec, dim<2>{1, 2}); },
++            typeid(dense_vec), dim<2>{1, 2}, 2);
++
++        // Slots 11/12: [NeoN alloc-hoist] see the serial overload -- persistent scalars so the scale
++        // blocks issue NO raw cudaMalloc (a synchronizing call) per correction point.
++        storage.template create_or_get_op<dense_vec>(
++            11,
++            [&] {
++                auto e = dense_vec::create(exec, dim<2>{1, nrhs});
++                e->fill(value_type{std::numeric_limits<gko::remove_complex<value_type>>::min()});
++                return e;
++            },
++            typeid(dense_vec), dim<2>{1, nrhs}, nrhs);
++        storage.template create_or_get_op<dense_vec>(
++            12, [&] { return dense_vec::create(exec, dim<2>{1, 1}); },
++            typeid(dense_vec), dim<2>{1, 1}, 1);
+     }
+
+ }
+@@ -630,10 +682,127 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+         mid_smoother = multigrid->get_mid_smoother_list().at(level);
+     }
+     auto post_smoother = multigrid->get_post_smoother_list().at(level);
++    // [NeoN faithful-port patch -- NOT upstream] OpenFOAM's GAMGSolver::scale (GAMGSolverScale.C)
++    // finishes its Rayleigh correction with ONE INLINE DIAGONAL DIVISION:
++    //     field[i] = sf*field[i] + (source[i] - sf*Acf[i]) / D[i];
++    // i.e. the inner operator is exactly D^-1 -- one divide per cell, no operator application.
++    // Ginkgo's port instead calls `pre_smoother->apply()`, the full configured smoother. For the
++    // standard Ir(1){Schwarz{Jacobi(1)}} smoother that pays an EXTRA residual SpMV -- a distributed
++    // HALO EXCHANGE per correction point, per level, per V-cycle -- that OpenFOAM never spends. That
++    // single infidelity roughly DOUBLES scale correction's SpMV cost, and SpMV halos were measured as
++    // 77% of its total communication.
++    //
++    // Ir's INNER solver *is* that D^-1 (the Schwarz{Jacobi} it wraps), so applying it directly is both
++    // faithful to OpenFOAM and SpMV-free. It also drops Ir's relaxation_factor, which is correct:
++    // OpenFOAM's scale() applies no relaxation. Non-Ir smoothers fall back to the original path.
++    // RELAXATION (2026-07-15 fix -- do NOT remove): Ir applies `x += relaxation_factor * error`,
++    // so its inner solver alone is the UNDAMPED D^-1. Dropping the damping was justified as "OpenFOAM's
++    // scale() has no relaxation" -- true of OpenFOAM, but OpenFOAM's smoothers are its own (GaussSeidel
++    // by default), whereas Ginkgo's Ir(0.9){Jacobi} DEPENDS on that damping for stability. Undamped it
++    // overshoots: at max_levels=2 (coarse grid still ~12M rows, so the correction is large) convergence
++    // collapsed 18.3 -> 122.4 iterations, while L4 was unaffected -- the classic signature of an
++    // over-long step that only bites where corrections are big. So: keep the SpMV saving, keep the
++    // damping.
++    auto apply_scale_inner = [&](const std::shared_ptr<const LinOp>& smoother, const LinOp* rhs,
++                                 LinOp* out) {
++        if (auto ir = std::dynamic_pointer_cast<const Ir<value_type>>(smoother)) {
++            if (auto inner = ir->get_solver()) {
++                inner->apply(rhs, out);   // out = D^-1 * rhs   (OpenFOAM: /D), NO extra SpMV
++                const auto relax = ir->get_parameters().relaxation_factor;
++                if (relax != gko::one<value_type>()) {
++                    // [NeoN alloc-hoist] persistent slot 12 + a 1-element fill (async kernel),
++                    // NOT initialize<>() which would raw-cudaMalloc per correction point.
++                    auto* relax_op =
++                        as<matrix::Dense<value_type>>(level_storage.get_mutable_op(12));
++                    relax_op->fill(relax);
++                    // `out` is a distributed::Vector when distributed -- cast to VectorType,
++                    // NOT Dense (as<Dense> throws NotSupported on distributed::Vector).
++                    as<VectorType>(out)->scale(relax_op);  // Ir's damping
++                }
++                return;
++            }
++        }
++        smoother->apply(rhs, out);
++    };
++
++    // [NeoN faithful-port patch -- NOT upstream] Fuse the two Rayleigh dots into ONE reduction.
++    // OpenFOAM (GAMGSolverScale.C) accumulates both into a FixedList<solveScalar,2> and issues a
++    // SINGLE mesh().reduce(). Ginkgo's port calls compute_dot twice; each distributed compute_dot
++    // ends in its own all_reduce (vector.cpp:491) -- a global barrier, and barriers cannot overlap
++    // with anything. This halves scale correction's reduction count.
++    //
++    // Method: compute both dots on the LOCAL vectors only (gko::detail::get_local dispatches to the
++    // Dense itself when serial, to the local block when distributed -- so no #ifdef at the call
++    // site), writing into the two columns of one contiguous (1 x 2) Dense, then reduce those 2
++    // values in one call. compute_dot reduces get_size()[1] elements, i.e. the column count, so the
++    // pair's layout is exactly what a 2-element all_reduce wants.
++    auto fused_rayleigh_dots = [&](const VectorType* delta, const LinOp* rhs, const LinOp* adelta,
++                                   matrix::Dense<value_type>* pair,
++                                   matrix::Dense<value_type>* num_out,
++                                   matrix::Dense<value_type>* denom_out) {
++        auto num_view = pair->create_submatrix(span{0, 1}, span{0, 1});
++        auto den_view = pair->create_submatrix(span{0, 1}, span{1, 2});
++        auto d_loc = gko::detail::get_local(delta);
++        d_loc->compute_dot(gko::detail::get_local(as<VectorType>(rhs)), num_view.get());
++        d_loc->compute_dot(gko::detail::get_local(as<VectorType>(adelta)), den_view.get());
++#if GINKGO_BUILD_MPI
++        if (auto dist = dynamic_cast<const experimental::distributed::DistributedBase*>(delta)) {
++            auto ex = pair->get_executor();
++            auto comm = dist->get_communicator();
++            auto sum_op = gko::experimental::mpi::sum<value_type>();
++            ex->synchronize();
++            if (experimental::mpi::requires_host_buffer(ex, comm)) {
++                auto host_pair = matrix::Dense<value_type>::create(ex->get_master());
++                host_pair->copy_from(pair);
++                comm.all_reduce(ex->get_master(), host_pair->get_values(), 2, sum_op.get_op());
++                pair->copy_from(host_pair.get());
++            } else {
++                comm.all_reduce(ex, pair->get_values(), 2, sum_op.get_op());
++            }
++        }
++#endif
++        num_out->copy_from(pair->create_submatrix(span{0, 1}, span{0, 1}).get());
++        denom_out->copy_from(pair->create_submatrix(span{0, 1}, span{1, 2}).get());
++    };
++
+     // scale correction applies at all levels except immediately above coarsest
+     bool do_scale =
+         multigrid->get_parameters().scale_correction && level < total_level - 1;
+
++    // [NeoN probe -- NOT for merge] split the pre/post scale-correction passes so each can be
++    // attributed on its own. NEON_MGSC_MODE = both (default) | pre | post | none.
++    // Read once: getenv per V-cycle per level would itself be a cost.
++    static const int mgsc_mode = [] {
++        const char* e = std::getenv("NEON_MGSC_MODE");
++        if (!e) return 0;                              // 0 = both (stock behaviour)
++        const std::string s{e};
++        if (s == "pre") return 1;
++        if (s == "post") return 2;
++        if (s == "none") return 3;
++        return 0;
++    }();
++    const bool do_scale_pre = do_scale && (mgsc_mode == 0 || mgsc_mode == 1);
++    const bool do_scale_post = do_scale && (mgsc_mode == 0 || mgsc_mode == 2);
++
++    // [NeoN patch] device-side guarded Rayleigh reciprocal: sf = num / (denom + eps), computed
++    // entirely on-device to avoid the per-correction-point copy_val_to_host(denom) D2H sync (that
++    // guard fires a synchronizing device->host copy at every level every V-cycle -- ~90/solve on the
++    // occDrivAer pressure solve, a leading cost when the solve is synchronization-bound). Safe because
++    // num = delta.b and denom = delta.A.delta are BOTH exactly zero iff delta = 0, so at delta=0
++    // sf = 0/eps = 0 (the correction reduces to smoother(b) -- benign, and does not occur after a
++    // pre-smoother sweep on nonzero b); eps = smallest positive normal is negligible vs any nonzero
++    // denom. Replaces the old `if (copy_val_to_host(denom) != 0) { inv_scale(...); <body> }`.
++    // [NeoN alloc-hoist] eps now lives in workspace slot 11, filled ONCE at generate(). It used to be
++    // created here per call -- a raw cudaMalloc (CudaAllocator, cuda/base/memory.cpp:58), which
++    // SYNCHRONIZES. That silently undid much of the dzc patch's point: it removed a
++    // copy_val_to_host D2H sync and added an allocation sync in its place.
++    auto safe_inv_scale = [&](matrix::Dense<value_type>* alpha_d,
++                              matrix::Dense<value_type>* denom_d) {
++        auto* eps = as<matrix::Dense<value_type>>(level_storage.get_mutable_op(11));
++        denom_d->add_scaled(one, eps);  // denom += eps (device, no sync, no alloc)
++        alpha_d->inv_scale(denom_d);    // sf = num / (denom + eps)
++    };
++
+     bool use_pre = has_property(mode, cycle_mode::first_of_cycle) ||
+                    mid_case == multigrid::mid_smooth_type::both ||
+                    mid_case == multigrid::mid_smooth_type::pre_smoother;
+@@ -661,7 +830,7 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+     //   Aδ    = A * δ_pre
+     //   sf    = (δ_pre · b) / (δ_pre · Aδ)
+     //   δ_pre = sf * δ_pre + smoother(b − sf * Aδ)   [reuses acf, r scratch]
+-    if (do_scale && use_pre && pre_smoother) {
++    if (do_scale_pre && use_pre && pre_smoother) {
+         auto exec = multigrid->get_executor();
+         auto* acf = level_storage.get_mutable_op(6);
+         auto* dp = level_storage.get_mutable_op(7);
+@@ -671,22 +840,23 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+             as<matrix::Dense<value_type>>(level_storage.get_mutable_op(9));
+
+         matrix->apply(x, acf);  // acf = A * δ_pre
+-        as<VectorType>(x)->compute_dot(b, level_storage.get_mutable_op(8));
+-        as<VectorType>(x)->compute_dot(acf, level_storage.get_mutable_op(9));
+-        if (exec->copy_val_to_host(denom_dense->get_const_values()) !=
+-            zero<value_type>()) {
+-            alpha_dense->inv_scale(denom_dense);  // sf = (δ·b)/(δ·Aδ)
+-
++        // [NeoN faithful-port] ONE fused reduction instead of two (OpenFOAM parity)
++        fused_rayleigh_dots(as<VectorType>(x), b, acf,
++                            as<matrix::Dense<value_type>>(level_storage.get_mutable_op(10)),
++                            alpha_dense, denom_dense);
++        // [NeoN patch] device-side guarded reciprocal (no copy_val_to_host D2H sync).
++        safe_inv_scale(alpha_dense, denom_dense);
++        {
+             // r temporarily holds r_scaled = b − sf * Aδ
+             as<VectorType>(acf)->scale(alpha_dense);  // acf = sf * Aδ
+             r->copy_from(b);
+             as<VectorType>(r)->add_scaled(neg_one, acf);  // r = b − sf*Aδ
+
+-            // dp = smoother(r_scaled) starting from zero
++            // dp = D^-1 * r_scaled   [NeoN faithful-port patch -- see note at apply_scale_inner]
+             as<VectorType>(dp)->fill(zero<value_type>());
+-            pre_smoother->apply(r, dp);
++            apply_scale_inner(pre_smoother, r, dp);
+
+-            // x = sf * δ_pre + smoother(b − sf*Aδ)
++            // x = sf * δ_pre + D^-1(b − sf*Aδ)
+             as<VectorType>(x)->scale(alpha_dense);
+             as<VectorType>(x)->add_scaled(one, dp);
+         }
+@@ -739,7 +909,7 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+     //   sf   = (δ_c · r) / (δ_c · Aδ)
+     //   δ_c  = sf * δ_c + smoother(r − sf * Aδ)
+     //   x   += δ_c                       [x = δ_pre + scale-corrected δ_c]
+-    if (do_scale) {
++    if (do_scale_post) {
+         auto exec = multigrid->get_executor();
+         auto* acf = level_storage.get_mutable_op(6);
+         auto* dp = level_storage.get_mutable_op(7);
+@@ -753,20 +923,21 @@ void MultigridState::run_cycle(multigrid::cycle cycle, size_type level,
+         mg_level->get_prolong_op()->apply(next_one, e, next_one, acf);
+
+         matrix->apply(acf, dp);  // dp = A * δ_c
+-        as<VectorType>(acf)->compute_dot(r, level_storage.get_mutable_op(8));
+-        as<VectorType>(acf)->compute_dot(dp, level_storage.get_mutable_op(9));
+-        if (exec->copy_val_to_host(denom_dense->get_const_values()) !=
+-            zero<value_type>()) {
+-            alpha_dense->inv_scale(denom_dense);  // sf = (δ_c·r)/(δ_c·Aδ_c)
+-
++        // [NeoN faithful-port] ONE fused reduction instead of two (OpenFOAM parity)
++        fused_rayleigh_dots(as<VectorType>(acf), r, dp,
++                            as<matrix::Dense<value_type>>(level_storage.get_mutable_op(10)),
++                            alpha_dense, denom_dense);
++        // [NeoN patch] device-side guarded reciprocal (no copy_val_to_host D2H sync).
++        safe_inv_scale(alpha_dense, denom_dense);
++        {
+             // r temporarily holds r_scaled = r − sf * Aδ_c
+             as<VectorType>(dp)->scale(alpha_dense);      // dp = sf * Aδ_c
+             as<VectorType>(r)->add_scaled(neg_one, dp);  // r = r − sf*Aδ_c
+
+-            // dp = smoother(r_scaled) starting from zero
++            // dp = D^-1 * r_scaled   [NeoN faithful-port patch -- see apply_scale_inner]
+             as<VectorType>(dp)->fill(zero<value_type>());
+             if (pre_smoother) {
+-                pre_smoother->apply(r, dp);
++                apply_scale_inner(pre_smoother, r, dp);
+             }
+
+             // acf = sf * δ_c + smoother(r − sf*Aδ_c)
+diff --git a/include/ginkgo/core/distributed/preconditioner/schwarz.hpp b/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
+index acb49f5f7..260d5672e 100644
+--- a/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
++++ b/include/ginkgo/core/distributed/preconditioner/schwarz.hpp
+@@ -20,6 +20,7 @@
+ #include <ginkgo/core/distributed/matrix.hpp>
+ #include <ginkgo/core/distributed/vector.hpp>
+ #include <ginkgo/core/distributed/vector_cache.hpp>
++#include <ginkgo/core/multigrid/multigrid_level.hpp>
+ #include <ginkgo/core/solver/solver_base.hpp>
+ #include <ginkgo/core/solver/workspace.hpp>
+
+@@ -68,7 +69,8 @@ namespace preconditioner {
+ template <typename ValueType = default_precision,
+           typename LocalIndexType = int32, typename GlobalIndexType = int64>
+ class Schwarz
+-    : public EnableLinOp<Schwarz<ValueType, LocalIndexType, GlobalIndexType>> {
++    : public EnableLinOp<Schwarz<ValueType, LocalIndexType, GlobalIndexType>>,
++      public UpdateMatrixValue {
+     friend class EnableLinOp<Schwarz>;
+     friend class EnablePolymorphicObject<Schwarz, LinOp>;
+     GKO_ASSERT_SUPPORTED_VALUE_AND_DIST_INDEX_TYPE;
+@@ -211,6 +213,17 @@ public:
+         return local_solver_;
+     }
+
++    /**
++     * Refresh the preconditioner for a new system matrix that keeps the same sparsity
++     * structure, reusing the existing local solver instead of rebuilding it. The rank-local
++     * block is re-extracted from @p new_system_matrix and, when the local solver itself
++     * implements UpdateMatrixValue (e.g. a Multigrid local solver, which reuses its Pgm
++     * aggregation), forwarded to it in place; otherwise the local solver is regenerated from the
++     * new local block. Falls back to a full generate() when a coarse correction is configured.
++     */
++    void update_matrix_value(
++        std::shared_ptr<const LinOp> new_system_matrix) override;
++
+ protected:
+     /**
+      * Creates an empty Schwarz preconditioner.
+@@ -249,6 +262,14 @@ protected:
+      */
+     void generate(std::shared_ptr<const LinOp> system_matrix);
+
++    /**
++     * Extract the rank-local matrix block the local solver is built from: the distributed
++     * matrix's diagonal block, with the L1 smoother correction applied when enabled. Shared by
++     * generate() and update_matrix_value() so both see the identical local operator.
++     */
++    std::shared_ptr<const LinOp> extract_local_matrix(
++        std::shared_ptr<const LinOp> system_matrix) const;
++
+     /**
+      * Generate an inner LinOp, threading the workspace view through to the
+      * factory when one is available. Otherwise falls back to the workspace-
+diff --git a/include/ginkgo/core/multigrid/pmis.hpp b/include/ginkgo/core/multigrid/pmis.hpp
+index bae9c2c59..e77649da4 100644
+--- a/include/ginkgo/core/multigrid/pmis.hpp
++++ b/include/ginkgo/core/multigrid/pmis.hpp
+@@ -123,13 +123,14 @@ protected:
+         : EnableLinOp<Pmis>(std::move(exec))
+     {}
+
+-    explicit Pmis(const Factory* factory,
+-                  std::shared_ptr<const LinOp> system_matrix)
+-        : EnableLinOp<Pmis>(factory->get_executor(), system_matrix->get_size()),
+-          EnableMultigridLevel<ValueType>(system_matrix),
++    explicit Pmis(const Factory* factory, LinOpGenerateComponents components)
++        : EnableLinOp<Pmis>(factory->get_executor(),
++                            components.system_matrix->get_size()),
++          EnableMultigridLevel<ValueType>(components.system_matrix),
+           parameters_{factory->get_parameters()},
+-          system_matrix_{system_matrix},
+-          weight_(factory->get_executor(), system_matrix_->get_size()[0])
++          system_matrix_{components.system_matrix},
++          weight_(factory->get_executor(),
++                  components.system_matrix->get_size()[0])
+     {
+         GKO_ASSERT(parameters_.strength_threshold <= 1.0);
+         GKO_ASSERT(parameters_.strength_threshold >= 0.0);

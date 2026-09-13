@@ -3,7 +3,10 @@
 # SPDX-License-Identifier: Unlicense
 
 [files]
-extend-exclude = ["third_party/*", "doc/Doxyfile.in"]
+# cmake/patches/* are verbatim upstream diffs: their content must match the third-party
+# source byte for byte, and their headers quote upstream commit SHAs (e.g. "ba5e66073",
+# read as a typo for "by"/"be").
+extend-exclude = ["third_party/*", "doc/Doxyfile.in", "cmake/patches/*"]
 
 [default.extend-words]
 nd = "nd"

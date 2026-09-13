@@ -20,6 +20,7 @@
 #include "NeoN/linearAlgebra/solver.hpp"
 #include "NeoN/linearAlgebra/linearSystem.hpp"
 #include "NeoN/linearAlgebra/utilities.hpp"
+#include "NeoN/linearAlgebra/ginkgo/mergedPgm.hpp" // MergedPgm mergeLevels-style coarsening
 
 
 namespace NeoN::la::ginkgo
@@ -300,6 +301,19 @@ public:
             reg.emplace(std::string(l1CriterionKey), l1CritFactory_);
             l1InConfig_ = pnodeReferencesString(config_, l1CriterionKey);
         }
+
+        // Register NeoN's MergedPgm coarseners (mergeLevels-style: merge k Pgm steps into one level
+        // via SpGEMM-composed prolongations). A configFile's `mg_level` can then name them, e.g.
+        // "mg_level": ["neon::pgmMerge2"]. Named-registry pattern, same as the L1 criterion above.
+        // pgmMerge1 = merge_levels 1 = plain Pgm (single coarsening step), but via the SAME
+        // MergedPgm code path as 2/3 -- so the cache (update_matrix_value) and distributed branches
+        // behave identically across the merge-levels sweep, unlike swapping in native gko
+        // multigrid::Pgm.
+        reg.emplace("neon::pgmMerge1", makeMergedPgmFactory<scalar>(gkoExec_, 1));
+        reg.emplace("neon::pgmMerge2", makeMergedPgmFactory<scalar>(gkoExec_, 2));
+        reg.emplace("neon::pgmMerge3", makeMergedPgmFactory<scalar>(gkoExec_, 3));
+        reg.emplace("neon::pgmMerge4", makeMergedPgmFactory<scalar>(gkoExec_, 4));
+
         factory_ = gko::config::parse(config_, reg, gko::config::make_type_descriptor<scalar>())
                        .on(gkoExec_);
     }
