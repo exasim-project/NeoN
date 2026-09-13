@@ -13,6 +13,7 @@
 - Add distributed (processor-boundary) support: exact processor-face geometry and non-orthogonal corrected/limited snGrad correction, plus a one-time `set()` / per-iteration `update()` boundary-condition interface [#528](https://github.com/exasim-project/NeoN/pull/528)
 - Add DSL expression optimizer infrastructure for operator fusing [#452](https://github.com/exasim-project/NeoN/pull/452)
 - Add L1-norm stopping criterion [#538](https://github.com/exasim-project/NeoN/pull/538)
+- Add `MergedPgm` multigrid coarsening, which merges several Pgm steps into one level and is selectable from a solver `configFile` as `neon::pgmMerge1`..`neon::pgmMerge4` [#602](https://github.com/exasim-project/NeoN/pull/602)
 
 ### Misc
 - Added linearUpwind scheme [#548](https://github.com/exasim-project/NeoN/pull/548)
@@ -23,6 +24,7 @@
 - Support AssemblyType != ValueType for Vec3 fields [#536](https://github.com/exasim-project/NeoN/pull/536)
 - Bump Kokkos to 5.0.2 [#476](https://github.com/exasim-project/NeoN/pull/476)
 - Bump Ginkgo to 1.11  [#409](https://github.com/exasim-project/NeoN/pull/409)
+- Bump Ginkgo to the `reuse_pgm_update_rebase` tag and apply the local patch stack, which adds `gko::UpdateMatrixValue` and multigrid `scale_correction` [#602](https://github.com/exasim-project/NeoN/pull/602)
 
 ## Fixes
 - Fix umpire/camp RPATH and macOS install names so wheels stay relocatable, and check relocatability on the unrepaired wheel in CI [#559](https://github.com/exasim-project/NeoN/pull/559)
