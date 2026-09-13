@@ -3,8 +3,13 @@ repos:
     rev: v4.6.0
     hooks:
       - id: check-yaml
+      # cmake/patches/* are unified diffs: a context line for a blank source line is a
+      # single space, and the final newline is part of the last hunk. Stripping either
+      # corrupts the patch, so keep both fixers away from them.
       - id: end-of-file-fixer
+        exclude: ^cmake/patches/
       - id: trailing-whitespace
+        exclude: ^cmake/patches/
       - id: pretty-format-json
         args: [--autofix, --no-sort-keys]
   - repo: https://github.com/pre-commit/mirrors-clang-format
