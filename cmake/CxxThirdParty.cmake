@@ -247,11 +247,25 @@ if(${NeoN_WITH_GINKGO})
   endif()
 
   # --- Ginkgo ---
+  # NeoN_GINKGO_PATCHED records whether the Ginkgo we build against carries the patch stack under
+  # cmake/patches/. Only the CPM-fetched copy does; a system Ginkgo is stock, so features that need
+  # the patched fork (MergedPgm's gko::UpdateMatrixValue / gko::LinOpGenerateComponents, and the
+  # multigrid scale_correction parameter) must compile out against it. Cached so a user who has
+  # installed a patched Ginkgo themselves can override with -DNeoN_GINKGO_PATCHED=ON.
   find_package(Ginkgo ${NeoN_GINKGO_VERSION} QUIET)
   if(Ginkgo_FOUND)
     message(STATUS "Using system-installed Ginkgo (version: ${Ginkgo_VERSION})")
+    message(STATUS "  NeoN Ginkgo patches not applied to a system Ginkgo — "
+                   "MergedPgm and multigrid scale_correction are disabled")
+    set(_neon_ginkgo_patched OFF)
   else()
     message(STATUS "System Ginkgo not found — fetching from GitHub via CPM.cmake...")
+    # The patch set and its ordering live in ApplyGinkgoPatches.cmake, which is also what makes a
+    # reconfigure of an existing build tree work: FetchContent re-runs PATCH_COMMAND against
+    # already-patched sources, which a plain `git apply` cannot survive.
+    set(GINKGO_PATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches)
+    set(GINKGO_PATCH ${CMAKE_COMMAND} -DGINKGO_PATCH_DIR=${GINKGO_PATCH_DIR} -P
+                     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyGinkgoPatches.cmake)
     cpmaddpackage(
       NAME
       Ginkgo
@@ -261,6 +275,8 @@ if(${NeoN_WITH_GINKGO})
       ginkgo-project/ginkgo
       GIT_TAG
       ${NeoN_GINKGO_TAG}
+      PATCH_COMMAND
+      ${GINKGO_PATCH}
       SYSTEM
       YES
       OPTIONS
@@ -273,6 +289,7 @@ if(${NeoN_WITH_GINKGO})
       "GINKGO_BUILD_PAPI_SDE OFF"
       "GINKGO_BUILD_CUDA ${Kokkos_ENABLE_CUDA}"
       "GINKGO_BUILD_HIP ${Kokkos_ENABLE_HIP}")
+    set(_neon_ginkgo_patched ON)
 
     # Ginkgo's build_helpers.cmake forces its targets to ${PROJECT_BINARY_DIR}/lib, ignoring
     # CMAKE_LIBRARY_OUTPUT_DIRECTORY. Route them into our shared lib output dir so all CPM-built
@@ -295,6 +312,9 @@ if(${NeoN_WITH_GINKGO})
       endif()
     endforeach()
   endif()
+
+  option(NeoN_GINKGO_PATCHED "The Ginkgo in use carries the NeoN patches under cmake/patches"
+         ${_neon_ginkgo_patched})
 endif()
 
 if(${NeoN_BUILD_PYTHON_BINDINGS})
