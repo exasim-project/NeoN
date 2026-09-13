@@ -6,7 +6,13 @@
 
 // Guarded like ginkgo.hpp: the generated NeoN.hpp umbrella header includes every header
 // unconditionally, so this must be a no-op in a build configured without Ginkgo.
-#if NF_WITH_GINKGO
+//
+// Also requires NF_GINKGO_PATCHED: MergedPgm derives from gko::UpdateMatrixValue and uses
+// gko::LinOpGenerateComponents, neither of which exists in a stock Ginkgo. NeoN only gets them
+// from the patch stack under cmake/patches/, which is applied to the CPM-fetched copy but cannot
+// be applied to a system-installed Ginkgo -- so against one of those this header compiles away
+// and the neon::pgmMerge* coarseners are simply not registered (see ginkgo.hpp).
+#if NF_WITH_GINKGO && NF_GINKGO_PATCHED
 
 #include <algorithm>
 #include <memory>

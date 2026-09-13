@@ -14,7 +14,11 @@ neon_unit_test(utilities)
 # the following tests currently require Ginkgo
 if(NeoN_WITH_GINKGO)
   neon_unit_test(ginkgo)
-  neon_unit_test(ginkgoScaleCorrection)
+  # scale_correction only exists in the patched Ginkgo (see NeoN_GINKGO_PATCHED in
+  # CxxThirdParty.cmake); against a stock one the configFile fails to parse at runtime.
+  if(NeoN_GINKGO_PATCHED)
+    neon_unit_test(ginkgoScaleCorrection)
+  endif()
 endif()
 
 if(NeoN_WITH_PETSC)
