@@ -4,6 +4,7 @@
 
 #define CATCH_CONFIG_RUNNER
 
+#include <atomic>
 #include <fstream>
 #include <iostream>
 #include <thread>
@@ -706,8 +707,26 @@ int main(int argc, char* argv[])
         MPI_Comm_size(COMM, &COMM_SIZE);
         IS_ROOT = RANK == ROOT;
 
-        bool threadShutdown = false;
-        std::thread serializeIOThread {serializeIO, &threadShutdown};
+        // serializeIO calls MPI concurrently with the main thread, which is only defined
+        // behaviour at MPI_THREAD_MULTIPLE. This target compiles with
+        // NF_REQUIRE_MPI_THREAD_SUPPORT so NeoN::mpi::Init requests that level, but query what
+        // was actually provided rather than relying on an assert that a release build may drop.
+        // See the same guard in test/catch2/test_main_mpi.cpp.
+        int providedThreadLevel = MPI_THREAD_SINGLE;
+        MPI_Query_thread(&providedThreadLevel);
+        IO_SERIALIZATION = providedThreadLevel == MPI_THREAD_MULTIPLE;
+
+        std::atomic<bool> threadShutdown {false};
+        std::thread serializeIOThread;
+        if (IO_SERIALIZATION)
+        {
+            serializeIOThread = std::thread {serializeIO, &threadShutdown};
+        }
+        else if (IS_ROOT)
+        {
+            std::cout << "[NeoN] MPI thread level is below MPI_THREAD_MULTIPLE; benchmark output "
+                         "from different ranks is not serialized.\n";
+        }
 
         NeoN::initialize(argc, argv);
 
@@ -739,7 +758,10 @@ int main(int argc, char* argv[])
 
         MPI_Barrier(COMM);
         threadShutdown = true;
-        serializeIOThread.join();
+        if (serializeIOThread.joinable())
+        {
+            serializeIOThread.join();
+        }
 
         NeoN::finalize();
     }
