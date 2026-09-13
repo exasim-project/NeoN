@@ -196,18 +196,28 @@ void MpiReporter::assertionEnded(const Catch::AssertionStats& stats)
 
     if (needPrint)
     {
-        MPI_Send(&needPrint, 1, MPI_CXX_BOOL, ROOT, SERIALIZATION_TAG, COMM);
+        // Ask the serialization thread on ROOT for the floor, and hand it back when done. Skipped
+        // when that thread was not started (IO_SERIALIZATION false, see test_main_mpi.cpp): with
+        // no peer to answer, this handshake would block forever. The rank prefix is printed either
+        // way, so output stays attributable even when it interleaves.
+        if (IO_SERIALIZATION)
+        {
+            MPI_Send(&needPrint, 1, MPI_CXX_BOOL, ROOT, SERIALIZATION_TAG, COMM);
 
-        bool allowedToPrint = false;
-        MPI_Recv(
-            &allowedToPrint, 1, MPI_CXX_BOOL, ROOT, SERIALIZATION_TAG, COMM, MPI_STATUS_IGNORE
-        );
+            bool allowedToPrint = false;
+            MPI_Recv(
+                &allowedToPrint, 1, MPI_CXX_BOOL, ROOT, SERIALIZATION_TAG, COMM, MPI_STATUS_IGNORE
+            );
+        }
 
         r_stream_->stream() << "Rank [" << RANK << "|" << COMM_SIZE << "]\n" << std::flush;
         reporter_->assertionEnded(stats);
         r_stream_->stream() << std::flush;
 
-        const bool finished = true;
-        MPI_Send(&finished, 1, MPI_CXX_BOOL, ROOT, SERIALIZATION_TAG, COMM);
+        if (IO_SERIALIZATION)
+        {
+            const bool finished = true;
+            MPI_Send(&finished, 1, MPI_CXX_BOOL, ROOT, SERIALIZATION_TAG, COMM);
+        }
     }
 }
