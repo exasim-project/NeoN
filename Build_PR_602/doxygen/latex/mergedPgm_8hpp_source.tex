@@ -11,12 +11,12 @@
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00007}00007\ \textcolor{comment}{//\ Guarded\ like\ ginkgo.hpp:\ the\ generated\ NeoN.hpp\ umbrella\ header\ includes\ every\ header}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00008}00008\ \textcolor{comment}{//\ unconditionally,\ so\ this\ must\ be\ a\ no-\/op\ in\ a\ build\ configured\ without\ Ginkgo.}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00009}00009\ \textcolor{comment}{//}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00010}00010\ \textcolor{comment}{//\ Also\ requires\ NF\_GINKGO\_PATCHED:\ MergedPgm\ derives\ from\ gko::UpdateMatrixValue\ and\ uses}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00011}00011\ \textcolor{comment}{//\ gko::LinOpGenerateComponents,\ neither\ of\ which\ exists\ in\ a\ stock\ Ginkgo.\ NeoN\ only\ gets\ them}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00012}00012\ \textcolor{comment}{//\ from\ the\ patch\ stack\ under\ cmake/patches/,\ which\ is\ applied\ to\ the\ CPM-\/fetched\ copy\ but\ cannot}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00013}00013\ \textcolor{comment}{//\ be\ applied\ to\ a\ system-\/installed\ Ginkgo\ -\/-\/\ so\ against\ one\ of\ those\ this\ header\ compiles\ away}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00014}00014\ \textcolor{comment}{//\ and\ the\ neon::pgmMerge*\ coarseners\ are\ simply\ not\ registered\ (see\ ginkgo.hpp).}}
-\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#if\ NF\_WITH\_GINKGO\ \&\&\ NF\_GINKGO\_PATCHED}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00010}00010\ \textcolor{comment}{//\ Also\ requires\ NF\_GINKGO\_FORK,\ which\ is\ OFF\ by\ default:\ MergedPgm\ derives\ from}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00011}00011\ \textcolor{comment}{//\ gko::UpdateMatrixValue\ and\ uses\ gko::LinOpGenerateComponents,\ neither\ of\ which\ exists\ in\ the}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00012}00012\ \textcolor{comment}{//\ Ginkgo\ NeoN\ pins.\ This\ header\ is\ therefore\ carried\ inactive\ -\/-\/\ it\ compiles\ away\ and\ the}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00013}00013\ \textcolor{comment}{//\ neon::pgmMerge*\ coarseners\ are\ not\ registered\ (see\ ginkgo.hpp).\ To\ build\ it,\ point\ NeoN\ at\ a}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00014}00014\ \textcolor{comment}{//\ Ginkgo\ providing\ those\ APIs\ and\ configure\ with\ -\/DNeoN\_GINKGO\_FORK=ON.}}
+\DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#if\ NF\_WITH\_GINKGO\ \&\&\ NF\_GINKGO\_FORK}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00016}00016\ }
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <algorithm>}}
 \DoxyCodeLine{\Hypertarget{mergedPgm_8hpp_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <memory>}}
