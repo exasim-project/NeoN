@@ -106,7 +106,8 @@ public:
 
     LinearUpwind(const Executor& exec, const UnstructuredMesh& mesh, Input input)
         : Base(exec, mesh), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
-          gradSchemeName_(readGradSchemeName(input))
+          gradSchemeName_(readGradSchemeName(input)),
+          cellLimitedGradient_(readCellLimited(gradSchemeName_))
     {
         // Opt in to the geometry scheme's per-internal-face cell-to-face offset vectors. These are
         // computed lazily and only for schemes that need them, so non-linearUpwind runs never
@@ -145,7 +146,7 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             dst,
-            CellLimited
+            cellLimitedGradient_
         );
     }
 
@@ -180,7 +181,7 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             corr,
-            CellLimited
+            cellLimitedGradient_
         );
     }
 
@@ -191,9 +192,16 @@ public:
 
 private:
 
-    // The OpenFOAM scheme spec is "linearUpwind <gradScheme>"; NeoN currently has a single
-    // (Gauss-Green) gradient scheme, so the name is read for spec-compatibility but not used to
-    // select a scheme. Returns a default when absent.
+    // The scheme spec is "linearUpwind <gradScheme>", e.g.
+    // "linearUpwind cellLimited Gauss linear 1". The deferred correction has to be built from
+    // the gradient named there: falling back to the unlimited Gauss-Green gradient leaves the
+    // reconstruction unclipped, a systematically more aggressive convection term. So the
+    // leading word decides whether the correction is cell-limited.
+    //
+    // A bare key ("linearUpwind limited", naming an entry in the caller's gradient-scheme
+    // table) cannot be resolved here -- NeoN holds no such table -- and falls back to the
+    // unlimited gradient. Callers that own the scheme dictionary should expand such a key to
+    // its definition before handing the spec over.
     static std::string readGradSchemeName(Input& input)
     {
         if (std::holds_alternative<NeoN::TokenList>(input))
@@ -207,8 +215,15 @@ private:
         return "Gauss";
     }
 
+    // linearUpwindV forces it; otherwise honour the gradient named in the spec.
+    static bool readCellLimited(const std::string& gradSchemeName)
+    {
+        return CellLimited || gradSchemeName == "cellLimited";
+    }
+
     const std::shared_ptr<GeometryScheme> geometryScheme_;
     std::string gradSchemeName_;
+    bool cellLimitedGradient_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred
