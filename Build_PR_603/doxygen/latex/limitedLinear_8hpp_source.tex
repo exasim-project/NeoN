@@ -1,0 +1,179 @@
+\doxysection{limited\+Linear.\+hpp}
+\hypertarget{limitedLinear_8hpp_source}{}\label{limitedLinear_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp}}
+\mbox{\hyperlink{limitedLinear_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{executor_8hpp}{NeoN/core/executor/executor.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{linear_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/linear.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceInterpolation_8hpp}{NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{geometryScheme_8hpp}{NeoN/finiteVolume/cellCentred/stencil/geometryScheme.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00015}00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{NeoN::finiteVolume::cellCentred}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00018}00018\ \textcolor{comment}{/*\ @brief\ blended\ central/upwind\ weights\ of\ the\ limitedLinear\ scheme.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00019}00019\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00020}00020\ \textcolor{comment}{\ *\ w\_f\ =\ limiter\ *\ w\_CD\ +\ (1\ -\/\ limiter)\ *\ w\_upwind,\ with\ the\ limiter\ built\ from\ the\ TVD\ ratio\ r\ of}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00021}00021\ \textcolor{comment}{\ *\ the\ upwind-\/cell\ gradient\ to\ the\ face\ gradient:\ limiter\ =\ max(min(twoByk\ *\ r,\ 1),\ 0),\ where}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00022}00022\ \textcolor{comment}{\ *\ twoByk\ =\ 2/k:\ k\ =\ 1\ limits\ most\ strongly\ (fully\ bounded),\ smaller\ k\ relaxes\ the\ blend\ towards}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00023}00023\ \textcolor{comment}{\ *\ central\ differencing.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00024}00024\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00025}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a525f8d2713b964a094fcfdaea56c173e}{00025}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a525f8d2713b964a094fcfdaea56c173e}{computeLimitedLinearWeights}}(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00026}00026\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<scalar>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00027}00027\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00028}00028\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ cdWeights,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00029}00029\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\&\ faceDeltaOwner,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00030}00030\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<Vec3>}}\&\ faceDeltaNeighbour,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00031}00031\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ twoByk,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00032}00032\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ weights}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00033}00033\ );}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00035}00035\ \textcolor{comment}{/*\ @brief\ limitedLinear\ surface\ interpolation.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00036}00036\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00037}00037\ \textcolor{comment}{\ *\ Registered\ for\ scalar\ fields\ only.\ Limiting\ a\ vector\ field\ is\ conventionally\ done\ on}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00038}00038\ \textcolor{comment}{\ *\ magSqr(phi),\ which\ needs\ a\ derived\ scalar\ field\ and\ its\ gradient;\ that\ variant\ is\ not}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00039}00039\ \textcolor{comment}{\ *\ implemented\ here,\ so\ a\ Vec3\ field\ must\ use\ another\ scheme.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00040}00040\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00041}00041\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00042}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear}{00042}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear}{LimitedLinear}}\ :}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory}{SurfaceInterpolationFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<LimitedLinear<ValueType>>}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00044}00044\ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceInterpolationFactory}{SurfaceInterpolationFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<LimitedLinear<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00048}00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00050}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_ac1ee04352ddf0769f8786742dff10542}{00050}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_ac1ee04352ddf0769f8786742dff10542}{LimitedLinear}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}}\&\ exec,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\ input)}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ :\ Base(exec,\ mesh),\ geometryScheme\_(\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1GeometryScheme}{GeometryScheme}}::readOrCreate(mesh)),}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ twoByk\_(readTwoByk(input))}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Opt\ in\ to\ the\ per-\/face\ cell-\/to-\/face\ offsets\ while\ the\ mesh\ centres\ are\ still\ alive;\ the}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ geometry\ scheme\ frees\ them\ on\ the\ first\ read\ of\ any\ cached\ geometry\ field.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ geometryScheme\_-\/>ensureFaceDeltas();}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00057}00057\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00059}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_adc4e139989069f81c567debe8ec7e5a6}{00059}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_adc4e139989069f81c567debe8ec7e5a6}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}limitedLinear"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00061}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_af9cd420e47a741dbcc8607296e387392}{00061}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_af9cd420e47a741dbcc8607296e387392}{doc}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}limitedLinear\ interpolation\ (TVD\ limited\ blend)"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00063}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a0a7d00e598de2bf3dab84b06434647f7}{00063}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a0a7d00e598de2bf3dab84b06434647f7}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00065}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a84b6ab19ad34c2aa4a262a8a1540d98f}{00065}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a84b6ab19ad34c2aa4a262a8a1540d98f}{interpolate}}(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ [[maybe\_unused]]\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ [[maybe\_unused]]\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ dst}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00068}00068\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00069}00069\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}limitedLinear\ interpolation\ scheme\ requires\ a\ faceFlux"{}});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00073}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a9222f8d5d31bd74dbe3a6eb43a0c6fef}{00073}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a9222f8d5d31bd74dbe3a6eb43a0c6fef}{interpolate}}(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<ValueType>}}\&\ dst}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00077}00077\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00078}00078\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\ blended(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ src.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_ae06b75408af47206bcfa482f217bdfff}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}limitedLinearWeights"{}},}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ src.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}(),}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_ab918b7425253d07393f1e18b71aa4e22}{createCalculatedBCs}}<\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceBoundary}{SurfaceBoundary<scalar>}}>(src.\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1DomainMixin_a6aee693a9887535811934a27d1892e3e}{mesh}}())}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00084}00084\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_adb4d220073a02c89e2ec5e2ac7f60406}{weight}}(flux,\ src,\ blended);}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a5ee2b2f0634716198d36459918063de3}{computeLinearInterpolation}}(src,\ blended,\ dst);}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00087}00087\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00089}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_adb4d220073a02c89e2ec5e2ac7f60406}{00089}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_adb4d220073a02c89e2ec5e2ac7f60406}{weight}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&,\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00090}00090\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a8b8fc4329e5e6dfc3731ca28605a8a49}{NF\_ERROR\_EXIT}}(\textcolor{stringliteral}{"{}limitedLinear\ interpolation\ scheme\ requires\ a\ faceFlux"{}});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00092}00092\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00094}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a20da3da2ba2f35f42d716dce06655cba}{00094}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_a20da3da2ba2f35f42d716dce06655cba}{weight}}(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ flux,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeField}{VolumeField<ValueType>}}\&\ src,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00097}00097\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1SurfaceField}{SurfaceField<scalar>}}\&\ weights}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00098}00098\ \ \ \ \ )\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00099}00099\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00100}00100\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_a525f8d2713b964a094fcfdaea56c173e}{computeLimitedLinearWeights}}(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ src,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ flux,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ geometryScheme\_-\/>weights(),}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ geometryScheme\_-\/>faceDeltaOwner(),}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ geometryScheme\_-\/>faceDeltaNeighbour(),}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ twoByk\_,}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ weights}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00108}00108\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00109}00109\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00111}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_ac4b1942dbb9276660171a7df5384de75}{00111}}\ \ \ \ \ std::unique\_ptr<SurfaceInterpolationFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear_ac4b1942dbb9276660171a7df5384de75}{clone}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00112}00112\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<LimitedLinear>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00114}00114\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00116}00116\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00118}00118\ \ \ \ \ \textcolor{comment}{//\ Scheme\ spec\ "{}limitedLinear\ <k>"{}:\ the\ factory\ consumed\ the\ name,\ so\ only\ k\ remains.\ k\ is}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ written\ as\ an\ integer\ (e.g.\ 1)\ or\ a\ fractional\ value\ (e.g.\ 0.2).\ It\ is\ mandatory:\ a\ missing}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00120}00120\ \ \ \ \ \textcolor{comment}{//\ or\ non-\/numeric\ coefficient\ is\ a\ spec\ error\ and\ is\ rejected\ rather\ than\ silently\ replaced\ by\ a}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00121}00121\ \ \ \ \ \textcolor{comment}{//\ default\ that\ would\ change\ the\ scheme's\ behaviour.}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00122}00122\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ readTwoByk(\mbox{\hyperlink{namespaceNeoN_a0f89cac0ba212d1026c9fedc65742cea}{Input}}\&\ input)}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00123}00123\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ k\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (std::holds\_alternative<NeoN::TokenList>(input))}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ tokens\ =\ std::get<NeoN::TokenList>(input);}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tokens.peekIs<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>())}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\ =\ tokens.next<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>();}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tokens.peekIs<\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}>())}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\textcolor{keyword}{>}(tokens.next<\mbox{\hyperlink{namespaceNeoN_afa6c1c30776d4f6ed4691b0f9d1ea416}{label}}>());}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(\textcolor{stringliteral}{"{}limitedLinear\ requires\ a\ numeric\ coefficient:\ 'limitedLinear\ <k>'"{}});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ dict\ =\ std::get<NeoN::Dictionary>(input);}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!dict.contains(\textcolor{stringliteral}{"{}limitedLinearCoeff"{}}))}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(\textcolor{stringliteral}{"{}limitedLinear\ requires\ the\ dictionary\ entry\ 'limitedLinearCoeff'"{}});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ k\ =\ dict.get<\mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}>(\textcolor{stringliteral}{"{}limitedLinearCoeff"{}});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00150}00150\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!(k\ >=\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(0)\ \&\&\ k\ <=\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(1)))}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00152}00152\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error_8hpp_a01fd2dadf84a907b46bb93644bde393f}{NF\_THROW}}(}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::string(\textcolor{stringliteral}{"{}limitedLinear\ coefficient\ must\ be\ in\ [0,\ 1],\ got\ "{}})\ +\ std::to\_string(k)}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00156}00156\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00157}00157\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}(2)\ /\ Kokkos::max(k,\ \mbox{\hyperlink{namespaceNeoN_aa2d88a1b21583ca5c103bd0c416947d0}{ROOTVSMALL}});}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00158}00158\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00160}00160\ \ \ \ \ \textcolor{keyword}{const}\ std::shared\_ptr<GeometryScheme>\ geometryScheme\_;}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00161}00161\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{scalar}}\ twoByk\_;}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00162}00162\ \};}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00164}00164\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00166}00166\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN}{NeoN}}}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00167}00167\ \{}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00169}00169\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred}{fvcc}}\ =\ finiteVolume::cellCentred;}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00171}00171\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1LimitedLinear}{fvcc::LimitedLinear<scalar>}};}
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{limitedLinear_8hpp_source_l00173}00173\ \}}
+
+\end{DoxyCode}

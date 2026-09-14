@@ -1,0 +1,186 @@
+\doxysection{total\+Pressure.\+hpp}
+\hypertarget{totalPressure_8hpp_source}{}\label{totalPressure_8hpp_source}\index{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/totalPressure.hpp@{/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/boundary/volume/totalPressure.hpp}}
+\mbox{\hyperlink{totalPressure_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00001}00001\ \textcolor{comment}{//\ SPDX-\/FileCopyrightText:\ 2023\ -\/\ 2026\ NeoN\ authors}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00002}00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00003}00003\ \textcolor{comment}{//\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00005}00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <Kokkos\_Core.hpp>}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{field_8hpp}{NeoN/fields/field.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{traits_8hpp}{NeoN/core/primitives/traits.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeBoundaryFactory_8hpp}{NeoN/finiteVolume/cellCentred/boundary/volumeBoundaryFactory.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundaryContext_8hpp}{NeoN/finiteVolume/cellCentred/boundary/boundaryContext.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{surfaceField_8hpp}{NeoN/finiteVolume/cellCentred/fields/surfaceField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{volumeField_8hpp}{NeoN/finiteVolume/cellCentred/fields/volumeField.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{unstructuredMesh_8hpp}{NeoN/mesh/unstructured/unstructuredMesh.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{parallelAlgorithms_8hpp}{NeoN/core/parallelAlgorithms.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00018}00018\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary}{NeoN::finiteVolume::cellCentred::volumeBoundary}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00021}00021\ \textcolor{keyword}{namespace\ }detail}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00022}00022\ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00024}00024\ \textcolor{comment}{//\ Shared\ kernel\ behind\ totalPressure,\ for\ the\ incompressible\ form}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00025}00025\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00026}00026\ \textcolor{comment}{//\ \ \ p\ =\ p0\ -\/\ 0.5\ *\ (1\ -\/\ pos0(phi))\ *\ magSqr(U)}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00027}00027\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00028}00028\ \textcolor{comment}{//\ i.e.\ on\ outflow\ (phi\ >=\ 0)\ the\ static\ pressure\ is\ the\ specified\ total\ pressure,\ and\ on}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00029}00029\ \textcolor{comment}{//\ inflow\ (phi\ <\ 0)\ the\ dynamic\ head\ 0.5*|U|\string^2\ is\ subtracted\ so\ that\ the\ *total*\ pressure\ of}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00030}00030\ \textcolor{comment}{//\ the\ entering\ stream\ is\ p0.\ The\ patch\ is\ Dirichlet\ either\ way:\ valueFraction\ =\ 1\ with}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00031}00031\ \textcolor{comment}{//\ refGrad\ =\ 0,\ only\ the\ value\ differs\ per\ face.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00032}00032\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00033}00033\ \textcolor{comment}{//\ Without\ a\ flux\ (hasFlux\ ==\ false,\ the\ plain\ correctBoundaryCondition\ path\ with\ no}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00034}00034\ \textcolor{comment}{//\ BoundaryContext)\ every\ face\ is\ treated\ as\ outflow,\ degenerating\ to\ a\ fixedValue\ at\ p0.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00035}00035\ \textcolor{comment}{//\ Without\ a\ velocity\ the\ dynamic\ head\ is\ zero,\ which\ is\ the\ same\ degeneration.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00036}00036\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00037}\mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_addb346e153f4099b2835d1420bbf723f}{00037}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_addb346e153f4099b2835d1420bbf723f}{setTotalPressureValue}}(}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00038}00038\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00039}00039\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00040}00040\ \ \ \ \ std::pair<localIdx,\ localIdx>\ range,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00041}00041\ \ \ \ \ ValueType\ p0,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ boundaryFlux,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00043}00043\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasFlux,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00044}00044\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ Vec3>}}\ boundaryVelocity,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00045}00045\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasVelocity}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00046}00046\ )}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00047}00047\ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00048}00048\ \ \ \ \ \textcolor{keyword}{auto}\ [refGradV,\ valueV,\ valueFractionV,\ refValueV]\ =\ \mbox{\hyperlink{namespaceNeoN_af9198d29681d27f9a478aa99c01c00b9}{views}}(}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00049}00049\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refGrad(),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00050}00050\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().value(),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().valueFraction(),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00052}00052\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_a8c00a2ea0c20ced11a5c88d803fbe01c}{boundaryData}}().refValue()}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00053}00053\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00054}00054\ \ \ \ \ (void)mesh;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00056}00056\ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_aa1fcf079c91daa08b6f3295b97788441}{NeoN::parallelFor}}(}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00057}00057\ \ \ \ \ \ \ \ \ domainVector.\mbox{\hyperlink{classNeoN_1_1Field_abd0575e5cec90d4f66844df33f5dfd90}{exec}}(),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ range,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{parallelAlgorithms_8hpp_a9498b53fd8bbd2ab12440cef550e6533}{NEON\_LAMBDA}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ i)\ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pos0(phi):\ 1\ on\ outflow\ (phi\ >=\ 0),\ 0\ on\ inflow.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ inflow\ =\ hasFlux\ \&\&\ boundaryFlux[i]\ <\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0);}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ ValueType\ p\ =\ p0;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (std::is\_same<ValueType,\ NeoN::scalar>::value)}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inflow\ \&\&\ hasVelocity)}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Vec3}{Vec3}}\ u\ =\ boundaryVelocity[i];}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}\ magSqrU\ =\ u[0]\ *\ u[0]\ +\ u[1]\ *\ u[1]\ +\ u[2]\ *\ u[2];}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p\ =\ p0\ -\/\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(0.5)\ *\ magSqrU;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ valueFractionV[i]\ =\ \mbox{\hyperlink{namespaceNeoN_a93c8d00d3aa9fc6f9271c4c0b4f0da97}{NeoN::scalar}}(1);}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ refValueV[i]\ =\ p;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ refGradV[i]\ =\ NeoN::zero<ValueType>();}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ valueV[i]\ =\ p;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}setTotalPressureValue"{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00080}00080\ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00081}00081\ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00083}00083\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00085}00085\ \textcolor{comment}{//\ totalPressure\ fixes\ the\ *total*\ pressure\ on\ a\ patch:\ the\ static\ pressure\ it\ imposes\ is\ the}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00086}00086\ \textcolor{comment}{//\ specified\ p0\ on\ outflow,\ and\ p0\ minus\ the\ dynamic\ head\ on\ inflow,\ so\ a\ stream\ entering\ the}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00087}00087\ \textcolor{comment}{//\ domain\ carries\ total\ pressure\ p0.\ It\ mirrors\ OpenFOAM's\ incompressible\ totalPressure}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00088}00088\ \textcolor{comment}{//\ (a\ fixedValue\ whose\ value\ is\ p0\ -\/\ 0.5*(1\ -\/\ pos0(phi))*magSqr(U)).}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00089}00089\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00090}00090\ \textcolor{comment}{//\ The\ flux\ and\ velocity\ are\ looked\ up\ by\ name\ from\ the\ BoundaryContext\ passed\ to\ the}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00091}00091\ \textcolor{comment}{//\ context-\/aware\ correctBoundaryCondition\ overload\ (keys\ "{}phi"{}\ and\ "{}U"{},\ both\ overridable\ via}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00092}00092\ \textcolor{comment}{//\ the\ dictionary).\ The\ plain\ overload\ has\ neither\ and\ degenerates\ to\ a\ fixedValue\ at\ p0,\ so\ a}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00093}00093\ \textcolor{comment}{//\ solver\ that\ wants\ the\ dynamic\ head\ must\ call\ correctBoundaryConditions(ctx)\ with\ phi\ and\ U}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00094}00094\ \textcolor{comment}{//\ inserted.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00095}00095\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00096}00096\ \textcolor{comment}{//\ Not\ modelled:\ the\ compressible\ forms\ (psi/rho\ variants)\ and\ a\ time-\/varying\ p0.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00097}00097\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ ValueType>}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00098}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure}{00098}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure}{TotalPressure}}\ :}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00099}00099\ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory}}<ValueType>::template\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register}}<TotalPressure<ValueType>>}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00100}00100\ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00101}00101\ \ \ \ \ \textcolor{keyword}{using\ }Base\ =\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1VolumeBoundaryFactory}{VolumeBoundaryFactory<ValueType>::template}}\ \mbox{\hyperlink{classRuntimeSelectionFactory_1_1Register}{Register<TotalPressure<ValueType>}}>;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00103}00103\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00105}00105\ \ \ \ \ \textcolor{keyword}{using\ }Base::correctBoundaryCondition;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00107}00107\ \ \ \ \ \textcolor{comment}{//\ assignable\ =\ true:\ the\ value\ is\ recomputed\ on\ every\ correctBoundaryCondition,\ so\ a}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{comment}{//\ downstream\ overwrite\ is\ reversible.\ fixesValue\ =\ true:\ the\ patch\ is\ Dirichlet\ on\ every}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00109}00109\ \ \ \ \ \textcolor{comment}{//\ face,\ which\ is\ what\ the\ pressure\ equation\ needs\ to\ pin\ its\ datum\ here.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00110}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a842d56486d17977593b79fd5e58c4907}{00110}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a842d56486d17977593b79fd5e58c4907}{TotalPressure}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1Dictionary}{Dictionary}}\&\ dict,\ \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{localIdx}}\ patchID)}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00111}00111\ \ \ \ \ \ \ \ \ :\ Base(mesh,\ dict,\ patchID,\ \{.assignable\ =\ \textcolor{keyword}{true},\ .fixesValue\ =\ \textcolor{keyword}{true}\}),\ mesh\_(mesh),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ p0\_(dict.contains(\textcolor{stringliteral}{"{}p0"{}})\ ?\ dict.get<ValueType>(\textcolor{stringliteral}{"{}p0"{}})\ :\ \mbox{\hyperlink{namespaceNeoN}{NeoN}}::\mbox{\hyperlink{namespaceNeoN_a4beedab28f9499a108fea579a833f101}{zero}}<ValueType>()),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ phiName\_(dict.contains(\textcolor{stringliteral}{"{}phi"{}})\ ?\ dict.get<std::string>(\textcolor{stringliteral}{"{}phi"{}})\ :\ std::string(\textcolor{stringliteral}{"{}phi"{}})),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ uName\_(dict.contains(\textcolor{stringliteral}{"{}U"{}})\ ?\ dict.get<std::string>(\textcolor{stringliteral}{"{}U"{}})\ :\ std::string(\textcolor{stringliteral}{"{}U"{}}))}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00115}00115\ \ \ \ \ \{\}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00117}00117\ \ \ \ \ \textcolor{comment}{//\ No\ context\ =>\ no\ flux\ or\ velocity:\ a\ plain\ fixedValue\ at\ p0.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00118}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a2b275c687bc1fcd42c3b74bfef3385fc}{00118}}\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a2b275c687bc1fcd42c3b74bfef3385fc}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00119}00119\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_addb346e153f4099b2835d1420bbf723f}{detail::setTotalPressureValue}}(}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>range(),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ p0\_,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ \{\},}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{false},}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ Vec3>}}\ \{\},}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ false}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00129}00129\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00130}00130\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00132}00132\ \ \ \ \ \textcolor{comment}{//\ Context-\/aware:\ subtract\ the\ dynamic\ head\ on\ inflow\ faces.}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00133}00133\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00134}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a6872b31dbe4e161b4c99fb0f622c4679}{00134}}\ \ \ \ \ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a6872b31dbe4e161b4c99fb0f622c4679}{correctBoundaryCondition}}(\mbox{\hyperlink{classNeoN_1_1Field}{Field<ValueType>}}\&\ domainVector,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1BoundaryContext}{BoundaryContext}}\&\ ctx)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00135}00135\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ hasFlux\ =\ ctx.hasSurfaceScalar(phiName\_);}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ hasVelocity\ =\ ctx.hasVector(uName\_);}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00138}00138\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1detail_addb346e153f4099b2835d1420bbf723f}{detail::setTotalPressureValue}}(}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ domainVector,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ mesh\_,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>range(),}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ p0\_,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ hasFlux\ ?\ ctx.surfaceScalarField(phiName\_).boundaryData().value().view()}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ NeoN::scalar>}}\ \{\},}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ hasFlux,}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ hasVelocity\ ?\ ctx.vectorFieldPtr(uName\_).boundaryData().value().view()}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{classNeoN_1_1View}{View<const\ Vec3>}}\ \{\},}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ hasVelocity}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00150}00150\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00151}00151\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00152}00152\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00153}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a030f447fb065a748b9a056d381f5fec1}{00153}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a030f447fb065a748b9a056d381f5fec1}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}totalPressure"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00154}00154\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00155}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_ab281ec500b3cc480b99f062414a3c3a2}{00155}}\ \ \ \ \ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_ab281ec500b3cc480b99f062414a3c3a2}{getName}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a030f447fb065a748b9a056d381f5fec1}{name}}();\ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00156}00156\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00157}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a11a067b07b7c593c73b7159f91a185de}{00157}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a11a067b07b7c593c73b7159f91a185de}{doc}}()}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00158}00158\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Total-\/pressure\ patch:\ static\ pressure\ p0\ on\ outflow,\ p0\ minus\ the\ dynamic\ "{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}head\ 0.5*magSqr(U)\ on\ inflow,\ so\ the\ entering\ stream\ carries\ total\ pressure\ "{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}p0.\ Needs\ phi\ and\ U\ in\ the\ BoundaryContext;\ without\ them\ it\ is\ a\ fixedValue\ "{}}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}at\ p0."{}};}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00163}00163\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00165}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a616f2be510bc6ba12ed7a52c4fa24113}{00165}}\ \ \ \ \ \textcolor{keyword}{static}\ std::string\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_a616f2be510bc6ba12ed7a52c4fa24113}{schema}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};\ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00167}\mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_aa9aae5dab97fe84ae187bb3a45d3d3ec}{00167}}\ \ \ \ \ std::unique\_ptr<VolumeBoundaryFactory<ValueType>>\ \mbox{\hyperlink{classNeoN_1_1finiteVolume_1_1cellCentred_1_1volumeBoundary_1_1TotalPressure_aa9aae5dab97fe84ae187bb3a45d3d3ec}{clone}}()\ const\ final}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00168}00168\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<TotalPressure>(*\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00170}00170\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00172}00172\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00174}00174\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classNeoN_1_1UnstructuredMesh}{UnstructuredMesh}}\&\ mesh\_;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00175}00175\ \ \ \ \ ValueType\ p0\_;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00176}00176\ \ \ \ \ std::string\ phiName\_;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00177}00177\ \ \ \ \ std::string\ uName\_;}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00178}00178\ \};}
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{totalPressure_8hpp_source_l00180}00180\ \}\ \textcolor{comment}{//\ namespace\ NeoN::finiteVolume::cellCentred::volumeBoundary}}
+
+\end{DoxyCode}
