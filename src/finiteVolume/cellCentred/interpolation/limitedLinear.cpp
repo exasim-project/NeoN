@@ -4,6 +4,7 @@
 
 #include "NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp"
 #include "NeoN/finiteVolume/cellCentred/boundary.hpp"
+#include "NeoN/finiteVolume/cellCentred/operators/cellLimitedGrad.hpp"
 #include "NeoN/finiteVolume/cellCentred/operators/gaussGreenGrad.hpp"
 #include "NeoN/core/containerFreeFunctions.hpp"
 #include "NeoN/core/parallelAlgorithms.hpp"
@@ -114,6 +115,32 @@ std::shared_ptr<Vector<Vec3>> procFaceDelta(const Executor& exec, const Unstruct
     return delta;
 }
 
+/* @brief the cell-limited (minmod, k=1) gradient operator, cached per mesh.
+ *
+ * Constructing one builds a cell-to-face stencil, which is far too expensive to repeat on every
+ * weight evaluation, so the first call on a mesh builds and caches it and the rest are a lookup.
+ */
+std::shared_ptr<CellLimitedGrad>
+limitedLinearLimitedGrad(const Executor& exec, const UnstructuredMesh& mesh)
+{
+    auto& db = mesh.stencilDB();
+    const std::string key = "limitedLinear::CellLimitedGrad";
+    if (!db.contains(key))
+    {
+        db.insert(
+            key,
+            std::make_shared<CellLimitedGrad>(
+                exec,
+                mesh,
+                NeoN::TokenList(
+                    {std::string("Gauss"), std::string("linear"), static_cast<scalar>(1)}
+                )
+            )
+        );
+    }
+    return db.get<std::shared_ptr<CellLimitedGrad>>(key);
+}
+
 } // namespace
 
 void computeLimitedLinearWeights(
@@ -123,7 +150,8 @@ void computeLimitedLinearWeights(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     const scalar twoByk,
-    SurfaceField<scalar>& weights
+    SurfaceField<scalar>& weights,
+    const bool cellLimitedGradient
 )
 {
     const auto exec = weights.exec();
@@ -136,7 +164,17 @@ void computeLimitedLinearWeights(
     );
     fill(gradPhi.internalVector(), zero<Vec3>());
     fill(gradPhi.boundaryData().value(), zero<Vec3>());
-    GaussGreenGrad(exec, mesh).grad(src, gradPhi);
+    if (cellLimitedGradient)
+    {
+        // The limiter gradient follows the transported field's own gradient scheme; when that is
+        // a cell-limited one the clipped slope yields a smaller TVD ratio, so the blend leans
+        // further towards upwind than the unlimited gradient would suggest.
+        limitedLinearLimitedGrad(exec, mesh)->grad(src, dsl::Coeff {}, gradPhi.internalVector());
+    }
+    else
+    {
+        GaussGreenGrad(exec, mesh).grad(src, gradPhi);
+    }
     gradPhi.correctBoundaryConditions();
 
     auto wS = weights.internalVector().view();

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "NeoN/core/error.hpp"
 #include "NeoN/core/executor/executor.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/linear.hpp"
 #include "NeoN/finiteVolume/cellCentred/interpolation/surfaceInterpolation.hpp"
@@ -29,7 +30,8 @@ void computeLimitedLinearWeights(
     const SurfaceField<Vec3>& faceDeltaOwner,
     const SurfaceField<Vec3>& faceDeltaNeighbour,
     scalar twoByk,
-    SurfaceField<scalar>& weights
+    SurfaceField<scalar>& weights,
+    bool cellLimitedGradient = false
 );
 
 /* @brief limitedLinear surface interpolation.
@@ -37,6 +39,13 @@ void computeLimitedLinearWeights(
  * Registered for scalar fields only. Limiting a vector field is conventionally done on
  * magSqr(phi), which needs a derived scalar field and its gradient; that variant is not
  * implemented here, so a Vec3 field must use another scheme.
+ *
+ * Spec: "limitedLinear <k> [cellLimited]". The optional trailing word selects the gradient the
+ * TVD ratio is built from. That gradient is a property of the transported *field*, not of this
+ * scheme -- a framework that keeps a per-field table of gradient schemes resolves it there and
+ * states the outcome here, because this class has no field-to-scheme table to consult. Omitting
+ * it keeps the unlimited Gauss-Green gradient, which reports a larger upwind-cell slope, hence a
+ * larger TVD ratio and a limiter closer to pure central differencing.
  */
 template<typename ValueType>
 class LimitedLinear :
@@ -49,7 +58,7 @@ public:
 
     LimitedLinear(const Executor& exec, const UnstructuredMesh& mesh, Input input)
         : Base(exec, mesh), geometryScheme_(GeometryScheme::readOrCreate(mesh)),
-          twoByk_(readTwoByk(input))
+          twoByk_(readTwoByk(input)), cellLimitedGradient_(readCellLimited(input))
     {
         // Opt in to the per-face cell-to-face offsets while the mesh centres are still alive; the
         // geometry scheme frees them on the first read of any cached geometry field.
@@ -104,7 +113,8 @@ public:
             geometryScheme_->faceDeltaOwner(),
             geometryScheme_->faceDeltaNeighbour(),
             twoByk_,
-            weights
+            weights,
+            cellLimitedGradient_
         );
     }
 
@@ -157,8 +167,36 @@ private:
         return scalar(2) / Kokkos::max(k, ROOTVSMALL);
     }
 
+    // Optional trailing marker "limitedLinear <k> cellLimited", which selects the cell-limited
+    // (minmod, k=1) gradient for the TVD ratio; absent, the unlimited Gauss-Green gradient is
+    // used. An unrecognised trailing word is a spec error rather than a silently ignored token.
+    static bool readCellLimited(Input& input)
+    {
+        if (std::holds_alternative<NeoN::TokenList>(input))
+        {
+            auto& tokens = std::get<NeoN::TokenList>(input);
+            if (!tokens.peekIs<std::string>()) return false;
+
+            const auto word = tokens.next<std::string>();
+            if (word == "cellLimited") return true;
+            NF_THROW(
+                std::string("limitedLinear accepts only 'cellLimited' after its coefficient, got ")
+                + word
+            );
+        }
+
+        const auto& dict = std::get<NeoN::Dictionary>(input);
+        if (!dict.contains("limitedLinearGrad")) return false;
+
+        const auto word = dict.get<std::string>("limitedLinearGrad");
+        if (word == "cellLimited") return true;
+        if (word == "Gauss") return false;
+        NF_THROW(std::string("limitedLinearGrad must be 'Gauss' or 'cellLimited', got ") + word);
+    }
+
     const std::shared_ptr<GeometryScheme> geometryScheme_;
     scalar twoByk_;
+    bool cellLimitedGradient_;
 };
 
 } // namespace NeoN::finiteVolume::cellCentred
