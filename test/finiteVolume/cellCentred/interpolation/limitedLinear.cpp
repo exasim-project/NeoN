@@ -27,11 +27,14 @@ Vector<scalar> interpolateOnRamp(
     const Executor& exec,
     const std::vector<scalar>& cellValues,
     const scalar boundaryValue,
-    const scalar k
+    const scalar k,
+    const bool cellLimitedGrad = false
 )
 {
     auto mesh = create1DUniformMesh(exec, static_cast<localIdx>(cellValues.size()));
-    Input input = TokenList({std::string("limitedLinear"), k});
+    Input input = cellLimitedGrad
+                    ? TokenList({std::string("limitedLinear"), k, std::string("cellLimited")})
+                    : TokenList({std::string("limitedLinear"), k});
     auto scheme = SurfaceInterpolation<scalar>(exec, mesh, input);
 
     std::vector<fvcc::VolumeBoundary<scalar>> vbcs {};
@@ -158,6 +161,52 @@ TEST_CASE("limitedLinear rejects a missing coefficient")
     REQUIRE_THROWS_AS(
         SurfaceInterpolation<scalar>(exec, mesh, Input(emptyDict)), NeoN::NeoNException
     );
+}
+
+// The limiter gradient is selectable because it belongs to the transported field rather than to
+// this scheme, and a cell-limited one reports a smaller upwind-cell slope than the Gauss-Green
+// default. Smaller slope -> smaller TVD ratio -> smaller limiter, so the blend leans further
+// towards upwind and can never overshoot what the unlimited gradient produces.
+TEST_CASE("limitedLinear cellLimited leans further towards upwind")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    // Monotone increasing, but with a step sharp enough that extrapolating the unlimited gradient
+    // from cell 4 undershoots its neighbour minimum -- which is exactly what cellLimited clips.
+    const std::vector<scalar> cellValues {0.0, 0.0, 0.0, 0.0, 0.2, 2.0, 2.0, 2.0, 2.0, 2.0};
+
+    auto plain = interpolateOnRamp(exec, cellValues, 0.0, 1.0, false);
+    auto limited = interpolateOnRamp(exec, cellValues, 0.0, 1.0, true);
+
+    // Flux is +x, so the owner (lower index) is upwind on every face and central differencing sits
+    // above the upwind value on this monotone profile.
+    bool differs = false;
+    for (localIdx i = 0; i < plain.size(); i++)
+    {
+        REQUIRE(limited.view()[i] <= plain.view()[i] + 1e-12);
+        if (limited.view()[i] < plain.view()[i] - 1e-12) differs = true;
+    }
+    // Guard against a vacuous pass: the flag has to change something on this profile.
+    REQUIRE(differs);
+
+    // Face 4 separates cells 4 and 5. The clipped gradient drives the limiter to zero there, so
+    // the face takes the upwind cell value outright.
+    REQUIRE(limited.view()[4] == Catch::Approx(cellValues[4]).margin(1e-12));
+}
+
+// An unrecognised word after the coefficient is a spec error: silently ignoring it would run the
+// case with the default gradient while the spec asked for something else.
+TEST_CASE("limitedLinear rejects an unknown gradient marker")
+{
+    auto [execName, exec] = GENERATE(allAvailableExecutor());
+    INFO("executor: " << execName);
+
+    auto mesh = create1DUniformMesh(exec, 10);
+    Input bogus = TokenList(
+        {std::string("limitedLinear"), static_cast<scalar>(1.0), std::string("leastSquares")}
+    );
+    REQUIRE_THROWS_AS(SurfaceInterpolation<scalar>(exec, mesh, bogus), NeoN::NeoNException);
 }
 
 } // namespace NeoN
