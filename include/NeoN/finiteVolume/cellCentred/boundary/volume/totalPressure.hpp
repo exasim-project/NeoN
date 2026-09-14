@@ -57,15 +57,22 @@ void setTotalPressureValue(
         domainVector.exec(),
         range,
         NEON_LAMBDA(const localIdx i) {
+            // nvcc forbids an extended __host__ __device__ lambda from FIRST capturing a
+            // variable inside an `if constexpr` body, and the velocity is only referenced
+            // there. Name both captures unconditionally first so the capture happens out
+            // here; the copies are a bool and a view handle, so this costs nothing.
+            [[maybe_unused]] const bool velocityKnown = hasVelocity;
+            [[maybe_unused]] const View<const Vec3> velocity = boundaryVelocity;
+
             // pos0(phi): 1 on outflow (phi >= 0), 0 on inflow.
             const bool inflow = hasFlux && boundaryFlux[i] < NeoN::scalar(0);
 
             ValueType p = p0;
             if constexpr (std::is_same<ValueType, NeoN::scalar>::value)
             {
-                if (inflow && hasVelocity)
+                if (inflow && velocityKnown)
                 {
-                    const Vec3 u = boundaryVelocity[i];
+                    const Vec3 u = velocity[i];
                     const NeoN::scalar magSqrU = u[0] * u[0] + u[1] * u[1] + u[2] * u[2];
                     p = p0 - NeoN::scalar(0.5) * magSqrU;
                 }
