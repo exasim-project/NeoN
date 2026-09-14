@@ -9,6 +9,7 @@
     <includes refid="unstructuredMesh_8hpp" local="yes">NeoN/mesh/unstructured/unstructuredMesh.hpp</includes>
     <includes local="no">Kokkos_Core.hpp</includes>
     <includes local="no">functional</includes>
+    <includedby refid="limitedLinear_8hpp" local="yes">/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp</includedby>
     <incdepgraph>
       <node id="37">
         <label>NeoN/core/containerFreeFunctions.hpp</label>
@@ -615,7 +616,11 @@
       <node id="79">
         <label>boundary/volume/fixedValue.hpp</label>
         <link refid="volume_2fixedValue_8hpp"/>
+        <childnode refid="31" relation="include">
+        </childnode>
         <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="61" relation="include">
         </childnode>
@@ -913,6 +918,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/limitedLinear.hpp</label>
+        <link refid="limitedLinear_8hpp"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/NeoN/NeoN/include/NeoN/finiteVolume/cellCentred/interpolation/linear.hpp</label>
+        <link refid="linear_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="classNeoN_1_1finiteVolume_1_1cellCentred_1_1Linear" prot="public">NeoN::finiteVolume::cellCentred::Linear</innerclass>
     <innernamespace refid="namespaceNeoN">NeoN</innernamespace>
     <innernamespace refid="namespaceNeoN_1_1finiteVolume">NeoN::finiteVolume</innernamespace>
