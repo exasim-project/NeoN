@@ -459,12 +459,13 @@ removeBoundaryContributions(
     auto& bRhs = lsView.boundaryRhs;
 
     const auto ma = ls.faceToMatrixAddress()->view(ls.matrix().sparsity()->rowOffs().view());
+    const auto boundaryRows = ls.boundaryMatrix().sparsity()->rowIdxs().view();
 
     parallelFor(
         ls.exec(),
         {0, bMatrix.values.size()},
         NEON_LAMBDA(const localIdx facei) {
-            const auto celli = bMatrix.sparsity.rowOffs[facei]; // cell index stored in rowOffs
+            const auto celli = boundaryRows[facei];
             Kokkos::atomic_add(&matrix.values[ma.diagIdx(celli)], bMatrix.values[facei]);
             Kokkos::atomic_add(&rhs[celli], bRhs[facei]);
         },
