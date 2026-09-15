@@ -15,8 +15,8 @@
 namespace NeoN
 {
 
-// Freezes ELL's exclusion from the FaceToMatrixAddress constructor -- CSR row-local
-// offsets don't apply to ELL's column-major storage.
+// ELL is excluded from the FaceToMatrixAddress constructor, the row local offsets
+// do not apply to the column major storage
 static_assert(
     !std::is_constructible_v<
         la::ELLMatrix<scalar, localIdx>,
@@ -241,7 +241,7 @@ TEST_CASE("ELLMatrix")
     //   [ 1 .  . ]
     //   [ . 5  6 ]
     //   [ . 8 .  ]
-    // row 2 has no diagonal -- diag() should leave it at zero.
+    // row 2 has no diagonal, diag() should leave it at zero
     SECTION("diag() leaves a missing diagonal at zero " + execName)
     {
         const localIdx smallNRows = 3;

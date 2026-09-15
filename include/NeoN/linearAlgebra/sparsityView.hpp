@@ -34,9 +34,7 @@ struct SparsityView
     SparsityView(View<const IndexType> colIdxsView, View<const IndexType> rowOffsView)
         : colIdxs(colIdxsView), rowOffs(rowOffsView) {};
 
-    /**
-     * @brief Sentinel storage offset returned by findEntry() when (i,j) is not stored.
-     */
+    /*@brief offset returned by findEntry() if (i,j) is not stored */
     KOKKOS_INLINE_FUNCTION
     static constexpr IndexType invalidIndex() { return std::numeric_limits<IndexType>::max(); }
 
@@ -44,8 +42,7 @@ struct SparsityView
      * @brief Retrieve the storage offset of the matrix element at position (i,j).
      * @param i The row index.
      * @param j The column index.
-     * @return Offset into colIdxs/values if it exists, invalidIndex() otherwise.
-     * @note assumes colIdxs is sorted ascending within each row's range; not verified.
+     * @return Offset into colIdxs if it exists, invalidIndex() otherwise.
      */
     KOKKOS_INLINE_FUNCTION
     IndexType findEntry(const IndexType i, const IndexType j) const
@@ -64,10 +61,10 @@ struct SparsityView
     }
 
     /**
-     * @brief Retrieve a reference to the matrix element at position (i,j).
+     * @brief Retrieve the storage offset of the matrix element at position (i,j).
      * @param i The row index.
      * @param j The column index.
-     * @return Reference to the matrix element if it exists.
+     * @return Offset into colIdxs, aborts if the entry is not stored.
      */
     KOKKOS_INLINE_FUNCTION
     IndexType entry(const IndexType i, const IndexType j) const
@@ -86,12 +83,11 @@ struct SparsityView
 
 /**
  * @struct EllSparsityView
- * @brief A view struct to allow easy read/write on all executors for the ELLPACK
- * (fixed-width, padded) sparsity pattern.
+ * @brief A view struct to allow easy read/write on all executors, ELLPACK format.
  *
- * Column indices are stored column-major across the padded row slots, i.e. slot
- * `s` of row `i` lives at flat offset `i + stride * s`. Rows with fewer nonzeros
- * than `numStoredElementsPerRow` are padded with `invalidIndex()`.
+ * Column indices are stored column major, slot s of row i is at offset
+ * i + stride * s. Rows with fewer entries than numStoredElementsPerRow are
+ * padded with invalidIndex().
  *
  * @tparam IndexType The index type of the rows and columns.
  * @todo ideally this should be immutable
@@ -105,15 +101,11 @@ struct EllSparsityView
         : colIdxs(colIdxsView), numStoredElementsPerRow(numStoredElementsPerRowIn),
           stride(strideIn) {};
 
-    /**
-     * @brief Sentinel column index marking an unused (padding) slot.
-     */
+    /*@brief column index marking an unused padding slot */
     KOKKOS_INLINE_FUNCTION
     static constexpr IndexType invalidIndex() { return std::numeric_limits<IndexType>::max(); }
 
-    /**
-     * @brief Flat storage offset of slot `slot` of row `i` (column-major layout).
-     */
+    /*@brief storage offset of the given slot of row i */
     KOKKOS_INLINE_FUNCTION
     IndexType linearIndex(const IndexType i, const IndexType slot) const
     {
@@ -124,9 +116,7 @@ struct EllSparsityView
      * @brief Retrieve the storage offset of the matrix element at position (i,j).
      * @param i The row index.
      * @param j The column index.
-     * @return Flat offset into colIdxs/values if it exists, invalidIndex() otherwise.
-     * @note assumes each row's stored columns are sorted ascending with padding
-     * (invalidIndex()) trailing; not verified.
+     * @return Offset into colIdxs if it exists, invalidIndex() otherwise.
      */
     KOKKOS_INLINE_FUNCTION
     IndexType findEntry(const IndexType i, const IndexType j) const
@@ -145,7 +135,7 @@ struct EllSparsityView
      * @brief Retrieve the storage offset of the matrix element at position (i,j).
      * @param i The row index.
      * @param j The column index.
-     * @return Flat offset into colIdxs/values if it exists.
+     * @return Offset into colIdxs, aborts if the entry is not stored.
      */
     KOKKOS_INLINE_FUNCTION
     IndexType entry(const IndexType i, const IndexType j) const

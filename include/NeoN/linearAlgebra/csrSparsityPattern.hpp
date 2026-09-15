@@ -58,10 +58,9 @@ public:
 
     [[nodiscard]] localIdx rows() const { return dimensions_.rows; };
 
-    /*@brief true count of nonzero matrix entries (no padding in CSR) */
     [[nodiscard]] localIdx nnz() const { return colIdxs_.size(); };
 
-    /*@brief size of the backing storage, identical to nnz() since CSR has no padding */
+    /*@brief getter for the storage size, same as nnz() since CSR has no padding */
     [[nodiscard]] localIdx storageSize() const { return colIdxs_.size(); };
 
     [[nodiscard]] Dimensions dimension() const { return dimensions_; };
@@ -69,8 +68,8 @@ public:
     using ViewType = SparsityView<IndexType>;
 
     /**
-     * @brief Get a view representation of the matrix's data.
-     * @return MatrixView for easy access to matrix elements.
+     * @brief Get a view representation of the sparsity pattern.
+     * @return SparsityView for easy access to the stored entries.
      */
     [[nodiscard]] SparsityView<IndexType> view() const
     {

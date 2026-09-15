@@ -96,8 +96,8 @@ public:
     }
 
     /**
-     * @brief Constructor for Matrix from a CSR/COO-shaped (colIdxs, rowOffs) pair.
-     * Not available for ELL -- use the two-argument constructor instead.
+     * @brief Constructor for Matrix from a colIdxs and rowOffs pair.
+     * Not available for ELL, use the constructor taking a sparsity pattern instead.
      * @param values The non-zero values of the matrix.
      * @param colIdxs The column indices for each non-zero value.
      * @param rowOffs The starting index in values/colIdxs for each row.
@@ -125,8 +125,8 @@ public:
      * @brief Constructor for Matrix with a FaceToMatrixAddress.
      *
      * The sparsity pattern and the face-to-matrix address are passed as independent objects.
-     * Only available for localIdx-indexed, rowOffs()-capable sparsity types -- FaceToMatrixAddress
-     * offsets are CSR row-local and don't apply to ELL.
+     * Only available for localIdx indexed sparsity types providing rowOffs(), the
+     * FaceToMatrixAddress offsets are row local and do not apply to ELL.
      *
      * @param values The non-zero values of the matrix.
      * @param sparsity The sparsity pattern of the matrix.
@@ -186,8 +186,8 @@ public:
     }
 
     /**
-     * @brief Get a reference to row offset vector. Not available for ELL -- no
-     * contiguous row range to offset into.
+     * @brief Get a reference to row offset vector. Not available for ELL, which
+     * has no contiguous row range.
      * @return Vector containing the row pointers.
      */
     [[nodiscard]] const Vector<typename SparsityType::SparsityIndexType>& rowOffs() const

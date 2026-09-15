@@ -18,8 +18,7 @@ Vector<ValueType> Matrix<ValueType, SparsityType>::diag() const
     auto [diagV, matrixV] = views(diag, values_);
     const auto sparsityV = sparsityPattern_->view();
 
-    // Lenient: a missing diagonal keeps the zero fill() above instead of aborting.
-    // Traversal lives in *SparsityView::findEntry(), not here.
+    // findEntry() and not entry(), a missing diagonal keeps the zero from fill() above
     parallelFor(
         values_.exec(),
         {0, nRows()},
@@ -63,9 +62,7 @@ Matrix<ValueType, SparsityType> Matrix<ValueType, SparsityType>::copyToExecutor(
             };
         }
     }
-    // faceToMatrixAddress_ can only be set via the constrained 3-arg constructor above, so
-    // it's null here whenever that constraint isn't met. Assert it so a future change can't
-    // silently drop it.
+    // only the constrained constructor above can set faceToMatrixAddress_, so it is null here
     NF_ASSERT(!faceToMatrixAddress_, "Face address requires localIdx sparsity");
     return {copiedValues, copiedSparsity};
 }
@@ -364,8 +361,7 @@ void scaledInverseDiag(
 NN_DECLARE_MATRIX(scalar, localIdx);
 NN_DECLARE_MATRIX(Vec3, localIdx);
 
-// ELL instantiated standalone, not via NN_DECLARE_MATRIX: upper() is CSR-shaped and has
-// no ELL overload.
+// ELL is instantiated separately since upper() is CSR shaped and has no ELL overload
 template class Matrix<scalar, la::EllSparsityPattern<localIdx>>;
 template class Matrix<Vec3, la::EllSparsityPattern<localIdx>>;
 
