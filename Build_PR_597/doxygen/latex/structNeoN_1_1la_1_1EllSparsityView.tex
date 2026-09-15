@@ -2,7 +2,7 @@
 \hypertarget{structNeoN_1_1la_1_1EllSparsityView}{}\label{structNeoN_1_1la_1_1EllSparsityView}\index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}}
 
 
-\doxylink{classA}{A} view struct to allow easy read/write on all executors for the ELLPACK (fixed-\/width, padded) sparsity pattern.  
+\doxylink{classA}{A} view struct to allow easy read/write on all executors, ELLPACK format.  
 
 
 
@@ -15,7 +15,7 @@
 \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a80469c2f2f6cceef0b0d19150d8f0527}{Ell\+Sparsity\+View}} (\mbox{\hyperlink{classNeoN_1_1View}{View}}$<$ const Index\+Type $>$ col\+Idxs\+View, Index\+Type num\+Stored\+Elements\+Per\+Row\+In, Index\+Type stride\+In)
 \item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d}{linear\+Index}} (const Index\+Type i, const Index\+Type slot) const
-\begin{DoxyCompactList}\small\item\em Flat storage offset of slot {\ttfamily slot} of row {\ttfamily i} (column-\/major layout). \end{DoxyCompactList}\item 
+\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be}{find\+Entry}} (const Index\+Type i, const Index\+Type j) const
 \begin{DoxyCompactList}\small\item\em Retrieve the storage offset of the matrix element at position (i,j). \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a13940cecfefc3590d4b8360c395f920a}{entry}} (const Index\+Type i, const Index\+Type j) const
@@ -24,7 +24,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1
 \begin{DoxyCompactItemize}
 \item 
 static KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION constexpr Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index}} ()
-\begin{DoxyCompactList}\small\item\em Sentinel column index marking an unused (padding) slot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -39,9 +39,9 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eab
 \doxysubsection{Detailed Description}
 \subsubsection*{template$<$typename Index\+Type$>$\newline
 struct Neo\+N\+::la\+::\+Ell\+Sparsity\+View$<$ Index\+Type $>$}
-\doxylink{classA}{A} view struct to allow easy read/write on all executors for the ELLPACK (fixed-\/width, padded) sparsity pattern. 
+\doxylink{classA}{A} view struct to allow easy read/write on all executors, ELLPACK format. 
 
-Column indices are stored column-\/major across the padded row slots, i.\+e. slot {\ttfamily s} of row {\ttfamily i} lives at flat offset {\ttfamily i + stride \texorpdfstring{$\ast$}{*} s}. Rows with fewer nonzeros than {\ttfamily num\+Stored\+Elements\+Per\+Row} are padded with {\ttfamily \doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()}}.
+Column indices are stored column major, slot s of row i is at offset i + stride \texorpdfstring{$\ast$}{*} s. Rows with fewer entries than num\+Stored\+Elements\+Per\+Row are padded with \doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()}.
 
 
 \begin{DoxyTemplParams}{Template Parameters}
@@ -52,7 +52,7 @@ Column indices are stored column-\/major across the padded row slots, i.\+e. slo
 \item[\mbox{\hyperlink{todo__todo000002}{Todo}}]ideally this should be immutable \end{DoxyRefDesc}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00100}{100}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00096}{96}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -66,7 +66,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00100}{100}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00098}{98}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -90,11 +90,11 @@ Retrieve the storage offset of the matrix element at position (i,j).
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-Flat offset into col\+Idxs/values if it exists. 
+Offset into col\+Idxs, aborts if the entry is not stored. 
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00151}{151}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00141}{141}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be}\label{structNeoN_1_1la_1_1EllSparsityView_a14067f67899d32c5e12af0f66a2f17be} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!findEntry@{findEntry}}
@@ -115,14 +115,11 @@ Retrieve the storage offset of the matrix element at position (i,j).
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-Flat offset into col\+Idxs/values if it exists, \doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()} otherwise. 
+Offset into col\+Idxs if it exists, \doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()} otherwise. 
 \end{DoxyReturn}
-\begin{DoxyNote}{Note}
-assumes each row\textquotesingle{}s stored columns are sorted ascending with padding (\doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{invalid\+Index()}) trailing; not verified. 
-\end{DoxyNote}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}\label{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!invalidIndex@{invalidIndex}}
@@ -133,11 +130,7 @@ static KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION constexpr Index\+Type \mbox{\hyperli
 
 
 
-Sentinel column index marking an unused (padding) slot. 
-
-
-
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00112}{112}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00106}{106}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d}\label{structNeoN_1_1la_1_1EllSparsityView_a8ef95591fb8a134c0006baff1c019f7d} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!linearIndex@{linearIndex}}
@@ -148,11 +141,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1
 
 
 
-Flat storage offset of slot {\ttfamily slot} of row {\ttfamily i} (column-\/major layout). 
-
-
-
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00110}{110}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -166,7 +155,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00118}{118}} of fi
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00161}{161}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00151}{151}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_afcc48e17c8a7706a69a0962d492363bd}\label{structNeoN_1_1la_1_1EllSparsityView_afcc48e17c8a7706a69a0962d492363bd} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!numStoredElementsPerRow@{numStoredElementsPerRow}}
@@ -177,7 +166,7 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00162}{162}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00152}{152}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eabe14884d56606685042}\label{structNeoN_1_1la_1_1EllSparsityView_a4465a04c7f1eabe14884d56606685042} 
 \index{NeoN::la::EllSparsityView$<$ IndexType $>$@{NeoN::la::EllSparsityView$<$ IndexType $>$}!stride@{stride}}
@@ -188,7 +177,7 @@ Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Neo\+N\+::la\+
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00153}{153}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 

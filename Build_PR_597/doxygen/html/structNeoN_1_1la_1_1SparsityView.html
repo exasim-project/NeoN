@@ -96,13 +96,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a21a0b63c58cf5433a0ce05b68cf3ec3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the storage offset of the matrix element at position (i,j).  <br /></td></tr>
 <tr class="separator:a21a0b63c58cf5433a0ce05b68cf3ec3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa42e43ddbb911c0586d0cacab40b35e" id="r_aaa42e43ddbb911c0586d0cacab40b35e"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html#aaa42e43ddbb911c0586d0cacab40b35e">entry</a> (const IndexType i, const IndexType j) const</td></tr>
-<tr class="memdesc:aaa42e43ddbb911c0586d0cacab40b35e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a reference to the matrix element at position (i,j).  <br /></td></tr>
+<tr class="memdesc:aaa42e43ddbb911c0586d0cacab40b35e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the storage offset of the matrix element at position (i,j).  <br /></td></tr>
 <tr class="separator:aaa42e43ddbb911c0586d0cacab40b35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a06eb6a21cd06f88daecc251c498bccfa" id="r_a06eb6a21cd06f88daecc251c498bccfa"><td class="memItemLeft" align="right" valign="top">static KOKKOS_INLINE_FUNCTION constexpr IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a06eb6a21cd06f88daecc251c498bccfa">invalidIndex</a> ()</td></tr>
-<tr class="memdesc:a06eb6a21cd06f88daecc251c498bccfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sentinel storage offset returned by <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a21a0b63c58cf5433a0ce05b68cf3ec3c" title="Retrieve the storage offset of the matrix element at position (i,j).">findEntry()</a> when (i,j) is not stored.  <br /></td></tr>
 <tr class="separator:a06eb6a21cd06f88daecc251c498bccfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -202,7 +201,7 @@ template&lt;typename IndexType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Retrieve a reference to the matrix element at position (i,j). </p>
+<p>Retrieve the storage offset of the matrix element at position (i,j). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">i</td><td>The row index. </td></tr>
@@ -210,9 +209,9 @@ template&lt;typename IndexType &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Reference to the matrix element if it exists. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Offset into colIdxs, aborts if the entry is not stored. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00073">73</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00070">70</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -260,10 +259,9 @@ template&lt;typename IndexType &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Offset into colIdxs/values if it exists, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a06eb6a21cd06f88daecc251c498bccfa" title="Sentinel storage offset returned by findEntry() when (i,j) is not stored.">invalidIndex()</a> otherwise. </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>assumes colIdxs is sorted ascending within each row's range; not verified. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Offset into colIdxs if it exists, <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a06eb6a21cd06f88daecc251c498bccfa">invalidIndex()</a> otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00051">51</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00048">48</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -292,9 +290,7 @@ template&lt;typename IndexType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Sentinel storage offset returned by <a class="el" href="structNeoN_1_1la_1_1SparsityView.html#a21a0b63c58cf5433a0ce05b68cf3ec3c" title="Retrieve the storage offset of the matrix element at position (i,j).">findEntry()</a> when (i,j) is not stored. </p>
-
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00041">41</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00039">39</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -313,7 +309,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00083">83</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00080">80</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>
@@ -331,7 +327,7 @@ template&lt;typename IndexType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00084">84</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sparsityView_8hpp_source.html#l00081">81</a> of file <a class="el" href="sparsityView_8hpp_source.html">sparsityView.hpp</a>.</p>
 
 </div>
 </div>

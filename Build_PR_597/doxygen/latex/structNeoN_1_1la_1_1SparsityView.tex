@@ -17,12 +17,12 @@
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a21a0b63c58cf5433a0ce05b68cf3ec3c}{find\+Entry}} (const Index\+Type i, const Index\+Type j) const
 \begin{DoxyCompactList}\small\item\em Retrieve the storage offset of the matrix element at position (i,j). \end{DoxyCompactList}\item 
 KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_aaa42e43ddbb911c0586d0cacab40b35e}{entry}} (const Index\+Type i, const Index\+Type j) const
-\begin{DoxyCompactList}\small\item\em Retrieve a reference to the matrix element at position (i,j). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Retrieve the storage offset of the matrix element at position (i,j). \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 static KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION constexpr Index\+Type \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView_a06eb6a21cd06f88daecc251c498bccfa}{invalid\+Index}} ()
-\begin{DoxyCompactList}\small\item\em Sentinel storage offset returned by \doxylink{structNeoN_1_1la_1_1SparsityView_a21a0b63c58cf5433a0ce05b68cf3ec3c}{find\+Entry()} when (i,j) is not stored. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -74,7 +74,7 @@ KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION Index\+Type \mbox{\hyperlink{structNeoN_1_1
 
 
 
-Retrieve a reference to the matrix element at position (i,j). 
+Retrieve the storage offset of the matrix element at position (i,j). 
 
 
 \begin{DoxyParams}{Parameters}
@@ -84,11 +84,11 @@ Retrieve a reference to the matrix element at position (i,j).
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-Reference to the matrix element if it exists. 
+Offset into col\+Idxs, aborts if the entry is not stored. 
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00073}{73}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1SparsityView_a21a0b63c58cf5433a0ce05b68cf3ec3c}\label{structNeoN_1_1la_1_1SparsityView_a21a0b63c58cf5433a0ce05b68cf3ec3c} 
 \index{NeoN::la::SparsityView$<$ IndexType $>$@{NeoN::la::SparsityView$<$ IndexType $>$}!findEntry@{findEntry}}
@@ -109,14 +109,11 @@ Retrieve the storage offset of the matrix element at position (i,j).
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-Offset into col\+Idxs/values if it exists, \doxylink{structNeoN_1_1la_1_1SparsityView_a06eb6a21cd06f88daecc251c498bccfa}{invalid\+Index()} otherwise. 
+Offset into col\+Idxs if it exists, \doxylink{structNeoN_1_1la_1_1SparsityView_a06eb6a21cd06f88daecc251c498bccfa}{invalid\+Index()} otherwise. 
 \end{DoxyReturn}
-\begin{DoxyNote}{Note}
-assumes col\+Idxs is sorted ascending within each row\textquotesingle{}s range; not verified. 
-\end{DoxyNote}
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00051}{51}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00048}{48}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1SparsityView_a06eb6a21cd06f88daecc251c498bccfa}\label{structNeoN_1_1la_1_1SparsityView_a06eb6a21cd06f88daecc251c498bccfa} 
 \index{NeoN::la::SparsityView$<$ IndexType $>$@{NeoN::la::SparsityView$<$ IndexType $>$}!invalidIndex@{invalidIndex}}
@@ -127,11 +124,7 @@ static KOKKOS\+\_\+\+INLINE\+\_\+\+FUNCTION constexpr Index\+Type \mbox{\hyperli
 
 
 
-Sentinel storage offset returned by \doxylink{structNeoN_1_1la_1_1SparsityView_a21a0b63c58cf5433a0ce05b68cf3ec3c}{find\+Entry()} when (i,j) is not stored. 
-
-
-
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00041}{41}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00039}{39}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 
@@ -145,7 +138,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00041}{41}} of fil
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00080}{80}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 \Hypertarget{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f}\label{structNeoN_1_1la_1_1SparsityView_acfac377b626675a92f8556481c10021f} 
 \index{NeoN::la::SparsityView$<$ IndexType $>$@{NeoN::la::SparsityView$<$ IndexType $>$}!rowOffs@{rowOffs}}
@@ -156,7 +149,7 @@ Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00083}{83}} of fil
 
 
 
-Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
+Definition at line \mbox{\hyperlink{sparsityView_8hpp_source_l00081}{81}} of file \mbox{\hyperlink{sparsityView_8hpp_source}{sparsity\+View.\+hpp}}.
 
 
 

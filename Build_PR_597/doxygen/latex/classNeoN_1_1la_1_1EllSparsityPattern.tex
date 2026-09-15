@@ -2,7 +2,7 @@
 \hypertarget{classNeoN_1_1la_1_1EllSparsityPattern}{}\label{classNeoN_1_1la_1_1EllSparsityPattern}\index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}}
 
 
-fixed-\/width, padded column-\/index representation of a matrix (ELLPACK format)  
+fixed width, padded column index representation of a matrix (ELLPACK format)  
 
 
 
@@ -28,7 +28,7 @@ using \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a313069d07b823e1136
 \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_adf188a22b071e8183f548499de0e68f6}{Ell\+Sparsity\+Pattern}} (const \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{Ell\+Sparsity\+Pattern}} \&sp)
 \item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a765c671ecedc5a678a5b96c6344ee558}{Ell\+Sparsity\+Pattern}} (\mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \&\&col\+Idx, \mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} dim, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a79352612b79ac543ef5552180ea3a7b0}{num\+Stored\+Elements\+Per\+Row}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a612112caa329c21077141cd9bef000c2}{stride}}, \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} logical\+Nnz)
-\begin{DoxyCompactList}\small\item\em construct from a fully-\/built padded, column-\/major col\+Idx array. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em construct from a padded, column major col\+Idx array \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{Ell\+Sparsity\+Pattern}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a232d0c5115c549e6087077c4cac7eb27}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const override
 \item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a00a9dcd83b95afc1869f0ab15f543721}{\texorpdfstring{$\sim$}{\string~}\+Ell\+Sparsity\+Pattern}} ()=default
@@ -40,7 +40,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a637f39faca6b2489cf4067e49439c0ef}{rows}} () const
 \item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_afbc022f8b9e7302a901bd748af781d6e}{storage\+Size}} () const
-\begin{DoxyCompactList}\small\item\em size of the (padded) storage backing this pattern, i.\+e. the size {\ttfamily values\+\_\+} of a {\ttfamily \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}} built on top of this pattern must have. \end{DoxyCompactList}\item 
+\item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_af830c1f617bfa7fd91680a89e7c15c83}{nnz}} () const
 \item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a79352612b79ac543ef5552180ea3a7b0}{num\+Stored\+Elements\+Per\+Row}} () const
@@ -50,7 +50,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox
 \mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a4bafbe450719ce473a920990c986e62b}{dimension}} () const
 \item 
 \mbox{\hyperlink{structNeoN_1_1la_1_1EllSparsityView}{Ell\+Sparsity\+View}}$<$ Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern_a5f07bcfe7aad45586f1823379aa38cc3}{view}} () const
-\begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Get a view representation of the sparsity pattern. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo}{Neo\+N\+::\+Supports\+Copy\+To$<$ Ell\+Sparsity\+Pattern$<$ Index\+Type $>$ $>$}}}
 \begin{DoxyCompactItemize}
 \item 
@@ -63,11 +63,11 @@ Ell\+Sparsity\+Pattern$<$ Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1Supports
 \doxysubsection{Detailed Description}
 \subsubsection*{template$<$typename Index\+Type$>$\newline
 class Neo\+N\+::la\+::\+Ell\+Sparsity\+Pattern$<$ Index\+Type $>$}
-fixed-\/width, padded column-\/index representation of a matrix (ELLPACK format) 
+fixed width, padded column index representation of a matrix (ELLPACK format) 
 
-Every row reserves {\ttfamily \doxylink{classNeoN_1_1la_1_1EllSparsityPattern_a79352612b79ac543ef5552180ea3a7b0}{num\+Stored\+Elements\+Per\+Row()}} column-\/index slots, the width of the widest row in the matrix. Rows with fewer nonzeros are padded with {\ttfamily \doxylink{structNeoN_1_1la_1_1EllSparsityView}{Ell\+Sparsity\+View}\texorpdfstring{$<$}{<}Index\+Type\texorpdfstring{$>$}{>}::invalid\+Index()}. Slots are stored column-\/major, i.\+e. slot {\ttfamily s} of row {\ttfamily i} is stored at {\ttfamily i + \doxylink{classNeoN_1_1la_1_1EllSparsityPattern_a612112caa329c21077141cd9bef000c2}{stride()} \texorpdfstring{$\ast$}{*} s}, so that a one-\/thread-\/per-\/row kernel reads/writes memory in a coalesced fashion when iterating over slots. 
+Every row stores \doxylink{classNeoN_1_1la_1_1EllSparsityPattern_a79352612b79ac543ef5552180ea3a7b0}{num\+Stored\+Elements\+Per\+Row()} column indices, the width of the widest row, padding the shorter rows with invalid\+Index(). The slots are stored column major, slot s of row i at i + \doxylink{classNeoN_1_1la_1_1EllSparsityPattern_a612112caa329c21077141cd9bef000c2}{stride()} \texorpdfstring{$\ast$}{*} s, so that one thread per row accesses memory coalesced. 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00026}{26}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00024}{24}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 
 
@@ -81,7 +81,7 @@ using \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{Neo\+N\+::la\+::\+
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00033}{33}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00031}{31}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a313069d07b823e1136eb5f9acb796041}\label{classNeoN_1_1la_1_1EllSparsityPattern_a313069d07b823e1136eb5f9acb796041} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!ViewType@{ViewType}}
@@ -92,7 +92,7 @@ using \mbox{\hyperlink{classNeoN_1_1la_1_1EllSparsityPattern}{Neo\+N\+::la\+::\+
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00094}{94}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00085}{85}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 
 
@@ -113,13 +113,13 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00094}{94}} 
 
 
 
-construct from a fully-\/built padded, column-\/major col\+Idx array. 
+construct from a padded, column major col\+Idx array 
 
 
 \begin{DoxyParams}{Parameters}
-{\em col\+Idx} & per-\/slot column indices, sorted ascending within each row\textquotesingle{}s slots, with padding (\doxylink{structNeoN_1_1la_1_1EllSparsityView_ade7595799f2b0ed3da6d82fb98b1e243}{Ell\+Sparsity\+View$<$\+Index\+Type$>$\+::invalid\+Index()}) trailing. Not verified. \\
+{\em col\+Idx} & per slot column indices, sorted ascending per row with the padding trailing \\
 \hline
-{\em logical\+Nnz} & count of non-\/padding entries in col\+Idx. Caller-\/supplied and trusted, not recomputed from col\+Idx -- only checked against storage size. \\
+{\em logical\+Nnz} & number of non padding entries, only checked against the storage size \\
 \hline
 \end{DoxyParams}
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a00a9dcd83b95afc1869f0ab15f543721}\label{classNeoN_1_1la_1_1EllSparsityPattern_a00a9dcd83b95afc1869f0ab15f543721} 
@@ -141,7 +141,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00071}{71}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a232d0c5115c549e6087077c4cac7eb27}\label{classNeoN_1_1la_1_1EllSparsityPattern_a232d0c5115c549e6087077c4cac7eb27} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!copyToExecutor@{copyToExecutor}}
@@ -156,7 +156,7 @@ Implements \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo_ad54623a2d9533dc70f4d609
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a4bafbe450719ce473a920990c986e62b}\label{classNeoN_1_1la_1_1EllSparsityPattern_a4bafbe450719ce473a920990c986e62b} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!dimension@{dimension}}
@@ -167,7 +167,7 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00053}{53}} 
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00092}{92}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a9f8fd88feda2e84fcb3859591ccde8f9}\label{classNeoN_1_1la_1_1EllSparsityPattern_a9f8fd88feda2e84fcb3859591ccde8f9} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!exec@{exec}}
@@ -178,7 +178,7 @@ const \mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00067}{67}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00064}{64}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_af830c1f617bfa7fd91680a89e7c15c83}\label{classNeoN_1_1la_1_1EllSparsityPattern_af830c1f617bfa7fd91680a89e7c15c83} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!nnz@{nnz}}
@@ -189,7 +189,7 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00067}{67}} 
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a79352612b79ac543ef5552180ea3a7b0}\label{classNeoN_1_1la_1_1EllSparsityPattern_a79352612b79ac543ef5552180ea3a7b0} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!numStoredElementsPerRow@{numStoredElementsPerRow}}
@@ -200,7 +200,7 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00084}{84}} 
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00087}{87}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00078}{78}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a637f39faca6b2489cf4067e49439c0ef}\label{classNeoN_1_1la_1_1EllSparsityPattern_a637f39faca6b2489cf4067e49439c0ef} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!rows@{rows}}
@@ -211,7 +211,7 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00087}{87}} 
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00073}{73}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_afbc022f8b9e7302a901bd748af781d6e}\label{classNeoN_1_1la_1_1EllSparsityPattern_afbc022f8b9e7302a901bd748af781d6e} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!storageSize@{storageSize}}
@@ -222,14 +222,7 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00073}{73}} 
 
 
 
-size of the (padded) storage backing this pattern, i.\+e. the size {\ttfamily values\+\_\+} of a {\ttfamily \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}} built on top of this pattern must have. 
-
-\begin{DoxyNote}{Note}
-unlike CSR, this includes padding entries and is therefore not the count of logical/non-\/zero matrix entries -- see \doxylink{classNeoN_1_1la_1_1EllSparsityPattern_af830c1f617bfa7fd91680a89e7c15c83}{nnz()}. 
-\end{DoxyNote}
-
-
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00081}{81}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a612112caa329c21077141cd9bef000c2}\label{classNeoN_1_1la_1_1EllSparsityPattern_a612112caa329c21077141cd9bef000c2} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!stride@{stride}}
@@ -240,7 +233,7 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00081}{81}} 
 
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00090}{90}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00081}{81}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1EllSparsityPattern_a5f07bcfe7aad45586f1823379aa38cc3}\label{classNeoN_1_1la_1_1EllSparsityPattern_a5f07bcfe7aad45586f1823379aa38cc3} 
 \index{NeoN::la::EllSparsityPattern$<$ IndexType $>$@{NeoN::la::EllSparsityPattern$<$ IndexType $>$}!view@{view}}
@@ -251,14 +244,14 @@ Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00090}{90}} 
 
 
 
-Get a view representation of the matrix\textquotesingle{}s data. 
+Get a view representation of the sparsity pattern. 
 
 \begin{DoxyReturn}{Returns}
-\doxylink{structNeoN_1_1la_1_1EllSparsityView}{Ell\+Sparsity\+View} for easy access to matrix elements. 
+\doxylink{structNeoN_1_1la_1_1EllSparsityView}{Ell\+Sparsity\+View} for easy access to the stored entries. 
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00100}{100}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{ellSparsityPattern_8hpp_source_l00091}{91}} of file \mbox{\hyperlink{ellSparsityPattern_8hpp_source}{ell\+Sparsity\+Pattern.\+hpp}}.
 
 
 

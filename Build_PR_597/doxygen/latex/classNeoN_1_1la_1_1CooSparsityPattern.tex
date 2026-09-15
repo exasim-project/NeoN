@@ -45,9 +45,9 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_a2b12fb41714b4fca4889b6d022749eda}{row\+Idxs}} ()
 \begin{DoxyCompactList}\small\item\em returns the non-\/const COO per-\/entry row indices (one per nnz) \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_a402ab2ccd4648a9c60201228cf68cd02}{row\+Offs}} () const
-\begin{DoxyCompactList}\small\item\em returns the COO per-\/entry row indices (one per nnz) \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em returns the row offsets, mapping a row to its start index in values \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_a19183d43826dd6612ee3bb6825e5e504}{row\+Offs}} ()
-\begin{DoxyCompactList}\small\item\em returns the non-\/const COO per-\/entry row indices (one per nnz) \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em returns the non-\/const row offsets \end{DoxyCompactList}\item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_ace998e5c6f0e6494153a357d163b3e07}{rows}} () const
 \item 
 \mbox{\hyperlink{namespaceNeoN_a40785cd3c378b425dd30ae7f4d7dcabc}{local\+Idx}} \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_a6c42157178613597356289d00f3cff3c}{nnz}} () const
@@ -57,7 +57,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox
 \mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_acc130ea387bc85ab57ee013828c7f906}{dimension}} () const
 \item 
 \mbox{\hyperlink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View}}$<$ Index\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern_a1f48448b94b94ee29e9b0764f53f35db}{view}} () const
-\begin{DoxyCompactList}\small\item\em Get a view representation of the matrix\textquotesingle{}s data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Get a view representation of the sparsity pattern. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classNeoN_1_1SupportsCopyTo}{Neo\+N\+::\+Supports\+Copy\+To$<$ Coo\+Sparsity\+Pattern$<$ Index\+Type $>$ $>$}}}
 \begin{DoxyCompactItemize}
 \item 
@@ -99,7 +99,7 @@ using \mbox{\hyperlink{classNeoN_1_1la_1_1CooSparsityPattern}{Neo\+N\+::la\+::\+
 
 
 
-Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00077}{77}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00076}{76}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
 
 
 
@@ -187,7 +187,7 @@ Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00037}{37}} 
 
 
 
-Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00074}{74}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1CooSparsityPattern_af710e81f1141ca0645bb6322e40aaf89}\label{classNeoN_1_1la_1_1CooSparsityPattern_af710e81f1141ca0645bb6322e40aaf89} 
 \index{NeoN::la::CooSparsityPattern$<$ IndexType $>$@{NeoN::la::CooSparsityPattern$<$ IndexType $>$}!exec@{exec}}
@@ -213,7 +213,7 @@ Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00047}{47}} 
 
 
 
-Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00069}{69}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1CooSparsityPattern_a2b12fb41714b4fca4889b6d022749eda}\label{classNeoN_1_1la_1_1CooSparsityPattern_a2b12fb41714b4fca4889b6d022749eda} 
 \index{NeoN::la::CooSparsityPattern$<$ IndexType $>$@{NeoN::la::CooSparsityPattern$<$ IndexType $>$}!rowIdxs@{rowIdxs}}
@@ -254,7 +254,7 @@ Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00056}{56}} 
 
 
 
-returns the non-\/const COO per-\/entry row indices (one per nnz) 
+returns the non-\/const row offsets 
 
 
 
@@ -269,7 +269,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Index\+Type $>$ \& \mbox
 
 
 
-returns the COO per-\/entry row indices (one per nnz) 
+returns the row offsets, mapping a row to its start index in values 
 
 
 
@@ -295,7 +295,7 @@ Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00067}{67}} 
 
 
 
-Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00073}{73}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00072}{72}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
 
 \Hypertarget{classNeoN_1_1la_1_1CooSparsityPattern_a1f48448b94b94ee29e9b0764f53f35db}\label{classNeoN_1_1la_1_1CooSparsityPattern_a1f48448b94b94ee29e9b0764f53f35db} 
 \index{NeoN::la::CooSparsityPattern$<$ IndexType $>$@{NeoN::la::CooSparsityPattern$<$ IndexType $>$}!view@{view}}
@@ -306,14 +306,14 @@ Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00073}{73}} 
 
 
 
-Get a view representation of the matrix\textquotesingle{}s data. 
+Get a view representation of the sparsity pattern. 
 
 \begin{DoxyReturn}{Returns}
-\doxylink{structNeoN_1_1la_1_1MatrixView}{Matrix\+View} for easy access to matrix elements. Backed by row\+Offs\+\_\+, not row\+Idxs\+\_\+ -- entry()/find\+Entry() need row-\/range offsets. 
+\doxylink{structNeoN_1_1la_1_1SparsityView}{Sparsity\+View} for easy access to the stored entries. Backed by row\+Offs\+\_\+ and not row\+Idxs\+\_\+, since entry() needs the row ranges. 
 \end{DoxyReturn}
 
 
-Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
+Definition at line \mbox{\hyperlink{cooSparsityPattern_8hpp_source_l00083}{83}} of file \mbox{\hyperlink{cooSparsityPattern_8hpp_source}{coo\+Sparsity\+Pattern.\+hpp}}.
 
 
 

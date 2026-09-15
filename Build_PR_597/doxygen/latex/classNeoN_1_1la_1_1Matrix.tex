@@ -28,7 +28,7 @@ using \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a5ae20ec54af7a7443cbb96b0e147df
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_afd4c9eb00414752315c70340966e6bea}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ sp)
 \begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix}. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a6b2e924a3860b6fb4f3682143c829dec}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a987054eb7aaf4e43fc94fe1429f6e7f5}{col\+Idxs}}, const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af33c631e231a40bb2e15ad1ac1dd7de9}{row\+Offs}}, \mbox{\hyperlink{structNeoN_1_1la_1_1Dimensions}{Dimensions}} dimensions)
-\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} from a CSR/\+COO-\/shaped (col\+Idxs, row\+Offs) pair. Not available for ELL -- use the two-\/argument constructor instead. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} from a col\+Idxs and row\+Offs pair. Not available for ELL, use the constructor taking a sparsity pattern instead. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a65ad75535917fdda1ba4782ee0ecf841}{Matrix}} (const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \&\mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aa1d6d042ecac3ad3bb7e4df66fec5707}{values}}, std\+::shared\+\_\+ptr$<$ const Sparsity\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_aae45d61e9077a6ccf5870200b777ebc2}{sparsity}}, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}} $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a02b801ebe205b3f8e6194eb6bdfaf806}{face\+To\+Matrix\+Address}})
 \begin{DoxyCompactList}\small\item\em Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} with a \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af2fb7061f12d0beab7f04f5dc333cbc0}{\texorpdfstring{$\sim$}{\string~}\+Matrix}} ()=default
@@ -46,7 +46,7 @@ void \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a2ce62bcdbef333ae01962e18af3c593
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a987054eb7aaf4e43fc94fe1429f6e7f5}{col\+Idxs}} () const
 \begin{DoxyCompactList}\small\item\em Get a reference to column indices vector. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\+::\+Sparsity\+Index\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_af33c631e231a40bb2e15ad1ac1dd7de9}{row\+Offs}} () const
-\begin{DoxyCompactList}\small\item\em Get a reference to row offset vector. Not available for ELL -- no contiguous row range to offset into. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Get a reference to row offset vector. Not available for ELL, which has no contiguous row range. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ Value\+Type $>$ \& \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_a1ea80482bb87bb33883dc3ccaa586f80}{values}} () const
 \begin{DoxyCompactList}\small\item\em Get a const reference to values vector. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix}{Matrix}}$<$ Value\+Type, Sparsity\+Type $>$ \mbox{\hyperlink{classNeoN_1_1la_1_1Matrix_ab27fc5d5e14d12efff17578b79dd3a31}{copy\+To\+Executor}} (\mbox{\hyperlink{namespaceNeoN_a84c514269c3ade9cf4103acb1210a65f}{Executor}} dst\+Exec) const override
@@ -145,7 +145,7 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00092}{92}} of file \mbo
 
 
 
-Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} from a CSR/\+COO-\/shaped (col\+Idxs, row\+Offs) pair. Not available for ELL -- use the two-\/argument constructor instead. 
+Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} from a col\+Idxs and row\+Offs pair. Not available for ELL, use the constructor taking a sparsity pattern instead. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -171,7 +171,7 @@ Definition at line \mbox{\hyperlink{matrix_8hpp_source_l00105}{105}} of file \mb
 
 Constructor for \doxylink{classNeoN_1_1la_1_1Matrix}{Matrix} with a \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address}. 
 
-The sparsity pattern and the face-\/to-\/matrix address are passed as independent objects. Only available for local\+Idx-\/indexed, \doxylink{classNeoN_1_1la_1_1Matrix_af33c631e231a40bb2e15ad1ac1dd7de9}{row\+Offs()}-\/capable sparsity types -- \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address} offsets are CSR row-\/local and don\textquotesingle{}t apply to ELL.
+The sparsity pattern and the face-\/to-\/matrix address are passed as independent objects. Only available for local\+Idx indexed sparsity types providing \doxylink{classNeoN_1_1la_1_1Matrix_af33c631e231a40bb2e15ad1ac1dd7de9}{row\+Offs()}, the \doxylink{classNeoN_1_1la_1_1FaceToMatrixAddress}{Face\+To\+Matrix\+Address} offsets are row local and do not apply to ELL.
 
 
 \begin{DoxyParams}{Parameters}
@@ -341,7 +341,7 @@ const \mbox{\hyperlink{classNeoN_1_1Vector}{Vector}}$<$ typename Sparsity\+Type\
 
 
 
-Get a reference to row offset vector. Not available for ELL -- no contiguous row range to offset into. 
+Get a reference to row offset vector. Not available for ELL, which has no contiguous row range. 
 
 \begin{DoxyReturn}{Returns}
 \doxylink{classNeoN_1_1Vector}{Vector} containing the row pointers. 

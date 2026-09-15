@@ -169,7 +169,7 @@
         </param>
     <requiresclause>requires( Vector&lt;typename SparsityType::SparsityIndexType&gt; c, Vector&lt;typename SparsityType::SparsityIndexType&gt; r, Dimensions d ) { SparsityType(std::move(c), std::move(r), d); }    </requiresclause>
         <briefdescription>
-<para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> from a CSR/COO-shaped (colIdxs, rowOffs) pair. Not available for ELL <ndash/> use the two-argument constructor instead. </para>
+<para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> from a colIdxs and rowOffs pair. Not available for ELL, use the constructor taking a sparsity pattern instead. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -226,7 +226,7 @@
 <para>Constructor for <ref refid="classNeoN_1_1la_1_1Matrix" kindref="compound">Matrix</ref> with a <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para>The sparsity pattern and the face-to-matrix address are passed as independent objects. Only available for localIdx-indexed, <ref refid="classNeoN_1_1la_1_1Matrix_1af33c631e231a40bb2e15ad1ac1dd7de9" kindref="member">rowOffs()</ref>-capable sparsity types <ndash/> <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> offsets are CSR row-local and don&apos;t apply to ELL.</para>
+<para>The sparsity pattern and the face-to-matrix address are passed as independent objects. Only available for localIdx indexed sparsity types providing <ref refid="classNeoN_1_1la_1_1Matrix_1af33c631e231a40bb2e15ad1ac1dd7de9" kindref="member">rowOffs()</ref>, the <ref refid="classNeoN_1_1la_1_1FaceToMatrixAddress" kindref="compound">FaceToMatrixAddress</ref> offsets are row local and do not apply to ELL.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>values</parametername>
@@ -385,7 +385,7 @@
         <qualifiedname>NeoN::la::Matrix::rowOffs</qualifiedname>
     <requiresclause>requires(const SparsityType&amp; sp) { sp.rowOffs(); }    </requiresclause>
         <briefdescription>
-<para>Get a reference to row offset vector. Not available for ELL <ndash/> no contiguous row range to offset into. </para>
+<para>Get a reference to row offset vector. Not available for ELL, which has no contiguous row range. </para>
         </briefdescription>
         <detaileddescription>
 <para><simplesect kind="return"><para><ref refid="classNeoN_1_1Vector" kindref="compound">Vector</ref> containing the row pointers. </para>
