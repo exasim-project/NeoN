@@ -186,7 +186,7 @@ public:
      * The executor is unchanged — exec_ is const and cannot be moved.
      *
      * @warning Invalidates any existing View objects that point into *this.
-     * * @param rhs Vector whose resources are transferred to this Vector.
+     * @param rhs Vector whose resources are transferred to this Vector.
      * @return A reference to this Vector.
      */
     Vector<ValueType>& operator=(Vector<ValueType>&& rhs) noexcept;
