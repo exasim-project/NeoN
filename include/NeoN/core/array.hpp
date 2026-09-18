@@ -375,7 +375,6 @@ public:
      * @return The half-open index range [0, size()).
      */
     [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
-    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
 
 private:
 

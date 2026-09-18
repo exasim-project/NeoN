@@ -273,7 +273,6 @@ public:
      * @param size New number of elements.
      */
     void resize(const localIdx size);
-    void resize(const localIdx size);
 
     /**
      * @brief Returns a pointer to the underlying Vector data.
