@@ -42,9 +42,10 @@ public:
     using ArrayValueType = ValueType;
 
     /**
-     * @brief Create an uninitialized Array with a given size on an executor
-     * @param exec  Executor associated to the field
-     * @param size  size of the field
+     * @brief Creates an uninitialized Array with the given size on an executor.
+     *
+     * @param exec Executor on which the array data is allocated.
+     * @param size Number of elements in the array.
      */
     Array(const Executor& exec, localIdx size) : size_(size), data_(nullptr), exec_(exec)
     {
@@ -58,11 +59,12 @@ public:
     }
 
     /**
-     * @brief Create a Array with a given size from existing memory on an executor
-     * @param exec  Executor associated to the field
-     * @param in    Pointer to existing data
-     * @param size  size of the field
-     * @param hostExec Executor where the original data is located
+     * @brief Creates an Array from existing data on the given executor.
+     *
+     * @param exec Executor on which the array data is allocated.
+     * @param in Pointer to the source data.
+     * @param size Number of elements to copy.
+     * @param hostExec Executor on which the source data is located.
      */
     Array(
         const Executor& exec,
@@ -84,10 +86,11 @@ public:
 
 
     /**
-     * @brief Create a Array with a given size on an executor and uniform value
-     * @param exec  Executor associated to the field
-     * @param size  size of the field
-     * @param value  the  default value
+     * @brief Creates an Array with the given size and initializes all elements to a value.
+     *
+     * @param exec Executor on which the array data is allocated.
+     * @param size Number of elements in the array.
+     * @param value Value used to initialize all elements.
      */
     Array(const Executor& exec, localIdx size, ValueType value)
         : size_(size), data_(nullptr), exec_(exec)
@@ -103,9 +106,9 @@ public:
     }
 
     /**
-     * @brief Create a Array from a given Array of values on an executor
-     * @param exec  Executor associated to the field
-     * @param in a Array of elements to copy over
+     * @brief Create an Array from a std::vector on a given executor
+     * @param exec  Executor on which the array data is allocated
+     * @param in std::vector containing the values to copy into the array
      */
     Array(const Executor& exec, std::vector<ValueType> in)
         : Array(exec, in.data(), static_cast<localIdx>(in.size()))
@@ -113,24 +116,27 @@ public:
 
 
     /**
-     * @brief Create a Array as a copy of a Array on a specified executor
-     * @param exec  Executor associated to the field
-     * @param in a Array of elements to copy over
+     * @brief Creates a copy of an Array on the specified executor.
+     *
+     * @param exec Executor on which the new array is allocated.
+     * @param in Array to copy.
      */
     Array(const Executor& exec, const Array<ValueType>& in)
         : Array(exec, in.data(), in.size(), in.exec())
     {}
 
     /**
-     * @brief Copy constructor, creates a new field with the same size and data as the parsed field.
-     * @param rhs The field to copy from.
+     * @brief Creates a copy of another Array on the same executor.
+     *
+     * @param rhs Array to copy from.
      */
     Array(const Array<ValueType>& rhs) : Array(rhs.exec(), rhs.data(), rhs.size(), rhs.exec()) {}
 
 
     /**
-     * @brief Move constructor, moves the data from the parsed field to the new field.
-     * @param rhs The field to move from.
+     * @brief Move constructor.
+     *
+     * @param rhs Array whose resources are transferred to the new Array.
      */
     Array(Array<ValueType>&& rhs) noexcept : size_(rhs.size_), data_(rhs.data_), exec_(rhs.exec_)
     {
@@ -148,9 +154,12 @@ public:
     }
 
     /**
-     * @brief applies a functor, transformation, to the field
-     * @param f The functor to map over the field.
-     * @note Ideally the f should be a KOKKOS_LAMBA
+     * @brief Applies a function to each element of the Array.
+     *
+     * @param f Function or functor applied to the array elements.
+     *
+     * @note The function should be compatible with execution by Kokkos. Ideally, it should be
+     * Kokkos lambda.
      */
     template<typename func>
     void apply(func f)
@@ -159,9 +168,10 @@ public:
     }
 
     /**
-     * @brief Copies the data to a new field on a specific executor.
-     * @param dstExec The executor on which the data should be copied.
-     * @returns A copy of the field on the host.
+     * @brief Creates a copy of the Array on a specified executor.
+     *
+     * @param dstExec Executor on which the copied array is allocated.
+     * @return A copy of this Array on @p dstExec.
      */
     [[nodiscard]] Array<ValueType> copyToExecutor(Executor dstExec) const
     {
@@ -174,18 +184,19 @@ public:
     }
 
     /**
-     * @brief Returns a copy of the field back to the host.
-     * @returns A copy of the field on the host.
+     * @brief Creates a host-resident copy of the Array.
+     *
+     * @return A copy of this Array allocated on the serial executor.
      */
     [[nodiscard]] Array<ValueType> copyToHost() const { return copyToExecutor(SerialExecutor()); }
 
     /**
-     * @brief Copies the data (from anywhere) to a parsed host field.
-     * @param result The field into which the data must be copied. Must be
-     * sized.
+     * @brief Copies the Array data to a host-resident Array.
      *
-     * @warning exits if the size of the result field is not the same as the
-     * source field.
+     * @param result Destination Array. Its size must match the source Array.
+     *
+     * @warning An error is raised if @p result does not have the same size as
+     * this Array.
      */
     void copyToHost(Array<ValueType>& result)
     {
@@ -202,8 +213,9 @@ public:
     const Array& operator[](const localIdx i) const = delete;
 
     /**
-     * @brief Assignment operator, Sets the field values to that of the passed value.
-     * @param rhs The value to set the field to.
+     * @brief Assigns a value to all elements of the Array.
+     *
+     * @param rhs Value assigned to each element.
      */
     void operator=(const ValueType& rhs)
     {
@@ -212,10 +224,12 @@ public:
     }
 
     /**
-     * @brief Assignment operator, Sets the field values to that of the parsed field.
-     * @param rhs The field to copy from.
+     * @brief Copies the contents of another Array.
      *
-     * @warning This field will be sized to the size of the parsed field.
+     * @param rhs Array to copy from.
+     *
+     * @warning The source and destination Arrays must use the same executor.
+     * The destination is resized if necessary.
      */
     void operator=(const Array<ValueType>& rhs)
     {
@@ -228,8 +242,9 @@ public:
     }
 
     /**
-     * @brief Resizes the field to a new size.
-     * @param size The new size to set the field to.
+     * @brief Resizes the Array.
+     *
+     * @param size New number of elements.
      */
     void resize(const localIdx size)
     {
@@ -255,38 +270,44 @@ public:
     }
 
     /**
-     * @brief Direct access to the underlying field data
-     * @return Pointer to the first cell data in the field.
+     * @brief Returns a pointer to the underlying array data.
+     *
+     * @return Pointer to the first element.
      */
     [[nodiscard]] inline ValueType* data() { return data_; }
 
     /**
-     * @brief Direct access to the underlying field data
-     * @return Pointer to the first cell data in the field.
+     * @brief Returns a pointer to the underlying array data.
+     *
+     * @return Pointer to the first element.
      */
     [[nodiscard]] inline const ValueType* data() const { return data_; }
 
     /**
-     * @brief Gets the executor associated with the field.
-     * @return Reference to the executor.
+     * @brief Returns the executor associated with the Array.
+     *
+     * @return Reference to the Array's executor.
      */
     [[nodiscard]] inline const Executor& exec() const { return exec_; }
 
     /**
-     * @brief Gets the size of the field.
-     * @return The size of the field.
+     * @brief Returns the number of elements in the Array.
+     *
+     * @return Number of elements.
      */
     [[nodiscard]] inline localIdx size() const { return size_; }
 
     /**
-     * @brief Gets the size of the field.
-     * @return The size of the field.
+     * @brief Returns the number of elements in the Array.
+     *
+     * @return Number of elements.
      */
     [[nodiscard]] inline label ssize() const { return static_cast<label>(size_); }
 
     /**
-     * @brief Checks if the field is empty.
-     * @return True if the field is empty, false otherwise.
+     * @brief Checks whether the Array contains no elements.
+     *
+     * @return True if the Array is empty, otherwise false.
      */
     [[nodiscard]] inline bool empty() const { return size() == 0; }
 
@@ -297,8 +318,9 @@ public:
     View<const ValueType> view() const&& = delete;
 
     /**
-     * @brief Gets the field as a view.
-     * @return View of the field.
+     * @brief Returns a view of the Array data.
+     *
+     * @return Non-owning view of the Array data.
      */
     [[nodiscard]] inline View<ValueType> view() &
     {
@@ -306,8 +328,9 @@ public:
     }
 
     /**
-     * @brief Gets the field as a view.
-     * @return View of the field.
+     * @brief Returns a view of the Array data.
+     *
+     * @return Non-owning view of the Array data.
      */
     [[nodiscard]] inline View<const ValueType> view() const&
     {
@@ -321,8 +344,10 @@ public:
     [[nodiscard]] View<const ValueType> view(std::pair<localIdx, localIdx> range) const&& = delete;
 
     /**
-     * @brief Gets a sub view of the field as a view.
-     * @return View of the field.
+     * @brief Returns a view of a range of the Array.
+     *
+     * @param range Half-open range of elements to include in the view.
+     * @return Non-owning view of the specified range.
      */
     [[nodiscard]] inline View<ValueType> view(std::pair<localIdx, localIdx> range) &
     {
@@ -332,8 +357,10 @@ public:
     }
 
     /**
-     * @brief Gets a sub view of the field as a view.
-     * @return View of the field.
+     * @brief Returns a view of a range of the Array.
+     *
+     * @param range Half-open range of elements to include in the view.
+     * @return Non-owning view of the specified range.
      */
     [[nodiscard]] inline View<const ValueType> view(std::pair<localIdx, localIdx> range) const&
     {
@@ -343,20 +370,22 @@ public:
     }
 
     /**
-     * @brief Gets the range of the field.
-     * @return The range of the field {0, size()}.
+     * @brief Returns the index range of the Array.
+     *
+     * @return The half-open index range [0, size()).
      */
+    [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
     [[nodiscard]] inline std::pair<localIdx, localIdx> range() const { return {0, size()}; }
 
 private:
 
-    localIdx size_ {0};         //!< Size of the field.
-    ValueType* data_ {nullptr}; //!< Pointer to the field data.
-    const Executor exec_;       //!< Executor associated with the field. (CPU, GPU, openMP, etc.)
+    localIdx size_ {0};         //!< Number of elements in the Array.
+    ValueType* data_ {nullptr}; //!< Pointer to the underlying Array data.
+    const Executor exec_;       //!< Executor associated with the Array.
 
     /**
-     * @brief Checks if two fields are the same size and have the same executor.
-     * @param rhs The field to compare with.
+     * @brief Checks if two Arrays have the same size and the same executor.
+     * @param rhs Array to compare with.
      */
     void validateOtherArray(const Array<ValueType>& rhs) const
     {
