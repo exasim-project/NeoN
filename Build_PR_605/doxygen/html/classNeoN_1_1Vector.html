@@ -1198,10 +1198,7 @@ template&lt;typename ValueType &gt; </div>
 
 <p>Move-assignment operator — transfers ownership of the data buffer. </p>
 <p>Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by *this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec_ is const and cannot be moved.</p>
-<dl class="section warning"><dt>Warning</dt><dd>Invalidates any existing <a class="el" href="classNeoN_1_1View.html">View</a> objects that point into *this.<ul>
-<li></li>
-</ul>
-</dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>Invalidates any existing <a class="el" href="classNeoN_1_1View.html">View</a> objects that point into *this. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rhs</td><td><a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a> whose resources are transferred to this <a class="el" href="classNeoN_1_1Vector.html" title="An executor-aware contiguous container for numerical data with vector-style arithmetic semantics.">Vector</a>. </td></tr>

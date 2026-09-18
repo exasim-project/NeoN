@@ -621,9 +621,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by *this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec_ is const and cannot be moved.</para>
-<para><simplesect kind="warning"><para>Invalidates any existing <ref refid="classNeoN_1_1View" kindref="compound">View</ref> objects that point into *this.<itemizedlist>
-<listitem></listitem></itemizedlist>
-</para>
+<para><simplesect kind="warning"><para>Invalidates any existing <ref refid="classNeoN_1_1View" kindref="compound">View</ref> objects that point into *this. </para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
 <parameternamelist>

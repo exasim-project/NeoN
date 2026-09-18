@@ -679,10 +679,7 @@ Move-\/assignment operator — transfers ownership of the data buffer.
 Swaps the data pointer and size from rhs in O(1) without launching any GPU kernel. The old buffer owned by \texorpdfstring{$\ast$}{*}this is freed first (after a fence if on GPU). After the move, rhs is left in an empty (size=0, data=nullptr) state. The executor is unchanged — exec\+\_\+ is const and cannot be moved.
 
 \begin{DoxyWarning}{Warning}
-Invalidates any existing \doxylink{classNeoN_1_1View}{View} objects that point into \texorpdfstring{$\ast$}{*}this.
-\begin{DoxyItemize}
-\item 
-\end{DoxyItemize}
+Invalidates any existing \doxylink{classNeoN_1_1View}{View} objects that point into \texorpdfstring{$\ast$}{*}this. 
 \end{DoxyWarning}
 
 \begin{DoxyParams}{Parameters}
